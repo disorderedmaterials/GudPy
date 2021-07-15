@@ -1,5 +1,4 @@
 
-from logging import FATAL
 import sys, os
 from unittest.result import failfast
 from unittest.suite import TestSuite
@@ -73,7 +72,52 @@ class TestUtils(TestCase):
 
         self.assertEqual(firstword(""), "")
 
+    def testExtractIntsFromString(self):
 
+        self.assertEqual(extract_ints_from_string("1 2 3 4 Hello\n"), [1,2,3,4])
+
+    def testExtractIntsFromString1(self):
+
+        self.assertEqual(extract_ints_from_string("1 2 3 4 Hello 5 6 7 8"), [1,2,3,4])
+
+    def testExtractIntsFromBadString(self):
+
+        self.assertEqual(extract_ints_from_string("No integers here!\n"), [])
+
+    def testExtractFloatsFromString(self):
+
+        self.assertEqual(extract_floats_from_string("1.0 2.0 3.0 4.0 Hello\n"), [1.0,2.0,3.0,4.0])
+
+    def testExtractFloatsFromString1(self):
+
+        self.assertEqual(extract_floats_from_string("1.0 2.0 3.0 4.0 Hello 5.0 6.0 7.0 8.0"), [1.0,2.0,3.0,4.0])
+
+    def testExtractFloatsFromBadString(self):
+
+        self.assertEqual(extract_floats_from_string("No floats here!\n"), [])
+
+    def testCountOccurencesList(self):
+    
+        self.assertEqual(count_occurrences("Hello", ["Hello world", "Hello there", "Hi world", "Hello", "Hi there"]), 3)
+
+    def testCountOccurencesTuple(self):
+
+        self.assertEqual(count_occurrences("Hello", ("Hello world", "Hello there", "Hi world", "Hello", "Hi there")), 3)
+
+    def testIterIsTypeStr(self):
+
+        self.assertTrue(iteristype(["1", "2", "3"], str))
+        self.assertFalse(iteristype(["1", "2", "3"], int))
+
+    def testIterIsTypeInt(self):
+
+        self.assertTrue(iteristype([1,2,3], int))
+        self.assertFalse(iteristype(["1", "2", "3"], int))
+
+    def testIterIsTypeMixed(self):
+
+        self.assertFalse(iteristype([None, 1, TestCase()], TestCase))
+        self.assertFalse(iteristype([None, 1, TestCase()], int))
 
 class TestParseGudrunFile(TestCase):
 
@@ -127,7 +171,20 @@ def suite():
     suite.addTest(TestUtils('testFirstwordShort'))
     suite.addTest(TestUtils('testFirstWordEmpty'))
 
+    suite.addTest(TestUtils('testExtractIntsFromString'))
+    suite.addTest(TestUtils('testExtractIntsFromString1'))
+    suite.addTest(TestUtils('testExtractIntsFromBadString'))
 
+    suite.addTest(TestUtils('testExtractFloatsFromString'))
+    suite.addTest(TestUtils('testExtractFloatsFromString1'))
+    suite.addTest(TestUtils('testExtractFloatsFromBadString'))
+
+    suite.addTest(TestUtils('testCountOccurencesList'))
+    suite.addTest(TestUtils('testCountOccurencesTuple'))
+
+    suite.addTest(TestUtils('testIterIsTypeStr'))
+    suite.addTest(TestUtils('testIterIsTypeInt'))
+    suite.addTest(TestUtils('testIterIsTypeMixed'))
 
     suite.addTest(TestParseGudrunFile('testEmptyPath'))
     suite.addTest(TestParseGudrunFile('testInvalidPath'))
@@ -136,10 +193,11 @@ def suite():
     suite.addTest(TestParseGudFile('testInvalidFileType'))
     suite.addTest(TestParseGudFile('testInvalidPath'))
 
+
     return suite
 
 
 if __name__ == '__main__':
 
-    testRunner = TextTestRunner(failfast=True, verbosity=2)
+    testRunner = TextTestRunner(failfast=True, verbosity=3)
     testRunner.run(suite())

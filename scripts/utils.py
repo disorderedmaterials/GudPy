@@ -45,12 +45,12 @@ def extract_floats_from_string(string):
 from collections import deque
 from itertools import islice
 
-def consume(iter, n):
+def consume(iterable, n):
 
-    deque(iter, maxlen=0) if not n else next(islice(iter,n,n),None)
+    deque(iterable, maxlen=0) if not n else next(islice(iterable,n,n),None)
 
-def count_occurrences(substring, list_):
-    return sum(1 for string in list_ if substring in string)
+def count_occurrences(substring, iterable):
+    return sum(1 for string in iterable if substring in string)
 
 def iteristype(iter, type):
     return all(isinstance(x, type) for x in iter)
