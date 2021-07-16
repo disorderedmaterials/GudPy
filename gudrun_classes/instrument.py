@@ -116,5 +116,4 @@ class Instrument:
                             self.numberIterations,
                             numifyBool(self.tweakTweakFactors)
 )))                         
-                        # )).replace('\n\n',''))
 

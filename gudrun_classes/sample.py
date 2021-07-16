@@ -33,15 +33,12 @@ class Sample:
         self.analyse = False
         self.sampleEnvironementScatteringFuncAttenuationCoeff = (0.,0.)
         
-        self.sampleBackground = None
         self.containers = []
 
     def __str__(self):
 
-        SAMPLE_BACKGROUND = SAMPLE_CONTAINERS = SAMPLE = ''
+        SAMPLE_CONTAINERS = SAMPLE = ''
 
-        if self.sampleBackground:
-            SAMPLE_BACKGROUND = str(self.sampleBackground)
         if len(self.containers) > 0:
             SAMPLE_CONTAINERS = cleandoc("\n".join([str(x) for x in self.containers]))
         SAMPLE = cleandoc("""
@@ -107,51 +104,23 @@ class Sample:
                 spacify(self.sampleEnvironementScatteringFuncAttenuationCoeff)
             ))
 
-
-        if len(SAMPLE_BACKGROUND) > 0 and len(SAMPLE_CONTAINERS) > 0:
-
-            return (cleandoc(
-"""{}
-{}
-
-{}
-GO
-            """.format(
-                SAMPLE_BACKGROUND,
-                SAMPLE,
-                SAMPLE_CONTAINERS
-            )
-            ))
-        elif len(SAMPLE_BACKGROUND) == 0 and len(SAMPLE_CONTAINERS) > 0:
+        if len(SAMPLE_CONTAINERS) > 0:
             return (cleandoc("""
 {}
 
 {}
 GO
-
             """.format(
                 SAMPLE,
                 SAMPLE_CONTAINERS
             )
-            ))
-        elif len(SAMPLE_BACKGROUND) > 0 and len(SAMPLE_CONTAINERS) == 0:
-            return (cleandoc("""
-{}
-{}
-GO
-
-            """.format(
-                SAMPLE_BACKGROUND,
-                SAMPLE
-            )
-            ))            
+            ))      
         else:
             return (cleandoc("""
 {}
 
 GO
-
-""".format(
+            """.format(
                 SAMPLE
             )
             ))  

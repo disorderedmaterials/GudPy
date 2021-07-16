@@ -37,7 +37,8 @@ class GudrunFile:
             self.instrument = None
             self.beam = None
             self.normalisation = None
-            self.samples = []
+            self.sampleBackgrounds = []
+            self.ignoredSamples = []
             self.parse()
     
 
@@ -714,6 +715,35 @@ class GudrunFile:
 
         return KEYWORDS['SAMPLE']
 
+    def sampleBackgroundHelper(self, lines):
+
+        KEYWORDS = {'SAMPLE BACKGROUND': None, 'SAMPLE': [], 'CONTAINER': Container}
+
+        #Iterate through the lines, parsing any Samples, backgrounds and containers found
+        parsing = ''
+        start = end = 0
+        for i, line in enumerate(lines):
+            for key in KEYWORDS.keys():
+                if key in line and firstword(line) in KEYWORDS.keys():
+                    parsing = key
+                    start = i
+                    break
+            if line[0] == "}":
+                end = i
+                if parsing == 'SAMPLE BACKGROUND': start+=2
+                slice = deepcopy(lines[start:end-1])
+                if isinstance(KEYWORDS[parsing], list):
+                    KEYWORDS[parsing].append(self.makeParse(slice,parsing))
+                elif isinstance(KEYWORDS[parsing], Container):
+                    KEYWORDS['SAMPLE'][-1].containers.append(self.makeParse(slice, parsing))
+                else:
+                    KEYWORDS[parsing] = self.makeParse(slice, parsing)
+                start = end = 0
+        KEYWORDS['SAMPLE BACKGROUND'].samples = KEYWORDS['SAMPLE']
+
+        return KEYWORDS['SAMPLE BACKGROUND'] 
+
+
     def parse(self):
 
         #Ensure only valid files are given.
@@ -751,14 +781,30 @@ class GudrunFile:
             #Get everything after the final item parsed
             lines_split = deepcopy(lines[split+1:])
             start = end = 0
+            found = False
             
-            #Parse the samples and their backgrounds
-            for i, line in enumerate(lines_split): 
-                if 'GO' in line:
+            #Parse sample backgrounds and corresponding samples and containers.
+            for i, line in enumerate(lines_split):
+                if ('SAMPLE BACKGROUND' in line and '{' in line) and not found:
+                    start = i
+                    found = True
+                    continue
+                elif (('SAMPLE BACKGROUND' in line and '{' in line) or ('END' in line)) and found:
                     end = i
+                    found = False
                     slice = deepcopy(lines_split[start:end])
-                    self.samples.append(self.sampleHelper(slice))
-                    start = end+1
+                    self.sampleBackgrounds.append(self.sampleBackgroundHelper(slice))
+                    start = end + 1
+                else:
+                    continue
+
+            # #Parse the samples and their backgrounds
+            # for i, line in enumerate(lines_split): 
+            #     if 'GO' in line:
+            #         end = i
+            #         slice = deepcopy(lines_split[start:end])
+            #         self.samples.append(self.sampleHelper(slice))
+            #         start = end+1
 
     def __str__(self):
         LINEBREAK = '\n\n'
@@ -766,7 +812,7 @@ class GudrunFile:
         instrument = "INSTRUMENT        {\n\n" + str(self.instrument) + LINEBREAK + "}"
         beam = "BEAM        {\n\n" + str(self.beam) + LINEBREAK + "}"
         normalisation = "NORMALISATION        {\n\n" + str(self.normalisation) + LINEBREAK + "}"        
-        samples = "\n".join([str(x) for x in self.samples]).rstrip()
+        sampleBackgrounds = "\n".join([str(x) for x in self.sampleBackgrounds]).rstrip()
         footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(time.strftime('%Y%m%d %H:%M:%S') )
         return (
             header + 
@@ -776,7 +822,7 @@ class GudrunFile:
             LINEBREAK +
             normalisation +
             LINEBREAK +
-            samples +
+            sampleBackgrounds +
             footer
         )
 
@@ -790,14 +836,35 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
+    # def dont_evaluate(self, sample):
+    #     self.ignoredSamples.append(sample)
+    #     self.samples.remove(sample)
+
+    # def do_evaluate(self, sample):
+    #     self.ignoredSamples.remove(sample)
+    #     self.samples.append(sample)
 
 if __name__ == '__main__':
     g = GudrunFile(path="NIMROD-water/water.txt")
-    g.write_out()
+    # for i in range(1,len(g.samples)-3):
+    #     g.dont_evaluate(g.samples[i])
     import subprocess
-    print('running gudrun_dcs with {}'.format(g.path))
+    # for sample in g.samples:
+    #     while True:
+    #         eval = input("Evaluate {}? Y/N".format(sample.name))
+    #         if eval[0] == "Y" or eval[0] == "y":
+    #             break
+    #         elif eval[0] == "N" or eval[0] == "n":
+    #             g.ignoredSamples.append(sample)
+    #             g.samples.remove(sample)
+    #             break
+    g.write_out()
+    # for sample in g.samples:
+    #     print(sample.name)
+            # print('running gudrun_dcs with {}'.format(g.path))
     result = subprocess.run(['GudPy/Gudrun/bin/gudrun_dcs', g.path], capture_output=True, text=True)
-    
+    # g.samples+=g.ignoredSamples
+    # g.ignoredSamples = []
 
     if len(result.stderr) > 0:
         print("An error occured whilst running gudrun_dcs on {}\n\n. The error occured is as follows:\n\n".format(g.path))

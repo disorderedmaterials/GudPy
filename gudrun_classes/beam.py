@@ -17,6 +17,10 @@ class Beam:
         self.sampleDependantBackgroundFactor = 0.
         self.shieldingAttenuationCoefficient = 0.
 
+
+
+
+
     def __str__(self):
         return cleandoc("""
 {}        Sample geometry
