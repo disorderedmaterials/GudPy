@@ -14,19 +14,4 @@ class Composition:
         for element in self.elements:
             string+=( '{}        {} atomic composition'.format(str(element), self.type_))
             string+='\n'
-        # for element in self.elements:
-        #     string+=cleandoc("""{}       {} atomic composition""".format(
-        #                                                 str(element),
-        #                                                 self.type_
-        #     ))
-        # return '\n'.join(self.str)                               
-        # return cleandoc(string)
-        # string =''
-        # for element in self.elements:
-        #     string+= '{}        {} atomic composition'.format(str(element), self.type_)
-        #     string+='\n'
-        # print(cleandoc(string))
         return cleandoc(string)
-
-        # return ('\n'.join([str(x) for x in self.elements]))
-        # return ('\n'.join(self.str))

@@ -1,4 +1,5 @@
 
+from logging import StringTemplateStyle
 import sys, os
 from unittest.result import failfast
 from unittest.suite import TestSuite
@@ -132,6 +133,114 @@ class TestParseGudrunFile(TestCase):
         invalidPath = 'invalid_path'
         self.assertRaises(ValueError, GudrunFile, path=invalidPath)
 
+    def testInstrumentInitDataTypes(self):
+
+        instrument = Instrument()
+
+        self.assertIsInstance(instrument, Instrument)
+        self.assertIsInstance(instrument.name, str)
+        self.assertIsInstance(instrument.GudrunInputFileDir, str)
+        self.assertIsInstance(instrument.dataFileDir, str)
+        self.assertIsInstance(instrument.dataFileType, str)
+        self.assertIsInstance(instrument.detectorCalibrationFileName, str)
+        self.assertIsInstance(instrument.columnNoPhiVals, int)
+        self.assertIsInstance(instrument.groupFileName, str)
+        self.assertIsInstance(instrument.deadtimeConstantsFileName, str)
+        self.assertIsInstance(instrument.spectrumNumbersForIncidentBeamMonitor, list)
+        self.assertIsInstance(instrument.wavelengthRangeForMonitorNormalisation, tuple)
+        self.assertIsInstance(instrument.spectrumNumbersForTransmissionMonitor, list)
+        self.assertIsInstance(instrument.incidentMonitorQuietCountConst, float)
+        self.assertIsInstance(instrument.transmissionMonitorQuietCountConst, float)
+        self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
+        self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, int)
+        self.assertIsInstance(instrument.wavelengthRangeForMonitorNormalisation, tuple)
+        self.assertIsInstance(instrument.NoSmoothsOnMonitor, int)
+        self.assertIsInstance(instrument.XScaleRangeStep, tuple)
+        self.assertIsInstance(instrument.groupingParameterPanel, tuple)
+        self.assertIsInstance(instrument.groupsAcceptanceFactor, float)
+        self.assertIsInstance(instrument.mergePower, int)
+        self.assertIsInstance(instrument.subSingleAtomScattering, bool)
+        self.assertIsInstance(instrument.byChannel, int)
+        self.assertIsInstance(instrument.incidentFlightPath, float)
+        self.assertIsInstance(instrument.spectrumNumberForOutputDiagnosticFiles, int)
+        self.assertIsInstance(instrument.neutronScatteringParametersFile, str)
+        self.assertIsInstance(instrument.scaleSelection, int)
+        self.assertIsInstance(instrument.subWavelengthBinnedData, bool)
+        self.assertIsInstance(instrument.GudrunStartFolder, str)
+        self.assertIsInstance(instrument.startupFileFolder, str)
+        self.assertIsInstance(instrument.logarithmicStepSize, float)
+        self.assertIsInstance(instrument.hardGroupEdges, bool)
+        self.assertIsInstance(instrument.numberIterations, int)
+        self.assertIsInstance(instrument.tweakTweakFactors, bool) 
+   
+    def testBeamInitDataTypes(self):
+
+        beam = Beam()
+        
+        self.assertIsInstance(beam, Beam)
+        self.assertIsInstance(beam.sampleGeometry, str)
+        self.assertIsInstance(beam.noBeamProfileValues, int)
+        self.assertIsInstance(beam.beamProfileValues, list)
+        self.assertIsInstance(beam.stepSizeAbsorptionMSNoSlices, tuple)
+        self.assertIsInstance(beam.incidentBeamEdgesRelCentroid, tuple)
+        self.assertIsInstance(beam.scatteredBeamEdgesRelCentroid, tuple)
+        self.assertIsInstance(beam.filenameIncidentBeamSpectrumParams, str)
+        self.assertIsInstance(beam.overallBackgroundFactor, float)
+        self.assertIsInstance(beam.sampleDependantBackgroundFactor, float)
+        self.assertIsInstance(beam.shieldingAttenuationCoefficient, float)
+
+    def testNormalisationInitDataTypes(self):
+
+        normalisation = Normalisation()
+
+        self.assertIsInstance(normalisation, Normalisation)
+        self.assertIsInstance(normalisation.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(normalisation.dataFiles, DataFiles)
+        self.assertIsInstance(normalisation.numberOfFilesPeriodNumberBg, tuple)
+        self.assertIsInstance(normalisation.dataFilesBg, DataFiles)
+        self.assertIsInstance(normalisation.forceCalculationOfCorrections, bool)
+        self.assertIsInstance(normalisation.composition, Composition)
+        self.assertIsInstance(normalisation.geometry, str)
+        self.assertIsInstance(normalisation.thickness, tuple)
+        self.assertIsInstance(normalisation.angleOfRotationSampleWidth, tuple)
+        self.assertIsInstance(normalisation.densityOfAtoms, float)
+        self.assertIsInstance(normalisation.tempForNormalisationPC, int)
+        self.assertIsInstance(normalisation.totalCrossSectionSource, str)
+        self.assertIsInstance(normalisation.normalisationDifferentialCrossSectionFilename, str)
+        self.assertIsInstance(normalisation.lowerLimitSmoothedNormalisation, float)
+        self.assertIsInstance(normalisation.normalisationDegreeSmoothing, float)
+        self.assertIsInstance(normalisation.minNormalisationSignalBR, float)
+
+    def testSampleBackgroundDataTypes(self):
+
+        sampleBackground = SampleBackground()
+
+        self.assertIsInstance(sampleBackground, SampleBackground)
+        self.assertIsInstance(sampleBackground.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(sampleBackground.dataFiles, DataFiles)
+        self.assertIsInstance(sampleBackground.samples, list)   
+
+    def testSampleDataTypes(self):
+
+        sample = Sample()
+
+        self.assertIsInstance(sample, Sample)
+        self.assertIsInstance(sample.name, str)
+        self.assertIsInstance(sample.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(sample.dataFiles, DataFiles)
+        self.assertIsInstance(sample.forceCalculationOfCorrections, bool)
+        self.assertIsInstance(sample.composition, Composition)
+        self.assertIsInstance(sample.geometry, str)
+        self.assertIsInstance(sample.thickness, tuple)
+        self.assertIsInstance(sample.angleOfRotationSampleWidth, tuple)
+        self.assertIsInstance(sample.densityOfAtoms, float)
+        self.assertIsInstance(sample.tempForNormalisationPC, int)
+        self.assertIsInstance(sample.totalCrossSectionSource, str)
+        self.assertIsInstance(sample.sampleTweakFactor, float)
+        self.assertIsInstance(sample.topHatW, float)
+        self.assertIsInstance(sample.minRadFT, float)
+        
+
 class TestParseGudFile(TestCase):
 
     def testEmptyPath(self):
@@ -188,6 +297,13 @@ def suite():
 
     suite.addTest(TestParseGudrunFile('testEmptyPath'))
     suite.addTest(TestParseGudrunFile('testInvalidPath'))
+
+    suite.addTest(TestParseGudrunFile('testInstrumentInitDataTypes'))
+    suite.addTest(TestParseGudrunFile('testBeamInitDataTypes'))
+    suite.addTest(TestParseGudrunFile('testNormalisationInitDataTypes'))
+    suite.addTest(TestParseGudrunFile('testSampleBackgroundDataTypes'))
+
+
 
     suite.addTest(TestParseGudFile('testEmptyPath'))
     suite.addTest(TestParseGudFile('testInvalidFileType'))

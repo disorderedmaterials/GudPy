@@ -1,6 +1,8 @@
 
 
 from inspect import cleandoc
+from composition import Composition
+from data_files import DataFiles
 
 from utils import *
 
@@ -9,9 +11,9 @@ class Sample:
         
         self.name =''
         self.numberOfFilesPeriodNumber = (0,0)
-        self.dataFiles = None
+        self.dataFiles = DataFiles([], 'SAMPLE')
         self.forceCalculationOfCorrections = False
-        self.composition = None
+        self.composition = Composition([], 'SAMPLE')
         self.geometry = ''
         self.thickness = (0.,0.)
         self.angleOfRotationSampleWidth = (0.,0.)
