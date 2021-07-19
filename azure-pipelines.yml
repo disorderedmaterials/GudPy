@@ -37,7 +37,7 @@ steps:
 
 - task: PublishTestResults@2
   inputs:
-    testResultFiles: '**\nose2-junit.xml'
+    testResultFiles: 'nose2-junit.xml'
     testRunTitle: 'GudPy on Python $(python.version)'
   condition: succeededOrFailed()
 
