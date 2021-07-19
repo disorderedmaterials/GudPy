@@ -38,7 +38,12 @@ jobs:
 
   - task: PublishTestResults@2
     inputs:
-      testResultFiles: '**\nose2-junit.xml'
+      testResultFiles: '**\n- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/nose2-junit-*.xml'
+    failTaskOnFailedTests: true
+    testRunTitle: 'GudPy on Python $(python.version)'.xml'
       testRunTitle: 'GudPy on Python $(python.version)'
     condition: succeededOrFailed()
 
