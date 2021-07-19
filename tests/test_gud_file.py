@@ -4,9 +4,9 @@ import unittest
 from unittest.result import failfast
 from unittest.suite import TestSuite
 from unittest import TestCase, TextTestRunner
-sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
 
 try:
+    sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
     from gud_file import GudFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], 'gudrun_classes'))

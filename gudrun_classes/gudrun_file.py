@@ -562,7 +562,7 @@ class GudrunFile:
                 dataFiles.append(firstword(curr))
             else:
                 raise ValueError('Number of data files does not match number of data files specified')
-        sample.dataFiles = DataFiles(deepcopy(dataFiles), 'SAMPLE {}'.format(sample.name))
+        sample.dataFiles = DataFiles(deepcopy(dataFiles), '{}'.format(sample.name))
 
         #Get all of the elements and their information, and then build the composition
 
@@ -580,7 +580,6 @@ class GudrunFile:
 
     def parseContainer(self, lines):
         container = Container()
-
         #Extract the name from the lines, and then discard the unnecessary lines.
         container.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
@@ -661,7 +660,7 @@ class GudrunFile:
                 dataFiles.append(firstword(curr))
             else:
                 raise ValueError('Number of data files does not match number of data files specified')
-        container.dataFiles = DataFiles(deepcopy(dataFiles), '{} data files'.format(container.name))
+        container.dataFiles = DataFiles(deepcopy(dataFiles), '{}'.format(container.name))
 
         #Get all elements in the composition and their details.
 
@@ -713,6 +712,7 @@ class GudrunFile:
                 if parsing == 'SAMPLE BACKGROUND': start+=2
                 slice = deepcopy(lines[start:end-1])
                 if isinstance(KEYWORDS[parsing], list):
+                    print('container found!')
                     KEYWORDS[parsing].append(self.makeParse(slice,parsing))
                 else:
                     KEYWORDS[parsing] = self.makeParse(slice, parsing)
@@ -727,7 +727,7 @@ class GudrunFile:
     def sampleBackgroundHelper(self, lines):
 
         KEYWORDS = {'SAMPLE BACKGROUND': None, 'SAMPLE': [], 'CONTAINER': Container}
-
+        containers = []
         #Iterate through the lines, parsing any Samples, backgrounds and containers found
         parsing = ''
         start = end = 0
@@ -741,10 +741,10 @@ class GudrunFile:
                 end = i
                 if parsing == 'SAMPLE BACKGROUND': start+=2
                 slice = deepcopy(lines[start:end-1])
-                if isinstance(KEYWORDS[parsing], list):
+                if parsing == "SAMPLE":
                     KEYWORDS[parsing].append(self.makeParse(slice,parsing))
-                elif isinstance(KEYWORDS[parsing], Container):
-                    KEYWORDS['SAMPLE'][-1].containers.append(self.makeParse(slice, parsing))
+                elif parsing == "CONTAINER":
+                    KEYWORDS['SAMPLE'][-1].containers.append(deepcopy(self.makeParse(slice, parsing)))
                 else:
                     KEYWORDS[parsing] = self.makeParse(slice, parsing)
                 start = end = 0
@@ -871,12 +871,12 @@ if __name__ == '__main__':
     # for sample in g.samples:
     #     print(sample.name)
             # print('running gudrun_dcs with {}'.format(g.path))
-    result = subprocess.run(['GudPy/Gudrun/bin/gudrun_dcs', g.path], capture_output=True, text=True)
-    # g.samples+=g.ignoredSamples
-    # g.ignoredSamples = []
+    # result = subprocess.run(['GudPy/Gudrun/bin/gudrun_dcs', g.path], capture_output=True, text=True)
+    # # g.samples+=g.ignoredSamples
+    # # g.ignoredSamples = []
 
-    if len(result.stderr) > 0:
-        print("An error occured whilst running gudrun_dcs on {}\n\n. The error occured is as follows:\n\n".format(g.path))
-        print(result.stderr)
-    else:
-        print(result.stdout)    
+    # if len(result.stderr) > 0:
+    #     print("An error occured whilst running gudrun_dcs on {}\n\n. The error occured is as follows:\n\n".format(g.path))
+    #     print(result.stderr)
+    # else:
+    #     print(result.stdout)    

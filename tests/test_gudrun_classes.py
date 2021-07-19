@@ -4,10 +4,9 @@ import unittest
 from unittest.result import failfast
 from unittest.suite import TestSuite
 from unittest import TestCase, TextTestRunner
-sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
 
 try:
-    from utils import *
+    sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
     from gudrun_file import GudrunFile
     from beam import Beam
     from composition import Composition
