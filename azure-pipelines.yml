@@ -35,7 +35,7 @@ steps:
     nose2 --plugin nose2.plugins.junitxml --junit-xml tests
   displayName: 'Run tests'
 
--task: PublishTestResults@2
+- task: PublishTestResults@2
   inputs:
     testResultFiles: '**\nose2-junit.xml'
     testRunTitle: 'GudPy on Python $(python.version)'
