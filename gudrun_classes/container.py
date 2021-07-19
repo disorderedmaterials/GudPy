@@ -3,16 +3,20 @@ from inspect import cleandoc
 
 try:
     from utils import *
+    from data_files import DataFiles
+    from composition import Composition
 except ModuleNotFoundError:
     from scripts.utils import *
+    from gudrun_classes.data_files import DataFiles
+    from gudrun_classes.composition import Composition
 
 
 class Container:
     def __init__(self):
         self.name = ''
         self.numberOfFilesPeriodNumber = (0,0)
-        self.dataFiles = None
-        self.composition = None
+        self.dataFiles = DataFiles([], 'CONTAINER')
+        self.composition = Composition([], 'CONTAINER')
         self.geometry = ''
         self.thickness = (0.,0.)
         self.angleOfRotationSampleWidth = (0.,0.)
