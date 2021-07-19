@@ -1,5 +1,3 @@
-
-from typing import get_origin
 from inspect import cleandoc
 
 try:
