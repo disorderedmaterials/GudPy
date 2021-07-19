@@ -2,9 +2,10 @@
 from typing import get_origin
 from inspect import cleandoc
 
-from utils import *
-
-# import numpy as np
+try:
+    from utils import *
+except ModuleNotFoundError:
+    from scripts.utils import *
 
 class Instrument:
     def __init__(self):

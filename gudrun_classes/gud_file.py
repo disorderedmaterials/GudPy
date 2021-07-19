@@ -1,6 +1,5 @@
 import sys, os
 from os.path import isfile
-from inspect import cleandoc, formatargspec
 
 class GudFile():
     def __init__(self, path):

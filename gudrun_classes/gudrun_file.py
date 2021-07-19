@@ -1,23 +1,32 @@
-from itertools import count
 import sys, os
-sys.path.insert(1, os.path.join(sys.path[0], '../scripts'))
-from utils import *
-
-from data_files import DataFiles
 from os.path import isfile
-
 import time
-
-from instrument import Instrument
-from beam import Beam
-from normalisation import Normalisation
-from sample import Sample
-from sample_background import SampleBackground
-from container import Container
-from composition import Composition
-from element import Element
-
 from copy import deepcopy
+
+try:
+    sys.path.insert(1, os.path.join(sys.path[0], '../scripts'))
+    from utils import *
+    from instrument import Instrument
+    from beam import Beam
+    from normalisation import Normalisation
+    from sample import Sample
+    from sample_background import SampleBackground
+    from container import Container
+    from composition import Composition
+    from element import Element
+    from data_files import DataFiles
+except ModuleNotFoundError:
+    sys.path.insert(1, os.path.join(sys.path[0], 'scripts'))
+    from scripts.utils import *
+    from gudrun_classes.beam import Beam
+    from gudrun_classes.composition import Composition
+    from gudrun_classes.container import Container
+    from gudrun_classes.data_files import DataFiles
+    from gudrun_classes.element import Element
+    from gudrun_classes.instrument import Instrument
+    from gudrun_classes.normalisation import Normalisation
+    from gudrun_classes.sample_background import SampleBackground
+    from gudrun_classes.sample import Sample
 
 
 class GudrunFile:

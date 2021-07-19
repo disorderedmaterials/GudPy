@@ -1,27 +1,41 @@
 
-from logging import StringTemplateStyle
 import sys, os
+import unittest
 from unittest.result import failfast
 from unittest.suite import TestSuite
 from unittest import TestCase, TextTestRunner
-
 sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
 sys.path.insert(2, os.path.join(sys.path[0], '../scripts'))
 
-from utils import *
-
-from gudrun_file import GudrunFile
-from gud_file import GudFile
-from beam import Beam
-from composition import Composition
-from container import Container
-from data_files import DataFiles
-from element import Element
-from instrument import Instrument
-from normalisation import Normalisation
-from sample_background import SampleBackground
-from sample import Sample
-
+try:
+    from utils import *
+    from gudrun_file import *
+    from gudrun_file import GudrunFile
+    from gud_file import GudFile
+    from beam import Beam
+    from composition import Composition
+    from container import Container
+    from data_files import DataFiles
+    from element import Element
+    from instrument import Instrument
+    from normalisation import Normalisation
+    from sample_background import SampleBackground
+    from sample import Sample
+except ModuleNotFoundError:
+    sys.path.insert(1, os.path.join(sys.path[0], 'gudrun_classes'))
+    sys.path.insert(2, os.path.join(sys.path[0], 'scripts'))  
+    from scripts.utils import *
+    from gudrun_classes.gudrun_file import *
+    from gudrun_classes.gud_file import GudFile
+    from gudrun_classes.beam import Beam
+    from gudrun_classes.composition import Composition
+    from gudrun_classes.container import Container
+    from gudrun_classes.data_files import DataFiles
+    from gudrun_classes.element import Element
+    from gudrun_classes.instrument import Instrument
+    from gudrun_classes.normalisation import Normalisation
+    from gudrun_classes.sample_background import SampleBackground
+    from gudrun_classes.sample import Sample
 
 class TestUtils(TestCase):
 
@@ -260,60 +274,63 @@ class TestParseGudFile(TestCase):
 
 
 
-def suite():
+# def suite():
 
-    suite = TestSuite()
+#     suite = TestSuite()
 
-    suite.addTest(TestUtils('testNumifyBoolFalse'))
-    suite.addTest(TestUtils('testNumifyBoolTrue'))
-    suite.addTest(TestUtils('testNumifyBoolBad'))
+#     suite.addTest(TestUtils('testNumifyBoolFalse'))
+#     suite.addTest(TestUtils('testNumifyBoolTrue'))
+#     suite.addTest(TestUtils('testNumifyBoolBad'))
     
-    suite.addTest(TestUtils('testBoolifyNum0'))
-    suite.addTest(TestUtils('testBoolifyNum1'))
-    suite.addTest(TestUtils('testBoolifyNumBad'))
+#     suite.addTest(TestUtils('testBoolifyNum0'))
+#     suite.addTest(TestUtils('testBoolifyNum1'))
+#     suite.addTest(TestUtils('testBoolifyNumBad'))
     
-    suite.addTest(TestUtils('testSpacifyNonStr'))
-    suite.addTest(TestUtils('testSpacifyStrs'))
-    suite.addTest(TestUtils('testSpacifyTuple'))
+#     suite.addTest(TestUtils('testSpacifyNonStr'))
+#     suite.addTest(TestUtils('testSpacifyStrs'))
+#     suite.addTest(TestUtils('testSpacifyTuple'))
 
-    suite.addTest(TestUtils('testFirstwordLong'))
-    suite.addTest(TestUtils('testFirstwordShort'))
-    suite.addTest(TestUtils('testFirstWordEmpty'))
+#     suite.addTest(TestUtils('testFirstwordLong'))
+#     suite.addTest(TestUtils('testFirstwordShort'))
+#     suite.addTest(TestUtils('testFirstWordEmpty'))
 
-    suite.addTest(TestUtils('testExtractIntsFromString'))
-    suite.addTest(TestUtils('testExtractIntsFromString1'))
-    suite.addTest(TestUtils('testExtractIntsFromBadString'))
+#     suite.addTest(TestUtils('testExtractIntsFromString'))
+#     suite.addTest(TestUtils('testExtractIntsFromString1'))
+#     suite.addTest(TestUtils('testExtractIntsFromBadString'))
 
-    suite.addTest(TestUtils('testExtractFloatsFromString'))
-    suite.addTest(TestUtils('testExtractFloatsFromString1'))
-    suite.addTest(TestUtils('testExtractFloatsFromBadString'))
+#     suite.addTest(TestUtils('testExtractFloatsFromString'))
+#     suite.addTest(TestUtils('testExtractFloatsFromString1'))
+#     suite.addTest(TestUtils('testExtractFloatsFromBadString'))
 
-    suite.addTest(TestUtils('testCountOccurencesList'))
-    suite.addTest(TestUtils('testCountOccurencesTuple'))
+#     suite.addTest(TestUtils('testCountOccurencesList'))
+#     suite.addTest(TestUtils('testCountOccurencesTuple'))
 
-    suite.addTest(TestUtils('testIterIsTypeStr'))
-    suite.addTest(TestUtils('testIterIsTypeInt'))
-    suite.addTest(TestUtils('testIterIsTypeMixed'))
+#     suite.addTest(TestUtils('testIterIsTypeStr'))
+#     suite.addTest(TestUtils('testIterIsTypeInt'))
+#     suite.addTest(TestUtils('testIterIsTypeMixed'))
 
-    suite.addTest(TestParseGudrunFile('testEmptyPath'))
-    suite.addTest(TestParseGudrunFile('testInvalidPath'))
+#     suite.addTest(TestParseGudrunFile('testEmptyPath'))
+#     suite.addTest(TestParseGudrunFile('testInvalidPath'))
 
-    suite.addTest(TestParseGudrunFile('testInstrumentInitDataTypes'))
-    suite.addTest(TestParseGudrunFile('testBeamInitDataTypes'))
-    suite.addTest(TestParseGudrunFile('testNormalisationInitDataTypes'))
-    suite.addTest(TestParseGudrunFile('testSampleBackgroundDataTypes'))
-
-
-
-    suite.addTest(TestParseGudFile('testEmptyPath'))
-    suite.addTest(TestParseGudFile('testInvalidFileType'))
-    suite.addTest(TestParseGudFile('testInvalidPath'))
+#     suite.addTest(TestParseGudrunFile('testInstrumentInitDataTypes'))
+#     suite.addTest(TestParseGudrunFile('testBeamInitDataTypes'))
+#     suite.addTest(TestParseGudrunFile('testNormalisationInitDataTypes'))
+#     suite.addTest(TestParseGudrunFile('testSampleBackgroundDataTypes'))
 
 
-    return suite
+
+#     suite.addTest(TestParseGudFile('testEmptyPath'))
+#     suite.addTest(TestParseGudFile('testInvalidFileType'))
+#     suite.addTest(TestParseGudFile('testInvalidPath'))
 
 
-if __name__ == '__main__':
+#     return suite
 
-    testRunner = TextTestRunner(failfast=True, verbosity=3)
-    testRunner.run(suite())
+
+# if __name__ == '__main__':
+
+#     # unittest.main(
+#     #     testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
+#     # failfast=False, buffer=False, catchbreak=False)
+#     # testRunner = TextTestRunner(failfast=True, verbosity=3)
+#     # testRunner.run(suite())

@@ -1,7 +1,13 @@
 from inspect import cleandoc
-from utils import *
-from data_files import DataFiles
-from composition import Composition
+
+try:
+    from utils import *
+    from data_files import DataFiles
+    from composition import Composition
+except ModuleNotFoundError:
+    from scripts.utils import *
+    from gudrun_classes.data_files import DataFiles
+    from gudrun_classes.composition import Composition
 
 class Normalisation:
     def __init__(self):

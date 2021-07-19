@@ -1,7 +1,11 @@
 from inspect import cleandoc
-from data_files import DataFiles
 
-from utils import *
+try:
+    from utils import *
+    from data_files import DataFiles
+except ModuleNotFoundError:
+    from scripts.utils import *
+    from gudrun_classes.data_files import DataFiles
 
 class SampleBackground:
     def __init__(self):

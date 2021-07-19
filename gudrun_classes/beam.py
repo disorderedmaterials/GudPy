@@ -1,7 +1,11 @@
 
 from inspect import cleandoc
 
-from utils import *
+try:
+    from utils import *
+except ModuleNotFoundError:
+    from scripts.utils import *
+
 
 class Beam:
     def __init__(self):
