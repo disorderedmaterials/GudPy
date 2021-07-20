@@ -440,9 +440,11 @@ class TestGudPyIO(TestCase):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
         g1.write_out()
+
+        
         self.assertEqual(open(g1.outpath, encoding='utf-8').read(), str(self.g))
         self.assertEqual(open(g1.outpath, encoding='utf-8').read(), str(g1))
-        self.assertEqual(open(g1.outpath, encoding='utf-8').read(), open(self.g.outpath).read())
+        self.assertEqual(open(g1.outpath, encoding='utf-8').read(), open(self.g.outpath, encoding="utf-8").read())
 
 
     def testReloadGudrunFile(self):
