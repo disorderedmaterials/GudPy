@@ -9,7 +9,7 @@ stages:
 - stage: Lint
   displayName: Format and lint code
   jobs:
-  - job: "Lint-ubuntu"
+  - job: "Lint_ubuntu"
     pool:
       vmImage: ubuntu-latest
     strategy:
@@ -59,7 +59,7 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
       displayName: "Publish formatted code."
-  - job: "Lint-windows"
+  - job: "Lint_windows"
     pool:
       vmImage: windows-latest
     strategy:
