@@ -308,10 +308,11 @@ class TestGudPyIO(TestCase):
         path = 'TestData/NIMROD-water/water.txt'
 
         if os.name == "nt":
-            # dirpath = "/".join(os.getcwd().split("/")[:-1]) + "/" + path
+            print("Windows")
             from pathlib import Path
             dirpath = Path().resolve()/Path(path)
         else:
+            print("Ubuntu")
             dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/tests/" + path
         print(dirpath)
         self.g = GudrunFile(dirpath)
