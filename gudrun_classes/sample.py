@@ -59,12 +59,12 @@ class Sample:
 {}        Geometry
 {}        Upstream and downstream thickness [cm]
 {}        Angle of rotation and sample width (cm)
-{}        Density atoms/Å^3?
+{}        Density atoms/\u212b^3?
 {}        Temperature for sample Placzek correction
 {}        Total cross section source
 {}        Sample tweak factor
-{}        Top hat width (1/Å) for cleaning up Fourier Transform
-{}        Minimum radius for FT  [Å]
+{}        Top hat width (1/\u212b) for cleaning up Fourier Transform
+{}        Minimum radius for FT  [\u212b]
 {}        g(r) broadening at r = 1A [A]
 0  0          0   0          to finish specifying wavelength range of resonance
 {}        Exponential amplitude and decay [1/A]
@@ -158,12 +158,12 @@ GO
 # {}        Geometry
 # {}        Upstream and downstream thickness [cm]
 # {}        Angle of rotation and sample width (cm)
-# {}        Density atoms/Å^3?
+# {}        Density atoms/\u212b^3?
 # {}        Temperature for sample Placzek correction
 # {}        Total cross section source
 # {}        Sample tweak factor
-# {}        Top hat width (1/Å) for cleaning up Fourier Transform
-# {}        Minimum radius for FT  [Å]
+# {}        Top hat width (1/\u212b) for cleaning up Fourier Transform
+# {}        Minimum radius for FT  [\u212b]
 # {}        g(r) broadening at r = 1A [A]
 # 0  0          0   0          to finish specifying wavelength range of resonance
 # {}        Exponential amplitude and decay [1/A]

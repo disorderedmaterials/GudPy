@@ -58,13 +58,13 @@ class Instrument:
 {}        Groups file name
 {}        Deadtime constants file name
 {}        Spectrum number(s) for incident beam monitor
-{}        Wavelength range [Å] for monitor normalisation
+{}        Wavelength range [\u212b] for monitor normalisation
 {}        Spectrum number(s) for transmission monitor
 {}        Incident monitor quiet count constant
 {}        Transmission monitor quiet count constant
 {}        Channel numbers for spike analysis
 {}        Spike analysis acceptance factor
-{}        Wavelength range to use [Å] and step size
+{}        Wavelength range to use [\u212b] and step size
 {}        No. of smooths on monitor
 {}        Min, Max and step in x-scale (-ve for logarithmic binning)
 0  0  0  0          0 0 0 0 to end input of specified values
@@ -129,13 +129,13 @@ class Instrument:
 {}        Groups file name
 {}        Deadtime constants file name
 {}        Spectrum number(s) for incident beam monitor
-{}        Wavelength range [Å] for monitor normalisation
+{}        Wavelength range [\u212b] for monitor normalisation
 {}        Spectrum number(s) for transmission monitor
 {}        Incident monitor quiet count constant
 {}        Transmission monitor quiet count constant
 {}        Channel numbers for spike analysis
 {}        Spike analysis acceptance factor
-{}        Wavelength range to use [Å] and step size
+{}        Wavelength range to use [\u212b] and step size
 {}        No. of smooths on monitor
 {}        Min, Max and step in x-scale (-ve for logarithmic binning)
 {}

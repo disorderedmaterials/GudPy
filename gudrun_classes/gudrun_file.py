@@ -494,7 +494,7 @@ class GudrunFile:
         """
         Get all attributes that are integers:
             - Temperature for normalisation Placzek correction
-            - Top hat width (1/Å) for cleaning up Fourier Transform
+            - Top hat width (1/\u212b) for cleaning up Fourier Transform
             - Normalise to
             - Output units
         """

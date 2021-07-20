@@ -38,7 +38,7 @@ class Container:
 {}        Geometry
 {}        Upstream and downstream thickness [cm]
 {}        Angle of rotation and sample width (cm)
-{}        Density atoms/Å^3?
+{}        Density atoms/\u212b^3?
 {}        Total cross section source
 {}        Tweak factor
 {}        Sample environment scattering fraction and attenuation coefficient [per A]
@@ -67,7 +67,7 @@ class Container:
 {}        Geometry
 {}        Upstream and downstream thickness [cm]
 {}        Angle of rotation and sample width (cm)
-{}        Density atoms/Å^3?
+{}        Density atoms/\u212b^3?
 {}        Total cross section source
 {}        Tweak factor
 {}        Sample environment scattering fraction and attenuation coefficient [per A]

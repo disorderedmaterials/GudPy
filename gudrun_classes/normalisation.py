@@ -40,7 +40,7 @@ class Normalisation:
 {}        Geometry
 {}        Upstream and downstream thickness [cm]
 {}        Angle of rotation and sample width (cm)
-{}        Density atoms/Å^3?
+{}        Density atoms/\u212b^3?
 {}        Temperature for normalisation Placzek correction
 {}        Total cross section source
 {}        Normalisation differential cross section filename
