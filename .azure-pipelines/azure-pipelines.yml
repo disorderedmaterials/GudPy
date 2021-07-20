@@ -48,7 +48,7 @@ stages:
       condition: Failed()
 
     - publish: $(System.DefaultWorkingDirectory)
-      artifact: "FORMATTED_GudPy_ubuntu-latest_python3.7"
+      artifact: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
       displayName: "Publish formatted code."
       
 - stage: Test
