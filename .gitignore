@@ -1,0 +1,6 @@
+Gudrun/
+__pycache__/
+.vscode/
+build/
+dist/
+*.xml
