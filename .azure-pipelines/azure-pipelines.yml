@@ -130,7 +130,7 @@ stages:
           pip install pyinstaller
         displayName: "Install dependencies"
       
-      - script: python -m pyinstaller gudpy.spec
+      - script: pyinstaller gudpy.spec
 
  # jobs:
   # - job: 'Test_Linux'
