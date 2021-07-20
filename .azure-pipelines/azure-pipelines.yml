@@ -6,42 +6,119 @@
 trigger:
 - main
 
-jobs:
-- job: 'Test_Linux'
-  pool:
-    vmImage: ubuntu-latest
-  strategy:
-    matrix:
-      # Python27:
-      #   python.version: '2.7'
-      # Python35:
-      #   python.version: '3.5'
-      # Python36:
-      #   python.version: '3.6'
-      Python37:
-        python.version: '3.7'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-    displayName: 'Use Python $(python.version)'
+stages:
+- stage: Lint
+  displayName: Format and lint code
+  jobs:
+  - job: "Lint"
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+       versionSpec: "3.7"
+       architecture: "x64"
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install dependencies'
+    - script: |
+        pip install black
+        python -m black --target-version=py38 ./gudrun_classes
+        python -m black --target-version=py38 ./scripts
+        python -m black --target-version=py38 ./gui
+        python -m black --target-version=py38 ./widgets
+      displayName: "Apply black code formatting (PEP8 conformance)"
+    - script: |
+        pip install flake8
+        python -m flake8 ./gudrun_classes --count --show-source --statistics
+        python -m flake8 ./scripts --count --show-source --statistics
+        python -m flake8 ./gui --count --show-source --statistics
+        python -m flake8 ./widgets --count --show-source --statistics
+        python -m flake8 ./gudrun_classes --count --exit-zero --max-complexity=10 --max-line-length=100
+        python -m flake8 ./scripts --count --exit-zero --max-complexity=10 --max-line-length=100
+        python -m flake8 ./gui --count --exit-zero --max-complexity=10 --max-line-length=100
+        python -m flake8 ./widgets --count --exit-zero --max-complexity=10 --max-line-length=100
+      displayName: "Static code analysis for PEP8 conformance using flake8"
+    - publish: $(System.DefaultWorkingDirectory)
+      artifact: "FORMATTED_GudPy_ubuntu-latest_python3.7"
+      displayName: "Publish formatted code."
+- stage: Test
+  displayName: Unit tests
+  dependsOn: Lint
+  condition: succeeded()
+  jobs:
+  - job: "Test"
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: none
 
-  - script: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-    displayName: 'Install dependencies'
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact from Linting stage"
+      inputs:
+        buildType: "current"
+        artifactName: "FORMATTED_GudPy_ubuntu-latest_python3.7"
+        targetPath: "$(System.DefaultWorkingDirectory)"
+    - task: UsePythonVersion@0
+      inputs:
+       versionSpec: "3.7"
+       architecture: "x64"
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: "Install dependencies"
+      
+    - script: |
+        pip install nose2
+        nose2 --plugin nose2.plugins.junitxml --junit-xml tests
+      displayName: 'Run tests'
 
-  - script: |
-      pip install nose2
-      nose2 --plugin nose2.plugins.junitxml --junit-xml tests
-    displayName: 'Run tests'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '*.xml'
+        failTaskOnFailedTests: true
+        testRunTitle: 'GudPy on Python $(python.version)'
+      condition: succeededOrFailed()
+        
+    -
+ # jobs:
+  # - job: 'Test_Linux'
+  #   pool:
+  #     vmImage: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       # Python27:
+  #       #   python.version: '2.7'
+  #       # Python35:
+  #       #   python.version: '3.5'
+  #       # Python36:
+  #       #   python.version: '3.6'
+  #       Python37:
+  #         python.version: '3.7'
+  #   steps:
+  #   - task: UsePythonVersion@0
+  #     inputs:
+  #       versionSpec: '$(python.version)'
+  #     displayName: 'Use Python $(python.version)'
 
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '*.xml'
-      failTaskOnFailedTests: true
-      testRunTitle: 'GudPy on Python $(python.version)'
-    condition: succeededOrFailed()
+  #   - script: |
+  #       python -m pip install --upgrade pip
+  #       pip install -r requirements.txt
+  #     displayName: 'Install dependencies'
+
+  #   - script: |
+  #       pip install nose2
+  #       nose2 --plugin nose2.plugins.junitxml --junit-xml tests
+  #     displayName: 'Run tests'
+
+  #   - task: PublishTestResults@2
+  #     inputs:
+  #       testResultsFormat: 'JUnit'
+  #       testResultsFiles: '*.xml'
+  #       failTaskOnFailedTests: true
+  #       testRunTitle: 'GudPy on Python $(python.version)'
+  #     condition: succeededOrFailed()
 
     
