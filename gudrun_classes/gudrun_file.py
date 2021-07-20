@@ -770,7 +770,7 @@ class GudrunFile:
         KEYWORDS = {'INSTRUMENT' : False, 'BEAM': False, 'NORMALISATION': False}
 
         #Iterate through the file, parsing the Instrument, Beam and Normalisation.
-        with open(self.path) as fp:
+        with open(self.path, encoding="utf-8") as fp:
             lines = fp.readlines()
             split = 0
             for i, line in enumerate(lines):
@@ -844,7 +844,7 @@ class GudrunFile:
         fname = os.path.basename(self.path)
         ref_fname = 'gudpy_{}'.format(fname)
         dir = os.path.dirname(self.path)
-        f = open("{}/{}".format(dir, ref_fname), "w")
+        f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
         # self.path = "{}/{}".format(dir, ref_fname)
         f.write(str(self))
         f.close()

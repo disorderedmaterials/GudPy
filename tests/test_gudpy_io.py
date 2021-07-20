@@ -311,7 +311,7 @@ class TestGudPyIO(TestCase):
             from pathlib import Path
             dirpath = Path().resolve()/'tests/'/Path(path)
         else:
-            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + path
+            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
         print(dirpath)
         self.g = GudrunFile(dirpath)
 
