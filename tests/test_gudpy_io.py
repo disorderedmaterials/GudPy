@@ -1,7 +1,10 @@
 import sys, os
 from unittest import TestCase
+
 try:
     sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
+    sys.path.insert(2, os.path.join(sys.path[0], '../scripts'))
+    from utils import spacify, numifyBool
     from gudrun_file import GudrunFile
     from beam import Beam
     from composition import Composition
@@ -14,6 +17,8 @@ try:
     from sample import Sample
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], 'gudrun_classes'))
+    sys.path.insert(2, os.path.join(sys.path[0], 'scripts'))
+    from scripts.utils import spacify, numifyBool
     from gudrun_classes.gudrun_file import GudrunFile
     from gudrun_classes.beam import Beam
     from gudrun_classes.composition import Composition
@@ -266,9 +271,9 @@ class TestGudPyIO(TestCase):
 
             "name" : "SAMPLE Null Water, Can N8",
             "numberOfFilesPeriodNumber" : (2,1),
-            "dataFiles" : DataFiles(["NIMROD00016742_NullWater_in_N8.raw", "NIMROD00016742_NullWater_in_N8.raw"], "SAMPLE Null Water, Can N8"),
+            "dataFiles" : DataFiles(["NIMROD00016742_NullWater_in_N8.raw", "NIMROD00016744_NullWater_in_N8.raw"], "SAMPLE Null Water, Can N8"),
             "forceCalculationOfCorrections" : True,
-            "composition" : Composition([Element('H', 0, 1.281), Element('O', 0, 1.0), Element('H', 2, 0.7185)], "SAMPLE Null Water, Can N8"),
+            "composition" : Composition([Element('H', 0, 1.281), Element('O', 0, 1.0), Element('H', 2, 0.7185)], "Sample"),
             "geometry" : "SameAsBeam",
             "thickness" : (0.05, 0.05),
             "angleOfRotationSampleWidth" : (0, 5),
@@ -292,14 +297,23 @@ class TestGudPyIO(TestCase):
             "containers" : [self.expectedContainerD]
         }
 
-        self.expectedSampleBackgrounds = {
-            "1" : {
-                "numberOfFilesPeriodNumber" : (2,1),
-                "dataFiles" : DataFiles(["NIMROD00016698_EmptyInst.raw", "NIMROD00016703_EmptyInst.raw"], "SAMPLE BACKGROUND"),
-                "samples" : [self.expectedSampleA, self.expectedSampleB, self.expectedSampleC]
-            }
+        self.expectedSampleBackground = {
+            
+            "numberOfFilesPeriodNumber" : (2,1),
+            "dataFiles" : DataFiles(["NIMROD00016698_EmptyInst.raw", "NIMROD00016703_EmptyInst.raw"], "SAMPLE BACKGROUND"),
+            "samples" : [self.expectedSampleA, self.expectedSampleB, self.expectedSampleC]
+        
         }
 
+        path = 'TestData/NIMROD-water/water.txt'
+        dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
+        self.g = GudrunFile(dirpath)
+
+        self.dicts = [self.expectedInstrument, self.expectedBeam, self.expectedNormalisation,
+                        self.expectedContainerA, self.expectedContainerB, self.expectedContainerC, self.expectedContainerD,
+                        self.expectedSampleA, self.expectedSampleB, self.expectedSampleC, self.expectedSampleD,
+                        self.expectedSampleBackground    
+                    ]
 
         return super().setUp()
 
@@ -308,22 +322,20 @@ class TestGudPyIO(TestCase):
         return super().tearDown()
 
     def testLoadGudrunFile(self):
-        path = 'TestData/NIMROD-water/water.txt'
-        dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
-        g = GudrunFile(dirpath)
-        self.assertIsInstance(g, GudrunFile)
-        
-        instrumentAttrsDict = g.instrument.__dict__
+
+        self.assertIsInstance(self.g, GudrunFile)
+
+        instrumentAttrsDict = self.g.instrument.__dict__
 
         for key in instrumentAttrsDict.keys():
             self.assertEqual(self.expectedInstrument[key], instrumentAttrsDict[key])
 
-        beamAttrsDict = g.beam.__dict__
+        beamAttrsDict = self.g.beam.__dict__
 
         for key in beamAttrsDict.keys():
             self.assertEqual(self.expectedBeam[key], beamAttrsDict[key])
         
-        normalisationAttrsDict = g.normalisation.__dict__
+        normalisationAttrsDict = self.g.normalisation.__dict__
 
         for key in normalisationAttrsDict.keys():
             if isinstance(normalisationAttrsDict[key], (DataFiles, Composition)):
@@ -331,22 +343,22 @@ class TestGudPyIO(TestCase):
             else:
                 self.assertEqual(self.expectedNormalisation[key], normalisationAttrsDict[key])
 
-        self.assertEqual(len(g.sampleBackgrounds), 1)
+        self.assertEqual(len(self.g.sampleBackgrounds), 1)
 
-        sampleBackgroundsAttrsDict = g.sampleBackgrounds[0].__dict__
+        sampleBackgroundsAttrsDict = self.g.sampleBackgrounds[0].__dict__
 
 
         for key in sampleBackgroundsAttrsDict.keys():
             if key == "samples":
-                for i, sample in enumerate(self.expectedSampleBackgrounds["1"][key]):
+                for i, sample in enumerate(self.expectedSampleBackground[key]):
             
-                    sampleAttrsDict = g.sampleBackgrounds[0].samples[i].__dict__
+                    sampleAttrsDict = self.g.sampleBackgrounds[0].samples[i].__dict__
 
                     for key_ in sampleAttrsDict.keys():
 
                         if key_ == "containers":
                             for j, container in enumerate(sample[key_]):
-                                containerAttrsDict = g.sampleBackgrounds[0].samples[i].containers[j].__dict__
+                                containerAttrsDict = self.g.sampleBackgrounds[0].samples[i].containers[j].__dict__
 
                                 for _key in containerAttrsDict.keys():
 
@@ -362,6 +374,63 @@ class TestGudPyIO(TestCase):
 
 
             elif isinstance(sampleBackgroundsAttrsDict[key], DataFiles):
-                self.assertEqual(str(self.expectedSampleBackgrounds["1"][key]), str(sampleBackgroundsAttrsDict[key]))
+                self.assertEqual(str(self.expectedSampleBackground[key]), str(sampleBackgroundsAttrsDict[key]))
             else:
-                self.assertEqual(self.expectedSampleBackgrounds["1"][key], sampleBackgroundsAttrsDict[key])            
+                self.assertEqual(self.expectedSampleBackground[key], sampleBackgroundsAttrsDict[key])
+    
+    def testWriteGudrunFile(self):
+        self.g.write_out()
+        outlines = open(self.g.outpath).read()
+        self.assertEqual(outlines, str(self.g))
+
+        def valueInLines(value, lines):
+            if isinstance(value, str):
+                self.assertTrue(value in lines)
+            elif isinstance(value, (list, tuple)):
+                if isinstance(value[0], dict):
+                    for val in value:
+                        for val_ in val.values():
+                            valueInLines(val_, lines)
+                else:
+                    if value == (0, 0.,0.,0.): return
+                    self.assertTrue(spacify(value) in lines or spacify(value, num_spaces=2) in lines)
+            elif isinstance(value, bool):
+                self.assertTrue(str(numifyBool(value)) in lines)
+            else:
+                if "        " in str(value):
+                    self.assertTrue(str(value).split("        ")[0] in lines)
+                else:    
+                    self.assertTrue(str(value) in lines)
+
+
+        for dic in self.dicts:
+            for value in dic.values():
+                if isinstance(value, list):
+                    for val in value:
+                        if isinstance(val, dict):
+                            for val_ in val.values():
+                                valueInLines(val_, outlines)
+                        else:
+                            valueInLines(val, outlines)
+                else:
+                    valueInLines(value, outlines)
+
+
+        inlines = open(self.g.path).read()
+        for dic in self.dicts:
+            for value in dic.values():
+                if isinstance(value, list):
+                    for val in value:
+                        if isinstance(val, dict):
+                            for val_ in val.values():
+                                valueInLines(val_, inlines)
+                        else:
+                            valueInLines(val, inlines)
+                else:
+                    valueInLines(value, inlines) 
+
+    def testRewriteGudrunFile(self):
+        pass
+
+    def testReloadGudrunFile(self):
+        pass

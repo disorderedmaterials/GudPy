@@ -32,6 +32,10 @@ except ModuleNotFoundError:
 class GudrunFile:
     def __init__(self, path=None, data=None):
         self.path = path
+        fname = os.path.basename(self.path)
+        ref_fname = 'gudpy_{}'.format(fname)
+        dir = os.path.dirname(self.path)
+        self.outpath = '{}/{}'.format(dir, ref_fname)
         #If a dictionary of data is supplied, unpack the dictionary and assign the values.
         #Otherwise, parse via the path.
         if data:
@@ -841,7 +845,7 @@ class GudrunFile:
         ref_fname = 'gudpy_{}'.format(fname)
         dir = os.path.dirname(self.path)
         f = open("{}/{}".format(dir, ref_fname), "w")
-        self.path = "{}/{}".format(dir, ref_fname)
+        # self.path = "{}/{}".format(dir, ref_fname)
         f.write(str(self))
         f.close()
 

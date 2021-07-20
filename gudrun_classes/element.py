@@ -5,7 +5,7 @@ class Element:
         self.abundance = abundance
     
     def __str__(self):
-        return self.atomicSymbol + ' ' + str(self.massNo) + ' ' + str(self.abundance)
+        return self.atomicSymbol + '  ' + str(self.massNo) + '  ' + str(self.abundance)
 
     def __repr__(self):
         return str(self)
