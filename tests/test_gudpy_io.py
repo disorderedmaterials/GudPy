@@ -306,7 +306,12 @@ class TestGudPyIO(TestCase):
         }
 
         path = 'TestData/NIMROD-water/water.txt'
-        dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
+
+        if os.name == "nt":
+            dirpath = "/".join(os.getcwd().split("/")[:-1]) + "/" + path
+
+        else:
+            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
         self.g = GudrunFile(dirpath)
 
         self.dicts = [self.expectedInstrument, self.expectedBeam, self.expectedNormalisation,
