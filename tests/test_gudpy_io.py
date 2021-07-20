@@ -311,7 +311,6 @@ class TestGudPyIO(TestCase):
             # dirpath = "/".join(os.getcwd().split("/")[:-1]) + "/" + path
             from pathlib import Path
             dirpath = Path().resolve()/Path(path)
-            print(dirpath)
         else:
             dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/tests/" + path
         print(dirpath)
