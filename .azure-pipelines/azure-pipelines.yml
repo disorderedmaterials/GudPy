@@ -16,7 +16,7 @@ stages:
       strategy:
         matrix:
           Python36:
-            python.version: '3.6.14'
+            python.version: '3.6'
           Python37:
             python.version: '3.7'
           Python38:
@@ -25,8 +25,8 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-       versionSpec: "$(python.version)"
-       architecture: "x64"
+        versionSpec: '$(python.version)'
+        architecture: "x64"
     - script: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -71,7 +71,7 @@ stages:
     strategy:
       matrix:
         Python36:
-          python.version: '3.6.14'
+          python.version: '3.6'
         Python37:
           python.version: '3.7'
         Python38:
@@ -88,7 +88,7 @@ stages:
         targetPath: "$(System.DefaultWorkingDirectory)"
     - task: UsePythonVersion@0
       inputs:
-       versionSpec: "$(python.version)"
+       versionSpec: '$(python.version)'
        architecture: "x64"
     - script: |
         python -m pip install --upgrade pip
@@ -118,7 +118,7 @@ stages:
     strategy:
       matrix:
         Python36:
-          python.version: '3.6.14'
+          python.version: '3.6'
         Python37:
           python.version: '3.7'
         Python38:
@@ -134,7 +134,7 @@ stages:
           targetPath: "$(System.DefaultWorkingDirectory)"
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: "$(python.version)"
+          versionSpec: '$(python.version)'
           architecture: "x64"
         
       - script: |
