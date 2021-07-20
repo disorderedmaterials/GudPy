@@ -429,8 +429,18 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, inlines) 
 
+
     def testRewriteGudrunFile(self):
-        pass
+        self.g.write_out()
+        g1 = GudrunFile(self.g.outpath)
+        g1.write_out()
+        self.assertEqual(open(g1.outpath).read(), str(self.g))
+        self.assertEqual(open(g1.outpath).read(), str(g1))
+        self.assertEqual(open(g1.outpath).read(), open(self.g.outpath).read())
+
 
     def testReloadGudrunFile(self):
-        pass
+        self.g.write_out()
+        g1 = GudrunFile(self.g.outpath)
+        self.assertEqual(str(g1), str(self.g))
+
