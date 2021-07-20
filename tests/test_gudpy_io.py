@@ -313,7 +313,7 @@ class TestGudPyIO(TestCase):
             dirpath = Path().resolve()/Path(path)
             print(dirpath)
         else:
-            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
+            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/tests/" + path
         print(dirpath)
         self.g = GudrunFile(dirpath)
 
