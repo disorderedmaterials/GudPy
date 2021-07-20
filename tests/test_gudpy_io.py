@@ -386,7 +386,7 @@ class TestGudPyIO(TestCase):
     
     def testWriteGudrunFile(self):
         self.g.write_out()
-        outlines = open(self.g.outpath).read()
+        outlines = open(self.g.outpath, encoding='utf-8').read()
         self.assertEqual(outlines, str(self.g))
 
         def valueInLines(value, lines):
