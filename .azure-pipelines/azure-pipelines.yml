@@ -29,20 +29,28 @@ stages:
         python -m black --target-version=py38 ./gui
         python -m black --target-version=py38 ./widgets
       displayName: "Apply black code formatting (PEP8 conformance)"
+
     - script: |
         pip install flake8
-        python -m flake8 ./gudrun_classes --count --show-source --statistics
-        python -m flake8 ./scripts --count --show-source --statistics
-        python -m flake8 ./gui --count --show-source --statistics
-        python -m flake8 ./widgets --count --show-source --statistics
-        python -m flake8 ./gudrun_classes --count --exit-zero --max-complexity=10 --max-line-length=100
-        python -m flake8 ./scripts --count --exit-zero --max-complexity=10 --max-line-length=100
-        python -m flake8 ./gui --count --exit-zero --max-complexity=10 --max-line-length=100
-        python -m flake8 ./widgets --count --exit-zero --max-complexity=10 --max-line-length=100
+        python -m flake8 .
+      condition: succeededOrFailed()
       displayName: "Static code analysis for PEP8 conformance using flake8"
+
+    - script: pyton -m flake8. > flake8.err.log
+      displayName: "Capture flake8 error log"
+      condition: Failed()
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'flake8.err.log'
+        ArtifactName: 'Flake8 Error log file'
+      continueOnError: True
+      condition: Failed()
+
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_ubuntu-latest_python3.7"
       displayName: "Publish formatted code."
+      
 - stage: Test
   displayName: Unit tests
   dependsOn: Lint
