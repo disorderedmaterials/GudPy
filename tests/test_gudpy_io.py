@@ -308,7 +308,10 @@ class TestGudPyIO(TestCase):
         path = 'TestData/NIMROD-water/water.txt'
 
         if os.name == "nt":
-            dirpath = "/".join(os.getcwd().split("/")[:-1]) + "/" + path
+            # dirpath = "/".join(os.getcwd().split("/")[:-1]) + "/" + path
+            from pathlib import Path
+            dirpath = Path().resolve()/Path(path)
+            print(dirpath)
         else:
             dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
         print(dirpath)
