@@ -36,7 +36,7 @@ stages:
       condition: succeededOrFailed()
       displayName: "Static code analysis for PEP8 conformance using flake8"
 
-    - script: pyton -m flake8. > flake8.err.log
+    - script: python -m flake8. > flake8.err.log
       displayName: "Capture flake8 error log"
       condition: Failed()
     
