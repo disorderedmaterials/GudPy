@@ -204,7 +204,7 @@ stages:
   dependsOn: Test
   condition: succeeded()
   jobs:
-  - job: "Build"
+  - job: "Build_ubtuntu"
     pool:
       vmImage: ubuntu-latest
     strategy:
@@ -215,7 +215,7 @@ stages:
           python.version: '3.7'
         Python38:
           python.version: '3.8'
-      maxParallel: 2
+      maxParallel: 3
     steps:
       - checkout: none
       - task: DownloadPipelineArtifact@2
@@ -228,6 +228,38 @@ stages:
         inputs:
           versionSpec: '$(python.version)'
           architecture: "x64"
+        
+      - script: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+        displayName: "Install dependencies"
+      
+      - script: pyinstaller gudpy.spec
+  - job: "Build_windows"
+    pool:
+      vmImage: windows-latest
+    strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+        Python37:
+          python.version: '3.7'
+        Python38:
+          python.version: '3.8'
+      maxParallel: 3
+    steps:
+      - checkout: none
+      - task: DownloadPipelineArtifact@2
+        displayName: "Download artifact from Linting stage"
+        inputs:
+          buildType: "current"
+          artifactName: "FORMATTED_GudPy_windows-latest_python$(python.version)"
+          targetPath: "$(System.DefaultWorkingDirectory)"
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+          architecture: "x86"
         
       - script: |
           python -m pip install --upgrade pip
