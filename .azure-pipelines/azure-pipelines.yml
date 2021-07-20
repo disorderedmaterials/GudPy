@@ -61,11 +61,13 @@ stages:
       vmImage: ubuntu-latest
     strategy:
       matrix:
+        Python36:
+          python.version: '3.6'
         Python37:
           python.version: '3.7'
         Python38:
           python.version: '3.8'
-      maxParallel: 2
+      maxParallel: 3
     steps:
     - checkout: none
 
@@ -73,7 +75,7 @@ stages:
       displayName: "Download artifact from Linting stage"
       inputs:
         buildType: "current"
-        artifactName: "FORMATTED_GudPy_ubuntu-latest_python3.7"
+        artifactName: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
         targetPath: "$(System.DefaultWorkingDirectory)"
     - task: UsePythonVersion@0
       inputs:
@@ -106,6 +108,8 @@ stages:
       vmImage: ubuntu-latest
     strategy:
       matrix:
+        Python36:
+          python.version: '3.6'
         Python37:
           python.version: '3.7'
         Python38:
@@ -117,7 +121,7 @@ stages:
         displayName: "Download artifact from Linting stage"
         inputs:
           buildType: "current"
-          artifactName: "FORMATTED_GudPy_ubuntu-latest_python3.7"
+          artifactName: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
           targetPath: "$(System.DefaultWorkingDirectory)"
       - task: UsePythonVersion@0
         inputs:
