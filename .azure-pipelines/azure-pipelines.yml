@@ -4,13 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- main
-
+- mai
 stages:
 - stage: Lint
   displayName: Format and lint code
   jobs:
-  - job: "Lint"
+  - job: "Lint-ubuntu"
     pool:
       vmImage: ubuntu-latest
     strategy:
@@ -60,7 +59,57 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
       displayName: "Publish formatted code."
-      
+  - job: "Lint-windows"
+    pool:
+      vmImage: windows-latest
+    strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+        Python37:
+          python.version: '3.7'
+        Python38:
+          python.version: '3.8'
+      maxParallel: 3
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+        architecture: "x86"
+      displayName: "Use Python $(python.version)"
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install dependencies'
+    - script: |
+        pip install black
+        python -m black --target-version=py38 ./gudrun_classes
+        python -m black --target-version=py38 ./scripts
+        python -m black --target-version=py38 ./gui
+        python -m black --target-version=py38 ./widgets
+      displayName: "Apply black code formatting (PEP8 conformance)"
+
+    - script: |
+        pip install flake8
+        python -m flake8 . --exit-zero
+      condition: succeededOrFailed()
+      displayName: "Static code analysis for PEP8 conformance using flake8"
+
+    - script: python -m flake8 . --exit-zero > flake8.err.log
+      displayName: "Capture flake8 error log"
+      condition: Failed()
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'flake8.err.log'
+        ArtifactName: 'Flake8 Error log file'
+      continueOnError: True
+      condition: Failed()
+
+    - publish: $(System.DefaultWorkingDirectory)
+      artifact: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
+      displayName: "Publish formatted code."
+
 - stage: Test
   displayName: Unit tests
   dependsOn: Lint
