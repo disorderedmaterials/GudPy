@@ -31,9 +31,13 @@ stages:
       steps:
         - checkout: self
           fetchDepth: 1
-        - template: templates/test-linux.yml
+        - template: templates/test.yml
           parameters:
             version: '3.6'
-        - template: templates/test-linux.yml
+            arch: 'x64'
+            os: 'ubuntu'
+        - template: templates/test.yml
           parameters:
             version: '3.7'
+            arch: 'x64'
+            os: 'ubuntu'
