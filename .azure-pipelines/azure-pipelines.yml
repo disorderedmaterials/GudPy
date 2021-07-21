@@ -9,7 +9,7 @@ trigger:
     - refactor-pipelines
   paths:
     include:
-      .azure-pipelines/*
+      - .azure-pipelines/*
 stages:
 - stage: Lint
   displayName: Format and lint code
