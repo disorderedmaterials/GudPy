@@ -1,6 +1,5 @@
 import sys, os
 from unittest import TestCase
-import unittest
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
@@ -312,7 +311,6 @@ class TestGudPyIO(TestCase):
             dirpath = Path().resolve()/'tests/'/Path(path)
         else:
             dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
-        print(dirpath)
         self.g = GudrunFile(dirpath)
 
         self.dicts = [self.expectedInstrument, self.expectedBeam, self.expectedNormalisation,
@@ -327,7 +325,6 @@ class TestGudPyIO(TestCase):
 
         return super().tearDown()
 
-    @unittest.skip
     def testLoadGudrunFile(self):
 
         self.assertIsInstance(self.g, GudrunFile)
@@ -384,7 +381,7 @@ class TestGudPyIO(TestCase):
                 self.assertEqual(str(self.expectedSampleBackground[key]), str(sampleBackgroundsAttrsDict[key]))
             else:
                 self.assertEqual(self.expectedSampleBackground[key], sampleBackgroundsAttrsDict[key])
-    @unittest.skip
+
     def testWriteGudrunFile(self):
         self.g.write_out()
         outlines = open(self.g.outpath, encoding='utf-8').read()
@@ -436,7 +433,6 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, inlines) 
 
-    @unittest.skip
     def testRewriteGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
@@ -447,7 +443,6 @@ class TestGudPyIO(TestCase):
         self.assertEqual(open(g1.outpath, encoding='utf-8').read(), str(g1))
         self.assertEqual(open(g1.outpath, encoding='utf-8').read(), open(self.g.outpath, encoding="utf-8").read())
 
-    @unittest.skip
     def testReloadGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
