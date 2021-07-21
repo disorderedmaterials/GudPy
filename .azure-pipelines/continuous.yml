@@ -25,7 +25,7 @@ stages:
   displayName: 'Unit Tests'
   jobs:
     - job: 'linux'
-    displayName: 'Ubuntu'
-    pool:
-      vmImage: 'ubuntu-latest'
+      displayName: 'Ubuntu'
+      pool:
+        vmImage: 'ubuntu-latest'
       
