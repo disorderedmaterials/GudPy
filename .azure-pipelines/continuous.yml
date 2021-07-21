@@ -58,3 +58,20 @@ stages:
             version: '3.7'
             arch: 'x86'
             os: 'windows'
+    - job: 'macOS'
+      displayName: 'MacOS'
+      pool:
+        vmImage: 'macOS-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/test.yml
+          parameters:
+            version: '3.6'
+            arch: 'x64'
+            os: 'macOS'
+        - template: templates/test.yml
+          parameters:
+            version: '3.7'
+            arch: 'x64'
+            os: 'macOS'
