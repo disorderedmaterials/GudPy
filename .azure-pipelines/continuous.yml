@@ -10,7 +10,10 @@ trigger:
   paths:
     include:
       - .azure-pipelines/*
+
+
 stages:
+
 - stage: 'lint'
   displayName: Format and lint code
   jobs:
@@ -21,11 +24,13 @@ stages:
       - checkout: self
         fetchDepth: 1
       - template: templates/lint.yml
+
 - stage: 'test'
   displayName: 'Unit Tests'
   jobs:
+
     - job: 'linux'
-      displayName: 'Ubuntu'
+      displayName: 'Linux'
       pool:
         vmImage: 'ubuntu-latest'
       steps:
@@ -41,6 +46,7 @@ stages:
             version: '3.7'
             arch: 'x64'
             os: 'ubuntu'
+
     - job: 'windows'
       displayName: 'Windows'
       pool:
@@ -58,6 +64,7 @@ stages:
             version: '3.7'
             arch: 'x86'
             os: 'windows'
+
     - job: 'macOS'
       displayName: 'MacOS'
       pool:
@@ -75,3 +82,63 @@ stages:
             version: '3.7'
             arch: 'x64'
             os: 'macOS'
+
+- stage: 'build'
+  displayName: 'Build GudPy exe'
+  jobs:
+
+    - job: 'linux'
+      displayName: 'Linux'
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/build.yml
+          parameters:
+            version: '3.6'
+            arch: 'x64'
+            os: 'ubuntu'
+        - template: templates/build.yml
+          parameters:
+            version: '3.7'
+            arch: 'x64'
+            os: 'ubuntu'
+
+    - job: 'windows'
+      displayName: 'Windows'
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/build.yml
+          parameters:
+            version: '3.6'
+            arch: 'x86'
+            os: 'windows'
+        - template: templates/build.yml
+          parameters:
+            version: '3.7'
+            arch: 'x86'
+            os: 'windows'
+
+    - job: 'macOS'
+      displayName: 'MacOS'
+      pool:
+        vmImage: 'macOS-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/build.yml
+          parameters:
+            version: '3.6'
+            arch: 'x64'
+            os: 'macOS'
+        - template: templates/build.yml
+          parameters:
+            version: '3.7'
+            arch: 'x64'
+            os: 'macOS'
+
+    
