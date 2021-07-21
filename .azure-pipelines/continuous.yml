@@ -32,3 +32,8 @@ stages:
         - checkout: self
           fetchDepth: 1
         - template: templates/test-linux.yml
+        parameters:
+          version: '3.6'
+        - template: templates/test-linux.yml
+        parameters:
+          version: '3.7'

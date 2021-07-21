@@ -1,14 +1,13 @@
-strategy:
-  matrix:
-    Python36:
-      python.version: '3.6'
-    Python38:
-      python.version: '3.8'
-  maxParallel: 2
+parameters:
+- name: 'version'
+  default: '3.6'
+  type: string
+
+
 steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '$(python.version)'
+      versionSpec: ${{ parameters.version }}
       architecture: "x64"
 
   - script: |
@@ -26,5 +25,5 @@ steps:
       testResultsFormat: 'JUnit'
       testResultsFiles: '*.xml'
       failTaskOnFailedTests: true
-      testRunTitle: 'GudPy on Python $(python.version) (ubuntu)'
+      testRunTitle: 'GudPy on Python ${{ parameters.version }} (ubuntu)'
     condition: succeededOrFailed()
