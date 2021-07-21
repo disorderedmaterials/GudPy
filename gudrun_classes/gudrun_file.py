@@ -810,15 +810,11 @@ class GudrunFile:
                     start = end + 1
                 else:
                     continue
-
-            # #Parse the samples and their backgrounds
-            # for i, line in enumerate(lines_split): 
-            #     if 'GO' in line:
-            #         end = i
-            #         slice = deepcopy(lines_split[start:end])
-            #         self.samples.append(self.sampleHelper(slice))
-            #         start = end+1
-
+            import pathlib
+            self.instrument.GudrunStartFolder = pathlib.Path(__file__).parent.absolute()
+            self.instrument.GudrunInputFileDir = pathlib.Path(__file__).parent.absolute() #(?????)
+            self.instrument.startupFileFolder = pathlib.Path(self.path).parent.absolute()
+            # self.write_out()
     def __str__(self):
         LINEBREAK = '\n\n'
         header = "'  '  '        '  '/'" + LINEBREAK
@@ -840,47 +836,25 @@ class GudrunFile:
         )
 
     def write_out(self):
-        #TODO: windows/osx compatibility
-        fname = os.path.basename(self.path)
-        ref_fname = 'gudpy_{}'.format(fname)
-        dir = os.path.dirname(self.path)
-        f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
-        # self.path = "{}/{}".format(dir, ref_fname)
+        # fname = os.path.basename(self.path)
+        # ref_fname = 'gudpy_{}'.format(fname)
+        # dir = os.path.dirname(self.path)
+        # f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
+        f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
-    # def dont_evaluate(self, sample):
-    #     self.ignoredSamples.append(sample)
-    #     self.samples.remove(sample)
-
-    # def do_evaluate(self, sample):
-    #     self.ignoredSamples.remove(sample)
-    #     self.samples.append(sample)
+    def dcs(self):
+        import subprocess
+        try:
+            
+            result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
+        except FileNotFoundError:
+            gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
+            result = subprocess.run([gudrun_dcs, self.path], capture_output=True, text=True)            
+        return result
 
 if __name__ == '__main__':
     g = GudrunFile(path="NIMROD-water/water.txt")
-    # for i in range(1,len(g.samples)-3):
-    #     g.dont_evaluate(g.samples[i])
-    import subprocess
-    # for sample in g.samples:
-    #     while True:
-    #         eval = input("Evaluate {}? Y/N".format(sample.name))
-    #         if eval[0] == "Y" or eval[0] == "y":
-    #             break
-    #         elif eval[0] == "N" or eval[0] == "n":
-    #             g.ignoredSamples.append(sample)
-    #             g.samples.remove(sample)
-    #             break
     g.write_out()
-    # for sample in g.samples:
-    #     print(sample.name)
-            # print('running gudrun_dcs with {}'.format(g.path))
-    # result = subprocess.run(['GudPy/Gudrun/bin/gudrun_dcs', g.path], capture_output=True, text=True)
-    # # g.samples+=g.ignoredSamples
-    # # g.ignoredSamples = []
 
-    # if len(result.stderr) > 0:
-    #     print("An error occured whilst running gudrun_dcs on {}\n\n. The error occured is as follows:\n\n".format(g.path))
-    #     print(result.stderr)
-    # else:
-    #     print(result.stdout)    

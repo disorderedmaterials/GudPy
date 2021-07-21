@@ -1,10 +1,11 @@
 import sys, os
 from PyQt5 import QtCore, QtGui
+import subprocess
 sys.path.insert(1, os.path.join(sys.path[0], '../scripts'))
 sys.path.insert(2, os.path.join(sys.path[0], '../gudrun_classes'))
 sys.path.insert(3, os.path.join(sys.path[0], '../widgets'))
 
-from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QTextEdit, QWidget
+from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QLabel, QMessageBox, QTextEdit, QWidget, QDialog
 from main_window import GudPyMainWindow
 from gudrun_file_text_area import GudrunFileTextArea
 from sidebar import GudPySiderbar
@@ -34,10 +35,13 @@ class GudPy(QApplication):
         if filename[0]:
             with open(filename[0], 'r') as f:
                 self.textArea.setText(f.read())
+        sys.path.append(filename[0])
         self.gudrunFile = GudrunFile(filename[0])
-
-
-
+        result = self.gudrunFile.dcs()
+        self.msg = QMessageBox(self.mainWindow)
+        self.msg.setWindowTitle("Result")
+        self.msg.setText(result.stdout)
+        x = self.msg.exec_()
         # self.sidebar = GudPySiderbar(self.mainWindow, tabs)
         # self.mainWindow.setCentralWidget(self.sidebar)
 
