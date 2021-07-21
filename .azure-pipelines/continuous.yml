@@ -12,12 +12,54 @@ trigger:
       - .azure-pipelines/*
 
 
+variables:
+  targets: >
+    {
+      linux-py-36:
+      {
+        python.version: '3.6',
+        image.name: 'ubuntu-latest',
+        arch: 'x64'
+      },
+      linux-py-37:
+      {
+        python.version: '3.7',
+        image.name: 'ubuntu-latest',
+        arch: 'x64'
+      },
+      windows-py-36:
+      {
+        python.version: '3.6',
+        image.name: 'windows-latest',
+        arch: 'x86'      
+      },
+      windows-py-37:
+      {
+        python.version: '3.7',
+        image.name: 'windows-latest',
+        arch: 'x86'      
+      },
+      macOS-py-36:
+      {
+        python.version: '3.6',
+        image.name: 'macOS-latest',
+        arch: 'x64'
+      },
+      macOS-py-37: 
+      {
+        python.version: '3.7',
+        image.name: 'macOS-latest',
+        arch: 'x64'
+      }
+
+    }
+
 stages:
 
 - stage: 'lint'
   displayName: Format and lint code
   jobs:
-  - job: 'Lint'
+  - job: 'lint'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -29,116 +71,39 @@ stages:
   displayName: 'Unit Tests'
   jobs:
 
-    - job: 'linux'
-      displayName: 'Linux'
+    - job: 'test'
+      strategy:
+        matrix: $[ variables.targets ]
+      displayName: 'Test $(image.name) on Python $(python.version)'
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: '$(image.name)'
       steps:
-        - checkout: self
-          fetchDepth: 1
-        - template: templates/test.yml
-          parameters:
-            version: '3.6'
-            arch: 'x64'
-            os: 'ubuntu'
-        - template: templates/test.yml
-          parameters:
-            version: '3.7'
-            arch: 'x64'
-            os: 'ubuntu'
-
-    - job: 'windows'
-      displayName: 'Windows'
-      pool:
-        vmImage: 'windows-latest'
-      steps:
-        - checkout: self
-          fetchDepth: 1
-        - template: templates/test.yml
-          parameters:
-            version: '3.6'
-            arch: 'x86'
-            os: 'windows'
-        - template: templates/test.yml
-          parameters:
-            version: '3.7'
-            arch: 'x86'
-            os: 'windows'
-
-    - job: 'macOS'
-      displayName: 'MacOS'
-      pool:
-        vmImage: 'macOS-latest'
-      steps:
-        - checkout: self
-          fetchDepth: 1
-        - template: templates/test.yml
-          parameters:
-            version: '3.6'
-            arch: 'x64'
-            os: 'macOS'
-        - template: templates/test.yml
-          parameters:
-            version: '3.7'
-            arch: 'x64'
-            os: 'macOS'
+      - checkout: self
+        fetchDepth: 1
+      - template: templates/test.yml
+        parameters:
+          version: '$(python.version)'
+          arch: '$(arch)'
+          os: '$(image.name)'
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
   jobs:
 
-    - job: 'linux'
-      displayName: 'Linux'
+    - job: 'build'
+      strategy:
+        matrix: $[ variables.targets ]
+      displayName: 'Build on $(image.name) with Python $(python.version)'
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: '$(image.name)'
       steps:
         - checkout: self
           fetchDepth: 1
         - template: templates/build.yml
           parameters:
-            version: '3.6'
-            arch: 'x64'
-            os: 'ubuntu'
-        - template: templates/build.yml
-          parameters:
-            version: '3.7'
-            arch: 'x64'
-            os: 'ubuntu'
+            version: '$(python.version)'
+            arch: '$(arch)'
+            os: '$(image.name)'
 
-    - job: 'windows'
-      displayName: 'Windows'
-      pool:
-        vmImage: 'windows-latest'
-      steps:
-        - checkout: self
-          fetchDepth: 1
-        - template: templates/build.yml
-          parameters:
-            version: '3.6'
-            arch: 'x86'
-            os: 'windows'
-        - template: templates/build.yml
-          parameters:
-            version: '3.7'
-            arch: 'x86'
-            os: 'windows'
-
-    - job: 'macOS'
-      displayName: 'MacOS'
-      pool:
-        vmImage: 'macOS-latest'
-      steps:
-        - checkout: self
-          fetchDepth: 1
-        - template: templates/build.yml
-          parameters:
-            version: '3.6'
-            arch: 'x64'
-            os: 'macOS'
-        - template: templates/build.yml
-          parameters:
-            version: '3.7'
-            arch: 'x64'
-            os: 'macOS'
 
     
