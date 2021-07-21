@@ -370,7 +370,7 @@ stages:
           python.version: '3.7'
         Python38:
           python.version: '3.8'
-      maxParallel: 3
+      maxParallel: 1
     steps:
       - checkout: none
       - task: DownloadPipelineArtifact@2
@@ -382,7 +382,7 @@ stages:
       - task: UsePythonVersion@0
         inputs:
           versionSpec: '$(python.version)'
-          architecture: "x86"
+          architecture: "x64"
         
       - script: |
           python -m pip install --upgrade pip
