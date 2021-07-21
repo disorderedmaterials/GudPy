@@ -14,7 +14,7 @@ stages:
 - stage: 'lint'
   displayName: Format and lint code
   jobs:
-  - job: 'lint'
+  - job: 'Lint'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -28,4 +28,7 @@ stages:
       displayName: 'Ubuntu'
       pool:
         vmImage: 'ubuntu-latest'
-      
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/test-linux.yml
