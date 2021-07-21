@@ -74,7 +74,7 @@ stages:
     - job: 'test'
       strategy:
         matrix: $[ variables.targets ]
-      displayName: 'Test $(imageName) on Python $(pythonVersion)'
+      displayName: 'Test'
       pool:
         vmImage: '$(imageName)'
       steps:
@@ -93,7 +93,7 @@ stages:
     - job: 'build'
       strategy:
         matrix: $[ variables.targets ]
-      displayName: 'Build on $(imageName) with Python $(pythonVersion)'
+      displayName: 'Build'
       pool:
         vmImage: '$(imageName)'
       steps:
