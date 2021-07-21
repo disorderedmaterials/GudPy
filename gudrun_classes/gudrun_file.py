@@ -810,11 +810,7 @@ class GudrunFile:
                     start = end + 1
                 else:
                     continue
-            import pathlib
-            self.instrument.GudrunStartFolder = pathlib.Path(__file__).parent.absolute()
-            self.instrument.GudrunInputFileDir = pathlib.Path(__file__).parent.absolute() #(?????)
-            self.instrument.startupFileFolder = pathlib.Path(self.path).parent.absolute()
-            # self.write_out()
+
     def __str__(self):
         LINEBREAK = '\n\n'
         header = "'  '  '        '  '/'" + LINEBREAK
@@ -836,11 +832,10 @@ class GudrunFile:
         )
 
     def write_out(self):
-        # fname = os.path.basename(self.path)
-        # ref_fname = 'gudpy_{}'.format(fname)
-        # dir = os.path.dirname(self.path)
-        # f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
-        f = open(self.path, "w", encoding="utf-8")
+        fname = os.path.basename(self.path)
+        ref_fname = 'gudpy_{}'.format(fname)
+        dir = os.path.dirname(self.path)
+        f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
