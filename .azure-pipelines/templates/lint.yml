@@ -1,0 +1,42 @@
+  
+  
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.8"
+      architecture: "x64"
+    displayName: "Use Python 3.8"
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install black
+      pip install flake8
+    displayName: 'Install dependencies'
+
+  - script: |
+      python -m black --target-version=py38 ./gudrun_classes
+      python -m black --target-version=py38 ./scripts
+      python -m black --target-version=py38 ./gui
+      python -m black --target-version=py38 ./widgets
+    displayName: "Apply black code formatting (PEP8 conformance)"
+
+  - script: |
+      python -m flake8 . --exit-zero
+    condition: succeededOrFailed()
+    displayName: "Static code analysis for PEP8 conformance using flake8"    
+
+  - script: python -m flake8 . --exit-zero > flake8.err.log
+    displayName: "Capture flake8 error log"
+    condition: succeeded()
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'flake8.err.log'
+      ArtifactName: 'Flake8 Error log file'
+    continueOnError: True
+    condition: succeeded()
+
+  - publish: $(System.DefaultWorkingDirectory)
+    artifact: "FORMATTED_GudPy"
+    displayName: "Publish formatted code."
