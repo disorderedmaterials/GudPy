@@ -6,8 +6,8 @@ block_cipher = None
 
 a = Analysis(['gui/gudpy.py'],
              pathex=['gudrun_classes/', 'scripts/', 'widgets/', '/home/jared/GudPy/GudPy'],
-             binaries=[],
-             datas=[],
+             binaries=[('Gudrun/bin/gudrun_dcs', '.'), ('Gudrun/bin/libget.so', '.'), ('Gudrun/bin/libGudrunN.so', '.'), ('Gudrun/bin/purge_det', '.')],
+             datas=[('../StartupFiles', 'StartupFiles/')],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
