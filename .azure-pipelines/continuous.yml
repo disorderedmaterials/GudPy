@@ -15,41 +15,41 @@ trigger:
 variables:
   targets: >
     {
-      linux-py-36:
+      linuxPy36:
       {
-        python.version: '3.6',
+        python.version: "3.6",
         image.name: 'ubuntu-latest',
-        arch: 'x64'
+        arch: "x64"
       },
-      linux-py-37:
+      linuxPy37:
       {
-        python.version: '3.7',
-        image.name: 'ubuntu-latest',
-        arch: 'x64'
+        python.version: "3.7",
+        image.name: "ubuntu-latest",
+        arch: "x64"
       },
-      windows-py-36:
+      windowsPy36:
       {
-        python.version: '3.6',
-        image.name: 'windows-latest',
-        arch: 'x86'      
+        python.version: "3.6",
+        image.name: "windows-latest",
+        arch: "x86"      
       },
-      windows-py-37:
+      windowsPy37:
       {
-        python.version: '3.7',
-        image.name: 'windows-latest',
-        arch: 'x86'      
+        python.version: "3.7",
+        image.name: "windows-latest",
+        arch: "x86"      
       },
-      macOS-py-36:
+      macOSPy36:
       {
-        python.version: '3.6',
-        image.name: 'macOS-latest',
-        arch: 'x64'
+        python.version: "3.6",
+        image.name: "macOS-latest",
+        arch: "x64"
       },
-      macOS-py-37: 
+      macOSPy37: 
       {
-        python.version: '3.7',
-        image.name: 'macOS-latest',
-        arch: 'x64'
+        python.version: "3.7",
+        image.name: "macOS-latest",
+        arch: "x64"
       }
 
     }
