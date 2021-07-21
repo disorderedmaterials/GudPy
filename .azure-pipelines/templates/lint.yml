@@ -10,11 +10,10 @@ steps:
   - script: |
       python -m pip install --upgrade pip
       pip install -r requirements.txt
-      pip install black
-      pip install flake8
     displayName: 'Install dependencies'
 
   - script: |
+      pip install black
       python -m black --target-version=py38 ./gudrun_classes
       python -m black --target-version=py38 ./scripts
       python -m black --target-version=py38 ./gui
@@ -22,6 +21,7 @@ steps:
     displayName: "Apply black code formatting (PEP8 conformance)"
 
   - script: |
+      pip install flake8
       python -m flake8 . --exit-zero
     condition: succeededOrFailed()
     displayName: "Static code analysis for PEP8 conformance using flake8"    

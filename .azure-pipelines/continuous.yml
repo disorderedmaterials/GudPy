@@ -11,7 +11,7 @@ trigger:
     include:
       .azure-pipelines/*
 stages:
-- stage: Lint
+- stage: 'lint'
   displayName: Format and lint code
   jobs:
   - job: 'lint'
@@ -21,6 +21,11 @@ stages:
       - checkout: self
         fetchDepth: 1
       - template: templates/lint.yml
-
-
-    
+- stage: 'test'
+  displayName: 'Unit Tests'
+  jobs:
+    - job: 'linux'
+    displayName: 'Ubuntu'
+    pool:
+      vmImage: 'ubuntu-latest'
+      
