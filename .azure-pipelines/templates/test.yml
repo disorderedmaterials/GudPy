@@ -1,0 +1,34 @@
+parameters:
+- name: 'version'
+  default: '3.6'
+  type: string
+- name: 'arch'
+  default: 'x64'
+  type: string
+- name: os
+  default: 'ubuntu'
+  type: string
+steps:
+  - task: UsePythonVersion@0
+    displayName: "Use Python Version ${{ parameters.version }}"
+    inputs:
+      versionSpec: ${{ parameters.version }}
+      architecture: ${{ parameters.arch }}
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: "Install dependencies"
+    
+  - script: |
+      pip install nose2
+      nose2 --plugin nose2.plugins.junitxml --junit-xml tests
+    displayName: 'Run tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '*.xml'
+      failTaskOnFailedTests: true
+      testRunTitle: 'GudPy on Python ${{ parameters.version }} ${{ parameters.os }}'
+    condition: succeededOrFailed()
