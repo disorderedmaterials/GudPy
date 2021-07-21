@@ -17,38 +17,38 @@ variables:
     {
       linuxPy36:
       {
-        python.version: "3.6",
-        image.name: 'ubuntu-latest',
+        pythonVersion: "3.6",
+        imageName: 'ubuntu-latest',
         arch: "x64"
       },
       linuxPy37:
       {
-        python.version: "3.7",
-        image.name: "ubuntu-latest",
+        pythonVersion: "3.7",
+        imageName: "ubuntu-latest",
         arch: "x64"
       },
       windowsPy36:
       {
-        python.version: "3.6",
-        image.name: "windows-latest",
+        pythonVersion: "3.6",
+        imageName: "windows-latest",
         arch: "x86"      
       },
       windowsPy37:
       {
-        python.version: "3.7",
-        image.name: "windows-latest",
+        pythonVersion: "3.7",
+        imageName: "windows-latest",
         arch: "x86"      
       },
       macOSPy36:
       {
-        python.version: "3.6",
-        image.name: "macOS-latest",
+        pythonVersion: "3.6",
+        imageName: "macOS-latest",
         arch: "x64"
       },
       macOSPy37: 
       {
-        python.version: "3.7",
-        image.name: "macOS-latest",
+        pythonVersion: "3.7",
+        imageName: "macOS-latest",
         arch: "x64"
       }
 
@@ -74,17 +74,17 @@ stages:
     - job: 'test'
       strategy:
         matrix: $[ variables.targets ]
-      displayName: 'Test $(image.name) on Python $(python.version)'
+      displayName: 'Test $(imageName) on Python $(pythonVersion)'
       pool:
-        vmImage: '$(image.name)'
+        vmImage: '$(imageName)'
       steps:
       - checkout: self
         fetchDepth: 1
       - template: templates/test.yml
         parameters:
-          version: '$(python.version)'
+          version: '$(pythonVersion)'
           arch: '$(arch)'
-          os: '$(image.name)'
+          os: '$(imageName)'
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -93,17 +93,17 @@ stages:
     - job: 'build'
       strategy:
         matrix: $[ variables.targets ]
-      displayName: 'Build on $(image.name) with Python $(python.version)'
+      displayName: 'Build on $(imageName) with Python $(pythonVersion)'
       pool:
-        vmImage: '$(image.name)'
+        vmImage: '$(imageName)'
       steps:
         - checkout: self
           fetchDepth: 1
         - template: templates/build.yml
           parameters:
-            version: '$(python.version)'
+            version: '$(pythonVersion)'
             arch: '$(arch)'
-            os: '$(image.name)'
+            os: '$(imageName)'
 
 
     
