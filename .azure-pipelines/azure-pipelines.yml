@@ -47,14 +47,14 @@ stages:
 
     - script: python -m flake8 . --exit-zero > flake8.err.log
       displayName: "Capture flake8 error log"
-      condition: Failed()
+      condition: succeeded()
     
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: 'flake8.err.log'
         ArtifactName: 'Flake8 Error log file'
       continueOnError: True
-      condition: Failed()
+      condition: succeeded()
 
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_ubuntu-latest_python$(python.version)"
@@ -97,14 +97,14 @@ stages:
 
     - script: python -m flake8 . --exit-zero > flake8.err.log
       displayName: "Capture flake8 error log"
-      condition: Failed()
+      condition: succeeded()
     
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: 'flake8.err.log'
         ArtifactName: 'Flake8 Error log file'
       continueOnError: True
-      condition: Failed()
+      condition: succeeded()
 
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_windows-latest_python$(python.version)"
@@ -147,14 +147,14 @@ stages:
 
     - script: python -m flake8 . --exit-zero > flake8.err.log
       displayName: "Capture flake8 error log"
-      condition: Failed()
+      condition: succeeded()
     
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: 'flake8.err.log'
         ArtifactName: 'Flake8 Error log file'
       continueOnError: True
-      condition: Failed()
+      condition: succeeded()
 
     - publish: $(System.DefaultWorkingDirectory)
       artifact: "FORMATTED_GudPy_macOS-latest_python$(python.version)"
