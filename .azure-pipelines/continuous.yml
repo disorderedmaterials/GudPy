@@ -6,7 +6,7 @@
 trigger:
   branches:
     include:
-    - refactor-pipelines
+    - main
   paths:
     include:
       - .azure-pipelines/*
