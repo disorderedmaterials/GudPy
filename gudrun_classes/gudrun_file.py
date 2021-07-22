@@ -60,7 +60,7 @@ class GudrunFile:
 
         KEYPHRASES = {
 
-            "name" : "name",
+            "name" : "Instrument name",
             "GudrunInputFileDir" : "Gudrun input file dir",
             "dataFileDir" : "Data file dir",
             "dataFileType" : "Data file type",
@@ -396,6 +396,14 @@ class GudrunFile:
 
 
         #Count the number of data files and background data files.
+
+        if not isin(["number", "files", "period"], lines) == (True, 0):
+            raise ValueError("Whilst parsing NORMALISATION, numberOfFilesPeriodNumber was not found")
+        
+        if not isin(["number", "files", "period"], deepcopy(lines[2:]))[0]:
+            raise ValueError("Whilst parsing NORMALISATION, numberOfFilesPeriodNumberBg was not found")
+
+
         numberFiles = extract_ints_from_string(lines[0])[0]
         numberFilesBG = extract_ints_from_string(lines[numberFiles+1])[0]
 
@@ -456,7 +464,7 @@ class GudrunFile:
         for key in STRINGS:
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+                raise ValueError("Whilst parsing NORMALISATION, {} was not found".format(key))
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
@@ -469,7 +477,7 @@ class GudrunFile:
         for key in INTS:
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+                raise ValueError("Whilst parsing NORMALISATION, {} was not found".format(key))
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
@@ -485,7 +493,7 @@ class GudrunFile:
         for key in FLOATS:
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+                raise ValueError("Whilst parsing NORMALISATION, {} was not found".format(key))
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
@@ -501,7 +509,7 @@ class GudrunFile:
         for key in BOOLS:
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+                raise ValueError("Whilst parsing NORMALISATION, {} was not found".format(key))
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = boolifyNum(int(firstword(lines[FORMAT_MAP[key]])))
@@ -516,7 +524,7 @@ class GudrunFile:
         for key in TUPLE_FLOATS:
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+                raise ValueError("Whilst parsing NORMALISATION, {} was not found".format(key))
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))

@@ -1,5 +1,6 @@
 import sys, os
 from unittest import TestCase
+import random
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
@@ -461,7 +462,6 @@ class TestGudPyIO(TestCase):
 
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w",encoding='utf-8')
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         f.close()
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
@@ -477,7 +477,6 @@ class TestGudPyIO(TestCase):
             f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
             f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
         
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -491,7 +490,6 @@ class TestGudPyIO(TestCase):
             f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
             f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
         
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -505,7 +503,6 @@ class TestGudPyIO(TestCase):
             f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
             f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
 
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -518,7 +515,6 @@ class TestGudPyIO(TestCase):
             f.write("'  '  '        '  '/'\n\n")
             f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
         
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -531,7 +527,6 @@ class TestGudPyIO(TestCase):
             f.write("'  '  '        '  '/'\n\n")
             f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
 
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -544,7 +539,6 @@ class TestGudPyIO(TestCase):
             f.write("'  '  '        '  '/'\n\n")
             f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
         
-        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual(
@@ -552,4 +546,157 @@ class TestGudPyIO(TestCase):
             str(cm.exception)
         )
 
+
+    def testLoadMissingInstrumentAttributesSeq(self):
+
         
+        for i, key in enumerate(self.expectedInstrument.keys()):
+
+            if key == "groupingParameterPanel" : continue
+
+            badInstrument = str(self.goodInstrument).split("\n")
+            del badInstrument[i]
+            badInstrument = "\n".join(badInstrument)   
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(badInstrument) + '\n\n}')
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")
+    
+    def testLoadMissingInstrumentAttributesRand(self):
+
+        for i in range(50):
+
+            key = random.choice(list(self.expectedInstrument))
+            j = list(self.expectedInstrument).index(key)
+
+            if key == "groupingParameterPanel" : continue
+
+            badInstrument = str(self.goodInstrument).split("\n")
+            del badInstrument[j]
+            badInstrument = "\n".join(badInstrument)  
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(badInstrument) + '\n\n}')
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")
+
+    def testLoadMissingBeamAttributesSeq(self):
+        
+        for i, key in enumerate(self.expectedBeam.keys()):
+
+            badBeam = str(self.goodBeam).split("\n")
+            del badBeam[i]
+            badBeam = "\n".join(badBeam)            
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+                f.write("\n\nBEAM        {\n\n"+str(badBeam) + '\n\n}')
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing BEAM, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")
+
+    def testLoadMissingBeamAttributesRand(self):
+
+        for i in range(50):
+
+            key = random.choice(list(self.expectedBeam))
+            j = list(self.expectedBeam).index(key)
+
+            badBeam = str(self.goodBeam).split("\n")
+            del badBeam[j]
+            badBeam = "\n".join(badBeam)  
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+                f.write("\n\nBEAM        {\n\n"+str(badBeam) + '\n\n}')
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing BEAM, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")    
+
+    def testLoadMissingNormalisationAttributesSeq(self):
+
+        
+
+        for i, key in enumerate(self.expectedNormalisation.keys()):
+
+            if i > 3: i+=1
+            if i > 5: i+=1
+
+            if key in ["dataFiles", "dataFilesBg", "composition"]: continue
+
+            badNormalisation = str(self.goodNormalisation).split("\n")
+            del badNormalisation[i]
+            badNormalisation = "\n".join(badNormalisation)            
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+                f.write("\n\nBEAM        {\n\n"+str(self.goodBeam) + '\n\n}')
+                f.write("\n\nNORMALISATION        {\n\n"+str(badNormalisation) + '\n\n}')
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing NORMALISATION, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")
+
+    def testLoadMissingNormalisationAttributesRand(self):
+
+        for i in range(50):
+
+            key = random.choice(list(self.expectedNormalisation))
+
+            if key in ["dataFiles", "dataFilesBg", "composition"]: continue
+
+            j = list(self.expectedNormalisation).index(key)
+
+            if j > 3: j+=1
+            if j > 5: j+=1
+
+            badNormalisation = str(self.goodNormalisation).split("\n")
+            del badNormalisation[j]
+            badNormalisation = "\n".join(badNormalisation)  
+
+            with open("test_data.txt", "w", encoding='utf-8') as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+                f.write("\n\nBEAM        {\n\n"+str(self.goodBeam) + '\n\n}')
+                f.write("\n\nNORMALISATION        {\n\n"+str(badNormalisation) + '\n\n}')
+
+
+            with self.assertRaises(ValueError) as cm:
+                GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing NORMALISATION, {} was not found".format(key),
+                str(cm.exception)
+            )
+            os.remove("test_data.txt")    
