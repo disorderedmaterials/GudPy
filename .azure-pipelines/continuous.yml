@@ -57,7 +57,7 @@ variables:
 stages:
 
 - stage: 'lint'
-  displayName: Format and lint code
+  displayName: Lint code
   jobs:
   - job: 'lint'
     pool:
