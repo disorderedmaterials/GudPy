@@ -17,7 +17,7 @@ class SampleBackground:
         SAMPLES = "\n".join([str(x) for x in self.samples])
 
         return cleandoc("""
-SAMPLE BACKGROUND        {{
+SAMPLE BACKGROUND          {{
 
 {}        Number of files and period number
 {}

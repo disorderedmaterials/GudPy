@@ -531,7 +531,6 @@ class GudrunFile:
             if key == 'angleOfRotationSampleWidth':
                 self.normalisation.__dict__[key] = (self.normalisation.__dict__[key][0], int(self.normalisation.__dict__[key][1]))
 
-
         """
         Get all attributes that need to be stored specifically as a tuple of ints:
             - Number of files and period number
@@ -582,11 +581,11 @@ class GudrunFile:
     def parseSampleBackground(self, lines):
         sampleBackground = SampleBackground()
 
-        if not isin("Number of files and period number", lines[0]):
-            raise ValueError("Whilst parsing SAMPLE BACKGROUND {}, numberOfFilesPeriodNumber was not found".format(len(self.sampleBackgrounds+1)))
-
         #Get the number of files and period number.
-        sampleBackground.numberOfFilesPeriodNumber = tuple(extract_ints_from_string(lines[0]))
+        if not isin(["files", "period"], lines)[0]:
+            raise ValueError("Whilst parsing SAMPLE BACKGROUND 1, numberOfFilesPeriodNumber was not found")
+        sampleBackground.numberOfFilesPeriodNumber = tuple(extract_ints_from_string(str(lines[0])))
+
         #Get the associated data files.
         dataFiles = []
         for i in range(sampleBackground.numberOfFilesPeriodNumber[0]):
@@ -608,7 +607,7 @@ class GudrunFile:
 
         KEYPHRASES = {
             
-            "numberOfFilesPeriodNumber" : ["files", "period number"],
+            "numberOfFilesPeriodNumber" : ["files", "period"],
             "forceCalculationOfCorrections": ["Force", "corrections?"],
             "geometry" : "Geometry",
             "thickness" : ["Upstream", "downstream", "thickness"],
@@ -689,7 +688,7 @@ class GudrunFile:
             try:
                 isin_, i = isin(KEYPHRASES[key], lines)
                 if not isin_:
-                    raise ValueError("Whilst parsing {}  , {} was not found".format(sample.name, key))
+                    raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
                 if i!=FORMAT_MAP[key]:
                     FORMAT_MAP[key] = i 
                 sample.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
@@ -827,7 +826,7 @@ class GudrunFile:
 
         KEYPHRASES = {
             
-            "numberOfFilesPeriodNumber" : ["files", "period number"],
+            "numberOfFilesPeriodNumber" : ["files", "period"],
             "geometry" : "Geometry",
             "thickness" : ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth" : "Angle of rotation",
@@ -910,8 +909,6 @@ class GudrunFile:
             if i!=FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i 
             container.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
-            # if key == 'angleOfRotationSampleWidth':
-            #     container.__dict__[key] = (container.__dict__[key][0], int(container.__dict__[key][1]))
 
         """
         Get all attributes that need to be stored specifically as a tuple of ints:
@@ -926,7 +923,7 @@ class GudrunFile:
                 FORMAT_MAP[key] = i 
             container.__dict__[key] = tuple(extract_ints_from_string(lines[FORMAT_MAP[key]]))
         
-        #Get all of the normalisation datafiles and their information.
+        #Get all of the container datafiles and their information.
         
 
         dataFiles = []
@@ -985,7 +982,6 @@ class GudrunFile:
                 if parsing == 'SAMPLE BACKGROUND': start+=2
                 slice = deepcopy(lines[start:end-1])
                 if isinstance(KEYWORDS[parsing], list):
-                    print('container found!')
                     KEYWORDS[parsing].append(self.makeParse(slice,parsing))
                 else:
                     KEYWORDS[parsing] = self.makeParse(slice, parsing)
@@ -1083,9 +1079,9 @@ class GudrunFile:
     def __str__(self):
         LINEBREAK = '\n\n'
         header = "'  '  '        '  '/'" + LINEBREAK
-        instrument = "INSTRUMENT        {\n\n" + str(self.instrument) + LINEBREAK + "}"
-        beam = "BEAM        {\n\n" + str(self.beam) + LINEBREAK + "}"
-        normalisation = "NORMALISATION        {\n\n" + str(self.normalisation) + LINEBREAK + "}"        
+        instrument = "INSTRUMENT          {\n\n" + str(self.instrument) + LINEBREAK + "}"
+        beam = "BEAM          {\n\n" + str(self.beam) + LINEBREAK + "}"
+        normalisation = "NORMALISATION          {\n\n" + str(self.normalisation) + LINEBREAK + "}"        
         sampleBackgrounds = "\n".join([str(x) for x in self.sampleBackgrounds]).rstrip()
         footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(time.strftime('%Y%m%d %H:%M:%S') )
         return (
@@ -1118,6 +1114,6 @@ class GudrunFile:
         return result
 
 if __name__ == '__main__':
-    g = GudrunFile(path="NIMROD-water/water.txt")
+    g = GudrunFile(path="/home/jared/GudPy/GudPy/test-data.txt")
     g.write_out()
 
