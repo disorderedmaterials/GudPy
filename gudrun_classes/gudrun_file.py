@@ -89,7 +89,7 @@ class GudrunFile:
             "subWavelengthBinnedData" : ["Subtract", "wavelength-binned"],
             "GudrunStartFolder" : "Folder where Gudrun started",
             "startupFileFolder" : "Folder containing the startup file",
-            "logarithmicStepSize" : "Logarithmic",
+            "logarithmicStepSize" : "Logarithmic step size",
             "hardGroupEdges" : "edges?",
             "numberIterations" : "iterations",
             "tweakTweakFactors": "tweak"
