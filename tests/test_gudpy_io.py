@@ -304,6 +304,13 @@ class TestGudPyIO(TestCase):
         
         }
 
+        self.goodInstrument = Instrument()
+        self.goodInstrument.__dict__ = self.expectedInstrument
+        self.goodBeam = Beam()
+        self.goodBeam.__dict__ = self.expectedBeam
+        self.goodNormalisation = Normalisation()
+        self.goodNormalisation.__dict__ = self.expectedNormalisation
+
         path = 'TestData/NIMROD-water/water.txt'
 
         if os.name == "nt":
@@ -322,6 +329,9 @@ class TestGudPyIO(TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
+
+        if os.path.isfile("test_data.txt"):
+            os.remove("test_data.txt")
 
         return super().tearDown()
 
@@ -452,4 +462,94 @@ class TestGudPyIO(TestCase):
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w",encoding='utf-8')
         self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        f.close()
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )
+    
+
+    def testLoadMissingInstrument(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
+            f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
+        
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )
+
+    def testLoadMissingBeam(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+            f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
+        
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )
+
+    def testLoadMissingNormalisation(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+            f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
+
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )        
+
+    def testLoadMissingInstrumentAndBeam(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("NORMALISATION        {\n\n"+str(self.goodNormalisation)+'\n\n}')
+        
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )       
+    
+    def testLoadMissingInstrumentAndNormalisation(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("BEAM        {\n\n"+str(self.goodBeam)+'\n\n}')
+
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )               
+
+    def testLoadMissingNormalisationAndBeam(self):
+        with open("test_data.txt", "w", encoding='utf-8') as f:
+            f.write("'  '  '        '  '/'\n\n")
+            f.write("INSTRUMENT        {\n\n"+str(self.goodInstrument) + '\n\n}')
+        
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        with self.assertRaises(ValueError) as cm:
+            GudrunFile("test_data.txt")
+        self.assertEqual(
+            "INSTRUMENT, BEAM and NORMALISATION were not parsed. It's possible the file supplied is of an incorrect format!",
+            str(cm.exception)
+        )
+
         
