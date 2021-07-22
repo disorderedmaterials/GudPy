@@ -6,7 +6,7 @@
 trigger:
   branches:
     include:
-    - ci-gudrun
+    - main
   paths:
     include:
       - .azure-pipelines/*
