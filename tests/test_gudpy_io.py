@@ -439,12 +439,17 @@ class TestGudPyIO(TestCase):
         g1.write_out()
 
         
-        self.assertEqual(open(g1.outpath, encoding='utf-8').read(), str(self.g))
-        self.assertEqual(open(g1.outpath, encoding='utf-8').read(), str(g1))
-        self.assertEqual(open(g1.outpath, encoding='utf-8').read(), open(self.g.outpath, encoding="utf-8").read())
+        self.assertEqual(open(g1.outpath, encoding='utf-8').read()[:-5], str(self.g)[:-5])
+        self.assertEqual(open(g1.outpath, encoding='utf-8').read()[:-5], str(g1)[:-5])
+        self.assertEqual(open(g1.outpath, encoding='utf-8').read()[:-5], open(self.g.outpath, encoding="utf-8").read()[:-5])
 
     def testReloadGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
         self.assertEqual(str(g1), str(self.g))
 
+
+    def testLoadEmptyGudrunFile(self):
+        f = open("test_data.txt", "w",encoding='utf-8')
+        self.assertRaises(ValueError, GudrunFile, "test_data.txt")
+        

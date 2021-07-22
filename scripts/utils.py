@@ -54,3 +54,15 @@ def count_occurrences(substring, iterable):
 
 def iteristype(iter, type):
     return all(isinstance(x, type) for x in iter)
+
+def isin(iter1, iter2):
+    if isinstance(iter1, (list, tuple)):
+        for i, line in enumerate(iter2):
+            if all(word.lower() in str(line).lower() for word in iter1):
+                return True, i
+        return False,0
+    elif isinstance(iter1, str):
+        for j, line in enumerate(iter2):
+            if iter1.lower() in str(line).lower():
+                return True, j
+        return False,0

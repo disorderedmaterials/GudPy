@@ -28,7 +28,6 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
 
-
 class GudrunFile:
     def __init__(self, path=None, data=None):
         self.path = path
@@ -52,11 +51,51 @@ class GudrunFile:
             self.normalisation = None
             self.sampleBackgrounds = []
             self.ignoredSamples = []
+            self.error = None
             self.parse()
     
 
     def parseInstrument(self, lines):
         self.instrument = Instrument()
+
+        KEYPHRASES = {
+
+            "name" : "name",
+            "GudrunInputFileDir" : "Gudrun input file dir",
+            "dataFileDir" : "Data file dir",
+            "dataFileType" : "Data file type",
+            "detectorCalibrationFileName" : "Detector calibration",
+            "columnNoPhiVals" : "phi values",
+            "groupFileName" : "Groups file name",
+            "deadtimeConstantsFileName" : "Deadtime constants",          
+            "spectrumNumbersForIncidentBeamMonitor" : ["Spectrum", "number", "incident"],
+            "wavelengthRangeForMonitorNormalisation" : ["Wavelength", "range", "normalisation"],
+            "spectrumNumbersForTransmissionMonitor" : ["Spectrum", "number", "transmission"],
+            "incidentMonitorQuietCountConst" : ["Incident", "quiet", "count"],
+            "transmissionMonitorQuietCountConst" : ["Transmission", "quiet", "count"],
+            "channelNosSpikeAnalysis" : "Channel numbers",
+            "spikeAnalysisAcceptanceFactor" : "Spike analysis acceptance",
+            "wavelengthRangeStepSize" : ["Wavelength", "range", "step", "size"],
+            "NoSmoothsOnMonitor" : "smooths on monitor",
+            "XScaleRangeStep" : "x-scale",
+            "groupsAcceptanceFactor" : "Groups acceptance",
+            "mergePower" : "Merge power",
+            "subSingleAtomScattering" : ["single", "atom", "scattering?"],
+            "byChannel" : "By channel?",
+            "incidentFlightPath" : "Incident flight path",
+            "spectrumNumberForOutputDiagnosticFiles" : ["Spectrum", "number", "diagnostic"],
+            "neutronScatteringParametersFile" : "Neutron scattering parameters",
+            "scaleSelection" : "Scale selection",
+            "subWavelengthBinnedData" : ["Subtract", "wavelength-binned"],
+            "GudrunStartFolder" : "Folder where Gudrun started",
+            "startupFileFolder" : "Folder containing the startup file",
+            "logarithmicStepSize" : "Logarithmic",
+            "hardGroupEdges" : "edges?",
+            "numberIterations" : "iterations",
+            "tweakTweakFactors": "tweak"
+        }   
+
+
 
         #Extract marker line
         lines = [line for line in lines if not 'end input of specified values' in line]
@@ -100,8 +139,15 @@ class GudrunFile:
         """
 
         for key in STRINGS:
-            self.instrument.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
-        
+            try:
+                isin_, i = isin(KEYPHRASES[key], lines)
+                if not isin_:
+                    raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+                if i!=FORMAT_MAP[key]:
+                    FORMAT_MAP[key] = i
+                self.instrument.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
+            except IndexError:
+                continue        
         """
         Get all attributes that are integers:
             - User table column number for phi values
@@ -115,8 +161,13 @@ class GudrunFile:
         """
 
         for key in INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
-        
+
         """
         Get all attributes that are floats (doubles):
             - Incident monitor quiet count constant
@@ -127,6 +178,11 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
         """
@@ -138,6 +194,11 @@ class GudrunFile:
         """
 
         for key in BOOLS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = boolifyNum(int(firstword(lines[FORMAT_MAP[key]])))
 
         """
@@ -147,6 +208,11 @@ class GudrunFile:
         """
 
         for key in LISTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = extract_ints_from_string(lines[FORMAT_MAP[key]])
         
         """
@@ -156,6 +222,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = tuple(extract_ints_from_string(lines[FORMAT_MAP[key]]))
         
         """
@@ -164,6 +235,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing INSTRUMENT, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.instrument.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
 
         """
@@ -182,6 +258,22 @@ class GudrunFile:
 
     def parseBeam(self, lines):
         self.beam = Beam()
+
+        KEYPHRASES = {
+
+            "sampleGeometry" : "Sample geometry",
+            "noBeamProfileValues" : ["number","beam", "profile", "values"],
+            "beamProfileValues" : ["Beam", "profile", "values", "("],
+            "stepSizeAbsorptionMSNoSlices" : ["Step", "size", "m.s"],
+            "angularStepForCorrections" : "Angular step",
+            "incidentBeamEdgesRelCentroid" : "Incident beam edges",
+            "scatteredBeamEdgesRelCentroid" : "Scattered beam edges",
+            "filenameIncidentBeamSpectrumParams" : ["Filename", "incident", "spectrum", "parameters"],
+            "overallBackgroundFactor" : "Overall background factor",
+            "sampleDependantBackgroundFactor" : "Sample dependent background",
+            "shieldingAttenuationCoefficient" : ["Shielding", "attenuation", "coefficient"]
+
+        }
 
         #Map the attributes of the Beam class to line numbers.
 
@@ -204,6 +296,11 @@ class GudrunFile:
         """
 
         for key in STRINGS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i
             self.beam.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
         
         """
@@ -213,6 +310,11 @@ class GudrunFile:
         """
 
         for key in INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.beam.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
         
         """
@@ -223,6 +325,11 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.beam.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
 
@@ -232,6 +339,11 @@ class GudrunFile:
         """
 
         for key in LISTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.beam.__dict__[key] = extract_floats_from_string(lines[FORMAT_MAP[key]])
         
         """
@@ -241,6 +353,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.beam.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
 
         """
@@ -248,6 +365,11 @@ class GudrunFile:
         """
 
         key = 'stepSizeAbsorptionMSNoSlices'
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError("Whilst parsing BEAM, {} was not found".format(key))
+        if i!=FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i 
         stepSizeAbsorptionMS = extract_floats_from_string(lines[FORMAT_MAP[key]])[:2]
         noSlices = int(extract_floats_from_string(lines[FORMAT_MAP[key]])[2])
         stepSizeAbsorptionMSNoSlices = tuple(stepSizeAbsorptionMS + [noSlices])
@@ -255,6 +377,23 @@ class GudrunFile:
 
     def parseNormalisation(self, lines):
         self.normalisation = Normalisation()
+
+        KEYPHRASES = {
+
+            "forceCalculationOfCorrections": ["Force", "corrections?"],
+            "geometry" : "Geometry",
+            "thickness" : ["Upstream", "downstream", "thickness"],
+            "angleOfRotationSampleWidth" : "Angle of rotation",
+            "densityOfAtoms" : "Density",
+            "tempForNormalisationPC" : "Placzek correction",
+            "totalCrossSectionSource" : "Total cross",
+            "normalisationDifferentialCrossSectionFilename" : ["Normalisation", "cross section", "filename"],
+            "lowerLimitSmoothedNormalisation" : "Lower limit",
+            "normalisationDegreeSmoothing" : "Normalisation degree",
+            "minNormalisationSignalBR" : "background ratio"
+            
+        }
+
 
         #Count the number of data files and background data files.
         numberFiles = extract_ints_from_string(lines[0])[0]
@@ -315,6 +454,11 @@ class GudrunFile:
         """
 
         for key in STRINGS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
             
         """
@@ -323,6 +467,11 @@ class GudrunFile:
         """
 
         for key in INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
                  
         """
@@ -334,6 +483,11 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
         """
@@ -345,6 +499,11 @@ class GudrunFile:
         """
 
         for key in BOOLS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = boolifyNum(int(firstword(lines[FORMAT_MAP[key]])))
 
 
@@ -355,6 +514,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing NORMALISATION  , {} was not found".format(key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             self.normalisation.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
             if key == 'angleOfRotationSampleWidth':
                 self.normalisation.__dict__[key] = (self.normalisation.__dict__[key][0], int(self.normalisation.__dict__[key][1]))
@@ -410,9 +574,11 @@ class GudrunFile:
     def parseSampleBackground(self, lines):
         sampleBackground = SampleBackground()
 
+        if not isin("Number of files and period number", lines[0]):
+            raise ValueError("Whilst parsing SAMPLE BACKGROUND {}, numberOfFilesPeriodNumber was not found".format(len(self.sampleBackgrounds+1)))
+
         #Get the number of files and period number.
         sampleBackground.numberOfFilesPeriodNumber = tuple(extract_ints_from_string(lines[0]))
-        
         #Get the associated data files.
         dataFiles = []
         for i in range(sampleBackground.numberOfFilesPeriodNumber[0]):
@@ -432,6 +598,33 @@ class GudrunFile:
         sample.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
+        KEYPHRASES = {
+            
+            "numberOfFilesPeriodNumber" : ["files", "period number"],
+            "forceCalculationOfCorrections": ["Force", "corrections?"],
+            "geometry" : "Geometry",
+            "thickness" : ["Upstream", "downstream", "thickness"],
+            "angleOfRotationSampleWidth" : "Angle of rotation",
+            "densityOfAtoms" : "Density",
+            "tempForNormalisationPC" : "Placzek correction",
+            "totalCrossSectionSource" : "Total cross",
+            "sampleTweakFactor" : "tweak factor",
+            "topHatW" : "Top hat width",
+            "minRadFT" : "Minimum radius for FT",
+            "gor" : "g(r)",
+            "expAandD" : ["Exponential", "amplitude", "decay"],
+            "normalisationCorrectionFactor" : "Normalisation correction factor",
+            "fileSelfScattering" : ["file", "self scattering", "function"],
+            "normaliseTo" : "Normalise",
+            "maxRadFT": "Maximum radius for FT",
+            "outputUnits": "Output units",
+            "powerForBroadening" : "Power for broadening",
+            "stepSize": "Step size",
+            "analyse" : ["Analyse", "sample?"],
+            "sampleEnvironementScatteringFuncAttenuationCoeff" : ["environment", "scattering fraction", "attenuation coefficient"]
+        
+        }
+
         #Discard lines which don't contain information.
         lines = [line for line in lines if not 'end of' in line and not 'to finish' in line]
 
@@ -439,7 +632,7 @@ class GudrunFile:
         numberFiles = count_occurrences('data files', lines)
         numberElements = count_occurrences('Sample atomic composition', lines) + count_occurrences('Composition', lines)
 
-        #Map the attributes of the Beam class to line numbers.
+        #Map the attributes of the Sample class to line numbers.
 
         FORMAT_MAP = dict.fromkeys(sample.__dict__.keys())
         FORMAT_MAP.pop('name', None)
@@ -486,6 +679,11 @@ class GudrunFile:
 
         for key in STRINGS:
             try:
+                isin_, i = isin(KEYPHRASES[key], lines)
+                if not isin_:
+                    raise ValueError("Whilst parsing {}  , {} was not found".format(sample.name, key))
+                if i!=FORMAT_MAP[key]:
+                    FORMAT_MAP[key] = i 
                 sample.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
             except KeyError:
                 continue
@@ -500,6 +698,11 @@ class GudrunFile:
         """
 
         for key in INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             sample.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
                  
         """
@@ -514,6 +717,11 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
         """
@@ -523,6 +731,11 @@ class GudrunFile:
         """
 
         for key in BOOLS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             sample.__dict__[key] = boolifyNum(int(firstword(lines[FORMAT_MAP[key]])))
 
 
@@ -534,6 +747,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             sample.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
             if key == 'angleOfRotationSampleWidth':
                 sample.__dict__[key] = (sample.__dict__[key][0], int(sample.__dict__[key][1]))
@@ -545,6 +763,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             sample.__dict__[key] = tuple(extract_ints_from_string(lines[FORMAT_MAP[key]]))
 
         """
@@ -552,6 +775,11 @@ class GudrunFile:
         """
 
         key = 'expAandD'
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError("Whilst parsing {}, {} was not found".format(sample.name, key))
+        if i!=FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i 
         expAmp = extract_floats_from_string(lines[FORMAT_MAP[key]])[:2]
         decay = int(extract_floats_from_string(lines[FORMAT_MAP[key]])[2])
         expAandD = tuple(expAmp + [decay])
@@ -587,6 +815,22 @@ class GudrunFile:
         #Extract the name from the lines, and then discard the unnecessary lines.
         container.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
+
+
+        KEYPHRASES = {
+            
+            "numberOfFilesPeriodNumber" : ["files", "period number"],
+            "geometry" : "Geometry",
+            "thickness" : ["Upstream", "downstream", "thickness"],
+            "angleOfRotationSampleWidth" : "Angle of rotation",
+            "densityOfAtoms" : "Density",
+            "totalCrossSectionSource" : "Total cross",
+            "tweakFactor" : "tweak factor",
+            "scatteringFractionAttenuationCoefficient" : ["environment", "scattering fraction", "attenuation coefficient"]
+        
+        }
+
+
         lines = [line for line in lines if not 'end of' in line]
 
         #Count the number of files and number of elements.
@@ -621,6 +865,11 @@ class GudrunFile:
 
         for key in STRINGS:
             try:
+                isin_, i = isin(KEYPHRASES[key], lines)
+                if not isin_:
+                    raise ValueError("Whilst parsing {}, {} was not found".format(container.name, key))
+                if i!=FORMAT_MAP[key]:
+                    FORMAT_MAP[key] = i 
                 container.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
             except KeyError:
                 continue
@@ -632,6 +881,11 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(container.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             container.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
         
         """
@@ -642,6 +896,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_FLOATS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(container.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             container.__dict__[key] = tuple(extract_floats_from_string(lines[FORMAT_MAP[key]]))
             # if key == 'angleOfRotationSampleWidth':
             #     container.__dict__[key] = (container.__dict__[key][0], int(container.__dict__[key][1]))
@@ -652,6 +911,11 @@ class GudrunFile:
         """
 
         for key in TUPLE_INTS:
+            isin_, i = isin(KEYPHRASES[key], lines)
+            if not isin_:
+                raise ValueError("Whilst parsing {}, {} was not found".format(container.name, key))
+            if i!=FORMAT_MAP[key]:
+                FORMAT_MAP[key] = i 
             container.__dict__[key] = tuple(extract_ints_from_string(lines[FORMAT_MAP[key]]))
         
         #Get all of the normalisation datafiles and their information.
@@ -694,10 +958,7 @@ class GudrunFile:
                             'SAMPLE': self.parseSample,
                             'CONTAINER' : self.parseContainer,
                             }
-        try:
-            return parsingFunctions[key](lines)
-        except KeyError:
-            raise NotImplementedError('Function : parse {} not implemented'.format(key))
+        return parsingFunctions[key](lines)
 
     def sampleHelper(self, lines):
 
@@ -841,8 +1102,7 @@ class GudrunFile:
 
     def dcs(self):
         import subprocess
-        try:
-            
+        try:   
             result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
