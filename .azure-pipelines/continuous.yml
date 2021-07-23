@@ -12,44 +12,51 @@ trigger:
       - .azure-pipelines/*
 
 
+#Skip windows, for now.
+# windowsPy36:
+# {
+#   pythonVersion: "3.6",
+#   imageName: "windows-latest",
+#   arch: "x86"      
+# },
+# windowsPy37:
+# {
+#   pythonVersion: "3.7",
+#   imageName: "windows-latest",
+#   arch: "x86"      
+# },
+
 variables:
+  tag: 2021.test
   targets: >
     {
       linuxPy36:
       {
         pythonVersion: "3.6",
         imageName: 'ubuntu-latest',
-        arch: "x64"
+        arch: "x64",
+        osName: "linux"
       },
       linuxPy37:
       {
         pythonVersion: "3.7",
         imageName: "ubuntu-latest",
-        arch: "x64"
-      },
-      windowsPy36:
-      {
-        pythonVersion: "3.6",
-        imageName: "windows-latest",
-        arch: "x86"      
-      },
-      windowsPy37:
-      {
-        pythonVersion: "3.7",
-        imageName: "windows-latest",
-        arch: "x86"      
+        arch: "x64",
+        osName: "linux"
       },
       macOSPy36:
       {
         pythonVersion: "3.6",
         imageName: "macOS-latest",
-        arch: "x64"
+        arch: "x64",
+        osName: "osx"
       },
       macOSPy37: 
       {
         pythonVersion: "3.7",
         imageName: "macOS-latest",
-        arch: "x64"
+        arch: "x64",
+        osName: "osx"
       }
 
     }
@@ -85,6 +92,8 @@ stages:
           version: '$(pythonVersion)'
           arch: '$(arch)'
           os: '$(imageName)'
+          osName: $(osName)
+          tag: $(tag)
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -104,6 +113,8 @@ stages:
             version: '$(pythonVersion)'
             arch: '$(arch)'
             os: '$(imageName)'
+            osName: $(osName)
+            tag: $(tag)
 
 
     

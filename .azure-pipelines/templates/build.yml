@@ -8,6 +8,12 @@ parameters:
 - name: os
   default: 'ubuntu'
   type: string
+- name: osName
+  default: 'linux'
+  type: string
+- name: tag
+  default: ''
+  type: string
 steps:
   - task: UsePythonVersion@0
     displayName: "Use Python Version ${{ parameters.version }}"
@@ -20,6 +26,11 @@ steps:
       pip install -r requirements.txt
     displayName: "Install dependencies"
   
+  - bash: |
+      wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
+      unzip binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
+      mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
+
   - script: |
       pip install pyinstaller
       pyinstaller gudpy.spec
