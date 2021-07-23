@@ -27,7 +27,7 @@ trigger:
 # },
 
 variables:
-  tag: "2021.test"
+  tag: 2021.test
   targets: >
     {
       linuxPy36:
@@ -93,7 +93,7 @@ stages:
           arch: '$(arch)'
           os: '$(imageName)'
           osName: $(osName)
-          tag: $[ variables.tag ]
+          tag: $(tag)
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -114,7 +114,7 @@ stages:
             arch: '$(arch)'
             os: '$(imageName)'
             osName: $(osName)
-            tag: $[ variables.tag ]
+            tag: $(tag)
 
 
     
