@@ -1096,18 +1096,21 @@ class GudrunFile:
             footer
         )
 
-    def write_out(self):
+    def write_out(self, overwrite=False):
         fname = os.path.basename(self.path)
         ref_fname = 'gudpy_{}'.format(fname)
         dir = os.path.dirname(self.path)
-        f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
+        if not overwrite:
+            f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
+        else:
+            f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
     def dcs(self):
         import subprocess
         try:   
-            result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
+            result = subprocess.run(['bin/gudrun_dcs', self.path], capture_output=True, text=True)
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
             result = subprocess.run([gudrun_dcs, self.path], capture_output=True, text=True)            
