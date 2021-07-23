@@ -28,8 +28,8 @@ steps:
   
   - bash: |
       wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
-      unzip binaries-${{ parameters. tag}}-${{ parameters.osName }}.zip
-      mv binaries-${{ parameters. tag}}-${{ parameters.osName }} bin
+      unzip binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
+      mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
 
   - script: |
       pip install pyinstaller
