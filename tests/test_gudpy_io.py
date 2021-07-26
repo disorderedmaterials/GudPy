@@ -36,11 +36,6 @@ except ModuleNotFoundError:
 
 class TestGudPyIO(TestCase):
 
-    def __init__(self, *args, **kwargs):
-        self.step=0
-        super(TestGudPyIO, self).__init__(*args, **kwargs)
-
-
     def setUp(self) -> None:
         self.expectedInstrument = {
 
@@ -354,7 +349,6 @@ class TestGudPyIO(TestCase):
         g.instrument.GudrunStartFolder = GudrunStartFolder
         g.instrument.dataFileDir = str(dataFileDir) +"/"
         g.write_out(overwrite=True)
-        self.step+=1
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -364,13 +358,9 @@ class TestGudPyIO(TestCase):
         if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
             os.remove("tests/TestData/NIMROD-water/good_water.txt")
             
-        diff = [f for f in os.listdir() if not f in self.keepsakes]
-        if len(diff) > 0:
-            os.mkdir("run{}".format(self.step))
-            for f in os.listdir():
-                if not f in self.keepsakes:                
-                    import shutil
-                    shutil.move(f, "run{}/{}".format(self.step, f))
+        for f in os.listdir():
+            if not f in self.keepsakes:
+                os.remove(f)
 
         return super().tearDown()
 
@@ -914,7 +904,27 @@ class TestGudPyIO(TestCase):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         self.assertTrue('vanadium.soq' in os.listdir())
+
+    def testGudrunMakesVansmoFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('vansmo.par' in os.listdir())
     
+    def testGudrunMakesRan1File(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('ran1.dat' in os.listdir())
+
+    def testGudrunMakesPolyCoeffFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('polyfitcoeff.text' in os.listdir())
+
+    def testGudrunMakesRunfactorFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('runfactor_list.dat' in os.listdir())
+
     def testGudrunMakesAbsFile(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
@@ -1278,7 +1288,124 @@ class TestGudPyIO(TestCase):
     def testGudrunMakesVdcscor(self):
         pass
 
+    def testGudrunMakesDcs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
 
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "dcs01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMdcs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mdcs01")
+                self.assertTrue(file in os.listdir())        
+    
+    def testGudrunMakesMgor01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mgor01")
+                self.assertTrue(file in os.listdir())           
+
+    def testGudrunMakesMdor01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mdor01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMsub01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "msub01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesAbs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "abs01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMint01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mint01")
+
+                if sample.topHatW != 0.:
+                    self.assertTrue(file in os.listdir())
+                else:
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesChksum(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "chksum")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesSamrat(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "samrat")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "samrat")
+                self.assertTrue(file in os.listdir())
+    
+    def testGudrunMakesTransnofit01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesVanrat(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vanrat")
+        self.assertTrue(file in os.listdir())
 
     """
     Unsure if the following tests are setup correctly.
