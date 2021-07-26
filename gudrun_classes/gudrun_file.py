@@ -1104,14 +1104,32 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
-    def dcs(self):
+    def dcs(self, outpath=None):
         import subprocess
-        try:   
+        if not outpath:
+            outpath = self.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0].replace('.raw', '')
+            try:
+                os.mkdir(outpath)
+            except FileExistsError:
+                i = 1
+                while True:
+                    try:
+                        os.mkdir(outpath+"({})".format(i))
+                        break
+                    except FileExistsError:
+                        i+=1
+                        continue
+        else:
+            if not os.path.isfile(outpath):
+                os.mkdir(outpath)    
+        os.chdir(outpath)
+        try:
             result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
             result = subprocess.run([gudrun_dcs, self.path], capture_output=True, text=True)            
         return result
+
 
 if __name__ == '__main__':
     g = GudrunFile(path="/home/jared/GudPy/GudPy/test-data.txt")
