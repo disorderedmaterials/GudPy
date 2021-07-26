@@ -1122,12 +1122,14 @@ class GudrunFile:
         else:
             if not os.path.isfile(outpath):
                 os.mkdir(outpath)    
+        cwd = os.getcwd()
         os.chdir(outpath)
         try:
             result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
             result = subprocess.run([gudrun_dcs, self.path], capture_output=True, text=True)            
+        os.chdir(cwd)
         return result
 
 
