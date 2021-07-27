@@ -32,7 +32,7 @@ steps:
       mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
       wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip
       unzip startupFiles-${{ parameters.tag }}.zip
-      mv startupFiles-${{ parameters.tag }} bin
+      mv startupFiles bin
   - script: |
       pip install nose2
       nose2 --plugin nose2.plugins.junitxml --junit-xml tests
