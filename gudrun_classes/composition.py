@@ -6,12 +6,12 @@ class Composition:
         self.elements = elements
         # print(elements)
         self.type_ = type_
-        self.str = [str(el) +'        ' + type_ + ' atomic composition' for el in self.elements]
+        self.str = [str(el) + '        ' + type_ +
+                    ' atomic composition' for el in self.elements]
 
-    
     def __str__(self):
         string = ''
         for element in self.elements:
-            string+=( '{}        {} atomic composition'.format(str(element), self.type_))
-            string+='\n'
+            string += ('{}        {} atomic composition'.format(str(element), self.type_))
+            string += '\n'
         return cleandoc(string)

@@ -5,6 +5,7 @@ try:
 except ModuleNotFoundError:
     from scripts.utils import *
 
+
 class Instrument:
     def __init__(self):
         self.name = ''
@@ -13,19 +14,19 @@ class Instrument:
         self.dataFileType = ''
         self.detectorCalibrationFileName = ''
         self.columnNoPhiVals = 0
-        self.groupFileName =''
+        self.groupFileName = ''
         self.deadtimeConstantsFileName = ''
         self.spectrumNumbersForIncidentBeamMonitor = []
-        self.wavelengthRangeForMonitorNormalisation = (0,0)
+        self.wavelengthRangeForMonitorNormalisation = (0, 0)
         self.spectrumNumbersForTransmissionMonitor = []
         self.incidentMonitorQuietCountConst = 0.
         self.transmissionMonitorQuietCountConst = 0.
-        self.channelNosSpikeAnalysis = (0,0)
+        self.channelNosSpikeAnalysis = (0, 0)
         self.spikeAnalysisAcceptanceFactor = 0
-        self.wavelengthRangeStepSize = (0.,0.,0.)
+        self.wavelengthRangeStepSize = (0., 0., 0.)
         self.NoSmoothsOnMonitor = 0
-        self.XScaleRangeStep = (0.,0.,0.)
-        self.groupingParameterPanel = (0, 0.,0.,0.)
+        self.XScaleRangeStep = (0., 0., 0.)
+        self.groupingParameterPanel = (0, 0., 0., 0.)
         self.groupsAcceptanceFactor = 0.
         self.mergePower = 0
         self.subSingleAtomScattering = False
@@ -42,12 +43,9 @@ class Instrument:
         self.numberIterations = 0
         self.tweakTweakFactors = False
 
-
-
-
     def __str__(self):
 
-        if not all (self.groupingParameterPanel):
+        if not all(self.groupingParameterPanel):
             return cleandoc(str("""
 {}        Instrument name
 {}        Gudrun input file directory:
@@ -92,13 +90,16 @@ class Instrument:
                             self.groupFileName,
                             self.deadtimeConstantsFileName,
                             spacify(self.spectrumNumbersForIncidentBeamMonitor),
-                            spacify(self.wavelengthRangeForMonitorNormalisation,num_spaces=2),
+                            spacify(
+                                self.wavelengthRangeForMonitorNormalisation, num_spaces=2),
                             spacify(self.spectrumNumbersForTransmissionMonitor),
                             self.incidentMonitorQuietCountConst,
                             self.transmissionMonitorQuietCountConst,
-                            spacify(self.channelNosSpikeAnalysis, num_spaces=2),
+                            spacify(self.channelNosSpikeAnalysis,
+                                    num_spaces=2),
                             self.spikeAnalysisAcceptanceFactor,
-                            spacify(self.wavelengthRangeStepSize, num_spaces=2),
+                            spacify(self.wavelengthRangeStepSize,
+                                    num_spaces=2),
                             self.NoSmoothsOnMonitor,
                             spacify(self.XScaleRangeStep, num_spaces=2),
                             self.groupsAcceptanceFactor,
@@ -116,7 +117,7 @@ class Instrument:
                             numifyBool(self.hardGroupEdges),
                             self.numberIterations,
                             numifyBool(self.tweakTweakFactors)
-)))    
+                            )))
         else:
 
             return cleandoc(str("""
@@ -164,16 +165,20 @@ class Instrument:
                             self.groupFileName,
                             self.deadtimeConstantsFileName,
                             spacify(self.spectrumNumbersForIncidentBeamMonitor),
-                            spacify(self.wavelengthRangeForMonitorNormalisation,num_spaces=2),
+                            spacify(
+                                self.wavelengthRangeForMonitorNormalisation, num_spaces=2),
                             spacify(self.spectrumNumbersForTransmissionMonitor),
                             self.incidentMonitorQuietCountConst,
                             self.transmissionMonitorQuietCountConst,
-                            spacify(self.channelNosSpikeAnalysis, num_spaces=2),
+                            spacify(self.channelNosSpikeAnalysis,
+                                    num_spaces=2),
                             self.spikeAnalysisAcceptanceFactor,
-                            spacify(self.wavelengthRangeStepSize, num_spaces=2),
+                            spacify(self.wavelengthRangeStepSize,
+                                    num_spaces=2),
                             self.NoSmoothsOnMonitor,
                             spacify(self.XScaleRangeStep, num_spaces=2),
-                            '' if not all (self.groupingParameterPanel) else cleandoc(spacify(self.groupingParameterPanel) + """        Group, Xmin, Xmax, Background factor"""),
+                            '' if not all(self.groupingParameterPanel) else cleandoc(spacify(
+                                self.groupingParameterPanel) + """        Group, Xmin, Xmax, Background factor"""),
                             self.groupsAcceptanceFactor,
                             self.mergePower,
                             numifyBool(self.subSingleAtomScattering),
@@ -189,5 +194,4 @@ class Instrument:
                             numifyBool(self.hardGroupEdges),
                             self.numberIterations,
                             numifyBool(self.tweakTweakFactors)
-)))                         
-
+                            )))

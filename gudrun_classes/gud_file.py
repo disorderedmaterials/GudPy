@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 from os.path import isfile
 
 try:
@@ -57,9 +58,12 @@ class GudFile():
 
         self.densityAcm3 = (self.contents[8].split(" ")[-1].strip())
         self.densityGcm3 = (self.contents[9].split(" ")[-1].strip())
-        self.averageScatteringLength = (self.contents[10].split(" ")[-1].strip())
-        self.averageScatteringLengthSquared = (self.contents[11].split(" ")[-1].strip())
-        self.averageSquareOfScatteringLength = (self.contents[12].split(" ")[-1].strip())
+        self.averageScatteringLength = (
+            self.contents[10].split(" ")[-1].strip())
+        self.averageScatteringLengthSquared = (
+            self.contents[11].split(" ")[-1].strip())
+        self.averageSquareOfScatteringLength = (
+            self.contents[12].split(" ")[-1].strip())
         self.coherentRatio = (self.contents[13].split(" ")[-1].strip())
 
         self.expectedDCS = (self.contents[15].split(" ")[-1].strip())
@@ -69,24 +73,24 @@ class GudFile():
         while not line.isspace():
             self.groups.append(line)
             line = self.contents[19+i]
-            i+=1
+            i += 1
 
         self.groupsTable = "".join(self.groups)
 
         self.noGroups = self.contents[19+i].split(" ")[-1].strip()
-        self.averageLevelMergedDCS = self.contents[19+i+2].split(" ")[-2].strip()
+        self.averageLevelMergedDCS = self.contents[19 +
+                                                   i+2].split(" ")[-2].strip()
         self.gradient = self.contents[19+i+4].split(" ")[-4].strip()
-
 
         start = 19+i+6
         end = 0
         line = self.contents[start]
         if 'WARNING!' in line:
             while 'Suggested tweak factor' not in line:
-                end+=1
+                end += 1
                 line = self.contents[start+end]
-            end+=19+i+6
-            
+            end += 19+i+6
+
             self.err = "".join(self.contents[start:end])
         else:
             self.result = line
@@ -97,14 +101,12 @@ class GudFile():
             # self.result = "".join(self.contents[start:end])
             # print(self.result)
 
-
         self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
-    
-    
+
     def __str__(self):
         if self.err:
             return (
-""" {}
+                """ {}
 
  {}
 
@@ -132,28 +134,28 @@ class GudFile():
 
 {} Suggested tweak factor:   {}
 """.format(
-            self.name,
-            self.title,
-            self.author,
-            self.stamp,
-            self.densityAcm3,
-            self.densityGcm3,
-            self.averageScatteringLength,
-            self.averageScatteringLengthSquared,
-            self.averageSquareOfScatteringLength,
-            self.coherentRatio,
-            self.expectedDCS,
-            self.groupsTable,
-            self.noGroups,
-            self.averageLevelMergedDCS,
-            self.gradient,
-            self.err,
-            self.suggestedTweakFactor,
+                    self.name,
+                    self.title,
+                    self.author,
+                    self.stamp,
+                    self.densityAcm3,
+                    self.densityGcm3,
+                    self.averageScatteringLength,
+                    self.averageScatteringLengthSquared,
+                    self.averageSquareOfScatteringLength,
+                    self.coherentRatio,
+                    self.expectedDCS,
+                    self.groupsTable,
+                    self.noGroups,
+                    self.averageLevelMergedDCS,
+                    self.gradient,
+                    self.err,
+                    self.suggestedTweakFactor,
 
-            ))
+                ))
         else:
             return (
-""" {}
+                """ {}
 
  {}
 
@@ -181,25 +183,25 @@ class GudFile():
 
 {} Suggested tweak factor:   {}
 """.format(
-            self.name,
-            self.title,
-            self.author,
-            self.stamp,
-            self.densityAcm3,
-            self.densityGcm3,
-            self.averageScatteringLength,
-            self.averageScatteringLengthSquared,
-            self.averageSquareOfScatteringLength,
-            self.coherentRatio,
-            self.expectedDCS,
-            self.groupsTable,
-            self.noGroups,
-            self.averageLevelMergedDCS,
-            self.gradient,
-            self.result,
-            self.suggestedTweakFactor,
+                    self.name,
+                    self.title,
+                    self.author,
+                    self.stamp,
+                    self.densityAcm3,
+                    self.densityGcm3,
+                    self.averageScatteringLength,
+                    self.averageScatteringLengthSquared,
+                    self.averageSquareOfScatteringLength,
+                    self.coherentRatio,
+                    self.expectedDCS,
+                    self.groupsTable,
+                    self.noGroups,
+                    self.averageLevelMergedDCS,
+                    self.gradient,
+                    self.result,
+                    self.suggestedTweakFactor,
 
-            ))
+                ))
 
     def write_out(self, overwrite=False):
         if not overwrite:

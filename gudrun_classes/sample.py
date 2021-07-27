@@ -11,17 +11,18 @@ except ModuleNotFoundError:
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
 
+
 class Sample:
     def __init__(self):
-        
-        self.name =''
-        self.numberOfFilesPeriodNumber = (0,0)
+
+        self.name = ''
+        self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], 'SAMPLE')
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], 'SAMPLE')
         self.geometry = ''
-        self.thickness = (0.,0.)
-        self.angleOfRotationSampleWidth = (0.,0.)
+        self.thickness = (0., 0.)
+        self.angleOfRotationSampleWidth = (0., 0.)
         self.densityOfAtoms = 0.
         self.tempForNormalisationPC = 0
         self.totalCrossSectionSource = ''
@@ -29,7 +30,7 @@ class Sample:
         self.topHatW = 0.
         self.minRadFT = 0.
         self.gor = 0.
-        self.expAandD = (0.,0.,0)
+        self.expAandD = (0., 0., 0)
         self.normalisationCorrectionFactor = 0.
         self.fileSelfScattering = ''
         self.normaliseTo = 0
@@ -38,8 +39,8 @@ class Sample:
         self.powerForBroadening = 0.
         self.stepSize = 0.
         self.analyse = False
-        self.sampleEnvironementScatteringFuncAttenuationCoeff = (0.,0.)
-        
+        self.sampleEnvironementScatteringFuncAttenuationCoeff = (0., 0.)
+
         self.containers = []
 
     def __str__(self):
@@ -47,7 +48,8 @@ class Sample:
         SAMPLE_CONTAINERS = SAMPLE = ''
 
         if len(self.containers) > 0:
-            SAMPLE_CONTAINERS = cleandoc("\n".join([str(x) for x in self.containers]))
+            SAMPLE_CONTAINERS = cleandoc(
+                "\n".join([str(x) for x in self.containers]))
         SAMPLE = cleandoc("""
 {}        {{
 
@@ -84,32 +86,32 @@ class Sample:
 
 
 """.format(
-                self.name,
-                spacify(self.numberOfFilesPeriodNumber),
-                str(self.dataFiles),
-                numifyBool(self.forceCalculationOfCorrections),
-                str(self.composition),
-                self.geometry,
-                spacify(self.thickness),
-                spacify(self.angleOfRotationSampleWidth),
-                self.densityOfAtoms,
-                self.tempForNormalisationPC,
-                self.totalCrossSectionSource,
-                self.sampleTweakFactor,
-                self.topHatW,
-                self.minRadFT,
-                self.gor,
-                spacify(self.expAandD),
-                self.normalisationCorrectionFactor,
-                self.fileSelfScattering,
-                self.normaliseTo,
-                self.maxRadFT,
-                self.outputUnits,
-                self.powerForBroadening,
-                self.stepSize,
-                numifyBool(self.analyse),
-                spacify(self.sampleEnvironementScatteringFuncAttenuationCoeff)
-            ))
+            self.name,
+            spacify(self.numberOfFilesPeriodNumber),
+            str(self.dataFiles),
+            numifyBool(self.forceCalculationOfCorrections),
+            str(self.composition),
+            self.geometry,
+            spacify(self.thickness),
+            spacify(self.angleOfRotationSampleWidth),
+            self.densityOfAtoms,
+            self.tempForNormalisationPC,
+            self.totalCrossSectionSource,
+            self.sampleTweakFactor,
+            self.topHatW,
+            self.minRadFT,
+            self.gor,
+            spacify(self.expAandD),
+            self.normalisationCorrectionFactor,
+            self.fileSelfScattering,
+            self.normaliseTo,
+            self.maxRadFT,
+            self.outputUnits,
+            self.powerForBroadening,
+            self.stepSize,
+            numifyBool(self.analyse),
+            spacify(self.sampleEnvironementScatteringFuncAttenuationCoeff)
+        ))
 
         if len(SAMPLE_CONTAINERS) > 0:
             return (cleandoc("""
@@ -121,7 +123,7 @@ GO
                 SAMPLE,
                 SAMPLE_CONTAINERS
             )
-            ))      
+            ))
         else:
             return (cleandoc("""
 {}
@@ -130,11 +132,7 @@ GO
             """.format(
                 SAMPLE
             )
-            ))  
-
-
-
-
+            ))
 
         # if SAMPLE_BACKGROUND and SAMPLE_CONTAINERS:
         #     return SAMPLE_BACKGROUND + SAMPLE + SAMPLE_CONTAINERS
@@ -207,7 +205,3 @@ GO
 #                     numifyBool(self.analyse),
 #                     spacify(self.sampleEnvironementScatteringFuncAttenuationCoeff)
 #                 ))
-
-
-
-            

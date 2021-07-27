@@ -3,7 +3,7 @@ class Element:
         self.atomicSymbol = atomicSymbol
         self.massNo = massNo
         self.abundance = abundance
-    
+
     def __str__(self):
         return self.atomicSymbol + '  ' + str(self.massNo) + '  ' + str(self.abundance)
 

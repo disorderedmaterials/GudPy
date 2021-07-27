@@ -14,17 +14,17 @@ except ModuleNotFoundError:
 class Container:
     def __init__(self):
         self.name = ''
-        self.numberOfFilesPeriodNumber = (0,0)
+        self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], 'CONTAINER')
         self.composition = Composition([], 'CONTAINER')
         self.geometry = ''
-        self.thickness = (0.,0.)
-        self.angleOfRotationSampleWidth = (0.,0.)
+        self.thickness = (0., 0.)
+        self.angleOfRotationSampleWidth = (0., 0.)
         self.densityOfAtoms = 0.
         self.totalCrossSectionSource = ''
         self.tweakFactor = 0.
-        self.scatteringFractionAttenuationCoefficient = (0.,0.)
-    
+        self.scatteringFractionAttenuationCoefficient = (0., 0.)
+
     def __str__(self):
         if len(self.dataFiles.dataFiles) > 0:
 
@@ -45,17 +45,17 @@ class Container:
 
 }}
             """.format(
-                    self.name,
-                    spacify(self.numberOfFilesPeriodNumber),
-                    str(self.dataFiles),
-                    str(self.composition),
-                    self.geometry,
-                    spacify(self.thickness),
-                    spacify(self.angleOfRotationSampleWidth),
-                    self.densityOfAtoms,
-                    self.totalCrossSectionSource,
-                    self.tweakFactor,
-                    spacify(self.scatteringFractionAttenuationCoefficient)
+                self.name,
+                spacify(self.numberOfFilesPeriodNumber),
+                str(self.dataFiles),
+                str(self.composition),
+                self.geometry,
+                spacify(self.thickness),
+                spacify(self.angleOfRotationSampleWidth),
+                self.densityOfAtoms,
+                self.totalCrossSectionSource,
+                self.tweakFactor,
+                spacify(self.scatteringFractionAttenuationCoefficient)
             ))
         else:
             return cleandoc("""
@@ -74,15 +74,14 @@ class Container:
 
 }}
             """.format(
-                    self.name,
-                    spacify(self.numberOfFilesPeriodNumber),
-                    str(self.composition),
-                    self.geometry,
-                    spacify(self.thickness),
-                    spacify(self.angleOfRotationSampleWidth),
-                    self.densityOfAtoms,
-                    self.totalCrossSectionSource,
-                    self.tweakFactor,
-                    spacify(self.scatteringFractionAttenuationCoefficient)
+                self.name,
+                spacify(self.numberOfFilesPeriodNumber),
+                str(self.composition),
+                self.geometry,
+                spacify(self.thickness),
+                spacify(self.angleOfRotationSampleWidth),
+                self.densityOfAtoms,
+                self.totalCrossSectionSource,
+                self.tweakFactor,
+                spacify(self.scatteringFractionAttenuationCoefficient)
             ))
-

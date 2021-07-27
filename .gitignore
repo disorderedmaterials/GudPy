@@ -6,3 +6,6 @@ bin/
 dist/
 *.xml
 .coverage
+*.gud
+*.txt
+nexus_*

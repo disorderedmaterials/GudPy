@@ -1,5 +1,6 @@
 
-import sys, os
+import sys
+import os
 import unittest
 from unittest.result import failfast
 from unittest.suite import TestSuite
@@ -38,7 +39,6 @@ class TestGudrunClasses(TestCase):
         emptyPath = ''
         self.assertRaises(ValueError, GudrunFile, path=emptyPath)
 
-
     def testInvalidPath(self):
 
         invalidPath = 'invalid_path'
@@ -57,14 +57,19 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.columnNoPhiVals, int)
         self.assertIsInstance(instrument.groupFileName, str)
         self.assertIsInstance(instrument.deadtimeConstantsFileName, str)
-        self.assertIsInstance(instrument.spectrumNumbersForIncidentBeamMonitor, list)
-        self.assertIsInstance(instrument.wavelengthRangeForMonitorNormalisation, tuple)
-        self.assertIsInstance(instrument.spectrumNumbersForTransmissionMonitor, list)
+        self.assertIsInstance(
+            instrument.spectrumNumbersForIncidentBeamMonitor, list)
+        self.assertIsInstance(
+            instrument.wavelengthRangeForMonitorNormalisation, tuple)
+        self.assertIsInstance(
+            instrument.spectrumNumbersForTransmissionMonitor, list)
         self.assertIsInstance(instrument.incidentMonitorQuietCountConst, float)
-        self.assertIsInstance(instrument.transmissionMonitorQuietCountConst, float)
+        self.assertIsInstance(
+            instrument.transmissionMonitorQuietCountConst, float)
         self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
         self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, int)
-        self.assertIsInstance(instrument.wavelengthRangeForMonitorNormalisation, tuple)
+        self.assertIsInstance(
+            instrument.wavelengthRangeForMonitorNormalisation, tuple)
         self.assertIsInstance(instrument.NoSmoothsOnMonitor, int)
         self.assertIsInstance(instrument.XScaleRangeStep, tuple)
         self.assertIsInstance(instrument.groupingParameterPanel, tuple)
@@ -73,7 +78,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.subSingleAtomScattering, bool)
         self.assertIsInstance(instrument.byChannel, int)
         self.assertIsInstance(instrument.incidentFlightPath, float)
-        self.assertIsInstance(instrument.spectrumNumberForOutputDiagnosticFiles, int)
+        self.assertIsInstance(
+            instrument.spectrumNumberForOutputDiagnosticFiles, int)
         self.assertIsInstance(instrument.neutronScatteringParametersFile, str)
         self.assertIsInstance(instrument.scaleSelection, int)
         self.assertIsInstance(instrument.subWavelengthBinnedData, bool)
@@ -82,12 +88,12 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.logarithmicStepSize, float)
         self.assertIsInstance(instrument.hardGroupEdges, bool)
         self.assertIsInstance(instrument.numberIterations, int)
-        self.assertIsInstance(instrument.tweakTweakFactors, bool) 
-   
+        self.assertIsInstance(instrument.tweakTweakFactors, bool)
+
     def testBeamInitDataTypes(self):
 
         beam = Beam()
-        
+
         self.assertIsInstance(beam, Beam)
         self.assertIsInstance(beam.sampleGeometry, str)
         self.assertIsInstance(beam.noBeamProfileValues, int)
@@ -109,7 +115,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.dataFiles, DataFiles)
         self.assertIsInstance(normalisation.numberOfFilesPeriodNumberBg, tuple)
         self.assertIsInstance(normalisation.dataFilesBg, DataFiles)
-        self.assertIsInstance(normalisation.forceCalculationOfCorrections, bool)
+        self.assertIsInstance(
+            normalisation.forceCalculationOfCorrections, bool)
         self.assertIsInstance(normalisation.composition, Composition)
         self.assertIsInstance(normalisation.geometry, str)
         self.assertIsInstance(normalisation.thickness, tuple)
@@ -117,9 +124,12 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.densityOfAtoms, float)
         self.assertIsInstance(normalisation.tempForNormalisationPC, int)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
-        self.assertIsInstance(normalisation.normalisationDifferentialCrossSectionFilename, str)
-        self.assertIsInstance(normalisation.lowerLimitSmoothedNormalisation, float)
-        self.assertIsInstance(normalisation.normalisationDegreeSmoothing, float)
+        self.assertIsInstance(
+            normalisation.normalisationDifferentialCrossSectionFilename, str)
+        self.assertIsInstance(
+            normalisation.lowerLimitSmoothedNormalisation, float)
+        self.assertIsInstance(
+            normalisation.normalisationDegreeSmoothing, float)
         self.assertIsInstance(normalisation.minNormalisationSignalBR, float)
 
     def testSampleBackgroundInitDataTypes(self):
@@ -127,9 +137,10 @@ class TestGudrunClasses(TestCase):
         sampleBackground = SampleBackground()
 
         self.assertIsInstance(sampleBackground, SampleBackground)
-        self.assertIsInstance(sampleBackground.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(
+            sampleBackground.numberOfFilesPeriodNumber, tuple)
         self.assertIsInstance(sampleBackground.dataFiles, DataFiles)
-        self.assertIsInstance(sampleBackground.samples, list)   
+        self.assertIsInstance(sampleBackground.samples, list)
 
     def testSampleInitDataTypes(self):
 
@@ -150,7 +161,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
         self.assertIsInstance(sample.minRadFT, float)
-        
+
     def testContainerInitDataTypes(self):
 
         container = Container()
@@ -166,7 +177,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(container.densityOfAtoms, float)
         self.assertIsInstance(container.totalCrossSectionSource, str)
         self.assertIsInstance(container.tweakFactor, float)
-        self.assertIsInstance(container.scatteringFractionAttenuationCoefficient, tuple)
+        self.assertIsInstance(
+            container.scatteringFractionAttenuationCoefficient, tuple)
 
     def testCompositionInitDataTypes(self):
 
@@ -176,7 +188,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(composition.elements, list)
         self.assertIsInstance(composition.type_, str)
         self.assertIsInstance(composition.str, list)
-    
+
     def testElementInitDataTypes(self):
 
         element = Element('H', 0, 0.)

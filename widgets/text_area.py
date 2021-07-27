@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QTextEdit
 
 
 class TextArea(QTextEdit):
-    
+
     def __init__(self, parent, relHeight, relWidth):
         self.parent = parent
         self.relHeight = relHeight
