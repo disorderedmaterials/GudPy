@@ -1,14 +1,12 @@
-
-
 from collections import deque
 from itertools import islice
 
 
 def spacify(iterable, num_spaces=1):
     try:
-        return (" "*num_spaces).join(iterable)
+        return (" " * num_spaces).join(iterable)
     except TypeError:
-        return (" "*num_spaces).join([str(x) for x in iterable])
+        return (" " * num_spaces).join([str(x) for x in iterable])
 
 
 def numifyBool(boolean):
@@ -20,7 +18,7 @@ def numifyBool(boolean):
 
 def boolifyNum(num):
     if num != 0 and num != 1:
-        raise ValueError('Only 1 and 0 can be represented in boolean.')
+        raise ValueError("Only 1 and 0 can be represented in boolean.")
     return {0: False, 1: True}[num]
 
 

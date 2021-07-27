@@ -1,29 +1,29 @@
-
 from inspect import cleandoc
 
 try:
-    from utils import *
+    from utils import spacify
 except ModuleNotFoundError:
-    from scripts.utils import *
+    from scripts.utils import spacify
 
 
 class Beam:
     def __init__(self):
-        self.sampleGeometry = ''
+        self.sampleGeometry = ""
         self.noBeamProfileValues = 0
         self.beamProfileValues = []
-        self.stepSizeAbsorptionMSNoSlices = (0., 0., 0)
+        self.stepSizeAbsorptionMSNoSlices = (0.0, 0.0, 0)
         self.angularStepForCorrections = 0
-        self.incidentBeamEdgesRelCentroid = (0., 0., 0., 0.)
-        self.scatteredBeamEdgesRelCentroid = (0., 0., 0., 0.)
-        self.filenameIncidentBeamSpectrumParams = ''
-        self.overallBackgroundFactor = 0.
-        self.sampleDependantBackgroundFactor = 0.
-        self.shieldingAttenuationCoefficient = 0.
+        self.incidentBeamEdgesRelCentroid = (0.0, 0.0, 0.0, 0.0)
+        self.scatteredBeamEdgesRelCentroid = (0.0, 0.0, 0.0, 0.0)
+        self.filenameIncidentBeamSpectrumParams = ""
+        self.overallBackgroundFactor = 0.0
+        self.sampleDependantBackgroundFactor = 0.0
+        self.shieldingAttenuationCoefficient = 0.0
 
     def __str__(self):
 
-        return cleandoc("""
+        return cleandoc(
+            """
 {}        Sample geometry
 {}        Number of beam profile values
 {}        Beam profile values (Maximum of 50 allowed currently)
@@ -35,15 +35,16 @@ class Beam:
 {}        Overall background factor
 {}        Sample dependent background factor
 {}        Shielding attenuation coefficient [per m per A]""".format(
-            self.sampleGeometry,
-            self.noBeamProfileValues,
-            spacify(self.beamProfileValues),
-            spacify(self.stepSizeAbsorptionMSNoSlices),
-            self.angularStepForCorrections,
-            spacify(self.incidentBeamEdgesRelCentroid),
-            spacify(self.scatteredBeamEdgesRelCentroid),
-            self.filenameIncidentBeamSpectrumParams,
-            self.overallBackgroundFactor,
-            self.sampleDependantBackgroundFactor,
-            self.shieldingAttenuationCoefficient
-        ))
+                self.sampleGeometry,
+                self.noBeamProfileValues,
+                spacify(self.beamProfileValues),
+                spacify(self.stepSizeAbsorptionMSNoSlices),
+                self.angularStepForCorrections,
+                spacify(self.incidentBeamEdgesRelCentroid),
+                spacify(self.scatteredBeamEdgesRelCentroid),
+                self.filenameIncidentBeamSpectrumParams,
+                self.overallBackgroundFactor,
+                self.sampleDependantBackgroundFactor,
+                self.shieldingAttenuationCoefficient,
+            )
+        )

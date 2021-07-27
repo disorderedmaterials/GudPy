@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QTextEdit
 
 
 class TextArea(QTextEdit):
-
     def __init__(self, parent, relHeight, relWidth):
         self.parent = parent
         self.relHeight = relHeight
@@ -10,11 +9,11 @@ class TextArea(QTextEdit):
 
         super().__init__(self.parent)
 
-        self.setFixedHeight(self.relHeight*self.parent.size().height())
-        self.setFixedWidth(self.relWidth*self.parent.size().width())
+        self.setFixedHeight(self.relHeight * self.parent.size().height())
+        self.setFixedWidth(self.relWidth * self.parent.size().width())
         self.show()
 
     def updateArea(self):
 
-        self.setFixedHeight(self.relHeight*self.parent.size().height())
-        self.setFixedWidth(self.relWidth*self.parent.size().width())
+        self.setFixedHeight(self.relHeight * self.parent.size().height())
+        self.setFixedWidth(self.relWidth * self.parent.size().width())

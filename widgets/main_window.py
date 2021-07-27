@@ -3,7 +3,6 @@ from PyQt5.QtGui import QResizeEvent
 
 
 class GudPyMainWindow(QMainWindow):
-
     def __init__(self):
         super().__init__()
 

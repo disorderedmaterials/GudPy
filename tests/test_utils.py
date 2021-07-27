@@ -1,22 +1,30 @@
-
 import sys
 import os
-import unittest
-from unittest.result import failfast
-from unittest.suite import TestSuite
-from unittest import TestCase, TextTestRunner
-sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
-sys.path.insert(2, os.path.join(sys.path[0], '../scripts'))
+from unittest import TestCase
+
+sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
+sys.path.insert(2, os.path.join(sys.path[0], "../scripts"))
 
 try:
-    from utils import *
+    from utils import (
+            iteristype,
+            firstword, boolifyNum,
+            numifyBool, spacify,
+            extract_ints_from_string,
+            extract_floats_from_string,
+            count_occurrences)
 except ModuleNotFoundError:
-    sys.path.insert(2, os.path.join(sys.path[0], 'scripts'))
-    from scripts.utils import *
+    sys.path.insert(2, os.path.join(sys.path[0], "scripts"))
+    from scripts.utils import (
+            iteristype,
+            firstword, boolifyNum,
+            numifyBool, spacify,
+            extract_ints_from_string,
+            extract_floats_from_string,
+            count_occurrences)
 
 
 class TestUtils(TestCase):
-
     def testNumifyBoolFalse(self):
 
         self.assertEqual(numifyBool(False), 0)
@@ -56,7 +64,9 @@ class TestUtils(TestCase):
     def testFirstwordLong(self):
 
         self.assertEqual(
-            firstword("Today is a good day!\n Today is a really good day!"), "Today")
+            firstword("Today is a good day!\n Today is a really good day!"),
+            "Today",
+        )
 
     def testFirstwordShort(self):
 
@@ -68,13 +78,15 @@ class TestUtils(TestCase):
 
     def testExtractIntsFromString(self):
 
-        self.assertEqual(extract_ints_from_string(
-            "1 2 3 4 Hello\n"), [1, 2, 3, 4])
+        self.assertEqual(
+            extract_ints_from_string("1 2 3 4 Hello\n"), [1, 2, 3, 4]
+        )
 
     def testExtractIntsFromString1(self):
 
-        self.assertEqual(extract_ints_from_string(
-            "1 2 3 4 Hello 5 6 7 8"), [1, 2, 3, 4])
+        self.assertEqual(
+            extract_ints_from_string("1 2 3 4 Hello 5 6 7 8"), [1, 2, 3, 4]
+        )
 
     def testExtractIntsFromBadString(self):
 
@@ -82,13 +94,19 @@ class TestUtils(TestCase):
 
     def testExtractFloatsFromString(self):
 
-        self.assertEqual(extract_floats_from_string(
-            "1.0 2.0 3.0 4.0 Hello\n"), [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(
+            extract_floats_from_string("1.0 2.0 3.0 4.0 Hello\n"),
+            [1.0, 2.0, 3.0, 4.0],
+        )
 
     def testExtractFloatsFromString1(self):
 
-        self.assertEqual(extract_floats_from_string(
-            "1.0 2.0 3.0 4.0 Hello 5.0 6.0 7.0 8.0"), [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(
+            extract_floats_from_string(
+                "1.0 2.0 3.0 4.0 Hello 5.0 6.0 7.0 8.0"
+            ),
+            [1.0, 2.0, 3.0, 4.0],
+        )
 
     def testExtractFloatsFromBadString(self):
 
@@ -96,13 +114,35 @@ class TestUtils(TestCase):
 
     def testCountOccurencesList(self):
 
-        self.assertEqual(count_occurrences(
-            "Hello", ["Hello world", "Hello there", "Hi world", "Hello", "Hi there"]), 3)
+        self.assertEqual(
+            count_occurrences(
+                "Hello",
+                [
+                    "Hello world",
+                    "Hello there",
+                    "Hi world",
+                    "Hello",
+                    "Hi there",
+                ],
+            ),
+            3,
+        )
 
     def testCountOccurencesTuple(self):
 
-        self.assertEqual(count_occurrences(
-            "Hello", ("Hello world", "Hello there", "Hi world", "Hello", "Hi there")), 3)
+        self.assertEqual(
+            count_occurrences(
+                "Hello",
+                (
+                    "Hello world",
+                    "Hello there",
+                    "Hi world",
+                    "Hello",
+                    "Hi there",
+                ),
+            ),
+            3,
+        )
 
     def testIterIsTypeStr(self):
 

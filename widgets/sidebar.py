@@ -1,9 +1,7 @@
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QPushButton, QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
 
 class GudPySiderbar(QWidget):
-
     def __init__(self, parent, tabs):
 
         self.parent = parent
