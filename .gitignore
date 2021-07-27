@@ -2,5 +2,7 @@ Gudrun/
 __pycache__/
 .vscode/
 build/
+bin/
 dist/
 *.xml
+.coverage
