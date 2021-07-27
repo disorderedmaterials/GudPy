@@ -292,7 +292,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result"]: continue
+            if key in ["groups", "contents", "result", "outpath"]: continue
             if key == "groupsTable":
 
                 for rowA, rowB in zip(self.expectedGudFileA[key].split("\n"), gf.groupsTable.split("\n")):
@@ -320,7 +320,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err"]: continue
+            if key in ["groups", "contents", "err", "outpath"]: continue
             if key == "groupsTable":
 
                 for rowA, rowB in zip(self.expectedGudFileB[key].split("\n"), gf.groupsTable.split("\n")):
@@ -349,7 +349,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err"]: continue
+            if key in ["groups", "contents", "err", "outpath"]: continue
             if key == "groupsTable":
 
                 for rowA, rowB in zip(self.expectedGudFileC[key].split("\n"), gf.groupsTable.split("\n")):
@@ -367,7 +367,6 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(self.expectedGudFileC[key].strip()), float(gudAttrsDict[key].strip()), 1)
                     except:
                         raise e
-
     def testLoadGudFileD(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
@@ -378,7 +377,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result"]: continue
+            if key in ["groups", "contents", "result", "outpath"]: continue
             if key == "groupsTable":
 
                 for rowA, rowB in zip(self.expectedGudFileD[key].split("\n"), gf.groupsTable.split("\n")):
@@ -396,3 +395,66 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(self.expectedGudFileD[key].strip()), float(gudAttrsDict[key].strip()), 1)
                     except:
                         raise e
+
+    def testWriteGudFileA(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf.write_out()
+        outlines = open(gf.outpath, encoding='utf-8').read()
+        self.assertEqual(outlines, str(gf))
+
+    def testRewriteGudFileA(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf.write_out()
+
+        gf1 = GudFile(gf.outpath)
+        gf1.write_out()
+       
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf))
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf1))
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), open(gf.outpath, encoding='utf-8').read())
+
+    def testReloadGudFileB(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf.write_out()
+        gf1 = GudFile(gf.outpath)
+        print(open(gf1.path, "r").read())
+
+        self.assertEqual(str(gf), str(gf1))
+    
+    def testWriteGudFileB(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf.write_out()
+        outlines = open(gf.outpath, encoding='utf-8').read()
+        self.assertEqual(outlines, str(gf))
+
+    def testRewriteGudFileB(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf.write_out()
+
+        gf1 = GudFile(gf.outpath)
+        gf1.write_out()
+       
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf))
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf1))
+        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), open(gf.outpath, encoding='utf-8').read())
+
+    def testReloadGudFileB(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf.write_out()
+        gf1 = GudFile(gf.outpath)
+
+        self.assertEqual(str(gf), str(gf1))
+        
+        

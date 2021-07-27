@@ -12,6 +12,10 @@ except ModuleNotFoundError:
 class GudFile():
     def __init__(self, path):
         self.path = path
+        fname = os.path.basename(self.path)
+        ref_fname = 'gudpy_{}'.format(fname)
+        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
+        self.outpath = '{}/{}'.format(dir, ref_fname)
         self.name = ''
         self.title = ''
         self.author = ''
@@ -45,6 +49,7 @@ class GudFile():
 
         with open(self.path) as f:
             self.contents = f.readlines()
+            f.close()
         self.name = self.contents[0].strip()
         self.title = self.contents[2].strip()
         self.author = self.contents[4].strip()
@@ -99,10 +104,14 @@ class GudFile():
     def __str__(self):
         if self.err:
             return (
-"""{}
-{}
-{}        
-{}
+""" {}
+
+ {}
+
+ {}
+
+ {}
+
  Number density of this sample (atoms/A**3) =  {}
  Corresponding density in g/cm**3 =    {}
  Average scattering length of the sample (10**-12cm) =   {}
@@ -119,10 +128,9 @@ class GudFile():
 
  Average level of merged dcs is   {} b/sr/atom;
 
- Gradient of merged dcs: {}% of average level.
+ Gradient of merged dcs: {} of average level.
 
-{}
- Suggested tweak factor:   {}
+{} Suggested tweak factor:   {}
 """.format(
             self.name,
             self.title,
@@ -145,10 +153,14 @@ class GudFile():
             ))
         else:
             return (
-"""{}
-{}
-{}        
-{}
+""" {}
+
+ {}
+
+ {}
+
+ {}
+
  Number density of this sample (atoms/A**3) =  {}
  Corresponding density in g/cm**3 =    {}
  Average scattering length of the sample (10**-12cm) =   {}
@@ -165,10 +177,9 @@ class GudFile():
 
  Average level of merged dcs is   {} b/sr/atom;
 
- Gradient of merged dcs: {}% of average level.
+ Gradient of merged dcs: {} of average level.
 
-{}
- Suggested tweak factor:   {}
+{} Suggested tweak factor:   {}
 """.format(
             self.name,
             self.title,
@@ -190,9 +201,11 @@ class GudFile():
 
             ))
 
-    def write_out(self):
-        #TODO: windows/osx compatibility
-        f = open(self.path)
+    def write_out(self, overwrite=False):
+        if not overwrite:
+            f = open(self.outpath, "w", encoding="utf-8")
+        else:
+            f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 

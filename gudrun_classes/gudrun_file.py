@@ -33,7 +33,7 @@ class GudrunFile:
         self.path = path
         fname = os.path.basename(self.path)
         ref_fname = 'gudpy_{}'.format(fname)
-        dir = os.path.dirname(self.path)
+        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
         self.outpath = '{}/{}'.format(dir, ref_fname)
         #If a dictionary of data is supplied, unpack the dictionary and assign the values.
         #Otherwise, parse via the path.
@@ -1097,11 +1097,8 @@ class GudrunFile:
         )
 
     def write_out(self, overwrite=False):
-        fname = os.path.basename(self.path)
-        ref_fname = 'gudpy_{}'.format(fname)
-        dir = os.path.dirname(self.path)
         if not overwrite:
-            f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
+            f = open(self.outpath, "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
