@@ -710,7 +710,7 @@ class TestGudPyIO(TestCase):
             GudrunFile("test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
-            ' were not parsed. It\'s possible the file supplied '
+            ' were not parsed. It\'s possible the file supplied'
             ' is of an incorrect format!'),
             str(cm.exception),
         )
