@@ -630,7 +630,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
@@ -650,7 +650,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
@@ -672,7 +672,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
@@ -690,7 +690,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
@@ -723,7 +723,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
@@ -740,7 +740,7 @@ class TestGudPyIO(TestCase):
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ),
