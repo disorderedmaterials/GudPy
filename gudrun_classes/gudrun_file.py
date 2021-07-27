@@ -1429,7 +1429,7 @@ class GudrunFile:
             # If we didn't parse each one of the keywords, then panic
             if not all(KEYWORDS.values()):
                 raise ValueError((
-                    'INSTRUMENT, BEAM AND NORMALISATION'
+                    'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ))
