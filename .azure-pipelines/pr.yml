@@ -6,8 +6,6 @@ pr:
     include:
       - "*"
   paths:
-    include:
-      - .azure-pipelines/templates/*
     exclude:
       - .azure-pipelines/continuous.yml
 
