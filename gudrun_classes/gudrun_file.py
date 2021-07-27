@@ -33,7 +33,7 @@ class GudrunFile:
         self.path = path
         fname = os.path.basename(self.path)
         ref_fname = 'gudpy_{}'.format(fname)
-        dir = os.path.dirname(self.path)
+        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
         self.outpath = '{}/{}'.format(dir, ref_fname)
         #If a dictionary of data is supplied, unpack the dictionary and assign the values.
         #Otherwise, parse via the path.
@@ -1096,18 +1096,18 @@ class GudrunFile:
             footer
         )
 
-    def write_out(self):
-        fname = os.path.basename(self.path)
-        ref_fname = 'gudpy_{}'.format(fname)
-        dir = os.path.dirname(self.path)
-        f = open("{}/{}".format(dir, ref_fname), "w", encoding="utf-8")
+    def write_out(self, overwrite=False):
+        if not overwrite:
+            f = open(self.outpath, "w", encoding="utf-8")
+        else:
+            f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
     def dcs(self):
         import subprocess
         try:   
-            result = subprocess.run(['gudrun_dcs', self.path], capture_output=True, text=True)
+            result = subprocess.run(['bin/gudrun_dcs', self.path], capture_output=True, text=True)
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + 'gudrun_dcs'
             result = subprocess.run([gudrun_dcs, self.path], capture_output=True, text=True)            

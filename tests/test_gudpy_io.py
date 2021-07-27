@@ -1,7 +1,9 @@
 import sys, os
-from unittest import TestCase
+from unittest import TestCase, skip
 import random
 from copy import deepcopy
+from pathlib import Path
+from shutil import copyfile
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
@@ -33,6 +35,7 @@ except ModuleNotFoundError:
     from gudrun_classes.sample import Sample
 
 class TestGudPyIO(TestCase):
+
 
     def setUp(self) -> None:
         self.expectedInstrument = {
@@ -334,12 +337,31 @@ class TestGudPyIO(TestCase):
                         self.expectedSampleBackground    
                     ]
 
+        self.keepsakes = os.listdir()
+
+        copyfile(self.g.path, "tests/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+
+        from pathlib import Path
+        parent = Path("tests").parent.absolute()
+        GudrunStartFolder = parent/"bin"
+        dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
+
+        g.instrument.GudrunStartFolder = GudrunStartFolder
+        g.instrument.dataFileDir = str(dataFileDir) +"/"
+        g.write_out(overwrite=True)
         return super().setUp()
 
     def tearDown(self) -> None:
 
         if os.path.isfile("test_data.txt"):
             os.remove("test_data.txt")
+        if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
+            os.remove("tests/TestData/NIMROD-water/good_water.txt")
+            
+        for f in os.listdir():
+            if not f in self.keepsakes:
+                os.remove(f)
 
         return super().tearDown()
 
@@ -836,3 +858,575 @@ class TestGudPyIO(TestCase):
                 str(cm.exception)
             )
             os.remove("test_data.txt")
+
+    def testZeroExitGudrun(self):
+
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        result = g.dcs()
+        self.assertEqual(result.stderr, '')
+
+    def testGudrunMakesSpikeFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('spike.dat' in os.listdir())
+
+
+    def testGudrunMakesDeadtimeFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('deadtime.cor' in os.listdir())
+
+    def testGudrunMakesParFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('gudrun_run_par.dat' in os.listdir())
+
+    def testGudrunMakesGrpFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('gudrun_grp.dat' in os.listdir())
+
+    def testGudrunMakesCalibFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('gudrun_calib.dat' in os.listdir())
+
+    def testGudrunMakesVanTcbFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('gudrun_van_tcb.dat' in os.listdir())
+
+    def testGudrunMakesSamTcbFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('gudrun_sam_tcb.dat' in os.listdir())
+
+    def testGudrunMakesVanFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('vanadium.soq' in os.listdir())
+
+    def testGudrunMakesVansmoFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('vansmo.par' in os.listdir())
+    
+    def testGudrunMakesRan1File(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('ran1.dat' in os.listdir())
+
+    def testGudrunMakesPolyCoeffFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('polyfitcoeff.text' in os.listdir())
+
+    def testGudrunMakesRunfactorFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        self.assertTrue('runfactor_list.dat' in os.listdir())
+
+    def testGudrunMakesAbsFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "abs01")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakesAbscorFile(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "abscor")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "abscor")
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesBak(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "bak")
+                self.assertTrue(file in os.listdir())
+    
+    @skip
+    def testGudrunMakesCnt(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "cnt")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "cnt")
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesGr1(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "gr1")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesGr2(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "gr2")
+                self.assertTrue(file in os.listdir())
+    
+    def testGudrunMakesGud(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "gud")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakesMerge(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "merge")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "merge")
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesModule(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        self.assertTrue("vanadium.module" in os.listdir())
+        self.assertTrue("vanadium_back.module" in os.listdir())
+        self.assertTrue("sample_back.module" in os.listdir())
+        if len(g.sampleBackgrounds[0].samples) > 0:
+            self.assertTrue("sample.module" in os.listdir())
+    
+    def testGudrunMakesMul01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mul01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mul01")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mul01")
+                self.assertTrue(file in os.listdir())
+   
+    @skip
+    def testGudrunMakesMulcor(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mulcor")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mulcor")
+                    self.assertFalse(file in os.listdir())
+
+    def testGudrunMakesMut01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mut01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mut01")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mul01")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakesNormmon(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "normmon")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "normmon")
+                    self.assertFalse(file in os.listdir())
+
+    @skip
+    def testGudrunMakesNormvan(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "normvan")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "normvan")
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesPla01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "pla01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "pla01")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakesPreMerge(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "premerge")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "premerge")
+                    self.assertFalse(file in os.listdir())
+
+    def testGudrunMakesRawmon(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawmon")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            file = sampleBackground.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawmon")
+            self.assertTrue(file in os.listdir())
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawmon")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawmon")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesRawtrans(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawtrans")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            file = sampleBackground.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawtrans")
+            self.assertTrue(file in os.listdir())
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawtrans")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "rawtrans")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakeSmo(self):
+        pass
+
+    def testGudrunMakesSmomon(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smomon")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            file = sampleBackground.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smomon")
+            self.assertTrue(file in os.listdir())
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smomon")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smomon")
+                self.assertTrue(file in os.listdir())
+  
+    @skip
+    def testGudrunMakesSmovan(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smovan")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "smovan")
+                    self.assertFalse(file in os.listdir())
+  
+    @skip
+    def testGudrunMakesSubbak(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "subbak")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "subbak")
+                    self.assertFalse(file in os.listdir())
+
+    def testGudrunMakesSub01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        for sampleBackground in g.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "sub01")
+                self.assertTrue(file in os.listdir())
+    
+    def testGudrunMakesTrans01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "trans01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "trans01")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "trans01")
+                self.assertTrue(file in os.listdir())
+
+    @skip
+    def testGudrunMakesVanbin(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vanbin")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vanbin")
+                    self.assertFalse(file in os.listdir())
+
+    @skip
+    def testGudrunMakesVancor(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        if g.instrument.spectrumNumberForOutputDiagnosticFiles:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vancor")
+                    self.assertTrue(file in os.listdir())
+        else:
+            for sampleBackground in g.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vancor")
+                    self.assertFalse(file in os.listdir())
+
+    @skip
+    def testGudrunMakesVdcsbin(self):
+        pass
+
+    @skip
+    def testGudrunMakesVdcscor(self):
+        pass
+
+    def testGudrunMakesDcs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "dcs01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMdcs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mdcs01")
+                self.assertTrue(file in os.listdir())        
+    
+    def testGudrunMakesMgor01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mgor01")
+                self.assertTrue(file in os.listdir())           
+
+    def testGudrunMakesMdor01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mdor01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMsub01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "msub01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesAbs01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "abs01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesMint01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "mint01")
+
+                if sample.topHatW != 0.:
+                    self.assertTrue(file in os.listdir())
+                else:
+                    self.assertFalse(file in os.listdir())
+    
+    def testGudrunMakesChksum(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "chksum")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesSamrat(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+        
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "samrat")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "samrat")
+                self.assertTrue(file in os.listdir())
+    
+    def testGudrunMakesTransnofit01(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+        
+        self.assertTrue(file in os.listdir())
+
+        for sampleBackground in g.sampleBackgrounds:
+
+            for sample in sampleBackground.samples:
+                file = sample.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+                self.assertTrue(file in os.listdir())
+                file = sample.containers[0].dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "transnofit01")
+                self.assertTrue(file in os.listdir())
+
+    def testGudrunMakesVanrat(self):
+        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g.dcs()
+
+        file = g.normalisation.dataFiles.dataFiles[0].replace(g.instrument.dataFileType, "vanrat")
+        self.assertTrue(file in os.listdir())
+
+    """
+    Unsure if the following tests are setup correctly.
+    I have assumed from the manual, that when a diagnostic spectrum is specified, 
+    a file is created named after the first sample data file, for each file, using the format specified.
+    
+        - testGudrunMakesAbscorFile
+        - testGudrunMakesCnt
+        - testGudrunMakesMerge
+        - testGudrunMakesMulcor
+        - testGudrunMakesNormmon
+        - testGudrunMakesNormvan
+        - testGudrunMakesPreMerge
+        - testGudrunMakesSmovan
+        - testGudrunMakesSubbak
+        - testGudrunMakesVanbin
+        - testGudrunMakesVancor
+        - testGudrunMakesVdcsbin
+        - testGudrunMakesVdcscor
+    """
+    
+    
+    

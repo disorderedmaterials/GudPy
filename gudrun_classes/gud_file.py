@@ -1,9 +1,21 @@
 import sys, os
 from os.path import isfile
 
+try:
+    sys.path.insert(2, os.path.join(sys.path[0], '../scripts'))
+    from utils import firstword
+except ModuleNotFoundError:
+    sys.path.insert(2, os.path.join(sys.path[0], 'scripts'))
+    from scripts.utils import firstword
+
+
 class GudFile():
     def __init__(self, path):
         self.path = path
+        fname = os.path.basename(self.path)
+        ref_fname = 'gudpy_{}'.format(fname)
+        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
+        self.outpath = '{}/{}'.format(dir, ref_fname)
         self.name = ''
         self.title = ''
         self.author = ''
@@ -13,14 +25,15 @@ class GudFile():
         self.averageScatteringLength = 0.
         self.averageScatteringLengthSquared = 0.
         self.averageSquareOfScatteringLength = 0.
-        self.expectedDCS = 0.
         self.coherentRatio = 0.
+        self.expectedDCS = 0.
         self.groups = []
         self.groupsTable = ''
         self.noGroups = 0
         self.averageLevelMergedDCS = 0.
         self.gradient = 0.
         self.err = ''
+        self.result = ''
         self.suggestedTweakFactor = 0.
         self.contents = ''
 
@@ -30,16 +43,17 @@ class GudFile():
         if not isfile(self.path):
             raise ValueError("Please provide a valid path.")
 
+        self.parse()
 
     def parse(self):
 
         with open(self.path) as f:
             self.contents = f.readlines()
-
-        self.name = self.contents[0]
-        self.title = self.contents[2]
-        self.author = self.contents[4]
-        self.stamp = self.contents[6]
+            f.close()
+        self.name = self.contents[0].strip()
+        self.title = self.contents[2].strip()
+        self.author = self.contents[4].strip()
+        self.stamp = self.contents[6].strip()
 
         self.densityAcm3 = (self.contents[8].split(" ")[-1].strip())
         self.densityGcm3 = (self.contents[9].split(" ")[-1].strip())
@@ -71,9 +85,18 @@ class GudFile():
             while 'Suggested tweak factor' not in line:
                 end+=1
                 line = self.contents[start+end]
-        end+=19+i+6
-        
-        self.err = "".join(self.contents[start:end])
+            end+=19+i+6
+            
+            self.err = "".join(self.contents[start:end])
+        else:
+            self.result = line
+            # while 'Suggested tweak factor' not in line:
+            #     end+=1
+            #     line = self.contents[start+end]
+            # end = 19+i+6
+            # self.result = "".join(self.contents[start:end])
+            # print(self.result)
+
 
         self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
     
@@ -81,10 +104,14 @@ class GudFile():
     def __str__(self):
         if self.err:
             return (
-"""{}
-{}
-{}        
-{}
+""" {}
+
+ {}
+
+ {}
+
+ {}
+
  Number density of this sample (atoms/A**3) =  {}
  Corresponding density in g/cm**3 =    {}
  Average scattering length of the sample (10**-12cm) =   {}
@@ -101,10 +128,9 @@ class GudFile():
 
  Average level of merged dcs is   {} b/sr/atom;
 
- Gradient of merged dcs: {}% of average level.
+ Gradient of merged dcs: {} of average level.
 
-{}
- Suggested tweak factor:   {}
+{} Suggested tweak factor:   {}
 """.format(
             self.name,
             self.title,
@@ -127,10 +153,14 @@ class GudFile():
             ))
         else:
             return (
-"""{}
-{}
-{}        
-{}
+""" {}
+
+ {}
+
+ {}
+
+ {}
+
  Number density of this sample (atoms/A**3) =  {}
  Corresponding density in g/cm**3 =    {}
  Average scattering length of the sample (10**-12cm) =   {}
@@ -147,9 +177,9 @@ class GudFile():
 
  Average level of merged dcs is   {} b/sr/atom;
 
- Gradient of merged dcs: {}% of average level.
+ Gradient of merged dcs: {} of average level.
 
- Suggested tweak factor:   {}
+{} Suggested tweak factor:   {}
 """.format(
             self.name,
             self.title,
@@ -166,13 +196,16 @@ class GudFile():
             self.noGroups,
             self.averageLevelMergedDCS,
             self.gradient,
+            self.result,
             self.suggestedTweakFactor,
 
             ))
 
-    def write_out(self):
-        #TODO: windows/osx compatibility
-        f = open(self.path)
+    def write_out(self, overwrite=False):
+        if not overwrite:
+            f = open(self.outpath, "w", encoding="utf-8")
+        else:
+            f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
