@@ -35,13 +35,18 @@ steps:
       mv StartupFiles bin
   - script: |
       pip install nose2
-      nose2 --plugin nose2.plugins.junitxml --junit-xml tests
+      nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
     displayName: 'Run tests'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '*.xml'
+      testResultsFiles: 'nose2-*.xml'
       failTaskOnFailedTests: true
       testRunTitle: 'GudPy on Python ${{ parameters.version }} ${{ parameters.os }}'
     condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: 'coverage.xml'
