@@ -32,6 +32,7 @@ steps:
       mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
       wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip
       mv startupFiles-${{ parameters.tag }}.zip bin
+      unzip startupFiles-${{ parameters.tag }}.zip
   - script: |
       pip install pyinstaller
       pyinstaller gudpy.spec
