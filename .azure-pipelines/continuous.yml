@@ -30,35 +30,20 @@ variables:
   tag: 2021.test
   targets: >
     {
-      linuxPy36:
+      linuxPy38:
       {
-        pythonVersion: "3.6",
-        imageName: 'ubuntu-latest',
-        arch: "x64",
-        osName: "linux"
-      },
-      linuxPy37:
-      {
-        pythonVersion: "3.7",
+        pythonVersion: "3.8",
         imageName: "ubuntu-latest",
         arch: "x64",
         osName: "linux"
       },
-      macOSPy36:
+      macOSPy38: 
       {
-        pythonVersion: "3.6",
-        imageName: "macOS-latest",
-        arch: "x64",
-        osName: "osx"
-      },
-      macOSPy37: 
-      {
-        pythonVersion: "3.7",
+        pythonVersion: "3.8",
         imageName: "macOS-latest",
         arch: "x64",
         osName: "osx"
       }
-
     }
 
 stages:
