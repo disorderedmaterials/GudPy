@@ -14,11 +14,11 @@ steps:
 
   - script: |
       pip install flake8
-      python -m flake8 . --exit-zero
+      python -m flake8 . 
     condition: succeededOrFailed()
     displayName: "Static code analysis for PEP8 conformance using flake8"    
 
-  - script: python -m flake8 . --exit-zero > flake8.err.log
+  - script: python -m flake8 . > flake8.err.log
     displayName: "Capture flake8 error log"
     condition: failed()
 
