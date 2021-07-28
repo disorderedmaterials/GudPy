@@ -32,7 +32,9 @@ class TweakFactorIterator():
                         tweakFactor = float(
                             gudFile.suggestedTweakFactor.strip()
                             )
-                        targSampleBackground = self.gudrunFile.sampleBackgrounds[j]
-                        targSampleBackground.samples[k].sampleTweakFactor = (
+                        sampleBackground_ = (
+                            self.gudrunFile.sampleBackgrounds[j]
+                        )
+                        sampleBackground_.samples[k].sampleTweakFactor = (
                                                     tweakFactor
                         )
