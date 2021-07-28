@@ -40,6 +40,7 @@ class Sample:
         self.environementScatteringFuncAttenuationCoeff = (0.0, 0.0)
 
         self.containers = []
+        self.runThisSample = True
 
     def __str__(self):
 
