@@ -896,6 +896,7 @@ class GudrunFile:
         FORMAT_MAP.pop("composition", None)
         FORMAT_MAP.pop("sampleBackground", None)
         FORMAT_MAP.pop("containers", None)
+        FORMAT_MAP.pop("runThisSample", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
