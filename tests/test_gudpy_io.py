@@ -37,7 +37,6 @@ except ModuleNotFoundError:
 
 class TestGudPyIO(TestCase):
 
-
     def setUp(self) -> None:
         self.expectedInstrument = {
             "name": "NIMROD",
