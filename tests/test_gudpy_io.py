@@ -36,6 +36,7 @@ except ModuleNotFoundError:
 
 
 class TestGudPyIO(TestCase):
+
     def setUp(self) -> None:
         self.expectedInstrument = {
             "name": "NIMROD",
@@ -500,6 +501,7 @@ class TestGudPyIO(TestCase):
                     sampleAttrsDict = (
                         self.g.sampleBackgrounds[0].samples[i].__dict__
                     )
+                    sampleAttrsDict.pop("runThisSample", None)
 
                     for key_ in sampleAttrsDict.keys():
 
@@ -961,8 +963,17 @@ class TestGudPyIO(TestCase):
         os.remove("test_data.txt")
 
     def testLoadMissingSampleAttributesSeq(self):
+
+        ignore = (
+            [
+                "name", "dataFiles",
+                "composition", "containers",
+                "runThisSample"
+            ]
+        )
+
         for i, key in enumerate(self.expectedSampleA.keys()):
-            if key in ["name", "dataFiles", "composition", "containers"]:
+            if key in ignore:
                 continue
 
             if i == 1:
@@ -1006,10 +1017,19 @@ class TestGudPyIO(TestCase):
             os.remove("test_data.txt")
 
     def testLoadMissingSampleAttributesRand(self):
+
+        ignore = (
+            [
+                "name", "dataFiles",
+                "composition", "containers",
+                "runThisSample"
+            ]
+        )
+
         for i in range(50):
             key = random.choice(list(self.expectedSampleA))
             j = list(self.expectedSampleA).index(key)
-            if key in ["name", "dataFiles", "composition", "containers"]:
+            if key in ignore:
                 continue
 
             if j == 1:

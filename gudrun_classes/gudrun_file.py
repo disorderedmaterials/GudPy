@@ -1,6 +1,7 @@
 import sys
 import os
 from os.path import isfile
+import subprocess
 import time
 from copy import deepcopy
 
@@ -895,6 +896,7 @@ class GudrunFile:
         FORMAT_MAP.pop("composition", None)
         FORMAT_MAP.pop("sampleBackground", None)
         FORMAT_MAP.pop("containers", None)
+        FORMAT_MAP.pop("runThisSample", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -935,6 +937,7 @@ class GudrunFile:
             x
             for x in sample.__dict__.keys()
             if isinstance(sample.__dict__[x], bool)
+            and not x == "runThisSample"
         ]
         TUPLES = [
             x
@@ -1501,21 +1504,27 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
-    def dcs(self):
-        import subprocess
+    def dcs(self, path=''):
+
+        if not path:
+            path = self.path
 
         try:
             result = subprocess.run(
-                ["bin/gudrun_dcs", self.path], capture_output=True, text=True
+                ["bin/gudrun_dcs", path], capture_output=True, text=True
             )
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
             result = subprocess.run(
-                [gudrun_dcs, self.path], capture_output=True, text=True
+                [gudrun_dcs, path], capture_output=True, text=True
             )
         return result
+
+    def process(self):
+        self.write_out()
+        self.dcs(path=self.outpath)
 
 
 if __name__ == "__main__":
     g = GudrunFile(path="/home/jared/GudPy/NIMROD-water/water.txt")
-    g.write_out()
+    g.dcs()

@@ -16,6 +16,7 @@ except ModuleNotFoundError:
 
 
 class TestParseGudFile(TestCase):
+
     def setUp(self) -> None:
 
         self.expectedGudFileA = {
