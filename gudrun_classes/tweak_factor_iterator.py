@@ -25,14 +25,14 @@ class TweakFactorIterator():
                 for k, sample in enumerate(sampleBackground.samples):
                     if sample.runThisSample:
                         gud = sample.dataFiles.dataFiles[0].replace(
-                                    self.instrument.dataFileType,
+                                    self.gudrunFile.instrument.dataFileType,
                                     "gud"
                                 )
                         gudFile = GudFile(gud)
                         tweakFactor = float(
                             gudFile.suggestedTweakFactor.strip()
                             )
-                        targSampleBackground = self.sampleBackgrounds[j]
+                        targSampleBackground = self.gudrunFile.sampleBackgrounds[j]
                         targSampleBackground.samples[k].sampleTweakFactor = (
                                                     tweakFactor
                         )
