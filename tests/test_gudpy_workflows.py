@@ -7,7 +7,6 @@ import re
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
-    from utils import spacify, numifyBool
     from gudrun_file import GudrunFile
 
 except ModuleNotFoundError:
@@ -46,7 +45,7 @@ class TestGudPyWorkflows(TestCase):
         g.instrument.GudrunStartFolder = GudrunStartFolder
         g.instrument.dataFileDir = str(dataFileDir) + "/"
         g.write_out(overwrite=True)
-
+        self.g = g
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -63,33 +62,64 @@ class TestGudPyWorkflows(TestCase):
         return super().tearDown()
 
     def testGudPyDCS(self):
-        
+
         self.g.dcs()
-        
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf1 = GudFile(gfPath)
-        dcsLevelPercentage = re.findall('\d*[.]?\d*%', gf1.err)[0]
-        dcsLevelPercentage = float(dcsLevelPercentage.replace('%',''))
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.err)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 14.4, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf2 = GudFile(gfPath)
-        dcsLevelPercentage = re.findall('\d*[.]?\d*%', gf2.result)[0]
-        dcsLevelPercentage = float(dcsLevelPercentage.replace('%',''))
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf3 = GudFile(gfPath)
-        dcsLevelPercentage = re.findall('\d*[.]?\d*%', gf3.result)[0]
-        dcsLevelPercentage = float(dcsLevelPercentage.replace('%',''))
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 98.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf4 = GudFile(gfPath)
-        dcsLevelPercentage = re.findall('\d*[.]?\d*%', gf4.err)[0]
-        dcsLevelPercentage = float(dcsLevelPercentage.replace('%',''))
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.err)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
+
+    def testGudPyIterateByTweakFactor(self):
+
+        self.g.iterateByTweakFactor(5)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf1 = GudFile(gfPath)
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf2 = GudFile(gfPath)
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf3 = GudFile(gfPath)
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf4 = GudFile(gfPath)
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
