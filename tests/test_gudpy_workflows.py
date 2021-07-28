@@ -3,6 +3,7 @@ import sys
 from shutil import copyfile
 from unittest import TestCase
 import re
+import math
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
@@ -121,10 +122,11 @@ class TestGudPyWorkflows(TestCase):
                 for x, y in zip(a.split(), b.split()):
                     if x == '#' or y == '#':
                         continue
-
-                    self.assertAlmostEqual(
-                        float(x.strip()), float(y.strip()), 0
-                        )
+                    self.assertTrue(math.isclose(
+                        float(x.strip()),
+                        float(y.strip()),
+                        rel_tol=0.05
+                    ))
 
     def testGudPyIterateByTweakFactor(self):
 
@@ -158,3 +160,74 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+    def testGudPyIterateBySubtractingWavelength(self):
+
+        for i in range(1, 4):
+
+            wavelengthSubtractionIterator = (
+                WavelengthSubtractionIterator(self.g)
+            )
+
+            wavelengthSubtractionIterator.iterate(i)
+            print('Iterating {} times'.format(i))
+
+            for sample in self.g.sampleBackgrounds[0].samples:
+
+                mintFilename = (
+                    sample.dataFiles.dataFiles[0].replace(
+                        self.g.instrument.dataFileType, "mint01"
+                    )
+                )
+
+                actualMintFile = (
+                    f'tests/TestData/water-ref/wavelength{i}/'
+                    f'{mintFilename}'
+                )
+
+                actualData = open(
+                    mintFilename, "r", encoding="utf-8"
+                    ).readlines()[10:]
+                expectedData = open(
+                    actualMintFile, "r", encoding="utf-8"
+                    ).readlines()[10:]
+
+                for a, b in zip(actualData, expectedData):
+
+                    for x, y in zip(a.split(), b.split()):
+                        if x == '#' or y == '#':
+                            continue
+
+                        self.assertTrue(math.isclose(
+                            float(x.strip()),
+                            float(y.strip()),
+                            rel_tol=0.05
+                        ))
+
+                msubFilename = (
+                    sample.dataFiles.dataFiles[0].replace(
+                        self.g.instrument.dataFileType, "msubw01"
+                    )
+                )
+                actualMsubFilename = (
+                    f'tests/TestData/water-ref/wavelength{i}/{msubFilename}'
+                )
+
+                actualData = open(
+                    msubFilename, "r", encoding="utf-8"
+                    ).readlines()[10:]
+                expectedData = open(
+                    actualMsubFilename, "r", encoding="utf-8"
+                    ).readlines()[10:]
+
+                for a, b in zip(actualData, expectedData):
+
+                    for x, y in zip(a.split(), b.split()):
+                        if x == '#' or y == '#':
+                            continue
+
+                        self.assertTrue(math.isclose(
+                            float(x.strip()),
+                            float(y.strip()),
+                            rel_tol=0.05
+                        ))
