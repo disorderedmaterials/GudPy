@@ -937,6 +937,7 @@ class GudrunFile:
             x
             for x in sample.__dict__.keys()
             if isinstance(sample.__dict__[x], bool)
+            and not x == "runThisSample"
         ]
         TUPLES = [
             x
