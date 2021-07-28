@@ -22,7 +22,6 @@ try:
     from composition import Composition
     from element import Element
     from data_files import DataFiles
-    from gud_file import GudFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -40,7 +39,6 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
-    from gudrun_classes.gud_file import GudFile
 
 
 class GudrunFile:
@@ -1520,29 +1518,9 @@ class GudrunFile:
             )
         return result
 
-    def iterateByTweakFactor(self, n):
-        # Iteratively tweak the tweak factor for n iterations.
-
-        for i in range(n):
-
-            # Write out what we currently have,
-            # and run gudrun_dcs on that file.
-            self.write_out()
-            self.dcs(path=self.outpath)
-
-            # Iterate through all samples,
-            # updating their tweak factor from the output of gudrun_dcs.
-            for j, sampleBackground in enumerate(self.sampleBackgrounds):
-                for k, sample in enumerate(sampleBackground.samples):
-                    gud = sample.dataFiles.dataFiles[0].replace(
-                                self.instrument.dataFileType,
-                                "gud"
-                            )
-                    gudFile = GudFile(gud)
-                    tweakFactor = float(gudFile.suggestedTweakFactor.strip())
-                    self.sampleBackgrounds[j].samples[k].sampleTweakFactor = (
-                                                tweakFactor
-                    )
+    def process(self):
+        self.write_out()
+        self.dcs(path=self.outpath)
 
 
 if __name__ == "__main__":
