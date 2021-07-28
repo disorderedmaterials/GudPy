@@ -1,4 +1,3 @@
-from gudrun_classes.gud_file import GudFile
 import os
 import sys
 from shutil import copyfile
@@ -8,10 +7,13 @@ import re
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
     from gudrun_file import GudrunFile
-
+    from tweak_factor_iterator import TweakFactorIterator
+    from gud_file import GudFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gudrun_file import GudrunFile
+    from gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+    from gudrun_classes.gud_file import GudFile
 
 
 class TestGudPyWorkflows(TestCase):
@@ -94,7 +96,8 @@ class TestGudPyWorkflows(TestCase):
 
     def testGudPyIterateByTweakFactor(self):
 
-        self.g.iterateByTweakFactor(5)
+        tweakFactorIterator = TweakFactorIterator(self.g)
+        tweakFactorIterator.iterate(5)
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
