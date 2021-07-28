@@ -9,11 +9,16 @@ try:
     from gudrun_file import GudrunFile
     from tweak_factor_iterator import TweakFactorIterator
     from gud_file import GudFile
+    from wavelength_subtraction_iterator import WavelengthSubtractionIterator
+
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gudrun_file import GudrunFile
     from gudrun_classes.tweak_factor_iterator import TweakFactorIterator
     from gudrun_classes.gud_file import GudFile
+    from gudrun_classes.wavelength_subtraction_iterator import (
+        WavelengthSubtractionIterator
+    )
 
 
 class TestGudPyWorkflows(TestCase):
@@ -93,6 +98,33 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.err)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
+
+        for sample in self.g.sampleBackgrounds[0].samples:
+
+            mintFilename = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.g.instrument.dataFileType, "mint01"
+                )
+            )
+
+            actualMintFile = f'tests/TestData/water-ref/plain/{mintFilename}'
+
+            actualData = open(
+                mintFilename, "r", encoding="utf-8"
+                ).readlines()[10:]
+            expectedData = open(
+                actualMintFile, "r", encoding="utf-8"
+                ).readlines()[10:]
+
+            for a, b in zip(actualData, expectedData):
+
+                for x, y in zip(a.split(), b.split()):
+                    if x == '#' or y == '#':
+                        continue
+
+                    self.assertAlmostEqual(
+                        float(x.strip()), float(y.strip()), 0
+                        )
 
     def testGudPyIterateByTweakFactor(self):
 
