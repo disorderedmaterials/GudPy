@@ -1,40 +1,39 @@
-
-from scripts.utils import extract_floats_from_string
-import unittest
-import sys, os
+import sys
+import os
 from unittest import TestCase
 from shutil import copyfile
+
 try:
-    sys.path.insert(1, os.path.join(sys.path[0], '../gudrun_classes'))
+    sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
     from gud_file import GudFile
     from gudrun_file import GudrunFile
+    from utils import extract_floats_from_string
 except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], 'gudrun_classes'))
+    sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gud_file import GudFile
     from gudrun_classes.gudrun_file import GudrunFile
-
+    from scripts.utils import extract_floats_from_string
 
 
 class TestParseGudFile(TestCase):
-
     def setUp(self) -> None:
 
-
         self.expectedGudFileA = {
-            "path" : "NIMROD00016608_H2O_in_N9.gud",
-            "name" : "NIMROD00016608_H2O_in_N9.gud",
-            "title" : "H2O in 1mm TiZr Can N9 pos 11 Beam 30x30mm Mod 195.3x115mm HxV JC6Y -10",
-            "author" : "T. G. A. Youngs, D.",
-            "stamp" : "23-OCT-2012 17:45:25",
-            "densityAcm3" : "0.100000E+00",
-            "densityGcm3" : "0.99717",
-            "averageScatteringLength" : "-0.05583",
-            "averageScatteringLengthSquared" : "0.311736E-02",
-            "averageSquareOfScatteringLength" : "0.205450E+00",
-            "coherentRatio" : "0.659052E+02",
-            "expectedDCS" : "4.46355",
-            "groupsTable" : 
-"""    1            0.0000    0.0000        0.00000              0.0000
+            "path": "NIMROD00016608_H2O_in_N9.gud",
+            "name": "NIMROD00016608_H2O_in_N9.gud",
+            "title": (
+                'H2O in 1mm TiZr Can N9 pos 11 Beam 30x30mm'
+                ' Mod 195.3x115mm HxV JC6Y -10'),
+            "author": "T. G. A. Youngs, D.",
+            "stamp": "23-OCT-2012 17:45:25",
+            "densityAcm3": "0.100000E+00",
+            "densityGcm3": "0.99717",
+            "averageScatteringLength": "-0.05583",
+            "averageScatteringLengthSquared": "0.311736E-02",
+            "averageSquareOfScatteringLength": "0.205450E+00",
+            "coherentRatio": "0.659052E+02",
+            "expectedDCS": "4.46355",
+            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -60,35 +59,34 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        3.75996             -0.4879
    25            0.3153   49.9980        3.26407             -0.4735
 """,
-            "noGroups" : "25" ,
-            "averageLevelMergedDCS" : "3.81991",
-            "gradient" : "-0.5106%",
-            "err" : 
-""" WARNING! This DCS level is   14.4% BELOW expected level.
+            "noGroups": "25",
+            "averageLevelMergedDCS": "3.81991",
+            "gradient": "-0.5106%",
+            "err": """ WARNING! This DCS level is   14.4% BELOW expected level.
 
  Please check sample density, size or thickness, and composition.
  If all is in order, then refer to your local contact for further advice
 
 """,
-            "suggestedTweakFactor" : "1.16850"
-
+            "suggestedTweakFactor": "1.16850",
         }
 
         self.expectedGudFileB = {
-            "path" : "NIMROD00016609_D2O_in_N10.gud",
-            "name" : "NIMROD00016609_D2O_in_N10.gud",
-            "title" : "D2O in 1mm TiZr Can N10 pos 10 Beam 30x30mm Mod 195.3x115mm HxV JC6Y -10",
-            "author" : "T. G. A. Youngs, D.",
-            "stamp" : "23-OCT-2012 18:43:54",
-            "densityAcm3" : "0.100000E+00",
-            "densityGcm3" : "1.10854",
-            "averageScatteringLength" : "0.63817",
-            "averageScatteringLengthSquared" : "0.407257E+00",
-            "averageSquareOfScatteringLength" : "0.408931E+00",
-            "coherentRatio" : "0.100411E+01",
-            "expectedDCS" : "0.51757",
-            "groupsTable" : 
-"""    1            0.0000    0.0000        0.00000              0.0000
+            "path": "NIMROD00016609_D2O_in_N10.gud",
+            "name": "NIMROD00016609_D2O_in_N10.gud",
+            "title": (
+                'D2O in 1mm TiZr Can N10 pos 10 Beam 30x30mm'
+                ' Mod 195.3x115mm HxV JC6Y -10'),
+            "author": "T. G. A. Youngs, D.",
+            "stamp": "23-OCT-2012 18:43:54",
+            "densityAcm3": "0.100000E+00",
+            "densityGcm3": "1.10854",
+            "averageScatteringLength": "0.63817",
+            "averageScatteringLengthSquared": "0.407257E+00",
+            "averageSquareOfScatteringLength": "0.408931E+00",
+            "coherentRatio": "0.100411E+01",
+            "expectedDCS": "0.51757",
+            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -114,29 +112,29 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        0.51460              0.0200
    25            0.3153   49.9980        0.51156              0.0656
 """,
-            "noGroups" : "25" ,
-            "averageLevelMergedDCS" : "0.51788",
-            "gradient" : "-0.0235%",
-            "result" : " This DCS level is  100.1% of expected level",
-            "suggestedTweakFactor" : "0.99941"
-
+            "noGroups": "25",
+            "averageLevelMergedDCS": "0.51788",
+            "gradient": "-0.0235%",
+            "result": " This DCS level is  100.1% of expected level",
+            "suggestedTweakFactor": "0.99941",
         }
 
         self.expectedGudFileC = {
-            "path" : "NIMROD00016741_HDO_in_N6.gud",
-            "name" : "NIMROD00016741_HDO_in_N6.gud",
-            "title" : "HDO in 1mm TiZr Can N6 pos 14 at 25oC Beam 30x30mm Mod 195.3x115mm HxV JC6Y -10",
-            "author" : "T. Youngs",
-            "stamp" : "28-OCT-2012 12:56:29",
-            "densityAcm3" : "0.100000E+00",
-            "densityGcm3" : "1.05285",
-            "averageScatteringLength" : "0.29117",
-            "averageScatteringLengthSquared" : "0.847780E-01",
-            "averageSquareOfScatteringLength" : "0.307191E+00",
-            "coherentRatio" : "0.362347E+01",
-            "expectedDCS" : "2.49056",
-            "groupsTable" : 
-"""    1            0.0000    0.0000        0.00000              0.0000
+            "path": "NIMROD00016741_HDO_in_N6.gud",
+            "name": "NIMROD00016741_HDO_in_N6.gud",
+            "title": (
+                'HDO in 1mm TiZr Can N6 pos 14 at 25oC Beam 30x30mm'
+                ' Mod 195.3x115mm HxV JC6Y -10'),
+            "author": "T. Youngs",
+            "stamp": "28-OCT-2012 12:56:29",
+            "densityAcm3": "0.100000E+00",
+            "densityGcm3": "1.05285",
+            "averageScatteringLength": "0.29117",
+            "averageScatteringLengthSquared": "0.847780E-01",
+            "averageSquareOfScatteringLength": "0.307191E+00",
+            "coherentRatio": "0.362347E+01",
+            "expectedDCS": "2.49056",
+            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -162,29 +160,29 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        2.45972             -0.3599
    25            0.3153   49.9980        2.18191             -0.2975
 """,
-            "noGroups" : "25" ,
-            "averageLevelMergedDCS" : "2.45211",
-            "gradient" : "-0.3551%",
-            "result" : " This DCS level is   98.5% of expected level",
-            "suggestedTweakFactor" : "1.01568"
-
+            "noGroups": "25",
+            "averageLevelMergedDCS": "2.45211",
+            "gradient": "-0.3551%",
+            "result": " This DCS level is   98.5% of expected level",
+            "suggestedTweakFactor": "1.01568",
         }
 
         self.expectedGudFileD = {
-            "path" : "NIMROD00016742_NullWater_in_N8.gud",
-            "name" : "NIMROD00016742_NullWater_in_N8.gud",
-            "title" : "Null Water in 1mm TiZr Can N8 pos 12 at 25oC Beam 30x30mm Mod 195.3x115mm HxV JC",
-            "author" : "T. Youngs",
-            "stamp" : "28-OCT-2012 13:53:13",
-            "densityAcm3" : "0.100000E+00",
-            "densityGcm3" : "1.03732",
-            "averageScatteringLength" : "0.19358",
-            "averageScatteringLengthSquared" : "0.374735E-01",
-            "averageSquareOfScatteringLength" : "0.278574E+00",
-            "coherentRatio" : "0.743389E+01",
-            "expectedDCS" : "3.04538",
-            "groupsTable" : 
-"""    1            0.0000    0.0000        0.00000              0.0000
+            "path": "NIMROD00016742_NullWater_in_N8.gud",
+            "name": "NIMROD00016742_NullWater_in_N8.gud",
+            "title": (
+                'Null Water in 1mm TiZr Can N8 pos 12 at 25oC Beam 30x30mm'
+                ' Mod 195.3x115mm HxV JC'),
+            "author": "T. Youngs",
+            "stamp": "28-OCT-2012 13:53:13",
+            "densityAcm3": "0.100000E+00",
+            "densityGcm3": "1.03732",
+            "averageScatteringLength": "0.19358",
+            "averageScatteringLengthSquared": "0.374735E-01",
+            "averageSquareOfScatteringLength": "0.278574E+00",
+            "coherentRatio": "0.743389E+01",
+            "expectedDCS": "3.04538",
+            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -210,29 +208,32 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        2.63808             -0.3647
    25            0.3153   49.9980        2.33847             -0.3202
 """,
-            "noGroups" : "25" ,
-            "averageLevelMergedDCS" : "2.64872",
-            "gradient" : "-0.3721%",
-            "err" :
-"""WARNING! This DCS level is   13.0% BELOW expected level.
+            "noGroups": "25",
+            "averageLevelMergedDCS": "2.64872",
+            "gradient": "-0.3721%",
+            "err": """WARNING! This DCS level is   13.0% BELOW expected level.
 
  Please check sample density, size or thickness, and composition.
  If all is in order, then refer to your local contact for further advice
 
 """,
-            "suggestedTweakFactor" : "1.14976"
-
+            "suggestedTweakFactor": "1.14976",
         }
 
         self.keepsakes = os.listdir()
 
-        path = 'TestData/NIMROD-water/water.txt'
+        path = "TestData/NIMROD-water/water.txt"
 
         if os.name == "nt":
             from pathlib import Path
-            dirpath = Path().resolve()/'tests/'/Path(path)
+
+            dirpath = Path().resolve() / "tests/" / Path(path)
         else:
-            dirpath = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/" + path
+            dirpath = (
+                "/".join(os.path.realpath(__file__).split("/")[:-1])
+                + "/"
+                + path
+            )
         self.g = GudrunFile(dirpath)
 
         self.keepsakes = os.listdir()
@@ -241,12 +242,13 @@ class TestParseGudFile(TestCase):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
 
         from pathlib import Path
+
         parent = Path("tests").parent.absolute()
-        GudrunStartFolder = parent/"bin"
+        GudrunStartFolder = parent / "bin"
         dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
 
         g.instrument.GudrunStartFolder = GudrunStartFolder
-        g.instrument.dataFileDir = str(dataFileDir) +"/"
+        g.instrument.dataFileDir = str(dataFileDir) + "/"
         g.write_out(overwrite=True)
         return super().setUp()
 
@@ -254,146 +256,216 @@ class TestParseGudFile(TestCase):
 
         if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
             os.remove("tests/TestData/NIMROD-water/good_water.txt")
-            
+
         for f in os.listdir():
-            if not f in self.keepsakes:
+            if f not in self.keepsakes:
                 if not f.endswith("gud"):
                     os.remove(f)
         return super().tearDown()
 
     def testEmptyPath(self):
 
-        emptyPath = ''
+        emptyPath = ""
         self.assertRaises(ValueError, GudFile, emptyPath)
-    
+
     def testInvalidFileType(self):
 
-        invalid_file_type = 'NIMROD0001_H20_in_N9.txt'
+        invalid_file_type = "NIMROD0001_H20_in_N9.txt"
         self.assertRaises(ValueError, GudFile, invalid_file_type)
 
     def testInvalidPath(self):
 
-        invalid_path = 'invalid_path.gud'
+        invalid_path = "invalid_path.gud"
         self.assertRaises(ValueError, GudFile, invalid_path)
 
     def testValidPath(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf= GudFile("NIMROD00016608_H2O_in_N9.gud")
+        gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
         self.assertIsInstance(gf, GudFile)
-
 
     def testLoadGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
-        
+
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]: continue
+            if key in ["groups", "contents", "result", "outpath"]:
+                continue
             if key == "groupsTable":
 
-                for rowA, rowB in zip(self.expectedGudFileA[key].split("\n"), gf.groupsTable.split("\n")):
+                for rowA, rowB in zip(
+                    self.expectedGudFileA[key].split("\n"),
+                    gf.groupsTable.split("\n"),
+                ):
                     for valueA, valueB in zip(rowA.split(), rowB.split()):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
-                 self.assertAlmostEqual(float(self.expectedGudFileA[key].replace("%", '')), float(gudAttrsDict[key].replace("%", '')), 1)
+                self.assertAlmostEqual(
+                    float(self.expectedGudFileA[key].replace("%", "")),
+                    float(gudAttrsDict[key].replace("%", "")),
+                    1,
+                )
             elif key == "err":
-                self.assertAlmostEqual(extract_floats_from_string(self.expectedGudFileA[key][0]), extract_floats_from_string(gudAttrsDict[key][0]), 1)
+                self.assertAlmostEqual(
+                    extract_floats_from_string(self.expectedGudFileA[key][0]),
+                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    1,
+                )
             else:
                 try:
-                    self.assertEqual(self.expectedGudFileA[key], gudAttrsDict[key])
+                    self.assertEqual(
+                        self.expectedGudFileA[key], gudAttrsDict[key]
+                    )
                 except AssertionError as e:
                     try:
-                        self.assertAlmostEqual(float(self.expectedGudFileA[key].strip()), float(gudAttrsDict[key].strip()), 1)
-                    except:
+                        self.assertAlmostEqual(
+                            float(self.expectedGudFileA[key].strip()),
+                            float(gudAttrsDict[key].strip()),
+                            1,
+                        )
+                    except Exception:
                         raise e
 
     def testLoadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
-        
+
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]: continue
+            if key in ["groups", "contents", "err", "outpath"]:
+                continue
             if key == "groupsTable":
 
-                for rowA, rowB in zip(self.expectedGudFileB[key].split("\n"), gf.groupsTable.split("\n")):
+                for rowA, rowB in zip(
+                    self.expectedGudFileB[key].split("\n"),
+                    gf.groupsTable.split("\n"),
+                ):
                     for valueA, valueB in zip(rowA.split(), rowB.split()):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
-                 self.assertAlmostEqual(float(self.expectedGudFileB[key].replace("%", '')), float(gudAttrsDict[key].replace("%", '')), 1)
+                self.assertAlmostEqual(
+                    float(self.expectedGudFileB[key].replace("%", "")),
+                    float(gudAttrsDict[key].replace("%", "")),
+                    1,
+                )
             elif key == "result":
-                self.assertAlmostEqual(extract_floats_from_string(self.expectedGudFileB[key][0]), extract_floats_from_string(gudAttrsDict[key][0]), 1)
+                self.assertAlmostEqual(
+                    extract_floats_from_string(self.expectedGudFileB[key][0]),
+                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    1,
+                )
             else:
                 try:
-                    self.assertEqual(self.expectedGudFileB[key], gudAttrsDict[key])
+                    self.assertEqual(
+                        self.expectedGudFileB[key], gudAttrsDict[key]
+                    )
                 except AssertionError as e:
                     try:
-                        self.assertAlmostEqual(float(self.expectedGudFileB[key].strip()), float(gudAttrsDict[key].strip()), 1)
-                    except:
+                        self.assertAlmostEqual(
+                            float(self.expectedGudFileB[key].strip()),
+                            float(gudAttrsDict[key].strip()),
+                            1,
+                        )
+                    except Exception:
                         raise e
 
     def testLoadGudFileC(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         gf = GudFile("NIMROD00016741_HDO_in_N6.gud")
-        
-        self.assertIsInstance(gf, GudFile)
 
+        self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]: continue
+            if key in ["groups", "contents", "err", "outpath"]:
+                continue
             if key == "groupsTable":
 
-                for rowA, rowB in zip(self.expectedGudFileC[key].split("\n"), gf.groupsTable.split("\n")):
+                for rowA, rowB in zip(
+                    self.expectedGudFileC[key].split("\n"),
+                    gf.groupsTable.split("\n"),
+                ):
                     for valueA, valueB in zip(rowA.split(), rowB.split()):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
-                 self.assertAlmostEqual(float(self.expectedGudFileC[key].replace("%", '')), float(gudAttrsDict[key].replace("%", '')), 1)
+                self.assertAlmostEqual(
+                    float(self.expectedGudFileC[key].replace("%", "")),
+                    float(gudAttrsDict[key].replace("%", "")),
+                    1,
+                )
             elif key == "result":
-                self.assertAlmostEqual(extract_floats_from_string(self.expectedGudFileC[key][0]), extract_floats_from_string(gudAttrsDict[key][0]), 1)
+                self.assertAlmostEqual(
+                    extract_floats_from_string(self.expectedGudFileC[key][0]),
+                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    1,
+                )
             else:
                 try:
-                    self.assertEqual(self.expectedGudFileC[key], gudAttrsDict[key])
+                    self.assertEqual(
+                        self.expectedGudFileC[key], gudAttrsDict[key]
+                    )
                 except AssertionError as e:
                     try:
-                        self.assertAlmostEqual(float(self.expectedGudFileC[key].strip()), float(gudAttrsDict[key].strip()), 1)
-                    except:
+                        self.assertAlmostEqual(
+                            float(self.expectedGudFileC[key].strip()),
+                            float(gudAttrsDict[key].strip()),
+                            1,
+                        )
+                    except Exception:
                         raise e
+
     def testLoadGudFileD(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
-        
-        self.assertIsInstance(gf, GudFile)
 
+        self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]: continue
+            if key in ["groups", "contents", "result", "outpath"]:
+                continue
             if key == "groupsTable":
 
-                for rowA, rowB in zip(self.expectedGudFileD[key].split("\n"), gf.groupsTable.split("\n")):
+                for rowA, rowB in zip(
+                    self.expectedGudFileD[key].split("\n"),
+                    gf.groupsTable.split("\n"),
+                ):
                     for valueA, valueB in zip(rowA.split(), rowB.split()):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
-                 self.assertAlmostEqual(float(self.expectedGudFileD[key].replace("%", '')), float(gudAttrsDict[key].replace("%", '')), 1)
+                self.assertAlmostEqual(
+                    float(self.expectedGudFileD[key].replace("%", "")),
+                    float(gudAttrsDict[key].replace("%", "")),
+                    1,
+                )
             elif key == "err":
-                self.assertAlmostEqual(extract_floats_from_string(self.expectedGudFileA[key][0]), extract_floats_from_string(gudAttrsDict[key][0]), 1)
+                self.assertAlmostEqual(
+                    extract_floats_from_string(self.expectedGudFileA[key][0]),
+                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    1,
+                )
             else:
                 try:
-                    self.assertEqual(self.expectedGudFileD[key], gudAttrsDict[key])
+                    self.assertEqual(
+                        self.expectedGudFileD[key], gudAttrsDict[key]
+                    )
                 except AssertionError as e:
                     try:
-                        self.assertAlmostEqual(float(self.expectedGudFileD[key].strip()), float(gudAttrsDict[key].strip()), 1)
-                    except:
+                        self.assertAlmostEqual(
+                            float(self.expectedGudFileD[key].strip()),
+                            float(gudAttrsDict[key].strip()),
+                            1,
+                        )
+                    except Exception:
                         raise e
 
     def testWriteGudFileA(self):
@@ -401,7 +473,7 @@ class TestParseGudFile(TestCase):
         g.dcs()
         gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
         gf.write_out()
-        outlines = open(gf.outpath, encoding='utf-8').read()
+        outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
 
     def testRewriteGudFileA(self):
@@ -412,10 +484,13 @@ class TestParseGudFile(TestCase):
 
         gf1 = GudFile(gf.outpath)
         gf1.write_out()
-       
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf))
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf1))
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), open(gf.outpath, encoding='utf-8').read())
+
+        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf))
+        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf1))
+        self.assertEqual(
+            open(gf1.outpath, encoding="utf-8").read(),
+            open(gf.outpath, encoding="utf-8").read(),
+        )
 
     def testReloadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
@@ -423,16 +498,15 @@ class TestParseGudFile(TestCase):
         gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
         gf.write_out()
         gf1 = GudFile(gf.outpath)
-        print(open(gf1.path, "r").read())
 
         self.assertEqual(str(gf), str(gf1))
-    
+
     def testWriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
         gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
         gf.write_out()
-        outlines = open(gf.outpath, encoding='utf-8').read()
+        outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
 
     def testRewriteGudFileB(self):
@@ -443,18 +517,10 @@ class TestParseGudFile(TestCase):
 
         gf1 = GudFile(gf.outpath)
         gf1.write_out()
-       
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf))
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), str(gf1))
-        self.assertEqual(open(gf1.outpath, encoding='utf-8').read(), open(gf.outpath, encoding='utf-8').read())
 
-    def testReloadGudFileB(self):
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
-        g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
-        gf.write_out()
-        gf1 = GudFile(gf.outpath)
-
-        self.assertEqual(str(gf), str(gf1))
-        
-        
+        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf))
+        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf1))
+        self.assertEqual(
+            open(gf1.outpath, encoding="utf-8").read(),
+            open(gf.outpath, encoding="utf-8").read(),
+        )

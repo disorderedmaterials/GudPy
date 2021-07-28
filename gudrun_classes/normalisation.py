@@ -1,35 +1,37 @@
 from inspect import cleandoc
 
 try:
-    from utils import *
+    from utils import spacify, numifyBool
     from data_files import DataFiles
     from composition import Composition
 except ModuleNotFoundError:
-    from scripts.utils import *
+    from scripts.utils import spacify, numifyBool
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
 
+
 class Normalisation:
     def __init__(self):
-        self.numberOfFilesPeriodNumber = (0,0)
-        self.dataFiles = DataFiles([], 'NORMALISATION')
-        self.numberOfFilesPeriodNumberBg = (0,0)
-        self.dataFilesBg = DataFiles([], 'NORMALISATION BACKGROUND')
+        self.numberOfFilesPeriodNumber = (0, 0)
+        self.dataFiles = DataFiles([], "NORMALISATION")
+        self.numberOfFilesPeriodNumberBg = (0, 0)
+        self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
-        self.composition = Composition([], 'NORMALISATION')
-        self.geometry = ''
-        self.thickness = (0.,0.)
-        self.angleOfRotationSampleWidth = (0.,0.)
-        self.densityOfAtoms = 0.
+        self.composition = Composition([], "NORMALISATION")
+        self.geometry = ""
+        self.thickness = (0.0, 0.0)
+        self.angleOfRotationSampleWidth = (0.0, 0.0)
+        self.densityOfAtoms = 0.0
         self.tempForNormalisationPC = 0
-        self.totalCrossSectionSource = ''
-        self.normalisationDifferentialCrossSectionFilename = ''
-        self.lowerLimitSmoothedNormalisation = 0.
-        self.normalisationDegreeSmoothing = 0.
-        self.minNormalisationSignalBR = 0.
-    
+        self.totalCrossSectionSource = ""
+        self.normalisationDifferentialCrossSectionFilename = ""
+        self.lowerLimitSmoothedNormalisation = 0.0
+        self.normalisationDegreeSmoothing = 0.0
+        self.minNormalisationSignalBR = 0.0
+
     def __str__(self):
-        return cleandoc("""
+        return cleandoc(
+            """
 {}        Number of  files and period number
 {}
 {}        Number of  files and period number
@@ -62,6 +64,6 @@ class Normalisation:
                 self.normalisationDifferentialCrossSectionFilename,
                 self.lowerLimitSmoothedNormalisation,
                 self.normalisationDegreeSmoothing,
-                self.minNormalisationSignalBR
-        ))
-
+                self.minNormalisationSignalBR,
+            )
+        )
