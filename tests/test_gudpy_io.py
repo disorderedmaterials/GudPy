@@ -37,7 +37,6 @@ except ModuleNotFoundError:
 
 class TestGudPyIO(TestCase):
 
-
     def setUp(self) -> None:
         self.expectedInstrument = {
             "name": "NIMROD",
@@ -502,6 +501,7 @@ class TestGudPyIO(TestCase):
                     sampleAttrsDict = (
                         self.g.sampleBackgrounds[0].samples[i].__dict__
                     )
+                    sampleAttrsDict.pop("runThisSample", None)
 
                     for key_ in sampleAttrsDict.keys():
 
