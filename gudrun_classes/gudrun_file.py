@@ -1,6 +1,7 @@
 import sys
 import os
 from os.path import isfile
+import subprocess
 import time
 from copy import deepcopy
 
@@ -21,6 +22,7 @@ try:
     from composition import Composition
     from element import Element
     from data_files import DataFiles
+    from gud_file import GudFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -38,6 +40,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.gud_file import GudFile
 
 
 class GudrunFile:
@@ -1501,21 +1504,47 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
-    def dcs(self):
-        import subprocess
+    def dcs(self, path=''):
+
+        if not path:
+            path = self.path
 
         try:
             result = subprocess.run(
-                ["bin/gudrun_dcs", self.path], capture_output=True, text=True
+                ["bin/gudrun_dcs", path], capture_output=True, text=True
             )
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
             result = subprocess.run(
-                [gudrun_dcs, self.path], capture_output=True, text=True
+                [gudrun_dcs, path], capture_output=True, text=True
             )
         return result
+
+    def iterateByTweakFactor(self, n):
+        # Iteratively tweak the tweak factor for n iterations.
+
+        for i in range(n):
+
+            # Write out what we currently have,
+            # and run gudrun_dcs on that file.
+            self.write_out()
+            self.dcs(path=self.outpath)
+
+            # Iterate through all samples,
+            # updating their tweak factor from the output of gudrun_dcs.
+            for j, sampleBackground in enumerate(self.sampleBackgrounds):
+                for k, sample in enumerate(sampleBackground.samples):
+                    gud = sample.dataFiles.dataFiles[0].replace(
+                                self.instrument.dataFileType,
+                                "gud"
+                            )
+                    gudFile = GudFile(gud)
+                    tweakFactor = float(gudFile.suggestedTweakFactor.strip())
+                    self.sampleBackgrounds[j].samples[k].sampleTweakFactor = (
+                                                tweakFactor
+                    )
 
 
 if __name__ == "__main__":
     g = GudrunFile(path="/home/jared/GudPy/NIMROD-water/water.txt")
-    g.write_out()
+    g.dcs()
