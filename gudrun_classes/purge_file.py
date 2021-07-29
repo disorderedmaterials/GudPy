@@ -12,19 +12,14 @@ except ModuleNotFoundError:
 class PurgeFile():
 
     def __init__(
-            self, gudrunFile, standardDeviation=(10.0, 10.0), ignoreBad=True
-                ):
+            self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
 
         self.gudrunFile = gudrunFile
         self.instrumentName = gudrunFile.instrument.name
         self.inputFileDir = gudrunFile.instrument.GudrunInputFileDir
         self.dataFileDir = gudrunFile.instrument.dataFileDir
-        self.detCalibFile = (
-            os.path.abspath(gudrunFile.instrument.detectorCalibrationFileName)
-        )
-        self.groupsFile = (
-            os.path.abspath(gudrunFile.instrument.groupFileName)
-        )
+        self.detCalibFile = gudrunFile.instrument.detectorCalibrationFileName
+        self.groupsFile = gudrunFile.instrument.groupFileName
         self.spectrumNumbers = (
             gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
         )
@@ -39,6 +34,11 @@ class PurgeFile():
         self.normalisationPeriodNo = (
             self.gudrunFile.normalisation.numberOfFilesPeriodNumber[1]
         )
+        self.normalisationDataFiles = ""
+        for dataFile in self.gudrunFile.normalisation.dataFiles.dataFiles:
+            self.normalisationDataFiles += (
+                dataFile + "  " + str(self.normalisationPeriodNo) + "\n"
+            )
         self.sampleBackgroundDataFiles = ""
         self.sampleDataFiles = ""
         self.containerDataFiles = ""
@@ -48,7 +48,7 @@ class PurgeFile():
                 self.sampleBackgroundDataFiles += (
                     dataFile + "  " + str(periodNumber) + "\n"
                 )
-            for sample in sampleBackground.samples:
+            for sample in [x for x in sampleBackground.samples if x.analyse]:
                 periodNumber = sample.numberOfFilesPeriodNumber[1]
                 for dataFile in sample.dataFiles.dataFiles:
                     self.sampleDataFiles += (
@@ -91,10 +91,13 @@ class PurgeFile():
             f'Spike analysis acceptance factor\n'
             f'{spacify(self.standardDeviation, num_spaces=2)}{TAB}'
             f'Specify the number of standard deviations allowed'
-            f' above and below the mean ratio.\n'
+            f' above and below the mean ratio.'
+            f' Specify the range of std\'s allowed'
+            f' around the mean standard deviation.\n'
             f'{numifyBool(self.ignoreBad)}{TAB}'
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
+            f'{self.normalisationDataFiles}'
             f'{self.sampleBackgroundDataFiles}'
             f'{self.sampleDataFiles}'
             f'{self.containerDataFiles}'
