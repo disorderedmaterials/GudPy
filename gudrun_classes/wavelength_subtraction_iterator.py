@@ -17,7 +17,7 @@ class WavelengthSubtractionIterator():
         self.gudrunFile.instrument.XScaleRangeStep = (
             self.gudrunFile.instrument.XScaleRangeStep[: -1]
         )
-    
+
     def collectQRange(self):
         self.QRange = self.gudrunFile.instrument.XScaleRangeStep
 
@@ -25,7 +25,9 @@ class WavelengthSubtractionIterator():
         self.gudrunFile.instrument.XScaleRangeStep = self.QRange
 
     def applyWavelengthRanges(self):
-        self.gudrunFile.instrument.XScaleRangeStep = self.gudrunFile.instrument.wavelengthRangeStepSize[:2]
+        self.gudrunFile.instrument.XScaleRangeStep = (
+            self.gudrunFile.instrument.wavelengthRangeStepSize[:2]
+        )
 
     def zeroTopHatWidths(self):
 
@@ -58,7 +60,7 @@ class WavelengthSubtractionIterator():
     def setSelfScatteringFiles(self, scale):
 
         dataFileType = self.gudrunFile.instrument.dataFileType
-        suffix = {1: "msubw01",3: "mint01"}[scale]
+        suffix = {1: "msubw01", 3: "mint01"}[scale]
 
         iterator = enumerate(self.gudrunFile.sampleBackgrounds)
 

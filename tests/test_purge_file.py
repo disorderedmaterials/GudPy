@@ -2,7 +2,6 @@ import os
 import sys
 from unittest import TestCase
 from shutil import copyfile
-import unittest
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
@@ -12,6 +11,7 @@ except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gudrun_file import GudrunFile
     from gudrun_classes.purge_file import PurgeFile
+
 
 class TestPurgeFile(TestCase):
 
@@ -48,50 +48,60 @@ class TestPurgeFile(TestCase):
         )
         g.write_out(overwrite=True)
         self.g = g
-
+        samples = self.g.sampleBackgrounds[0].samples
         self.expectedPurgeFile = {
-            "instrumentName" : self.g.instrument.name,
-            "inputFileDir" : self.g.instrument.GudrunInputFileDir,
-            "dataFileDir" : self.g.instrument.dataFileDir,
-            "detCalibFile" : self.g.instrument.detectorCalibrationFileName,
-            "groupsFile" : self.g.instrument.groupFileName,
-            "spectrumNumbers" : self.g.instrument.spectrumNumbersForIncidentBeamMonitor,
-            "channelNumbers" : self.g.instrument.channelNosSpikeAnalysis,
-            "acceptanceFactor" : self.g.instrument.spikeAnalysisAcceptanceFactor,
-            "standardDeviation" : (10, 10),
-            "ignoreBad" : True,
-            "normalisationPeriodNo" : self.g.normalisation.numberOfFilesPeriodNumber[1],
-            "normalisationPeriodNoBg" : self.g.normalisation.numberOfFilesPeriodNumberBg[1],
-            "normalisationDataFiles" : (
+            "instrumentName": self.g.instrument.name,
+            "inputFileDir": self.g.instrument.GudrunInputFileDir,
+            "dataFileDir": self.g.instrument.dataFileDir,
+            "detCalibFile": self.g.instrument.detectorCalibrationFileName,
+            "groupsFile": self.g.instrument.groupFileName,
+            "spectrumNumbers": (
+                self.g.instrument.spectrumNumbersForIncidentBeamMonitor
+            ),
+            "channelNumbers": (
+                self.g.instrument.channelNosSpikeAnalysis
+            ),
+            "acceptanceFactor": (
+                self.g.instrument.spikeAnalysisAcceptanceFactor
+                ),
+            "standardDeviation": (10, 10),
+            "ignoreBad": True,
+            "normalisationPeriodNo": (
+                self.g.normalisation.numberOfFilesPeriodNumber[1]
+                ),
+            "normalisationPeriodNoBg": (
+                self.g.normalisation.numberOfFilesPeriodNumberBg[1]
+            ),
+            "normalisationDataFiles": (
                 f'{self.g.normalisation.dataFiles.dataFiles[0]}  1\n'
             ),
-            "normalisationBackgroundDataFiles" : (
+            "normalisationBackgroundDataFiles": (
                 f'{self.g.normalisation.dataFilesBg.dataFiles[0]}  1\n'
                 f'{self.g.normalisation.dataFilesBg.dataFiles[1]}  1\n'
             ),
-            "sampleBackgroundDataFiles" : (
+            "sampleBackgroundDataFiles": (
                 f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1\n'
                 f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1\n'
             ),
-            "sampleDataFiles" : (
-                f'{self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[1]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[1]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[1]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[1]}  1\n'
+            "sampleDataFiles": (
+                f'{samples[0].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[0].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[1].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[1].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[2].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[2].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[3].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[3].dataFiles.dataFiles[1]}  1\n'
             ),
-            "containerDataFiles" : (
-                f'{self.g.sampleBackgrounds[0].samples[0].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[0].containers[0].dataFiles.dataFiles[1]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[0].containers[0].dataFiles.dataFiles[2]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[1].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[1].containers[0].dataFiles.dataFiles[1]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[1].containers[0].dataFiles.dataFiles[2]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[2].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].samples[3].containers[0].dataFiles.dataFiles[0]}  1\n'
+            "containerDataFiles": (
+                f'{samples[0].containers[0].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[0].containers[0].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[0].containers[0].dataFiles.dataFiles[2]}  1\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[2]}  1\n'
+                f'{samples[2].containers[0].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[3].containers[0].dataFiles.dataFiles[0]}  1\n'
             )
 
         }

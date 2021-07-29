@@ -46,7 +46,7 @@ class PurgeFile():
         for dataFile in self.gudrunFile.normalisation.dataFilesBg.dataFiles:
             self.normalisationBackgroundDataFiles += (
                 dataFile + "  " + str(self.normalisationPeriodNoBg) + "\n"
-            )     
+            )
         self.sampleBackgroundDataFiles = ""
         self.sampleDataFiles = ""
         self.containerDataFiles = ""
@@ -56,7 +56,11 @@ class PurgeFile():
                 self.sampleBackgroundDataFiles += (
                     dataFile + "  " + str(periodNumber) + "\n"
                 )
-            for sample in [x for x in sampleBackground.samples if x.runThisSample]:
+            for sample in [
+                x
+                for x in sampleBackground.samples
+                if x.runThisSample
+                    ]:
                 periodNumber = sample.numberOfFilesPeriodNumber[1]
                 for dataFile in sample.dataFiles.dataFiles:
                     self.sampleDataFiles += (
