@@ -34,11 +34,19 @@ class PurgeFile():
         self.normalisationPeriodNo = (
             self.gudrunFile.normalisation.numberOfFilesPeriodNumber[1]
         )
+        self.normalisationPeriodNoBg = (
+            self.gudrunFile.normalisation.numberOfFilesPeriodNumberBg[1]
+        )
         self.normalisationDataFiles = ""
+        self.normalisationBackgroundDataFiles = ""
         for dataFile in self.gudrunFile.normalisation.dataFiles.dataFiles:
             self.normalisationDataFiles += (
                 dataFile + "  " + str(self.normalisationPeriodNo) + "\n"
             )
+        for dataFile in self.gudrunFile.normalisation.dataFilesBg.dataFiles:
+            self.normalisationBackgroundDataFiles += (
+                dataFile + "  " + str(self.normalisationPeriodNoBg) + "\n"
+            )     
         self.sampleBackgroundDataFiles = ""
         self.sampleDataFiles = ""
         self.containerDataFiles = ""
@@ -48,7 +56,7 @@ class PurgeFile():
                 self.sampleBackgroundDataFiles += (
                     dataFile + "  " + str(periodNumber) + "\n"
                 )
-            for sample in [x for x in sampleBackground.samples if x.analyse]:
+            for sample in [x for x in sampleBackground.samples if x.runThisSample]:
                 periodNumber = sample.numberOfFilesPeriodNumber[1]
                 for dataFile in sample.dataFiles.dataFiles:
                     self.sampleDataFiles += (
@@ -98,6 +106,7 @@ class PurgeFile():
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
             f'{self.normalisationDataFiles}'
+            f'{self.normalisationBackgroundDataFiles}'
             f'{self.sampleBackgroundDataFiles}'
             f'{self.sampleDataFiles}'
             f'{self.containerDataFiles}'
