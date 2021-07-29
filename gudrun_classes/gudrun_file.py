@@ -22,6 +22,7 @@ try:
     from composition import Composition
     from element import Element
     from data_files import DataFiles
+    from purge_file import PurgeFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -39,6 +40,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.purge_file import PurgeFile
 
 
 class GudrunFile:
@@ -1508,7 +1510,7 @@ class GudrunFile:
 
         if not path:
             path = self.path
-
+        self.purge()
         try:
             result = subprocess.run(
                 ["bin/gudrun_dcs", path], capture_output=True, text=True
@@ -1524,7 +1526,6 @@ class GudrunFile:
         self.write_out()
         self.dcs(path=self.outpath)
 
-
-if __name__ == "__main__":
-    g = GudrunFile(path="/home/jared/GudPy/NIMROD-water/water.txt")
-    g.dcs()
+    def purge(self):
+        purge = PurgeFile(self)
+        return purge.purge()
