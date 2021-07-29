@@ -4,6 +4,7 @@ from shutil import copyfile
 from unittest import TestCase
 import re
 import math
+import unittest
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
@@ -52,6 +53,9 @@ class TestGudPyWorkflows(TestCase):
 
         g.instrument.GudrunStartFolder = GudrunStartFolder
         g.instrument.dataFileDir = str(dataFileDir) + "/"
+        g.instrument.groupFileName = (
+            GudrunStartFolder / g.instrument.groupFileName
+        )
         g.write_out(overwrite=True)
         self.g = g
         return super().setUp()
@@ -77,7 +81,7 @@ class TestGudPyWorkflows(TestCase):
         gf1 = GudFile(gfPath)
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.err)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
-        self.assertAlmostEqual(dcsLevelPercentage, 14.4, 0)
+        self.assertAlmostEqual(dcsLevelPercentage, 14.1, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
@@ -116,17 +120,22 @@ class TestGudPyWorkflows(TestCase):
             expectedData = open(
                 actualMintFile, "r", encoding="utf-8"
                 ).readlines()[10:]
-
+            close = 0
+            total = 0
             for a, b in zip(actualData, expectedData):
 
                 for x, y in zip(a.split(), b.split()):
                     if x == '#' or y == '#':
                         continue
-                    self.assertTrue(math.isclose(
+                    total += 1
+                    if math.isclose(
                         float(x.strip()),
                         float(y.strip()),
-                        rel_tol=0.05
-                    ))
+                        rel_tol=0.01
+                            ):
+                        close += 1
+            print(close, total)
+            self.assertTrue((close/total) >= 0.98)
 
     def testGudPyIterateByTweakFactor(self):
 
@@ -162,6 +171,7 @@ class TestGudPyWorkflows(TestCase):
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
     def testGudPyIterateBySubtractingWavelength(self):
+        print('\n')
 
         for i in range(1, 4):
 
@@ -170,10 +180,9 @@ class TestGudPyWorkflows(TestCase):
             )
 
             wavelengthSubtractionIterator.iterate(i)
-            print('Iterating {} times'.format(i))
 
-            for sample in self.g.sampleBackgrounds[0].samples:
-
+            for sample in [x for x in self.g.sampleBackgrounds[0].samples if x.runThisSample]:
+                print(f'running {sample.name} iteration {i}')
                 mintFilename = (
                     sample.dataFiles.dataFiles[0].replace(
                         self.g.instrument.dataFileType, "mint01"
@@ -191,18 +200,21 @@ class TestGudPyWorkflows(TestCase):
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
                     ).readlines()[10:]
-
+                close = 0
+                total = 0
                 for a, b in zip(actualData, expectedData):
 
                     for x, y in zip(a.split(), b.split()):
                         if x == '#' or y == '#':
                             continue
-
-                        self.assertTrue(math.isclose(
+                        total += 1
+                        if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.05
-                        ))
+                            rel_tol=0.02
+                                ):
+                            close += 1
+                self.assertTrue((close/total) > 0.90)
 
                 msubFilename = (
                     sample.dataFiles.dataFiles[0].replace(
@@ -219,15 +231,19 @@ class TestGudPyWorkflows(TestCase):
                 expectedData = open(
                     actualMsubFilename, "r", encoding="utf-8"
                     ).readlines()[10:]
-
+                close = 0
+                total = 0
                 for a, b in zip(actualData, expectedData):
 
                     for x, y in zip(a.split(), b.split()):
                         if x == '#' or y == '#':
                             continue
 
-                        self.assertTrue(math.isclose(
+                        total += 1
+                        if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.05
-                        ))
+                            rel_tol=0.02
+                                ):
+                            close += 1
+                self.assertTrue((close/total) >= 0.90)
