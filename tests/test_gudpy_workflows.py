@@ -4,7 +4,6 @@ from shutil import copyfile
 from unittest import TestCase
 import re
 import math
-import unittest
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
@@ -134,8 +133,7 @@ class TestGudPyWorkflows(TestCase):
                         rel_tol=0.01
                             ):
                         close += 1
-            print(close, total)
-            self.assertTrue((close/total) >= 0.98)
+            self.assertTrue((close/total) >= 0.95)
 
     def testGudPyIterateByTweakFactor(self):
 
@@ -171,7 +169,6 @@ class TestGudPyWorkflows(TestCase):
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
     def testGudPyIterateBySubtractingWavelength(self):
-        print('\n')
 
         for i in range(1, 4):
 
@@ -181,8 +178,11 @@ class TestGudPyWorkflows(TestCase):
 
             wavelengthSubtractionIterator.iterate(i)
 
-            for sample in [x for x in self.g.sampleBackgrounds[0].samples if x.runThisSample]:
-                print(f'running {sample.name} iteration {i}')
+            for sample in [
+                    x
+                    for x in self.g.sampleBackgrounds[0].samples
+                    if x.runThisSample
+                    ]:
                 mintFilename = (
                     sample.dataFiles.dataFiles[0].replace(
                         self.g.instrument.dataFileType, "mint01"
@@ -211,10 +211,10 @@ class TestGudPyWorkflows(TestCase):
                         if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.02
+                            rel_tol=0.01
                                 ):
                             close += 1
-                self.assertTrue((close/total) > 0.90)
+                self.assertTrue((close/total) >= 0.90)
 
                 msubFilename = (
                     sample.dataFiles.dataFiles[0].replace(
@@ -243,7 +243,7 @@ class TestGudPyWorkflows(TestCase):
                         if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.02
+                            rel_tol=0.01
                                 ):
                             close += 1
                 self.assertTrue((close/total) >= 0.90)

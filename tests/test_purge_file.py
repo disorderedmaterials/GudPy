@@ -81,8 +81,10 @@ class TestPurgeFile(TestCase):
                 f'{self.g.normalisation.dataFilesBg.dataFiles[1]}  1{TAB}\n'
             ),
             "sampleBackgroundDataFiles": (
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1'
+                f'{TAB}\n'
+                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1'
+                f'{TAB}\n'
             ),
             "sampleDataFiles": (
                 f'{samples[0].dataFiles.dataFiles[0]}  1{TAB}\n'
@@ -128,6 +130,8 @@ class TestPurgeFile(TestCase):
         outlines = open("purge_det.dat", encoding="utf-8").read()
         self.assertEqual(outlines, str(purge))
 
-        outlines_ = open("tests/TestData/purge_det.dat", encoding='utf-8').read()
+        outlines_ = open(
+            "tests/TestData/purge_det.dat",
+            encoding='utf-8').read()
         self.assertEqual(outlines, outlines_)
         self.assertEqual(str(purge), outlines_)
