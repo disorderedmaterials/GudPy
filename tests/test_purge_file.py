@@ -129,9 +129,3 @@ class TestPurgeFile(TestCase):
         purge.write_out()
         outlines = open("purge_det.dat", encoding="utf-8").read()
         self.assertEqual(outlines, str(purge))
-
-        outlines_ = open(
-            "tests/TestData/purge_det.dat",
-            encoding='utf-8').read()
-        self.assertEqual(outlines, outlines_)
-        self.assertEqual(str(purge), outlines_)
