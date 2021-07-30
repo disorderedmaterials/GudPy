@@ -274,9 +274,21 @@ class GudrunFile:
                 continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
+                if key == "XMin":
+                    raise ValueError(
+                        'Whilst parsing INSTRUMENT'
+                        ', Xmin, Xmax, XStep was not found'
+                    )
+                elif key == "wavelengthMin":
+                    raise ValueError(
+                        'Whilst parsing INSTRUMENT'
+                        ', wavelengthMin, wavelengthMax,'
+                        ' wavelengthStep was not found'
+                    )
+                else:
+                    raise ValueError(
+                        f'Whilst parsing INSTRUMENT, {key} was not found'
+                    )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
             if key == "XMin":
@@ -1563,5 +1575,7 @@ class GudrunFile:
 
 
 if __name__ == "__main__":
-    g = GudrunFile(path="/home/jared/GudPy/NIMROD-water/water.txt")
-    g.dcs()
+    g = GudrunFile(
+        path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
+        )
+    print(g.dcs())

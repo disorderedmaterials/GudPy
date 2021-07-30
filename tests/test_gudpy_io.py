@@ -83,7 +83,7 @@ class TestGudPyIO(TestCase):
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "numberIterations": 2,
-            "tweakTweakFactors": False,
+            "tweakTweakFactors": False
         }
 
         self.expectedBeam = {
@@ -760,13 +760,15 @@ class TestGudPyIO(TestCase):
 
     def testLoadMissingInstrumentAttributesSeq(self):
 
-        for i, key in enumerate(self.expectedInstrument.keys()):
-            ignore = [
-                "groupingParameterPanel", "useLogarithmicBinning",
-                "wavelengthMax", "wavelengthStep",
-                "XMax", "XStep"
-                ]
-            if key in ignore:
+        expectedInstrument = deepcopy(self.expectedInstrument)
+        expectedInstrument.pop("XMax", None)
+        expectedInstrument.pop("XStep", None)
+        expectedInstrument.pop("wavelengthMax", None)
+        expectedInstrument.pop("wavelengthStep", None)
+        expectedInstrument.pop("useLogarithmicBinning", None)
+
+        for i, key in enumerate(expectedInstrument.keys()):
+            if key == "groupingParameterPanel":
                 continue
 
             badInstrument = str(self.goodInstrument).split("\n")
@@ -781,24 +783,41 @@ class TestGudPyIO(TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                str(cm.exception),
-            )
+
+            if key == "XMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT, Xmin,'
+                    ' Xmax, XStep was not found',
+                    str(cm.exception),
+                )
+            elif key == "wavelengthMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT'
+                    ', wavelengthMin, wavelengthMax,'
+                    ' wavelengthStep was not found',
+                    str(cm.exception),
+                )
+            else:
+                self.assertEqual(
+                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                    str(cm.exception),
+                )
             os.remove("test_data.txt")
 
     def testLoadMissingInstrumentAttributesRand(self):
 
+        expectedInstrument = deepcopy(self.expectedInstrument)
+        expectedInstrument.pop("XMax", None)
+        expectedInstrument.pop("XStep", None)
+        expectedInstrument.pop("wavelengthMax", None)
+        expectedInstrument.pop("wavelengthStep", None)
+        expectedInstrument.pop("useLogarithmicBinning", None)
+
         for i in range(50):
 
-            key = random.choice(list(self.expectedInstrument))
-            j = list(self.expectedInstrument).index(key)
-            ignore = [
-                "groupingParameterPanel", "useLogarithmicBinning",
-                "wavelengthMax", "wavelengthStep",
-                "XMax", "XStep"
-                ]
-            if key in ignore:
+            key = random.choice(list(expectedInstrument))
+            j = list(expectedInstrument).index(key)
+            if key == "groupingParameterPanel":
                 continue
 
             badInstrument = str(self.goodInstrument).split("\n")
@@ -810,13 +829,26 @@ class TestGudPyIO(TestCase):
                 f.write(
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
-
             with self.assertRaises(ValueError) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                str(cm.exception),
-            )
+            if key == "XMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT, Xmin,'
+                    ' Xmax, XStep was not found',
+                    str(cm.exception),
+                )
+            elif key == "wavelengthMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT'
+                    ', wavelengthMin, wavelengthMax,'
+                    ' wavelengthStep was not found',
+                    str(cm.exception),
+                )
+            else:
+                self.assertEqual(
+                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                    str(cm.exception),
+                )
             os.remove("test_data.txt")
 
     def testLoadMissingBeamAttributesSeq(self):
