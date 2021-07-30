@@ -43,7 +43,6 @@ except ModuleNotFoundError:
     from gudrun_classes.purge_file import PurgeFile
 
 
-
 class GudrunFile:
     def __init__(self, path=None, data=None):
         self.path = path

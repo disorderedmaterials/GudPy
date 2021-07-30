@@ -135,7 +135,6 @@ class TestGudPyWorkflows(TestCase):
                         close += 1
             self.assertTrue((close/total) >= 0.95)
 
-
     def testGudPyIterateByTweakFactor(self):
 
         tweakFactorIterator = TweakFactorIterator(self.g)
