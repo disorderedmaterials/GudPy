@@ -127,7 +127,7 @@ class WavelengthSubtractionIterator():
         self.enableLogarithmicBinning()
         self.gudrunFile.instrument.scaleSelection = self.scales.WAVELENGTH
         self.zeroTopHatWidths()
-        self.setSelfScatteringFiles(self.scales.WAVELENGTH)
+        self.setSelfScatteringFiles(self.scales.WAVELENGTH.value)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
@@ -143,7 +143,7 @@ class WavelengthSubtractionIterator():
         self.applyQRange()
         self.gudrunFile.instrument.scaleSelection = self.scales.Q
         self.resetTopHatWidths()
-        self.setSelfScatteringFiles(self.scales.Q)
+        self.setSelfScatteringFiles(self.scales.Q.value)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
