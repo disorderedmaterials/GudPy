@@ -1,3 +1,5 @@
+from enum import Enum
+
 
 class WavelengthSubtractionIterator():
 
@@ -8,6 +10,15 @@ class WavelengthSubtractionIterator():
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
+
+        class Scales(Enum):
+            Q = 1
+            D_SPACE = 2
+            WAVELENGTH = 3
+            ENERGY = 4
+            TOF = 5
+
+        self.scales = Scales()
 
     def enableLogarithmicBinning(self):
 
@@ -116,7 +127,7 @@ class WavelengthSubtractionIterator():
         self.enableLogarithmicBinning()
         self.gudrunFile.instrument.scaleSelection = 3
         self.zeroTopHatWidths()
-        self.setSelfScatteringFiles(3)
+        self.setSelfScatteringFiles(self.scales.WAVELENGTH)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
@@ -132,7 +143,7 @@ class WavelengthSubtractionIterator():
         self.applyQRange()
         self.gudrunFile.instrument.scaleSelection = 1
         self.resetTopHatWidths()
-        self.setSelfScatteringFiles(1)
+        self.setSelfScatteringFiles(self.scales.Q)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
