@@ -49,6 +49,7 @@ class TestPurgeFile(TestCase):
         g.write_out(overwrite=True)
         self.g = g
         samples = self.g.sampleBackgrounds[0].samples
+        TAB = "          "
         self.expectedPurgeFile = {
             "instrumentName": self.g.instrument.name,
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
@@ -73,35 +74,35 @@ class TestPurgeFile(TestCase):
                 self.g.normalisation.numberOfFilesPeriodNumberBg[1]
             ),
             "normalisationDataFiles": (
-                f'{self.g.normalisation.dataFiles.dataFiles[0]}  1\n'
+                f'{self.g.normalisation.dataFiles.dataFiles[0]}  1{TAB}\n'
             ),
             "normalisationBackgroundDataFiles": (
-                f'{self.g.normalisation.dataFilesBg.dataFiles[0]}  1\n'
-                f'{self.g.normalisation.dataFilesBg.dataFiles[1]}  1\n'
+                f'{self.g.normalisation.dataFilesBg.dataFiles[0]}  1{TAB}\n'
+                f'{self.g.normalisation.dataFilesBg.dataFiles[1]}  1{TAB}\n'
             ),
             "sampleBackgroundDataFiles": (
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1\n'
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1\n'
+                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1{TAB}\n'
             ),
             "sampleDataFiles": (
-                f'{samples[0].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[0].dataFiles.dataFiles[1]}  1\n'
-                f'{samples[1].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[1].dataFiles.dataFiles[1]}  1\n'
-                f'{samples[2].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[2].dataFiles.dataFiles[1]}  1\n'
-                f'{samples[3].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[3].dataFiles.dataFiles[1]}  1\n'
+                f'{samples[0].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[0].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{samples[1].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[1].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{samples[2].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[2].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{samples[3].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[3].dataFiles.dataFiles[1]}  1{TAB}\n'
             ),
             "containerDataFiles": (
-                f'{samples[0].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[0].containers[0].dataFiles.dataFiles[1]}  1\n'
-                f'{samples[0].containers[0].dataFiles.dataFiles[2]}  1\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[1]}  1\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[2]}  1\n'
-                f'{samples[2].containers[0].dataFiles.dataFiles[0]}  1\n'
-                f'{samples[3].containers[0].dataFiles.dataFiles[0]}  1\n'
+                f'{samples[0].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[0].containers[0].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{samples[0].containers[0].dataFiles.dataFiles[2]}  1{TAB}\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[1]}  1{TAB}\n'
+                f'{samples[1].containers[0].dataFiles.dataFiles[2]}  1{TAB}\n'
+                f'{samples[2].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
+                f'{samples[3].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
             )
 
         }
@@ -119,3 +120,14 @@ class TestPurgeFile(TestCase):
             self.assertEqual(
                 self.expectedPurgeFile[key], purgeAttrsDict[key]
             )
+
+    def testWritePurgeFile(self):
+
+        purge = PurgeFile(self.g)
+        purge.write_out()
+        outlines = open("purge_det.dat", encoding="utf-8").read()
+        self.assertEqual(outlines, str(purge))
+
+        outlines_ = open("tests/TestData/purge_det.dat", encoding='utf-8').read()
+        self.assertEqual(outlines, outlines_)
+        self.assertEqual(str(purge), outlines_)

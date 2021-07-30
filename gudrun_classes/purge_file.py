@@ -37,15 +37,16 @@ class PurgeFile():
         self.normalisationPeriodNoBg = (
             self.gudrunFile.normalisation.numberOfFilesPeriodNumberBg[1]
         )
+        TAB = "          "
         self.normalisationDataFiles = ""
         self.normalisationBackgroundDataFiles = ""
         for dataFile in self.gudrunFile.normalisation.dataFiles.dataFiles:
             self.normalisationDataFiles += (
-                dataFile + "  " + str(self.normalisationPeriodNo) + "\n"
+                dataFile + "  " + str(self.normalisationPeriodNo) + TAB + "\n"
             )
         for dataFile in self.gudrunFile.normalisation.dataFilesBg.dataFiles:
             self.normalisationBackgroundDataFiles += (
-                dataFile + "  " + str(self.normalisationPeriodNoBg) + "\n"
+                dataFile + "  " + str(self.normalisationPeriodNoBg) + TAB + "\n"
             )
         self.sampleBackgroundDataFiles = ""
         self.sampleDataFiles = ""
@@ -54,7 +55,7 @@ class PurgeFile():
             periodNumber = sampleBackground.numberOfFilesPeriodNumber[1]
             for dataFile in sampleBackground.dataFiles.dataFiles:
                 self.sampleBackgroundDataFiles += (
-                    dataFile + "  " + str(periodNumber) + "\n"
+                    dataFile + "  " + str(periodNumber) + TAB + "\n"
                 )
             for sample in [
                 x
@@ -64,13 +65,13 @@ class PurgeFile():
                 periodNumber = sample.numberOfFilesPeriodNumber[1]
                 for dataFile in sample.dataFiles.dataFiles:
                     self.sampleDataFiles += (
-                        dataFile + "  " + str(periodNumber) + "\n"
+                        dataFile + "  " + str(periodNumber) + TAB + "\n"
                     )
                 for container in sample.containers:
                     periodNumber = container.numberOfFilesPeriodNumber[1]
                     for dataFile in container.dataFiles.dataFiles:
                         self.containerDataFiles += (
-                            dataFile + "  " + str(periodNumber) + "\n"
+                            dataFile + "  " + str(periodNumber) + TAB + "\n"
                         )
 
     def write_out(self):
