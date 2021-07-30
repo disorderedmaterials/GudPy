@@ -15,6 +15,8 @@ class PurgeFile():
             self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
 
         self.gudrunFile = gudrunFile
+
+        # Extract relevant attributes from the GudrunFile object.
         self.instrumentName = gudrunFile.instrument.name
         self.inputFileDir = gudrunFile.instrument.GudrunInputFileDir
         self.dataFileDir = gudrunFile.instrument.dataFileDir
@@ -37,9 +39,21 @@ class PurgeFile():
         self.normalisationPeriodNoBg = (
             self.gudrunFile.normalisation.numberOfFilesPeriodNumberBg[1]
         )
+
+        # Collect data files as strings of the format:
+        # {name} {period number}
+        # do this for normalisation, normalisation background,
+        # sample background, sample and container data files.
+        # insert eight space 'tab' after each period number,
+        # for consistency with original Gudrun code.
+
         TAB = "          "
         self.normalisationDataFiles = ""
         self.normalisationBackgroundDataFiles = ""
+
+        # Iterate through normalisation and normalisation background
+        # data files, appending their string representation with
+        # period number to the relevant string.
         for dataFile in self.gudrunFile.normalisation.dataFiles.dataFiles:
             self.normalisationDataFiles += (
                 dataFile + "  " + str(self.normalisationPeriodNo) + TAB + "\n"
@@ -52,6 +66,12 @@ class PurgeFile():
         self.sampleBackgroundDataFiles = ""
         self.sampleDataFiles = ""
         self.containerDataFiles = ""
+
+        # Iterate through sample backgrounds, samples and containers
+        # data files, appending their string representation with
+        # period number to the relevant string
+        # only append samples and their containers, if
+        # the sample is set to run.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             periodNumber = sampleBackground.numberOfFilesPeriodNumber[1]
             for dataFile in sampleBackground.dataFiles.dataFiles:
@@ -76,7 +96,8 @@ class PurgeFile():
                         )
 
     def write_out(self):
-
+        # Write out the string representation of the PurgeFile
+        # To purge_det.dat.
         f = open("purge_det.dat", "w", encoding="utf-8")
         f.write(str(self))
         f.close()
@@ -127,7 +148,10 @@ class PurgeFile():
                 text=True
             )
         except FileNotFoundError:
-            purge_det = sys._MEIPASS + os.sep + "purge_det.dat"
+            # FileNotFoundError probably means that GudPy is being
+            # run as an executable.
+            # So prepend sys._MEIPASS to the path to purge_det.
+            purge_det = sys._MEIPASS + os.sep + "purge_det"
             result = subprocess.run(
                 [purge_det, "purge_det.dat"], capture_output=True, text=True
             )
