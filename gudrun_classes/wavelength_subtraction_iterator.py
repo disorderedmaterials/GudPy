@@ -125,7 +125,7 @@ class WavelengthSubtractionIterator():
         # alter data file suffixes.
         self.applyWavelengthRanges()
         self.enableLogarithmicBinning()
-        self.gudrunFile.instrument.scaleSelection = self.scales.WAVELENGTH
+        self.gudrunFile.instrument.scaleSelection = self.scales.WAVELENGTH.value
         self.zeroTopHatWidths()
         self.setSelfScatteringFiles(self.scales.WAVELENGTH.value)
 
@@ -141,7 +141,7 @@ class WavelengthSubtractionIterator():
         # Set the correct scale, reset top hat widths
         # alter data file suffixes.
         self.applyQRange()
-        self.gudrunFile.instrument.scaleSelection = self.scales.Q
+        self.gudrunFile.instrument.scaleSelection = self.scales.Q.value
         self.resetTopHatWidths()
         self.setSelfScatteringFiles(self.scales.Q.value)
 
