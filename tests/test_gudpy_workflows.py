@@ -213,7 +213,7 @@ class TestGudPyWorkflows(TestCase):
                             rel_tol=0.02
                                 ):
                             close += 1
-                self.assertTrue((close/total) >= 0.90)
+                self.assertTrue((close/total) >= 0.85)
 
                 msubFilename = (
                     sample.dataFiles.dataFiles[0].replace(
@@ -246,4 +246,4 @@ class TestGudPyWorkflows(TestCase):
                             rel_tol=0.02
                                 ):
                             close += 1
-                self.assertTrue((close/total) >= 0.90)
+                self.assertTrue((close/total) >= 0.85)
