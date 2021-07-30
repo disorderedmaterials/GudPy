@@ -61,14 +61,11 @@ class Instrument:
             f'  {self.wavelengthStep}'
         )
 
-        useLogarithmicBinning = (
-            '  -0.01' if self.useLogarithmicBinning
-            else ''
-        )
+        if self.useLogarithmicBinning:
+            self.XStep = -0.01
 
         XScaleLine = (
             f'{self.XMin}  {self.XMax}  {self.XStep}'
-            f'{useLogarithmicBinning}'
         )
 
         if not all(self.groupingParameterPanel):

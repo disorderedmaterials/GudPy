@@ -175,7 +175,6 @@ class TestGudPyWorkflows(TestCase):
             wavelengthSubtractionIterator = (
                 WavelengthSubtractionIterator(self.g)
             )
-
             wavelengthSubtractionIterator.iterate(i)
 
             for sample in [
@@ -211,7 +210,7 @@ class TestGudPyWorkflows(TestCase):
                         if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.01
+                            rel_tol=0.02
                                 ):
                             close += 1
                 self.assertTrue((close/total) >= 0.90)
@@ -221,6 +220,7 @@ class TestGudPyWorkflows(TestCase):
                         self.g.instrument.dataFileType, "msubw01"
                     )
                 )
+
                 actualMsubFilename = (
                     f'tests/TestData/water-ref/wavelength{i}/{msubFilename}'
                 )
@@ -243,7 +243,7 @@ class TestGudPyWorkflows(TestCase):
                         if math.isclose(
                             float(x.strip()),
                             float(y.strip()),
-                            rel_tol=0.01
+                            rel_tol=0.02
                                 ):
                             close += 1
                 self.assertTrue((close/total) >= 0.90)

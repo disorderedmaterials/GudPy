@@ -1,5 +1,5 @@
 from enum import Enum
-
+from pathlib import Path
 
 class WavelengthSubtractionIterator():
 
@@ -22,11 +22,11 @@ class WavelengthSubtractionIterator():
 
     def enableLogarithmicBinning(self):
 
-        self.gudrunFile.instrument.useLogarithmicBinning = False
+        self.gudrunFile.instrument.useLogarithmicBinning = True
 
     def disableLogarithmicBinning(self):
 
-        self.gudrunFile.instrument.useLogarithmicBinning = True
+        self.gudrunFile.instrument.useLogarithmicBinning = False
 
     def collectQRange(self):
         # Collect max, min and step on Q scale.
@@ -48,9 +48,9 @@ class WavelengthSubtractionIterator():
         self.gudrunFile.instrument.XMin = (
             self.gudrunFile.instrument.wavelengthMin
         )
-        self.gudrunFile.instrument.XStep = (
-            self.gudrunFile.instrument.wavelengthStep
-        )
+        # self.gudrunFile.instrument.XStep = (
+        #     self.gudrunFile.instrument.wavelengthStep
+        # )
 
     def zeroTopHatWidths(self):
         # Enumerator for sample backgrounds
@@ -100,10 +100,9 @@ class WavelengthSubtractionIterator():
             for j, sample in enumerate(sampleBackground.samples):
                 if sample.runThisSample:
                     target = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    filename = target.dataFiles.dataFiles[0]
                     target.fileSelfScattering = (
-                        target.dataFiles.dataFiles[0].replace(
-                            dataFileType, suffix
-                            )
+                        str(Path(filename).stem) + '.' + suffix
                     )
 
     def wavelengthIteration(self, i):
@@ -139,10 +138,11 @@ class WavelengthSubtractionIterator():
         # Enable subtracting of wavelength binned data
         self.gudrunFile.instrument.subWavelengthBinnedData = True
         # Set the min, max and step size on the X scale
-        # To the min, max and step size on the wavelength scale
+        # To the min, max and step size on the Q scale
         # Set the correct scale, reset top hat widths
         # alter data file suffixes.
         self.applyQRange()
+        self.disableLogarithmicBinning()
         self.gudrunFile.instrument.scaleSelection = self.scales.Q.value
         self.resetTopHatWidths()
         self.setSelfScatteringFiles(self.scales.Q.value)
