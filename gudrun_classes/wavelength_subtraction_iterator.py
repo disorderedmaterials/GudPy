@@ -1,6 +1,7 @@
 from enum import Enum
 from pathlib import Path
 
+
 class WavelengthSubtractionIterator():
 
     def __init__(self, gudrunFile):
@@ -86,7 +87,6 @@ class WavelengthSubtractionIterator():
 
     def setSelfScatteringFiles(self, scale):
 
-        dataFileType = self.gudrunFile.instrument.dataFileType
         # Dict to pick suffix based on scale
         suffix = {1: "msubw01", 3: "mint01"}[scale]
 
