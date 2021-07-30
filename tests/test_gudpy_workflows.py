@@ -11,7 +11,6 @@ try:
     from tweak_factor_iterator import TweakFactorIterator
     from gud_file import GudFile
     from wavelength_subtraction_iterator import WavelengthSubtractionIterator
-
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gudrun_file import GudrunFile
@@ -55,6 +54,7 @@ class TestGudPyWorkflows(TestCase):
         g.instrument.groupFileName = (
             GudrunStartFolder / g.instrument.groupFileName
         )
+
         g.write_out(overwrite=True)
         self.g = g
         return super().setUp()
@@ -134,6 +134,7 @@ class TestGudPyWorkflows(TestCase):
                             ):
                         close += 1
             self.assertTrue((close/total) >= 0.95)
+
 
     def testGudPyIterateByTweakFactor(self):
 
