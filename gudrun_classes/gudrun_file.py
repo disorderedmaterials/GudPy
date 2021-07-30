@@ -110,9 +110,9 @@ class GudrunFile:
             ],
             "channelNosSpikeAnalysis": "Channel numbers",
             "spikeAnalysisAcceptanceFactor": "Spike analysis acceptance",
-            "wavelengthRangeStepSize": ["Wavelength", "range", "step", "size"],
+            "wavelengthMin": ["Wavelength", "range", "step", "size"],
             "NoSmoothsOnMonitor": "smooths on monitor",
-            "XScaleRangeStep": "x-scale",
+            "XMin": "x-scale",
             "groupsAcceptanceFactor": "Groups acceptance",
             "mergePower": "Merge power",
             "subSingleAtomScattering": ["single", "atom", "scattering?"],
@@ -154,6 +154,13 @@ class GudrunFile:
         auxVars = deepcopy(self.instrument.__dict__)
         if not len(isGroupingParameterPanelUsed):
             auxVars.pop("groupingParameterPanel", None)
+
+        # Pop these attributes, we will deal with them separately.
+        auxVars.pop("wavelengthMax", None)
+        auxVars.pop("wavelengthStep", None)
+        auxVars.pop("XMax", None)
+        auxVars.pop("XStep", None)
+        auxVars.pop("useLogarithmicBinning", None)
 
         # Map the attributes of the Instrument class to line numbers.
 
@@ -270,9 +277,29 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = float(
-                firstword(lines[FORMAT_MAP[key]])
-            )
+            if key == "XMin":
+                XScale = extract_floats_from_string(
+                    lines[FORMAT_MAP[key]]
+                )
+                self.instrument.__dict__["XMin"] = XScale[0]
+                self.instrument.__dict__["XMax"] = XScale[1]
+                self.instrument.__dict__["XStep"] = XScale[2]
+                if len(XScale) > 3:
+                    if XScale[3] == -0.01:
+                        self.instrument.__dict__["useLogarithmicBinning"] = (
+                            True
+                        )
+            elif key == "wavelengthMin":
+                wScale = extract_floats_from_string(
+                    lines[FORMAT_MAP[key]]
+                )
+                self.instrument.__dict__["wavelengthMin"] = wScale[0]
+                self.instrument.__dict__["wavelengthMax"] = wScale[1]
+                self.instrument.__dict__["wavelengthStep"] = wScale[2]
+            else:
+                self.instrument.__dict__[key] = float(
+                    firstword(lines[FORMAT_MAP[key]])
+                )
 
         """
         Get all attributes that are boolean values:

@@ -59,9 +59,14 @@ class TestGudPyIO(TestCase):
             "transmissionMonitorQuietCountConst": 0.0001,
             "channelNosSpikeAnalysis": (0, 0),
             "spikeAnalysisAcceptanceFactor": 5,
-            "wavelengthRangeStepSize": (0.05, 12.0, 0.1),
+            "wavelengthMin": 0.05,
+            "wavelengthMax": 12.0,
+            "wavelengthStep": 0.1,
             "NoSmoothsOnMonitor": 200,
-            "XScaleRangeStep": (0.01, 50.0, -0.025),
+            "XMin": 0.01,
+            "XMax": 50.0,
+            "XStep": -0.025,
+            "useLogarithmicBinning": False,
             "groupingParameterPanel": (0, 0.0, 0.0, 0.0),
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
@@ -499,7 +504,9 @@ class TestGudPyIO(TestCase):
                 for i, sample in enumerate(self.expectedSampleBackground[key]):
 
                     sampleAttrsDict = (
-                        self.g.sampleBackgrounds[0].samples[i].__dict__
+                        deepcopy(
+                            self.g.sampleBackgrounds[0].samples[i].__dict__
+                        )
                     )
                     sampleAttrsDict.pop("runThisSample", None)
 
