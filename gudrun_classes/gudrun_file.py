@@ -270,6 +270,8 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            if key in ["XMax", "XStep", "wavelengthMax", "wavelengthStep"]:
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -310,6 +312,8 @@ class GudrunFile:
         """
 
         for key in BOOLS:
+            if key == "useLogarithmicBinning":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
