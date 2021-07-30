@@ -245,6 +245,7 @@ class TestGudPyIO(TestCase):
             "analyse": False,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerA],
+            "runThisSample": True
         }
 
         self.expectedSampleB = {
@@ -282,6 +283,7 @@ class TestGudPyIO(TestCase):
             "analyse": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerB],
+            "runThisSample": True
         }
 
         self.expectedSampleC = {
@@ -324,6 +326,7 @@ class TestGudPyIO(TestCase):
             "analyse": False,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerC],
+            "runThisSample": True
         }
 
         self.expectedSampleD = {
@@ -366,6 +369,7 @@ class TestGudPyIO(TestCase):
             "analyse": False,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerD],
+            "runThisSample": True
         }
 
         self.expectedSampleBackground = {
@@ -508,8 +512,6 @@ class TestGudPyIO(TestCase):
                             self.g.sampleBackgrounds[0].samples[i].__dict__
                         )
                     )
-                    sampleAttrsDict.pop("runThisSample", None)
-
                     for key_ in sampleAttrsDict.keys():
 
                         if key_ == "containers":
@@ -759,8 +761,12 @@ class TestGudPyIO(TestCase):
     def testLoadMissingInstrumentAttributesSeq(self):
 
         for i, key in enumerate(self.expectedInstrument.keys()):
-
-            if key == "groupingParameterPanel":
+            ignore = [
+                "groupingParameterPanel", "useLogarithmicBinning",
+                "wavelengthMax", "wavelengthStep",
+                "XMax", "XStep"
+                ]
+            if key in ignore:
                 continue
 
             badInstrument = str(self.goodInstrument).split("\n")
@@ -787,8 +793,12 @@ class TestGudPyIO(TestCase):
 
             key = random.choice(list(self.expectedInstrument))
             j = list(self.expectedInstrument).index(key)
-
-            if key == "groupingParameterPanel":
+            ignore = [
+                "groupingParameterPanel", "useLogarithmicBinning",
+                "wavelengthMax", "wavelengthStep",
+                "XMax", "XStep"
+                ]
+            if key in ignore:
                 continue
 
             badInstrument = str(self.goodInstrument).split("\n")

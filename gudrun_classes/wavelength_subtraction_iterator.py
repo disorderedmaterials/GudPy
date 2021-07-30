@@ -18,7 +18,7 @@ class WavelengthSubtractionIterator():
             ENERGY = 4
             TOF = 5
 
-        self.scales = Scales()
+        self.scales = Scales
 
     def enableLogarithmicBinning(self):
 
