@@ -3,8 +3,8 @@
 INSTRUMENT          {
 
 NIMROD          Instrument name
-/home/tris/work/NIMROD-water/./          Gudrun input file directory:
-/          Data file directory
+/home/test/gudpy-water/          Gudrun input file directory:
+NIMROD-water/raw/          Data file directory
 raw          Data file type
 StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat          Detector calibration file name
 4          User table column number for phi values
@@ -30,8 +30,8 @@ StartupFiles/NIMROD/NIMRODdeadtimeNone.cor          Deadtime constants file name
 StartupFiles/NIMROD/sears91_gudrun.dat          Neutron scattering parameters file
 1          Scale selection: 1 = Q, 2 = d-space, 3 = wavelength, 4 = energy, 5 = TOF
 0          Subtract wavelength-binned data?
-/home/tris/src/Gudrun2017/Gudrun          Folder where Gudrun started
-/home/tris/work/NIMROD-water/.          Folder containing the startup file
+/home/test/src/Gudrun2017/Gudrun          Folder where Gudrun started
+/oldwork/test/water          Folder containing the startup file
 0.04          Logarithmic step size
 1          Hard group edges?
 2          Number of iterations
