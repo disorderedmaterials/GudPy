@@ -109,7 +109,7 @@ TRANSMISSION          Total cross section source
 0.0  1.5  0          Exponential amplitude and decay [1/A]
 *  0  0          * 0 0 to specify end of exponential parameter input
 1.0          Normalisation correction factor
-*          Name of file containing self scattering as a function of wavelength [A]
+NIMROD00016608_H2O_in_N9.msubw01          Name of file containing self scattering as a function of wavelength [A]
 0          Normalise to:Nothing
 50.0          Maximum radius for FT [A]
 0          Output units: b/atom/sr
@@ -164,7 +164,7 @@ TRANSMISSION          Total cross section source
 0.0  1.5  0          Exponential amplitude and decay [1/A]
 *  0  0          * 0 0 to specify end of exponential parameter input
 1.0          Normalisation correction factor
-*          Name of file containing self scattering as a function of wavelength [A]
+NIMROD00016609_D2O_in_N10.msubw01          Name of file containing self scattering as a function of wavelength [A]
 0          Normalise to:Nothing
 50.0          Maximum radius for FT [A]
 0          Output units: b/atom/sr
@@ -220,7 +220,7 @@ TRANSMISSION          Total cross section source
 0.0  1.5  0          Exponential amplitude and decay [1/A]
 *  0  0          * 0 0 to specify end of exponential parameter input
 1.0          Normalisation correction factor
-*          Name of file containing self scattering as a function of wavelength [A]
+NIMROD00016741_HDO_in_N6.msubw01          Name of file containing self scattering as a function of wavelength [A]
 0          Normalise to:Nothing
 50.0          Maximum radius for FT [A]
 0          Output units: b/atom/sr
@@ -274,7 +274,7 @@ TRANSMISSION          Total cross section source
 0.0  1.5  0          Exponential amplitude and decay [1/A]
 *  0  0          * 0 0 to specify end of exponential parameter input
 1.0          Normalisation correction factor
-*          Name of file containing self scattering as a function of wavelength [A]
+NIMROD00016742_NullWater_in_N8.msubw01          Name of file containing self scattering as a function of wavelength [A]
 0          Normalise to:Nothing
 50.0          Maximum radius for FT [A]
 0          Output units: b/atom/sr
