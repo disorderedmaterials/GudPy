@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 try:
     from utils import spacify
 except ModuleNotFoundError:
@@ -21,30 +19,30 @@ class Beam:
         self.shieldingAttenuationCoefficient = 0.0
 
     def __str__(self):
+        TAB = "          "
+        return (
 
-        return cleandoc(
-            """
-{}        Sample geometry
-{}        Number of beam profile values
-{}        Beam profile values (Maximum of 50 allowed currently)
-{}        Step size for absorption and m.s. calculation of no. of slices
-{}        Angular step for corrections [deg.]
-{}        Incident beam edges relative to centre of sample [cm]
-{}        Scattered beam edges relative to centre of sample [cm]
-{}        Filename containing incident beam spectrum parameters
-{}        Overall background factor
-{}        Sample dependent background factor
-{}        Shielding attenuation coefficient [per m per A]""".format(
-                self.sampleGeometry,
-                self.noBeamProfileValues,
-                spacify(self.beamProfileValues),
-                spacify(self.stepSizeAbsorptionMSNoSlices),
-                self.angularStepForCorrections,
-                spacify(self.incidentBeamEdgesRelCentroid),
-                spacify(self.scatteredBeamEdgesRelCentroid),
-                self.filenameIncidentBeamSpectrumParams,
-                self.overallBackgroundFactor,
-                self.sampleDependantBackgroundFactor,
-                self.shieldingAttenuationCoefficient,
-            )
+            f'{self.sampleGeometry}{TAB}'
+            f'Sample geometry\n'
+            f'{self.noBeamProfileValues}{TAB}'
+            f'Number of beam profile values\n'
+            f'{spacify(self.beamProfileValues)}{TAB}'
+            f'Beam profile values (Maximum of 50 allowed currently)\n'
+            f'{spacify(self.stepSizeAbsorptionMSNoSlices)}{TAB}'
+            f'Step size for absorption and m.s. calculation of no. of slices\n'
+            f'{self.angularStepForCorrections}{TAB}'
+            f'Angular step for corrections [deg.]\n'
+            f'{spacify(self.incidentBeamEdgesRelCentroid)}{TAB}'
+            f'Incident beam edges relative to centre of sample [cm]\n'
+            f'{spacify(self.scatteredBeamEdgesRelCentroid)}{TAB}'
+            f'Scattered beam edges relateive to centre of samples [cm]\n'
+            f'{self.filenameIncidentBeamSpectrumParams}{TAB}'
+            f'Filename containing incident beam spectrum parameters\n'
+            f'{self.overallBackgroundFactor}{TAB}'
+            f'Overall background factor\n'
+            f'{self.sampleDependantBackgroundFactor}{TAB}'
+            f'Sample dependent background factor\n'
+            f'{self.shieldingAttenuationCoefficient}{TAB}'
+            f'Shielding attenuation coefficient [per m per A]'
+
         )
