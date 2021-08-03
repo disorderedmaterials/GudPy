@@ -1567,7 +1567,7 @@ class GudrunFile:
 
     def process(self):
         self.write_out()
-        print(self.dcs(path=self.outpath))
+        self.dcs(path=self.outpath)
 
     def purge(self):
         purge = PurgeFile(self)
