@@ -4,7 +4,6 @@ from inspect import cleandoc
 class Composition:
     def __init__(self, elements, type_):
         self.elements = elements
-        # print(elements)
         self.type_ = type_
         self.str = [
             str(el) + "        " + type_ + " atomic composition"
