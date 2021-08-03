@@ -242,7 +242,7 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": True,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerA],
             "runThisSample": True
@@ -280,7 +280,7 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
-            "analyse": True,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerB],
             "runThisSample": True
@@ -323,7 +323,7 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": True,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerC],
             "runThisSample": True
@@ -366,7 +366,7 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": True,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerD],
             "runThisSample": True

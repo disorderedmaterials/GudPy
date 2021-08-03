@@ -912,7 +912,7 @@ class GudrunFile:
             "outputUnits": "Output units",
             "powerForBroadening": "Power for broadening",
             "stepSize": "Step size",
-            "analyse": ["Analyse", "sample?"],
+            "include": ["Analyse", "sample?"],
             "environementScatteringFuncAttenuationCoeff": [
                 "environment",
                 "scattering fraction",

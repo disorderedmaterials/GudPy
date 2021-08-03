@@ -36,7 +36,7 @@ class Sample:
         self.outputUnits = 0
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
-        self.analyse = False
+        self.include = False
         self.environementScatteringFuncAttenuationCoeff = (0.0, 0.0)
 
         self.containers = []
@@ -123,7 +123,7 @@ class Sample:
                 self.outputUnits,
                 self.powerForBroadening,
                 self.stepSize,
-                numifyBool(self.analyse),
+                numifyBool(self.include),
                 sampleEnvironmentLine,
             )
         )
