@@ -93,100 +93,48 @@ class GudFile:
         self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
 
     def __str__(self):
-        if self.err:
-            return """ {}
 
- {}
+        outLine = (
+            f'{self.err}'
+            if self.err
+            else
+            f'{self.result}'
+        )
 
- {}
+        return (
 
- {}
+            f' {self.name}\n\n'
+            f' {self.title}\n\n'
+            f' {self.author}\n\n'
+            f' {self.stamp}\n\n'
+            f' Number density of this sample (atoms/A**3) =  '
+            f'{self.densityAcm3}\n'
+            f' Corresponding density in g/cm**3 =    '
+            f'{self.densityGcm3}\n'
+            f' Average scattering length of the sample (10**-12cm) =   '
+            f'{self.averageScatteringLength}\n'
+            f' Average scattering length of squared (barns) =  '
+            f'{self.averageScatteringLengthSquared}\n'
+            f' Average square of the scattering length (barns) =  '
+            f'{self.averageSquareOfScatteringLength}\n'
+            f' Ratio of (coherent) single to interference =  '
+            f'{self.coherentRatio}\n\n'
+            f' Expected level of DCS [b/sr/atom] =    '
+            f'{self.expectedDCS}\n\n'
+            f' Group number,  first Q,   last Q,'
+            f'   level [b/sr/atom],   gradient in Q (%)\n\n'
+            f'{self.groupsTable}\n'
+            f' No. of groups accepted for merge =   '
+            f'{self.noGroups}\n\n'
+            f' Average level of merged dcs is   '
+            f'{self.averageLevelMergedDCS} b/sr/atom;\n\n'
+            f' Gradient of merged dcs: '
+            f'{self.gradient} of average level.\n\n'
+            f'{outLine}'
+            f' Suggested tweak factor:   '
+            f'{self.suggestedTweakFactor}\n'
 
- Number density of this sample (atoms/A**3) =  {}
- Corresponding density in g/cm**3 =    {}
- Average scattering length of the sample (10**-12cm) =   {}
- Average scattering length of squared (barns) =  {}
- Average square of the scattering length (barns) =  {}
- Ratio of (coherent) single to interference =  {}
-
- Expected level of DCS [b/sr/atom] =    {}
-
- Group number,  first Q,   last Q,   level [b/sr/atom],   gradient in Q (%)
-
-{}
- No. of groups accepted for merge =   {}
-
- Average level of merged dcs is   {} b/sr/atom;
-
- Gradient of merged dcs: {} of average level.
-
-{} Suggested tweak factor:   {}
-""".format(
-                self.name,
-                self.title,
-                self.author,
-                self.stamp,
-                self.densityAcm3,
-                self.densityGcm3,
-                self.averageScatteringLength,
-                self.averageScatteringLengthSquared,
-                self.averageSquareOfScatteringLength,
-                self.coherentRatio,
-                self.expectedDCS,
-                self.groupsTable,
-                self.noGroups,
-                self.averageLevelMergedDCS,
-                self.gradient,
-                self.err,
-                self.suggestedTweakFactor,
-            )
-        else:
-            return """ {}
-
- {}
-
- {}
-
- {}
-
- Number density of this sample (atoms/A**3) =  {}
- Corresponding density in g/cm**3 =    {}
- Average scattering length of the sample (10**-12cm) =   {}
- Average scattering length of squared (barns) =  {}
- Average square of the scattering length (barns) =  {}
- Ratio of (coherent) single to interference =  {}
-
- Expected level of DCS [b/sr/atom] =    {}
-
- Group number,  first Q,   last Q,   level [b/sr/atom],   gradient in Q (%)
-
-{}
- No. of groups accepted for merge =   {}
-
- Average level of merged dcs is   {} b/sr/atom;
-
- Gradient of merged dcs: {} of average level.
-
-{} Suggested tweak factor:   {}
-""".format(
-                self.name,
-                self.title,
-                self.author,
-                self.stamp,
-                self.densityAcm3,
-                self.densityGcm3,
-                self.averageScatteringLength,
-                self.averageScatteringLengthSquared,
-                self.averageSquareOfScatteringLength,
-                self.coherentRatio,
-                self.expectedDCS,
-                self.groupsTable,
-                self.noGroups,
-                self.averageLevelMergedDCS,
-                self.gradient,
-                self.result,
-                self.suggestedTweakFactor,
-            )
+        )
 
     def write_out(self, overwrite=False):
         if not overwrite:
@@ -195,9 +143,3 @@ class GudFile:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
-
-
-if __name__ == "__main__":
-    g = GudFile("NIMROD00016608_H2O_in_N9.gud")
-    g.parse()
-    print(str(g))
