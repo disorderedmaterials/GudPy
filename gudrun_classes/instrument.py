@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 try:
     from utils import spacify, numifyBool
 except ModuleNotFoundError:
@@ -49,13 +47,19 @@ class Instrument:
         self.tweakTweakFactors = False
 
     def __str__(self):
-        scaleSelectionLine = (
-            f'{self.scaleSelection}        '
-            f'Scale selection: 1 = Q, 2 = d-space,'
-            f' 3 = wavelength, 4 = energy, 5 = TOF'
+        TAB = "          "
+
+        wavelengthLineA = spacify(
+            self.wavelengthRangeForMonitorNormalisation,
+            num_spaces=2
         )
 
-        wavelengthLine = (
+        channelNosLine = spacify(
+            self.channelNosSpikeAnalysis,
+            num_spaces=2
+        )
+
+        wavelengthLineB = (
             f'{self.wavelengthMin}'
             f'  {self.wavelengthMax}'
             f'  {self.wavelengthStep}'
@@ -68,165 +72,86 @@ class Instrument:
             f'{self.XMin}  {self.XMax}  {self.XStep}'
         )
 
-        if not all(self.groupingParameterPanel):
-            return cleandoc(
-                str(
-                    """
-{}        Instrument name
-{}        Gudrun input file directory:
-{}        Data file directory
-{}        Data file type
-{}        Detector calibration file name
-{}        User table column number for phi values
-{}        Groups file name
-{}        Deadtime constants file name
-{}        Spectrum number(s) for incident beam monitor
-{}        Wavelength range [\u212b] for monitor normalisation
-{}        Spectrum number(s) for transmission monitor
-{}        Incident monitor quiet count constant
-{}        Transmission monitor quiet count constant
-{}        Channel numbers for spike analysis
-{}        Spike analysis acceptance factor
-{}        Wavelength range to use [\u212b] and step size
-{}        No. of smooths on monitor
-{}        Min, Max and step in x-scale (-ve for logarithmic binning)
-0  0  0  0          0 0 0 0 to end input of specified values
-{}        Groups acceptance factor
-{}        Merge power
-{}        Substract single atom scattering?
-{}        By channel?
-{}        Incident flight path [m]
-{}        Spectrum number to output diagnostic files
-{}        Neutron scattering parameters file
-{}
-{}        Subtract wavelength-binned data?
-{}        Folder where Gudrun started
-{}        Folder containing the startup file
-{}        Logarithmic step size
-{}        Hard group edges?
-{}        Number of iterations
-{}        Tweak the tweak factor(s)?""".format(
-                        self.name,
-                        self.GudrunInputFileDir,
-                        self.dataFileDir,
-                        self.dataFileType,
-                        self.detectorCalibrationFileName,
-                        self.columnNoPhiVals,
-                        self.groupFileName,
-                        self.deadtimeConstantsFileName,
-                        spacify(self.spectrumNumbersForIncidentBeamMonitor),
-                        spacify(
-                            self.wavelengthRangeForMonitorNormalisation,
-                            num_spaces=2,
-                        ),
-                        spacify(self.spectrumNumbersForTransmissionMonitor),
-                        self.incidentMonitorQuietCountConst,
-                        self.transmissionMonitorQuietCountConst,
-                        spacify(self.channelNosSpikeAnalysis, num_spaces=2),
-                        self.spikeAnalysisAcceptanceFactor,
-                        wavelengthLine,
-                        self.NoSmoothsOnMonitor,
-                        XScaleLine,
-                        self.groupsAcceptanceFactor,
-                        self.mergePower,
-                        numifyBool(self.subSingleAtomScattering),
-                        self.byChannel,
-                        self.incidentFlightPath,
-                        self.spectrumNumberForOutputDiagnosticFiles,
-                        self.neutronScatteringParametersFile,
-                        scaleSelectionLine,
-                        numifyBool(self.subWavelengthBinnedData),
-                        self.GudrunStartFolder,
-                        self.startupFileFolder,
-                        self.logarithmicStepSize,
-                        numifyBool(self.hardGroupEdges),
-                        self.numberIterations,
-                        numifyBool(self.tweakTweakFactors),
-                    )
-                )
-            )
-        else:
+        groupingParameterPanelLine = (
+            f'{spacify(self.groupingParameterPanel)}{TAB}'
+            f'Group, Xmin, Xmax, Background factor\n'
+            f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
+            if all(self.groupingParameterPanel)
+            else
+            f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
+        )
 
-            return cleandoc(
-                str(
-                    """
-{}        Instrument name
-{}        Gudrun input file directory:
-{}        Data file directory
-{}        Data file type
-{}        Detector calibration file name
-{}        User table column number for phi values
-{}        Groups file name
-{}        Deadtime constants file name
-{}        Spectrum number(s) for incident beam monitor
-{}        Wavelength range [\u212b] for monitor normalisation
-{}        Spectrum number(s) for transmission monitor
-{}        Incident monitor quiet count constant
-{}        Transmission monitor quiet count constant
-{}        Channel numbers for spike analysis
-{}        Spike analysis acceptance factor
-{}        Wavelength range to use [\u212b] and step size
-{}        No. of smooths on monitor
-{}        Min, Max and step in x-scale (-ve for logarithmic binning)
-{}
-0  0  0  0          0 0 0 0 to end input of specified values
-{}        Groups acceptance factor
-{}        Merge power
-{}        Substract single atom scattering?
-{}        By channel?
-{}        Incident flight path [m]
-{}        Spectrum number to output diagnostic files
-{}        Neutron scattering parameters file
-{}
-{}        Subtract wavelength-binned data?
-{}        Folder where Gudrun started
-{}        Folder containing the startup file
-{}        Logarithmic step size
-{}        Hard group edges?
-{}        Number of iterations
-{}        Tweak the tweak factor(s)?""".format(
-                        self.name,
-                        self.GudrunInputFileDir,
-                        self.dataFileDir,
-                        self.dataFileType,
-                        self.detectorCalibrationFileName,
-                        self.columnNoPhiVals,
-                        self.groupFileName,
-                        self.deadtimeConstantsFileName,
-                        spacify(self.spectrumNumbersForIncidentBeamMonitor),
-                        spacify(
-                            self.wavelengthRangeForMonitorNormalisation,
-                            num_spaces=2,
-                        ),
-                        spacify(self.spectrumNumbersForTransmissionMonitor),
-                        self.incidentMonitorQuietCountConst,
-                        self.transmissionMonitorQuietCountConst,
-                        spacify(self.channelNosSpikeAnalysis, num_spaces=2),
-                        self.spikeAnalysisAcceptanceFactor,
-                        wavelengthLine,
-                        self.NoSmoothsOnMonitor,
-                        XScaleLine,
-                        ""
-                        if not all(self.groupingParameterPanel)
-                        else cleandoc((
-                            spacify(self.groupingParameterPanel),
-                            """        Group, Xmin, Xmax, Background factor"""
-                        )),
-                        self.groupsAcceptanceFactor,
-                        self.mergePower,
-                        numifyBool(self.subSingleAtomScattering),
-                        self.byChannel,
-                        self.incidentFlightPath,
-                        self.spectrumNumberForOutputDiagnosticFiles,
-                        self.neutronScatteringParametersFile,
-                        scaleSelectionLine,
-                        numifyBool(self.subWavelengthBinnedData),
-                        self.GudrunStartFolder,
-                        self.startupFileFolder,
-                        self.logarithmicStepSize,
-                        numifyBool(self.hardGroupEdges),
-                        self.numberIterations,
-                        numifyBool(self.tweakTweakFactors),
-                    )
-                )
-            )
+        scaleSelectionLine = (
+            f'{self.scaleSelection}        '
+            f'Scale selection: 1 = Q, 2 = d-space,'
+            f' 3 = wavelength, 4 = energy, 5 = TOF\n'
+        )
+
+        return (
+            f'\n{self.name}{TAB}'
+            f'Instrument name\n'
+            f'{self.GudrunInputFileDir}{TAB}'
+            f'Gudrun input file directory:\n'
+            f'{self.dataFileDir}{TAB}'
+            f'Data file directory\n'
+            f'{self.dataFileType}{TAB}'
+            f'Data file type\n'
+            f'{self.detectorCalibrationFileName}{TAB}'
+            f'Detector calibration file name\n'
+            f'{self.columnNoPhiVals}{TAB}'
+            f'User table column number for phi values\n'
+            f'{self.groupFileName}{TAB}'
+            f'Groups file name\n'
+            f'{self.deadtimeConstantsFileName}{TAB}'
+            f'Deadtime constants file name\n'
+            f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}{TAB}'
+            f'Spectrum number(s) for incident beam monitor\n'
+            f'{wavelengthLineA}{TAB}'
+            f'Wavelength range [\u212b] for monitor normalisation\n'
+            f'{spacify(self.spectrumNumbersForTransmissionMonitor)}{TAB}'
+            f'Spectrum number(s) for transmission monitor\n'
+            f'{self.incidentMonitorQuietCountConst}{TAB}'
+            f'Incident monitor quiet count constant\n'
+            f'{self.transmissionMonitorQuietCountConst}{TAB}'
+            f'Transmission monitor quiet count constant\n'
+            f'{channelNosLine}{TAB}'
+            f'Channel numbers for spike analysis\n'
+            f'{self.spikeAnalysisAcceptanceFactor}{TAB}'
+            f'Spike analysis acceptance factor\n'
+            f'{wavelengthLineB}{TAB}'
+            f'Wavelength range to use [\u212b] and step size\n'
+            f'{self.NoSmoothsOnMonitor}{TAB}'
+            f'No. of smooths on monitor\n'
+            f'{XScaleLine}{TAB}'
+            f'Min, Max and step in x-scale (-ve for logarithmic binning)\n'
+            f'{groupingParameterPanelLine}'
+            f'{self.groupsAcceptanceFactor}{TAB}'
+            f'Groups acceptance factor\n'
+            f'{self.mergePower}{TAB}'
+            f'Merge power\n'
+            f'{numifyBool(self.subSingleAtomScattering)}{TAB}'
+            f'Substract single atom scattering?\n'
+            f'{self.byChannel}{TAB}'
+            f'By channel?\n'
+            f'{self.incidentFlightPath}{TAB}'
+            f'Incident flight path [m]\n'
+            f'{self.spectrumNumberForOutputDiagnosticFiles}{TAB}'
+            f'Spectrum number to output diagnostic files\n'
+            f'{self.neutronScatteringParametersFile}{TAB}'
+            f'Neutron scattering parameters file\n'
+            f'{scaleSelectionLine}'
+            f'{numifyBool(self.subWavelengthBinnedData)}{TAB}'
+            f'Subtract wavelength-binned data?\n'
+            f'{self.GudrunStartFolder}{TAB}'
+            f'Folder where Gudrun started\n'
+            f'{self.startupFileFolder}{TAB}'
+            f'Folder containing the startup file\n'
+            f'{self.logarithmicStepSize}{TAB}'
+            f'Logarithmic step size\n'
+            f'{numifyBool(self.hardGroupEdges)}{TAB}'
+            f'Hard group edges?\n'
+            f'{self.numberIterations}{TAB}'
+            f'Number of iterations\n'
+            f'{numifyBool(self.tweakTweakFactors)}{TAB}'
+            f'Tweak the tweak factor(s)?'
+        )
