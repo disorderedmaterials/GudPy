@@ -23,9 +23,14 @@ class Instrument:
         self.transmissionMonitorQuietCountConst = 0.0
         self.channelNosSpikeAnalysis = (0, 0)
         self.spikeAnalysisAcceptanceFactor = 0
-        self.wavelengthRangeStepSize = (0.0, 0.0, 0.0)
+        self.wavelengthMin = 0.
+        self.wavelengthMax = 0.
+        self.wavelengthStep = 0.
         self.NoSmoothsOnMonitor = 0
-        self.XScaleRangeStep = (0.0, 0.0, 0.0)
+        self.XMin = 0.
+        self.XMax = 0.
+        self.XStep = 0.
+        self.useLogarithmicBinning = False
         self.groupingParameterPanel = (0, 0.0, 0.0, 0.0)
         self.groupsAcceptanceFactor = 0.0
         self.mergePower = 0
@@ -49,6 +54,20 @@ class Instrument:
             f'Scale selection: 1 = Q, 2 = d-space,'
             f' 3 = wavelength, 4 = energy, 5 = TOF'
         )
+
+        wavelengthLine = (
+            f'{self.wavelengthMin}'
+            f'  {self.wavelengthMax}'
+            f'  {self.wavelengthStep}'
+        )
+
+        if self.useLogarithmicBinning:
+            self.XStep = -0.01
+
+        XScaleLine = (
+            f'{self.XMin}  {self.XMax}  {self.XStep}'
+        )
+
         if not all(self.groupingParameterPanel):
             return cleandoc(
                 str(
@@ -105,9 +124,9 @@ class Instrument:
                         self.transmissionMonitorQuietCountConst,
                         spacify(self.channelNosSpikeAnalysis, num_spaces=2),
                         self.spikeAnalysisAcceptanceFactor,
-                        spacify(self.wavelengthRangeStepSize, num_spaces=2),
+                        wavelengthLine,
                         self.NoSmoothsOnMonitor,
-                        spacify(self.XScaleRangeStep, num_spaces=2),
+                        XScaleLine,
                         self.groupsAcceptanceFactor,
                         self.mergePower,
                         numifyBool(self.subSingleAtomScattering),
@@ -184,9 +203,9 @@ class Instrument:
                         self.transmissionMonitorQuietCountConst,
                         spacify(self.channelNosSpikeAnalysis, num_spaces=2),
                         self.spikeAnalysisAcceptanceFactor,
-                        spacify(self.wavelengthRangeStepSize, num_spaces=2),
+                        wavelengthLine,
                         self.NoSmoothsOnMonitor,
-                        spacify(self.XScaleRangeStep, num_spaces=2),
+                        XScaleLine,
                         ""
                         if not all(self.groupingParameterPanel)
                         else cleandoc((

@@ -59,9 +59,14 @@ class TestGudPyIO(TestCase):
             "transmissionMonitorQuietCountConst": 0.0001,
             "channelNosSpikeAnalysis": (0, 0),
             "spikeAnalysisAcceptanceFactor": 5,
-            "wavelengthRangeStepSize": (0.05, 12.0, 0.1),
+            "wavelengthMin": 0.05,
+            "wavelengthMax": 12.0,
+            "wavelengthStep": 0.1,
             "NoSmoothsOnMonitor": 200,
-            "XScaleRangeStep": (0.01, 50.0, -0.025),
+            "XMin": 0.01,
+            "XMax": 50.0,
+            "XStep": -0.025,
+            "useLogarithmicBinning": False,
             "groupingParameterPanel": (0, 0.0, 0.0, 0.0),
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
@@ -78,7 +83,7 @@ class TestGudPyIO(TestCase):
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "numberIterations": 2,
-            "tweakTweakFactors": False,
+            "tweakTweakFactors": False
         }
 
         self.expectedBeam = {
@@ -237,9 +242,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": False,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerA],
+            "runThisSample": True
         }
 
         self.expectedSampleB = {
@@ -274,9 +280,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
-            "analyse": True,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerB],
+            "runThisSample": True
         }
 
         self.expectedSampleC = {
@@ -316,9 +323,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": False,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerC],
+            "runThisSample": True
         }
 
         self.expectedSampleD = {
@@ -358,9 +366,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": 0,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "analyse": False,
+            "include": True,
             "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
             "containers": [self.expectedContainerD],
+            "runThisSample": True
         }
 
         self.expectedSampleBackground = {
@@ -499,10 +508,10 @@ class TestGudPyIO(TestCase):
                 for i, sample in enumerate(self.expectedSampleBackground[key]):
 
                     sampleAttrsDict = (
-                        self.g.sampleBackgrounds[0].samples[i].__dict__
+                        deepcopy(
+                            self.g.sampleBackgrounds[0].samples[i].__dict__
+                        )
                     )
-                    sampleAttrsDict.pop("runThisSample", None)
-
                     for key_ in sampleAttrsDict.keys():
 
                         if key_ == "containers":
@@ -751,8 +760,14 @@ class TestGudPyIO(TestCase):
 
     def testLoadMissingInstrumentAttributesSeq(self):
 
-        for i, key in enumerate(self.expectedInstrument.keys()):
+        expectedInstrument = deepcopy(self.expectedInstrument)
+        expectedInstrument.pop("XMax", None)
+        expectedInstrument.pop("XStep", None)
+        expectedInstrument.pop("wavelengthMax", None)
+        expectedInstrument.pop("wavelengthStep", None)
+        expectedInstrument.pop("useLogarithmicBinning", None)
 
+        for i, key in enumerate(expectedInstrument.keys()):
             if key == "groupingParameterPanel":
                 continue
 
@@ -768,19 +783,40 @@ class TestGudPyIO(TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                str(cm.exception),
-            )
+
+            if key == "XMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT, Xmin,'
+                    ' Xmax, XStep was not found',
+                    str(cm.exception),
+                )
+            elif key == "wavelengthMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT'
+                    ', wavelengthMin, wavelengthMax,'
+                    ' wavelengthStep was not found',
+                    str(cm.exception),
+                )
+            else:
+                self.assertEqual(
+                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                    str(cm.exception),
+                )
             os.remove("test_data.txt")
 
     def testLoadMissingInstrumentAttributesRand(self):
 
+        expectedInstrument = deepcopy(self.expectedInstrument)
+        expectedInstrument.pop("XMax", None)
+        expectedInstrument.pop("XStep", None)
+        expectedInstrument.pop("wavelengthMax", None)
+        expectedInstrument.pop("wavelengthStep", None)
+        expectedInstrument.pop("useLogarithmicBinning", None)
+
         for i in range(50):
 
-            key = random.choice(list(self.expectedInstrument))
-            j = list(self.expectedInstrument).index(key)
-
+            key = random.choice(list(expectedInstrument))
+            j = list(expectedInstrument).index(key)
             if key == "groupingParameterPanel":
                 continue
 
@@ -793,13 +829,26 @@ class TestGudPyIO(TestCase):
                 f.write(
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
-
             with self.assertRaises(ValueError) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                str(cm.exception),
-            )
+            if key == "XMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT, Xmin,'
+                    ' Xmax, XStep was not found',
+                    str(cm.exception),
+                )
+            elif key == "wavelengthMin":
+                self.assertEqual(
+                    'Whilst parsing INSTRUMENT'
+                    ', wavelengthMin, wavelengthMax,'
+                    ' wavelengthStep was not found',
+                    str(cm.exception),
+                )
+            else:
+                self.assertEqual(
+                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
+                    str(cm.exception),
+                )
             os.remove("test_data.txt")
 
     def testLoadMissingBeamAttributesSeq(self):

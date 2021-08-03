@@ -22,6 +22,7 @@ try:
     from composition import Composition
     from element import Element
     from data_files import DataFiles
+    from purge_file import PurgeFile
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -39,6 +40,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.purge_file import PurgeFile
 
 
 class GudrunFile:
@@ -108,9 +110,9 @@ class GudrunFile:
             ],
             "channelNosSpikeAnalysis": "Channel numbers",
             "spikeAnalysisAcceptanceFactor": "Spike analysis acceptance",
-            "wavelengthRangeStepSize": ["Wavelength", "range", "step", "size"],
+            "wavelengthMin": ["Wavelength", "range", "step", "size"],
             "NoSmoothsOnMonitor": "smooths on monitor",
-            "XScaleRangeStep": "x-scale",
+            "XMin": "x-scale",
             "groupsAcceptanceFactor": "Groups acceptance",
             "mergePower": "Merge power",
             "subSingleAtomScattering": ["single", "atom", "scattering?"],
@@ -152,6 +154,13 @@ class GudrunFile:
         auxVars = deepcopy(self.instrument.__dict__)
         if not len(isGroupingParameterPanelUsed):
             auxVars.pop("groupingParameterPanel", None)
+
+        # Pop these attributes, we will deal with them separately.
+        auxVars.pop("wavelengthMax", None)
+        auxVars.pop("wavelengthStep", None)
+        auxVars.pop("XMax", None)
+        auxVars.pop("XStep", None)
+        auxVars.pop("useLogarithmicBinning", None)
 
         # Map the attributes of the Instrument class to line numbers.
 
@@ -261,16 +270,50 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            if key in ["XMax", "XStep", "wavelengthMax", "wavelengthStep"]:
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
+                if key == "XMin":
+                    raise ValueError(
+                        'Whilst parsing INSTRUMENT'
+                        ', Xmin, Xmax, XStep was not found'
+                    )
+                elif key == "wavelengthMin":
+                    raise ValueError(
+                        'Whilst parsing INSTRUMENT'
+                        ', wavelengthMin, wavelengthMax,'
+                        ' wavelengthStep was not found'
+                    )
+                else:
+                    raise ValueError(
+                        f'Whilst parsing INSTRUMENT, {key} was not found'
+                    )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = float(
-                firstword(lines[FORMAT_MAP[key]])
-            )
+            if key == "XMin":
+                XScale = extract_floats_from_string(
+                    lines[FORMAT_MAP[key]]
+                )
+                self.instrument.__dict__["XMin"] = XScale[0]
+                self.instrument.__dict__["XMax"] = XScale[1]
+                self.instrument.__dict__["XStep"] = XScale[2]
+                if len(XScale) > 3:
+                    if XScale[3] == -0.01:
+                        self.instrument.__dict__["useLogarithmicBinning"] = (
+                            True
+                        )
+            elif key == "wavelengthMin":
+                wScale = extract_floats_from_string(
+                    lines[FORMAT_MAP[key]]
+                )
+                self.instrument.__dict__["wavelengthMin"] = wScale[0]
+                self.instrument.__dict__["wavelengthMax"] = wScale[1]
+                self.instrument.__dict__["wavelengthStep"] = wScale[2]
+            else:
+                self.instrument.__dict__[key] = float(
+                    firstword(lines[FORMAT_MAP[key]])
+                )
 
         """
         Get all attributes that are boolean values:
@@ -281,6 +324,8 @@ class GudrunFile:
         """
 
         for key in BOOLS:
+            if key == "useLogarithmicBinning":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -867,7 +912,7 @@ class GudrunFile:
             "outputUnits": "Output units",
             "powerForBroadening": "Power for broadening",
             "stepSize": "Step size",
-            "analyse": ["Analyse", "sample?"],
+            "include": ["Analyse", "sample?"],
             "environementScatteringFuncAttenuationCoeff": [
                 "environment",
                 "scattering fraction",
@@ -1508,7 +1553,7 @@ class GudrunFile:
 
         if not path:
             path = self.path
-
+        self.purge()
         try:
             result = subprocess.run(
                 ["bin/gudrun_dcs", path], capture_output=True, text=True
@@ -1524,7 +1569,13 @@ class GudrunFile:
         self.write_out()
         self.dcs(path=self.outpath)
 
+    def purge(self):
+        purge = PurgeFile(self)
+        return purge.purge()
+
 
 if __name__ == "__main__":
-    g = GudrunFile(path="/home/jared/GudPy/NIMROD-water/water.txt")
-    g.dcs()
+    g = GudrunFile(
+        path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
+        )
+    print(g.dcs())

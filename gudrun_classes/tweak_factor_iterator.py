@@ -12,6 +12,7 @@ class TweakFactorIterator():
 
     def iterate(self, n):
 
+        # Perform n iterations of tweaking by tweak factor.
         for i in range(n):
 
             # Write out what we currently have,

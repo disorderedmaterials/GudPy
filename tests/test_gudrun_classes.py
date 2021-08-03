@@ -66,11 +66,14 @@ class TestGudrunClasses(TestCase):
         )
         self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
         self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, int)
-        self.assertIsInstance(
-            instrument.wavelengthRangeForMonitorNormalisation, tuple
-        )
+        self.assertIsInstance(instrument.wavelengthMin, float)
+        self.assertIsInstance(instrument.wavelengthMax, float)
+        self.assertIsInstance(instrument.wavelengthStep, float)
         self.assertIsInstance(instrument.NoSmoothsOnMonitor, int)
-        self.assertIsInstance(instrument.XScaleRangeStep, tuple)
+        self.assertIsInstance(instrument.XMin, float)
+        self.assertIsInstance(instrument.XMax, float)
+        self.assertIsInstance(instrument.XStep, float)
+        self.assertIsInstance(instrument.useLogarithmicBinning, bool)
         self.assertIsInstance(instrument.groupingParameterPanel, tuple)
         self.assertIsInstance(instrument.groupsAcceptanceFactor, float)
         self.assertIsInstance(instrument.mergePower, int)

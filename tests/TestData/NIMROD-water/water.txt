@@ -92,16 +92,16 @@ SAMPLE H2O, Can N9          {
 NIMROD00016608_H2O_in_N9.raw          SAMPLE H2O, Can N9 data files
 NIMROD00016610_H2O_in_N9.raw          SAMPLE H2O, Can N9 data files
 1          Force calculation of sample corrections?
-H  0  2.0          Composition
-O  0  1.0          Composition
+H  0  2.0          Sample atomic composition
+O  0  1.0          Sample atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.05  0.05          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.1          Density atoms/Å^3?
-0          Temperature for Placzek correction:
+0          Temperature for sample Placzek correction
 TRANSMISSION          Total cross section source
-1.0          Tweak factor
+1.0          Sample tweak factor
 -10.0          Top hat width (1/Å) for cleaning up Fourier Transform
 0.8          Minimum radius for FT  [Å]
 0.1          g(r) broadening at r = 1A [A]
@@ -115,7 +115,7 @@ NIMROD00016608_H2O_in_N9.msubw01          Name of file containing self scatterin
 0          Output units: b/atom/sr
 0.5          Power for broadening function e.g. 0.5
 0.03          Step size [A] 
-0          Analyse this sample? 
+1          Analyse this sample? 
 1.0  0.0          Sample environment scattering fraction and attenuation coefficient [per A]
 
 }
@@ -147,16 +147,16 @@ SAMPLE D2O, Can N10          {
 NIMROD00016609_D2O_in_N10.raw          SAMPLE D2O, Can N10 data files
 NIMROD00016611_D2O_in_N10.raw          SAMPLE D2O, Can N10 data files
 1          Force calculation of sample corrections?
-H  2  2.0          Composition
-O  0  1.0          Composition
+H  2  2.0          Sample atomic composition
+O  0  1.0          Sample atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.05  0.05          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.1          Density atoms/Å^3?
-0          Temperature for Placzek correction:
+0          Temperature for sample Placzek correction
 TRANSMISSION          Total cross section source
-1.0          Tweak factor
+1.0          Sample tweak factor
 -10.0          Top hat width (1/Å) for cleaning up Fourier Transform
 0.8          Minimum radius for FT  [Å]
 0.0          g(r) broadening at r = 1A [A]
@@ -181,15 +181,15 @@ CONTAINER N10          {
 NIMROD00016695_Empty_N10.raw          CONTAINER N10 data files
 NIMROD00016700_Empty_N10.raw          CONTAINER N10 data files
 NIMROD00016705_Empty_N10.raw          CONTAINER N10 data files
-Ti  0  7.16          Composition
-Zr  0  3.438          Composition
+Ti  0  7.16          Container atomic composition
+Zr  0  3.438          Container atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.1  0.1          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.0542          Density atoms/Å^3?
 TABLES          Total cross section source
-1.0          Tweak factor
+1.0          Container tweak factor
 1.0  0.0          Sample environment scattering fraction and attenuation coefficient [per A]
 
 }
@@ -202,17 +202,17 @@ SAMPLE HDO, Can N6          {
 NIMROD00016741_HDO_in_N6.raw          SAMPLE HDO, Can N6 data files
 NIMROD00016743_HDO_in_N6.raw          SAMPLE HDO, Can N6 data files
 1          Force calculation of sample corrections?
-H  0  1.0          Composition
-O  0  1.0          Composition
-H  2  1.0          Composition
+H  0  1.0          Sample atomic composition
+O  0  1.0          Sample atomic composition
+H  2  1.0          Sample atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.05  0.05          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.1          Density atoms/Å^3?
-0          Temperature for Placzek correction:
+0          Temperature for sample Placzek correction
 TRANSMISSION          Total cross section source
-1.0          Tweak factor
+1.0          Sample tweak factor
 -10.0          Top hat width (1/Å) for cleaning up Fourier Transform
 0.8          Minimum radius for FT  [Å]
 0.1          g(r) broadening at r = 1A [A]
@@ -226,7 +226,7 @@ NIMROD00016741_HDO_in_N6.msubw01          Name of file containing self scatterin
 0          Output units: b/atom/sr
 0.5          Power for broadening function e.g. 0.5
 0.03          Step size [A] 
-0          Analyse this sample? 
+1          Analyse this sample? 
 1.0  0.0          Sample environment scattering fraction and attenuation coefficient [per A]
 
 }
@@ -235,15 +235,15 @@ CONTAINER N6          {
 
 1  1          Number of  files and period number
 NIMROD00014908_Empty_N6.raw          CONTAINER N6 data files
-Ti  0  7.16          Composition
-Zr  0  3.438          Composition
+Ti  0  7.16          Container atomic composition
+Zr  0  3.438          Container atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.1  0.1          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.0542          Density atoms/Å^3?
 TABLES          Total cross section source
-1.0          Tweak factor
+1.0          Container tweak factor
 1.0  0.0          Sample environment scattering fraction and attenuation coefficient [per A]
 
 }
@@ -256,17 +256,17 @@ SAMPLE Null Water, Can N8          {
 NIMROD00016742_NullWater_in_N8.raw          SAMPLE Null Water, Can N8 data files
 NIMROD00016744_NullWater_in_N8.raw          SAMPLE Null Water, Can N8 data files
 1          Force calculation of sample corrections?
-H  0  1.281          Composition
-O  0  1.0          Composition
-H  2  0.7185          Composition
+H  0  1.281          Sample atomic composition
+O  0  1.0          Sample atomic composition
+H  2  0.7185          Sample atomic composition
 *  0  0          * 0 0 to specify end of composition input
 SameAsBeam          Geometry
 0.05  0.05          Upstream and downstream thicknesses [cm]
 0  5          Angle of rotation and sample width (cm)
 -0.1          Density atoms/Å^3?
-0          Temperature for Placzek correction:
+0          Temperature for sample Placzek correction
 TRANSMISSION          Total cross section source
-1.0          Tweak factor
+1.0          Sample tweak factor
 -10.0          Top hat width (1/Å) for cleaning up Fourier Transform
 0.8          Minimum radius for FT  [Å]
 0.1          g(r) broadening at r = 1A [A]
@@ -280,7 +280,7 @@ NIMROD00016742_NullWater_in_N8.msubw01          Name of file containing self sca
 0          Output units: b/atom/sr
 0.5          Power for broadening function e.g. 0.5
 0.03          Step size [A] 
-0          Analyse this sample? 
+1          Analyse this sample? 
 1.0  0.0          Sample environment scattering fraction and attenuation coefficient [per A]
 
 }
@@ -307,5 +307,5 @@ GO
 
 END          
 Date and time last written:  20170707 10:47:08          
-Date and time last written:  20210714 10:20:21          
+Date and time last written:  20210728 14:50:39          
 N

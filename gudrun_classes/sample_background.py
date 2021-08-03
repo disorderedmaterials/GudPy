@@ -16,7 +16,7 @@ class SampleBackground:
 
     def __str__(self):
 
-        SAMPLES = "\n".join([str(x) for x in self.samples])
+        SAMPLES = "\n".join([str(x) for x in self.samples if x.runThisSample])
 
         return cleandoc(
             """
