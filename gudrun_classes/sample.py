@@ -54,14 +54,14 @@ class Sample:
         selfScatteringLine = (
             f'{self.fileSelfScattering}{TAB}'
             f'Name of file containing self scattering'
-            f' as a function of wavelength [A]\n'
+            f' as a function of wavelength [\u212b]\n'
         )
 
         sampleEnvironmentLine = (
             f'{spacify(self.environementScatteringFuncAttenuationCoeff)}'
             f'{TAB}'
             f'Sample environment scattering fraction'
-            f' and attenuation coefficient [per A]\n'
+            f' and attenuation coefficient [per \u212b]\n'
         )
 
         SAMPLE_CONTAINERS = (
@@ -99,11 +99,11 @@ class Sample:
             f'{self.minRadFT}{TAB}'
             f'Minimum radius for FT  [\u212b]\n'
             f'{self.gor}{TAB}'
-            f'g(r) broadening at r = 1A [A]\n'
+            f'g(r) broadening at r = 1\u212b [\u212b]\n'
             f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
             ' range of resonance\n'
             f'{spacify(self.expAandD)}{TAB}'
-            f'Exponential amplitude and decay [1/A]\n'
+            f'Exponential amplitude and decay [1/\u212b]\n'
             f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
             f'\n'
             f'{self.normalisationCorrectionFactor}{TAB}'
@@ -112,13 +112,13 @@ class Sample:
             f'{self.normaliseTo}{TAB}'
             f'Normalise to:Nothing\n'
             f'{self.maxRadFT}{TAB}'
-            f'Maximum radius for FT [A]\n'
+            f'Maximum radius for FT [\u212b]\n'
             f'{self.outputUnits}{TAB}'
             f'Output units: b/atom/sr\n'
             f'{self.powerForBroadening}{TAB}'
             f'Power for broadening function e.g. 0.5\n'
             f'{self.stepSize}{TAB}'
-            f'Step size [A]\n'
+            f'Step size [\u212b]\n'
             f'{numifyBool(self.include)}{TAB}'
             f'Analyse this sample?\n'
             f'{sampleEnvironmentLine}'
