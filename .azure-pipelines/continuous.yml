@@ -28,7 +28,7 @@ pr: none
 # },
 
 variables:
-  tag: 2021.test
+  tag: 2021.1
   targets: >
     {
       linuxPy38:
