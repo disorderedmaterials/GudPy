@@ -5,7 +5,116 @@ except ModuleNotFoundError:
 
 
 class Instrument:
+    """
+    Class to represent a Container.
+
+    ...
+
+    Attributes
+    ----------
+    name : str
+        Name of the sample.
+    GudrunInputFileDir : str
+        Input file directory for Gudrun.
+    dataFileDir : str
+        Data file directory.
+    dataFileType : str
+        Type of files stored in dataFileDir.
+    detectorCalibrationFileName : str
+        Filename used for detector calibration.
+    columnNoPhiVals : int
+        User table column number for phi values
+    groupFileName : str
+        Name of detector groups file to read from.
+    deadtimeConstantsFileName : str
+        Name of file containing detector,
+        module and data acquisition dead times.
+    spectrumNumbersForIncidentBeamMonitor : int[]
+        Number of spectra of incident beam monitor.
+    wavelengthRangeForMonitorNormalisation : tuple(int, int)
+        Input wavelength range for monitor normalisation.
+        0 0 signals to divide channel by channel.
+    spectrumNumbersForTransmissionMonitor : int[]
+        Transmission monitor spectrum numbers
+    incidentMonitorQuietCountConst : float
+        Quiet count constant for incident beam monitor.
+    transmissionMonitorQuietCountConst : float
+        Quiet count constant for transmission beam monitor.
+    channelNosSpikeAnalysis : tuple(int, int)
+        First and last channel numbers to check for spikes.
+        0 0 signals to use all channels.
+    spikeAnalysisAcceptanceFactor : int
+        Acceptance factor for spike analysis.
+    wavelengthMin : float
+        Minimum incident wavelength.
+    wavelengthMax : float
+        Maximum incident wavelength.
+    wavelengthStep : float
+        Wavelength step size for corrections.
+    NoSmoothsOnMonitor : int
+        Number of smoothings for monitor and Vanadium.
+    XMin : float
+        Minimum X for final merged data.
+    XMax : float
+        Maxmimum X for final merged data.
+    XStep : float
+        Step size for corrections.
+        Negative means logarithmic binning above XMin.
+    useLogarithmicBinning : bool
+        Should logarithmic binning be used?
+    groupingParameterPanel : tuple(int, float, float, float)
+        Indicate that groups have special X-ranges.
+    groupsAcceptanceFactor : float
+        Acceptance factor for final merge.
+        1.0 indicates all groups are accepted.
+    mergePower : int
+        Power used to set X-weighting for merge.
+    subSingleAtomScattering : bool
+        Should we subtract a background from each group prior to merge?
+    byChannel : int
+        Channel for merge.
+        1 means to use error bars,
+        0 means to use uniform weights.
+    incidentFlightPath : float
+        Incident flight path.
+    spectrumNumberForOutputDiagnosticFiles : int
+        Spectrum number for diagnostic files.
+        <=0 means no diagnostic files are written.
+    neutronScatteringParametersFile : str
+        Name of file which contains neutron scattering lengths.
+    scaleSelection : int
+        Indicates the units/scale for final outputs.
+        1 = Q [1/Angstrom], 2 = d-space [Angstrom],
+        3 = wavelength [Angstrom], 4 = energy [meV],
+        5 = TOF [musec]
+    subWavelengthBinnedData : bool
+        Should we subtract wavelength data prior to merge?
+    GudrunStartFolder : str
+        Default folder for calibration, groups and other files,
+        to be used if they have not been specified.
+    startupFileFolder : str
+        Location of instrument specific files.
+    logarithmicStepSize : float
+        Power to be used to increment the step size.
+        Will be set to 0.0, if XStep > 0.
+    hardGroupEdges : bool
+        Should hard group edges be used?
+    numberIterations : int
+        Number of iterations (may be obsolete).
+    tweakTweakFactors : bool
+        Should the tweak factors be tweaked? (may be obsolete).
+    Methods
+    -------
+    """
+
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the Instrument object.
+
+        Parameters
+        ----------
+        None
+        """
         self.name = ""
         self.GudrunInputFileDir = ""
         self.dataFileDir = ""
@@ -47,6 +156,18 @@ class Instrument:
         self.tweakTweakFactors = False
 
     def __str__(self):
+        """
+        Returns the string representation of the Instrument object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Instrument.
+        """
         TAB = "          "
 
         wavelengthLineA = spacify(
