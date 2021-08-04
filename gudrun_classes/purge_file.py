@@ -64,11 +64,11 @@ class PurgeFile():
         String representation of all containers data files,
         and their period numbers.
     Methods
+    -------
     write_out()
         Writes out the string representation of the PurgeFile to purge_det.dat
     purge()
         Writes out the file, and then calls purge_det on that file.
-    -------
     """
     def __init__(
             self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
