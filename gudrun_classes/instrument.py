@@ -6,7 +6,7 @@ except ModuleNotFoundError:
 
 class Instrument:
     """
-    Class to represent a Container.
+    Class to represent an Instrument.
 
     ...
 
