@@ -5,7 +5,47 @@ except ModuleNotFoundError:
 
 
 class Beam:
+    """
+    Class to represent a Beam.
+
+    ...
+
+    Attributes
+    ----------
+    sampleGeometry : str
+        geometry of the sample.
+    noBeamProfileValues : int
+        number of beam profile values.
+    beamProfileValues : int[]
+        list of beam profile values.
+    stepSizeAbsorptionMSNoSlices: tuple(float, float, int)
+        contains step size for absorption,
+        m.s. calculation and number of slices.
+    angularStepForCorrections : int
+        Angular step size to be used in corrections.
+    incidentBeamEdgesRelCentroid : tuple(float, float, float, float)
+        Positions of edges of incident beam relative to centre of sample.
+    scatteredBeamEdgesRelCentroid : tuple(float, float, float, float)
+        Positions of edges of scattered beam relative to centre of sample.
+    filenameIncidentBeamSpectrumParams : str
+        Name of file containing the incident spectrum parameters.
+    overallBackgroundFactor : float
+        Background factor.
+    sampleDependantBackgroundFactor : float
+        Sample dependant background factor.
+    shieldingAttenuationCoefficient : float
+        Absorption coefficient for the shielding
+    Methods
+    -------
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the Beam object.
+
+        Parameters
+        ----------
+        None
+        """
         self.sampleGeometry = ""
         self.noBeamProfileValues = 0
         self.beamProfileValues = []
@@ -19,6 +59,18 @@ class Beam:
         self.shieldingAttenuationCoefficient = 0.0
 
     def __str__(self):
+        """
+        Returns the string representation of the Beam object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Beam.
+        """
         TAB = "          "
         return (
 
