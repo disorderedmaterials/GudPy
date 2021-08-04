@@ -9,7 +9,55 @@ except ModuleNotFoundError:
 
 
 class Normalisation:
+    """
+    Class to represent Normalisation.
+
+    ...
+
+    Attributes
+    ----------
+    numberOfFilesPeriodNumber : tuple(int, int)
+        Number of data files and their period number.
+    dataFiles : DataFiles
+        DataFiles object storing data files belonging to the container.
+    numberOfFilesPeriodNumberBg : tuple(int, int)
+        Number of background data files and their period number.
+    dataFilesBg : DataFiles
+        DataFiles object storing background data files.
+    composition: Composition
+        Composition object storing the atomic composition of the container.
+    geometry : str
+        Geometry of the container.
+    thickness : tuple(float, float)
+        Upstream and downstream thickness.
+    angleOfRotationSampleWidth : tuple(float, float)
+        Angle of rotation of the container and its width.
+    densityOfAtoms : str
+        Density of atoms in the container (atoms/Angstrom^3)
+    tempForNormalisationPC : int
+        Temperature for Placzek correction.
+    totalCrossSectionSource : str
+        TABLES / TRANSMISSION monitor / filename
+    normalisationDifferentialCrossSectionFilename : str
+        Name of the normalisation differential cross section file.
+    lowerLimitSmoothedNormalisation : float
+        Lowest accepted value for smoothed Vanadium.
+        Detectors are rejected below this value.
+    normalisationDegreeSmoothing : float
+        Degree of smoothing on Vanadium.
+    minNormalisationSignalBR : float
+        Vanadium signal to background acceptance ratio.
+    Methods
+    -------
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the Normalistion object.
+
+        Parameters
+        ----------
+        None
+        """
         self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], "NORMALISATION")
         self.numberOfFilesPeriodNumberBg = (0, 0)
@@ -28,7 +76,18 @@ class Normalisation:
         self.minNormalisationSignalBR = 0.0
 
     def __str__(self):
+        """
+        Returns the string representation of the Normalisation object.
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Normalisation.
+        """
         TAB = "          "
 
         dataFilesLineA = (
