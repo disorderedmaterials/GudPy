@@ -55,6 +55,6 @@ class Container:
             f'{spacify(self.scatteringFractionAttenuationCoefficient)}'
             f'{TAB}'
             f'Sample environment scattering fraction '
-            f'and attenuation coefficient [per A]\n'
+            f'and attenuation coefficient [per \u212b]\n'
             f'\n}}\n'
         )

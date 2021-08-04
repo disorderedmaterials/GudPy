@@ -43,6 +43,6 @@ class Beam:
             f'{self.sampleDependantBackgroundFactor}{TAB}'
             f'Sample dependent background factor\n'
             f'{self.shieldingAttenuationCoefficient}{TAB}'
-            f'Shielding attenuation coefficient [per m per A]'
+            f'Shielding attenuation coefficient [per m per \u212b]'
 
         )

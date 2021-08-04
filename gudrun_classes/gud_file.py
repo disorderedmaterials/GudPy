@@ -107,7 +107,7 @@ class GudFile:
             f' {self.title}\n\n'
             f' {self.author}\n\n'
             f' {self.stamp}\n\n'
-            f' Number density of this sample (atoms/A**3) =  '
+            f' Number density of this sample (atoms/\u212b**3) =  '
             f'{self.densityAcm3}\n'
             f' Corresponding density in g/cm**3 =    '
             f'{self.densityGcm3}\n'
