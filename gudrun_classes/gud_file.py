@@ -116,6 +116,7 @@ class GudFile:
         if not isfile(self.path):
             raise ValueError("Please provide a valid path.")
 
+        # Parse the GudFile
         self.parse()
 
     def parse(self):
