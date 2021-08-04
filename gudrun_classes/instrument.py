@@ -13,7 +13,7 @@ class Instrument:
     Attributes
     ----------
     name : str
-        Name of the sample.
+        Name of the instrument.
     GudrunInputFileDir : str
         Input file directory for Gudrun.
     dataFileDir : str
