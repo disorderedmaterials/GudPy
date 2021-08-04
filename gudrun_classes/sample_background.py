@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 try:
     from utils import spacify
     from data_files import DataFiles
@@ -15,21 +13,22 @@ class SampleBackground:
         self.samples = []
 
     def __str__(self):
-
+        TAB = "          "
         SAMPLES = "\n".join([str(x) for x in self.samples if x.runThisSample])
 
-        return cleandoc(
-            """
-SAMPLE BACKGROUND          {{
+        dataFilesLine = (
+            f'{str(self.dataFiles)}\n'
+            if len(self.dataFiles.dataFiles) > 0
+            else
+            ''
+        )
 
-{}        Number of files and period number
-{}
+        return (
+            f'\nSAMPLE BACKGROUND{TAB}{{\n\n'
+            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'Number of files and period number\n'
+            f'{dataFilesLine}\n\n'
+            f'}}\n\n'
+            f'{SAMPLES}'
 
-}}
-
-{}        """.format(
-                spacify(self.numberOfFilesPeriodNumber),
-                str(self.dataFiles),
-                SAMPLES,
-            )
         )
