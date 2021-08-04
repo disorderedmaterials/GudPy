@@ -24,11 +24,11 @@ class SampleBackground:
         )
 
         return (
-            f'\nSAMPLE BACKGROUND{TAB}{{\n\n'
+            f'SAMPLE BACKGROUND{TAB}{{\n\n'
             f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
             f'Number of files and period number\n'
-            f'{dataFilesLine}\n\n'
-            f'}}\n\n'
+            f'{dataFilesLine}\n'
+            f'}}\n'
             f'{SAMPLES}'
 
         )

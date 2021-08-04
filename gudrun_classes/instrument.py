@@ -88,7 +88,7 @@ class Instrument:
         )
 
         return (
-            f'\n{self.name}{TAB}'
+            f'{self.name}{TAB}'
             f'Instrument name\n'
             f'{self.GudrunInputFileDir}{TAB}'
             f'Gudrun input file directory:\n'
