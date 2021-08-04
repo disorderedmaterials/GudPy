@@ -13,7 +13,7 @@ class Beam:
     Attributes
     ----------
     sampleGeometry : str
-        geometry of the sample.
+        geometry of the sample (FLATPLATE / CYLINDRICAL).
     noBeamProfileValues : int
         number of beam profile values.
     beamProfileValues : int[]
@@ -22,19 +22,19 @@ class Beam:
         contains step size for absorption,
         m.s. calculation and number of slices.
     angularStepForCorrections : int
-        Angular step size to be used in corrections.
+        Angular step size to be used in corrections [deg.].
     incidentBeamEdgesRelCentroid : tuple(float, float, float, float)
         Positions of edges of incident beam relative to centre of sample.
     scatteredBeamEdgesRelCentroid : tuple(float, float, float, float)
         Positions of edges of scattered beam relative to centre of sample.
     filenameIncidentBeamSpectrumParams : str
-        Name of file containing the incident spectrum parameters.
+        Name of file containing the incident beam spectrum parameters.
     overallBackgroundFactor : float
-        Background factor.
+        Overall ackground factor.
     sampleDependantBackgroundFactor : float
         Sample dependant background factor.
     shieldingAttenuationCoefficient : float
-        Absorption coefficient for the shielding
+        Absorption coefficient for the shielding.
     Methods
     -------
     """

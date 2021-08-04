@@ -9,7 +9,47 @@ except ModuleNotFoundError:
 
 
 class Container:
+    """
+    Class to represent a Container.
+
+    ...
+
+    Attributes
+    ----------
+    name : str
+        Name of the container.
+    numberOfFilesPeriodNumber : tuple(int, int)
+        Number of data files and their period number.
+    dataFiles : DataFiles
+        DataFiles object storing data files belonging to the container.
+    composition: Composition
+        Composition object storing the atomic composition of the container.
+    geometry : str
+        Geometry of the container.
+    thickness : tuple(float, float)
+        Upstream and downstream thickness.
+    angleOfRotationSampleWidth : tuple(float, float)
+        Angle of rotation of the container and its width.
+    densityOfAtoms : str
+        Density of atoms in the container (atoms/Angstrom^3)
+    overallBackgroundFactor : float
+        Background factor.
+    totalCrossSectionSource : str
+        TABLES / TRANSMISSION monitor / filename
+    scatteringFractionAttenuationCoefficient : tuple(float, float)
+        Sample environment scattering fraction and attenuation coefficient,
+        per Angstrom
+    Methods
+    -------
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the Container object.
+
+        Parameters
+        ----------
+        None
+        """
         self.name = ""
         self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], "CONTAINER")
@@ -23,6 +63,18 @@ class Container:
         self.scatteringFractionAttenuationCoefficient = (0.0, 0.0)
 
     def __str__(self):
+        """
+        Returns the string representation of the Container object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Container.
+        """
         TAB = "          "
         dataFilesLines = (
             f'{str(self.dataFiles)}\n'
