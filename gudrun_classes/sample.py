@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 try:
     from utils import spacify, numifyBool
     from data_files import DataFiles
@@ -44,108 +42,87 @@ class Sample:
 
     def __str__(self):
 
+        TAB = "          "
+
+        dataFilesLine = (
+            f'{str(self.dataFiles)}\n'
+            if len(self.dataFiles.dataFiles) > 0
+            else
+            ''
+        )
+
         selfScatteringLine = (
-            f'{self.fileSelfScattering}        '
+            f'{self.fileSelfScattering}{TAB}'
             f'Name of file containing self scattering'
-            f' as a function of wavelength [A]'
+            f' as a function of wavelength [A]\n'
         )
 
         sampleEnvironmentLine = (
             f'{spacify(self.environementScatteringFuncAttenuationCoeff)}'
-            f'        '
+            f'{TAB}'
             f'Sample environment scattering fraction'
-            f'and attenuation coefficient [per A]'
+            f' and attenuation coefficient [per A]\n'
         )
 
-        SAMPLE_CONTAINERS = SAMPLE = ""
-
-        if len(self.containers) > 0:
-            SAMPLE_CONTAINERS = cleandoc(
-                "\n".join([str(x) for x in self.containers])
-            )
-        SAMPLE = cleandoc(
-            """
-{}        {{
-
-{}        Number of  files and period number
-{}
-{}        Force calculation of sample corrections?
-{}
-*  0  0          * 0 0 to specify end of composition input
-{}        Geometry
-{}        Upstream and downstream thickness [cm]
-{}        Angle of rotation and sample width (cm)
-{}        Density atoms/\u212b^3?
-{}        Temperature for sample Placzek correction
-{}        Total cross section source
-{}        Sample tweak factor
-{}        Top hat width (1/\u212b) for cleaning up Fourier Transform
-{}        Minimum radius for FT  [\u212b]
-{}        g(r) broadening at r = 1A [A]
-0  0          0   0          to finish specifying wavelength range of resonance
-{}        Exponential amplitude and decay [1/A]
-*  0  0          * 0 0 to specify end of exponential parameter input
-{}        Normalisation correction factor
-{}
-{}        Normalise to:Nothing
-{}        Maximum radius for FT [A]
-{}        Output units: b/atom/sr
-{}        Power for broadening function e.g. 0.5
-{}        Step size [A]
-{}        Analyse this sample?
-{}
-
-}}
-
-
-
-""".format(
-                self.name,
-                spacify(self.numberOfFilesPeriodNumber),
-                str(self.dataFiles),
-                numifyBool(self.forceCalculationOfCorrections),
-                str(self.composition),
-                self.geometry,
-                spacify(self.thickness),
-                spacify(self.angleOfRotationSampleWidth),
-                self.densityOfAtoms,
-                self.tempForNormalisationPC,
-                self.totalCrossSectionSource,
-                self.sampleTweakFactor,
-                self.topHatW,
-                self.minRadFT,
-                self.gor,
-                spacify(self.expAandD),
-                self.normalisationCorrectionFactor,
-                selfScatteringLine,
-                self.normaliseTo,
-                self.maxRadFT,
-                self.outputUnits,
-                self.powerForBroadening,
-                self.stepSize,
-                numifyBool(self.include),
-                sampleEnvironmentLine,
-            )
+        SAMPLE_CONTAINERS = (
+            "\n".join([str(x) for x in self.containers])
+            if len(self.containers) > 0
+            else
+            ''
         )
 
-        if len(SAMPLE_CONTAINERS) > 0:
-            return cleandoc(
-                """
-{}
-
-{}
-GO
-            """.format(
-                    SAMPLE, SAMPLE_CONTAINERS
-                )
-            )
-        else:
-            return cleandoc(
-                """
-{}
-
-GO
-            """.format(
-                    SAMPLE
-                )
-            )
+        return (
+            f'\n{self.name}{TAB}{{\n\n'
+            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'Number of  files and period number\n'
+            f'{dataFilesLine}'
+            f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
+            f'Force calculation of sample corrections?\n'
+            f'{str(self.composition)}\n'
+            f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
+            f'{self.geometry}{TAB}'
+            f'Geometry\n'
+            f'{spacify(self.thickness)}{TAB}'
+            f'Upstream and downstream thickness [cm]\n'
+            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
+            f'Angle of rotation and sample width (cm)\n'
+            f'{self.densityOfAtoms}{TAB}'
+            f'Density atoms/\u212b^3?\n'
+            f'{self.tempForNormalisationPC}{TAB}'
+            f'Temperature for sample Placzek correction\n'
+            f'{self.totalCrossSectionSource}{TAB}'
+            f'Total cross section source\n'
+            f'{self.sampleTweakFactor}{TAB}'
+            f'Sample tweak factor\n'
+            f'{self.topHatW}{TAB}'
+            f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
+            f'{self.minRadFT}{TAB}'
+            f'Minimum radius for FT  [\u212b]\n'
+            f'{self.gor}{TAB}'
+            f'g(r) broadening at r = 1A [A]\n'
+            f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
+            ' range of resonance\n'
+            f'{spacify(self.expAandD)}{TAB}'
+            f'Exponential amplitude and decay [1/A]\n'
+            f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
+            f'\n'
+            f'{self.normalisationCorrectionFactor}{TAB}'
+            f'Normalisation correction factor\n'
+            f'{selfScatteringLine}'
+            f'{self.normaliseTo}{TAB}'
+            f'Normalise to:Nothing\n'
+            f'{self.maxRadFT}{TAB}'
+            f'Maximum radius for FT [A]\n'
+            f'{self.outputUnits}{TAB}'
+            f'Output units: b/atom/sr\n'
+            f'{self.powerForBroadening}{TAB}'
+            f'Power for broadening function e.g. 0.5\n'
+            f'{self.stepSize}{TAB}'
+            f'Step size [A]\n'
+            f'{numifyBool(self.include)}{TAB}'
+            f'Analyse this sample?\n'
+            f'{sampleEnvironmentLine}'
+            f'\n}}\n\n'
+            f'{SAMPLE_CONTAINERS}'
+            f'\nGO\n'
+        )
