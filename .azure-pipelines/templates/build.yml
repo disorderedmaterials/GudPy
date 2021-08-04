@@ -33,6 +33,18 @@ steps:
       wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip
       unzip startupFiles-${{ parameters.tag }}.zip
       mv StartupFiles bin
+      
   - script: |
       pip install pyinstaller
+      
+  - bash: |
+      if [[ "${{ parameters.osName }}" == "osx" ]]; then
+          echo "Increasing timeouts on OSX."
+          PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
+          PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
+          PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
+          sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
+      fi
+      
+  - script: |
       pyinstaller gudpy.spec
