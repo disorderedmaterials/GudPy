@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 
 class Composition:
     """
@@ -27,7 +25,7 @@ class Composition:
         self.elements = elements
         self.type_ = type_
 
-        # Create an auxilliary list for storing strings 
+        # Create an auxilliary list for storing strings
         self.str = [
             str(el) + "        " + type_ + " atomic composition"
             for el in self.elements
