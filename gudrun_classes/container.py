@@ -22,7 +22,7 @@ class Container:
         Number of data files and their period number.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
-    composition: Composition
+    composition : Composition
         Composition object storing the atomic composition of the container.
     geometry : str
         Geometry of the container.
