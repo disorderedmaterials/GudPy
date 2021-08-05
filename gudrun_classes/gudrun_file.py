@@ -1055,7 +1055,7 @@ class GudrunFile:
             "sampleTweakFactor": "tweak factor",
             "topHatW": "Top hat width",
             "minRadFT": "Minimum radius for FT",
-            "gor": "g(r)",
+            "grBroadening": "g(r)",
             "expAandD": ["Exponential", "amplitude", "decay"],
             "normalisationCorrectionFactor": "Normalisation correction factor",
             "fileSelfScattering": ["file", "self scattering", "function"],

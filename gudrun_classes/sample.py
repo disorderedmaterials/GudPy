@@ -45,7 +45,7 @@ class Sample:
         Width of top hat function for Fourier transform.
     minRadFT : float
         Minimum radius for Fourier transform.
-    gor : float
+    grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
     expAandD : tuple(float, float, int)
         Sample exponential paramaters.
@@ -99,7 +99,7 @@ class Sample:
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
         self.minRadFT = 0.0
-        self.gor = 0.0
+        self.grBroadening = 0.0
         self.expAandD = (0.0, 0.0, 0)
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
@@ -184,7 +184,7 @@ class Sample:
             f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
             f'{self.minRadFT}{TAB}'
             f'Minimum radius for FT  [\u212b]\n'
-            f'{self.gor}{TAB}'
+            f'{self.grBroadening}{TAB}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
             f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
             ' range of resonance\n'
