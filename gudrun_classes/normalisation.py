@@ -24,7 +24,7 @@ class Normalisation:
         Number of background data files and their period number.
     dataFilesBg : DataFiles
         DataFiles object storing background data files.
-    composition: Composition
+    composition : Composition
         Composition object storing the atomic composition of the container.
     geometry : str
         Geometry of the container.
