@@ -79,15 +79,15 @@ class GudrunFile:
         to the normalisation attribute.
         Parses the attributes of the Normalisation from the input lines.
     parseSampleBackground(lines):
-        Initialiases a SampleBackground object.
+        Initialises a SampleBackground object.
         Parses the attributes of the SampleBackground from the input lines.
         Returns the SampleBackground object.
     parseSample(lines):
-        Initialiases a Sample object.
+        Initialises a Sample object.
         Parses the attributes of the Sample from the input lines.
         Returns the Sample object.
     parseContainer(lines):
-        Initialiases a Container object.
+        Initialises a Container object.
         Parses the attributes of the Container from the input lines.
         Returns the Container object.
     makeParse(lines, key):
