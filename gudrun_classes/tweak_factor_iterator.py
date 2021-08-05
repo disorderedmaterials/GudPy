@@ -5,13 +5,50 @@ except ModuleNotFoundError:
 
 
 class TweakFactorIterator():
+    """
+    Class to represent a Tweak Factor Iterator.
+    This class is used for iteratively tweakinng by the tweak factor.
+    This means running gudrun_dcs iteratively, and adjusting the tweak
+    factor of each sample across iterations. The new tweak factor
+    applied is the tweak factor suggested by gudrun_dcs in the previous iteration.
 
+    ...
+
+    Attributes
+    ----------
+    gudrunFile : GudrunFile
+        Input GudrunFile that we will be using for iterating.
+    Methods
+    ----------
+    iterate(n)
+        Perform n iterations of iterating by tweak factor.
+    """
     def __init__(self, gudrunFile):
+        """
+        Constructs all the necessary attributes for the PurgeFile object.
 
+        Parameters
+        ----------
+        gudrunFile : GudrunFile
+            Input GudrunFile that we will be using for iterating.
+        """
         self.gudrunFile = gudrunFile
 
     def iterate(self, n):
+        """
+        This method is the core of the TweakFactorIterator.
+        It performs n iterations of tweaking by the tweak factor.
+        Namely, it performs gudurn_dcs n times, adjusting the tweak factor
+        for each sample before each iteration, after the first one, to
+        the suggested tweak factor outputted from the previous iteration
+        of gudrun_dcs. gudrun_dcs outputs a .gud file, which we
+        parse to extract the suggested tweak factor from.
 
+        Parameters
+        ----------
+        n : int
+            Number of iterations to perform.
+        """
         # Perform n iterations of tweaking by tweak factor.
         for i in range(n):
 
