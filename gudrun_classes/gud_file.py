@@ -24,9 +24,9 @@ class GudFile:
         Author of the run.
     stamp : str
         Date and time that the run was completed.
-    densityAcm3 : float
+    atomicDensity : float
         Number density of sample (atoms/Angstrom^3).
-    densityGcm3 : float
+    chemicalDensity : float
         Number density of sample (g/cm^3).
     averageScatteringLength : float
         Average scattering length of the sample (10^-12cm).
@@ -92,8 +92,8 @@ class GudFile:
         self.title = ""
         self.author = ""
         self.stamp = ""
-        self.densityAcm3 = 0.0
-        self.densityGcm3 = 0.0
+        self.atomicDensity = 0.0
+        self.chemicalDensity = 0.0
         self.averageScatteringLength = 0.0
         self.averageScatteringLengthSquared = 0.0
         self.averageSquareOfScatteringLength = 0.0
@@ -144,8 +144,8 @@ class GudFile:
         self.stamp = self.contents[6].strip()
 
         # Extract the last item of data from the lines.
-        self.densityAcm3 = self.contents[8].split(" ")[-1].strip()
-        self.densityGcm3 = self.contents[9].split(" ")[-1].strip()
+        self.atomicDensity = self.contents[8].split(" ")[-1].strip()
+        self.chemicalDensity = self.contents[9].split(" ")[-1].strip()
         self.averageScatteringLength = self.contents[10].split(" ")[-1].strip()
         self.averageScatteringLengthSquared = (
             self.contents[11].split(" ")[-1].strip()
@@ -221,9 +221,9 @@ class GudFile:
             f' {self.author}\n\n'
             f' {self.stamp}\n\n'
             f' Number density of this sample (atoms/\u212b**3) =  '
-            f'{self.densityAcm3}\n'
+            f'{self.atomicDensity}\n'
             f' Corresponding density in g/cm**3 =    '
-            f'{self.densityGcm3}\n'
+            f'{self.chemicalDensity}\n'
             f' Average scattering length of the sample (10**-12cm) =   '
             f'{self.averageScatteringLength}\n'
             f' Average scattering length of squared (barns) =  '
