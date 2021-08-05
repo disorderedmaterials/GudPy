@@ -46,8 +46,7 @@ class Sample:
     minRadFT : float
         Minimum radius for Fourier transform.
     gor : float
-        Broadening power on g(r).
-        0 = constant, 0.5 = sqrt(r), 1 = r
+        Broadening of g(r) at r = 1 Angstrom
     expAandD : tuple(float, float, int)
         Sample exponential paramaters.
     normalisationCorrectionFactor : float
