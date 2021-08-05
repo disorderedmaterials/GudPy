@@ -7,7 +7,7 @@ except ModuleNotFoundError:
 class TweakFactorIterator():
     """
     Class to represent a Tweak Factor Iterator.
-    This class is used for iteratively tweakinng by the tweak factor.
+    This class is used for iteratively tweaking by the tweak factor.
     This means running gudrun_dcs iteratively, and adjusting the tweak
     factor of each sample across iterations. The new tweak factor
     applied is the tweak factor suggested by
