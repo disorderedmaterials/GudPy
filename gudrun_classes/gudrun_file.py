@@ -44,40 +44,122 @@ except ModuleNotFoundError:
 
 
 class GudrunFile:
-    def __init__(self, path=None, data=None):
+    """
+    Class to represent a GudFile (files with .gud extension).
+    .gud files are outputted by gudrun_dcs, via merge_routines
+    each .gud file belongs to an individual sample.
+
+    ...
+
+    Attributes
+    ----------
+    path : str
+        Path to the file.
+    outpath : str
+        Path to write to, when not overwriting the initial file.
+    instrument : Instrument
+        Instrument object extracted from the input file.
+    beam : Beam
+        Beam object extracted from the input file.
+    normalisation : Normalisation
+        Normalisation object extracted from the input file.
+    sampleBackgrounds : SampleBackground[]
+        List of SampleBackgrounds extracted from the input file.
+    Methods
+    -------
+    parseInstrument(lines):
+        Initialises an Intrument object and assigns it
+        to the instrument attribute.
+        Parses the attributes of the Instrument from the input lines.
+    parseBeam(lines):
+        Initialises a Beam object and assigns it to the beam attribute.
+        Parses the attributes of the Beam from the input lines.
+    parseNormalisation(lines):
+        Initialises a Normalisation object and assigns it
+        to the normalisation attribute.
+        Parses the attributes of the Normalisation from the input lines.
+    parseSampleBackground(lines):
+        Initialises a SampleBackground object.
+        Parses the attributes of the SampleBackground from the input lines.
+        Returns the SampleBackground object.
+    parseSample(lines):
+        Initialises a Sample object.
+        Parses the attributes of the Sample from the input lines.
+        Returns the Sample object.
+    parseContainer(lines):
+        Initialises a Container object.
+        Parses the attributes of the Container from the input lines.
+        Returns the Container object.
+    makeParse(lines, key):
+        Uses the key to call a parsing function from a dictionary
+        of parsing functions. The lines are passed as an argument.
+        Returns the result of the called parsing function.
+    sampleBackgroundHelper(lines):
+        Parses the SampleBackground, its Samples and their Containers.
+        Returns the SampleBackground object.
+    parse():
+        Parse the GudrunFile from its path.
+        Assign objects from the file to the attributes of the class.
+    write_out(overwrite=False)
+        Writes out the string representation of the GudrunFile to a file.
+    dcs(path=''):
+        Call gudrun_dcs on the path supplied. If the path is its
+        default value, then use the path attribute as the path.
+    process():
+        Write out the GudrunFile, and call gudrun_dcs on the outputted file.
+    purge():
+        Create a PurgeFile from the GudrunFile, and run purge_det on it.
+    """
+
+    def __init__(self, path=None):
+        """
+        Constructs all the necessary attributes for the GudrunFile object.
+        Calls the GudrunFile's parse method,
+        to parse the GudrunFile from its path.
+
+        Parameters
+        ----------
+        path : str
+            Path to the file.
+        """
+
         self.path = path
+
+        # Construct the outpath.
         fname = os.path.basename(self.path)
         ref_fname = "gudpy_{}".format(fname)
         dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
         self.outpath = "{}/{}".format(dir, ref_fname)
-        # If a dictionary of data is supplied,
-        # unpack the dictionary and assign the values.
-        # Otherwise, parse via the path.
-        if data:
-            try:
-                self.instrument = data["instrument"]
-                self.beam = data["beam"]
-                self.normalisation = data["normalisation"]
-                self.samples = data["samples"]
-            except KeyError as keyError:
-                raise KeyError((
-                    f'Dictionary is of incorrect format, '
-                    f'KeyError was raised when accessing a key: '
-                    f'{str(keyError)}'
-                ))
 
-        else:
-            self.instrument = None
-            self.beam = None
-            self.normalisation = None
-            self.sampleBackgrounds = []
-            self.ignoredSamples = []
-            self.error = None
-            self.parse()
+        self.instrument = None
+        self.beam = None
+        self.normalisation = None
+        self.sampleBackgrounds = []
+
+        # Parse the GudrunFile.
+        self.parse()
 
     def parseInstrument(self, lines):
+        """
+        Intialises an Instrument object and assigns it to the
+        instrument attribute.
+        Parses the attributes of the Instrument from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Instrument from.
+        Returns
+        -------
+        None
+        """
+
         self.instrument = Instrument()
 
+        # Dictionary of key phrases for ensuring expected data is on
+        # the expected lines.
         KEYPHRASES = {
             "name": "Instrument name",
             "GudrunInputFileDir": "Gudrun input file dir",
@@ -405,8 +487,26 @@ class GudrunFile:
             self.instrument.__dict__[key] = groupingParameterPanel
 
     def parseBeam(self, lines):
+        """
+        Intialises a Beam object and assigns it to the
+        beam attribute.
+        Parses the attributes of the Beam from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Beam from.
+        Returns
+        -------
+        None
+        """
+
         self.beam = Beam()
 
+        # Dictionary of key phrases for ensuring expected data is on
+        # the expected lines.
         KEYPHRASES = {
             "sampleGeometry": "Sample geometry",
             "noBeamProfileValues": ["number", "beam", "profile", "values"],
@@ -572,8 +672,26 @@ class GudrunFile:
         self.beam.__dict__[key] = stepSizeAbsorptionMSNoSlices
 
     def parseNormalisation(self, lines):
+        """
+        Intialises a Normalisation object and assigns it to the
+        normalisation attribute.
+        Parses the attributes of the Normalisation from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Normalisation from.
+        Returns
+        -------
+        None
+        """
+
         self.normalisation = Normalisation()
 
+        # Dictionary of key phrases for ensuring expected data is on
+        # the expected lines.
         KEYPHRASES = {
             "forceCalculationOfCorrections": ["Force", "corrections?"],
             "geometry": "Geometry",
@@ -857,6 +975,22 @@ class GudrunFile:
         self.normalisation.composition = Composition(elements, "Normalisation")
 
     def parseSampleBackground(self, lines):
+        """
+        Intialises a SampleBackground object.
+        Parses the attributes of the SampleBackground from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+        Returns the parsed object.
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Instrument from.
+        Returns
+        -------
+        sampleBackground : SampleBackground
+            The SampleBackground that was parsed from the input lines.
+        """
+
         sampleBackground = SampleBackground()
 
         # Get the number of files and period number.
@@ -884,6 +1018,22 @@ class GudrunFile:
         return sampleBackground
 
     def parseSample(self, lines):
+        """
+        Intialises a Sample object.
+        Parses the attributes of the Sample from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+        Returns the parsed object.
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Instrument from.
+        Returns
+        -------
+        sample : Sample
+            The Sample that was parsed from the input lines.
+        """
+
         sample = Sample()
 
         # Extract the name from the lines,
@@ -891,6 +1041,8 @@ class GudrunFile:
         sample.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
+        # Dictionary of key phrases for ensuring expected data is on
+        # the expected lines.
         KEYPHRASES = {
             "numberOfFilesPeriodNumber": ["files", "period"],
             "forceCalculationOfCorrections": ["Force", "corrections?"],
@@ -1177,12 +1329,30 @@ class GudrunFile:
         return sample
 
     def parseContainer(self, lines):
+        """
+        Intialises a Container object.
+        Parses the attributes of the Container from the input lines.
+        Raises a ValueError if any mandatory attributes are missing.
+        Returns the parsed object.
+
+        Parameters
+        ----------
+        lines : str
+            Input lines to parse the Instrument from.
+        Returns
+        -------
+        container : Container
+            The Container that was parsed from the input lines.
+        """
+
         container = Container()
         # Extract the name from the lines,
         # and then discard the unnecessary lines.
         container.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
+        # Dictionary of key phrases for ensuring expected data is on
+        # the expected lines.
         KEYPHRASES = {
             "numberOfFilesPeriodNumber": ["files", "period"],
             "geometry": "Geometry",
@@ -1358,8 +1528,32 @@ class GudrunFile:
         return container
 
     def makeParse(self, lines, key):
+        """
+        Calls a parsing function from a dictionary of parsing functions
+        by the input key. The input lines are passed as an argument.
+        Returns the result of the called parsing function.
+        Only use case is as a helper function during parsing.
 
-        # Dictionary of the parsing functions.
+        Parameters
+        ----------
+        lines : list
+            List of strings. Each element of the list is a line from the
+            input file.
+        key : str
+            Parsing function to call
+            (INSTRUMENT/BEAM/NORMALISATION/SAMPLE BACKGROUND/SAMPLE/CONTAINER)
+        Returns
+        -------
+        NoneType
+            if parsing INSTRUMENT/BEAM/NORMALISATION
+        SampleBackground
+            if parsing SAMPLE BACKGROUND
+        Sample
+            if parsing Sample
+        Container
+            if parsing Container
+        """
+
         parsingFunctions = {
             "INSTRUMENT": self.parseInstrument,
             "BEAM": self.parseBeam,
@@ -1368,45 +1562,31 @@ class GudrunFile:
             "SAMPLE": self.parseSample,
             "CONTAINER": self.parseContainer,
         }
+        # Return the result of the parsing function that was called.
         return parsingFunctions[key](lines)
 
-    def sampleHelper(self, lines):
-
-        KEYWORDS = {"SAMPLE BACKGROUND": None, "SAMPLE": None, "CONTAINER": []}
-
-        # Iterate through the lines, parsing any Samples,
-        # backgrounds and containers found
-        parsing = ""
-        for i, line in enumerate(lines):
-            for key in KEYWORDS.keys():
-                if key in line and firstword(line) in KEYWORDS.keys():
-                    parsing = key
-                    start = i
-                    break
-            if line[0] == "}":
-                end = i
-                if parsing == "SAMPLE BACKGROUND":
-                    start += 2
-                slice = deepcopy(lines[start: end - 1])
-                if isinstance(KEYWORDS[parsing], list):
-                    KEYWORDS[parsing].append(self.makeParse(slice, parsing))
-                else:
-                    KEYWORDS[parsing] = self.makeParse(slice, parsing)
-                start = end = 0
-
-        # Assign the sampleBackground and container(s) found to the sample.
-        KEYWORDS["SAMPLE"].sampleBackground = KEYWORDS["SAMPLE BACKGROUND"]
-        KEYWORDS["SAMPLE"].containers = KEYWORDS["CONTAINER"]
-
-        return KEYWORDS["SAMPLE"]
-
     def sampleBackgroundHelper(self, lines):
+        """
+        Helper method for parsing Sample Background and its
+        Samples and their Containers.
+        Returns the SampleBackground object.
+        Parameters
+        ----------
+        lines : list
+            List of strings. Each element of the list is a line from the
+            input file.
+        Returns
+        -------
+        SampleBackground
+            The SampleBackground parsed from the lines.
+        """
 
         KEYWORDS = {
             "SAMPLE BACKGROUND": None,
             "SAMPLE": [],
             "CONTAINER": Container,
         }
+
         # Iterate through the lines, parsing any Samples,
         #  backgrounds and containers found
         parsing = ""
@@ -1436,6 +1616,18 @@ class GudrunFile:
         return KEYWORDS["SAMPLE BACKGROUND"]
 
     def parse(self):
+        """
+        Parse the GudrunFile from its path.
+        Assign objects from the file to the attributes of the class.
+        Raises ValueError if Instrument, Beam or Normalisation are missing.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
 
         # Ensure only valid files are given.
         if not self.path:
@@ -1508,6 +1700,19 @@ class GudrunFile:
                     continue
 
     def __str__(self):
+        """
+        Returns the string representation of the GudrunFile object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of GudrunFile.
+        """
+
         LINEBREAK = "\n\n"
         header = "'  '  '        '  '/'" + LINEBREAK
         instrument = (
@@ -1542,6 +1747,20 @@ class GudrunFile:
         )
 
     def write_out(self, overwrite=False):
+        """
+        Writes out the string representation of the GudrunFile.
+        If 'overwrite' is True, then the initial file is overwritten.
+        Otherwise, it is written to 'gudpy_{initial filename}.txt'.
+
+        Parameters
+        ----------
+        overwrite : bool, optional
+            Overwrite the initial file? (default is False).
+
+        Returns
+        -------
+        None
+        """
         if not overwrite:
             f = open(self.outpath, "w", encoding="utf-8")
         else:
@@ -1550,7 +1769,23 @@ class GudrunFile:
         f.close()
 
     def dcs(self, path=''):
+        """
+        Purge detectors and then call gudrun_dcs on the path supplied.
+        If the path is its default value,
+        then use the path attribute as the path.
 
+        Parameters
+        ----------
+        overwrite : bool, optional
+            Overwrite the initial file? (default is False).
+        path : str, optional
+            Path to parse from (default is empty, which indicates self.path).
+        Returns
+        -------
+        subprocess.CompletedProcess
+            The result of calling gudrun_dcs using subprocess.run.
+            Can access stdout/stderr from this.
+        """
         if not path:
             path = self.path
         self.purge()
@@ -1566,10 +1801,37 @@ class GudrunFile:
         return result
 
     def process(self):
+        """
+        Write out the current state of the file, then
+        purge detectors and then call gudrun_dcs on the file that
+        was written out.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        subprocess.CompletedProcess
+            The result of calling gudrun_dcs using subprocess.run.
+            Can access stdout/stderr from this.
+        """
         self.write_out()
-        self.dcs(path=self.outpath)
+        return self.dcs(path=self.outpath)
 
     def purge(self):
+        """
+        Create a PurgeFile from the GudrunFile,
+        and then call Purge.purge() to purge the detectors.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        subprocess.CompletedProcess
+            The result of calling purge_det using subprocess.run.
+            Can access stdout/stderr from this.
+        """
         purge = PurgeFile(self)
         return purge.purge()
 

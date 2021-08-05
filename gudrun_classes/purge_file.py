@@ -10,10 +10,83 @@ except ModuleNotFoundError:
 
 
 class PurgeFile():
+    """
+    Class to represent a PurgeFile.
 
+    ...
+
+    Attributes
+    ----------
+    gudrunFile : GudrunFile
+        Parent GudrunFile that we are creating the PurgeFile from.
+    instrumentName : str
+        Name of the instrument.
+    inputFileDir : str
+        Input file directory for Gudrun.
+    dataFileDir : str
+        Data file directory.
+    dataFileType : str
+        Type of files stored in dataFileDir.
+    detCalibFile : str
+        Filename used for detector calibration.
+    groupsFile : str
+        Name of detector groups file to read from.
+    spectrumNumbers : int[]
+        Number of spectra of incident beam monitor.
+    channelNumbers : tuple(int, int)
+        First and last channel numbers to check for spikes.
+        0 0 signals to use all channels.
+    acceptanceFactor : int
+        Acceptance factor for spike analysis.
+    standardDeviation : tuple(int, int)
+         Stores the number of std deviations allowed above and below
+         the mean ratio and the range of std's allowed around the mean
+         standard deviation.
+    ignoreBad : bool
+        Ignore any existing bad spectrum files (spec.bad, spec.dat)?
+    normalisationPeriodNo : int
+        Period number for normalisation data files.
+    normalisationPeriodNoBg : int
+        Period number for normalisation background data files.
+    normalisationDataFiles : str
+        String representation of all normalisation data files,
+        and their period numbers.
+    normalisationBackgroundDataFiles : str
+        String representation of all background normalisation data files,
+        and their period numbers.
+    sampleBackgroundDataFiles : str
+        String representation of all sample background data files,
+        and their period numbers.
+    sampleDataFiles : str
+        String representation of all sample data files,
+        and their period numbers.
+    containerDataFiles : str
+        String representation of all containers data files,
+        and their period numbers.
+    Methods
+    -------
+    write_out()
+        Writes out the string representation of the PurgeFile to purge_det.dat
+    purge()
+        Writes out the file, and then calls purge_det on that file.
+    """
     def __init__(
             self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
+        """
+        Constructs all the necessary attributes for the PurgeFile object.
 
+        Parameters
+        ----------
+        gudrunFile : GudrunFile
+            Parent GudrunFile that we are creating the PurgeFile from.
+        standardDeviation: tuple(int, int), optional
+            Number of std deviations allowed above and below
+            the mean ratio and the range of std's allowed around the mean
+            standard deviation. Default is (10, 10)
+        ignoreBad : bool
+            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
+            Default is True.
+        """
         self.gudrunFile = gudrunFile
 
         # Extract relevant attributes from the GudrunFile object.
@@ -96,6 +169,17 @@ class PurgeFile():
                         )
 
     def write_out(self):
+        """
+        Writes out the string representation of the PurgeFile to
+        purge_det.dat.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
         # Write out the string representation of the PurgeFile
         # To purge_det.dat.
         f = open("purge_det.dat", "w", encoding="utf-8")
@@ -103,7 +187,18 @@ class PurgeFile():
         f.close()
 
     def __str__(self):
+        """
+        Returns the string representation of the PurgeFile object.
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of PurgeFile.
+        """
         HEADER = "'  '  '          '  '/'\n\n"
         TAB = "          "
         return (
@@ -140,6 +235,19 @@ class PurgeFile():
         )
 
     def purge(self):
+        """
+        Write out the current state of the PurgeFile, then
+        purge detectors by calling purge_det on that file.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        subprocess.CompletedProcess
+            The result of calling purge_det using subprocess.run.
+            Can access stdout/stderr from this.
+        """
         self.write_out()
         try:
             result = subprocess.run(

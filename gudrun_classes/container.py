@@ -1,5 +1,3 @@
-from inspect import cleandoc
-
 try:
     from utils import spacify
     from data_files import DataFiles
@@ -11,7 +9,47 @@ except ModuleNotFoundError:
 
 
 class Container:
+    """
+    Class to represent a Container.
+
+    ...
+
+    Attributes
+    ----------
+    name : str
+        Name of the container.
+    numberOfFilesPeriodNumber : tuple(int, int)
+        Number of data files and their period number.
+    dataFiles : DataFiles
+        DataFiles object storing data files belonging to the container.
+    composition : Composition
+        Composition object storing the atomic composition of the container.
+    geometry : str
+        Geometry of the container.
+    thickness : tuple(float, float)
+        Upstream and downstream thickness.
+    angleOfRotationSampleWidth : tuple(float, float)
+        Angle of rotation of the container and its width.
+    densityOfAtoms : str
+        Density of atoms in the container (atoms/Angstrom^3)
+    overallBackgroundFactor : float
+        Background factor.
+    totalCrossSectionSource : str
+        TABLES / TRANSMISSION monitor / filename
+    scatteringFractionAttenuationCoefficient : tuple(float, float)
+        Sample environment scattering fraction and attenuation coefficient,
+        per Angstrom
+    Methods
+    -------
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the Container object.
+
+        Parameters
+        ----------
+        None
+        """
         self.name = ""
         self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], "CONTAINER")
@@ -25,74 +63,50 @@ class Container:
         self.scatteringFractionAttenuationCoefficient = (0.0, 0.0)
 
     def __str__(self):
+        """
+        Returns the string representation of the Container object.
 
-        sampleEnvironmentLine = (
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Container.
+        """
+        TAB = "          "
+        dataFilesLines = (
+            f'{str(self.dataFiles)}\n'
+            if len(self.dataFiles.dataFiles) > 0
+            else
+            ''
+            )
+
+        return (
+
+            f'{self.name}{TAB}{{\n\n'
+            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'Number of files and period number\n'
+            f'{dataFilesLines}'
+            f'{str(self.composition)}\n'
+            f'*  0  0{TAB}'
+            f'* 0 0 to specify end of composition input\n'
+            f'{self.geometry}{TAB}'
+            f'Geometry\n'
+            f'{spacify(self.thickness)}{TAB}'
+            f'Upstream and downstream thickness [cm]\n'
+            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
+            f'Angle of rotation and sample width (cm)\n'
+            f'{self.densityOfAtoms}{TAB}'
+            f'Density atoms/\u212b^3?\n'
+            f'{self.totalCrossSectionSource}{TAB}'
+            f'Total cross section source\n'
+            f'{self.tweakFactor}{TAB}'
+            f'Tweak factor\n'
             f'{spacify(self.scatteringFractionAttenuationCoefficient)}'
-            f'        '
-            f'Sample environment scattering fraction'
-            f'and attenuation coefficient [per A]'
+            f'{TAB}'
+            f'Sample environment scattering fraction '
+            f'and attenuation coefficient [per \u212b]\n'
+            f'\n}}\n'
         )
-
-        if len(self.dataFiles.dataFiles) > 0:
-
-            return cleandoc(
-                """
-{}        {{
-
-{}        Number of files and period number
-{}
-{}
-* 0 0        * 0 0 to specify end of composition input
-{}        Geometry
-{}        Upstream and downstream thickness [cm]
-{}        Angle of rotation and sample width (cm)
-{}        Density atoms/\u212b^3?
-{}        Total cross section source
-{}        Tweak factor
-{}
-
-}}
-            """.format(
-                    self.name,
-                    spacify(self.numberOfFilesPeriodNumber),
-                    str(self.dataFiles),
-                    str(self.composition),
-                    self.geometry,
-                    spacify(self.thickness),
-                    spacify(self.angleOfRotationSampleWidth),
-                    self.densityOfAtoms,
-                    self.totalCrossSectionSource,
-                    self.tweakFactor,
-                    sampleEnvironmentLine
-                )
-            )
-        else:
-            return cleandoc(
-                """
-{}        {{
-
-{}        Number of files and period number
-{}
-* 0 0        * 0 0 to specify end of composition input
-{}        Geometry
-{}        Upstream and downstream thickness [cm]
-{}        Angle of rotation and sample width (cm)
-{}        Density atoms/\u212b^3?
-{}        Total cross section source
-{}        Tweak factor
-{}
-
-}}
-            """.format(
-                    self.name,
-                    spacify(self.numberOfFilesPeriodNumber),
-                    str(self.composition),
-                    self.geometry,
-                    spacify(self.thickness),
-                    spacify(self.angleOfRotationSampleWidth),
-                    self.densityOfAtoms,
-                    self.totalCrossSectionSource,
-                    self.tweakFactor,
-                    sampleEnvironmentLine,
-                )
-            )
