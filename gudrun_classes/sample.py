@@ -9,8 +9,83 @@ except ModuleNotFoundError:
 
 
 class Sample:
-    def __init__(self):
+    """
+    Class to represent a Sample.
 
+    ...
+
+    Attributes
+    ----------
+    name : str
+        Name of the sample.
+    numberOfFilesPeriodNumber : tuple(int, int)
+        Number of data files and their period number.
+    dataFiles : DataFiles
+        DataFiles object storing data files belonging to the container.
+    forceCalculationOfCorrections : bool
+        Decide whether to force calculations of corrections or read them
+        from the file, if it exists.
+    composition : Composition
+        Composition object storing the atomic composition of the sample.
+    geometry : str
+        Geometry of the sample (FLATPLATE / CYLINDRICAL).
+    thickness : tuple(float, float)
+        Upstream and downstream thickness.
+    angleOfRotationSampleWidth : tuple(float, float)
+        Angle of rotation of the sample and its width.
+    densityOfAtoms : str
+        Density of atoms in the sample (atoms/Angstrom^3)
+    overallBackgroundFactor : float
+        Background factor.
+    totalCrossSectionSource : str
+        TABLES / TRANSMISSION monitor / filename
+    sampleTweakFactor : float
+        Tweak factor for the sample.
+    topHatW : float
+        Width of top hat function for Fourier transform.
+    minRadFT : float
+        Minimum radius for Fourier transform.
+    gor : float
+        Broadening power on g(r).
+        0 = constant, 0.5 = sqrt(r), 1 = r
+    expAandD : tuple(float, float, int)
+        Sample exponential paramaters.
+    normalisationCorrectionFactor : float
+        Factor to multiply normalisation by prior to dividing into sample.
+    fileSelfScattering : str
+        Name of file containing scattering as a function of wavelength.
+    normaliseTo : int
+        Normalisationt type required on the final merged DCS data.
+        0 = nothing, 1 = <f>^2, 2 = <f^2>
+    maxRadFT : float
+        Maximum radiues for Fourier transform.
+    outputUnits : int
+        Output units for final merged DCS, barns/atom/sr or cm^-1/sr
+    powerForBroadening : float
+        Broadening power
+        0 = constant, 0.5 = sqrt(r), 1 = r
+    stepSize : int
+        Step size in radius for final g(r).
+    include : bool
+        Should the sample be included in analysis?
+    environementScatteringFuncAttenuationCoeff : tuple(float, float)
+        Sample environment factors used to compensate
+        for different attenuation and scattering in different containers.
+    containers : Container[]
+        List of Container objects attached to this sample.
+    runThisSample : bool
+        Should this sample be ran?
+    Methods
+    -------
+    """
+    def __init__(self):
+        """
+        Constructs all the necessary attributes for the Sample object.
+
+        Parameters
+        ----------
+        None
+        """
         self.name = ""
         self.numberOfFilesPeriodNumber = (0, 0)
         self.dataFiles = DataFiles([], "SAMPLE")
@@ -41,6 +116,18 @@ class Sample:
         self.runThisSample = True
 
     def __str__(self):
+        """
+        Returns the string representation of the Sample object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of Sample.
+        """
 
         TAB = "          "
 
