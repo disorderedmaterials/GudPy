@@ -26,7 +26,7 @@ class GudFile:
         Date and time that the run was completed.
     densityAcm3 : float
         Number density of sample (atoms/Angstrom^3).
-    densityAcm3 : float
+    densityGcm3 : float
         Number density of sample (g/cm^3).
     averageScatteringLength : float
         Average scattering length of the sample (10^-12cm).
