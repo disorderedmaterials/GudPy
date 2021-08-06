@@ -33,7 +33,7 @@ class Container:
     angleOfRotationSampleWidth : tuple(float, float)
         Angle of rotation of the container and its width.
     density : str
-        Density of atoms in the container.
+        Density of the container.
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
