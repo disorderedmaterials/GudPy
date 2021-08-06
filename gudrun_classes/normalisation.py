@@ -72,7 +72,7 @@ class Normalisation:
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
         self.density = 0.0
-        self.densityUnits = 0
+        self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
         self.totalCrossSectionSource = ""
         self.normalisationDifferentialCrossSectionFilename = ""
