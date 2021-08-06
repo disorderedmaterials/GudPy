@@ -2,10 +2,12 @@ try:
     from utils import spacify, numifyBool
     from data_files import DataFiles
     from composition import Composition
+    from enums import unitsOfDensity
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
+    from gudrun_classes.enums import unitsOfDensity
 
 
 class Normalisation:
@@ -32,8 +34,10 @@ class Normalisation:
         Upstream and downstream thickness.
     angleOfRotationSampleWidth : tuple(float, float)
         Angle of rotation of the container and its width.
-    densityOfAtoms : str
-        Density of atoms in the container (atoms/Angstrom^3)
+    density : float
+        Density of normalisation
+    densityUnits : int
+        0 = atoms/Angstrom^3, 1 = gm/cm^3
     tempForNormalisationPC : int
         Temperature for Placzek correction.
     totalCrossSectionSource : str
@@ -67,7 +71,8 @@ class Normalisation:
         self.geometry = ""
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
-        self.densityOfAtoms = 0.0
+        self.density = 0.0
+        self.densityUnits = 0
         self.tempForNormalisationPC = 0
         self.totalCrossSectionSource = ""
         self.normalisationDifferentialCrossSectionFilename = ""
@@ -104,6 +109,18 @@ class Normalisation:
             ''
         )
 
+        if self.densityUnits == unitsOfDensity.ATOMIC.value:
+            units = 'atoms/\u212b^3'
+            density = self.density*-1
+        elif self.density == unitsOfDensity.CHEMICAL.value:
+            units = 'gm/cm^3'
+            density = self.density
+
+        densityLine = (
+            f'{density}{TAB}'
+            f'Density {units}?\n'
+        )
+
         return (
             f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
             f'Number of  files and period number\n'
@@ -121,8 +138,7 @@ class Normalisation:
             f'Upstream and downstream thickness [cm]\n'
             f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
-            f'{self.densityOfAtoms}{TAB}'
-            f'Density atoms/\u212b^3?\n'
+            f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for normalisation Placzek correction\n'
             f'{self.totalCrossSectionSource}{TAB}'

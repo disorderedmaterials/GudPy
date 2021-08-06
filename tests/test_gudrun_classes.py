@@ -125,7 +125,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.geometry, str)
         self.assertIsInstance(normalisation.thickness, tuple)
         self.assertIsInstance(normalisation.angleOfRotationSampleWidth, tuple)
-        self.assertIsInstance(normalisation.densityOfAtoms, float)
+        self.assertIsInstance(normalisation.density, float)
+        self.assertIsInstance(normalisation.densityUnits, int)
         self.assertIsInstance(normalisation.tempForNormalisationPC, int)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
         self.assertIsInstance(

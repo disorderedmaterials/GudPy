@@ -119,7 +119,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.15, 0.15),
             "angleOfRotationSampleWidth": (0.0, 5),
-            "densityOfAtoms": -0.0721,
+            "density": 0.0721,
+            "densityUnits": 0,
             "tempForNormalisationPC": 200,
             "totalCrossSectionSource": "TABLES",
             "normalisationDifferentialCrossSectionFilename": "*",
@@ -919,8 +920,13 @@ class TestGudPyIO(TestCase):
                 i += 1
             if i > 5:
                 i += 1
-
-            if key in ["dataFiles", "dataFilesBg", "composition"]:
+            if i >= 13:
+                i -= 1
+            print(key, i)
+            if key in [
+                    "dataFiles", "dataFilesBg",
+                    "composition", "densityUnits"
+                    ]:
                 continue
 
             badNormalisation = str(self.goodNormalisation).split("\n")
@@ -955,7 +961,10 @@ class TestGudPyIO(TestCase):
 
             key = random.choice(list(self.expectedNormalisation))
 
-            if key in ["dataFiles", "dataFilesBg", "composition"]:
+            if key in [
+                    "dataFiles", "dataFilesBg",
+                    "composition", "densityUnits"
+                    ]:
                 continue
 
             j = list(self.expectedNormalisation).index(key)
@@ -964,6 +973,8 @@ class TestGudPyIO(TestCase):
                 j += 1
             if j > 5:
                 j += 1
+            if j >= 13:
+                j -= 1
 
             badNormalisation = str(self.goodNormalisation).split("\n")
             del badNormalisation[j]
