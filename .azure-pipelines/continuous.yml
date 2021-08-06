@@ -12,10 +12,6 @@ trigger:
       - .azure-pipelines/*
 pr: none
 
-
-#Skip windows, for now.
-
-
 variables:
   tag: 2021.1
   targets: >
