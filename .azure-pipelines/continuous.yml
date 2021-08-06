@@ -14,18 +14,7 @@ pr: none
 
 
 #Skip windows, for now.
-# windowsPy36:
-# {
-#   pythonVersion: "3.6",
-#   imageName: "windows-latest",
-#   arch: "x86"      
-# },
-# windowsPy37:
-# {
-#   pythonVersion: "3.7",
-#   imageName: "windows-latest",
-#   arch: "x86"      
-# },
+
 
 variables:
   tag: 2021.1
@@ -44,6 +33,12 @@ variables:
         imageName: "macOS-latest",
         arch: "x64",
         osName: "osx"
+      },
+      windowsPy38:
+      {
+        pythonVersion: "3.8",
+        imageName: "windows-latest",
+        arch: "x86"      
       }
     }
 
