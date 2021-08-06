@@ -62,7 +62,7 @@ class Container:
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
         self.density = 0.0
-        self.densityUnits = 0
+        self.densityUnits = UnitsOfDensity.ATOMIC
         self.totalCrossSectionSource = ""
         self.tweakFactor = 0.0
         self.scatteringFractionAttenuationCoefficient = (0.0, 0.0)
