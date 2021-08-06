@@ -88,6 +88,7 @@ class Container:
             else
             ''
             )
+
         if self.densityUnits == UnitsOfDensity.ATOMIC.value:
             units = 'atoms/\u212b^3'
             density = self.density*-1
@@ -101,7 +102,6 @@ class Container:
         )
 
         return (
-
             f'{self.name}{TAB}{{\n\n'
             f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
             f'Number of files and period number\n'

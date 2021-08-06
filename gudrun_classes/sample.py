@@ -141,7 +141,6 @@ class Sample:
             else
             ''
         )
-
         if self.densityUnits == UnitsOfDensity.ATOMIC.value:
             units = 'atoms/\u212b^3'
             density = self.density*-1
