@@ -1,15 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+SEP = os.path.sep
 
 block_cipher = None
 
 
 a = Analysis(['gui/gudpy.py'],
-             pathex=['gudrun_classes/', 'scripts/', 'widgets/', '/home/jared/GudPy/GudPy'],
-             binaries=[('bin/gudrun_dcs', '.'), ('bin/calc_corrsx_in_out', '.'), ('bin/purge_det', '.'), ('bin/tophatsub', '.') ],
-             #binaries=None,
-             #datas=[('../StartupFiles', 'StartupFiles/')],
-             datas=None,
+             pathex=['gudrun_classes' + SEP, 'scripts' + SEP, 'widgets' + SEP],
+             binaries=[('bin' + SEP + 'gudrun_dcs', '.'), ('bin' + SEP + 'calc_corrsx_in_out', '.'), ('bin' + SEP + 'purge_det', '.'), ('bin' + SEP + 'tophatsub', '.')],
+             datas=[('StartupFiles', 'StartupFiles' + SEP)],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
