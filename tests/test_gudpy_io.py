@@ -1092,7 +1092,7 @@ class TestGudPyIO(TestCase):
             print(key, j)
             if key in ignore:
                 continue
-            
+
             if i == 1:
                 i = 0
             if i >= 5:
@@ -1917,7 +1917,6 @@ class TestGudPyIO(TestCase):
             g.instrument.dataFileType, "vanrat"
         )
         self.assertTrue(file in os.listdir())
-
 
     """
     Unsure if the following tests are setup correctly.
