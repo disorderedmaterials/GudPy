@@ -1051,13 +1051,13 @@ class GudrunFile:
             "geometry": "Geometry",
             "thickness": ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth": "Angle of rotation",
-            "densityOfAtoms": "Density",
+            "density": "Density",
             "tempForNormalisationPC": "Placzek correction",
             "totalCrossSectionSource": "Total cross",
             "sampleTweakFactor": "tweak factor",
             "topHatW": "Top hat width",
             "minRadFT": "Minimum radius for FT",
-            "grBroadening": "g(r)",
+            "grBroadening": ["g(r)", "broadening"],
             "expAandD": ["Exponential", "amplitude", "decay"],
             "normalisationCorrectionFactor": "Normalisation correction factor",
             "fileSelfScattering": ["file", "self scattering", "function"],
@@ -1096,6 +1096,7 @@ class GudrunFile:
         FORMAT_MAP.pop("sampleBackground", None)
         FORMAT_MAP.pop("containers", None)
         FORMAT_MAP.pop("runThisSample", None)
+        FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -1180,6 +1181,8 @@ class GudrunFile:
         """
 
         for key in INTS:
+            if key == "densityUnits":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -1212,7 +1215,16 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+            if key == "density":
+                density = float(firstword(lines[FORMAT_MAP[key]]))
+                if density < 0:
+                    density = abs(density)
+                    sample.densityUnits = unitsOfDensity.ATOMIC.value
+                else:
+                    sample.densityUnits = unitsOfDensity.CHEMICAL.value
+                sample.__dict__[key] = density
+            else:
+                sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
         """
         Get all attributes that are boolean values:

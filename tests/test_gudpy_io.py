@@ -231,7 +231,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": 0,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -269,7 +270,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": 0,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -312,7 +314,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": 0,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -355,7 +358,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": 0,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -510,7 +514,6 @@ class TestGudPyIO(TestCase):
         for key in sampleBackgroundsAttrsDict.keys():
             if key == "samples":
                 for i, sample in enumerate(self.expectedSampleBackground[key]):
-
                     sampleAttrsDict = (
                         deepcopy(
                             self.g.sampleBackgrounds[0].samples[i].__dict__
@@ -1021,7 +1024,8 @@ class TestGudPyIO(TestCase):
             [
                 "name", "dataFiles",
                 "composition", "containers",
-                "runThisSample"
+                "runThisSample",
+                "densityUnits"
             ]
         )
 
@@ -1033,10 +1037,12 @@ class TestGudPyIO(TestCase):
                 i = 0
             if i >= 5:
                 i += 2
-            if i >= 17:
+            if i >= 11 and i <= 17:
+                i -= 1
+            if i > 17:
                 i += 1
-            if i >= 19:
-                i += 1
+            if i == 19:
+                i -= 1
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1075,24 +1081,29 @@ class TestGudPyIO(TestCase):
             [
                 "name", "dataFiles",
                 "composition", "containers",
-                "runThisSample"
+                "runThisSample",
+                "densityUnits"
             ]
         )
 
         for i in range(50):
             key = random.choice(list(self.expectedSampleA))
             j = list(self.expectedSampleA).index(key)
+            print(key, j)
             if key in ignore:
                 continue
+            
+            if i == 1:
+                i = 0
+            if i >= 5:
+                i += 2
+            if i >= 11 and i <= 17:
+                i -= 1
+            if i > 17:
+                i += 1
+            if i == 19:
+                i -= 1
 
-            if j == 1:
-                j = 0
-            if j >= 5:
-                j += 2
-            if j >= 17:
-                j += 1
-            if j >= 19:
-                j += 1
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1906,6 +1917,7 @@ class TestGudPyIO(TestCase):
             g.instrument.dataFileType, "vanrat"
         )
         self.assertTrue(file in os.listdir())
+
 
     """
     Unsure if the following tests are setup correctly.
