@@ -71,7 +71,7 @@ class TestGudPyIO(TestCase):
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
             "subSingleAtomScattering": False,
-            "byChannel": 2,
+            "mergeWeights": 2,
             "incidentFlightPath": 20.0,
             "spectrumNumberForOutputDiagnosticFiles": 0,
             "neutronScatteringParametersFile":

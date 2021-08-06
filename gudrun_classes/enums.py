@@ -9,6 +9,12 @@ class Scales(Enum):
     TOF = 5
 
 
-class unitsOfDensity(Enum):
+class UnitsOfDensity(Enum):
     ATOMIC = 0
     CHEMICAL = 1
+
+
+class MergeWeights(Enum):
+    NONE = 0
+    DETECTOR = 1
+    CHANNEL = 2

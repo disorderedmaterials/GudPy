@@ -1,7 +1,12 @@
+from gudrun_classes.enums import MergeWeights
+
+
 try:
     from utils import spacify, numifyBool
+    from enums import mergeWeights
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
+
 
 
 class Instrument:
@@ -71,10 +76,10 @@ class Instrument:
         Power used to set X-weighting for merge.
     subSingleAtomScattering : bool
         Should we subtract a background from each group prior to merge?
-    byChannel : int
-        Channel for merge.
-        1 means to use error bars,
-        0 means to use uniform weights.
+    mergeWeights : int
+        0 = None
+        1 = By detector
+        2 = By channel
     incidentFlightPath : float
         Incident flight path.
     spectrumNumberForOutputDiagnosticFiles : int
@@ -142,7 +147,7 @@ class Instrument:
         self.groupsAcceptanceFactor = 0.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
-        self.byChannel = 0
+        self.mergeWeights = 0
         self.incidentFlightPath = 0.0
         self.spectrumNumberForOutputDiagnosticFiles = 0
         self.neutronScatteringParametersFile = ""
@@ -202,6 +207,18 @@ class Instrument:
             f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
         )
 
+        if self.mergeWeights == MergeWeights.NONE.value:
+            mergeBy = "Merge weights: None?"
+        elif self.mergeWeights == MergeWeights.DETECTOR.value:
+            mergeBy = "By detector?"
+        elif self.mergeWeights == MergeWeights.CHANNEL.value:
+            mergeBy = "By channel?"
+
+        mergeWeightsLine = (
+            f'{self.mergeWeights}{TAB}'
+            f'{mergeBy}\n'
+        )
+
         scaleSelectionLine = (
             f'{self.scaleSelection}        '
             f'Scale selection: 1 = Q, 2 = d-space,'
@@ -252,8 +269,7 @@ class Instrument:
             f'Merge power\n'
             f'{numifyBool(self.subSingleAtomScattering)}{TAB}'
             f'Substract single atom scattering?\n'
-            f'{self.byChannel}{TAB}'
-            f'By channel?\n'
+            f'{mergeWeightsLine}'
             f'{self.incidentFlightPath}{TAB}'
             f'Incident flight path [m]\n'
             f'{self.spectrumNumberForOutputDiagnosticFiles}{TAB}'

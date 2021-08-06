@@ -23,7 +23,7 @@ try:
     from element import Element
     from data_files import DataFiles
     from purge_file import PurgeFile
-    from enums import unitsOfDensity
+    from enums import UnitsOfDensity
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -42,7 +42,7 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
     from gudrun_classes.purge_file import PurgeFile
-    from gudrun_classes.enums import unitsOfDensity
+    from gudrun_classes.enums import UnitsOfDensity
 
 
 class GudrunFile:
@@ -200,7 +200,7 @@ class GudrunFile:
             "groupsAcceptanceFactor": "Groups acceptance",
             "mergePower": "Merge power",
             "subSingleAtomScattering": ["single", "atom", "scattering?"],
-            "byChannel": "By channel?",
+            "mergeWeights": ["By", "?"],
             "incidentFlightPath": "Incident flight path",
             "spectrumNumberForOutputDiagnosticFiles": [
                 "Spectrum",
@@ -871,11 +871,11 @@ class GudrunFile:
                 if density < 0:
                     density = abs(density)
                     self.normalisation.densityUnits = (
-                        unitsOfDensity.ATOMIC.value
+                        UnitsOfDensity.ATOMIC.value
                     )
                 else:
                     self.normalisation.densityUnits = (
-                        unitsOfDensity.CHEMICAL.value
+                        UnitsOfDensity.CHEMICAL.value
                     )
                 self.normalisation.__dict__[key] = density
             else:
@@ -1235,9 +1235,9 @@ class GudrunFile:
                 density = float(firstword(lines[FORMAT_MAP[key]]))
                 if density < 0:
                     density = abs(density)
-                    sample.densityUnits = unitsOfDensity.ATOMIC.value
+                    sample.densityUnits = UnitsOfDensity.ATOMIC.value
                 else:
-                    sample.densityUnits = unitsOfDensity.CHEMICAL.value
+                    sample.densityUnits = UnitsOfDensity.CHEMICAL.value
                 sample.__dict__[key] = density
             else:
                 sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
@@ -1483,9 +1483,9 @@ class GudrunFile:
                 density = float(firstword(lines[FORMAT_MAP[key]]))
                 if density < 0:
                     density = abs(density)
-                    container.densityUnits = unitsOfDensity.ATOMIC.value
+                    container.densityUnits = UnitsOfDensity.ATOMIC.value
                 else:
-                    container.densityUnits = unitsOfDensity.CHEMICAL.value
+                    container.densityUnits = UnitsOfDensity.CHEMICAL.value
                 container.__dict__[key] = density
             else:
                 container.__dict__[key] = (

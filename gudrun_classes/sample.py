@@ -2,12 +2,12 @@ try:
     from utils import spacify, numifyBool
     from data_files import DataFiles
     from composition import Composition
-    from enums import unitsOfDensity
+    from enums import UnitsOfDensity
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
-    from gudrun_classes.enums import unitsOfDensity
+    from gudrun_classes.enums import UnitsOfDensity
 
 
 class Sample:
@@ -142,10 +142,10 @@ class Sample:
             ''
         )
 
-        if self.densityUnits == unitsOfDensity.ATOMIC.value:
+        if self.densityUnits == UnitsOfDensity.ATOMIC.value:
             units = 'atoms/\u212b^3'
             density = self.density*-1
-        elif self.density == unitsOfDensity.CHEMICAL.value:
+        elif self.density == UnitsOfDensity.CHEMICAL.value:
             units = 'gm/cm^3'
             density = self.density
 
