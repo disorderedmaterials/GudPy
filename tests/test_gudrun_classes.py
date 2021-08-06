@@ -78,7 +78,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.groupsAcceptanceFactor, float)
         self.assertIsInstance(instrument.mergePower, int)
         self.assertIsInstance(instrument.subSingleAtomScattering, bool)
-        self.assertIsInstance(instrument.byChannel, int)
+        self.assertIsInstance(instrument.mergeWeights, int)
         self.assertIsInstance(instrument.incidentFlightPath, float)
         self.assertIsInstance(
             instrument.spectrumNumberForOutputDiagnosticFiles, int
