@@ -515,8 +515,8 @@ class GudrunFile:
             "beamProfileValues": ["Beam", "profile", "values", "("],
             "stepSizeAbsorptionMSNoSlices": ["Step", "size", "m.s"],
             "angularStepForCorrections": "Angular step",
-            "incidentBeamEdgesRelCentroid": "Incident beam edges",
-            "scatteredBeamEdgesRelCentroid": "Scattered beam edges",
+            "incidentBeamLeftEdge": "Incident beam edges",
+            "scatteredBeamLeftEdge": "Scattered beam edges",
             "filenameIncidentBeamSpectrumParams": [
                 "Filename",
                 "incident",
@@ -535,6 +535,12 @@ class GudrunFile:
         # Map the attributes of the Beam class to line numbers.
 
         FORMAT_MAP = dict.fromkeys(self.beam.__dict__.keys())
+        FORMAT_MAP.pop("incidentBeamRightEdge", None)
+        FORMAT_MAP.pop("incidentBeamTopEdge", None)
+        FORMAT_MAP.pop("incidentBeamBottomEdge", None)
+        FORMAT_MAP.pop("scatteredBeamRightEdge", None)
+        FORMAT_MAP.pop("scatteredBeamTopEdge", None)
+        FORMAT_MAP.pop("scatteredBeamBottomEdge", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Categorise attributes by variables, for easier handling.
@@ -609,6 +615,12 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    ]:
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -616,7 +628,29 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+
+            if key == "incidentBeamLeftEdge":
+                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
+                (
+                    self.beam.incidentBeamLeftEdge,
+                    self.beam.incidentBeamRightEdge,
+                    self.beam.incidentBeamTopEdge,
+                    self.beam.incidentBeamBottomEdge,
+                    *rest
+                ) = edges
+            elif key == "scatteredBeamLeftEdge":
+                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
+                (
+                    self.beam.scatteredBeamLeftEdge,
+                    self.beam.scatteredBeamRightEdge,
+                    self.beam.scatteredBeamTopEdge,
+                    self.beam.scatteredBeamBottomEdge,
+                    *rest
+                ) = edges
+            else:
+                self.beam.__dict__[key] = float(
+                    firstword(lines[FORMAT_MAP[key]])
+                )
 
         """
         Get all attributes that need to be stored in arbitrary sized lists:

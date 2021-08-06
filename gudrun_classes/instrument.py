@@ -1,12 +1,9 @@
-from gudrun_classes.enums import MergeWeights
-
-
 try:
     from utils import spacify, numifyBool
-    from enums import mergeWeights
+    from enums import MergeWeights
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
-
+    from gudrun_classes.enums import MergeWeights
 
 
 class Instrument:

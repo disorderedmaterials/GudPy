@@ -92,8 +92,14 @@ class TestGudPyIO(TestCase):
             "beamProfileValues": [1.0, 1.0],
             "stepSizeAbsorptionMSNoSlices": (0.05, 0.2, 100),
             "angularStepForCorrections": 10,
-            "incidentBeamEdgesRelCentroid": (-1.5, 1.5, -1.5, 1.5),
-            "scatteredBeamEdgesRelCentroid": (-2.1, 2.1, -2.1, 2.1),
+            "incidentBeamLeftEdge": -1.5,
+            "incidentBeamRightEdge": 1.5,
+            "incidentBeamTopEdge": -1.5,
+            "incidentBeamBottomEdge": 1.5,
+            "scatteredBeamLeftEdge": -2.1,
+            "scatteredBeamRightEdge": 2.1,
+            "scatteredBeamTopEdge": -2.1,
+            "scatteredBeamBottomEdge": 2.1,
             "filenameIncidentBeamSpectrumParams":
                 "StartupFiles/NIMROD/spectrum000.dat",
             "overallBackgroundFactor": 1.0,
@@ -862,7 +868,16 @@ class TestGudPyIO(TestCase):
     def testLoadMissingBeamAttributesSeq(self):
 
         for i, key in enumerate(self.expectedBeam.keys()):
-
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    ]:
+                continue
+            if i > 5:
+                i -= 3
+            if i > 9:
+                i -= 3
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[i]
             badBeam = "\n".join(badBeam)
@@ -889,7 +904,20 @@ class TestGudPyIO(TestCase):
         for i in range(50):
 
             key = random.choice(list(self.expectedBeam))
+
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    ]:
+                continue
+
             j = list(self.expectedBeam).index(key)
+
+            if j > 5:
+                j -= 3
+            if j > 9:
+                j -= 3
 
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[j]
