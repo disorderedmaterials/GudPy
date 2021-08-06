@@ -3,7 +3,7 @@ from enum import Enum
 
 class Scales(Enum):
     Q = 1
-    D_SPACE = 2
+    D_SPACING = 2
     WAVELENGTH = 3
     ENERGY = 4
     TOF = 5
