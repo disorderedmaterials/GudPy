@@ -90,7 +90,9 @@ class TestGudPyIO(TestCase):
             "sampleGeometry": "FLATPLATE",
             "noBeamProfileValues": 2,
             "beamProfileValues": [1.0, 1.0],
-            "stepSizeAbsorptionMSNoSlices": (0.05, 0.2, 100),
+            "stepSizeAbsorption": 0.05,
+            "stepSizeMS": 0.2,
+            "noSlices": 100,
             "angularStepForCorrections": 10,
             "incidentBeamLeftEdge": -1.5,
             "incidentBeamRightEdge": 1.5,
@@ -871,13 +873,18 @@ class TestGudPyIO(TestCase):
             if key in [
                     "incidentBeamRightEdge", "incidentBeamTopEdge",
                     "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeMS", "noSlices"
                     ]:
                 continue
-            if i > 5:
+
+            if i >= 4:
+                i -= 2
+            if i >= 9:
                 i -= 3
-            if i > 9:
+            if i >= 10:
                 i -= 3
+
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[i]
             badBeam = "\n".join(badBeam)
@@ -908,15 +915,18 @@ class TestGudPyIO(TestCase):
             if key in [
                     "incidentBeamRightEdge", "incidentBeamTopEdge",
                     "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeMS", "noSlices"
                     ]:
                 continue
 
             j = list(self.expectedBeam).index(key)
 
-            if j > 5:
+            if j >= 4:
+                j -= 2
+            if j >= 9:
                 j -= 3
-            if j > 9:
+            if j >= 10:
                 j -= 3
 
             badBeam = str(self.goodBeam).split("\n")

@@ -18,9 +18,12 @@ class Beam:
         number of beam profile values.
     beamProfileValues : int[]
         list of beam profile values.
-    stepSizeAbsorptionMSNoSlices: tuple(float, float, int)
-        contains step size for absorption,
-        m.s. calculation and number of slices.
+    stepSizeAbsorption : float
+        Step size for absorption calculations.
+    stepSizeMS : float
+        Step size for m.s calculation.
+    noSlices : float
+        Number of slices for m.s calculation.
     angularStepForCorrections : int
         Angular step size to be used in corrections [deg.].
     incidentBeamLeftEdge : float
@@ -61,7 +64,9 @@ class Beam:
         self.sampleGeometry = ""
         self.noBeamProfileValues = 0
         self.beamProfileValues = []
-        self.stepSizeAbsorptionMSNoSlices = (0.0, 0.0, 0)
+        self.stepSizeAbsorption = 0.0
+        self.stepSizeMS = 0.0
+        self.noSlices = 0
         self.angularStepForCorrections = 0
         self.incidentBeamLeftEdge = 0.0
         self.incidentBeamRightEdge = 0.0
@@ -108,6 +113,14 @@ class Beam:
             f'Scattered beam edges relateive to centre of samples [cm]\n'
         )
 
+        absorptionAndMSLine = (
+            f'{self.stepSizeAbsorption} '
+            f'{self.stepSizeMS} '
+            f'{self.noSlices}'
+            f'{TAB}'
+            f'Step size for absorption and m.s. calculation of no. of slices\n'
+        )
+
         return (
 
             f'{self.sampleGeometry}{TAB}'
@@ -116,8 +129,7 @@ class Beam:
             f'Number of beam profile values\n'
             f'{spacify(self.beamProfileValues)}{TAB}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'
-            f'{spacify(self.stepSizeAbsorptionMSNoSlices)}{TAB}'
-            f'Step size for absorption and m.s. calculation of no. of slices\n'
+            f'{absorptionAndMSLine}'
             f'{self.angularStepForCorrections}{TAB}'
             f'Angular step for corrections [deg.]\n'
             f'{incidentBeamLine}'

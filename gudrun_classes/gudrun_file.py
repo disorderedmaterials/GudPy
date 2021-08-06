@@ -513,7 +513,7 @@ class GudrunFile:
             "sampleGeometry": "Sample geometry",
             "noBeamProfileValues": ["number", "beam", "profile", "values"],
             "beamProfileValues": ["Beam", "profile", "values", "("],
-            "stepSizeAbsorptionMSNoSlices": ["Step", "size", "m.s"],
+            "stepSizeAbsorption": ["Step", "size", "m.s"],
             "angularStepForCorrections": "Angular step",
             "incidentBeamLeftEdge": "Incident beam edges",
             "scatteredBeamLeftEdge": "Scattered beam edges",
@@ -598,6 +598,8 @@ class GudrunFile:
         """
 
         for key in INTS:
+            if key == "noSlices":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -618,7 +620,8 @@ class GudrunFile:
             if key in [
                     "incidentBeamRightEdge", "incidentBeamTopEdge",
                     "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge"
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeAbsorption", "stepSizeMS"
                     ]:
                 continue
             isin_, i = isin(KEYPHRASES[key], lines)
@@ -692,7 +695,7 @@ class GudrunFile:
         and m.s. calculation and number of slices
         """
 
-        key = "stepSizeAbsorptionMSNoSlices"
+        key = "stepSizeAbsorption"
         isin_, i = isin(KEYPHRASES[key], lines)
         if not isin_:
             raise ValueError(
@@ -702,10 +705,14 @@ class GudrunFile:
             FORMAT_MAP[key] = i
         stepSizeAbsorptionMS = extract_floats_from_string(
             lines[FORMAT_MAP[key]]
-        )[:2]
-        noSlices = int(extract_floats_from_string(lines[FORMAT_MAP[key]])[2])
-        stepSizeAbsorptionMSNoSlices = tuple(stepSizeAbsorptionMS + [noSlices])
-        self.beam.__dict__[key] = stepSizeAbsorptionMSNoSlices
+        )
+        (
+            self.beam.stepSizeAbsorption,
+            self.beam.stepSizeMS,
+            self.beam.noSlices,
+            *rest
+        ) = stepSizeAbsorptionMS
+        self.beam.noSlices = int(self.beam.noSlices)
 
     def parseNormalisation(self, lines):
         """
