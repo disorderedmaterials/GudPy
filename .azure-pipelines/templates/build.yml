@@ -27,11 +27,11 @@ steps:
     displayName: "Install dependencies"
   
   - bash: |
-      wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
-      unzip binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip > binaries.zip
+      unzip binaries.zip
       mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
-      wget https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip
-      unzip startupFiles-${{ parameters.tag }}.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip > startupFiles.zip
+      unzip startupFiles.zip
       mv StartupFiles bin
       
   - script: |
