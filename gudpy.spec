@@ -1,12 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 SEP = os.path.sep
-
+SUFFIX = ""
+if os.name == "nt":
+    SUFFIX = ".exe"
 block_cipher = None
 
 
 a = Analysis(['gui/gudpy.py'],
              pathex=['gudrun_classes' + SEP, 'scripts' + SEP, 'widgets' + SEP],
-             binaries=[('bin' + SEP + 'gudrun_dcs', '.'), ('bin' + SEP + 'calc_corrsx_in_out', '.'), ('bin' + SEP + 'purge_det', '.'), ('bin' + SEP + 'tophatsub', '.')],
+             binaries=[('bin' + SEP + 'gudrun_dcs' + SUFFIX, '.'), ('bin' + SEP + 'calc_corrsx_in_out' + SUFFIX, '.'), ('bin' + SEP + 'purge_det' + SUFFIX, '.'), ('bin' + SEP + 'tophatsub' + SUFFIX, '.')],
              datas=[('bin' + SEP + 'StartupFiles', '.')],
              hiddenimports=[],
              hookspath=[],
