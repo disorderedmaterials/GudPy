@@ -27,7 +27,7 @@ class GudFile:
     atomicDensity : float
         Number density of sample (atoms/Angstrom^3).
     chemicalDensity : float
-        Number density of sample (g/cm^3).
+        Chemical density of sample (g/cm^3).
     averageScatteringLength : float
         Average scattering length of the sample (10^-12cm).
     averageScatteringLengthSquared : float
