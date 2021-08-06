@@ -91,7 +91,7 @@ class Container:
 
         if self.densityUnits == UnitsOfDensity.ATOMIC.value:
             units = 'atoms/\u212b^3'
-            density = self.density*-1
+            density = -self.density
         elif self.density == UnitsOfDensity.CHEMICAL.value:
             units = 'gm/cm^3'
             density = self.density
