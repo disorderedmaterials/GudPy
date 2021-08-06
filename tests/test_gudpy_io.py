@@ -145,7 +145,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": 0,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -168,7 +169,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": 0,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -186,7 +188,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": 0,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -204,7 +207,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": 0,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -1122,21 +1126,22 @@ class TestGudPyIO(TestCase):
 
     def testLoadMissingContainerAttributesSeq(self):
         for i, key in enumerate(self.expectedContainerA.keys()):
-            if key in ["name", "dataFiles", "composition"]:
+            if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
             if i == 1:
                 i = 0
             if i >= 2:
                 i += 3
-
+            if i >= 12:
+                i -= 1
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
             del badSampleBackground[i + 44]
-
             badSampleBackground = "\n".join(badSampleBackground)
+
             with open("test_data.txt", "w", encoding="utf-8") as f:
                 f.write("'  '  '        '  '/'\n\n")
                 f.write(
@@ -1165,18 +1170,22 @@ class TestGudPyIO(TestCase):
         for i in range(50):
             key = random.choice(list(self.expectedContainerA))
             j = list(self.expectedContainerA).index(key)
-            if key in ["name", "dataFiles", "composition"]:
+            if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
 
             if j == 1:
                 j = 0
             if j >= 2:
                 j += 3
+            if j >= 12:
+                j -= 1
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
+            print("\n".join(badSampleBackground))
+            print(badSampleBackground[j+44], j, key)
             del badSampleBackground[j + 44]
 
             badSampleBackground = "\n".join(badSampleBackground)

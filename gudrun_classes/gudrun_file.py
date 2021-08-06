@@ -23,6 +23,7 @@ try:
     from element import Element
     from data_files import DataFiles
     from purge_file import PurgeFile
+    from enums import unitsOfDensity
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -41,6 +42,7 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
     from gudrun_classes.purge_file import PurgeFile
+    from gudrun_classes.enums import unitsOfDensity
 
 
 class GudrunFile:
@@ -1358,7 +1360,7 @@ class GudrunFile:
             "geometry": "Geometry",
             "thickness": ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth": "Angle of rotation",
-            "densityOfAtoms": "Density",
+            "density": "Density",
             "totalCrossSectionSource": "Total cross",
             "tweakFactor": "tweak factor",
             "scatteringFractionAttenuationCoefficient": [
@@ -1382,6 +1384,7 @@ class GudrunFile:
         FORMAT_MAP.pop("name", None)
         FORMAT_MAP.pop("dataFiles", None)
         FORMAT_MAP.pop("composition", None)
+        FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         for key in FORMAT_MAP.keys():
@@ -1448,7 +1451,18 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            container.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+            if key == "density":
+                density = float(firstword(lines[FORMAT_MAP[key]]))
+                if density < 0:
+                    density = abs(density)
+                    container.densityUnits = unitsOfDensity.ATOMIC.value
+                else:
+                    container.densityUnits = unitsOfDensity.CHEMICAL.value
+                container.__dict__[key] = density
+            else:
+                container.__dict__[key] = (
+                    float(firstword(lines[FORMAT_MAP[key]]))
+                )
 
         """
         Get all attributes that need to be stored as a tuple of floats:

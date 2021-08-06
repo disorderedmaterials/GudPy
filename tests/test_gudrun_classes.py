@@ -182,7 +182,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(container.geometry, str)
         self.assertIsInstance(container.thickness, tuple)
         self.assertIsInstance(container.angleOfRotationSampleWidth, tuple)
-        self.assertIsInstance(container.densityOfAtoms, float)
+        self.assertIsInstance(container.density, float)
+        self.assertIsInstance(container.densityUnits, int)
         self.assertIsInstance(container.totalCrossSectionSource, str)
         self.assertIsInstance(container.tweakFactor, float)
         self.assertIsInstance(
