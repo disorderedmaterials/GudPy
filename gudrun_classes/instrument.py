@@ -1,3 +1,6 @@
+from gudrun_classes.enums import Scales
+
+
 try:
     from utils import spacify, numifyBool
     from enums import MergeWeights
@@ -144,11 +147,11 @@ class Instrument:
         self.groupsAcceptanceFactor = 0.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
-        self.mergeWeights = 0
+        self.mergeWeights = MergeWeights.NONE
         self.incidentFlightPath = 0.0
         self.spectrumNumberForOutputDiagnosticFiles = 0
         self.neutronScatteringParametersFile = ""
-        self.scaleSelection = 0
+        self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
         self.GudrunStartFolder = ""
         self.startupFileFolder = ""
@@ -204,20 +207,20 @@ class Instrument:
             f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
         )
 
-        if self.mergeWeights == MergeWeights.NONE.value:
+        if self.mergeWeights == MergeWeights.NONE:
             mergeBy = "Merge weights: None?"
-        elif self.mergeWeights == MergeWeights.DETECTOR.value:
+        elif self.mergeWeights == MergeWeights.DETECTOR:
             mergeBy = "By detector?"
-        elif self.mergeWeights == MergeWeights.CHANNEL.value:
+        elif self.mergeWeights == MergeWeights.CHANNEL:
             mergeBy = "By channel?"
 
         mergeWeightsLine = (
-            f'{self.mergeWeights}{TAB}'
+            f'{self.mergeWeights.value}{TAB}'
             f'{mergeBy}\n'
         )
 
         scaleSelectionLine = (
-            f'{self.scaleSelection}        '
+            f'{self.scaleSelection.value}        '
             f'Scale selection: 1 = Q, 2 = d-space,'
             f' 3 = wavelength, 4 = energy, 5 = TOF\n'
         )

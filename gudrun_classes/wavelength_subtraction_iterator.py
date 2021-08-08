@@ -167,7 +167,7 @@ class WavelengthSubtractionIterator():
         then set self scattering file extensions to mint01.
         """
         # Dict to pick suffix based on scale
-        suffix = {1: "msubw01", 3: "mint01"}[scale]
+        suffix = {Scales.Q: "msubw01", Scales.WAVELENGTH: "mint01"}[scale]
 
         # Enumerator for sample backgrounds
         iterator = enumerate(self.gudrunFile.sampleBackgrounds)
@@ -217,10 +217,10 @@ class WavelengthSubtractionIterator():
         self.applyWavelengthRanges()
         self.enableLogarithmicBinning()
         self.gudrunFile.instrument.scaleSelection = (
-            Scales.WAVELENGTH.value
+            Scales.WAVELENGTH
         )
         self.zeroTopHatWidths()
-        self.setSelfScatteringFiles(Scales.WAVELENGTH.value)
+        self.setSelfScatteringFiles(Scales.WAVELENGTH)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
@@ -243,9 +243,9 @@ class WavelengthSubtractionIterator():
         # alter data file suffixes.
         self.applyQRange()
         self.disableLogarithmicBinning()
-        self.gudrunFile.instrument.scaleSelection = Scales.Q.value
+        self.gudrunFile.instrument.scaleSelection = Scales.Q
         self.resetTopHatWidths()
-        self.setSelfScatteringFiles(Scales.Q.value)
+        self.setSelfScatteringFiles(Scales.Q)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()

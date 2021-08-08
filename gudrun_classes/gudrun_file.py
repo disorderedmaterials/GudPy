@@ -1,9 +1,12 @@
+from typing import ChainMap
+from gudrun_classes.enums import MergeWeights, Scales
 import sys
 import os
 from os.path import isfile
 import subprocess
 import time
 from copy import deepcopy
+from enum import Enum
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../scripts"))
@@ -488,6 +491,35 @@ class GudrunFile:
             groupingParameterPanel = tuple([group] + maxMinBf)
             self.instrument.__dict__[key] = groupingParameterPanel
 
+        """
+        Get mergeWeights attribute.
+        """
+        key = "mergeWeights"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        mergeWeights = int(firstword(lines[FORMAT_MAP[key]]))
+        mergeWeights = MergeWeights[MergeWeights(mergeWeights).name]
+        self.instrument.__dict__[key] = mergeWeights
+        """
+        Get scaleSelection attribute.
+        """
+        key = "scaleSelection"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        scaleSelection = int(firstword(lines[FORMAT_MAP[key]]))
+        scaleSelection = Scales[Scales(scaleSelection).name]
+        self.instrument.__dict__[key] = scaleSelection
+
     def parseBeam(self, lines):
         """
         Intialises a Beam object and assigns it to the
@@ -912,11 +944,11 @@ class GudrunFile:
                 if density < 0:
                     density = abs(density)
                     self.normalisation.densityUnits = (
-                        UnitsOfDensity.ATOMIC.value
+                        UnitsOfDensity.ATOMIC
                     )
                 else:
                     self.normalisation.densityUnits = (
-                        UnitsOfDensity.CHEMICAL.value
+                        UnitsOfDensity.CHEMICAL
                     )
                 self.normalisation.__dict__[key] = density
             else:
@@ -1276,9 +1308,9 @@ class GudrunFile:
                 density = float(firstword(lines[FORMAT_MAP[key]]))
                 if density < 0:
                     density = abs(density)
-                    sample.densityUnits = UnitsOfDensity.ATOMIC.value
+                    sample.densityUnits = UnitsOfDensity.ATOMIC
                 else:
-                    sample.densityUnits = UnitsOfDensity.CHEMICAL.value
+                    sample.densityUnits = UnitsOfDensity.CHEMICAL
                 sample.__dict__[key] = density
             else:
                 sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
@@ -1524,9 +1556,9 @@ class GudrunFile:
                 density = float(firstword(lines[FORMAT_MAP[key]]))
                 if density < 0:
                     density = abs(density)
-                    container.densityUnits = UnitsOfDensity.ATOMIC.value
+                    container.densityUnits = UnitsOfDensity.ATOMIC
                 else:
-                    container.densityUnits = UnitsOfDensity.CHEMICAL.value
+                    container.densityUnits = UnitsOfDensity.CHEMICAL
                 container.__dict__[key] = density
             else:
                 container.__dict__[key] = (

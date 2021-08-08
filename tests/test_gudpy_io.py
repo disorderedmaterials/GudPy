@@ -1,3 +1,4 @@
+from enum import Enum
 import sys
 import os
 from unittest import TestCase, skip
@@ -19,6 +20,7 @@ try:
     from normalisation import Normalisation
     from sample_background import SampleBackground
     from sample import Sample
+    from enums import Scales, UnitsOfDensity, MergeWeights
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     sys.path.insert(2, os.path.join(sys.path[0], "scripts"))
@@ -33,6 +35,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
 
 
 class TestGudPyIO(TestCase):
@@ -71,12 +74,12 @@ class TestGudPyIO(TestCase):
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
             "subSingleAtomScattering": False,
-            "mergeWeights": 2,
+            "mergeWeights": MergeWeights.CHANNEL,
             "incidentFlightPath": 20.0,
             "spectrumNumberForOutputDiagnosticFiles": 0,
             "neutronScatteringParametersFile":
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
-            "scaleSelection": 1,
+            "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
             "GudrunStartFolder": "/home/test/src/Gudrun2017/Gudrun",
             "startupFileFolder": "/oldwork/test/water",
@@ -128,7 +131,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.15, 0.15),
             "angleOfRotationSampleWidth": (0.0, 5),
             "density": 0.0721,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 200,
             "totalCrossSectionSource": "TABLES",
             "normalisationDifferentialCrossSectionFilename": "*",
@@ -155,7 +158,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.0542,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -179,7 +182,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.0542,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -198,7 +201,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.0542,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -217,7 +220,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.0542,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -241,7 +244,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -280,7 +283,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -324,7 +327,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -368,7 +371,7 @@ class TestGudPyIO(TestCase):
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
-            "densityUnits": 0,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
@@ -599,6 +602,8 @@ class TestGudPyIO(TestCase):
                     )
             elif isinstance(value, bool):
                 self.assertTrue(str(numifyBool(value)) in lines)
+            elif isinstance(value, Enum):
+                self.assertTrue(str(value.value) in lines)
             else:
                 if "        " in str(value):
                     self.assertTrue(str(value).split("        ")[0] in lines)
@@ -960,7 +965,6 @@ class TestGudPyIO(TestCase):
                 i += 1
             if i >= 13:
                 i -= 1
-            print(key, i)
             if key in [
                     "dataFiles", "dataFilesBg",
                     "composition", "densityUnits"
@@ -1138,20 +1142,19 @@ class TestGudPyIO(TestCase):
         for i in range(50):
             key = random.choice(list(self.expectedSampleA))
             j = list(self.expectedSampleA).index(key)
-            print(key, j)
             if key in ignore:
                 continue
 
-            if i == 1:
-                i = 0
-            if i >= 5:
-                i += 2
-            if i >= 11 and i <= 17:
-                i -= 1
-            if i > 17:
-                i += 1
-            if i == 19:
-                i -= 1
+            if j == 1:
+                j = 0
+            if j >= 5:
+                j += 2
+            if j >= 11 and j <= 17:
+                j -= 1
+            if j > 17:
+                j += 1
+            if j == 19:
+                j -= 1
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1244,8 +1247,6 @@ class TestGudPyIO(TestCase):
             ]
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
-            print("\n".join(badSampleBackground))
-            print(badSampleBackground[j+44], j, key)
             del badSampleBackground[j + 44]
 
             badSampleBackground = "\n".join(badSampleBackground)

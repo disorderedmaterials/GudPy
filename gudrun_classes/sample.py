@@ -98,7 +98,7 @@ class Sample:
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
         self.density = 0.0
-        self.densityUnits = 0
+        self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
         self.totalCrossSectionSource = ""
         self.sampleTweakFactor = 0.0
@@ -141,10 +141,10 @@ class Sample:
             else
             ''
         )
-        if self.densityUnits == UnitsOfDensity.ATOMIC.value:
+        if self.densityUnits == UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
             density = self.density*-1
-        elif self.density == UnitsOfDensity.CHEMICAL.value:
+        elif self.density == UnitsOfDensity.CHEMICAL:
             units = 'gm/cm^3'
             density = self.density
 

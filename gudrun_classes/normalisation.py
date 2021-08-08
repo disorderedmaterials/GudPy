@@ -109,10 +109,10 @@ class Normalisation:
             ''
         )
 
-        if self.densityUnits == UnitsOfDensity.ATOMIC.value:
+        if self.densityUnits == UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
-            density = self.density*-1
-        elif self.density == UnitsOfDensity.CHEMICAL.value:
+            density = -self.density
+        elif self.density == UnitsOfDensity.CHEMICAL:
             units = 'gm/cm^3'
             density = self.density
 
