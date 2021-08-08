@@ -1,12 +1,9 @@
-from typing import ChainMap
-from gudrun_classes.enums import MergeWeights, Scales
 import sys
 import os
 from os.path import isfile
 import subprocess
 import time
 from copy import deepcopy
-from enum import Enum
 
 try:
     sys.path.insert(1, os.path.join(sys.path[0], "../scripts"))
@@ -26,7 +23,7 @@ try:
     from element import Element
     from data_files import DataFiles
     from purge_file import PurgeFile
-    from enums import UnitsOfDensity
+    from enums import UnitsOfDensity, MergeWeights, Scales
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -45,7 +42,7 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
     from gudrun_classes.purge_file import PurgeFile
-    from gudrun_classes.enums import UnitsOfDensity
+    from gudrun_classes.enums import UnitsOfDensity, MergeWeights, Scales
 
 
 class GudrunFile:

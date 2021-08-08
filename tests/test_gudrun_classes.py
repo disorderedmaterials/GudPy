@@ -29,7 +29,6 @@ except ModuleNotFoundError:
     from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
 
 
-
 class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
 
