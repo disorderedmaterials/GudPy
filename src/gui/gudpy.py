@@ -6,8 +6,12 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
+import pathmagic
 import sys
 
+from gudrun_classes.gudrun_file import GudrunFile
+from widgets.gudrun_file_text_area import GudrunFileTextArea
+from widgets.main_window import GudPyMainWindow
 
 class GudPy(QApplication):
 
@@ -40,21 +44,6 @@ class GudPy(QApplication):
                 self.textArea.setText(f.read())
         sys.path.append(filename[0])
         self.gudrunFile = GudrunFile(filename[0])
-        result = self.gudrunFile.dcs()
-        self.msg = QMessageBox(self.mainWindow)
-        self.msg.setWindowTitle("Result")
-        self.msg.setText(result.stdout)
-        self.msg.exec_()
-        # self.sidebar = GudPySiderbar(self.mainWindow, tabs)
-        # self.mainWindow.setCentralWidget(self.sidebar)
-
-        # self.layout = QHBoxLayout()
-        # self.layout.addWidget(self.sidebar)
-        # self.layout.setStretch(0,40)
-        # self.mainWidget = QWidget()
-        # self.mainWidget.setLayout(self.layout)
-        # self.mainWindow.setMenuWidget(self.mainWidget)
-
 
 def main(argv):
     print(sys.path)
