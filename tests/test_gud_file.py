@@ -2,9 +2,9 @@ import os
 from unittest import TestCase
 from shutil import copyfile
 
-from gudrun_classes.gud_file import GudFile
-from gudrun_classes.gudrun_file import GudrunFile
-from scripts.utils import extract_floats_from_string
+from gud_file import GudFile
+from gudrun_file import GudrunFile
+from utils import extract_floats_from_string
 
 
 class TestParseGudFile(TestCase):

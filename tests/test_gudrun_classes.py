@@ -1,19 +1,20 @@
 from unittest import TestCase
 
-from gudrun_classes.gudrun_file import GudrunFile
-from gudrun_classes.beam import Beam
-from gudrun_classes.composition import Composition
-from gudrun_classes.container import Container
-from gudrun_classes.data_files import DataFiles
-from gudrun_classes.element import Element
-from gudrun_classes.instrument import Instrument
-from gudrun_classes.normalisation import Normalisation
-from gudrun_classes.sample_background import SampleBackground
-from gudrun_classes.sample import Sample
-from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
+from gudrun_file import GudrunFile
+from beam import Beam
+from composition import Composition
+from container import Container
+from data_files import DataFiles
+from element import Element
+from instrument import Instrument
+from normalisation import Normalisation
+from sample_background import SampleBackground
+from sample import Sample
+from enums import Scales, UnitsOfDensity, MergeWeights
 
 
 class TestGudrunClasses(TestCase):
+
     def testEmptyPath(self):
 
         emptyPath = ""
