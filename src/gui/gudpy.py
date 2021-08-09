@@ -21,6 +21,24 @@ class GudPy(QApplication):
     def initComponents(self):
 
         self.mainWindow = GudPyMainWindow()
+<<<<<<< HEAD
+=======
+        self.textArea = GudrunFileTextArea(self.mainWindow, 1, 0.3)
+
+        filename = QFileDialog.getOpenFileName(
+            self.mainWindow, "Choose GudPy file for gudrun_dcs"
+        )
+        if filename[0]:
+            with open(filename[0], "r") as f:
+                self.textArea.setText(f.read())
+        sys.path.append(filename[0])
+        try:
+            self.gudrunFile = GudrunFile(filename[0])
+        except ValueError as e:
+            self.msgBox = QMessageBox(self.mainWindow)
+            self.msgBox.setText(str(e))
+            self.msgBox.exec()
+>>>>>>> Offload sizing of text area to its own class. Handle invalid GudrunFile on launch
 
 def main(argv):
     print(sys.path)
