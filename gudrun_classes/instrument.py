@@ -147,7 +147,7 @@ class Instrument:
         self.groupsAcceptanceFactor = 0.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
-        self.mergeWeights = MergeWeights.NONE
+        self.mergeWeights = MergeWeights.CHANNEL
         self.incidentFlightPath = 0.0
         self.spectrumNumberForOutputDiagnosticFiles = 0
         self.neutronScatteringParametersFile = ""
