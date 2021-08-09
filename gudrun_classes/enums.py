@@ -28,4 +28,4 @@ class NormalisationType(Enum):
 
 class OutputUnits(Enum):
     BARNS_ATOM_SR = 0
-    CM_INV_SR = 1
+    INV_CM_SR = 1
