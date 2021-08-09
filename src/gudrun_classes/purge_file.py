@@ -1,12 +1,8 @@
 import os
 import sys
+import pathmagic  # noqa: F401
+from scripts.utils import spacify, numifyBool
 import subprocess
-try:
-    sys.path.insert(1, os.path.join(sys.path[0], "../scripts"))
-    from utils import spacify, numifyBool
-except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
-    from scripts.utils import spacify, numifyBool
 
 
 class PurgeFile():

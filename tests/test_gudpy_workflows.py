@@ -1,24 +1,15 @@
 import os
-import sys
 from shutil import copyfile
 from unittest import TestCase
 import re
 import math
 
-try:
-    sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
-    from gudrun_file import GudrunFile
-    from tweak_factor_iterator import TweakFactorIterator
-    from gud_file import GudFile
-    from wavelength_subtraction_iterator import WavelengthSubtractionIterator
-except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
-    from gudrun_classes.gudrun_file import GudrunFile
-    from gudrun_classes.tweak_factor_iterator import TweakFactorIterator
-    from gudrun_classes.gud_file import GudFile
-    from gudrun_classes.wavelength_subtraction_iterator import (
-        WavelengthSubtractionIterator
-    )
+from gudrun_classes.gudrun_file import GudrunFile
+from gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from gudrun_classes.gud_file import GudFile
+from gudrun_classes.wavelength_subtraction_iterator import (
+    WavelengthSubtractionIterator
+)
 
 
 class TestGudPyWorkflows(TestCase):

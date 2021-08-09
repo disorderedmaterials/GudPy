@@ -1,27 +1,13 @@
-import sys
-import os
 from unittest import TestCase
 
-sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
-sys.path.insert(2, os.path.join(sys.path[0], "../scripts"))
 
-try:
-    from utils import (
-            iteristype,
-            firstword, boolifyNum,
-            numifyBool, spacify,
-            extract_ints_from_string,
-            extract_floats_from_string,
-            count_occurrences)
-except ModuleNotFoundError:
-    sys.path.insert(2, os.path.join(sys.path[0], "scripts"))
-    from scripts.utils import (
-            iteristype,
-            firstword, boolifyNum,
-            numifyBool, spacify,
-            extract_ints_from_string,
-            extract_floats_from_string,
-            count_occurrences)
+from scripts.utils import (
+        iteristype,
+        firstword, boolifyNum,
+        numifyBool, spacify,
+        extract_ints_from_string,
+        extract_floats_from_string,
+        count_occurrences)
 
 
 class TestUtils(TestCase):

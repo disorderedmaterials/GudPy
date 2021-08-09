@@ -5,44 +5,25 @@ import subprocess
 import time
 from copy import deepcopy
 
-try:
-    sys.path.insert(1, os.path.join(sys.path[0], "../scripts"))
-    from utils import (
-            iteristype, isin,
-            firstword, boolifyNum,
-            extract_ints_from_string,
-            extract_floats_from_string,
-            count_occurrences)
-    from instrument import Instrument
-    from beam import Beam
-    from normalisation import Normalisation
-    from sample import Sample
-    from sample_background import SampleBackground
-    from container import Container
-    from composition import Composition
-    from element import Element
-    from data_files import DataFiles
-    from purge_file import PurgeFile
-    from enums import UnitsOfDensity, MergeWeights, Scales
-except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
-    from scripts.utils import (
-            iteristype, isin,
-            firstword, boolifyNum,
-            extract_ints_from_string,
-            extract_floats_from_string,
-            count_occurrences)
-    from gudrun_classes.beam import Beam
-    from gudrun_classes.composition import Composition
-    from gudrun_classes.container import Container
-    from gudrun_classes.data_files import DataFiles
-    from gudrun_classes.element import Element
-    from gudrun_classes.instrument import Instrument
-    from gudrun_classes.normalisation import Normalisation
-    from gudrun_classes.sample_background import SampleBackground
-    from gudrun_classes.sample import Sample
-    from gudrun_classes.purge_file import PurgeFile
-    from gudrun_classes.enums import UnitsOfDensity, MergeWeights, Scales
+import pathmagic  # noqa: F401
+
+from scripts.utils import (
+        iteristype, isin,
+        firstword, boolifyNum,
+        extract_ints_from_string,
+        extract_floats_from_string,
+        count_occurrences)
+from instrument import Instrument
+from beam import Beam
+from normalisation import Normalisation
+from sample import Sample
+from sample_background import SampleBackground
+from container import Container
+from composition import Composition
+from element import Element
+from data_files import DataFiles
+from purge_file import PurgeFile
+from enums import UnitsOfDensity, MergeWeights, Scales
 
 
 class GudrunFile:

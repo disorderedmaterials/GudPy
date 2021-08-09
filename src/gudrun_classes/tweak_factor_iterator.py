@@ -1,7 +1,4 @@
-try:
-    from gud_file import GudFile
-except ModuleNotFoundError:
-    from gudrun_classes.gud_file import GudFile
+from gud_file import GudFile
 
 
 class TweakFactorIterator():
