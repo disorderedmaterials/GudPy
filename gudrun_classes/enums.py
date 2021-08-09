@@ -22,8 +22,8 @@ class MergeWeights(Enum):
 
 class NormalisationType(Enum):
     NOTHING = 0
-    F1 = 1
-    F2 = 2
+    AVERAGE_SQUARED = 1
+    AVERAGE_OF_SQUARES = 2
 
 
 class OutputUnits(Enum):

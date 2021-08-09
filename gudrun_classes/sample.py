@@ -60,7 +60,7 @@ class Sample:
     fileSelfScattering : str
         Name of file containing scattering as a function of wavelength.
     normaliseTo : int
-        Normalisationt type required on the final merged DCS data.
+        Normalisation type required on the final merged DCS data.
         0 = nothing, 1 = <f>^2, 2 = <f^2>
     maxRadFT : float
         Maximum radiues for Fourier transform.
@@ -163,9 +163,9 @@ class Sample:
 
         if self.normaliseTo == NormalisationType.NOTHING:
             normaliseTo = "Nothing"
-        elif self.normaliseTo == NormalisationType.F1:
+        elif self.normaliseTo == NormalisationType.AVERAGE_SQUARED:
             normaliseTo = "<b>^2"
-        elif self.normaliseTo == NormalisationType.F2:
+        elif self.normaliseTo == NormalisationType.AVERAGE_OF_SQUARES:
             normaliseTo = "<b^2>"
 
         normaliseLine = (
