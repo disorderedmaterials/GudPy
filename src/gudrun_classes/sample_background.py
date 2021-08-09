@@ -1,9 +1,6 @@
-try:
-    from utils import spacify
-    from data_files import DataFiles
-except ModuleNotFoundError:
-    from scripts.utils import spacify
-    from gudrun_classes.data_files import DataFiles
+import pathmagic  # noqa: F401
+from scripts.utils import spacify
+from data_files import DataFiles
 
 
 class SampleBackground:

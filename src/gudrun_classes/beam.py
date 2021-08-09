@@ -1,7 +1,5 @@
-try:
-    from utils import spacify
-except ModuleNotFoundError:
-    from scripts.utils import spacify
+import pathmagic  # noqa: F401
+from scripts.utils import spacify
 
 
 class Beam:
