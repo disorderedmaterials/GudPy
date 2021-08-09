@@ -2,6 +2,7 @@ from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 
 
+
 class Instrument:
     """
     Class to represent an Instrument.
