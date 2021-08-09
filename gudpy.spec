@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-VERSION = 0.0.1
+VERSION = "0.0.1"
 SEP = os.path.sep
 SUFFIX = ""
 if os.name == "nt":
