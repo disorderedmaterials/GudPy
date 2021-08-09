@@ -10,7 +10,7 @@ from instrument import Instrument
 from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
-from enums import Scales, UnitsOfDensity, MergeWeights
+from enums import Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
 
 
 class TestGudrunClasses(TestCase):
@@ -166,6 +166,9 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
         self.assertIsInstance(sample.minRadFT, float)
+        self.assertIsInstance(sample.maxRadFT, float)
+        self.assertIsInstance(sample.normaliseTo, NormalisationType)
+        self.assertIsInstance(sample.outputUnits, OutputUnits)
 
     def testContainerInitDataTypes(self):
 
