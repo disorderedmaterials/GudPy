@@ -883,6 +883,14 @@ class TestGudPyIO(TestCase):
                     ]:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply negative offsets to fix index,
+            # which got skewed by attributes relating
+            # to the scattered beam edges and incident
+            # beam edges.
             if i >= 4:
                 i -= 2
             if i >= 9:
@@ -927,6 +935,14 @@ class TestGudPyIO(TestCase):
 
             j = list(self.expectedBeam).index(key)
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply negative offsets to fix index,
+            # which got skewed by attributes relating
+            # to the scattered beam edges and incident
+            # beam edges.
             if j >= 4:
                 j -= 2
             if j >= 9:
@@ -958,13 +974,23 @@ class TestGudPyIO(TestCase):
     def testLoadMissingNormalisationAttributesSeq(self):
 
         for i, key in enumerate(self.expectedNormalisation.keys()):
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
 
+            # Apply positive offsets to fix index,
+            # which got skewed by the normalisation and
+            # background normalisation data files.
             if i > 3:
                 i += 1
             if i > 5:
                 i += 1
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
             if i >= 13:
                 i -= 1
+
             if key in [
                     "dataFiles", "dataFilesBg",
                     "composition", "densityUnits"
@@ -1011,10 +1037,20 @@ class TestGudPyIO(TestCase):
 
             j = list(self.expectedNormalisation).index(key)
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the normalisation and
+            # background normalisation data files.
             if j > 3:
                 j += 1
             if j > 5:
                 j += 1
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
             if j >= 13:
                 j -= 1
 
@@ -1086,10 +1122,25 @@ class TestGudPyIO(TestCase):
             if key in ignore:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if i == 1:
                 i = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the sample data files
+            # and composition.
+
             if i >= 5:
                 i += 2
+
+            # Apply offsets to fix index,
+            # which got skewed by densityUnits attribute.
             if i >= 11 and i <= 17:
                 i -= 1
             if i > 17:
@@ -1145,10 +1196,24 @@ class TestGudPyIO(TestCase):
             if key in ignore:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if j == 1:
                 j = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the sample data files
+            # and composition.
             if j >= 5:
                 j += 2
+
+            # Apply offsets to fix index,
+            # which got skewed by densityUnits attribute.
             if j >= 11 and j <= 17:
                 j -= 1
             if j > 17:
@@ -1191,12 +1256,28 @@ class TestGudPyIO(TestCase):
         for i, key in enumerate(self.expectedContainerA.keys()):
             if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
+
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if i == 1:
                 i = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the container data files
+            # and composition.
             if i >= 2:
                 i += 3
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
             if i >= 12:
                 i -= 1
+
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1236,12 +1317,27 @@ class TestGudPyIO(TestCase):
             if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if j == 1:
                 j = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the container data files
+            # and composition.
             if j >= 2:
                 j += 3
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
             if j >= 12:
                 j -= 1
+
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
