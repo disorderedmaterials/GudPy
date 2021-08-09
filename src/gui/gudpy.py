@@ -6,11 +6,9 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
-import pathmagic
+import pathmagic  # noqa: F401
 import sys
 
-from gudrun_classes.gudrun_file import GudrunFile
-from widgets.gudrun_file_text_area import GudrunFileTextArea
 from widgets.main_window import GudPyMainWindow
 
 class GudPy(QApplication):
@@ -25,21 +23,6 @@ class GudPy(QApplication):
     def initComponents(self):
 
         self.mainWindow = GudPyMainWindow()
-        self.textArea = GudrunFileTextArea(self.mainWindow, 1, 0.3)
-
-        filename = QFileDialog.getOpenFileName(
-            self.mainWindow, "Choose GudPy file for gudrun_dcs"
-        )
-        if filename[0]:
-            with open(filename[0], "r") as f:
-                self.textArea.setText(f.read())
-        sys.path.append(filename[0])
-        try:
-            self.gudrunFile = GudrunFile(filename[0])
-        except ValueError as e:
-            self.msgBox = QMessageBox(self.mainWindow)
-            self.msgBox.setText(str(e))
-            self.msgBox.exec()
 
 def main(argv):
     print(sys.path)
