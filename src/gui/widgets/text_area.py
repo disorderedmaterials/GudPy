@@ -11,6 +11,15 @@ class TextArea(QTextEdit):
 
         self.setFixedHeight(self.relHeight * self.parent.size().height())
         self.setFixedWidth(self.relWidth * self.parent.size().width())
+        self.setGeometry(
+            int(
+                self.parent.size().width()
+                - (0.3 * self.parent.size().width())
+            ),
+            0,
+            int(self.parent.size().height()),
+            int(0.3 * self.parent.size().width()),
+        )
         self.show()
 
     def updateArea(self):
