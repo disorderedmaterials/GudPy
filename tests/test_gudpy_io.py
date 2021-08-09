@@ -1,3 +1,4 @@
+from enum import Enum
 import sys
 import os
 from unittest import TestCase, skip
@@ -19,6 +20,7 @@ try:
     from normalisation import Normalisation
     from sample_background import SampleBackground
     from sample import Sample
+    from enums import Scales, UnitsOfDensity, MergeWeights
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     sys.path.insert(2, os.path.join(sys.path[0], "scripts"))
@@ -33,6 +35,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
 
 
 class TestGudPyIO(TestCase):
@@ -71,12 +74,12 @@ class TestGudPyIO(TestCase):
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
             "subSingleAtomScattering": False,
-            "byChannel": 2,
+            "mergeWeights": MergeWeights.CHANNEL,
             "incidentFlightPath": 20.0,
             "spectrumNumberForOutputDiagnosticFiles": 0,
             "neutronScatteringParametersFile":
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
-            "scaleSelection": 1,
+            "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
             "GudrunStartFolder": "/home/test/src/Gudrun2017/Gudrun",
             "startupFileFolder": "/oldwork/test/water",
@@ -90,10 +93,18 @@ class TestGudPyIO(TestCase):
             "sampleGeometry": "FLATPLATE",
             "noBeamProfileValues": 2,
             "beamProfileValues": [1.0, 1.0],
-            "stepSizeAbsorptionMSNoSlices": (0.05, 0.2, 100),
+            "stepSizeAbsorption": 0.05,
+            "stepSizeMS": 0.2,
+            "noSlices": 100,
             "angularStepForCorrections": 10,
-            "incidentBeamEdgesRelCentroid": (-1.5, 1.5, -1.5, 1.5),
-            "scatteredBeamEdgesRelCentroid": (-2.1, 2.1, -2.1, 2.1),
+            "incidentBeamLeftEdge": -1.5,
+            "incidentBeamRightEdge": 1.5,
+            "incidentBeamTopEdge": -1.5,
+            "incidentBeamBottomEdge": 1.5,
+            "scatteredBeamLeftEdge": -2.1,
+            "scatteredBeamRightEdge": 2.1,
+            "scatteredBeamTopEdge": -2.1,
+            "scatteredBeamBottomEdge": 2.1,
             "filenameIncidentBeamSpectrumParams":
                 "StartupFiles/NIMROD/spectrum000.dat",
             "overallBackgroundFactor": 1.0,
@@ -119,7 +130,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.15, 0.15),
             "angleOfRotationSampleWidth": (0.0, 5),
-            "densityOfAtoms": -0.0721,
+            "density": 0.0721,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 200,
             "totalCrossSectionSource": "TABLES",
             "normalisationDifferentialCrossSectionFilename": "*",
@@ -145,7 +157,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -168,7 +181,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -186,7 +200,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -204,7 +219,8 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.1, 0.1),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.0542,
+            "density": 0.0542,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
             "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
@@ -227,13 +243,14 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
-            "gor": 0.1,
+            "grBroadening": 0.1,
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
@@ -265,13 +282,14 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
-            "gor": 0.0,
+            "grBroadening": 0.0,
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016609_D2O_in_N10.msubw01",
@@ -308,13 +326,14 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
-            "gor": 0.1,
+            "grBroadening": 0.1,
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
@@ -351,13 +370,14 @@ class TestGudPyIO(TestCase):
             "geometry": "SameAsBeam",
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
-            "densityOfAtoms": -0.1,
+            "density": 0.1,
+            "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
-            "gor": 0.1,
+            "grBroadening": 0.1,
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
@@ -506,7 +526,6 @@ class TestGudPyIO(TestCase):
         for key in sampleBackgroundsAttrsDict.keys():
             if key == "samples":
                 for i, sample in enumerate(self.expectedSampleBackground[key]):
-
                     sampleAttrsDict = (
                         deepcopy(
                             self.g.sampleBackgrounds[0].samples[i].__dict__
@@ -583,6 +602,8 @@ class TestGudPyIO(TestCase):
                     )
             elif isinstance(value, bool):
                 self.assertTrue(str(numifyBool(value)) in lines)
+            elif isinstance(value, Enum):
+                self.assertTrue(str(value.value) in lines)
             else:
                 if "        " in str(value):
                     self.assertTrue(str(value).split("        ")[0] in lines)
@@ -854,6 +875,28 @@ class TestGudPyIO(TestCase):
     def testLoadMissingBeamAttributesSeq(self):
 
         for i, key in enumerate(self.expectedBeam.keys()):
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeMS", "noSlices"
+                    ]:
+                continue
+
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply negative offsets to fix index,
+            # which got skewed by attributes relating
+            # to the scattered beam edges and incident
+            # beam edges.
+            if i >= 4:
+                i -= 2
+            if i >= 9:
+                i -= 3
+            if i >= 10:
+                i -= 3
 
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[i]
@@ -881,7 +924,31 @@ class TestGudPyIO(TestCase):
         for i in range(50):
 
             key = random.choice(list(self.expectedBeam))
+
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeMS", "noSlices"
+                    ]:
+                continue
+
             j = list(self.expectedBeam).index(key)
+
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply negative offsets to fix index,
+            # which got skewed by attributes relating
+            # to the scattered beam edges and incident
+            # beam edges.
+            if j >= 4:
+                j -= 2
+            if j >= 9:
+                j -= 3
+            if j >= 10:
+                j -= 3
 
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[j]
@@ -907,13 +974,27 @@ class TestGudPyIO(TestCase):
     def testLoadMissingNormalisationAttributesSeq(self):
 
         for i, key in enumerate(self.expectedNormalisation.keys()):
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
 
+            # Apply positive offsets to fix index,
+            # which got skewed by the normalisation and
+            # background normalisation data files.
             if i > 3:
                 i += 1
             if i > 5:
                 i += 1
 
-            if key in ["dataFiles", "dataFilesBg", "composition"]:
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
+            if i >= 13:
+                i -= 1
+
+            if key in [
+                    "dataFiles", "dataFilesBg",
+                    "composition", "densityUnits"
+                    ]:
                 continue
 
             badNormalisation = str(self.goodNormalisation).split("\n")
@@ -948,15 +1029,30 @@ class TestGudPyIO(TestCase):
 
             key = random.choice(list(self.expectedNormalisation))
 
-            if key in ["dataFiles", "dataFilesBg", "composition"]:
+            if key in [
+                    "dataFiles", "dataFilesBg",
+                    "composition", "densityUnits"
+                    ]:
                 continue
 
             j = list(self.expectedNormalisation).index(key)
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the normalisation and
+            # background normalisation data files.
             if j > 3:
                 j += 1
             if j > 5:
                 j += 1
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
+            if j >= 13:
+                j -= 1
 
             badNormalisation = str(self.goodNormalisation).split("\n")
             del badNormalisation[j]
@@ -1017,7 +1113,8 @@ class TestGudPyIO(TestCase):
             [
                 "name", "dataFiles",
                 "composition", "containers",
-                "runThisSample"
+                "runThisSample",
+                "densityUnits"
             ]
         )
 
@@ -1025,14 +1122,31 @@ class TestGudPyIO(TestCase):
             if key in ignore:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if i == 1:
                 i = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the sample data files
+            # and composition.
+
             if i >= 5:
                 i += 2
-            if i >= 17:
+
+            # Apply offsets to fix index,
+            # which got skewed by densityUnits attribute.
+            if i >= 11 and i <= 17:
+                i -= 1
+            if i > 17:
                 i += 1
-            if i >= 19:
-                i += 1
+            if i == 19:
+                i -= 1
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1071,7 +1185,8 @@ class TestGudPyIO(TestCase):
             [
                 "name", "dataFiles",
                 "composition", "containers",
-                "runThisSample"
+                "runThisSample",
+                "densityUnits"
             ]
         )
 
@@ -1081,14 +1196,31 @@ class TestGudPyIO(TestCase):
             if key in ignore:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if j == 1:
                 j = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the sample data files
+            # and composition.
             if j >= 5:
                 j += 2
-            if j >= 17:
+
+            # Apply offsets to fix index,
+            # which got skewed by densityUnits attribute.
+            if j >= 11 and j <= 17:
+                j -= 1
+            if j > 17:
                 j += 1
-            if j >= 19:
-                j += 1
+            if j == 19:
+                j -= 1
+
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1122,12 +1254,29 @@ class TestGudPyIO(TestCase):
 
     def testLoadMissingContainerAttributesSeq(self):
         for i, key in enumerate(self.expectedContainerA.keys()):
-            if key in ["name", "dataFiles", "composition"]:
+            if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
+
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if i == 1:
                 i = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the container data files
+            # and composition.
             if i >= 2:
                 i += 3
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
+            if i >= 12:
+                i -= 1
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1135,8 +1284,8 @@ class TestGudPyIO(TestCase):
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
             del badSampleBackground[i + 44]
-
             badSampleBackground = "\n".join(badSampleBackground)
+
             with open("test_data.txt", "w", encoding="utf-8") as f:
                 f.write("'  '  '        '  '/'\n\n")
                 f.write(
@@ -1165,13 +1314,30 @@ class TestGudPyIO(TestCase):
         for i in range(50):
             key = random.choice(list(self.expectedContainerA))
             j = list(self.expectedContainerA).index(key)
-            if key in ["name", "dataFiles", "composition"]:
+            if key in ["name", "dataFiles", "composition", "densityUnits"]:
                 continue
 
+            # Apply offsets to line numbers,
+            # to ensure that the index refers to
+            # the correct line for the corresponding key.
+
+            # Fix line number of attribute
+            # which stores the number of data files
+            # and period number, to the first line.
             if j == 1:
                 j = 0
+
+            # Apply positive offsets to fix index,
+            # which got skewed by the container data files
+            # and composition.
             if j >= 2:
                 j += 3
+
+            # Apply negative offset to fix index,
+            # which got skewed by densityUnits attribute.
+            if j >= 12:
+                j -= 1
+
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]

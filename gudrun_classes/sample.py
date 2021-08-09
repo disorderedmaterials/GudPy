@@ -2,10 +2,12 @@ try:
     from utils import spacify, numifyBool
     from data_files import DataFiles
     from composition import Composition
+    from enums import UnitsOfDensity
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
+    from gudrun_classes.enums import UnitsOfDensity
 
 
 class Sample:
@@ -33,8 +35,10 @@ class Sample:
         Upstream and downstream thickness.
     angleOfRotationSampleWidth : tuple(float, float)
         Angle of rotation of the sample and its width.
-    densityOfAtoms : str
-        Density of atoms in the sample (atoms/Angstrom^3)
+    density : str
+        Density of the sample
+    densityUnits : int
+        0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
         Background factor.
     totalCrossSectionSource : str
@@ -45,7 +49,7 @@ class Sample:
         Width of top hat function for Fourier transform.
     minRadFT : float
         Minimum radius for Fourier transform.
-    gor : float
+    grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
     expAandD : tuple(float, float, int)
         Sample exponential paramaters.
@@ -93,13 +97,14 @@ class Sample:
         self.geometry = ""
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
-        self.densityOfAtoms = 0.0
+        self.density = 0.0
+        self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
         self.totalCrossSectionSource = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
         self.minRadFT = 0.0
-        self.gor = 0.0
+        self.grBroadening = 0.0
         self.expAandD = (0.0, 0.0, 0)
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
@@ -135,6 +140,17 @@ class Sample:
             if len(self.dataFiles.dataFiles) > 0
             else
             ''
+        )
+        if self.densityUnits == UnitsOfDensity.ATOMIC:
+            units = 'atoms/\u212b^3'
+            density = self.density*-1
+        elif self.densityUnits == UnitsOfDensity.CHEMICAL:
+            units = 'gm/cm^3'
+            density = self.density
+
+        densityLine = (
+            f'{density}{TAB}'
+            f'Density {units}?\n'
         )
 
         selfScatteringLine = (
@@ -172,8 +188,7 @@ class Sample:
             f'Upstream and downstream thickness [cm]\n'
             f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
-            f'{self.densityOfAtoms}{TAB}'
-            f'Density atoms/\u212b^3?\n'
+            f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for sample Placzek correction\n'
             f'{self.totalCrossSectionSource}{TAB}'
@@ -184,7 +199,7 @@ class Sample:
             f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
             f'{self.minRadFT}{TAB}'
             f'Minimum radius for FT  [\u212b]\n'
-            f'{self.gor}{TAB}'
+            f'{self.grBroadening}{TAB}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
             f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
             ' range of resonance\n'

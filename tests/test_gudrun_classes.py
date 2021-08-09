@@ -13,6 +13,7 @@ try:
     from normalisation import Normalisation
     from sample_background import SampleBackground
     from sample import Sample
+    from enums import Scales, UnitsOfDensity, MergeWeights
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     from gudrun_classes.gudrun_file import GudrunFile
@@ -25,6 +26,7 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
+    from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
 
 
 class TestGudrunClasses(TestCase):
@@ -78,13 +80,13 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.groupsAcceptanceFactor, float)
         self.assertIsInstance(instrument.mergePower, int)
         self.assertIsInstance(instrument.subSingleAtomScattering, bool)
-        self.assertIsInstance(instrument.byChannel, int)
+        self.assertIsInstance(instrument.mergeWeights, MergeWeights)
         self.assertIsInstance(instrument.incidentFlightPath, float)
         self.assertIsInstance(
             instrument.spectrumNumberForOutputDiagnosticFiles, int
         )
         self.assertIsInstance(instrument.neutronScatteringParametersFile, str)
-        self.assertIsInstance(instrument.scaleSelection, int)
+        self.assertIsInstance(instrument.scaleSelection, Scales)
         self.assertIsInstance(instrument.subWavelengthBinnedData, bool)
         self.assertIsInstance(instrument.GudrunStartFolder, str)
         self.assertIsInstance(instrument.startupFileFolder, str)
@@ -101,9 +103,17 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(beam.sampleGeometry, str)
         self.assertIsInstance(beam.noBeamProfileValues, int)
         self.assertIsInstance(beam.beamProfileValues, list)
-        self.assertIsInstance(beam.stepSizeAbsorptionMSNoSlices, tuple)
-        self.assertIsInstance(beam.incidentBeamEdgesRelCentroid, tuple)
-        self.assertIsInstance(beam.scatteredBeamEdgesRelCentroid, tuple)
+        self.assertIsInstance(beam.stepSizeAbsorption, float)
+        self.assertIsInstance(beam.stepSizeMS, float)
+        self.assertIsInstance(beam.noSlices, int)
+        self.assertIsInstance(beam.incidentBeamLeftEdge, float)
+        self.assertIsInstance(beam.incidentBeamRightEdge, float)
+        self.assertIsInstance(beam.incidentBeamTopEdge, float)
+        self.assertIsInstance(beam.incidentBeamBottomEdge, float)
+        self.assertIsInstance(beam.scatteredBeamLeftEdge, float)
+        self.assertIsInstance(beam.scatteredBeamRightEdge, float)
+        self.assertIsInstance(beam.scatteredBeamTopEdge, float)
+        self.assertIsInstance(beam.scatteredBeamBottomEdge, float)
         self.assertIsInstance(beam.filenameIncidentBeamSpectrumParams, str)
         self.assertIsInstance(beam.overallBackgroundFactor, float)
         self.assertIsInstance(beam.sampleDependantBackgroundFactor, float)
@@ -125,7 +135,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.geometry, str)
         self.assertIsInstance(normalisation.thickness, tuple)
         self.assertIsInstance(normalisation.angleOfRotationSampleWidth, tuple)
-        self.assertIsInstance(normalisation.densityOfAtoms, float)
+        self.assertIsInstance(normalisation.density, float)
+        self.assertIsInstance(normalisation.densityUnits, UnitsOfDensity)
         self.assertIsInstance(normalisation.tempForNormalisationPC, int)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
         self.assertIsInstance(
@@ -163,7 +174,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.geometry, str)
         self.assertIsInstance(sample.thickness, tuple)
         self.assertIsInstance(sample.angleOfRotationSampleWidth, tuple)
-        self.assertIsInstance(sample.densityOfAtoms, float)
+        self.assertIsInstance(sample.density, float)
+        self.assertIsInstance(sample.densityUnits, UnitsOfDensity)
         self.assertIsInstance(sample.tempForNormalisationPC, int)
         self.assertIsInstance(sample.totalCrossSectionSource, str)
         self.assertIsInstance(sample.sampleTweakFactor, float)
@@ -182,7 +194,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(container.geometry, str)
         self.assertIsInstance(container.thickness, tuple)
         self.assertIsInstance(container.angleOfRotationSampleWidth, tuple)
-        self.assertIsInstance(container.densityOfAtoms, float)
+        self.assertIsInstance(container.density, float)
+        self.assertIsInstance(container.densityUnits, UnitsOfDensity)
         self.assertIsInstance(container.totalCrossSectionSource, str)
         self.assertIsInstance(container.tweakFactor, float)
         self.assertIsInstance(

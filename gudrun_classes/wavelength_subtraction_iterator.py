@@ -1,5 +1,9 @@
-from enum import Enum
 from pathlib import Path
+
+try:
+    from enums import Scales
+except ModuleNotFoundError:
+    from gudrun_classes.enums import Scales
 
 
 class WavelengthSubtractionIterator():
@@ -29,8 +33,6 @@ class WavelengthSubtractionIterator():
     QStep : float
         Step size for corrections on Q scale.
         Stored, as we switch between scales this data needs to be held.
-    scales : Scales(Enum)
-        Enum for scales, used for readability.
     Methods
     ----------
     enableLogarithmicBinning
@@ -70,15 +72,6 @@ class WavelengthSubtractionIterator():
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
-
-        class Scales(Enum):
-            Q = 1
-            D_SPACE = 2
-            WAVELENGTH = 3
-            ENERGY = 4
-            TOF = 5
-
-        self.scales = Scales
 
     def enableLogarithmicBinning(self):
         """
@@ -174,7 +167,7 @@ class WavelengthSubtractionIterator():
         then set self scattering file extensions to mint01.
         """
         # Dict to pick suffix based on scale
-        suffix = {1: "msubw01", 3: "mint01"}[scale]
+        suffix = {Scales.Q: "msubw01", Scales.WAVELENGTH: "mint01"}[scale]
 
         # Enumerator for sample backgrounds
         iterator = enumerate(self.gudrunFile.sampleBackgrounds)
@@ -224,10 +217,10 @@ class WavelengthSubtractionIterator():
         self.applyWavelengthRanges()
         self.enableLogarithmicBinning()
         self.gudrunFile.instrument.scaleSelection = (
-            self.scales.WAVELENGTH.value
+            Scales.WAVELENGTH
         )
         self.zeroTopHatWidths()
-        self.setSelfScatteringFiles(self.scales.WAVELENGTH.value)
+        self.setSelfScatteringFiles(Scales.WAVELENGTH)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()
@@ -250,9 +243,9 @@ class WavelengthSubtractionIterator():
         # alter data file suffixes.
         self.applyQRange()
         self.disableLogarithmicBinning()
-        self.gudrunFile.instrument.scaleSelection = self.scales.Q.value
+        self.gudrunFile.instrument.scaleSelection = Scales.Q
         self.resetTopHatWidths()
-        self.setSelfScatteringFiles(self.scales.Q.value)
+        self.setSelfScatteringFiles(Scales.Q)
 
         # Write out updated file and call gudrun_dcs.
         self.gudrunFile.process()

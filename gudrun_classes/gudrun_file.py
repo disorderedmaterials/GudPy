@@ -23,6 +23,7 @@ try:
     from element import Element
     from data_files import DataFiles
     from purge_file import PurgeFile
+    from enums import UnitsOfDensity, MergeWeights, Scales
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -41,6 +42,7 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
     from gudrun_classes.purge_file import PurgeFile
+    from gudrun_classes.enums import UnitsOfDensity, MergeWeights, Scales
 
 
 class GudrunFile:
@@ -198,7 +200,7 @@ class GudrunFile:
             "groupsAcceptanceFactor": "Groups acceptance",
             "mergePower": "Merge power",
             "subSingleAtomScattering": ["single", "atom", "scattering?"],
-            "byChannel": "By channel?",
+            "mergeWeights": ["By", "?"],
             "incidentFlightPath": "Incident flight path",
             "spectrumNumberForOutputDiagnosticFiles": [
                 "Spectrum",
@@ -486,6 +488,35 @@ class GudrunFile:
             groupingParameterPanel = tuple([group] + maxMinBf)
             self.instrument.__dict__[key] = groupingParameterPanel
 
+        """
+        Get mergeWeights attribute.
+        """
+        key = "mergeWeights"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        mergeWeights = int(firstword(lines[FORMAT_MAP[key]]))
+        mergeWeights = MergeWeights[MergeWeights(mergeWeights).name]
+        self.instrument.__dict__[key] = mergeWeights
+        """
+        Get scaleSelection attribute.
+        """
+        key = "scaleSelection"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        scaleSelection = int(firstword(lines[FORMAT_MAP[key]]))
+        scaleSelection = Scales[Scales(scaleSelection).name]
+        self.instrument.__dict__[key] = scaleSelection
+
     def parseBeam(self, lines):
         """
         Intialises a Beam object and assigns it to the
@@ -511,10 +542,10 @@ class GudrunFile:
             "sampleGeometry": "Sample geometry",
             "noBeamProfileValues": ["number", "beam", "profile", "values"],
             "beamProfileValues": ["Beam", "profile", "values", "("],
-            "stepSizeAbsorptionMSNoSlices": ["Step", "size", "m.s"],
+            "stepSizeAbsorption": ["Step", "size", "m.s"],
             "angularStepForCorrections": "Angular step",
-            "incidentBeamEdgesRelCentroid": "Incident beam edges",
-            "scatteredBeamEdgesRelCentroid": "Scattered beam edges",
+            "incidentBeamLeftEdge": "Incident beam edges",
+            "scatteredBeamLeftEdge": "Scattered beam edges",
             "filenameIncidentBeamSpectrumParams": [
                 "Filename",
                 "incident",
@@ -533,6 +564,12 @@ class GudrunFile:
         # Map the attributes of the Beam class to line numbers.
 
         FORMAT_MAP = dict.fromkeys(self.beam.__dict__.keys())
+        FORMAT_MAP.pop("incidentBeamRightEdge", None)
+        FORMAT_MAP.pop("incidentBeamTopEdge", None)
+        FORMAT_MAP.pop("incidentBeamBottomEdge", None)
+        FORMAT_MAP.pop("scatteredBeamRightEdge", None)
+        FORMAT_MAP.pop("scatteredBeamTopEdge", None)
+        FORMAT_MAP.pop("scatteredBeamBottomEdge", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Categorise attributes by variables, for easier handling.
@@ -590,6 +627,8 @@ class GudrunFile:
         """
 
         for key in INTS:
+            if key == "noSlices":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -607,6 +646,13 @@ class GudrunFile:
         """
 
         for key in FLOATS:
+            if key in [
+                    "incidentBeamRightEdge", "incidentBeamTopEdge",
+                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+                    "stepSizeAbsorption", "stepSizeMS"
+                    ]:
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -614,7 +660,29 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+
+            if key == "incidentBeamLeftEdge":
+                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
+                (
+                    self.beam.incidentBeamLeftEdge,
+                    self.beam.incidentBeamRightEdge,
+                    self.beam.incidentBeamTopEdge,
+                    self.beam.incidentBeamBottomEdge,
+                    *rest
+                ) = edges
+            elif key == "scatteredBeamLeftEdge":
+                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
+                (
+                    self.beam.scatteredBeamLeftEdge,
+                    self.beam.scatteredBeamRightEdge,
+                    self.beam.scatteredBeamTopEdge,
+                    self.beam.scatteredBeamBottomEdge,
+                    *rest
+                ) = edges
+            else:
+                self.beam.__dict__[key] = float(
+                    firstword(lines[FORMAT_MAP[key]])
+                )
 
         """
         Get all attributes that need to be stored in arbitrary sized lists:
@@ -656,7 +724,7 @@ class GudrunFile:
         and m.s. calculation and number of slices
         """
 
-        key = "stepSizeAbsorptionMSNoSlices"
+        key = "stepSizeAbsorption"
         isin_, i = isin(KEYPHRASES[key], lines)
         if not isin_:
             raise ValueError(
@@ -666,10 +734,14 @@ class GudrunFile:
             FORMAT_MAP[key] = i
         stepSizeAbsorptionMS = extract_floats_from_string(
             lines[FORMAT_MAP[key]]
-        )[:2]
-        noSlices = int(extract_floats_from_string(lines[FORMAT_MAP[key]])[2])
-        stepSizeAbsorptionMSNoSlices = tuple(stepSizeAbsorptionMS + [noSlices])
-        self.beam.__dict__[key] = stepSizeAbsorptionMSNoSlices
+        )
+        (
+            self.beam.stepSizeAbsorption,
+            self.beam.stepSizeMS,
+            self.beam.noSlices,
+            *rest
+        ) = stepSizeAbsorptionMS
+        self.beam.noSlices = int(self.beam.noSlices)
 
     def parseNormalisation(self, lines):
         """
@@ -697,7 +769,7 @@ class GudrunFile:
             "geometry": "Geometry",
             "thickness": ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth": "Angle of rotation",
-            "densityOfAtoms": "Density",
+            "density": "Density",
             "tempForNormalisationPC": "Placzek correction",
             "totalCrossSectionSource": "Total cross",
             "normalisationDifferentialCrossSectionFilename": [
@@ -738,6 +810,7 @@ class GudrunFile:
         FORMAT_MAP.pop("dataFiles", None)
         FORMAT_MAP.pop("dataFilesBg", None)
         FORMAT_MAP.pop("composition", None)
+        FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -830,6 +903,8 @@ class GudrunFile:
         """
 
         for key in INTS:
+            if key == "densityUnits":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -861,9 +936,22 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = float(
-                firstword(lines[FORMAT_MAP[key]])
-            )
+            if key == "density":
+                density = float(firstword(lines[FORMAT_MAP[key]]))
+                if density < 0:
+                    density = abs(density)
+                    self.normalisation.densityUnits = (
+                        UnitsOfDensity.ATOMIC
+                    )
+                else:
+                    self.normalisation.densityUnits = (
+                        UnitsOfDensity.CHEMICAL
+                    )
+                self.normalisation.__dict__[key] = density
+            else:
+                self.normalisation.__dict__[key] = (
+                    float(firstword(lines[FORMAT_MAP[key]]))
+                )
 
         """
         Get all attributes that are boolean values:
@@ -1049,13 +1137,13 @@ class GudrunFile:
             "geometry": "Geometry",
             "thickness": ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth": "Angle of rotation",
-            "densityOfAtoms": "Density",
+            "density": "Density",
             "tempForNormalisationPC": "Placzek correction",
             "totalCrossSectionSource": "Total cross",
             "sampleTweakFactor": "tweak factor",
             "topHatW": "Top hat width",
             "minRadFT": "Minimum radius for FT",
-            "gor": "g(r)",
+            "grBroadening": ["g(r)", "broadening"],
             "expAandD": ["Exponential", "amplitude", "decay"],
             "normalisationCorrectionFactor": "Normalisation correction factor",
             "fileSelfScattering": ["file", "self scattering", "function"],
@@ -1094,6 +1182,7 @@ class GudrunFile:
         FORMAT_MAP.pop("sampleBackground", None)
         FORMAT_MAP.pop("containers", None)
         FORMAT_MAP.pop("runThisSample", None)
+        FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -1178,6 +1267,8 @@ class GudrunFile:
         """
 
         for key in INTS:
+            if key == "densityUnits":
+                continue
             isin_, i = isin(KEYPHRASES[key], lines)
             if not isin_:
                 raise ValueError(
@@ -1210,7 +1301,16 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+            if key == "density":
+                density = float(firstword(lines[FORMAT_MAP[key]]))
+                if density < 0:
+                    density = abs(density)
+                    sample.densityUnits = UnitsOfDensity.ATOMIC
+                else:
+                    sample.densityUnits = UnitsOfDensity.CHEMICAL
+                sample.__dict__[key] = density
+            else:
+                sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
         """
         Get all attributes that are boolean values:
@@ -1358,7 +1458,7 @@ class GudrunFile:
             "geometry": "Geometry",
             "thickness": ["Upstream", "downstream", "thickness"],
             "angleOfRotationSampleWidth": "Angle of rotation",
-            "densityOfAtoms": "Density",
+            "density": "Density",
             "totalCrossSectionSource": "Total cross",
             "tweakFactor": "tweak factor",
             "scatteringFractionAttenuationCoefficient": [
@@ -1382,6 +1482,7 @@ class GudrunFile:
         FORMAT_MAP.pop("name", None)
         FORMAT_MAP.pop("dataFiles", None)
         FORMAT_MAP.pop("composition", None)
+        FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         for key in FORMAT_MAP.keys():
@@ -1448,7 +1549,18 @@ class GudrunFile:
                 )
             if i != FORMAT_MAP[key]:
                 FORMAT_MAP[key] = i
-            container.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
+            if key == "density":
+                density = float(firstword(lines[FORMAT_MAP[key]]))
+                if density < 0:
+                    density = abs(density)
+                    container.densityUnits = UnitsOfDensity.ATOMIC
+                else:
+                    container.densityUnits = UnitsOfDensity.CHEMICAL
+                container.__dict__[key] = density
+            else:
+                container.__dict__[key] = (
+                    float(firstword(lines[FORMAT_MAP[key]]))
+                )
 
         """
         Get all attributes that need to be stored as a tuple of floats:
