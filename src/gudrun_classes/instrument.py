@@ -1,12 +1,6 @@
-from gudrun_classes.enums import Scales
-
-
-try:
-    from utils import spacify, numifyBool
-    from enums import MergeWeights
-except ModuleNotFoundError:
-    from scripts.utils import spacify, numifyBool
-    from gudrun_classes.enums import MergeWeights
+import pathmagic  # noqa: F401
+from scripts.utils import spacify, numifyBool
+from enums import MergeWeights, Scales
 
 
 class Instrument:

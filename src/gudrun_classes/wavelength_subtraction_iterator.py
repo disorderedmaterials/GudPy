@@ -1,9 +1,5 @@
 from pathlib import Path
-
-try:
-    from enums import Scales
-except ModuleNotFoundError:
-    from gudrun_classes.enums import Scales
+from enums import Scales
 
 
 class WavelengthSubtractionIterator():

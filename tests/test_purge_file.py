@@ -1,16 +1,10 @@
 import os
-import sys
 from unittest import TestCase
 from shutil import copyfile
 
-try:
-    sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
-    from gudrun_file import GudrunFile
-    from purge_file import PurgeFile
-except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
-    from gudrun_classes.gudrun_file import GudrunFile
-    from gudrun_classes.purge_file import PurgeFile
+
+from gudrun_file import GudrunFile
+from purge_file import PurgeFile
 
 
 class TestPurgeFile(TestCase):

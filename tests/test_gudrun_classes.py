@@ -1,36 +1,20 @@
-from gudrun_classes.enums import NormalisationType
-import sys
-import os
 from unittest import TestCase
-try:
-    sys.path.insert(1, os.path.join(sys.path[0], "../gudrun_classes"))
-    from gudrun_file import GudrunFile
-    from beam import Beam
-    from composition import Composition
-    from container import Container
-    from data_files import DataFiles
-    from element import Element
-    from instrument import Instrument
-    from normalisation import Normalisation
-    from sample_background import SampleBackground
-    from sample import Sample
-    from enums import Scales, UnitsOfDensity, MergeWeights
-except ModuleNotFoundError:
-    sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
-    from gudrun_classes.gudrun_file import GudrunFile
-    from gudrun_classes.beam import Beam
-    from gudrun_classes.composition import Composition
-    from gudrun_classes.container import Container
-    from gudrun_classes.data_files import DataFiles
-    from gudrun_classes.element import Element
-    from gudrun_classes.instrument import Instrument
-    from gudrun_classes.normalisation import Normalisation
-    from gudrun_classes.sample_background import SampleBackground
-    from gudrun_classes.sample import Sample
-    from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
+
+from gudrun_file import GudrunFile
+from beam import Beam
+from composition import Composition
+from container import Container
+from data_files import DataFiles
+from element import Element
+from instrument import Instrument
+from normalisation import Normalisation
+from sample_background import SampleBackground
+from sample import Sample
+from enums import Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
 
 
 class TestGudrunClasses(TestCase):
+
     def testEmptyPath(self):
 
         emptyPath = ""
@@ -184,6 +168,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.minRadFT, float)
         self.assertIsInstance(sample.maxRadFT, float)
         self.assertIsInstance(sample.normaliseTo, NormalisationType)
+        self.assertIsInstance(sample.outputUnits, OutputUnits)
 
     def testContainerInitDataTypes(self):
 

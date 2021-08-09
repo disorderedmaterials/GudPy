@@ -1,15 +1,8 @@
-try:
-    from utils import spacify, numifyBool
-    from data_files import DataFiles
-    from composition import Composition
-    from enums import UnitsOfDensity, NormalisationType, OutputUnits
-except ModuleNotFoundError:
-    from scripts.utils import spacify, numifyBool
-    from gudrun_classes.data_files import DataFiles
-    from gudrun_classes.composition import Composition
-    from gudrun_classes.enums import (
-        UnitsOfDensity, NormalisationType, OutputUnits
-    )
+import pathmagic  # noqa: F401
+from scripts.utils import spacify, numifyBool
+from data_files import DataFiles
+from composition import Composition
+from enums import UnitsOfDensity, NormalisationType, OutputUnits
 
 
 class Sample:
