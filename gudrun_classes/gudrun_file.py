@@ -23,7 +23,9 @@ try:
     from element import Element
     from data_files import DataFiles
     from purge_file import PurgeFile
-    from enums import UnitsOfDensity, MergeWeights, Scales
+    from enums import (
+        UnitsOfDensity, MergeWeights, Scales, NormalisationType, OutputUnits
+    )
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "scripts"))
     from scripts.utils import (
@@ -42,7 +44,9 @@ except ModuleNotFoundError:
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
     from gudrun_classes.purge_file import PurgeFile
-    from gudrun_classes.enums import UnitsOfDensity, MergeWeights, Scales
+    from gudrun_classes.enums import (
+        UnitsOfDensity, MergeWeights, Scales, NormalisationType, OutputUnits
+    )
 
 
 class GudrunFile:
@@ -1425,6 +1429,30 @@ class GudrunFile:
                 elements.append(element)
 
         sample.composition = Composition(elements, "Sample")
+
+        key = "normaliseTo"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing {}, {} was not found".format(sample.name, key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        normaliseTo = NormalisationType(int(
+            firstword(lines[FORMAT_MAP[key]]))
+            ).name
+        sample.normaliseTo = NormalisationType[normaliseTo]
+
+        key = "outputUnits"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing {}, {} was not found".format(sample.name, key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        outputUnits = OutputUnits(int(firstword(lines[FORMAT_MAP[key]]))).name
+        sample.outputUnits = OutputUnits[outputUnits]
 
         return sample
 

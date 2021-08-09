@@ -1,3 +1,4 @@
+from gudrun_classes.enums import NormalisationType
 import sys
 import os
 from unittest import TestCase
@@ -181,6 +182,8 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
         self.assertIsInstance(sample.minRadFT, float)
+        self.assertIsInstance(sample.maxRadFT, float)
+        self.assertIsInstance(sample.normaliseTo, NormalisationType)
 
     def testContainerInitDataTypes(self):
 

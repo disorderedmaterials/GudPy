@@ -20,7 +20,9 @@ try:
     from normalisation import Normalisation
     from sample_background import SampleBackground
     from sample import Sample
-    from enums import Scales, UnitsOfDensity, MergeWeights
+    from enums import (
+        Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    )
 except ModuleNotFoundError:
     sys.path.insert(1, os.path.join(sys.path[0], "gudrun_classes"))
     sys.path.insert(2, os.path.join(sys.path[0], "scripts"))
@@ -35,7 +37,9 @@ except ModuleNotFoundError:
     from gudrun_classes.normalisation import Normalisation
     from gudrun_classes.sample_background import SampleBackground
     from gudrun_classes.sample import Sample
-    from gudrun_classes.enums import Scales, UnitsOfDensity, MergeWeights
+    from gudrun_classes.enums import (
+        Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    )
 
 
 class TestGudPyIO(TestCase):
@@ -254,9 +258,9 @@ class TestGudPyIO(TestCase):
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
-            "normaliseTo": 0,
+            "normaliseTo": NormalisationType.NOTHING,
             "maxRadFT": 50.0,
-            "outputUnits": 0,
+            "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
@@ -293,9 +297,9 @@ class TestGudPyIO(TestCase):
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016609_D2O_in_N10.msubw01",
-            "normaliseTo": 0,
+            "normaliseTo": NormalisationType.NOTHING,
             "maxRadFT": 50.0,
-            "outputUnits": 0,
+            "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
             "include": True,
@@ -337,9 +341,9 @@ class TestGudPyIO(TestCase):
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
-            "normaliseTo": 0,
+            "normaliseTo": NormalisationType.NOTHING,
             "maxRadFT": 50.0,
-            "outputUnits": 0,
+            "outputUnits": OutputUnits.CM_INV_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
@@ -381,9 +385,9 @@ class TestGudPyIO(TestCase):
             "expAandD": (0.0, 1.5, 0),
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
-            "normaliseTo": 0,
+            "normaliseTo": NormalisationType.NOTHING,
             "maxRadFT": 50.0,
-            "outputUnits": 0,
+            "outputUnits": OutputUnits.CM_INV_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,

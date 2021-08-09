@@ -2,12 +2,14 @@ try:
     from utils import spacify, numifyBool
     from data_files import DataFiles
     from composition import Composition
-    from enums import UnitsOfDensity
+    from enums import UnitsOfDensity, NormalisationType, OutputUnits
 except ModuleNotFoundError:
     from scripts.utils import spacify, numifyBool
     from gudrun_classes.data_files import DataFiles
     from gudrun_classes.composition import Composition
-    from gudrun_classes.enums import UnitsOfDensity
+    from gudrun_classes.enums import (
+        UnitsOfDensity, NormalisationType, OutputUnits
+    )
 
 
 class Sample:
@@ -108,9 +110,9 @@ class Sample:
         self.expAandD = (0.0, 0.0, 0)
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
-        self.normaliseTo = 0
+        self.normaliseTo = NormalisationType.NOTHING
         self.maxRadFT = 0.0
-        self.outputUnits = 0
+        self.outputUnits = OutputUnits.BARNS_ATOM_SR
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
         self.include = False
@@ -157,6 +159,28 @@ class Sample:
             f'{self.fileSelfScattering}{TAB}'
             f'Name of file containing self scattering'
             f' as a function of wavelength [\u212b]\n'
+        )
+
+        if self.normaliseTo == NormalisationType.NOTHING:
+            normaliseTo = "Nothing"
+        elif self.normaliseTo == NormalisationType.F1:
+            normaliseTo = "<b>^2"
+        elif self.normaliseTo == NormalisationType.F2:
+            normaliseTo = "<b^2>"
+
+        normaliseLine = (
+            f'{self.normaliseTo.value}{TAB}'
+            f'Normalise to:{normaliseTo}\n'
+        )
+
+        if self.outputUnits == OutputUnits.BARNS_ATOM_SR:
+            outputUnits = "b/atom/sr"
+        elif self.outputUnits == OutputUnits.CM_INV_SR:
+            outputUnits = "cm**-1"
+
+        unitsLine = (
+            f'{self.outputUnits.value}{TAB}'
+            f'Output units: {outputUnits}\n'
         )
 
         sampleEnvironmentLine = (
@@ -210,12 +234,10 @@ class Sample:
             f'{self.normalisationCorrectionFactor}{TAB}'
             f'Normalisation correction factor\n'
             f'{selfScatteringLine}'
-            f'{self.normaliseTo}{TAB}'
-            f'Normalise to:Nothing\n'
+            f'{normaliseLine}'
             f'{self.maxRadFT}{TAB}'
             f'Maximum radius for FT [\u212b]\n'
-            f'{self.outputUnits}{TAB}'
-            f'Output units: b/atom/sr\n'
+            f'{unitsLine}'
             f'{self.powerForBroadening}{TAB}'
             f'Power for broadening function e.g. 0.5\n'
             f'{self.stepSize}{TAB}'

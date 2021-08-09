@@ -18,3 +18,14 @@ class MergeWeights(Enum):
     NONE = 0
     DETECTOR = 1
     CHANNEL = 2
+
+
+class NormalisationType(Enum):
+    NOTHING = 0
+    F1 = 1
+    F2 = 2
+
+
+class OutputUnits(Enum):
+    BARNS_ATOM_SR = 0
+    CM_INV_SR = 1
