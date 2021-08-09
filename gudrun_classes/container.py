@@ -32,7 +32,7 @@ class Container:
         Upstream and downstream thickness.
     angleOfRotationSampleWidth : tuple(float, float)
         Angle of rotation of the container and its width.
-    density : str
+    density : float
         Density of the container.
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
