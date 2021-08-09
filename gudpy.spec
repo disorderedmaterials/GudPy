@@ -6,7 +6,7 @@ if os.name == "nt":
 block_cipher = None
 
 
-a = Analysis(['gui/gudpy.py'],
+a = Analysis(['src/gui/gudpy.py'],
              pathex=['src/gudrun_classes' + SEP, 'src/scripts' + SEP, 'src/widgets' + SEP],
              binaries=[('bin' + SEP + 'gudrun_dcs' + SUFFIX, '.'), ('bin' + SEP + 'calc_corrsx_in_out' + SUFFIX, '.'), ('bin' + SEP + 'purge_det' + SUFFIX, '.'), ('bin' + SEP + 'tophatsub' + SUFFIX, '.')],
              datas=[('bin' + SEP + 'StartupFiles', '.')],
