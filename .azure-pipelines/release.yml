@@ -98,6 +98,8 @@ stages:
 
     - job: 'release_github'
       displayName: 'Release'
+      pool:
+        vmImage: ubuntu-latest
       steps:
         - checkout: self
           fetchDepth: 1
