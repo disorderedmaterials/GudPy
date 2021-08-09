@@ -10,7 +10,9 @@ from instrument import Instrument
 from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
-from enums import Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+from enums import (
+    Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+)
 
 
 class TestGudrunClasses(TestCase):
