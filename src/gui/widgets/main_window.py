@@ -1,3 +1,4 @@
+from widgets.instrument_pane import InstrumentPane
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QTextEdit
 from PyQt5.QtGui import QResizeEvent
 from gudrun_classes.gudrun_file import GudrunFile
@@ -46,6 +47,11 @@ class GudPyMainWindow(QMainWindow):
                     sampleButton.setGeometry(0, y, 200, 50)
                     sampleButton.setText(sample.name)
                     sampleButton.show()
+                    if sample.runThisSample:
+                        sampleButton.setStyleSheet("background-color : green")
+                    else:
+                        sampleButton.setStyleSheet("background-color : red")
+
                     self.sampleButtons[sampleButton] = [i, j, self.gudrunFile.sampleBackgrounds[i].samples[j]]
                     y+=50
                     for k, container in enumerate(sample.containers):
@@ -60,4 +66,4 @@ class GudPyMainWindow(QMainWindow):
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
-        [textArea.updateArea() for textArea in self.findChildren(QTextEdit)]
+        [textArea.updateArea() for textArea in self.findChildren(GudrunFileTextArea)]
