@@ -1,6 +1,5 @@
 from enum import Enum
 import os
-from src.gudrun_classes.enums import Instruments
 from unittest import TestCase, skip
 import random
 from copy import deepcopy
@@ -18,7 +17,7 @@ from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
 from enums import (
-    Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
 )
 
 
