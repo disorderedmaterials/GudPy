@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 
 
+
 from scripts.utils import spacify, numifyBool
 from gudrun_classes.enums import MergeWeights, Scales
 
