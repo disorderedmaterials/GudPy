@@ -17,7 +17,8 @@ from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
 from enums import (
-    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    Instruments, Scales, UnitsOfDensity,
+    MergeWeights, NormalisationType, OutputUnits
 )
 
 

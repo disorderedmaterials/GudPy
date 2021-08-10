@@ -24,7 +24,8 @@ from element import Element
 from data_files import DataFiles
 from purge_file import PurgeFile
 from enums import (
-    Instruments, UnitsOfDensity, MergeWeights, Scales, NormalisationType, OutputUnits
+    Instruments, UnitsOfDensity, MergeWeights,
+    Scales, NormalisationType, OutputUnits
 )
 
 
