@@ -39,9 +39,9 @@ variables:
       }
     }
 
-sgudrunTages:
+stages:
 
-- sgudrunTage: 'lint'
+- stage: 'lint'
   displayName: Lint code
   jobs:
   - job: 'lint'
@@ -52,7 +52,7 @@ sgudrunTages:
         fetchDepth: 1
       - template: templates/lint.yml
 
-- sgudrunTage: 'test'
+- stage: 'test'
   displayName: 'Unit Tests'
   jobs:
 
@@ -73,7 +73,7 @@ sgudrunTages:
           osName: $(osName)
           gudrunTag: $(gudrunTag)
 
-- sgudrunTage: 'build'
+- stage: 'build'
   displayName: 'Build GudPy exe'
   jobs:
 
