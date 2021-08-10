@@ -1,8 +1,8 @@
 from widgets.instrument_pane import InstrumentPane
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QTextEdit
+from PyQt5.QtWidgets import QMainWindow, QPushButton
 from PyQt5.QtGui import QResizeEvent
-from gudrun_classes.gudrun_file import GudrunFile
 from widgets.gudrun_file_text_area import GudrunFileTextArea
+
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -22,10 +22,13 @@ class GudPyMainWindow(QMainWindow):
         else:
             self.instrumentPane.show()
             self.instrumentButton.setStyleSheet("background-color : grey")
+
     def initComponents(self):
         self.textArea = GudrunFileTextArea(self, 1, 0.3)
         self.gudrunFile = self.textArea.getGudrunFile()
-        self.instrumentPane = InstrumentPane(self.gudrunFile.instrument, self, 0, 200, 1, 0.5)
+        self.instrumentPane = InstrumentPane(
+            self.gudrunFile.instrument, self, 0, 200, 1, 0.5
+        )
         if self.gudrunFile:
             self.instrumentButton = QPushButton(self)
             self.instrumentButton.setGeometry(0, 0, 200, 50)
@@ -36,7 +39,7 @@ class GudPyMainWindow(QMainWindow):
             self.beamButton.setGeometry(0, 50, 200, 50)
             self.beamButton.setText("BEAM")
             self.beamButton.show()
-            self.normalisationButton =  QPushButton(self)
+            self.normalisationButton = QPushButton(self)
             self.normalisationButton.setGeometry(0, 100, 200, 50)
             self.normalisationButton.setText("NORMALISATION")
             self.normalisationButton.show()
@@ -44,13 +47,16 @@ class GudPyMainWindow(QMainWindow):
             self.sampleBackgroundButtons = {}
             self.sampleButtons = {}
             self.containerButtons = {}
-            for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
+            sampleBackgrounds = self.gudrunFile.sampleBackgrounds
+            for i, sampleBackground in enumerate(sampleBackgrounds):
                 sampleBackgroundButton = QPushButton(self)
                 sampleBackgroundButton.setGeometry(0, y, 200, 50)
                 sampleBackgroundButton.setText("SAMPLE BACKGROUND")
                 sampleBackgroundButton.show()
-                self.sampleBackgroundButtons[sampleBackgroundButton] = [i, self.gudrunFile.sampleBackgrounds[i]]
-                y+=50
+                self.sampleBackgroundButtons[sampleBackgroundButton] = (
+                    [i, self.gudrunFile.sampleBackgrounds[i]]
+                )
+                y += 50
                 for j, sample in enumerate(sampleBackground.samples):
                     sampleButton = QPushButton(self)
                     sampleButton.setGeometry(0, y, 200, 50)
@@ -61,19 +67,35 @@ class GudPyMainWindow(QMainWindow):
                     else:
                         sampleButton.setStyleSheet("background-color : red")
 
-                    self.sampleButtons[sampleButton] = [i, j, self.gudrunFile.sampleBackgrounds[i].samples[j]]
-                    y+=50
+                    self.sampleButtons[sampleButton] = (
+                        [
+                            i,
+                            j,
+                            self.gudrunFile.sampleBackgrounds[i].samples[j]
+                        ]
+                    )
+                    y += 50
                     for k, container in enumerate(sample.containers):
                         containerButton = QPushButton(self)
                         containerButton.setGeometry(0, y, 200, 50)
                         containerButton.setText(container.name)
                         containerButton.show()
-                        self.containerButtons[containerButton] = [i, j, k, self.gudrunFile.sampleBackgrounds[i].samples[j].containers[k]]
-                        y+=50
-
+                        self.containerButtons[containerButton] = (
+                            [
+                                i,
+                                j,
+                                k,
+                                (
+                                    self.gudrunFile.sampleBackgrounds[i]
+                                    .samples[j].
+                                    containers[k]
+                                )
+                            ]
+                        )
+                        y += 50
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
-        [textArea.updateArea() for textArea in self.findChildren(GudrunFileTextArea)]
-        [instrumentPane.updateArea() for instrumentPane in self.findChildren(InstrumentPane)]
+        for child in self.findChildren((GudrunFileTextArea, InstrumentPane)):
+            child.updateArea()

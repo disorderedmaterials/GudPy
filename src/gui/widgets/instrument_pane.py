@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QComboBox, QLabel, QLineEdit, QPushButton, QTextEdit, QWidget
+from PyQt5.QtWidgets import QWidget
 
 
 from scripts.utils import spacify, numifyBool
 from gudrun_classes.enums import MergeWeights, Scales
 
 from widgets.make_pairs import makeLabelComboBoxPair, makeLabelTextPair
+
 
 class InstrumentPane(QWidget):
 
@@ -23,14 +24,17 @@ class InstrumentPane(QWidget):
             int(self.parent.size().height() * self.relHeight),
         )
         self.childWidth = (self.parent.size().width()*self.relWidth) // 5
-        self.childHeight =  (self.parent.size().height() * self.relHeight) // 20
+        self.childHeight = (
+            (self.parent.size().height() * self.relHeight) // 20
+        )
         self.initComponents()
 
     def initComponents(self):
-        instruments = {"SANDALS": 0, "GEM": 1, "NIMROD": 2,
-                        "D4C": 3, "POLARIS": 4, "HIPD": 5,
-                        "NPDF": 6
-                        }
+        instruments = {
+            "SANDALS": 0, "GEM": 1, "NIMROD": 2,
+            "D4C": 3, "POLARIS": 4, "HIPD": 5,
+            "NPDF": 6
+        }
 
         self.instrumentLabel, self.instrumentCombo = (
             makeLabelComboBoxPair(
@@ -50,7 +54,7 @@ class InstrumentPane(QWidget):
                 self.instrument.GudrunInputFileDir,
                 self.childHeight,
                 0
-                
+
             )
         )
 
@@ -64,7 +68,7 @@ class InstrumentPane(QWidget):
             )
         )
 
-        dfTypes = { "raw": 0, "sav": 1, "txt": 2, "nxs": 3, "*": 4}
+        dfTypes = {"raw": 0, "sav": 1, "txt": 2, "nxs": 3, "*": 4}
 
         self.dataFileTypeLabel, self.dataFileTypeText = (
             makeLabelComboBoxPair(
@@ -154,7 +158,7 @@ class InstrumentPane(QWidget):
                 "Incident monitor quiet count constant",
                 self.instrument.incidentMonitorQuietCountConst,
                 self.childHeight*11,
-                0            
+                0
             )
         )
 
@@ -164,7 +168,7 @@ class InstrumentPane(QWidget):
                 "Transmission monitor quiet count constant",
                 self.instrument.transmissionMonitorQuietCountConst,
                 self.childHeight*12,
-                0            
+                0
             )
         )
 
@@ -184,7 +188,7 @@ class InstrumentPane(QWidget):
                 "Spike analysis acceptance factor",
                 self.instrument.spikeAnalysisAcceptanceFactor,
                 self.childHeight*14,
-                0            
+                0
             )
         )
 
@@ -192,7 +196,11 @@ class InstrumentPane(QWidget):
             makeLabelTextPair(
                 self,
                 "Wavelength range and step size",
-                [self.instrument.wavelengthMin, self.instrument.wavelengthMax, self.instrument.wavelengthStep],
+                [
+                    self.instrument.wavelengthMin,
+                    self.instrument.wavelengthMax,
+                    self.instrument.wavelengthStep
+                ],
                 self.childHeight*15,
                 0,
                 isIterable=True
@@ -213,7 +221,11 @@ class InstrumentPane(QWidget):
             makeLabelTextPair(
                 self,
                 "X range and step size",
-                [self.instrument.XMin, self.instrument.XMax, self.instrument.XStep],
+                [
+                    self.instrument.XMin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ],
                 self.childHeight*17,
                 0,
                 isIterable=True
@@ -261,8 +273,6 @@ class InstrumentPane(QWidget):
                 0
             )
         )
-
-        
 
         self.mergeWeightsLabel, self.mergeWeightsCombo = (
             makeLabelComboBoxPair(
