@@ -11,7 +11,7 @@ from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
 from enums import (
-    Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
 )
 
 
@@ -32,7 +32,7 @@ class TestGudrunClasses(TestCase):
         instrument = Instrument()
 
         self.assertIsInstance(instrument, Instrument)
-        self.assertIsInstance(instrument.name, str)
+        self.assertIsInstance(instrument.name, Instruments)
         self.assertIsInstance(instrument.GudrunInputFileDir, str)
         self.assertIsInstance(instrument.dataFileDir, str)
         self.assertIsInstance(instrument.dataFileType, str)
