@@ -24,6 +24,6 @@ steps:
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       git clone https://github.com/disorderedmaterials/scripts.git
       ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION.exe
-      env:
-        GITHUB_TOKEN: $(REPO_SECRET)
+    env:
+      GITHUB_TOKEN: $(REPO_SECRET)
     displayName: 'Create Versioned Release (GitHub)'
