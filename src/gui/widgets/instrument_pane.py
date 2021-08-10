@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QWidget
 
 
-
 from scripts.utils import spacify, numifyBool
 from gudrun_classes.enums import MergeWeights, Scales
 
@@ -55,6 +54,10 @@ class InstrumentPane(QWidget):
                 self.instrument.GudrunInputFileDir,
                 self.childHeight,
                 0
+<<<<<<< HEAD
+=======
+
+>>>>>>> Refactor for PEP8 conformance.
             )
         )
 
