@@ -1,13 +1,9 @@
-trigger: none
-
-pr:
-  autoCancel: true
+trigger:
   branches:
     include:
-      - "*"
-  paths:
-    exclude:
-      - .azure-pipelines/continuous.yml
+      - release/*
+
+pr: none
 
 variables:
   gudrunTag: 2021.1
@@ -90,3 +86,21 @@ stages:
             os: '$(imageName)'
             osName: $(osName)
             gudrunTag: $(gudrunTag)
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathToPublish: "dist/"
+            ArtifactName: '$(osName)-artifacts'
+          displayName: 'Publish $(osName) Artifacts'
+
+- stage: 'release'
+  displayName: 'Release'
+  jobs:
+
+    - job: 'release_github'
+      displayName: 'Release'
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+        - checkout: self
+          fetchDepth: 1
+        - template: templates/create_release.yml

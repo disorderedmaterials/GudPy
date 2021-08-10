@@ -1,4 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
+VERSION = "0.0.1"
 SEP = os.path.sep
 SUFFIX = ""
 if os.name == "nt":
@@ -28,7 +29,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,  
           [],
-          name='GudPy',
+          name=f'GudPy-{VERSION}',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
