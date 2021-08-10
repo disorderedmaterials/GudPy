@@ -40,7 +40,7 @@ class InstrumentPane(QWidget):
             makeLabelComboBoxPair(
                 self,
                 "Instrument name",
-                instruments[self.instrument.name],
+                instruments[self.instrument.name.name],
                 list(instruments.keys()),
                 0,
                 0
@@ -54,10 +54,6 @@ class InstrumentPane(QWidget):
                 self.instrument.GudrunInputFileDir,
                 self.childHeight,
                 0
-<<<<<<< HEAD
-=======
-
->>>>>>> Refactor for PEP8 conformance.
             )
         )
 
