@@ -1,6 +1,8 @@
 import pathmagic  # noqa: F401
 from scripts.utils import spacify
 
+from enums import Geometry
+
 
 class Beam:
     """
@@ -59,7 +61,7 @@ class Beam:
         ----------
         None
         """
-        self.sampleGeometry = ""
+        self.sampleGeometry = Geometry.FLATPLATE
         self.noBeamProfileValues = 0
         self.beamProfileValues = []
         self.stepSizeAbsorption = 0.0
@@ -121,7 +123,7 @@ class Beam:
 
         return (
 
-            f'{self.sampleGeometry}{TAB}'
+            f'{Geometry(self.sampleGeometry.value).name}{TAB}'
             f'Sample geometry\n'
             f'{self.noBeamProfileValues}{TAB}'
             f'Number of beam profile values\n'

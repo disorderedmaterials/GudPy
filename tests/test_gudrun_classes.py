@@ -11,7 +11,8 @@ from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
 from enums import (
-    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType,
+    OutputUnits, Geometry
 )
 
 
@@ -87,7 +88,7 @@ class TestGudrunClasses(TestCase):
         beam = Beam()
 
         self.assertIsInstance(beam, Beam)
-        self.assertIsInstance(beam.sampleGeometry, str)
+        self.assertIsInstance(beam.sampleGeometry, Geometry)
         self.assertIsInstance(beam.noBeamProfileValues, int)
         self.assertIsInstance(beam.beamProfileValues, list)
         self.assertIsInstance(beam.stepSizeAbsorption, float)
@@ -158,7 +159,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.dataFiles, DataFiles)
         self.assertIsInstance(sample.forceCalculationOfCorrections, bool)
         self.assertIsInstance(sample.composition, Composition)
-        self.assertIsInstance(sample.geometry, str)
+        self.assertIsInstance(sample.geometry, Geometry)
         self.assertIsInstance(sample.thickness, tuple)
         self.assertIsInstance(sample.angleOfRotationSampleWidth, tuple)
         self.assertIsInstance(sample.density, float)

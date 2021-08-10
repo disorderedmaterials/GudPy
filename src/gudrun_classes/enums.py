@@ -39,3 +39,9 @@ class NormalisationType(Enum):
 class OutputUnits(Enum):
     BARNS_ATOM_SR = 0
     INV_CM_SR = 1
+
+
+class Geometry(Enum):
+    FLATPLATE = 0
+    CYLINDRICAL = 1
+    SameAsBeam = 3
