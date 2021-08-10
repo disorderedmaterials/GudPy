@@ -18,8 +18,10 @@ class GudPyMainWindow(QMainWindow):
     def showInstrumentPane(self):
         if self.instrumentPane.isVisible():
             self.instrumentPane.hide()
+            self.instrumentButton.setStyleSheet("")
         else:
             self.instrumentPane.show()
+            self.instrumentButton.setStyleSheet("background-color : grey")
     def initComponents(self):
         self.textArea = GudrunFileTextArea(self, 1, 0.3)
         self.gudrunFile = self.textArea.getGudrunFile()

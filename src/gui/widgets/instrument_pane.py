@@ -22,7 +22,6 @@ class InstrumentPane(QWidget):
         self.childWidth = (self.parent.size().width()*self.relWidth) // 5
         self.childHeight =  (self.parent.size().height() * self.relHeight) // 20
         self.initComponents()
-        self.show()
 
     def initComponents(self):
         instruments = {"SANDALS": 0, "GEM": 1, "NIMROD": 2,
@@ -376,7 +375,6 @@ class InstrumentPane(QWidget):
 
     def updateArea(self):
 
-        # super().updateArea()
         self.setGeometry(
             self.y,
             0,
