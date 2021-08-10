@@ -1,6 +1,6 @@
 import pathmagic  # noqa: F401
 from scripts.utils import spacify, numifyBool
-from enums import MergeWeights, Scales
+from enums import MergeWeights, Scales, Instruments
 
 
 class Instrument:
@@ -114,7 +114,7 @@ class Instrument:
         ----------
         None
         """
-        self.name = ""
+        self.name = Instruments.NIMROD
         self.GudrunInputFileDir = ""
         self.dataFileDir = ""
         self.dataFileType = ""
@@ -220,7 +220,7 @@ class Instrument:
         )
 
         return (
-            f'{self.name}{TAB}'
+            f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
             f'{self.GudrunInputFileDir}{TAB}'
             f'Gudrun input file directory:\n'

@@ -1,5 +1,6 @@
 from enum import Enum
 import os
+from src.gudrun_classes.enums import Instruments
 from unittest import TestCase, skip
 import random
 from copy import deepcopy
@@ -25,7 +26,7 @@ class TestGudPyIO(TestCase):
 
     def setUp(self) -> None:
         self.expectedInstrument = {
-            "name": "NIMROD",
+            "name": Instruments.NIMROD,
             "GudrunInputFileDir": "/home/test/gudpy-water/",
             "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",

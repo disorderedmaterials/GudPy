@@ -1,5 +1,13 @@
 from enum import Enum
 
+class Instruments(Enum):
+    SANDALS = 0 
+    GEM = 1 
+    NIMROD = 2 
+    D4C = 3 
+    POLARIS = 4 
+    HIPD = 5 
+    NPDF = 6    
 
 class Scales(Enum):
     Q = 1
