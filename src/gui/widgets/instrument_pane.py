@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import QComboBox, QLabel, QLineEdit, QPushButton, QTextEdit, QWidget
 
+
 from scripts.utils import spacify, numifyBool
 from gudrun_classes.enums import MergeWeights, Scales
+
+from widgets.make_pairs import makeLabelComboBoxPair, makeLabelTextPair
 
 class InstrumentPane(QWidget):
 
@@ -30,7 +33,8 @@ class InstrumentPane(QWidget):
                         }
 
         self.instrumentLabel, self.instrumentCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Instrument name",
                 instruments[self.instrument.name],
                 list(instruments.keys()),
@@ -40,7 +44,8 @@ class InstrumentPane(QWidget):
         )
 
         self.gudrunInputFileLabel, self.gudrunInputFileText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Gudrun input file directory",
                 self.instrument.GudrunInputFileDir,
                 self.childHeight,
@@ -50,7 +55,8 @@ class InstrumentPane(QWidget):
         )
 
         self.dataFileDirLabel, self.dataFileDirText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Data file directory",
                 self.instrument.dataFileDir,
                 self.childHeight*2,
@@ -61,7 +67,8 @@ class InstrumentPane(QWidget):
         dfTypes = { "raw": 0, "sav": 1, "txt": 2, "nxs": 3, "*": 4}
 
         self.dataFileTypeLabel, self.dataFileTypeText = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Data file type",
                 dfTypes[self.instrument.dataFileType],
                 list(dfTypes.keys()),
@@ -71,7 +78,8 @@ class InstrumentPane(QWidget):
         )
 
         self.detFileNameLabel, self.detFileNameText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Detector calibration file name",
                 self.instrument.detectorCalibrationFileName,
                 self.childHeight*4,
@@ -80,7 +88,8 @@ class InstrumentPane(QWidget):
         )
 
         self.phiValuesLabel, self.phiValuesText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Column no. for phi values",
                 self.instrument.columnNoPhiVals,
                 self.childHeight*5,
@@ -89,7 +98,8 @@ class InstrumentPane(QWidget):
         )
 
         self.groupsFileNameLabel, self.groupsFileNameText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Groups file name",
                 self.instrument.groupFileName,
                 self.childHeight*6,
@@ -98,7 +108,8 @@ class InstrumentPane(QWidget):
         )
 
         self.deadtimeFileNameLabel, self.deadtimeFileNameText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Deadtime constants file name",
                 self.instrument.deadtimeConstantsFileName,
                 self.childHeight*7,
@@ -107,7 +118,8 @@ class InstrumentPane(QWidget):
         )
 
         self.spectrumNumbersIBLabel, self.spectrumNumbersIBText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Spectrum no.s for incident beam monitor",
                 spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor),
                 self.childHeight*8,
@@ -116,7 +128,8 @@ class InstrumentPane(QWidget):
         )
 
         self.wavelengthRangeMonNormLabel, self.wavelengthRangeMonNormText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Wavelength range for monitor normalisation",
                 self.instrument.wavelengthRangeForMonitorNormalisation,
                 self.childHeight*9,
@@ -126,7 +139,8 @@ class InstrumentPane(QWidget):
         )
 
         self.spectrumNumbersTMLabel, self.spectrumNumbersTMText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Spectrum no.s for incident beam monitor",
                 spacify(self.instrument.spectrumNumbersForTransmissionMonitor),
                 self.childHeight*10,
@@ -135,7 +149,8 @@ class InstrumentPane(QWidget):
         )
 
         self.iMonitorQuietCountConstLabel, self.iMonitorQuietCountConstText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Incident monitor quiet count constant",
                 self.instrument.incidentMonitorQuietCountConst,
                 self.childHeight*11,
@@ -144,7 +159,8 @@ class InstrumentPane(QWidget):
         )
 
         self.tMonitorQuietCountConstLabel, self.tMonitorQuietCountConstText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Transmission monitor quiet count constant",
                 self.instrument.transmissionMonitorQuietCountConst,
                 self.childHeight*12,
@@ -153,7 +169,8 @@ class InstrumentPane(QWidget):
         )
 
         self.channelNosLabel, self.channelNosText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Channel no.s for spike analysis",
                 self.instrument.channelNosSpikeAnalysis,
                 self.childHeight*13,
@@ -162,7 +179,8 @@ class InstrumentPane(QWidget):
             )
         )
         self.spikeAcceptanceFactorLabel, self.spikeAcceptanceFactorText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Spike analysis acceptance factor",
                 self.instrument.spikeAnalysisAcceptanceFactor,
                 self.childHeight*14,
@@ -171,7 +189,8 @@ class InstrumentPane(QWidget):
         )
 
         self.wavelengthRangeLabel, self.wavelengthRangeText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Wavelength range and step size",
                 [self.instrument.wavelengthMin, self.instrument.wavelengthMax, self.instrument.wavelengthStep],
                 self.childHeight*15,
@@ -181,7 +200,8 @@ class InstrumentPane(QWidget):
         )
 
         self.noSmoothsLabel, self.noSmoothsText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "No. of smooths on monitor",
                 self.instrument.NoSmoothsOnMonitor,
                 self.childHeight*16,
@@ -190,7 +210,8 @@ class InstrumentPane(QWidget):
         )
 
         self.XRangeLabel, self.XRangeText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "X range and step size",
                 [self.instrument.XMin, self.instrument.XMax, self.instrument.XStep],
                 self.childHeight*17,
@@ -200,7 +221,8 @@ class InstrumentPane(QWidget):
         )
 
         self.logarithmicBinningLabel, self.logarithmicBinningCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Use logarithmic binning?",
                 numifyBool(self.instrument.useLogarithmicBinning),
                 ["False", "True"],
@@ -210,7 +232,8 @@ class InstrumentPane(QWidget):
         )
 
         self.groupsAcceptanceFactorLabel, self.groupsAcceptanceFactorText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Groups acceptance factor",
                 self.instrument.groupsAcceptanceFactor,
                 self.childHeight*19,
@@ -219,7 +242,8 @@ class InstrumentPane(QWidget):
         )
 
         self.mergePowerLabel, self.mergePowerText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Merge power",
                 self.instrument.mergePower,
                 self.childHeight*20,
@@ -228,7 +252,8 @@ class InstrumentPane(QWidget):
         )
 
         self.subAtomScatteringLabel, self.subAtomScatteringCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Subtract single atom scattering?",
                 numifyBool(self.instrument.subSingleAtomScattering),
                 ["False", "True"],
@@ -240,7 +265,8 @@ class InstrumentPane(QWidget):
         
 
         self.mergeWeightsLabel, self.mergeWeightsCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Merge weights by?",
                 self.instrument.mergeWeights.value,
                 [m.name for m in MergeWeights],
@@ -250,7 +276,8 @@ class InstrumentPane(QWidget):
         )
 
         self.incidentFlightPathLabel, self.incidentFlightPathText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Incident flight path",
                 self.instrument.incidentFlightPath,
                 self.childHeight*23,
@@ -259,7 +286,8 @@ class InstrumentPane(QWidget):
         )
 
         self.diagnosticSpectrumLabel, self.diagnosticSpectrumText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Spectrum number for output diagnostic files",
                 self.instrument.spectrumNumberForOutputDiagnosticFiles,
                 self.childHeight*24,
@@ -268,7 +296,8 @@ class InstrumentPane(QWidget):
         )
 
         self.neutronParamsFileNameText, self.neutronParamsFileNameLabel = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Neutron scattering params file",
                 self.instrument.neutronScatteringParametersFile,
                 self.childHeight*25,
@@ -277,7 +306,8 @@ class InstrumentPane(QWidget):
         )
 
         self.scaleSelectionText, self.scaleSelectionCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Scale selection",
                 self.instrument.scaleSelection.value,
                 [s.name for s in Scales],
@@ -287,7 +317,8 @@ class InstrumentPane(QWidget):
         )
 
         self.subWavelengthBinnedLabel, self.subWavelengthBinnedCombo = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Subtract single atom scattering?",
                 numifyBool(self.instrument.subWavelengthBinnedData),
                 ["False", "True"],
@@ -297,7 +328,8 @@ class InstrumentPane(QWidget):
         )
 
         self.GudrunStartFolderText, self.GudrunStartFolderLabel = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Gudrun start folder",
                 self.instrument.GudrunStartFolder,
                 self.childHeight*28,
@@ -306,7 +338,8 @@ class InstrumentPane(QWidget):
         )
 
         self.startupFileLabel, self.startupFileText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Gudrun start folder",
                 self.instrument.startupFileFolder,
                 self.childHeight*29,
@@ -315,7 +348,8 @@ class InstrumentPane(QWidget):
         )
 
         self.logarithmicStepSizeLabel, self.logarithmicStepSizeText = (
-            self.makeLabelTextPair(
+            makeLabelTextPair(
+                self,
                 "Logarithmic step size",
                 self.instrument.logarithmicStepSize,
                 self.childHeight*30,
@@ -324,7 +358,8 @@ class InstrumentPane(QWidget):
         )
 
         self.hardGroupEdgesLabel, self.hardGroupEdgesText = (
-            self.makeLabelComboBoxPair(
+            makeLabelComboBoxPair(
+                self,
                 "Hard group edges?",
                 numifyBool(self.instrument.hardGroupEdges),
                 ["False", "True"],
@@ -332,46 +367,6 @@ class InstrumentPane(QWidget):
                 0
             )
         )
-
-
-
-
-        
-
-    def makeLabelComboBoxPair(self, text, value, values, y, x):
-        label = QLabel(self)
-        label.setText(text)
-        label.setGeometry(x, y, self.childWidth, self.childHeight)
-        label.adjustSize()
-        combo = QComboBox(self)
-        combo.addItems(values)
-        combo.setCurrentIndex(value)
-        combo.setGeometry(x + label.size().width()+5, y, self.childWidth, self.childHeight//2)
-        combo.adjustSize()
-        return label, combo
-    
-    def makeLabelTextPair(self, text, value, y, x, isIterable=False):
-        label = QLabel(self)
-        label.setText(text)
-        label.setGeometry(x, y, self.childWidth, self.childHeight)
-        label.adjustSize()
-        if not isIterable:
-            text = QLineEdit(self)
-            text.setText(str(value))
-            text.setGeometry(x + label.size().width()+5, y, self.childWidth, self.childHeight//2)
-            text.adjustSize()
-            return label, text
-        else:
-            prev_size = label.size()
-            texts = []
-            for val in value:
-                text = QLineEdit(self)
-                text.setText(str(val))
-                text.setGeometry(x + prev_size.width()+5, y, self.childWidth, self.childHeight//2)
-                text.adjustSize()
-                prev_size+=text.size()
-                texts.append(text)
-            return label, texts
 
     def updateArea(self):
 
