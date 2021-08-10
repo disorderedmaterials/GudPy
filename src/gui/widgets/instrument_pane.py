@@ -54,7 +54,6 @@ class InstrumentPane(QWidget):
                 self.instrument.GudrunInputFileDir,
                 self.childHeight,
                 0
-
             )
         )
 

@@ -97,5 +97,10 @@ class GudPyMainWindow(QMainWindow):
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
+<<<<<<< HEAD
         for child in self.findChildren((GudrunFileTextArea, InstrumentPane)):
             child.updateArea()
+=======
+        [textArea.updateArea() for textArea in self.findChildren(GudrunFileTextArea)]
+        [instrumentPane.updateArea() for instrumentPane in self.findChildren(InstrumentPane)]
+>>>>>>> Added instrument pane.
