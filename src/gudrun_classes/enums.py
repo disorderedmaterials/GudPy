@@ -1,6 +1,16 @@
 from enum import Enum
 
 
+class Instruments(Enum):
+    SANDALS = 0
+    GEM = 1
+    NIMROD = 2
+    D4C = 3
+    POLARIS = 4
+    HIPD = 5
+    NPDF = 6
+
+
 class Scales(Enum):
     Q = 1
     D_SPACING = 2
@@ -29,3 +39,9 @@ class NormalisationType(Enum):
 class OutputUnits(Enum):
     BARNS_ATOM_SR = 0
     INV_CM_SR = 1
+
+
+class Geometry(Enum):
+    FLATPLATE = 0
+    CYLINDRICAL = 1
+    SameAsBeam = 3

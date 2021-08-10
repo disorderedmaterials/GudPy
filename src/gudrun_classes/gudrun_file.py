@@ -24,7 +24,9 @@ from element import Element
 from data_files import DataFiles
 from purge_file import PurgeFile
 from enums import (
-    UnitsOfDensity, MergeWeights, Scales, NormalisationType, OutputUnits
+    Instruments, UnitsOfDensity, MergeWeights,
+    Scales, NormalisationType, OutputUnits,
+    Geometry
 )
 
 
@@ -499,6 +501,20 @@ class GudrunFile:
         scaleSelection = int(firstword(lines[FORMAT_MAP[key]]))
         scaleSelection = Scales[Scales(scaleSelection).name]
         self.instrument.__dict__[key] = scaleSelection
+        """
+        Get name attribute.
+        """
+        key = "name"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        name = firstword(lines[FORMAT_MAP[key]])
+        name = Instruments[name]
+        self.instrument.__dict__[key] = name
 
     def parseBeam(self, lines):
         """
@@ -725,6 +741,17 @@ class GudrunFile:
             *rest
         ) = stepSizeAbsorptionMS
         self.beam.noSlices = int(self.beam.noSlices)
+        key = "sampleGeometry"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing BEAM, {} was not found".format(key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        geom = firstword(lines[FORMAT_MAP[key]])
+        geom = Geometry[geom]
+        self.beam.sampleGeometry = geom
 
     def parseNormalisation(self, lines):
         """
@@ -1432,6 +1459,17 @@ class GudrunFile:
             FORMAT_MAP[key] = i
         outputUnits = OutputUnits(int(firstword(lines[FORMAT_MAP[key]]))).name
         sample.outputUnits = OutputUnits[outputUnits]
+
+        key = "geometry"
+        isin_, i = isin(KEYPHRASES[key], lines)
+        if not isin_:
+            raise ValueError(
+                "Whilst parsing {}, {} was not found".format(sample.name, key)
+            )
+        if i != FORMAT_MAP[key]:
+            FORMAT_MAP[key] = i
+        geometry = firstword(lines[FORMAT_MAP[key]])
+        sample.geometry = Geometry[geometry]
 
         return sample
 

@@ -2,7 +2,7 @@ import pathmagic  # noqa: F401
 from scripts.utils import spacify, numifyBool
 from data_files import DataFiles
 from composition import Composition
-from enums import UnitsOfDensity, NormalisationType, OutputUnits
+from enums import UnitsOfDensity, NormalisationType, OutputUnits, Geometry
 
 
 class Sample:
@@ -89,7 +89,7 @@ class Sample:
         self.dataFiles = DataFiles([], "SAMPLE")
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], "SAMPLE")
-        self.geometry = ""
+        self.geometry = Geometry.FLATPLATE
         self.thickness = (0.0, 0.0)
         self.angleOfRotationSampleWidth = (0.0, 0.0)
         self.density = 0.0
@@ -199,7 +199,7 @@ class Sample:
             f'Force calculation of sample corrections?\n'
             f'{str(self.composition)}\n'
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
-            f'{self.geometry}{TAB}'
+            f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
             f'{spacify(self.thickness)}{TAB}'
             f'Upstream and downstream thickness [cm]\n'

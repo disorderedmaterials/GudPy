@@ -17,7 +17,9 @@ from normalisation import Normalisation
 from sample_background import SampleBackground
 from sample import Sample
 from enums import (
-    Scales, UnitsOfDensity, MergeWeights, NormalisationType, OutputUnits
+    Instruments, Scales, UnitsOfDensity,
+    MergeWeights, NormalisationType, OutputUnits,
+    Geometry
 )
 
 
@@ -25,7 +27,7 @@ class TestGudPyIO(TestCase):
 
     def setUp(self) -> None:
         self.expectedInstrument = {
-            "name": "NIMROD",
+            "name": Instruments.NIMROD,
             "GudrunInputFileDir": "/home/test/gudpy-water/",
             "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",
@@ -73,7 +75,7 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedBeam = {
-            "sampleGeometry": "FLATPLATE",
+            "sampleGeometry": Geometry.FLATPLATE,
             "noBeamProfileValues": 2,
             "beamProfileValues": [1.0, 1.0],
             "stepSizeAbsorption": 0.05,
@@ -223,7 +225,7 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("H", 0, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
-            "geometry": "SameAsBeam",
+            "geometry": Geometry.SameAsBeam,
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
@@ -262,7 +264,7 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("H", 2, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
-            "geometry": "SameAsBeam",
+            "geometry": Geometry.SameAsBeam,
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
@@ -306,7 +308,7 @@ class TestGudPyIO(TestCase):
                 ],
                 "Sample",
             ),
-            "geometry": "SameAsBeam",
+            "geometry": Geometry.SameAsBeam,
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
@@ -350,7 +352,7 @@ class TestGudPyIO(TestCase):
                 ],
                 "Sample",
             ),
-            "geometry": "SameAsBeam",
+            "geometry": Geometry.SameAsBeam,
             "thickness": (0.05, 0.05),
             "angleOfRotationSampleWidth": (0, 5),
             "density": 0.1,
