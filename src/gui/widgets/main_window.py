@@ -15,14 +15,21 @@ class GudPyMainWindow(QMainWindow):
         self.show()
         self.initComponents()
 
+    def showInstrumentPane(self):
+        if self.instrumentPane.isVisible():
+            self.instrumentPane.hide()
+        else:
+            self.instrumentPane.show()
     def initComponents(self):
         self.textArea = GudrunFileTextArea(self, 1, 0.3)
         self.gudrunFile = self.textArea.getGudrunFile()
+        self.instrumentPane = InstrumentPane(self.gudrunFile.instrument, self, 0, 200, 1, 0.5)
         if self.gudrunFile:
             self.instrumentButton = QPushButton(self)
             self.instrumentButton.setGeometry(0, 0, 200, 50)
             self.instrumentButton.setText("INSTRUMENT")
             self.instrumentButton.show()
+            self.instrumentButton.clicked.connect(self.showInstrumentPane)
             self.beamButton = QPushButton(self)
             self.beamButton.setGeometry(0, 50, 200, 50)
             self.beamButton.setText("BEAM")
@@ -67,3 +74,4 @@ class GudPyMainWindow(QMainWindow):
 
         super().resizeEvent(a0)
         [textArea.updateArea() for textArea in self.findChildren(GudrunFileTextArea)]
+        [instrumentPane.updateArea() for instrumentPane in self.findChildren(InstrumentPane)]
