@@ -11,7 +11,7 @@ parameters:
 - name: osName
   default: 'linux'
   type: string
-- name: tag
+- name: gudrunTag
   default: ''
   type: string
 steps:
@@ -27,10 +27,10 @@ steps:
     displayName: "Install dependencies"
   
   - bash: |
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/binaries-${{ parameters.tag }}-${{ parameters.osName }}.zip > binaries.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
       unzip binaries.zip
-      mv binaries-${{ parameters.tag }}-${{ parameters.osName }} bin
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.tag }}/startupFiles-${{ parameters.tag }}.zip > startupFiles.zip
+      mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }} bin
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin
       

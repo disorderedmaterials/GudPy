@@ -6,7 +6,7 @@ trigger:
 pr: none
 
 variables:
-  tag: 2021.1
+  gudrunTag: 2021.1
   targets: >
     {
       linuxPy38:
@@ -32,9 +32,9 @@ variables:
       }
     }
 
-stages:
+sgudrunTages:
 
-- stage: 'lint'
+- sgudrunTage: 'lint'
   displayName: Lint code
   jobs:
   - job: 'lint'
@@ -45,7 +45,7 @@ stages:
         fetchDepth: 1
       - template: templates/lint.yml
 
-- stage: 'test'
+- sgudrunTage: 'test'
   displayName: 'Unit Tests'
   jobs:
 
@@ -64,9 +64,9 @@ stages:
           arch: '$(arch)'
           os: '$(imageName)'
           osName: $(osName)
-          tag: $(tag)
+          gudrunTag: $(gudrunTag)
 
-- stage: 'build'
+- sgudrunTage: 'build'
   displayName: 'Build GudPy exe'
   jobs:
 
@@ -85,14 +85,14 @@ stages:
             arch: '$(arch)'
             os: '$(imageName)'
             osName: $(osName)
-            tag: $(tag)
+            gudrunTag: $(gudrunTag)
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"
             ArtifactName: '$(osName)-artifacts'
           displayName: 'Publish $(osName) Artifacts'
 
-- stage: 'release'
+- sgudrunTage: 'release'
   displayName: 'Release'
   jobs:
 
