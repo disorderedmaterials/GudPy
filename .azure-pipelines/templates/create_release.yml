@@ -23,6 +23,8 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       git clone https://github.com/disorderedmaterials/scripts.git
+      sed -i '' -e 's/trisyoungs/jswift-stfc/g' scripts/update-release
+      sed -i '' -e 's/tristan.youngs/jared.swift/g' scripts/update-release
       mv $(System.ArtifactsDirectory)/linux-artifacts/GudPy-$VERSION $(System.ArtifactsDirectory)/linux-artifacts/GudPy-$VERSION-linux
       mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION-osx
       mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION.exe $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION-windows.exe
