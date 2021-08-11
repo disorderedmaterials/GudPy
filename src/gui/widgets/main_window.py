@@ -1,7 +1,8 @@
+from PyQt5.QtCore import QWaitCondition, left, right
 from gudrun_classes.gudrun_file import GudrunFile
 from widgets.instrument_pane import InstrumentPane
 from widgets.beam_pane import BeamPane
-from PyQt5.QtWidgets import QMainWindow, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudrun_file_text_area import GudrunFileTextArea
 
@@ -17,68 +18,40 @@ class GudPyMainWindow(QMainWindow):
         self.show()
         self.initComponents()
 
-    def showInstrumentPane(self):
-        if self.instrumentPane.isVisible():
-            self.instrumentPane.hide()
-            self.instrumentButton.setStyleSheet("")
-        else:
-            self.changeSelection()
-            self.instrumentPane.show()
-            self.instrumentButton.setStyleSheet("background-color : grey")
-
-    def showBeamPane(self):
-        if self.beamPane.isVisible():
-            self.beamPane.hide()
-            self.beamButton.setStyleSheet("")
-        else:
-            self.changeSelection()
-            self.beamPane.show()
-            self.beamButton.setStyleSheet("background-color : grey")
-
     def initComponents(self):
-        self.textArea = GudrunFileTextArea(self, 1, 0.3)
-        # self.gudrunFile = self.textArea.getGudrunFile()
-        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-        self.instrumentPane = InstrumentPane(
-            self.gudrunFile.instrument, self, 0, 200, 1, 0.5
-        )
-        self.beamPane = BeamPane(
-            self.gudrunFile.beam, self, 0, 200, 1, 0.5
-        )
+
+        rightWidget = GudrunFileTextArea(self, 1, 0.2)
+        self.gudrunFile = rightWidget.getGudrunFile()
+
+
+        self.instrumentButton = QPushButton("INSTRUMENT", self)
+        self.beamButton = QPushButton("BEAM", self)
+        self.normalisationButton = QPushButton("NORMALISATION", self)
+
+        leftLayout = QVBoxLayout()
+        leftLayout.addWidget(self.instrumentButton)
+        leftLayout.addWidget(self.beamButton)
+        leftLayout.addWidget(self.normalisationButton)
+        leftLayout.addStretch(5)
+        leftLayout.setSpacing(20)
+
         if self.gudrunFile:
-            self.instrumentButton = QPushButton(self)
-            self.instrumentButton.setGeometry(0, 0, 200, 50)
-            self.instrumentButton.setText("INSTRUMENT")
-            self.instrumentButton.show()
-            self.instrumentButton.clicked.connect(self.showInstrumentPane)
-            self.beamButton = QPushButton(self)
-            self.beamButton.setGeometry(0, 50, 200, 50)
-            self.beamButton.setText("BEAM")
-            self.beamButton.clicked.connect(self.showBeamPane)
-            self.beamButton.show()
-            self.normalisationButton = QPushButton(self)
-            self.normalisationButton.setGeometry(0, 100, 200, 50)
-            self.normalisationButton.setText("NORMALISATION")
-            self.normalisationButton.show()
-            y = 150
             self.sampleBackgroundButtons = {}
             self.sampleButtons = {}
             self.containerButtons = {}
             sampleBackgrounds = self.gudrunFile.sampleBackgrounds
+
+            leftLayout = QVBoxLayout()
+
             for i, sampleBackground in enumerate(sampleBackgrounds):
-                sampleBackgroundButton = QPushButton(self)
-                sampleBackgroundButton.setGeometry(0, y, 200, 50)
-                sampleBackgroundButton.setText("SAMPLE BACKGROUND")
-                sampleBackgroundButton.show()
+                sampleBackgroundButton = QPushButton("SAMPLE BACKGROUND", self)
                 self.sampleBackgroundButtons[sampleBackgroundButton] = (
                     [i, self.gudrunFile.sampleBackgrounds[i]]
                 )
-                y += 50
+                leftLayout.addWidget(sampleBackgroundButton)
                 for j, sample in enumerate(sampleBackground.samples):
-                    sampleButton = QPushButton(self)
-                    sampleButton.setGeometry(0, y, 200, 50)
-                    sampleButton.setText(sample.name)
-                    sampleButton.show()
+                    sampleButton = QPushButton(sample.name, self)
+                    leftLayout.addWidget(sampleButton)
                     if sample.runThisSample:
                         sampleButton.setStyleSheet("background-color : green")
                     else:
@@ -91,12 +64,9 @@ class GudPyMainWindow(QMainWindow):
                             self.gudrunFile.sampleBackgrounds[i].samples[j]
                         ]
                     )
-                    y += 50
                     for k, container in enumerate(sample.containers):
-                        containerButton = QPushButton(self)
-                        containerButton.setGeometry(0, y, 200, 50)
-                        containerButton.setText(container.name)
-                        containerButton.show()
+                        containerButton = QPushButton(container.name, self)
+                        leftLayout.addWidget(containerButton)
                         self.containerButtons[containerButton] = (
                             [
                                 i,
@@ -109,17 +79,24 @@ class GudPyMainWindow(QMainWindow):
                                 )
                             ]
                         )
-                        y += 50
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(leftLayout)
+
+        centralWidget = QTabWidget()
+
+
+
+        mainLayout = QHBoxLayout()
+        mainLayout.addWidget(leftWidget)
+        mainLayout.addWidget(centralWidget)
+        mainLayout.addWidget(rightWidget)
+        mainWidget = QWidget()
+        mainWidget.setLayout(mainLayout)
+        self.setCentralWidget(mainWidget)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
         for child in self.findChildren((GudrunFileTextArea, InstrumentPane, BeamPane)):
             child.updateArea()
-
-    def changeSelection(self):
-        for child in self.findChildren((InstrumentPane, BeamPane)):
-            child.hide()
-        for child in self.findChildren(QPushButton):
-            if child.text() in ["INSTRUMENT", "BEAM", "NORMALISATION"]:
-                child.setStyleSheet("")
