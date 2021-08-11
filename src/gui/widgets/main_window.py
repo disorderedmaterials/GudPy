@@ -1,4 +1,6 @@
+from gudrun_classes.gudrun_file import GudrunFile
 from widgets.instrument_pane import InstrumentPane
+from widgets.beam_pane import BeamPane
 from PyQt5.QtWidgets import QMainWindow, QPushButton
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudrun_file_text_area import GudrunFileTextArea
@@ -20,14 +22,28 @@ class GudPyMainWindow(QMainWindow):
             self.instrumentPane.hide()
             self.instrumentButton.setStyleSheet("")
         else:
+            self.changeSelection()
             self.instrumentPane.show()
             self.instrumentButton.setStyleSheet("background-color : grey")
 
+    def showBeamPane(self):
+        if self.beamPane.isVisible():
+            self.beamPane.hide()
+            self.beamButton.setStyleSheet("")
+        else:
+            self.changeSelection()
+            self.beamPane.show()
+            self.beamButton.setStyleSheet("background-color : grey")
+
     def initComponents(self):
         self.textArea = GudrunFileTextArea(self, 1, 0.3)
-        self.gudrunFile = self.textArea.getGudrunFile()
+        # self.gudrunFile = self.textArea.getGudrunFile()
+        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
         self.instrumentPane = InstrumentPane(
             self.gudrunFile.instrument, self, 0, 200, 1, 0.5
+        )
+        self.beamPane = BeamPane(
+            self.gudrunFile.beam, self, 0, 200, 1, 0.5
         )
         if self.gudrunFile:
             self.instrumentButton = QPushButton(self)
@@ -38,6 +54,7 @@ class GudPyMainWindow(QMainWindow):
             self.beamButton = QPushButton(self)
             self.beamButton.setGeometry(0, 50, 200, 50)
             self.beamButton.setText("BEAM")
+            self.beamButton.clicked.connect(self.showBeamPane)
             self.beamButton.show()
             self.normalisationButton = QPushButton(self)
             self.normalisationButton.setGeometry(0, 100, 200, 50)
@@ -97,5 +114,12 @@ class GudPyMainWindow(QMainWindow):
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
-        for child in self.findChildren((GudrunFileTextArea, InstrumentPane)):
+        for child in self.findChildren((GudrunFileTextArea, InstrumentPane, BeamPane)):
             child.updateArea()
+
+    def changeSelection(self):
+        for child in self.findChildren((InstrumentPane, BeamPane)):
+            child.hide()
+        for child in self.findChildren(QPushButton):
+            if child.text() in ["INSTRUMENT", "BEAM", "NORMALISATION"]:
+                child.setStyleSheet("")
