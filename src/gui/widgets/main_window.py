@@ -1,15 +1,16 @@
+from os import write
 from PyQt5.QtCore import QWaitCondition, left, right
-from gudrun_classes.gudrun_file import GudrunFile
+from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from widgets.instrument_pane import InstrumentPane
 from widgets.beam_pane import BeamPane
-from PyQt5.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QMenuBar, QPushButton, QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudrun_file_text_area import GudrunFileTextArea
 
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(GudPyMainWindow, self).__init__()
 
         self.setGeometry(0, 0, 800, 600)
         self.setMinimumHeight(800)
@@ -19,10 +20,8 @@ class GudPyMainWindow(QMainWindow):
         self.initComponents()
 
     def initComponents(self):
-
-        rightWidget = GudrunFileTextArea(self, 1, 0.2)
+        rightWidget = GudrunFileTextArea(self, 1, 0.3)
         self.gudrunFile = rightWidget.getGudrunFile()
-
 
         self.instrumentButton = QPushButton("INSTRUMENT", self)
         self.beamButton = QPushButton("BEAM", self)
@@ -33,7 +32,7 @@ class GudPyMainWindow(QMainWindow):
         leftLayout.addWidget(self.beamButton)
         leftLayout.addWidget(self.normalisationButton)
         leftLayout.addStretch(5)
-        leftLayout.setSpacing(20)
+        leftLayout.setSpacing(10)
 
         if self.gudrunFile:
             self.sampleBackgroundButtons = {}
@@ -85,8 +84,6 @@ class GudPyMainWindow(QMainWindow):
 
         centralWidget = QTabWidget()
 
-
-
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget)
         mainLayout.addWidget(centralWidget)
@@ -94,6 +91,23 @@ class GudPyMainWindow(QMainWindow):
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
+
+        menuBar = self.menuBar()
+        menuBar.setNativeMenuBar(False)
+        runMenu = QMenu("&Run", menuBar)
+        writePurgeFile = QAction("Write Purge File", runMenu)
+        runPurge = QAction("Run Purge", runMenu)
+        runGudrun = QAction("Run Gudrun", runMenu)
+        iterateGudrun = QAction("Iterate Gudrun", runMenu)
+        runMenu.addAction(writePurgeFile)
+        runMenu.addAction(runPurge)
+        runMenu.addAction(runGudrun)
+        runMenu.addAction(iterateGudrun)
+        writePurgeFile.triggered.connect(lambda : PurgeFile(self.gudrunFile).write_out())
+        runPurge.triggered.connect(lambda : PurgeFile(self.gudrunFile).purge())
+        runGudrun.triggered.connect(lambda : self.gudrunFile.dcs())
+        menuBar.addMenu(runMenu)
+        self.setMenuBar(menuBar)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
