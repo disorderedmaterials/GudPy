@@ -3,8 +3,8 @@ from PyQt5.QtCore import QWaitCondition, left, right
 from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from widgets.instrument_pane import InstrumentPane
 from widgets.beam_pane import BeamPane
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QMenuBar, QPushButton, QTabWidget, QVBoxLayout, QWidget
-from PyQt5.QtGui import QResizeEvent
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QMenuBar, QPushButton, QTabWidget, QVBoxLayout, QWidget, QTreeView
+from PyQt5.QtGui import QResizeEvent, QStandardItemModel, QStandardItem
 from widgets.gudrun_file_text_area import GudrunFileTextArea
 
 
@@ -20,74 +20,44 @@ class GudPyMainWindow(QMainWindow):
         self.initComponents()
 
     def initComponents(self):
-        rightWidget = GudrunFileTextArea(self, 1, 0.3)
-        self.gudrunFile = rightWidget.getGudrunFile()
+        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
 
-        self.instrumentButton = QPushButton("INSTRUMENT", self)
-        self.beamButton = QPushButton("BEAM", self)
-        self.normalisationButton = QPushButton("NORMALISATION", self)
+        self.model = QStandardItemModel()
+        parentItem = self.model.invisibleRootItem()
+        instrumentItem = QStandardItem("Instrument")
+        parentItem.appendRow(instrumentItem)
+        beamItem = QStandardItem("Beam")
+        parentItem.appendRow(beamItem)
+        normalistionItem = QStandardItem("Normalisation")
+        parentItem.appendRow(normalistionItem)
 
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            sampleBackgroundItem = QStandardItem("Sample Background")
+            parentItem.appendRow(sampleBackgroundItem)
+
+            for sample in sampleBackground.samples:
+                sampleItem = QStandardItem(sample.name)
+                sampleBackgroundItem.appendRow(sampleItem)
+
+                for container in sample.containers:
+                    containerItem = QStandardItem(container.name)
+                    sampleItem.appendRow(containerItem)
+
+
+
+        self.objectTree = QTreeView(self)
+        self.objectTree.setModel(self.model)
+        self.objectTree.setHeaderHidden(True)
         leftLayout = QVBoxLayout()
-        leftLayout.addWidget(self.instrumentButton)
-        leftLayout.addWidget(self.beamButton)
-        leftLayout.addWidget(self.normalisationButton)
+        leftLayout.addWidget(self.objectTree)
         leftLayout.addStretch(5)
-        leftLayout.setSpacing(10)
-
-        if self.gudrunFile:
-            self.sampleBackgroundButtons = {}
-            self.sampleButtons = {}
-            self.containerButtons = {}
-            sampleBackgrounds = self.gudrunFile.sampleBackgrounds
-
-            leftLayout = QVBoxLayout()
-
-            for i, sampleBackground in enumerate(sampleBackgrounds):
-                sampleBackgroundButton = QPushButton("SAMPLE BACKGROUND", self)
-                self.sampleBackgroundButtons[sampleBackgroundButton] = (
-                    [i, self.gudrunFile.sampleBackgrounds[i]]
-                )
-                leftLayout.addWidget(sampleBackgroundButton)
-                for j, sample in enumerate(sampleBackground.samples):
-                    sampleButton = QPushButton(sample.name, self)
-                    leftLayout.addWidget(sampleButton)
-                    if sample.runThisSample:
-                        sampleButton.setStyleSheet("background-color : green")
-                    else:
-                        sampleButton.setStyleSheet("background-color : red")
-
-                    self.sampleButtons[sampleButton] = (
-                        [
-                            i,
-                            j,
-                            self.gudrunFile.sampleBackgrounds[i].samples[j]
-                        ]
-                    )
-                    for k, container in enumerate(sample.containers):
-                        containerButton = QPushButton(container.name, self)
-                        leftLayout.addWidget(containerButton)
-                        self.containerButtons[containerButton] = (
-                            [
-                                i,
-                                j,
-                                k,
-                                (
-                                    self.gudrunFile.sampleBackgrounds[i]
-                                    .samples[j].
-                                    containers[k]
-                                )
-                            ]
-                        )
-
         leftWidget = QWidget()
         leftWidget.setLayout(leftLayout)
 
         centralWidget = QTabWidget()
-
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget)
         mainLayout.addWidget(centralWidget)
-        mainLayout.addWidget(rightWidget)
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
@@ -107,7 +77,19 @@ class GudPyMainWindow(QMainWindow):
         runPurge.triggered.connect(lambda : PurgeFile(self.gudrunFile).purge())
         runGudrun.triggered.connect(lambda : self.gudrunFile.dcs())
         menuBar.addMenu(runMenu)
+
+        loadMenu = QMenu("&Load", menuBar)
+        loadFile = QAction("Load Input File", loadMenu)
+        loadConfiguration = QAction("Load Configuration", loadMenu)
+        loadMenu.addAction(loadFile)
+        loadMenu.addAction(loadConfiguration)
+        menuBar.addMenu(loadMenu)
+
+        plotMenu = QMenu("&Plot", menuBar)
+        menuBar.addMenu(plotMenu)
+
         self.setMenuBar(menuBar)
+
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
