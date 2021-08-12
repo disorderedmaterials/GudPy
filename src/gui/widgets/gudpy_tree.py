@@ -49,8 +49,3 @@ class GudPyTreeView(QTreeView):
                     containerItem = QStandardItem(container.name)
                     sampleItem.appendRow(containerItem)
                     self.map[container.name] = Attribute(container.name, container, container.__str__, parent=sample.name)
-
-    def onClick(self, index):
-        item = self.model.itemFromIndex(index)
-        if item.isCheckable():
-            item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
