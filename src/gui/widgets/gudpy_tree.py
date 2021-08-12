@@ -25,10 +25,13 @@ class GudPyTreeView(QTreeView):
 
         root = self.model.invisibleRootItem()
         instrumentItem = QStandardItem("Instrument")
+        instrumentItem.setEditable(False)
         self.map["Instrument"] = Attribute("Instrument", self.gudrunFile.instrument, self.gudrunFile.instrument.__str__)
         beamItem = QStandardItem("Beam")
+        beamItem.setEditable(False)
         self.map["Beam"] = Attribute("Beam", self.gudrunFile.beam, self.gudrunFile.beam.__str__)
         normalistionItem = QStandardItem("Normalisation")
+        normalistionItem.setEditable(False)
         self.map["Normalisation"] = Attribute("Normalisation", self.gudrunFile.normalisation, self.gudrunFile.normalisation.__str__)
         root.appendRow(instrumentItem)
         root.appendRow(beamItem)
@@ -36,6 +39,7 @@ class GudPyTreeView(QTreeView):
 
         for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
             sampleBackgroundItem = QStandardItem(f'Sample Background {i+1}')
+            sampleBackgroundItem.setEditable(False)
             root.appendRow(sampleBackgroundItem)
             self.map[f'Sample Background {i+1}'] = Attribute(f'Sample Background {i+1}', sampleBackground, sampleBackground.__str__)
             for sample in sampleBackground.samples:
