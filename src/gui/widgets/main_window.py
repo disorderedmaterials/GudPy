@@ -1,12 +1,9 @@
 from os import write
 from PyQt5.QtCore import QWaitCondition, left, right
 from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
-from widgets.instrument_pane import InstrumentPane
-from widgets.beam_pane import BeamPane
 from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QMenuBar, QPushButton, QTabWidget, QVBoxLayout, QWidget, QTreeView
 from PyQt5.QtGui import QResizeEvent, QStandardItemModel, QStandardItem
-from widgets.gudrun_file_text_area import GudrunFileTextArea
-
+from widgets.gudpy_tree import GudPyTreeView
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -21,33 +18,33 @@ class GudPyMainWindow(QMainWindow):
 
     def initComponents(self):
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-
-        self.model = QStandardItemModel()
-        parentItem = self.model.invisibleRootItem()
-        instrumentItem = QStandardItem("Instrument")
-        parentItem.appendRow(instrumentItem)
-        beamItem = QStandardItem("Beam")
-        parentItem.appendRow(beamItem)
-        normalistionItem = QStandardItem("Normalisation")
-        parentItem.appendRow(normalistionItem)
-
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            sampleBackgroundItem = QStandardItem("Sample Background")
-            parentItem.appendRow(sampleBackgroundItem)
-
-            for sample in sampleBackground.samples:
-                sampleItem = QStandardItem(sample.name)
-                sampleBackgroundItem.appendRow(sampleItem)
-
-                for container in sample.containers:
-                    containerItem = QStandardItem(container.name)
-                    sampleItem.appendRow(containerItem)
-
-
-
-        self.objectTree = QTreeView(self)
-        self.objectTree.setModel(self.model)
-        self.objectTree.setHeaderHidden(True)
+        self.objectTree = GudPyTreeView(self, self.gudrunFile)
+        # self.model = QStandardItemModel()
+        # parentItem = self.model.invisibleRootItem()
+        # instrumentItem = QStandardItem("Instrument")
+        # parentItem.appendRow(instrumentItem)
+        # beamItem = QStandardItem("Beam")
+        # parentItem.appendRow(beamItem)
+        # normalistionItem = QStandardItem("Normalisation")
+        # parentItem.appendRow(normalistionItem)
+        #
+        # for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        #     sampleBackgroundItem = QStandardItem("Sample Background")
+        #     parentItem.appendRow(sampleBackgroundItem)
+        #
+        #     for sample in sampleBackground.samples:
+        #         sampleItem = QStandardItem(sample.name)
+        #         sampleBackgroundItem.appendRow(sampleItem)
+        #
+        #         for container in sample.containers:
+        #             containerItem = QStandardItem(container.name)
+        #             sampleItem.appendRow(containerItem)
+        #
+        #
+        #
+        # self.objectTree = QTreeView(self)
+        # self.objectTree.setModel(self.model)
+        # self.objectTree.setHeaderHidden(True)
         leftLayout = QVBoxLayout()
         leftLayout.addWidget(self.objectTree)
         leftLayout.addStretch(5)
@@ -88,11 +85,16 @@ class GudPyMainWindow(QMainWindow):
         plotMenu = QMenu("&Plot", menuBar)
         menuBar.addMenu(plotMenu)
 
+        viewMenu = QMenu("&View", menuBar)
+        viewInputFile = QAction("View input file", viewMenu)
+        viewMenu.addAction(viewInputFile)
+        # viewInputFile.triggered.connect(lambda : GudrunFileTextArea()
+
         self.setMenuBar(menuBar)
 
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
-        for child in self.findChildren((GudrunFileTextArea, InstrumentPane, BeamPane)):
-            child.updateArea()
+        # for child in self.findChildren((GudrunFileTextArea, InstrumentPane, BeamPane)):
+        #     child.updateArea()
