@@ -1,9 +1,8 @@
-from os import write
-from PyQt5.QtCore import QWaitCondition, left, right
 from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QMenuBar, QPushButton, QTabWidget, QVBoxLayout, QWidget, QTreeView
-from PyQt5.QtGui import QResizeEvent, QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu,QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtGui import QResizeEvent
 from widgets.gudpy_tree import GudPyTreeView
+from widgets.view_input import ViewInput
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -19,32 +18,7 @@ class GudPyMainWindow(QMainWindow):
     def initComponents(self):
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
         self.objectTree = GudPyTreeView(self, self.gudrunFile)
-        # self.model = QStandardItemModel()
-        # parentItem = self.model.invisibleRootItem()
-        # instrumentItem = QStandardItem("Instrument")
-        # parentItem.appendRow(instrumentItem)
-        # beamItem = QStandardItem("Beam")
-        # parentItem.appendRow(beamItem)
-        # normalistionItem = QStandardItem("Normalisation")
-        # parentItem.appendRow(normalistionItem)
-        #
-        # for sampleBackground in self.gudrunFile.sampleBackgrounds:
-        #     sampleBackgroundItem = QStandardItem("Sample Background")
-        #     parentItem.appendRow(sampleBackgroundItem)
-        #
-        #     for sample in sampleBackground.samples:
-        #         sampleItem = QStandardItem(sample.name)
-        #         sampleBackgroundItem.appendRow(sampleItem)
-        #
-        #         for container in sample.containers:
-        #             containerItem = QStandardItem(container.name)
-        #             sampleItem.appendRow(containerItem)
-        #
-        #
-        #
-        # self.objectTree = QTreeView(self)
-        # self.objectTree.setModel(self.model)
-        # self.objectTree.setHeaderHidden(True)
+
         leftLayout = QVBoxLayout()
         leftLayout.addWidget(self.objectTree)
         leftLayout.addStretch(5)
@@ -88,10 +62,13 @@ class GudPyMainWindow(QMainWindow):
         viewMenu = QMenu("&View", menuBar)
         viewInputFile = QAction("View input file", viewMenu)
         viewMenu.addAction(viewInputFile)
-        # viewInputFile.triggered.connect(lambda : GudrunFileTextArea()
+        viewInputFile.triggered.connect(lambda : ViewInput(self.gudrunFile, parent=self))
+        menuBar.addMenu(viewMenu)
 
         self.setMenuBar(menuBar)
 
+    def updateFromFile(self):
+        self.initComponents()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
