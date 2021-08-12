@@ -1,6 +1,8 @@
 
 from PyQt5.QtGui import QResizeEvent, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QTreeView
+from PyQt5.QtCore import Qt, pyqtSlot
+# from PyQt5.QtCore import ItemIsUserCheckable
 from widgets.attribute import Attribute
 
 
@@ -17,7 +19,7 @@ class GudPyTreeView(QTreeView):
         self.makeModel()
         self.setModel(self.model)
         self.setHeaderHidden(True)
-        self.clicked.connect(lambda val : print(self.map[val.data()].func()))
+        self.clicked.connect(self.onClick)
 
     def makeModel(self):
 
@@ -38,9 +40,14 @@ class GudPyTreeView(QTreeView):
             self.map[f'Sample Background {i+1}'] = Attribute(f'Sample Background {i+1}', sampleBackground, sampleBackground.__str__)
             for sample in sampleBackground.samples:
                 sampleItem = QStandardItem(sample.name)
+                sampleItem.setCheckState(Qt.Unchecked)
                 sampleBackgroundItem.appendRow(sampleItem)
                 self.map[sample.name] = Attribute(sample.name, sample, sample.__str__, parent=f'Sample Background {i+1}')
                 for container in sample.containers:
                     containerItem = QStandardItem(container.name)
                     sampleItem.appendRow(containerItem)
                     self.map[container.name] = Attribute(container.name, container, container.__str__, parent=sample.name)
+
+    def onClick(self, index):
+        item = self.model.itemFromIndex(index)
+        item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
