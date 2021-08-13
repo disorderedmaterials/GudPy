@@ -46,7 +46,7 @@ class GudPyTreeView(QTreeView):
                 sampleItem = QStandardItem(sample.name)
                 sampleItem.setCheckable(True)
                 sampleItem.setFlags(sampleItem.flags() | Qt.ItemIsUserCheckable)
-                sampleItem.setCheckState(Qt.Unchecked)
+                sampleItem.setCheckState(Qt.Checked if sample.include else Qt.Unchecked)
                 sampleBackgroundItem.appendRow(sampleItem)
                 self.map[sample.name] = Attribute(sample.name, sample, sample.__str__, parent=f'Sample Background {i+1}')
                 for container in sample.containers:
