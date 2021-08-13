@@ -3,14 +3,16 @@ from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu,QTabWidget,
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudpy_tree import GudPyTreeView
 from widgets.view_input import ViewInput
+from widgets.instrument_widget import InstrumentWidget
+from widgets.sample_widget import SampleWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
         super(GudPyMainWindow, self).__init__()
 
-        self.setGeometry(0, 0, 800, 600)
-        self.setMinimumHeight(800)
-        self.setMinimumWidth(600)
+        self.setGeometry(0, 0, 1366, 768)
+        self.setMinimumHeight(1366)
+        self.setMinimumWidth(768)
         self.setWindowTitle("GudPy")
         self.show()
         self.initComponents()
@@ -25,11 +27,11 @@ class GudPyMainWindow(QMainWindow):
         leftWidget = QWidget()
         # leftWidget.setMaximumSize(self.size().width()*0.2, self.size().height()*0.3)
         leftWidget.setLayout(leftLayout)
-
-        centralWidget = QTabWidget()
+        # centralWidget = InstrumentWidget(self.gudrunFile.instrument, self)
+        centralWidget = SampleWidget(self.gudrunFile.sampleBackgrounds[0].samples[0], parent=self)
         mainLayout = QHBoxLayout()
-        mainLayout.addWidget(leftWidget, 25)
-        mainLayout.addWidget(centralWidget, 75)
+        mainLayout.addWidget(leftWidget, 20)
+        mainLayout.addWidget(centralWidget, 80)
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
