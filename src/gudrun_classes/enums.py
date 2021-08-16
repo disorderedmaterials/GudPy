@@ -12,11 +12,11 @@ class Instruments(Enum):
 
 
 class Scales(Enum):
-    Q = 1
-    D_SPACING = 2
-    WAVELENGTH = 3
-    ENERGY = 4
-    TOF = 5
+    Q = 0
+    D_SPACING = 1
+    WAVELENGTH = 2
+    ENERGY = 3
+    TOF = 4
 
 
 class UnitsOfDensity(Enum):
@@ -44,4 +44,4 @@ class OutputUnits(Enum):
 class Geometry(Enum):
     FLATPLATE = 0
     CYLINDRICAL = 1
-    SameAsBeam = 3
+    SameAsBeam = 2

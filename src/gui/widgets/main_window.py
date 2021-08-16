@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu,QTabWidget,
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudpy_tree import GudPyTreeView
 from widgets.view_input import ViewInput
-from widgets.instrument_widget import InstrumentWidget
 from widgets.sample_widget import SampleWidget
 
 class GudPyMainWindow(QMainWindow):
