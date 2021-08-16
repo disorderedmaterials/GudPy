@@ -19,15 +19,6 @@ class GudPyMainWindow(QMainWindow):
         self.show()
         self.initComponents()
 
-    def focusChanged(self, index):
-        print(index)
-        # if self.objectTree.currentIndex.row() + self.objectTree.currentIndex.column() == index:
-        #     return
-        # else:
-        #     newIndex = QModelIndex(self.objectTree.index)
-        #     self.objectTree.setCurrentIndex()
-
-
     def initComponents(self):
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
         self.objectTree = GudPyTreeView(self, self.gudrunFile)
