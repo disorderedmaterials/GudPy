@@ -1,10 +1,12 @@
+from PyQt5.QtCore import QAbstractItemModel, QModelIndex
 from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu,QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QStackedWidget,QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QResizeEvent
 from widgets.gudpy_tree import GudPyTreeView
 from widgets.view_input import ViewInput
 from widgets.sample_widget import SampleWidget
 from widgets.instrument_widget import InstrumentWidget
+from widgets.beam_widget import BeamWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -17,6 +19,15 @@ class GudPyMainWindow(QMainWindow):
         self.show()
         self.initComponents()
 
+    def focusChanged(self, index):
+        print(index)
+        # if self.objectTree.currentIndex.row() + self.objectTree.currentIndex.column() == index:
+        #     return
+        # else:
+        #     newIndex = QModelIndex(self.objectTree.index)
+        #     self.objectTree.setCurrentIndex()
+
+
     def initComponents(self):
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
         self.objectTree = GudPyTreeView(self, self.gudrunFile)
@@ -28,10 +39,15 @@ class GudPyMainWindow(QMainWindow):
         # leftWidget.setMaximumSize(self.size().width()*0.2, self.size().height()*0.3)
         leftWidget.setLayout(leftLayout)
         # centralWidget = InstrumentWidget(self.gudrunFile.instrument, self)
-        centralWidget = InstrumentWidget(self.gudrunFile.instrument, parent=self)
+        self.stack = QStackedWidget(self)
+        instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
+        beamWidget = BeamWidget(self.gudrunFile.beam, self)
+        self.stack.addWidget(instrumentWidget )
+        self.stack.addWidget(beamWidget)
+        self.stack.currentChanged.connect(self.focusChanged)
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget, 20)
-        mainLayout.addWidget(centralWidget, 80)
+        mainLayout.addWidget(self.stack, 80)
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
