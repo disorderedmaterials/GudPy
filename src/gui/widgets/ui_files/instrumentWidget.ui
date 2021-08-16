@@ -25,7 +25,7 @@
    <property name="title">
     <string>Instrument Configuration</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -595,7 +595,7 @@
      <string notr="true">scaleSelectionButtonGroup</string>
     </attribute>
    </widget>
-   <widget class="QRadioButton" name="dSpacingRadioButton">
+   <widget class="QRadioButton" name="DSpacingRadioButton">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -944,7 +944,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
     <property name="geometry">
      <rect>
       <x>310</x>
@@ -1053,6 +1053,22 @@
     </property>
     <property name="text">
      <string>Spectrum number for output diagnostic files</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="logarithmicBinningCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>370</y>
+      <width>161</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Logarithmic binning?</string>
     </property>
    </widget>
   </widget>

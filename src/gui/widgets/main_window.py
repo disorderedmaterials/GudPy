@@ -4,6 +4,7 @@ from PyQt5.QtGui import QResizeEvent
 from widgets.gudpy_tree import GudPyTreeView
 from widgets.view_input import ViewInput
 from widgets.sample_widget import SampleWidget
+from widgets.instrument_widget import InstrumentWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -27,7 +28,7 @@ class GudPyMainWindow(QMainWindow):
         # leftWidget.setMaximumSize(self.size().width()*0.2, self.size().height()*0.3)
         leftWidget.setLayout(leftLayout)
         # centralWidget = InstrumentWidget(self.gudrunFile.instrument, self)
-        centralWidget = SampleWidget(self.gudrunFile.sampleBackgrounds[0].samples[0], parent=self)
+        centralWidget = InstrumentWidget(self.gudrunFile.instrument, parent=self)
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget, 20)
         mainLayout.addWidget(centralWidget, 80)
