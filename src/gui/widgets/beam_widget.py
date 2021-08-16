@@ -3,8 +3,8 @@ from PyQt5 import uic
 import os
 
 class BeamWidget(QWidget):
-    def __init__(self, instrument, parent=None):
-        self.instrument = instrument
+    def __init__(self, beam, parent=None):
+        self.beam = beam
         self.parent = parent
 
         super(BeamWidget, self).__init__(self.parent)
