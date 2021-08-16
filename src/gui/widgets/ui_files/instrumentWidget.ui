@@ -1,0 +1,1065 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>605</width>
+    <height>875</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QGroupBox" name="configGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>0</y>
+     <width>561</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Instrument Configuration</string>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>441</width>
+      <height>58</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="configLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="nameLabel">
+       <property name="text">
+        <string>Instrument Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="nameComboBox"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="configLabel">
+       <property name="text">
+        <string>Instrument Config</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="configLineEdit"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="browseConfigButton">
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="otherGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>90</y>
+     <width>561</width>
+     <height>781</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Other</string>
+   </property>
+   <widget class="QLabel" name="dataFileDirectoryLabel">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>40</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Data File Directory</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="dataFileDirectoryLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>141</x>
+      <y>40</y>
+      <width>223</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseDataFileDirectoryButton">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>40</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="dataFileTypeLabel">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>40</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Type</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="dataFileTypeCombo">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>40</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseDetCalibrationButton">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>70</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="detCalibrationLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>70</y>
+      <width>223</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="detCalibrationLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Detector Calibration File</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseGroupsFileButton">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>100</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="groupsFileLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Groups File</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="groupsFileLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>100</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseDeadtimeFileButton">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>130</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="deadtimeFileLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Deadtime Constants File</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="deadtimeFileLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>130</y>
+      <width>223</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="phiValuesColumnLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>100</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Column for Phi Values</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="phiValuesColumnLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>100</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="spectrumNumbersIBLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>311</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Spectrum numbers for incident beam monitor</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="spectrumNumbersIBLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>160</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="spectrumNumbersTLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>190</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="spectrumNumbersTLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>311</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Spectrum numbers for transmission monitor</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wavelengthRangeMonNormLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>311</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Wavelength range for monitor normalisation</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minWavelengthMonNormLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>220</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxWavelengthMonNormLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>220</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="queitCountConstLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Quiet count const:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="queitCountConstIMLabel">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>250</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Incident monitor</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="quietCountConstIMLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>250</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="quietCountConstTMLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>250</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="queitCountConstTMLabel">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>250</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Transmission monitor</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="channelNoBLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>280</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="channelNosLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>211</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Channel no.s for spike analysis</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="channelNoALineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>280</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="acceptanceFactorLabel">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>280</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Acceptance factor</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="acceptanceFactorLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>280</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxWavelengthLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>310</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wavelengthRangeLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>310</y>
+      <width>261</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Wavelength range to use and step size</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minWavelengthLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>310</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="stepWavelengthLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>310</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="noSmoothsOnMonitorLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>340</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="noSmoothsOnMonitorLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>No. smooths on monitor</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="xScaleLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>370</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Type of x-scale for final DCS: </string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="minXScaleLabel">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>370</y>
+      <width>31</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Min</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="maxXScaleLabel">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>370</y>
+      <width>31</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="stepXScaleLabel">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>370</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step size</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="_QRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>400</y>
+      <width>81</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Q [1/A]</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">scaleSelectionButtonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="dSpacingRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>430</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>d-spacing [A]</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">scaleSelectionButtonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="wavelengthRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>460</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>wavelength [A]</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">scaleSelectionButtonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="energyRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>490</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>energy [meV]</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">scaleSelectionButtonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="TOFRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>520</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TOF [mus]</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">scaleSelectionButtonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QLineEdit" name="stepQLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>400</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minQLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>400</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxQLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>400</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="stepDSpacingLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>430</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minDSpacingLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>430</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxDSpacingLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>430</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="stepWavelength_LineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>460</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minWavelength_LineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>460</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxWavelength_LineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>460</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="stepEnergyLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>490</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minEnergyLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>490</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxEnergyLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>490</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="stepTOFLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>520</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="minTOFLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>520</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="maxTOFLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>520</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="groupingParameterTable">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>580</y>
+      <width>291</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Group</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>XMin</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>XMax</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Background Factor</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="groupingParameterPanelLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>550</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Grouping Parameter Panel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="groupsAcceptanceFactorLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>580</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Acceptance factor</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="groupsAcceptanceFactorLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>580</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mergePowerLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>610</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mergePowerLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>610</y>
+      <width>131</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Merge power</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mergeWeightsLabel">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>610</y>
+      <width>31</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>By?</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="mergeWeightsComboBox">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>610</y>
+      <width>71</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="incidentFlightPathLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>640</y>
+      <width>161</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Incident flight path [m]</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="incidentFlightPathLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>640</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>670</y>
+      <width>151</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Hard group edges?</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="neutronScatteringParamsFileLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>720</y>
+      <width>211</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Neutron scattering params file</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseNeutronScatteringParamsButton">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>720</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="neutronScatteringParamsFileLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>720</y>
+      <width>223</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="nexusDefintionFileLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>750</y>
+      <width>223</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="browseNexusDefinitionButton">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>750</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="nexusDefinitionFileLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>750</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>NeXus definition file</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="outputDiagSpectrumLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>690</y>
+      <width>41</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="outputDiagSpectrumLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>690</y>
+      <width>321</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Spectrum number for output diagnostic files</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="scaleSelectionButtonGroup"/>
+ </buttongroups>
+</ui>

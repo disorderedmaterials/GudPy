@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
+    <width>615</width>
     <height>700</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>3</x>
      <y>180</y>
-     <width>601</width>
+     <width>611</width>
      <height>181</height>
     </rect>
    </property>
@@ -234,7 +234,7 @@
     <rect>
      <x>3</x>
      <y>450</y>
-     <width>601</width>
+     <width>611</width>
      <height>241</height>
     </rect>
    </property>
@@ -265,7 +265,7 @@
      <rect>
       <x>349</x>
       <y>149</y>
-      <width>251</width>
+      <width>256</width>
       <height>71</height>
      </rect>
     </property>
@@ -281,6 +281,19 @@
       <height>100</height>
      </size>
     </property>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Amplitude</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Decay [1/A]</string>
+     </property>
+    </column>
    </widget>
    <widget class="QLabel" name="resonanceValuesLabel">
     <property name="geometry">
@@ -306,7 +319,7 @@
      <rect>
       <x>350</x>
       <y>54</y>
-      <width>251</width>
+      <width>256</width>
       <height>71</height>
      </rect>
     </property>
@@ -322,8 +335,39 @@
       <height>100</height>
      </size>
     </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>128</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>128</number>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>50</number>
+    </attribute>
+    <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderStretchLastSection">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Min Wavelength</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Max Wavelength</string>
+     </property>
+    </column>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>5</x>
@@ -544,7 +588,7 @@
     <rect>
      <x>3</x>
      <y>360</y>
-     <width>601</width>
+     <width>611</width>
      <height>91</height>
     </rect>
    </property>
@@ -817,7 +861,7 @@
     <rect>
      <x>290</x>
      <y>0</y>
-     <width>311</width>
+     <width>321</width>
      <height>167</height>
     </rect>
    </property>

@@ -1,9 +1,8 @@
 from gudrun_classes.enums import Geometry, NormalisationType, OutputUnits, UnitsOfDensity
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QHeaderView
+from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
-import sys
 
 class SampleWidget(QWidget):
     def __init__(self, sample, parent=None):
