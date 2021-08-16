@@ -35,7 +35,6 @@ class GudPyMainWindow(QMainWindow):
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
         self.stack.addWidget(instrumentWidget )
         self.stack.addWidget(beamWidget)
-        self.stack.currentChanged.connect(self.focusChanged)
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget, 20)
         mainLayout.addWidget(self.stack, 80)
