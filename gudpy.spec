@@ -8,8 +8,8 @@ block_cipher = None
 print(os.name)
 import sys
 
-a = Analysis(['src/gui/gudpy.py'],
-             pathex=['src/gudrun_classes' + SEP, 'src/scripts' + SEP, 'src/widgets' + SEP],
+a = Analysis(['main.py'],
+             pathex=[os.path.dirname(os.path.abspath('main.py'))],
              binaries=[('bin' + SEP + 'gudrun_dcs' + SUFFIX, '.'), ('bin' + SEP + 'calc_corrsx_in_out' + SUFFIX, '.'), ('bin' + SEP + 'purge_det' + SUFFIX, '.'), ('bin' + SEP + 'tophatsub' + SUFFIX, '.')],
              datas=[('bin' + SEP + 'StartupFiles', '.')],
              hiddenimports=[],

@@ -5,25 +5,25 @@ import subprocess
 import time
 from copy import deepcopy
 
-import pathmagic  # noqa: F401
+from . import pathmagic # noqa: F401
 
-from scripts.utils import (
+from ..scripts.utils import (
         iteristype, isin,
         firstword, boolifyNum,
         extract_ints_from_string,
         extract_floats_from_string,
         count_occurrences)
-from instrument import Instrument
-from beam import Beam
-from normalisation import Normalisation
-from sample import Sample
-from sample_background import SampleBackground
-from container import Container
-from composition import Composition
-from element import Element
-from data_files import DataFiles
-from purge_file import PurgeFile
-from enums import (
+from .instrument import Instrument
+from .beam import Beam
+from .normalisation import Normalisation
+from .sample import Sample
+from .sample_background import SampleBackground
+from .container import Container
+from .composition import Composition
+from .element import Element
+from .data_files import DataFiles
+from .purge_file import PurgeFile
+from .enums import (
     Instruments, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry

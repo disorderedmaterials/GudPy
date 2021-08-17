@@ -1,6 +1,3 @@
-from gudrun_file import GudrunFile
-from gudrun_file_text_area import GudrunFileTextArea
-from main_window import GudPyMainWindow
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -9,10 +6,10 @@ from PyQt5.QtWidgets import (
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], "../scripts"))
-sys.path.insert(2, os.path.join(sys.path[0], "../gudrun_classes"))
-sys.path.insert(3, os.path.join(sys.path[0], "../widgets"))
-
+print(sys.path)
+from ..gudrun_classes.gudrun_file import GudrunFile
+from .widgets.gudrun_file_text_area import GudrunFileTextArea
+from .widgets.main_window import GudPyMainWindow
 
 class GudPy(QApplication):
     def __init__(self, args):
@@ -61,4 +58,8 @@ class GudPy(QApplication):
 
 
 if __name__ == "__main__":
-    GudPy(sys.argv)
+    main(sys.argv)
+
+def main(argv):
+    print(sys.path)
+    GudPy(argv)

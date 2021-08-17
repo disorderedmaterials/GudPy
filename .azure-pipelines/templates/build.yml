@@ -53,4 +53,5 @@ steps:
       pyinstaller gudpy.spec
       if [[ "${{ parameters.osName }}" == "osx" ]]; then
           create-dmg dist/*.app
+          [ $? -eq 2 ]  || exit 0
       fi

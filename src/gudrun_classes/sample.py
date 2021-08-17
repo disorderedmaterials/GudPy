@@ -1,8 +1,8 @@
-import pathmagic  # noqa: F401
-from scripts.utils import spacify, numifyBool
-from data_files import DataFiles
-from composition import Composition
-from enums import UnitsOfDensity, NormalisationType, OutputUnits, Geometry
+from . import pathmagic # noqa: F401
+from ..scripts.utils import spacify, numifyBool
+from .data_files import DataFiles
+from .composition import Composition
+from .enums import UnitsOfDensity, NormalisationType, OutputUnits, Geometry
 
 
 class Sample:

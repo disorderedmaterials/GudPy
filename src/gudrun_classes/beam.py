@@ -1,7 +1,7 @@
-import pathmagic  # noqa: F401
-from scripts.utils import spacify
+from . import pathmagic # noqa: F401
+from ..scripts.utils import spacify
 
-from enums import Geometry
+from .enums import Geometry
 
 
 class Beam:
