@@ -2,7 +2,9 @@ from src.gudrun_classes import pathmagic  # noqa: F401
 from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import UnitsOfDensity, NormalisationType, OutputUnits, Geometry
+from src.gudrun_classes.enums import (
+    UnitsOfDensity, NormalisationType, OutputUnits, Geometry
+)
 
 
 class Sample:
