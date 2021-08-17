@@ -1,7 +1,7 @@
-from . import pathmagic  # noqa: F401
-from ..scripts.utils import spacify
+from src.gudrun_classes import pathmagic  # noqa: F401
+from src.scripts.utils import spacify
 
-from .enums import Geometry
+from src.gudrun_classes.enums import Geometry
 
 
 class Beam:

@@ -1,4 +1,4 @@
-from gud_file import GudFile
+from src.gudrun_classes.gud_file import GudFile
 
 
 class TweakFactorIterator():

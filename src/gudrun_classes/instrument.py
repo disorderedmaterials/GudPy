@@ -1,6 +1,6 @@
-from . import pathmagic  # noqa: F401
-from ..scripts.utils import spacify, numifyBool
-from .enums import MergeWeights, Scales, Instruments
+from src.gudrun_classes import pathmagic  # noqa: F401
+from src.scripts.utils import spacify, numifyBool
+from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 
 
 class Instrument:

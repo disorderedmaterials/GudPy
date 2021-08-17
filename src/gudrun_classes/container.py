@@ -1,8 +1,8 @@
-from . import pathmagic  # noqa: F401
-from ..scripts.utils import spacify
-from .data_files import DataFiles
-from .composition import Composition
-from .enums import UnitsOfDensity
+from src.gudrun_classes import pathmagic  # noqa: F401
+from src.scripts.utils import spacify
+from src.gudrun_classes.data_files import DataFiles
+from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.enums import UnitsOfDensity
 
 
 class Container:

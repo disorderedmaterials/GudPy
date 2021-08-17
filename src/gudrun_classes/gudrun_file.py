@@ -5,25 +5,25 @@ import subprocess
 import time
 from copy import deepcopy
 
-from . import pathmagic  # noqa: F401
+from src.gudrun_classes import pathmagic  # noqa: F401
 
-from ..scripts.utils import (
+from src.scripts.utils import (
         iteristype, isin,
         firstword, boolifyNum,
         extract_ints_from_string,
         extract_floats_from_string,
         count_occurrences)
-from .instrument import Instrument
-from .beam import Beam
-from .normalisation import Normalisation
-from .sample import Sample
-from .sample_background import SampleBackground
-from .container import Container
-from .composition import Composition
-from .element import Element
-from .data_files import DataFiles
-from .purge_file import PurgeFile
-from .enums import (
+from src.gudrun_classes.instrument import Instrument
+from src.gudrun_classes.beam import Beam
+from src.gudrun_classes.normalisation import Normalisation
+from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.sample_background import SampleBackground
+from src.gudrun_classes.container import Container
+from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.element import Element
+from src.gudrun_classes.data_files import DataFiles
+from src.gudrun_classes.purge_file import PurgeFile
+from src.gudrun_classes.enums import (
     Instruments, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry

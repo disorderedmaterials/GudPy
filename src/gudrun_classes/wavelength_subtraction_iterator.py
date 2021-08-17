@@ -1,5 +1,5 @@
 from pathlib import Path
-from enums import Scales
+from src.gudrun_classes.enums import Scales
 
 
 class WavelengthSubtractionIterator():
