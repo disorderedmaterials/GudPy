@@ -5,7 +5,8 @@ SUFFIX = ""
 if os.name == "nt":
     SUFFIX = ".exe"
 block_cipher = None
-
+print(os.name)
+import sys
 
 a = Analysis(['src/gui/gudpy.py'],
              pathex=['src/gudrun_classes' + SEP, 'src/scripts' + SEP, 'src/widgets' + SEP],
@@ -41,3 +42,7 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None )
+
+if sys.platform == "darwin":
+    app = BUNDLE(exe,
+                name=f'GudPy-{VERSION}.app')

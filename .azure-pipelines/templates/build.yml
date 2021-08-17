@@ -44,7 +44,13 @@ steps:
           PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
           PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
           sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
+          curl -fsSL -o install.sh https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+          brew install npm
+          npm install -g create-dmg
       fi
       
-  - script: |
+  - bash: |
       pyinstaller gudpy.spec
+      if [[ "${{ parameters.osName }}" == "osx" ]]; then
+          create-dmg dist/*.app
+      fi
