@@ -5,7 +5,7 @@ import subprocess
 import time
 from copy import deepcopy
 
-from . import pathmagic # noqa: F401
+from . import pathmagic  # noqa: F401
 
 from ..scripts.utils import (
         iteristype, isin,

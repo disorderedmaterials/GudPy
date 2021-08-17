@@ -1,4 +1,4 @@
-from . import pathmagic # noqa: F401
+from . import pathmagic  # noqa: F401
 from ..scripts.utils import spacify
 
 from .enums import Geometry
