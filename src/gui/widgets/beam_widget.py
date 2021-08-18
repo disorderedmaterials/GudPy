@@ -43,6 +43,7 @@ class BeamWidget(QWidget):
         Loads the UI file for the BeamWidget object,
         and then populates the child widgets with their
         corresponding data from the attributes of the Beam object.
+        Parameters
         ----------
         beam : Beam
             Beam object belonging to the GudrunFile

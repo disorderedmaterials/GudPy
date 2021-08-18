@@ -42,6 +42,7 @@ class ContainerWidget(QWidget):
         and then populates the child widgets with their
         corresponding data from the attributes of the Container object.
         ----------
+        Parameters
         container : Container
             Container object belonging to the GudrunFile.
         parent : QWidget
