@@ -4,10 +4,10 @@ from unittest import TestCase
 import re
 import math
 
-from gudrun_file import GudrunFile
-from tweak_factor_iterator import TweakFactorIterator
-from gud_file import GudFile
-from wavelength_subtraction_iterator import (
+from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.gud_file import GudFile
+from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 

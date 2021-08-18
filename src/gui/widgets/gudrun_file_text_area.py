@@ -1,4 +1,4 @@
-from text_area import TextArea
+from .text_area import TextArea
 
 
 class GudrunFileTextArea(TextArea):

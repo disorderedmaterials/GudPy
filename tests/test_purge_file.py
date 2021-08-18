@@ -3,8 +3,8 @@ from unittest import TestCase
 from shutil import copyfile
 
 
-from gudrun_file import GudrunFile
-from purge_file import PurgeFile
+from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.purge_file import PurgeFile
 
 
 class TestPurgeFile(TestCase):

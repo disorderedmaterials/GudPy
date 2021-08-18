@@ -5,18 +5,18 @@ import random
 from copy import deepcopy
 from shutil import copyfile
 
-from utils import spacify, numifyBool
-from gudrun_file import GudrunFile
-from beam import Beam
-from composition import Composition
-from container import Container
-from data_files import DataFiles
-from element import Element
-from instrument import Instrument
-from normalisation import Normalisation
-from sample_background import SampleBackground
-from sample import Sample
-from enums import (
+from src.scripts.utils import spacify, numifyBool
+from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.beam import Beam
+from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.container import Container
+from src.gudrun_classes.data_files import DataFiles
+from src.gudrun_classes.element import Element
+from src.gudrun_classes.instrument import Instrument
+from src.gudrun_classes.normalisation import Normalisation
+from src.gudrun_classes.sample_background import SampleBackground
+from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.enums import (
     Instruments, Scales, UnitsOfDensity,
     MergeWeights, NormalisationType, OutputUnits,
     Geometry

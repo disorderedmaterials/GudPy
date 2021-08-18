@@ -1,7 +1,6 @@
 import os
 import sys
-import pathmagic  # noqa: F401
-from scripts.utils import spacify, numifyBool
+from src.scripts.utils import spacify, numifyBool
 import subprocess
 
 
