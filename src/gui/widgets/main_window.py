@@ -1,15 +1,15 @@
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex
-from gudrun_classes.gudrun_file import GudrunFile, PurgeFile
+from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QStackedWidget,QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QResizeEvent
-from widgets.gudpy_tree import GudPyTreeView
-from widgets.view_input import ViewInput
-from widgets.sample_widget import SampleWidget
-from widgets.instrument_widget import InstrumentWidget
-from widgets.beam_widget import BeamWidget
-from widgets.sample_background_widget import SampleBackgroundWidget
-from widgets.container_widget import ContainerWidget
-from widgets.normalisation_widget import NormalisationWidget
+from src.gui.widgets.gudpy_tree import GudPyTreeView
+from src.gui.widgets.view_input import ViewInput
+from src.gui.widgets.sample_widget import SampleWidget
+from src.gui.widgets.instrument_widget import InstrumentWidget
+from src.gui.widgets.beam_widget import BeamWidget
+from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
+from src.gui.widgets.container_widget import ContainerWidget
+from src.gui.widgets.normalisation_widget import NormalisationWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):

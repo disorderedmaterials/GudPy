@@ -2,7 +2,7 @@
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import Qt
-from widgets.attribute import Attribute
+from src.gui.widgets.attribute import Attribute
 
 
 class GudPyTreeView(QTreeView):

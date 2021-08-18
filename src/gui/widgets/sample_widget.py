@@ -1,4 +1,4 @@
-from gudrun_classes.enums import Geometry, NormalisationType, OutputUnits, UnitsOfDensity
+from src.gudrun_classes.enums import Geometry, NormalisationType, OutputUnits, UnitsOfDensity
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt

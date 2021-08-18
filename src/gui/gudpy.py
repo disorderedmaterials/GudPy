@@ -1,13 +1,9 @@
-from ..gudrun_classes.gudrun_file import GudrunFile
-from .widgets.gudrun_file_text_area import GudrunFileTextArea
-from .widgets.main_window import GudPyMainWindow
 from PyQt5.QtWidgets import (
     QApplication
 )
-import pathmagic  # noqa: F401
 import sys
 
-from widgets.main_window import GudPyMainWindow
+from src.gui.widgets.main_window import GudPyMainWindow
 
 class GudPy(QApplication):
 

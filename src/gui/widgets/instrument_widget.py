@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
-from gudrun_classes.enums import Instruments, MergeWeights, Scales
-from scripts.utils import spacify
+from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
+from src.scripts.utils import spacify
 import os
 
 class InstrumentWidget(QWidget):

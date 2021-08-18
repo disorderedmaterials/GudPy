@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
-from gudrun_classes.enums import Geometry
+from src.gudrun_classes.enums import Geometry
 
 class BeamWidget(QWidget):
     """
