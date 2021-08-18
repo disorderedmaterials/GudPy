@@ -1,4 +1,3 @@
-from src.gudrun_classes import pathmagic  # noqa: F401
 from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition

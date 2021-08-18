@@ -5,8 +5,6 @@ import subprocess
 import time
 from copy import deepcopy
 
-from src.gudrun_classes import pathmagic  # noqa: F401
-
 from src.scripts.utils import (
         iteristype, isin,
         firstword, boolifyNum,

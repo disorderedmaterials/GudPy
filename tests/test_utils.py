@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 
-from scripts.utils import (
+from src.scripts.utils import (
         iteristype,
         firstword, boolifyNum,
         numifyBool, spacify,

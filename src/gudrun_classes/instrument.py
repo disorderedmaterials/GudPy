@@ -1,4 +1,3 @@
-from src.gudrun_classes import pathmagic  # noqa: F401
 from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 
