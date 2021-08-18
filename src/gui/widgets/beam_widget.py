@@ -4,26 +4,73 @@ import os
 from gudrun_classes.enums import Geometry
 
 class BeamWidget(QWidget):
+    """
+    Class to represent a BeamWidgt. Inherits QWidget.
+
+    ...
+
+    Attributes
+    ----------
+    beam : Beam
+        Beam object belonging to the GudrunFile.
+    parent : QWidget
+        Parent widget.
+    Methods
+    -------s
+    initComponents()
+        Loads UI file, and then populates data from the Beam.
+    """
     def __init__(self, beam, parent=None):
+        """
+        Constructs all the necessary attributes for the BeamWidget object.
+        Calls the initComponents method, to load the UI file and populate data.
+        Parameters
+        ----------
+        beam : Beam
+            Beam object belonging to the GudrunFile
+        parent : QWidget
+            Parent widget.
+        """
         self.beam = beam
         self.parent = parent
 
         super(BeamWidget, self).__init__(self.parent)
         self.initComponents()
     
+
     def initComponents(self):
+        """
+        Loads the UI file for the BeamWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Beam object.
+        ----------
+        beam : Beam
+            Beam object belonging to the GudrunFile
+        parent : QWidget
+            Parent widget.
+        """
+
+        # Get the current directory that we are residing in.
         current_dir = os.path.dirname(os.path.realpath(__file__))
+        # Join the current directory with the relative path of the UI file.
         uifile = os.path.join(current_dir, "ui_files/beamWidget.ui")
+        
+        # Use pyuic to load to the UI file into the BeamWidget.
         uic.loadUi(uifile, self)
 
+        # Populate the Geometry combo box with the names of the members of the Geometry enum.
         self.sampleGeometryComboBox.addItems([g.name for g in Geometry])
+        # Set the selected item to that defined in the Beam object.
         self.sampleGeometryComboBox.setCurrentIndex(self.beam.sampleGeometry.value)
 
+
+        # Load the rest of the attributes, by setting the text of their corresponding
+        # QLineEdits to their string value.
         self.absorptionStepSizeLineEdit.setText(str(self.beam.stepSizeAbsorption))
         self.msCalculationStepSizeLineEdit.setText(str(self.beam.stepSizeMS))
         self.noSlicesLineEdit.setText(str(self.beam.noSlices))
         self.stepForCorrectionsLineEdit.setText(str(self.beam.angularStepForCorrections))
-        
+
         self.leftIncidentBeamLineEdit.setText(str(self.beam.incidentBeamLeftEdge))
         self.rightIncidentBeamLineEdit.setText(str(self.beam.incidentBeamRightEdge))
         self.topIncidentBeamLineEdit.setText(str(self.beam.incidentBeamTopEdge))
@@ -40,5 +87,8 @@ class BeamWidget(QWidget):
         self.sampleDependantBackgroundFactorLineEdit.setText(str(self.beam.sampleDependantBackgroundFactor))
         self.shieldingLineEdit.setText(str(self.beam.shieldingAttenuationCoefficient))
 
+        # Fill the Beam Profile Values table.
         for i, val in enumerate(self.beam.beamProfileValues):
+            # Integer division by 5 of the current beam profile values index gives the row.
+            # The current beam profile values index modulo 5 gives the column.
             self.beamProfileValuesTable.setItem(i//5, i%5, QTableWidgetItem(str(val)))
