@@ -14,3 +14,5 @@ class SampleBackgroundWidget(QWidget):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/sampleBackgroundWidget.ui")
         uic.loadUi(uifile, self)
+
+        self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])
