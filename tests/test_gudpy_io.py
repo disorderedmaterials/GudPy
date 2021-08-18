@@ -5,7 +5,7 @@ import random
 from copy import deepcopy
 from shutil import copyfile
 
-from utils import spacify, numifyBool
+from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.composition import Composition
