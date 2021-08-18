@@ -9,6 +9,7 @@ from widgets.instrument_widget import InstrumentWidget
 from widgets.beam_widget import BeamWidget
 from widgets.sample_background_widget import SampleBackgroundWidget
 from widgets.container_widget import ContainerWidget
+from widgets.normalisation_widget import NormalisationWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -35,7 +36,7 @@ class GudPyMainWindow(QMainWindow):
         self.stack = QStackedWidget(self)
         instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
-        normalisationWidget = BeamWidget(self.gudrunFile.normalisation, self)
+        normalisationWidget = NormalisationWidget(self.gudrunFile.normalisation, self)
         self.stack.addWidget(instrumentWidget)
         self.stack.addWidget(beamWidget)
         self.stack.addWidget(normalisationWidget)

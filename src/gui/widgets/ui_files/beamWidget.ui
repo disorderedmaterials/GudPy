@@ -6,13 +6,490 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>650</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <widget class="QGroupBox" name="configurationGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>30</y>
+     <width>591</width>
+     <height>286</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>591</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="title">
+    <string>Beam Configuration</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="5" column="12" colspan="2">
+     <widget class="QPushButton" name="browseIncidentBeamSpectrumParametersButton">
+      <property name="maximumSize">
+       <size>
+        <width>89</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="7" colspan="5">
+     <widget class="QLineEdit" name="incidentBeamSpectrumParametersLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>113</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="5">
+     <widget class="QLabel" name="scatteredBeamEdgesLabel">
+      <property name="minimumSize">
+       <size>
+        <width>191</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>191</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Scattered beam edges [cm]</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="6" colspan="2">
+     <widget class="QLineEdit" name="shieldingLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="6">
+     <widget class="QLineEdit" name="overallBackgroundFactorLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="5">
+     <widget class="QLabel" name="incidentBeamEdgesLabel">
+      <property name="minimumSize">
+       <size>
+        <width>181</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>181</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Incident beam edges [cm]</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="7" colspan="4">
+     <widget class="QLabel" name="sampleDependantBackgroundFactorLabel">
+      <property name="minimumSize">
+       <size>
+        <width>131</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>131</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>sample dependant</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QLabel" name="stepSizeLabel">
+      <property name="minimumSize">
+       <size>
+        <width>171</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>171</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Step size for: absorption</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="6">
+     <widget class="QLabel" name="shieldingLabel">
+      <property name="text">
+       <string>Shielding attenuation coefficient</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="6">
+     <widget class="QLabel" name="backgroundFactorLabel">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Background factor: overall</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="6">
+     <widget class="QLineEdit" name="absorptionStepSizeLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="11">
+     <widget class="QLineEdit" name="sampleDependantBackgroundFactorLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="7">
+     <widget class="QLabel" name="msCalculationStepSizeLabel">
+      <property name="minimumSize">
+       <size>
+        <width>106</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>111</width>
+        <height>17</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>m.s. calculation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="7">
+     <widget class="QLabel" name="incidentBeamSpectrumParametersLabel">
+      <property name="maximumSize">
+       <size>
+        <width>251</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Incident beam spectrum parameters</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="10">
+     <widget class="QLineEdit" name="msCalculationStepSizeLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="11">
+     <widget class="QLineEdit" name="bottomIncidentBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="11">
+     <widget class="QLineEdit" name="bottomScatteredBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="10">
+     <widget class="QLineEdit" name="topScatteredBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="10">
+     <widget class="QLineEdit" name="topIncidentBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="8">
+     <widget class="QLineEdit" name="rightScatteredBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="8">
+     <widget class="QLineEdit" name="rightIncidentBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="7">
+     <widget class="QLineEdit" name="leftScatteredBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="7">
+     <widget class="QLineEdit" name="leftIncidentBeamLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="3">
+     <widget class="QLabel" name="sampleGeometryLabel">
+      <property name="minimumSize">
+       <size>
+        <width>133</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Sample Geometry</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3" colspan="4">
+     <widget class="QComboBox" name="sampleGeometryComboBox">
+      <property name="minimumSize">
+       <size>
+        <width>133</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="13">
+     <widget class="QLineEdit" name="noSlicesLineEdit">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="11" colspan="2">
+     <widget class="QLabel" name="noSlicesLabel">
+      <property name="maximumSize">
+       <size>
+        <width>71</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>no. slices</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="7">
+     <widget class="QLineEdit" name="stepForCorrectionsLineEdit"/>
+    </item>
+    <item row="2" column="0" colspan="5">
+     <widget class="QLabel" name="stepForCorrectionsLabel">
+      <property name="maximumSize">
+       <size>
+        <width>201</width>
+        <height>17</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Angular step for corrections</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="profileValuesGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>340</y>
+     <width>591</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Beam Profile Values</string>
+   </property>
+   <widget class="QTableWidget" name="beamProfileValuesTable">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>40</y>
+      <width>281</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="rowCount">
+     <number>10</number>
+    </property>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>52</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>52</number>
+    </attribute>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+    </column>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections/>
