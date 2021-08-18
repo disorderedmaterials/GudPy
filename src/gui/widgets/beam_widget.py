@@ -5,7 +5,7 @@ from gudrun_classes.enums import Geometry
 
 class BeamWidget(QWidget):
     """
-    Class to represent a BeamWidgt. Inherits QWidget.
+    Class to represent a BeamWidget. Inherits QWidget.
 
     ...
 
@@ -16,7 +16,7 @@ class BeamWidget(QWidget):
     parent : QWidget
         Parent widget.
     Methods
-    -------s
+    -------
     initComponents()
         Loads UI file, and then populates data from the Beam.
     """
