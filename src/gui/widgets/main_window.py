@@ -7,6 +7,8 @@ from widgets.view_input import ViewInput
 from widgets.sample_widget import SampleWidget
 from widgets.instrument_widget import InstrumentWidget
 from widgets.beam_widget import BeamWidget
+from widgets.sample_background_widget import SampleBackgroundWidget
+from widgets.container_widget import ContainerWidget
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -33,8 +35,24 @@ class GudPyMainWindow(QMainWindow):
         self.stack = QStackedWidget(self)
         instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
-        self.stack.addWidget(instrumentWidget )
+        normalisationWidget = BeamWidget(self.gudrunFile.normalisation, self)
+        self.stack.addWidget(instrumentWidget)
         self.stack.addWidget(beamWidget)
+        self.stack.addWidget(normalisationWidget)
+
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            sampleBackgroundWidget = SampleBackgroundWidget(sampleBackground, self)
+            self.stack.addWidget(sampleBackgroundWidget)
+
+            for sample in sampleBackground.samples:
+                sampleWidget = SampleWidget(sample, self)
+                self.stack.addWidget(sampleWidget)
+
+                for container in sample.containers:
+                    containerWidget = ContainerWidget(container, self)
+                    self.stack.addWidget(containerWidget)
+
+
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget, 20)
         mainLayout.addWidget(self.stack, 80)
