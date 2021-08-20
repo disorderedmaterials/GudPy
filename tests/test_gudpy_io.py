@@ -70,6 +70,7 @@ class TestGudPyIO(TestCase):
             "startupFileFolder": "/oldwork/test/water",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
+            "nxsDefinitionFile": "",
             "numberIterations": 2,
             "tweakTweakFactors": False
         }
@@ -772,7 +773,7 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("wavelengthMax", None)
         expectedInstrument.pop("wavelengthStep", None)
         expectedInstrument.pop("useLogarithmicBinning", None)
-
+        expectedInstrument.pop("nxsDefinitionFile", None)
         for i, key in enumerate(expectedInstrument.keys()):
             if key == "groupingParameterPanel":
                 continue
@@ -818,7 +819,7 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("wavelengthMax", None)
         expectedInstrument.pop("wavelengthStep", None)
         expectedInstrument.pop("useLogarithmicBinning", None)
-
+        expectedInstrument.pop("nxsDefinitionFile", None)
         for i in range(50):
 
             key = random.choice(list(expectedInstrument))

@@ -520,7 +520,8 @@ class GudrunFile:
             isin_, i = isin("NeXus", lines)
             if not isin_:
                 raise ValueError(
-                    "Whilst parsing INSTRUMENT, nxsDefinitionFile was not found"
+                    'Whilst parsing INSTRUMENT,'
+                    ' nxsDefinitionFile was not found'
                 )
             self.instrument.nxsDefinitionFile = firstword(lines[i])
 
