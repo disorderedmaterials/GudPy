@@ -228,6 +228,7 @@ class GudrunFile:
         auxVars.pop("XMax", None)
         auxVars.pop("XStep", None)
         auxVars.pop("useLogarithmicBinning", None)
+        auxVars.pop("nxsDefinitionFile", None)
 
         # Map the attributes of the Instrument class to line numbers.
 
@@ -239,6 +240,7 @@ class GudrunFile:
             x
             for x in self.instrument.__dict__.keys()
             if isinstance(self.instrument.__dict__[x], str)
+            and not x == "nxsDefinitionFile"
         ]
         LISTS = [
             x
@@ -513,6 +515,14 @@ class GudrunFile:
         name = firstword(lines[FORMAT_MAP[key]])
         name = Instruments[name]
         self.instrument.__dict__[key] = name
+
+        if self.instrument.dataFileType.lower() == "nxs":
+            isin_, i = isin("NeXus", lines)
+            if not isin_:
+                raise ValueError(
+                    "Whilst parsing INSTRUMENT, nxsDefinitionFile was not found"
+                )
+            self.instrument.nxsDefinitionFile = firstword(lines[i])
 
     def parseBeam(self, lines):
         """
