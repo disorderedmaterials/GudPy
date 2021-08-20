@@ -150,6 +150,7 @@ class Instrument:
         self.startupFileFolder = ""
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
+        self.nxsDefinitionFile = ""
         self.numberIterations = 0
         self.tweakTweakFactors = False
 
@@ -218,6 +219,14 @@ class Instrument:
             f' 3 = wavelength, 4 = energy, 5 = TOF\n'
         )
 
+        nexusDefinitionLine = (
+            f'{self.nxsDefinitionFile}{TAB}'
+            f'NeXus definition file\n'
+            if self.nxsDefinitionFile
+            else
+            ""
+        )
+
         return (
             f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
@@ -280,6 +289,7 @@ class Instrument:
             f'Logarithmic step size\n'
             f'{numifyBool(self.hardGroupEdges)}{TAB}'
             f'Hard group edges?\n'
+            f'{nexusDefinitionLine}'
             f'{self.numberIterations}{TAB}'
             f'Number of iterations\n'
             f'{numifyBool(self.tweakTweakFactors)}{TAB}'
