@@ -30,7 +30,6 @@ class SampleWidget(QWidget):
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
-        print(self.sample.geometry.value)
         self.upstreamLineEdit.setText(str(self.sample.thickness[0]))
         self.downstreamLineEdit.setText(str(self.sample.thickness[1]))
 
