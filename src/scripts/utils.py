@@ -73,3 +73,13 @@ def isin(iter1, iter2):
             if iter1.lower() in str(line).lower():
                 return True, j
         return False, 0
+
+def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
+
+    if not lastsep:
+        lastsep = sep
+    if sameseps:
+        endsep = sep
+    return (
+        sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
+    )
