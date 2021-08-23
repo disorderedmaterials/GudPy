@@ -216,6 +216,12 @@ class GudrunFile:
             if "Group, Xmin, Xmax, Background factor" in line
         ]
 
+        isNXS = [
+            line
+            for line in lines
+            if "NXS" in line or "nxs" in line or "NeXus" in line
+        ]
+
         # If grouping parameter panel is not being used,
         # remove its key from the dict
         auxVars = deepcopy(self.instrument.__dict__)
@@ -235,6 +241,10 @@ class GudrunFile:
         FORMAT_MAP = dict.fromkeys(auxVars.keys())
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
         # Categorise attributes by variables, for easier handling.
+
+        if isNXS:
+            FORMAT_MAP["numberIterations"]+=1
+            FORMAT_MAP["tweakTweakFactors"]+=1
 
         STRINGS = [
             x
@@ -1192,6 +1202,38 @@ class GudrunFile:
             "Sample atomic composition", lines
         ) + count_occurrences("Composition", lines)
 
+        # Count the number of resonance values
+        numberResonanceValues = count_occurrences(
+            "resonance wavelength", lines
+        )
+
+        resonanceLines = [
+            line
+            for line in lines
+            if "resonance wavelength" in line
+        ]
+
+        resonanceValues = []
+        for line in resonanceLines:
+            resonanceWavelength = extract_ints_from_string(line)
+            resonanceValues.append(tuple(resonanceWavelength))
+
+        # Count the number of exponential values
+        numberExponentialValues = count_occurences(
+            "amplitude and decay", lines
+        )
+
+        exponentialLines = [
+            line
+            for line in lines
+            if "amplitude and decay" in line
+        ]
+
+        exponentialValues = []
+        for line in exponentialLines:
+            exponentialPair = extract_ints_from_string(line)
+            exponentialValues.append(tuple(exponentialPair))
+
         # Map the attributes of the Sample class to line numbers.
 
         FORMAT_MAP = dict.fromkeys(sample.__dict__.keys())
@@ -1202,10 +1244,11 @@ class GudrunFile:
         FORMAT_MAP.pop("containers", None)
         FORMAT_MAP.pop("runThisSample", None)
         FORMAT_MAP.pop("densityUnits", None)
+        FORMAT_MAP.pop("resonanceValues", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
-        # which get skewed by data files and elements
+        # which get skewed by data files, elements, resonance and exponential values
 
         for key in FORMAT_MAP.keys():
             if FORMAT_MAP[key] > 0:
@@ -1215,11 +1258,15 @@ class GudrunFile:
         for key in FORMAT_MAP.keys():
             if FORMAT_MAP[key] - numberFiles == 1:
                 marker = FORMAT_MAP[key]
-                # print(key)
                 continue
             if marker:
                 if FORMAT_MAP[key] > marker:
                     FORMAT_MAP[key] += numberElements
+        
+        marker = FORMAT_MAP["grBroadening"]
+        for key in FORMAT_MAP.keys():
+            if FORMAT_MAP[key] > marker:
+                FORMAT_MAP[key] += numberResonanceValues + numberExponentialValues
 
         # Categorise attributes by variables, for easier handling.
         STRINGS = [
@@ -1253,6 +1300,10 @@ class GudrunFile:
             x for x in TUPLES if iteristype(sample.__dict__[x], float)
         ]
         TUPLE_INTS = [x for x in TUPLES if iteristype(sample.__dict__[x], int)]
+
+        # Resonance values
+        sample.resonanceValues = resonanceValues
+        sample.expAandD = exponentialValues
 
         """
         Get all attributes that are strings:

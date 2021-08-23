@@ -47,8 +47,10 @@ class Sample:
         Minimum radius for Fourier transform.
     grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
-    expAandD : tuple(float, float, int)
-        Sample exponential paramaters.
+    resonanceValues : tuple[]
+        List of tuples storing wavelength ranges for resonance values.
+    expAandD : tuple[]
+        List of tuples storing exponential amplitude and decay values.
     normalisationCorrectionFactor : float
         Factor to multiply normalisation by prior to dividing into sample.
     fileSelfScattering : str
@@ -101,7 +103,8 @@ class Sample:
         self.topHatW = 0.0
         self.minRadFT = 0.0
         self.grBroadening = 0.0
-        self.expAandD = (0.0, 0.0, 0)
+        self.resonanceValues = []
+        self.expAandD = []
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
@@ -219,7 +222,8 @@ class Sample:
             f'Minimum radius for FT  [\u212b]\n'
             f'{self.grBroadening}{TAB}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
-            f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
+            f'{resonanceLines}'
+            f'0  0{TAB}0  0{TAB} to finish specifying wavelength range of resonance'
             ' range of resonance\n'
             f'{spacify(self.expAandD)}{TAB}'
             f'Exponential amplitude and decay [1/\u212b]\n'
