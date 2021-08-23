@@ -237,7 +237,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "expAandD": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -276,7 +277,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.0,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "expAandD": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016609_D2O_in_N10.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -320,7 +322,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [].
+            "expAandD": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -364,7 +367,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "expAandD": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -1100,7 +1104,9 @@ class TestGudPyIO(TestCase):
                 "name", "dataFiles",
                 "composition", "containers",
                 "runThisSample",
-                "densityUnits"
+                "densityUnits",
+                "resonanceValues",
+                "expAandD"
             ]
         )
 
@@ -1172,7 +1178,9 @@ class TestGudPyIO(TestCase):
                 "name", "dataFiles",
                 "composition", "containers",
                 "runThisSample",
-                "densityUnits"
+                "densityUnits",
+                "resonanceValues",
+                "expAandD"
             ]
         )
 

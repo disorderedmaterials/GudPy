@@ -94,8 +94,9 @@ def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
         lastsep = sep
     if sameseps:
         endsep = sep
-
-    if len(iterable) == 1:
+    if len(iterable) == 0:
+        return ""
+    elif len(iterable) == 1:
         return (iterable[0]) + sep
 
     return sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
