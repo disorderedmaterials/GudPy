@@ -322,7 +322,7 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "resonanceValues": [].
+            "resonanceValues": [],
             "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
