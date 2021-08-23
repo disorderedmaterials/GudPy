@@ -55,7 +55,7 @@ class TestGudPyIO(TestCase):
             "XMax": 50.0,
             "XStep": -0.025,
             "useLogarithmicBinning": False,
-            "groupingParameterPanel": (0, 0.0, 0.0, 0.0),
+            "groupingParameterPanel": [],
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
             "subSingleAtomScattering": False,
@@ -579,13 +579,19 @@ class TestGudPyIO(TestCase):
             if isinstance(value, str):
                 self.assertTrue(value in lines)
             elif isinstance(value, (list, tuple)):
+                if len(value) == 0:
+                    return
                 if isinstance(value[0], dict):
                     for val in value:
                         for val_ in val.values():
                             valueInLines(val_, lines)
+                elif isinstance(value[0], tuple):
+                    for val in value:
+                        self.assertTrue(
+                            spacify(val) in lines
+                            or spacify(val, num_spaces=2) in lines
+                        )
                 else:
-                    if value == (0, 0.0, 0.0, 0.0):
-                        return
                     self.assertTrue(
                         spacify(value) in lines
                         or spacify(value, num_spaces=2) in lines
@@ -1139,7 +1145,8 @@ class TestGudPyIO(TestCase):
                 i += 1
             if i == 19:
                 i -= 1
-
+            if i >= 21:
+                i -= 1
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1213,6 +1220,8 @@ class TestGudPyIO(TestCase):
             if j > 17:
                 j += 1
             if j == 19:
+                j -= 1
+            if j >= 21:
                 j -= 1
 
             self.goodSampleBackground.samples = [

@@ -159,7 +159,6 @@ class Sample:
                 sameseps=True
             )
         )
-        print(self.exponentialValues)
         exponentialLines = (
             bjoin(
                 self.exponentialValues,

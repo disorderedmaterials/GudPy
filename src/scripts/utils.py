@@ -63,7 +63,8 @@ def isnumeric(string):
 
 def extract_nums_from_string(string):
     if string:
-        return [x for x in string.split(" ") if isnumeric(x)]
+        ret = [x for x in string.split(" ") if isnumeric(x)]
+        return [float(x) if '.' in x else int(x) for x in ret]
 
 
 def consume(iterable, n):
