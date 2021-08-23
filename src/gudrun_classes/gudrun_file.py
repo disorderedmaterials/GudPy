@@ -217,6 +217,13 @@ class GudrunFile:
             if "Group, Xmin, Xmax, Background factor" in line
         ]
 
+        for line in isGroupingParameterPanelUsed:
+            self.instrument.groupingParameterPanel.append(
+                tuple(
+                    extract_nums_from_string(line)
+                )
+            )
+
         isNXS = [
             line
             for line in lines
@@ -226,8 +233,6 @@ class GudrunFile:
         # If grouping parameter panel is not being used,
         # remove its key from the dict
         auxVars = deepcopy(self.instrument.__dict__)
-        if not len(isGroupingParameterPanelUsed):
-            auxVars.pop("groupingParameterPanel", None)
 
         # Pop these attributes, we will deal with them separately.
         auxVars.pop("wavelengthMax", None)
@@ -236,12 +241,19 @@ class GudrunFile:
         auxVars.pop("XStep", None)
         auxVars.pop("useLogarithmicBinning", None)
         auxVars.pop("nxsDefinitionFile", None)
+        auxVars.pop("groupingParameterPanel", None)
 
         # Map the attributes of the Instrument class to line numbers.
 
         FORMAT_MAP = dict.fromkeys(auxVars.keys())
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
         # Categorise attributes by variables, for easier handling.
+
+        if isGroupingParameterPanelUsed:
+            for key in FORMAT_MAP.keys():
+                if FORMAT_MAP[key] > FORMAT_MAP["XMin"]:
+                    FORMAT_MAP[key] += len(isGroupingParameterPanelUsed)
+
 
         if isNXS:
             FORMAT_MAP["numberIterations"]+=1
@@ -257,6 +269,7 @@ class GudrunFile:
             x
             for x in self.instrument.__dict__.keys()
             if isinstance(self.instrument.__dict__[x], list)
+            and not x =="groupingParameterPanel"
         ]
         INTS = [
             x
@@ -469,20 +482,6 @@ class GudrunFile:
             self.instrument.__dict__[key] = tuple(
                 extract_floats_from_string(lines[FORMAT_MAP[key]])
             )
-
-        """
-        Get the attributes for the grouping parameter panel:
-            - Group
-            - Xmin
-            - Xmax
-            - Background factor
-        """
-        if isGroupingParameterPanelUsed:
-            key = "groupingParameterPanel"
-            group = int(firstword(lines[FORMAT_MAP[key]]))
-            maxMinBf = extract_floats_from_string(lines[FORMAT_MAP[key]])[1:]
-            groupingParameterPanel = tuple([group] + maxMinBf)
-            self.instrument.__dict__[key] = groupingParameterPanel
 
         """
         Get mergeWeights attribute.
@@ -1327,7 +1326,6 @@ class GudrunFile:
                 sample.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
             except KeyError:
                 continue
-            # print(firstword(lines(FORMAT_MAP[key])))
 
         """
         Get all attributes that are integers:

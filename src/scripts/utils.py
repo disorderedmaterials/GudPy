@@ -59,8 +59,8 @@ def isnumeric(string):
     return isfloat(string) | string.isnumeric()
 
 def extract_nums_from_string(string):
-
-    return [x for x in string.split(" ") if isnumeric(x)]
+    if string:
+        return [x for x in string.split(" ") if isnumeric(x)]
 
 def consume(iterable, n):
 
