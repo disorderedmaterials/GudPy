@@ -254,10 +254,9 @@ class GudrunFile:
                 if FORMAT_MAP[key] > FORMAT_MAP["XMin"]:
                     FORMAT_MAP[key] += len(isGroupingParameterPanelUsed)
 
-
         if isNXS:
-            FORMAT_MAP["numberIterations"]+=1
-            FORMAT_MAP["tweakTweakFactors"]+=1
+            FORMAT_MAP["numberIterations"] += 1
+            FORMAT_MAP["tweakTweakFactors"] += 1
 
         STRINGS = [
             x
@@ -269,7 +268,7 @@ class GudrunFile:
             x
             for x in self.instrument.__dict__.keys()
             if isinstance(self.instrument.__dict__[x], list)
-            and not x =="groupingParameterPanel"
+            and not x == "groupingParameterPanel"
         ]
         INTS = [
             x
@@ -1248,7 +1247,8 @@ class GudrunFile:
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
-        # which get skewed by data files, elements, resonance and exponential values
+        # which get skewed by data files, elements,
+        # resonance and exponential values
 
         for key in FORMAT_MAP.keys():
             if FORMAT_MAP[key] > 0:
@@ -1262,11 +1262,13 @@ class GudrunFile:
             if marker:
                 if FORMAT_MAP[key] > marker:
                     FORMAT_MAP[key] += numberElements
-        
+
         marker = FORMAT_MAP["grBroadening"]
         for key in FORMAT_MAP.keys():
             if FORMAT_MAP[key] > marker:
-                FORMAT_MAP[key] += numberResonanceValues + numberExponentialValues
+                FORMAT_MAP[key] += (
+                    numberResonanceValues + numberExponentialValues
+                )
 
         # Categorise attributes by variables, for easier handling.
         STRINGS = [
