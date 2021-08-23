@@ -64,7 +64,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.XMax, float)
         self.assertIsInstance(instrument.XStep, float)
         self.assertIsInstance(instrument.useLogarithmicBinning, bool)
-        self.assertIsInstance(instrument.groupingParameterPanel, tuple)
+        self.assertIsInstance(instrument.groupingParameterPanel, list)
         self.assertIsInstance(instrument.groupsAcceptanceFactor, float)
         self.assertIsInstance(instrument.mergePower, int)
         self.assertIsInstance(instrument.subSingleAtomScattering, bool)
