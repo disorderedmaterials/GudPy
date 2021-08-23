@@ -48,6 +48,19 @@ def extract_floats_from_string(string):
             break
     return ret
 
+def isfloat(string):
+    try:
+        float(string)
+        return True
+    except:
+        return False
+
+def isnumeric(string):
+    return isfloat(string) | string.isnumeric()
+
+def extract_nums_from_string(string):
+
+    return [x for x in string.split(" ") if isnumeric(x)]
 
 def consume(iterable, n):
 
@@ -75,11 +88,14 @@ def isin(iter1, iter2):
         return False, 0
 
 def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
-
+    iterable = [str(i) if not isinstance(i, (str, list, tuple)) else i for i in iterable]
+    iterable = [spacify(i)  if isinstance(i, (list, tuple)) else i for i in iterable]
     if not lastsep:
         lastsep = sep
     if sameseps:
         endsep = sep
-    return (
-        sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
-    )
+
+    if len(iterable) == 1:
+        return (iterable[0]) + sep
+
+    return sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep

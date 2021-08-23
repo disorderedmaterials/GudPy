@@ -155,15 +155,15 @@ class Sample:
         resonanceLines = (
             bjoin(
                 self.resonanceValues,
-                "Min. and max resonance wavelength [\u212b]. 0  0 to end.\n",
+                " Min. and max resonance wavelength [\u212b]. 0  0 to end.\n",
                 sameseps=True
             )
         )
-
+        print(self.expAandD)
         exponentialLines = (
             bjoin(
                 self.expAandD,
-                "Exponential amplitude and decay [1/\u212b]\n",
+                " Exponential amplitude and decay [1/\u212b]\n",
                 sameseps=True
             )
         )
@@ -240,8 +240,7 @@ class Sample:
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
             f'{resonanceLines}'
             f'0  0{TAB}0  0{TAB} to finish specifying wavelength range of resonance\n'
-            f'{exponentialLines}{TAB}'
-            f'Exponential amplitude and decay [1/\u212b]\n'
+            f'{exponentialLines}'
             f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
             f'\n'
             f'{self.normalisationCorrectionFactor}{TAB}'

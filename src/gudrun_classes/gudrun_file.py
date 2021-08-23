@@ -10,6 +10,7 @@ from src.scripts.utils import (
         firstword, boolifyNum,
         extract_ints_from_string,
         extract_floats_from_string,
+        extract_nums_from_string,
         count_occurrences)
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
@@ -819,7 +820,7 @@ class GudrunFile:
                 'numberOfFilesPeriodNumber was not found'
             ))
 
-        if not isin(["number", "files", "period"], deepcopy(lines[2:]))[0]:
+        if not isin(["number", "files", "period"], deepcopy(lines[1:]))[0]:
             raise ValueError((
                 'Whilst parsing NORMALISATION, '
                 'numberOfFilesPeriodNumberBg was not found'
@@ -1173,7 +1174,6 @@ class GudrunFile:
             "topHatW": "Top hat width",
             "minRadFT": "Minimum radius for FT",
             "grBroadening": ["g(r)", "broadening"],
-            "expAandD": ["Exponential", "amplitude", "decay"],
             "normalisationCorrectionFactor": "Normalisation correction factor",
             "fileSelfScattering": ["file", "self scattering", "function"],
             "normaliseTo": "Normalise",
@@ -1215,11 +1215,11 @@ class GudrunFile:
 
         resonanceValues = []
         for line in resonanceLines:
-            resonanceWavelength = extract_ints_from_string(line)
+            resonanceWavelength = extract_floats_from_string(line)
             resonanceValues.append(tuple(resonanceWavelength))
 
         # Count the number of exponential values
-        numberExponentialValues = count_occurences(
+        numberExponentialValues = count_occurrences(
             "amplitude and decay", lines
         )
 
@@ -1231,7 +1231,7 @@ class GudrunFile:
 
         exponentialValues = []
         for line in exponentialLines:
-            exponentialPair = extract_ints_from_string(line)
+            exponentialPair = extract_nums_from_string(line)
             exponentialValues.append(tuple(exponentialPair))
 
         # Map the attributes of the Sample class to line numbers.
@@ -1245,6 +1245,7 @@ class GudrunFile:
         FORMAT_MAP.pop("runThisSample", None)
         FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.pop("resonanceValues", None)
+        FORMAT_MAP.pop("expAandD", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -1447,23 +1448,6 @@ class GudrunFile:
             sample.__dict__[key] = tuple(
                 extract_ints_from_string(lines[FORMAT_MAP[key]])
             )
-
-        """
-        Get the exponential amplitude and decay
-        """
-
-        key = "expAandD"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing {}, {} was not found".format(sample.name, key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        expAmp = extract_floats_from_string(lines[FORMAT_MAP[key]])[:2]
-        decay = int(extract_floats_from_string(lines[FORMAT_MAP[key]])[2])
-        expAandD = tuple(expAmp + [decay])
-        sample.__dict__[key] = expAandD
 
         # Get all of the sample datafiles and their information.
 
