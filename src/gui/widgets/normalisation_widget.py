@@ -24,9 +24,9 @@ class NormalisationWidget(QWidget):
         self.backgroundPeriodNoLineEdit.setText(str(self.normalisation.numberOfFilesPeriodNumberBg[1]))
 
         for i, element in enumerate(self.normalisation.composition.elements):
-                    self.normalisationCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
-                    self.normalisationCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
-                    self.normalisationCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
+            self.normalisationCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
+            self.normalisationCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
+            self.normalisationCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
         
         # self.geometryComboBox.addItems([g.name for g in Geometry])
         # self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)

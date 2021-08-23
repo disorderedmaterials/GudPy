@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget
+from src.gudrun_classes.enums import Geometry, OutputUnits, UnitsOfDensity
+from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 
@@ -56,3 +57,40 @@ class ContainerWidget(QWidget):
         
         # Use pyuic to load to the UI file into the ContainerWidget.
         uic.loadUi(uifile, self)
+
+        self.periodNoLineEdit.setText(str(self.container.numberOfFilesPeriodNumber[1]))
+        self.dataFilesList.addItems([df for df in self.container.dataFiles.dataFiles])
+
+        for i, element in enumerate(self.container.composition.elements):
+            self.containerCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
+            self.containerCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
+            self.containerCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
+
+        # self.geometryComboBox.addItems([g.name for g in Geometry])
+        # self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
+        self.upstreamLineEdit.setText(str(self.container.thickness[0]))
+        self.downstreamLineEdit.setText(str(self.container.thickness[1]))
+
+
+
+        self.densityLineEdit.setText(str(self.container.density))
+        self.densityUnitsComboBox.addItems([du.name for du in UnitsOfDensity])
+        self.densityUnitsComboBox.setCurrentIndex(self.container.densityUnits.value)
+
+        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
+        if "TABLES" in self.container.totalCrossSectionSource:
+            index = 0
+        elif "TRANSMISSION" in self.container.totalCrossSectionSource:
+            index = 1
+        else:
+            index = 2
+        self.totalCrossSectionComboBox.addItems(crossSectionSources)
+        self.totalCrossSectionComboBox.setCurrentIndex(index)
+
+        self.tweakFactorLineEdit.setText(str(self.container.tweakFactor))
+
+        self.angleOfRotationLineEdit.setText(str(self.container.angleOfRotationSampleWidth[0]))
+        self.sampleWidthLineEdit.setText(str(self.container.angleOfRotationSampleWidth[1]))
+
+        self.scatteringFractionLineEdit.setText(str(self.container.scatteringFractionAttenuationCoefficient[0]))
+        self.attenuationCoefficientLineEdit.setText(str(self.container.scatteringFractionAttenuationCoefficient[1]))
