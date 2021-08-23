@@ -73,3 +73,18 @@ def isin(iter1, iter2):
             if iter1.lower() in str(line).lower():
                 return True, j
         return False, 0
+
+def nthword(string, n):
+    return string.split(" ")[n]
+
+def nthint(string, n):
+    return int(nthword(string, n))
+
+def nthfloat(string, n):
+    return float(nthword(string, n))
+
+def firstNInts(string, n):
+    return [int(x) for x in string.split()[:n]]
+
+def firstNFloats(string, n):
+    return [float(x) for x in string.split()[:n]]

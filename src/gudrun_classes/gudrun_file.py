@@ -10,7 +10,12 @@ from src.scripts.utils import (
         firstword, boolifyNum,
         extract_ints_from_string,
         extract_floats_from_string,
-        count_occurrences)
+        count_occurrences,
+        firstNFloats,
+        firstNInts,
+        nthfloat,
+        nthint
+        )
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
@@ -142,388 +147,58 @@ class GudrunFile:
         """
 
         self.instrument = Instrument()
+        self.instrument.name = Instruments[firstword(lines[0])]
+        self.instrument.GudrunInputFileDir = firstword(lines[1])
+        self.instrument.dataFileDir = firstword(lines[2])
+        self.instrument.dataFileType = firstword(lines[3])
+        self.instrument.detectorCalibrationFileName = firstword(lines[4])
+        self.instrument.columnNoPhiVals = int(firstword(lines[5]))
+        self.instrument.groupFileName = firstword(lines[6])
+        self.instrument.deadtimeConstantsFileName = firstword(lines[7])
+        self.instrument.spectrumNumbersForIncidentBeamMonitor = extract_ints_from_string(lines[8])
+        self.instrument.wavelengthRangeForMonitorNormalisation = firstNInts(lines[9], 2)
+        self.instrument.spectrumNumbersForTransmissionMonitor = extract_ints_from_string(lines[10])
+        self.instrument.incidentMonitorQuietCountConst = nthfloat(lines[11], 0)
+        self.instrument.transmissionMonitorQuietCountConst = nthfloat(lines[12], 0)
+        self.instrument.channelNosSpikeAnalysis = firstNInts(lines[13], 2)
+        self.instrument.spikeAnalysisAcceptanceFactor = nthint(lines[14], 0)
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "name": "Instrument name",
-            "GudrunInputFileDir": "Gudrun input file dir",
-            "dataFileDir": "Data file dir",
-            "dataFileType": "Data file type",
-            "detectorCalibrationFileName": "Detector calibration",
-            "columnNoPhiVals": "phi values",
-            "groupFileName": "Groups file name",
-            "deadtimeConstantsFileName": "Deadtime constants",
-            "spectrumNumbersForIncidentBeamMonitor": [
-                "Spectrum",
-                "number",
-                "incident",
-            ],
-            "wavelengthRangeForMonitorNormalisation": [
-                "Wavelength",
-                "range",
-                "normalisation",
-            ],
-            "spectrumNumbersForTransmissionMonitor": [
-                "Spectrum",
-                "number",
-                "transmission",
-            ],
-            "incidentMonitorQuietCountConst": ["Incident", "quiet", "count"],
-            "transmissionMonitorQuietCountConst": [
-                "Transmission",
-                "quiet",
-                "count",
-            ],
-            "channelNosSpikeAnalysis": "Channel numbers",
-            "spikeAnalysisAcceptanceFactor": "Spike analysis acceptance",
-            "wavelengthMin": ["Wavelength", "range", "step", "size"],
-            "NoSmoothsOnMonitor": "smooths on monitor",
-            "XMin": "x-scale",
-            "groupsAcceptanceFactor": "Groups acceptance",
-            "mergePower": "Merge power",
-            "subSingleAtomScattering": ["single", "atom", "scattering?"],
-            "mergeWeights": ["By", "?"],
-            "incidentFlightPath": "Incident flight path",
-            "spectrumNumberForOutputDiagnosticFiles": [
-                "Spectrum",
-                "number",
-                "diagnostic",
-            ],
-            "neutronScatteringParametersFile": "Neutron scattering parameters",
-            "scaleSelection": "Scale selection",
-            "subWavelengthBinnedData": ["Subtract", "wavelength-binned"],
-            "GudrunStartFolder": "Folder where Gudrun started",
-            "startupFileFolder": "Folder containing the startup file",
-            "logarithmicStepSize": "Logarithmic step size",
-            "hardGroupEdges": "edges?",
-            "numberIterations": "iterations",
-            "tweakTweakFactors": "tweak",
-        }
+        wavelengthRange = firstNFloats(lines[15], 3)
+        self.instrument.wavelengthMin = wavelengthRange[0]
+        self.instrument.wavelengthMax = wavelengthRange[1]
+        self.instrument.wavelengthStep = wavelengthRange[2]
+        self.instrument.NoSmoothsOnMonitor = nthint(lines[16], 0)
+        
+        XRange = firstNFloats(lines[17], 3)
+        self.instrument.XMin = XRange[0]
+        self.instrument.XMax = XRange[1]
+        self.instrument.XStep = XRange[2]
+        self.instrument.useLogarithmicBinning = self.instrument.XStep == -0.01
 
-        # Extract marker line
-        lines = [
-            line
-            for line in lines
-            if "end input of specified values" not in line
-        ]
+        i = 18
+        line = lines[i]
+        while "end input of specified values" not in line:
+            self.instrument.groupingParameterPanel.append(tuple(firstNInts(line, 4)))
+            i += 1
 
-        # Check if the grouping parameter panel
-        # attribute is present in the file
-        isGroupingParameterPanelUsed = [
-            line
-            for line in lines
-            if "Group, Xmin, Xmax, Background factor" in line
-        ]
-
-        # If grouping parameter panel is not being used,
-        # remove its key from the dict
-        auxVars = deepcopy(self.instrument.__dict__)
-        if not len(isGroupingParameterPanelUsed):
-            auxVars.pop("groupingParameterPanel", None)
-
-        # Pop these attributes, we will deal with them separately.
-        auxVars.pop("wavelengthMax", None)
-        auxVars.pop("wavelengthStep", None)
-        auxVars.pop("XMax", None)
-        auxVars.pop("XStep", None)
-        auxVars.pop("useLogarithmicBinning", None)
-        auxVars.pop("nxsDefinitionFile", None)
-
-        # Map the attributes of the Instrument class to line numbers.
-
-        FORMAT_MAP = dict.fromkeys(auxVars.keys())
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-        # Categorise attributes by variables, for easier handling.
-
-        STRINGS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], str)
-            and not x == "nxsDefinitionFile"
-        ]
-        LISTS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], list)
-        ]
-        INTS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], int)
-            and not isinstance(self.instrument.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], float)
-        ]
-        BOOLS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], bool)
-        ]
-        TUPLES = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], tuple)
-        ]
-        TUPLE_INTS = [
-            x for x in TUPLES if iteristype(self.instrument.__dict__[x], int)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(self.instrument.__dict__[x], float)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Instrument name
-            - Gudrun input file directory
-            - Data file directory
-            - Data file type
-            - Detector calibration file name
-            - Group file name
-            - Deadtime constants file name
-            - Neutron scattering parameters file
-            - Gudrun start folder
-            - Startup file folder
-        """
-
-        for key in STRINGS:
-            try:
-                isin_, i = isin(KEYPHRASES[key], lines)
-                if not isin_:
-                    raise ValueError(
-                        "Whilst parsing INSTRUMENT, {} was not found".format(
-                            key
-                        )
-                    )
-                if i != FORMAT_MAP[key]:
-                    FORMAT_MAP[key] = i
-                self.instrument.__dict__[key] = firstword(
-                    lines[FORMAT_MAP[key]]
-                )
-            except IndexError:
-                continue
-        """
-        Get all attributes that are integers:
-            - User table column number for phi values
-            - Spike analysis acceptance factor
-            - Number of smooths on monitor
-            - Merge power
-            - Channel for subtracting single atom scattering
-            - Spectrum number for output diagnostic files
-            - Scale selection
-            - Number of iterations
-        """
-
-        for key in INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = int(
-                firstword(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get all attributes that are floats (doubles):
-            - Incident monitor quiet count constant
-            - Transmission monitor quiet count constant
-            - Groups acceptance factor
-            - Incident flight path
-            - Logarithmic step size
-        """
-
-        for key in FLOATS:
-            if key in ["XMax", "XStep", "wavelengthMax", "wavelengthStep"]:
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                if key == "XMin":
-                    raise ValueError(
-                        'Whilst parsing INSTRUMENT'
-                        ', Xmin, Xmax, XStep was not found'
-                    )
-                elif key == "wavelengthMin":
-                    raise ValueError(
-                        'Whilst parsing INSTRUMENT'
-                        ', wavelengthMin, wavelengthMax,'
-                        ' wavelengthStep was not found'
-                    )
-                else:
-                    raise ValueError(
-                        f'Whilst parsing INSTRUMENT, {key} was not found'
-                    )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "XMin":
-                XScale = extract_floats_from_string(
-                    lines[FORMAT_MAP[key]]
-                )
-                self.instrument.__dict__["XMin"] = XScale[0]
-                self.instrument.__dict__["XMax"] = XScale[1]
-                self.instrument.__dict__["XStep"] = XScale[2]
-                if len(XScale) > 3:
-                    if XScale[3] == -0.01:
-                        self.instrument.__dict__["useLogarithmicBinning"] = (
-                            True
-                        )
-            elif key == "wavelengthMin":
-                wScale = extract_floats_from_string(
-                    lines[FORMAT_MAP[key]]
-                )
-                self.instrument.__dict__["wavelengthMin"] = wScale[0]
-                self.instrument.__dict__["wavelengthMax"] = wScale[1]
-                self.instrument.__dict__["wavelengthStep"] = wScale[2]
-            else:
-                self.instrument.__dict__[key] = float(
-                    firstword(lines[FORMAT_MAP[key]])
-                )
-
-        """
-        Get all attributes that are boolean values:
-            - Subtract single atom scattering?
-            - Subtract wavelength-binned data?
-            - Hard group edges?
-            - Tweak the tweak factor(s)?
-        """
-
-        for key in BOOLS:
-            if key == "useLogarithmicBinning":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = boolifyNum(
-                int(firstword(lines[FORMAT_MAP[key]]))
-            )
-
-        """
-        Get all attributes that need to be stored in arbitrary sized lists:
-            - Spectrum numbers for incident beam monitor
-            - Spectrum numbers for transmission monitor
-        """
-
-        for key in LISTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = extract_ints_from_string(
-                lines[FORMAT_MAP[key]]
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Wavelength range for monitor normalisation
-            - Channel numbers for spike analysis
-        """
-
-        for key in TUPLE_INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Wavelength range to use and step size.
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get the attributes for the grouping parameter panel:
-            - Group
-            - Xmin
-            - Xmax
-            - Background factor
-        """
-        if isGroupingParameterPanelUsed:
-            key = "groupingParameterPanel"
-            group = int(firstword(lines[FORMAT_MAP[key]]))
-            maxMinBf = extract_floats_from_string(lines[FORMAT_MAP[key]])[1:]
-            groupingParameterPanel = tuple([group] + maxMinBf)
-            self.instrument.__dict__[key] = groupingParameterPanel
-
-        """
-        Get mergeWeights attribute.
-        """
-        key = "mergeWeights"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        mergeWeights = int(firstword(lines[FORMAT_MAP[key]]))
-        mergeWeights = MergeWeights[MergeWeights(mergeWeights).name]
-        self.instrument.__dict__[key] = mergeWeights
-        """
-        Get scaleSelection attribute.
-        """
-        key = "scaleSelection"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        scaleSelection = int(firstword(lines[FORMAT_MAP[key]]))
-        scaleSelection = Scales[Scales(scaleSelection).name]
-        self.instrument.__dict__[key] = scaleSelection
-        """
-        Get name attribute.
-        """
-        key = "name"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        name = firstword(lines[FORMAT_MAP[key]])
-        name = Instruments[name]
-        self.instrument.__dict__[key] = name
-
-        if self.instrument.dataFileType.lower() == "nxs":
-            isin_, i = isin("NeXus", lines)
-            if not isin_:
-                raise ValueError(
-                    'Whilst parsing INSTRUMENT,'
-                    ' nxsDefinitionFile was not found'
-                )
-            self.instrument.nxsDefinitionFile = firstword(lines[i])
+        self.instrument.groupsAcceptanceFactor = nthfloat(lines[i+1], 0)        
+        self.instrument.mergePower = nthint(lines[i+2], 0)
+        self.instrument.subSingleAtomScattering = boolifyNum(nthint(lines[i+3], 0))
+        self.instrument.mergeWeights = MergeWeights[MergeWeights(nthint(lines[i+4], 0)).name]
+        self.instrument.incidentFlightPath = nthfloat(lines[i+5], 0)
+        self.instrument.spectrumNumberForOutputDiagnosticFiles = nthint(lines[i+6], 0)
+        self.instrument.neutronScatteringParametersFile = firstword(lines[i+7])
+        self.instrument.scaleSelection = Scales[Scales(nthint(lines[i+8], 0)).name]
+        self.instrument.subWavelengthBinnedData = boolifyNum(nthint(lines[i+9], 0))
+        self.instrument.GudrunStartFolder = firstword(lines[i+10])
+        self.instrument.startupFileFolder = firstword(lines[i+11])
+        self.instrument.logarithmicStepSize = nthfloat(lines[i+12], 0)
+        self.instrument.hardGroupEdges = boolifyNum(nthint(lines[i+13], 0))
+        if self.instrument.dataFileType == "NXS" or self.instrument.dataFileType == "nxs":
+            self.instrument.nxsDefinitionFile = firstword(lines[i+14])
+            i+=1
+        self.instrument.numberIterations = nthint(lines[i+14], 0)
+        self.instrument.tweakTweakFactors = boolifyNum(nthint(lines[i+15], 0))
 
     def parseBeam(self, lines):
         """
