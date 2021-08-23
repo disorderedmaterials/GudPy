@@ -238,7 +238,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
-            "expAandD": [(0.0, 1.5, 0)],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -278,7 +278,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.0,
             "resonanceValues": [],
-            "expAandD": [(0.0, 1.5, 0)],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016609_D2O_in_N10.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -323,7 +323,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [].
-            "expAandD": [(0.0, 1.5, 0)],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -368,7 +368,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
-            "expAandD": [(0.0, 1.5, 0)],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -1106,7 +1106,7 @@ class TestGudPyIO(TestCase):
                 "runThisSample",
                 "densityUnits",
                 "resonanceValues",
-                "expAandD"
+                "exponentialValues"
             ]
         )
 
@@ -1180,7 +1180,7 @@ class TestGudPyIO(TestCase):
                 "runThisSample",
                 "densityUnits",
                 "resonanceValues",
-                "expAandD"
+                "exponentialValues"
             ]
         )
 

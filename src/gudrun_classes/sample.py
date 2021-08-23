@@ -49,7 +49,7 @@ class Sample:
         Broadening of g(r) at r = 1 Angstrom
     resonanceValues : tuple[]
         List of tuples storing wavelength ranges for resonance values.
-    expAandD : tuple[]
+    exponentialValues : tuple[]
         List of tuples storing exponential amplitude and decay values.
     normalisationCorrectionFactor : float
         Factor to multiply normalisation by prior to dividing into sample.
@@ -104,7 +104,7 @@ class Sample:
         self.minRadFT = 0.0
         self.grBroadening = 0.0
         self.resonanceValues = []
-        self.expAandD = []
+        self.exponentialValues = []
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
@@ -159,10 +159,10 @@ class Sample:
                 sameseps=True
             )
         )
-        print(self.expAandD)
+        print(self.exponentialValues)
         exponentialLines = (
             bjoin(
-                self.expAandD,
+                self.exponentialValues,
                 " Exponential amplitude and decay [1/\u212b]\n",
                 sameseps=True
             )

@@ -1243,7 +1243,7 @@ class GudrunFile:
         FORMAT_MAP.pop("runThisSample", None)
         FORMAT_MAP.pop("densityUnits", None)
         FORMAT_MAP.pop("resonanceValues", None)
-        FORMAT_MAP.pop("expAandD", None)
+        FORMAT_MAP.pop("exponentialValues", None)
         FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
 
         # Index arithmetic to fix indexes,
@@ -1305,7 +1305,7 @@ class GudrunFile:
 
         # Resonance values
         sample.resonanceValues = resonanceValues
-        sample.expAandD = exponentialValues
+        sample.exponentialValues = exponentialValues
 
         """
         Get all attributes that are strings:
