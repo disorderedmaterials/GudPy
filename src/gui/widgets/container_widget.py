@@ -1,9 +1,10 @@
+from src.gui.widgets.gudpy_widget import GudPyWidget
 from src.gudrun_classes.enums import Geometry, OutputUnits, UnitsOfDensity
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 
-class ContainerWidget(QWidget):
+class ContainerWidget(GudPyWidget):
     """
     Class to represent a ContainerWidget. Inherits QWidget.
 
@@ -34,7 +35,7 @@ class ContainerWidget(QWidget):
         self.container = container
         self.parent = parent
 
-        super(ContainerWidget, self).__init__(self.parent)
+        super(ContainerWidget, self).__init__(object=self.container, parent=self.parent)
         self.initComponents()
     
     def initComponents(self):

@@ -1,15 +1,16 @@
+from src.gui.widgets.gudpy_widget import GudPyWidget
 from src.gudrun_classes.enums import Geometry, NormalisationType, OutputUnits, UnitsOfDensity
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
 
-class SampleWidget(QWidget):
+class SampleWidget(GudPyWidget):
     def __init__(self, sample, parent=None):
         self.sample = sample
         self.parent = parent
 
-        super(SampleWidget, self).__init__(self.parent)
+        super(SampleWidget, self).__init__(object=self.sample, parent=self.parent)
         self.initComponents()
     
     def initComponents(self):

@@ -1,9 +1,10 @@
+from src.gui.widgets.gudpy_widget import GudPyWidget
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.enums import Geometry
 
-class BeamWidget(QWidget):
+class BeamWidget(GudPyWidget):
     """
     Class to represent a BeamWidget. Inherits QWidget.
 
@@ -34,7 +35,7 @@ class BeamWidget(QWidget):
         self.beam = beam
         self.parent = parent
 
-        super(BeamWidget, self).__init__(self.parent)
+        super(BeamWidget, self).__init__(object=self.beam, parent=self.parent)
         self.initComponents()
     
 
