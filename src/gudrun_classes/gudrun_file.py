@@ -147,6 +147,7 @@ class GudrunFile:
         """
 
         self.instrument = Instrument()
+
         self.instrument.name = Instruments[firstword(lines[0])]
         self.instrument.GudrunInputFileDir = firstword(lines[1])
         self.instrument.dataFileDir = firstword(lines[2])
@@ -219,223 +220,28 @@ class GudrunFile:
 
         self.beam = Beam()
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "sampleGeometry": "Sample geometry",
-            "noBeamProfileValues": ["number", "beam", "profile", "values"],
-            "beamProfileValues": ["Beam", "profile", "values", "("],
-            "stepSizeAbsorption": ["Step", "size", "m.s"],
-            "angularStepForCorrections": "Angular step",
-            "incidentBeamLeftEdge": "Incident beam edges",
-            "scatteredBeamLeftEdge": "Scattered beam edges",
-            "filenameIncidentBeamSpectrumParams": [
-                "Filename",
-                "incident",
-                "spectrum",
-                "parameters",
-            ],
-            "overallBackgroundFactor": "Overall background factor",
-            "sampleDependantBackgroundFactor": "Sample dependent background",
-            "shieldingAttenuationCoefficient": [
-                "Shielding",
-                "attenuation",
-                "coefficient",
-            ],
-        }
+        self.beam.sampleGeometry = Geometry[firstword(lines[0])]
+        self.beam.noBeamProfileValues = nthint(lines[1], 0)
+        self.beam.beamProfileValues = extract_floats_from_string(lines[2])
+        self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
+        self.beam.stepSizeMS = nthfloat(lines[3], 1)
+        self.beam.noSlices = nthint(lines[3], 2)
+        self.beam.angularStepForCorrections = nthint(lines[4], 0)
 
-        # Map the attributes of the Beam class to line numbers.
+        self.beam.incidentBeamLeftEdge = nthfloat(lines[5], 0)
+        self.beam.incidentBeamRightEdge = nthfloat(lines[5], 1)
+        self.beam.incidentBeamTopEdge = nthfloat(lines[5], 2)
+        self.beam.incidentBeamBottomEdge = nthfloat(lines[5], 3)
 
-        FORMAT_MAP = dict.fromkeys(self.beam.__dict__.keys())
-        FORMAT_MAP.pop("incidentBeamRightEdge", None)
-        FORMAT_MAP.pop("incidentBeamTopEdge", None)
-        FORMAT_MAP.pop("incidentBeamBottomEdge", None)
-        FORMAT_MAP.pop("scatteredBeamRightEdge", None)
-        FORMAT_MAP.pop("scatteredBeamTopEdge", None)
-        FORMAT_MAP.pop("scatteredBeamBottomEdge", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
+        self.beam.scatteredBeamLeftEdge = nthfloat(lines[6], 0)
+        self.beam.scatteredBeamRightEdge = nthfloat(lines[6], 1)
+        self.beam.scatteredBeamTopEdge = nthfloat(lines[6], 2)
+        self.beam.scatteredBeamBottomEdge = nthfloat(lines[6], 3)
 
-        # Categorise attributes by variables, for easier handling.
-
-        STRINGS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], str)
-        ]
-        LISTS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], list)
-        ]
-        INTS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], int)
-            and not isinstance(self.beam.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], float)
-        ]
-        TUPLES = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(self.beam.__dict__[x], float)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Sample geometry
-            - Filename for incident beam spectrum parameters
-        """
-
-        for key in STRINGS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
-
-        """
-        Get all attributes that are integers:
-            - Number of beam profile values
-            - Angular step for corrections
-        """
-
-        for key in INTS:
-            if key == "noSlices":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
-
-        """
-        Get all attributes that are floats (doubles):
-            - Overall background factor
-            - Sample dependant background factor
-            - Shielding attenuation coefficient
-        """
-
-        for key in FLOATS:
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeAbsorption", "stepSizeMS"
-                    ]:
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-
-            if key == "incidentBeamLeftEdge":
-                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
-                (
-                    self.beam.incidentBeamLeftEdge,
-                    self.beam.incidentBeamRightEdge,
-                    self.beam.incidentBeamTopEdge,
-                    self.beam.incidentBeamBottomEdge,
-                    *rest
-                ) = edges
-            elif key == "scatteredBeamLeftEdge":
-                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
-                (
-                    self.beam.scatteredBeamLeftEdge,
-                    self.beam.scatteredBeamRightEdge,
-                    self.beam.scatteredBeamTopEdge,
-                    self.beam.scatteredBeamBottomEdge,
-                    *rest
-                ) = edges
-            else:
-                self.beam.__dict__[key] = float(
-                    firstword(lines[FORMAT_MAP[key]])
-                )
-
-        """
-        Get all attributes that need to be stored in arbitrary sized lists:
-            - Beam profile values
-        """
-
-        for key in LISTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = extract_floats_from_string(
-                lines[FORMAT_MAP[key]]
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Incident beam edges relative to centre of sample
-            - Scattered beam edges relative to centre of sample
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get the step size for absorption
-        and m.s. calculation and number of slices
-        """
-
-        key = "stepSizeAbsorption"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing BEAM, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        stepSizeAbsorptionMS = extract_floats_from_string(
-            lines[FORMAT_MAP[key]]
-        )
-        (
-            self.beam.stepSizeAbsorption,
-            self.beam.stepSizeMS,
-            self.beam.noSlices,
-            *rest
-        ) = stepSizeAbsorptionMS
-        self.beam.noSlices = int(self.beam.noSlices)
-        key = "sampleGeometry"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing BEAM, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        geom = firstword(lines[FORMAT_MAP[key]])
-        geom = Geometry[geom]
-        self.beam.sampleGeometry = geom
+        self.beam.filenameIncidentBeamSpectrumParams = firstword(lines[7])
+        self.beam.overallBackgroundFactor = nthfloat(lines[8], 0)
+        self.beam.sampleDependantBackgroundFactor = nthfloat(lines[9], 0)
+        self.beam.shieldingAttenuationCoefficient = nthfloat(lines[10], 0)
 
     def parseNormalisation(self, lines):
         """
@@ -456,305 +262,59 @@ class GudrunFile:
 
         self.normalisation = Normalisation()
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "forceCalculationOfCorrections": ["Force", "corrections?"],
-            "geometry": "Geometry",
-            "thickness": ["Upstream", "downstream", "thickness"],
-            "angleOfRotationSampleWidth": "Angle of rotation",
-            "density": "Density",
-            "tempForNormalisationPC": "Placzek correction",
-            "totalCrossSectionSource": "Total cross",
-            "normalisationDifferentialCrossSectionFilename": [
-                "Normalisation",
-                "cross section",
-                "filename",
-            ],
-            "lowerLimitSmoothedNormalisation": "Lower limit",
-            "normalisationDegreeSmoothing": "Normalisation degree",
-            "minNormalisationSignalBR": "background ratio",
-        }
+        self.normalisation.numberOfFiles = nthint(lines[0], 0)
+        self.normalisation.periodNumber = nthint(lines[0], 1)
 
-        # Count the number of data files and background data files.
-
-        if not isin(["number", "files", "period"], lines) == (True, 0):
-            raise ValueError((
-                'Whilst parsing NORMALISATION, '
-                'numberOfFilesPeriodNumber was not found'
-            ))
-
-        if not isin(["number", "files", "period"], deepcopy(lines[2:]))[0]:
-            raise ValueError((
-                'Whilst parsing NORMALISATION, '
-                'numberOfFilesPeriodNumberBg was not found'
-            ))
-
-        numberFiles = extract_ints_from_string(lines[0])[0]
-        numberFilesBG = extract_ints_from_string(lines[numberFiles + 1])[0]
-
-        # Count the number of elements
-        numberElements = count_occurrences(
-            "Normalisation atomic composition", lines
-        ) + count_occurrences("Composition", lines)
-
-        # Map the attributes of the Beam class to line numbers.
-
-        FORMAT_MAP = dict.fromkeys(self.normalisation.__dict__.keys())
-        FORMAT_MAP.pop("dataFiles", None)
-        FORMAT_MAP.pop("dataFilesBg", None)
-        FORMAT_MAP.pop("composition", None)
-        FORMAT_MAP.pop("densityUnits", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-
-        # Index arithmetic to fix indexes,
-        # which get skewed by data files and elements
-
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > 0:
-                FORMAT_MAP[key] += numberFiles
-
-        marker = 0
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] - numberFiles == 1:
-                marker = FORMAT_MAP[key]
-                continue
-            if marker:
-                if FORMAT_MAP[key] > marker:
-                    FORMAT_MAP[key] += numberFilesBG
-
-        marker = 0
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] - numberFilesBG - numberFiles == 2:
-                marker = FORMAT_MAP[key]
-                continue
-            if marker:
-                if FORMAT_MAP[key] > marker:
-                    FORMAT_MAP[key] += numberElements + 1
-
-        # Categorise attributes by variables, for easier handling.
-        STRINGS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], str)
-        ]
-        INTS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], int)
-            and not isinstance(self.normalisation.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], float)
-        ]
-        BOOLS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], bool)
-        ]
-        TUPLES = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x
-            for x in TUPLES
-            if iteristype(self.normalisation.__dict__[x], float)
-        ]
-        TUPLE_INTS = [
-            x
-            for x in TUPLES
-            if iteristype(self.normalisation.__dict__[x], int)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Geometry
-            - Total cross section source
-            - Normalisation differential cross section filename
-        """
-
-        for key in STRINGS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = firstword(
-                lines[FORMAT_MAP[key]]
-            )
-
-        """
-        Get all attributes that are integers:
-            - Temperature for normalisation Placzek correction
-        """
-
-        for key in INTS:
-            if key == "densityUnits":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = int(
-                firstword(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get all attributes that are floats (doubles):
-            - Density of atoms
-            - Lower limit on smoothed normalisation
-            - Normalisation degree smoothing
-            - Minimum normalisation signal to background ratio
-        """
-
-        for key in FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "density":
-                density = float(firstword(lines[FORMAT_MAP[key]]))
-                if density < 0:
-                    density = abs(density)
-                    self.normalisation.densityUnits = (
-                        UnitsOfDensity.ATOMIC
-                    )
-                else:
-                    self.normalisation.densityUnits = (
-                        UnitsOfDensity.CHEMICAL
-                    )
-                self.normalisation.__dict__[key] = density
-            else:
-                self.normalisation.__dict__[key] = (
-                    float(firstword(lines[FORMAT_MAP[key]]))
-                )
-
-        """
-        Get all attributes that are boolean values:
-            - Subtract single atom scattering?
-            - Subtract wavelength-binned data?
-            - Hard group edges?
-            - Tweak the tweak factor(s)?
-        """
-
-        for key in BOOLS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = boolifyNum(
-                int(firstword(lines[FORMAT_MAP[key]]))
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Upstream and downstream thickness
-            - Angle of rotation and sample width
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-            if key == "angleOfRotationSampleWidth":
-                self.normalisation.__dict__[key] = (
-                    self.normalisation.__dict__[key][0],
-                    int(self.normalisation.__dict__[key][1]),
-                )
-
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Number of files and period number
-            - Number of background files and period number
-        """
-
-        for key in TUPLE_INTS:
-            self.normalisation.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        # Get all of the normalisation datafiles and their information.
-
+        # Extract data files
         dataFiles = []
-        for j in range(self.normalisation.numberOfFilesPeriodNumber[0]):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumber"] + j + 1]
-            if "data files" in curr or "Data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        self.normalisation.dataFiles = DataFiles(
-            deepcopy(dataFiles), "NORMALISATION"
-        )
+        for i in range(self.normalisation.numberOfFiles):
+            dataFiles.append(firstword(lines[i+1]))
+        self.normalisation.dataFiles = DataFiles(dataFiles, "NORMALISATION")    
+        i+=2
 
-        # Get all of the normalisation
-        # background datafiles and their information.
+        self.normalisation.numberOfFilesBg = nthint(lines[i], 0)
+        self.normalisation.periodNumberBg = nthint(lines[i], 1)
 
-        dataFiles = []
-        for j in range(self.normalisation.numberOfFilesPeriodNumberBg[0]):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumberBg"] + j + 1]
-            if "data files" in curr or "Data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        self.normalisation.dataFilesBg = DataFiles(
-            deepcopy(dataFiles), "NORMALISATION BACKGROUND"
-        )
+        # Extract background data files
+        dataFilesBg = []
+        for j in range(self.normalisation.numberOfFilesBg):
+            dataFilesBg.append(firstword(lines[i+j+1]))
+        self.normalisation.dataFilesBg = DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
+        j+=i+2
 
-        # Get all of the elements and their information,
-        # and then build the composition
+        self.normalisation.forceCalculationOfCorrections = boolifyNum(nthint(lines[j], 0))
 
-        elements = []
-        for j in range(numberElements):
-            curr = lines[FORMAT_MAP["forceCalculationOfCorrections"] + j + 1]
-            if (
-                "Normalisation atomic composition" in curr
-                or "Composition" in curr
-            ):
-                elementInfo = [x for x in curr.split(" ") if x][:3]
-                element = Element(
-                    elementInfo[0], int(elementInfo[1]), float(elementInfo[2])
-                )
-                elements.append(element)
+        # Construct composition
+        composition = []
+        n = 1
+        line = lines[j+n]
+        while "end of composition input" not in line:
+            atomicSymbol = firstword(line)
+            massNo = nthint(line, 1)
+            abundance = nthfloat(line, 2)
+            composition.append(Element(atomicSymbol, massNo, abundance))
+            n+=1
+            line = lines[j+n]
+        self.normalisation.composition = Composition(composition, "NORMALISATION")
+        j+=n+1
+        self.normalisation.geometry = Geometry[firstword(lines[j])]
 
-        self.normalisation.composition = Composition(elements, "Normalisation")
+        if (self.normalisation.geometry == Geometry.SameAsBeam and self.beam.sampleGeometry == Geometry.FLATPLATE) or self.normalisation.geometry == Geometry.FLATPLATE:
+            self.normalisation.upstreamThickness = nthfloat(lines[j+1], 0)
+            self.normalisation.downstreamThickness = nthfloat(lines[j+1], 1)
+            self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
+            self.normalisation.sampleWidth = nthfloat(lines[j+2], 1)
+        
+        density = nthfloat(lines[j+3], 0)
+        self.normalisation.density = abs(density)
+        self.normalisation.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
+
+        self.normalisation.tempForNormalisationPC = nthint(lines[j+4], 0)
+        self.normalisation.totalCrossSectionSource = firstword(lines[j+5])
+        self.normalisation.normalisationDifferentialCrossSectionFilename = firstword(lines[j+6])
+        self.normalisation.lowerLimitSmoothedNormalisation = nthfloat(lines[j+7], 0)
+        self.normalisation.normalisationDegreeSmoothing = nthfloat(lines[j+8], 0)
+        self.normalisation.minNormalisationSignalBR = nthfloat(lines[j+9], 0)
 
     def parseSampleBackground(self, lines):
         """
@@ -1681,4 +1241,4 @@ if __name__ == "__main__":
     g = GudrunFile(
         path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
         )
-    print(g.dcs())
+    # print(g.dcs())
