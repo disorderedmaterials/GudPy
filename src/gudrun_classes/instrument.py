@@ -139,7 +139,7 @@ class Instrument:
         self.XStep = 0.
         self.useLogarithmicBinning = False
         self.groupingParameterPanel = []
-        self.groupsAcceptanceFactor = 0.0
+        self.groupsAcceptanceFactor = 1.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
         self.mergeWeights = MergeWeights.CHANNEL
