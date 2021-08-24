@@ -136,7 +136,7 @@ class Instrument:
         self.XMax = 0.
         self.XStep = 0.
         self.useLogarithmicBinning = False
-        self.groupingParameterPanel = (0, 0.0, 0.0, 0.0)
+        self.groupingParameterPanel = []
         self.groupsAcceptanceFactor = 0.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
