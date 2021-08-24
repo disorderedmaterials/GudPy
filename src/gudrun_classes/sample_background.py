@@ -28,7 +28,8 @@ class SampleBackground:
         ----------
         None
         """
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.numberOfFiles = 0
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
         self.samples = []
 
@@ -57,7 +58,7 @@ class SampleBackground:
 
         return (
             f'SAMPLE BACKGROUND{TAB}{{\n\n'
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLine}\n'
             f'}}\n'
