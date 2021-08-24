@@ -1,7 +1,7 @@
 from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import UnitsOfDensity
+from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 
 
 class Normalisation:
@@ -22,7 +22,7 @@ class Normalisation:
         DataFiles object storing background data files.
     composition : Composition
         Composition object storing the atomic composition of the container.
-    geometry : str
+    geometry : Geometry
         Geometry of the container.
     thickness : tuple(float, float)
         Upstream and downstream thickness.
@@ -56,15 +56,19 @@ class Normalisation:
         ----------
         None
         """
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.numberOfFiles = 0
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "NORMALISATION")
-        self.numberOfFilesPeriodNumberBg = (0, 0)
+        self.numberOfFilesBg = 0
+        self.periodNumberBg = 0
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], "NORMALISATION")
-        self.geometry = ""
-        self.thickness = (0.0, 0.0)
-        self.angleOfRotationSampleWidth = (0.0, 0.0)
+        self.geometry = Geometry.FLATPLATE
+        self.upstreamThickness = 0.0
+        self.downstreamThickness = 0.0
+        self.angleOfRotation = 0.0
+        self.sampleWidth = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
@@ -116,21 +120,21 @@ class Normalisation:
         )
 
         return (
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
-            f'{spacify(self.numberOfFilesPeriodNumberBg)}{TAB}'
+            f'{self.numberOfFilesBg}  {self.periodNumberBg}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
             f'Force calculation of corrections?\n'
             f'{str(self.composition)}\n'
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
-            f'{self.geometry}{TAB}'
+            f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
-            f'{spacify(self.thickness)}{TAB}'
+            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
             f'Upstream and downstream thickness [cm]\n'
-            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
+            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
