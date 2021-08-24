@@ -1,4 +1,4 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 
 
@@ -60,8 +60,8 @@ class Instrument:
         Negative means logarithmic binning above XMin.
     useLogarithmicBinning : bool
         Should logarithmic binning be used?
-    groupingParameterPanel : tuple(int, float, float, float)
-        Indicate that groups have special X-ranges.
+    groupingParameterPanel : tuples[]
+        List of tuples which indicate that groups have special X-ranges.
     groupsAcceptanceFactor : float
         Acceptance factor for final merge.
         1.0 indicates all groups are accepted.
@@ -97,6 +97,8 @@ class Instrument:
         Will be set to 0.0, if XStep > 0.
     hardGroupEdges : bool
         Should hard group edges be used?
+    nxsDefinitionFile : str
+        NeXus definition file to be used, if NeXus files are being used.
     numberIterations : int
         Number of iterations (may be obsolete).
     tweakTweakFactors : bool
@@ -136,8 +138,8 @@ class Instrument:
         self.XMax = 0.
         self.XStep = 0.
         self.useLogarithmicBinning = False
-        self.groupingParameterPanel = (0, 0.0, 0.0, 0.0)
-        self.groupsAcceptanceFactor = 0.0
+        self.groupingParameterPanel = []
+        self.groupsAcceptanceFactor = 1.0
         self.mergePower = 0
         self.subSingleAtomScattering = False
         self.mergeWeights = MergeWeights.CHANNEL
@@ -192,9 +194,13 @@ class Instrument:
             f'{self.XMin}  {self.XMax}  {self.XStep}'
         )
 
+        joined = bjoin(
+            self.groupingParameterPanel,
+            " Group, Xmin, Xmax, Background factor\n",
+            sameseps=True
+        )
         groupingParameterPanelLine = (
-            f'{spacify(self.groupingParameterPanel)}{TAB}'
-            f'Group, Xmin, Xmax, Background factor\n'
+            f'{joined}'
             f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
             if all(self.groupingParameterPanel)
             else

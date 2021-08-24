@@ -1,4 +1,4 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
@@ -47,8 +47,10 @@ class Sample:
         Minimum radius for Fourier transform.
     grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
-    expAandD : tuple(float, float, int)
-        Sample exponential paramaters.
+    resonanceValues : tuple[]
+        List of tuples storing wavelength ranges for resonance values.
+    exponentialValues : tuple[]
+        List of tuples storing exponential amplitude and decay values.
     normalisationCorrectionFactor : float
         Factor to multiply normalisation by prior to dividing into sample.
     fileSelfScattering : str
@@ -101,7 +103,8 @@ class Sample:
         self.topHatW = 0.0
         self.minRadFT = 0.0
         self.grBroadening = 0.0
-        self.expAandD = (0.0, 0.0, 0)
+        self.resonanceValues = []
+        self.exponentialValues = []
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
@@ -147,6 +150,21 @@ class Sample:
         densityLine = (
             f'{density}{TAB}'
             f'Density {units}?\n'
+        )
+
+        resonanceLines = (
+            bjoin(
+                self.resonanceValues,
+                " Min. and max resonance wavelength [\u212b]. 0  0 to end.\n",
+                sameseps=True
+            )
+        )
+        exponentialLines = (
+            bjoin(
+                self.exponentialValues,
+                " Exponential amplitude and decay [1/\u212b]\n",
+                sameseps=True
+            )
         )
 
         selfScatteringLine = (
@@ -219,10 +237,10 @@ class Sample:
             f'Minimum radius for FT  [\u212b]\n'
             f'{self.grBroadening}{TAB}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
-            f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
-            ' range of resonance\n'
-            f'{spacify(self.expAandD)}{TAB}'
-            f'Exponential amplitude and decay [1/\u212b]\n'
+            f'{resonanceLines}'
+            f'0  0{TAB}0  0{TAB}'
+            f' to finish specifying wavelength range of resonance\n'
+            f'{exponentialLines}'
             f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
             f'\n'
             f'{self.normalisationCorrectionFactor}{TAB}'
