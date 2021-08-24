@@ -98,7 +98,7 @@ class Instrument:
     hardGroupEdges : bool
         Should hard group edges be used?
     nxsDefinitionFile : str
-        NeXus definiton file to be used, if NeXus files are being used.
+        NeXus definition file to be used, if NeXus files are being used.
     numberIterations : int
         Number of iterations (may be obsolete).
     tweakTweakFactors : bool
