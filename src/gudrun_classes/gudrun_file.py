@@ -270,7 +270,7 @@ class GudrunFile:
         for i in range(self.normalisation.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
         self.normalisation.dataFiles = DataFiles(dataFiles, "NORMALISATION")    
-        i+=2
+        i = 1 + self.normalisation.numberOfFiles
 
         self.normalisation.numberOfFilesBg = nthint(lines[i], 0)
         self.normalisation.periodNumberBg = nthint(lines[i], 1)
@@ -280,7 +280,7 @@ class GudrunFile:
         for j in range(self.normalisation.numberOfFilesBg):
             dataFilesBg.append(firstword(lines[i+j+1]))
         self.normalisation.dataFilesBg = DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
-        j+=i+2
+        j = 1 + i + self.normalisation.numberOfFilesBg
 
         self.normalisation.forceCalculationOfCorrections = boolifyNum(nthint(lines[j], 0))
 
@@ -341,7 +341,6 @@ class GudrunFile:
         dataFiles = []
         for i in range(sampleBackground.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
-        i+=2
         sampleBackground.dataFiles = DataFiles(dataFiles, "SAMPLE BACKGROUD")
 
         return sampleBackground
@@ -376,7 +375,7 @@ class GudrunFile:
         for i in range(sample.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
         sample.dataFiles = DataFiles(dataFiles, sample.name)
-        i+=2
+        i = 1 + sample.numberOfFiles
 
         sample.forceCalculationOfCorrections = boolifyNum(nthint(lines[i], 0))
 
@@ -441,7 +440,7 @@ class GudrunFile:
         sample.include = boolifyNum(nthint(lines[i+7], 0))
         sample.scatteringFraction = nthfloat(lines[i+8], 0)
         sample.attenuationCoefficient = nthfloat(lines[i+8], 1)
-        print(str(sample))
+
         return sample
 
     def parseContainer(self, lines):
@@ -467,192 +466,46 @@ class GudrunFile:
         container.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "numberOfFilesPeriodNumber": ["files", "period"],
-            "geometry": "Geometry",
-            "thickness": ["Upstream", "downstream", "thickness"],
-            "angleOfRotationSampleWidth": "Angle of rotation",
-            "density": "Density",
-            "totalCrossSectionSource": "Total cross",
-            "tweakFactor": "tweak factor",
-            "scatteringFractionAttenuationCoefficient": [
-                "environment",
-                "scattering fraction",
-                "attenuation coefficient",
-            ],
-        }
-
-        lines = [line for line in lines if "end of" not in line]
-
-        # Count the number of files and number of elements.
-        numberFiles = count_occurrences("data files", lines)
-        numberElements = count_occurrences(
-            "Container atomic composition", lines
-        ) + count_occurrences("Composition", lines)
-
-        # Map the attributes of the Beam class to line numbers.
-
-        FORMAT_MAP = dict.fromkeys(container.__dict__.keys())
-        FORMAT_MAP.pop("name", None)
-        FORMAT_MAP.pop("dataFiles", None)
-        FORMAT_MAP.pop("composition", None)
-        FORMAT_MAP.pop("densityUnits", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > 0:
-                FORMAT_MAP[key] += numberFiles + numberElements
-
-        # Categorise attributes by variables, for easier handling.
-        STRINGS = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], str)
-        ]
-        FLOATS = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], float)
-        ]
-        TUPLES = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(container.__dict__[x], float)
-        ]
-        TUPLE_INTS = [
-            x for x in TUPLES if iteristype(container.__dict__[x], int)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Geometry
-            - Total cross section source
-        """
-
-        for key in STRINGS:
-            try:
-                isin_, i = isin(KEYPHRASES[key], lines)
-                if not isin_:
-                    raise ValueError(
-                        "Whilst parsing {}, {} was not found".format(
-                            container.name, key
-                        )
-                    )
-                if i != FORMAT_MAP[key]:
-                    FORMAT_MAP[key] = i
-                container.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
-            except KeyError:
-                continue
-
-        """
-        Get all attributes that are floats (doubles):
-            - Density of atoms
-            - Tweak factor
-        """
-
-        for key in FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "density":
-                density = float(firstword(lines[FORMAT_MAP[key]]))
-                if density < 0:
-                    density = abs(density)
-                    container.densityUnits = UnitsOfDensity.ATOMIC
-                else:
-                    container.densityUnits = UnitsOfDensity.CHEMICAL
-                container.__dict__[key] = density
-            else:
-                container.__dict__[key] = (
-                    float(firstword(lines[FORMAT_MAP[key]]))
-                )
-
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Upstream and downstream thickness
-            - Angle of rotation and sample width
-            - Sample environment scattering fraction
-                and attenuation coefficient
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            container.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Number of files and period number
-        """
-
-        for key in TUPLE_INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            container.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        # Get all of the container datafiles and their information.
-
+        container.numberOfFiles = nthint(lines[0], 0)
+        container.periodNumber = nthint(lines[0], 1)
+        
         dataFiles = []
-        for j in range(numberFiles):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumber"] + j + 1]
-            if "data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        container.dataFiles = DataFiles(
-            deepcopy(dataFiles), "{}".format(container.name)
-        )
+        for i in range(container.numberOfFiles):
+            dataFiles.append(firstword(lines[i+1]))
+        container.dataFiles = DataFiles(dataFiles, container.name)
+        i = 1 + container.numberOfFiles
 
-        # Get all elements in the composition and their details.
+        # Construct composition
+        composition = []
+        n = 0
+        line = lines[i+n]
+        while not "end of composition input" in line:
+            atomicSymbol = firstword(line)
+            massNo = nthint(line, 1)
+            abundance = nthfloat(line, 2)
+            composition.append(Element(atomicSymbol, massNo, abundance))
+            n+=1
+            line = lines[i+n]
+        container.composition = Composition(composition, container.name)
+        i+=n+1
+        
+        container.geometry = Geometry[firstword(lines[i])]
 
-        elements = []
-        for j in range(numberElements):
-            curr = lines[
-                FORMAT_MAP["numberOfFilesPeriodNumber"] + j + numberFiles + 1
-            ]
-            if "atomic composition" in curr or "Composition" in curr:
-                elementInfo = [x for x in curr.split(" ") if x][:3]
-                element = Element(
-                    elementInfo[0], int(elementInfo[1]), float(elementInfo[2])
-                )
-                elements.append(element)
-            else:
-                print("ERROR " + str(curr))
+        if (container.geometry == Geometry.SameAsBeam and self.beam.sampleGeometry == Geometry.FLATPLATE) or container.geometry == Geometry.FLATPLATE:
+            container.upstreamThickness = nthfloat(lines[i+1], 0)
+            container.downstreamThickness = nthfloat(lines[i+1], 1)
+            container.angleOfRotation = nthfloat(lines[i+2], 0)
+            container.sampleWidth = nthfloat(lines[i+2], 1)
 
-        container.composition = Composition(elements, "Container")
+        density = nthfloat(lines[i+3], 0)
+        container.density = abs(density)
+        container.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
+        container.totalCrossSectionSource = firstword(lines[i+4])
+        container.tweakFactor = nthfloat(lines[i+5], 0)
+        container.scatteringFraction = nthfloat(lines[i+6], 0)
+        container.attenuationCoefficient = nthfloat(lines[i+6], 1)
 
+        print(str(container))
         return container
 
     def makeParse(self, lines, key):
