@@ -1,4 +1,4 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import bjoin, spacify, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
@@ -86,13 +86,16 @@ class Sample:
         None
         """
         self.name = ""
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.numberOfFiles = 0
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "SAMPLE")
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], "SAMPLE")
         self.geometry = Geometry.FLATPLATE
-        self.thickness = (0.0, 0.0)
-        self.angleOfRotationSampleWidth = (0.0, 0.0)
+        self.upstreamThickness = 0.0
+        self.downstreamThickness = 0.0
+        self.angleOfRotation = 0.0
+        self.sampleWidth = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
@@ -101,7 +104,8 @@ class Sample:
         self.topHatW = 0.0
         self.minRadFT = 0.0
         self.grBroadening = 0.0
-        self.expAandD = (0.0, 0.0, 0)
+        self.resonanceValues = []
+        self.exponentialValues = []
         self.normalisationCorrectionFactor = 0.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
@@ -110,7 +114,8 @@ class Sample:
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
         self.include = False
-        self.environementScatteringFuncAttenuationCoeff = (0.0, 0.0)
+        self.scatteringFraction = 0.0
+        self.attenuationCoefficient = 0.0
 
         self.containers = []
         self.runThisSample = True
@@ -149,6 +154,20 @@ class Sample:
             f'Density {units}?\n'
         )
 
+        resonanceLines = (
+            bjoin(
+                self.resonanceValues,
+                " Min. and max resonance wavelength [\u212b]. 0  0 to end.\n",
+                sameseps=True
+            )
+        )
+        exponentialLines = (
+            bjoin(
+                self.exponentialValues,
+                " Exponential amplitude and decay [1/\u212b]\n",
+                sameseps=True
+            )
+        )
         selfScatteringLine = (
             f'{self.fileSelfScattering}{TAB}'
             f'Name of file containing self scattering'
@@ -178,7 +197,7 @@ class Sample:
         )
 
         sampleEnvironmentLine = (
-            f'{spacify(self.environementScatteringFuncAttenuationCoeff)}'
+            f'{self.scatteringFraction}  {self.attenuationCoefficient}'
             f'{TAB}'
             f'Sample environment scattering fraction'
             f' and attenuation coefficient [per \u212b]\n'
@@ -193,7 +212,7 @@ class Sample:
 
         return (
             f'\n{self.name}{TAB}{{\n\n'
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
@@ -202,9 +221,9 @@ class Sample:
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
             f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
-            f'{spacify(self.thickness)}{TAB}'
+            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
             f'Upstream and downstream thickness [cm]\n'
-            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
+            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
@@ -219,10 +238,10 @@ class Sample:
             f'Minimum radius for FT  [\u212b]\n'
             f'{self.grBroadening}{TAB}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
-            f'0  0{TAB}0  0{TAB} to finish specifying wavelength'
-            ' range of resonance\n'
-            f'{spacify(self.expAandD)}{TAB}'
-            f'Exponential amplitude and decay [1/\u212b]\n'
+            f'{resonanceLines}'
+            f'0  0{TAB}0  0{TAB}'
+            f' to finish specifying wavelength range of resonance\n'
+            f'{exponentialLines}'
             f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
             f'\n'
             f'{self.normalisationCorrectionFactor}{TAB}'
