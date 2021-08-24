@@ -75,7 +75,7 @@ def isin(iter1, iter2):
         return False, 0
 
 def nthword(string, n):
-    return string.split(" ")[n]
+    return string.split()[n]
 
 def nthint(string, n):
     return int(nthword(string, n))
