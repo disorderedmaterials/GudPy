@@ -145,46 +145,81 @@ class GudrunFile:
         None
         """
 
+        # Initialise instrument attribute to a new instance of Intrument.
         self.instrument = Instrument()
 
+        # For string attributes, we simply extract the firstword in the line.
         self.instrument.name = Instruments[firstword(lines[0])]
         self.instrument.GudrunInputFileDir = firstword(lines[1])
         self.instrument.dataFileDir = firstword(lines[2])
         self.instrument.dataFileType = firstword(lines[3])
         self.instrument.detectorCalibrationFileName = firstword(lines[4])
-        self.instrument.columnNoPhiVals = int(firstword(lines[5]))
+
+        # For single integer attributes, we extract the zeroth int from the line.
+        self.instrument.columnNoPhiVals = nthint(lines[5], 0)
         self.instrument.groupFileName = firstword(lines[6])
         self.instrument.deadtimeConstantsFileName = firstword(lines[7])
+
+        # For N integer attributes, we extract the first N integers from the line.
         self.instrument.spectrumNumbersForIncidentBeamMonitor = extract_ints_from_string(lines[8])
+
+        # For integer pair attributes, we extract the first 2 integers from the line.
         self.instrument.wavelengthRangeForMonitorNormalisation = firstNInts(lines[9], 2)
+
         self.instrument.spectrumNumbersForTransmissionMonitor = extract_ints_from_string(lines[10])
+
+        # For single float attributes, we extract the zeroth float from the line.
         self.instrument.incidentMonitorQuietCountConst = nthfloat(lines[11], 0)
         self.instrument.transmissionMonitorQuietCountConst = nthfloat(lines[12], 0)
+
         self.instrument.channelNosSpikeAnalysis = firstNInts(lines[13], 2)
         self.instrument.spikeAnalysisAcceptanceFactor = nthint(lines[14], 0)
 
+        # Extract wavelength range
+        # Which consists of the first 3 floats (min, max, step) in the line.
         wavelengthRange = firstNFloats(lines[15], 3)
         self.instrument.wavelengthMin = wavelengthRange[0]
         self.instrument.wavelengthMax = wavelengthRange[1]
         self.instrument.wavelengthStep = wavelengthRange[2]
+
         self.instrument.NoSmoothsOnMonitor = nthint(lines[16], 0)
-        
+
+        # Extract X range
+        # Which consists of the first 3 floats (min, max, step) in the line.
         XRange = firstNFloats(lines[17], 3)
         self.instrument.XMin = XRange[0]
         self.instrument.XMax = XRange[1]
         self.instrument.XStep = XRange[2]
+
+        # If the XStep == -0.01, then enable logarithmic binning.
         self.instrument.useLogarithmicBinning = self.instrument.XStep == -0.01
 
+        # Extract the grouping parameter panel.
+        # Each row in the panel consists of the first 4 ints
+        # (Group, XMin, XMax, Background Factor) in the line.
+        # If the marker line is encountered, then the panel has been parsed.
         i = 18
         line = lines[i]
         while "end input of specified values" not in line:
             self.instrument.groupingParameterPanel.append(tuple(firstNInts(line, 4)))
             i += 1
+        
+        # The groupingParameterPanel alters our indexing, which can no longer be absolute,
+        # we must account for the offset, by adding 18+i+1+n for each next n attributes.
+        # where i is the number of rows in the grouping parameter panel.
 
         self.instrument.groupsAcceptanceFactor = nthfloat(lines[i+1], 0)        
         self.instrument.mergePower = nthint(lines[i+2], 0)
+
+        # For boolean attributes, we convert the first 
+        # integer in the line to its boolean value.
         self.instrument.subSingleAtomScattering = boolifyNum(nthint(lines[i+3], 0))
+
+        # For enumerated attributes, where the value  of the attribute is
+        # the first integer in the line, and we must get the member,
+        # we do this: Enum[Enum(value).name]
         self.instrument.mergeWeights = MergeWeights[MergeWeights(nthint(lines[i+4], 0)).name]
+
         self.instrument.incidentFlightPath = nthfloat(lines[i+5], 0)
         self.instrument.spectrumNumberForOutputDiagnosticFiles = nthint(lines[i+6], 0)
         self.instrument.neutronScatteringParametersFile = firstword(lines[i+7])
@@ -194,8 +229,13 @@ class GudrunFile:
         self.instrument.startupFileFolder = firstword(lines[i+11])
         self.instrument.logarithmicStepSize = nthfloat(lines[i+12], 0)
         self.instrument.hardGroupEdges = boolifyNum(nthint(lines[i+13], 0))
+
+        # If NeXus files are being used, then we expect a NeXus definition
+        # file to be present, and extract it.
         if self.instrument.dataFileType == "NXS" or self.instrument.dataFileType == "nxs":
             self.instrument.nxsDefinitionFile = firstword(lines[i+14])
+
+            # Increment i to account for the NeXus definition file.
             i+=1
         self.instrument.numberIterations = nthint(lines[i+14], 0)
         self.instrument.tweakTweakFactors = boolifyNum(nthint(lines[i+15], 0))
@@ -217,28 +257,44 @@ class GudrunFile:
         None
         """
 
+        # Initialise beam attribute to a new instance of Beam.
         self.beam = Beam()
 
+        # For enumerated attributes, where the member name of the attribute is
+        # the first 'word' in the line, and we must get the member,
+        # we do this: Enum[memberName].
         self.beam.sampleGeometry = Geometry[firstword(lines[0])]
+        
+        # Set the global geometry.
         geometry = self.beam.sampleGeometry
+
+        # For single integer attributes, we extract the zeroth int from the line.
         self.beam.noBeamProfileValues = nthint(lines[1], 0)
+
+        # For N float attributes, we extract the first N floats from the line.
         self.beam.beamProfileValues = extract_floats_from_string(lines[2])
+
+        # For single float attributes, we extract the zeroth float from the line.
         self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
         self.beam.stepSizeMS = nthfloat(lines[3], 1)
         self.beam.noSlices = nthint(lines[3], 2)
         self.beam.angularStepForCorrections = nthint(lines[4], 0)
 
+        # Extract the incident beam edges relative to the centroid of the sample.
         self.beam.incidentBeamLeftEdge = nthfloat(lines[5], 0)
         self.beam.incidentBeamRightEdge = nthfloat(lines[5], 1)
         self.beam.incidentBeamTopEdge = nthfloat(lines[5], 2)
         self.beam.incidentBeamBottomEdge = nthfloat(lines[5], 3)
 
+        # Extract the scattered beam edges relative to the centroid of the sample.
         self.beam.scatteredBeamLeftEdge = nthfloat(lines[6], 0)
         self.beam.scatteredBeamRightEdge = nthfloat(lines[6], 1)
         self.beam.scatteredBeamTopEdge = nthfloat(lines[6], 2)
         self.beam.scatteredBeamBottomEdge = nthfloat(lines[6], 3)
 
+        # For string attributes, we simply extract the firstword in the line.
         self.beam.filenameIncidentBeamSpectrumParams = firstword(lines[7])
+
         self.beam.overallBackgroundFactor = nthfloat(lines[8], 0)
         self.beam.sampleDependantBackgroundFactor = nthfloat(lines[9], 0)
         self.beam.shieldingAttenuationCoefficient = nthfloat(lines[10], 0)
@@ -260,8 +316,13 @@ class GudrunFile:
         None
         """
 
+        # Initialise normalisation attribute to a new instance of Normalisation.
         self.normalisation = Normalisation()
 
+        # The number of files and period number are both stored
+        # on the same line.
+        # So we extract the 0th integer for the number of files,
+        # and the 1st integer for the period number.
         self.normalisation.numberOfFiles = nthint(lines[0], 0)
         self.normalisation.periodNumber = nthint(lines[0], 1)
 
@@ -269,9 +330,17 @@ class GudrunFile:
         dataFiles = []
         for i in range(self.normalisation.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
-        self.normalisation.dataFiles = DataFiles(dataFiles, "NORMALISATION")    
+        
+        # Create a DataFiles object from the dataFiles list constructed.
+        self.normalisation.dataFiles = DataFiles(dataFiles, "NORMALISATION")
+
+        # Calculate the index which we should continue from.
         i = 1 + self.normalisation.numberOfFiles
 
+        # The number of background files and background period number are both stored
+        # on the same line.
+        # So we extract the 0th integer for the number of background files,
+        # and the 1st integer for the background riod number.
         self.normalisation.numberOfFilesBg = nthint(lines[i], 0)
         self.normalisation.periodNumberBg = nthint(lines[i], 1)
 
@@ -279,38 +348,75 @@ class GudrunFile:
         dataFilesBg = []
         for j in range(self.normalisation.numberOfFilesBg):
             dataFilesBg.append(firstword(lines[i+j+1]))
+
+        # Create a DataFiles object from the dataFiles list constructed.
         self.normalisation.dataFilesBg = DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
+
+        # Calculate the index which we should continue from.
+        # Account for the number of data files and number of background data files.
         j = 1 + i + self.normalisation.numberOfFilesBg
 
+        # For boolean attributes, we convert the first 
+        # integer in the line to its boolean value.
         self.normalisation.forceCalculationOfCorrections = boolifyNum(nthint(lines[j], 0))
 
         # Construct composition
         composition = []
         n = 1
         line = lines[j+n]
+        # Extract the composition.
+        # Each element in the composition consists of the first 'word',
+        # integer at the second position, and float t the first position,
+        # (Atomic Symbol, MassNo, Abundance) in the line.
+        # If the marker line is encountered, then the panel has been parsed.
         while "end of composition input" not in line:
             atomicSymbol = firstword(line)
             massNo = nthint(line, 1)
             abundance = nthfloat(line, 2)
+
+            # Create an Element object and append to the composition list.
             composition.append(Element(atomicSymbol, massNo, abundance))
             n+=1
             line = lines[j+n]
+
+        # Create a Composition object from the dataFiles list constructed.
         self.normalisation.composition = Composition(composition, "NORMALISATION")
+
+        # Calculate the index we must continue from.
+        # By adding the number of elements+1 to the current index.
         j+=n+1
+
+        # For enumerated attributes, where the member name of the attribute is
+        # the first 'word' in the line, and we must get the member,
+        # we do this: Enum[memberName].
         self.normalisation.geometry = Geometry[firstword(lines[j])]
 
+        # Is the geometry FLATPLATE?
         if (self.normalisation.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or self.normalisation.geometry == Geometry.FLATPLATE:
+
+            # If is is FLATPLATE, then extract the upstream and downstream
+            # thickness, the angle of rotation and sample width.
             self.normalisation.upstreamThickness = nthfloat(lines[j+1], 0)
             self.normalisation.downstreamThickness = nthfloat(lines[j+1], 1)
             self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
             self.normalisation.sampleWidth = nthfloat(lines[j+2], 1)
         else:
+
+            # Otherwise, it is CYLINDRICAL, then extract the inner and outer
+            # radii and the sample height.
             self.normalisation.innerRadius = nthfloat(lines[j+1], 0)
             self.normalisation.outerRadius = nthfloat(lines[j+1], 1)
             self.normalisation.sampleHeight = nthfloat(lines[j+2], 0)
-        
+
+        # Extract the density.
         density = nthfloat(lines[j+3], 0)
+        
+        # Take the absolute value of the density - since it could be -ve.
         self.normalisation.density = abs(density)
+        
+        # Decide on the units of density.
+        # -ve density means it is atomic (atoms/A^3)
+        # +ve means it is chemical (gm/cm^3)
         self.normalisation.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
 
         self.normalisation.tempForNormalisationPC = nthint(lines[j+4], 0)
@@ -366,50 +472,89 @@ class GudrunFile:
             The Sample that was parsed from the input lines.
         """
 
+        # Create a new instance of Sample.
         sample = Sample()
 
         # Extract the sample name, and then discard whitespace lines.
         sample.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
+        # The number of files and period number are both stored
+        # on the same line.
+        # So we extract the 0th integer for the number of files,
+        # and the 1st integer for the period number.
         sample.numberOfFiles = nthint(lines[0], 0)
         sample.periodNumber = nthint(lines[0], 1)
 
+        # Extract data files
         dataFiles = []
         for i in range(sample.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
+
+        # Create a DataFiles object from the dataFiles list constructed.
         sample.dataFiles = DataFiles(dataFiles, sample.name)
+
+        # Calculate the index which we should continue from.
         i = 1 + sample.numberOfFiles
 
+        # For boolean attributes, we convert the first 
+        # integer in the line to its boolean value.
         sample.forceCalculationOfCorrections = boolifyNum(nthint(lines[i], 0))
 
         # Construct composition
         composition = []
         n = 1
         line = lines[i+n]
+        # Extract the composition.
+        # Each element in the composition consists of the first 'word',
+        # integer at the second position, and float t the first position,
+        # (Atomic Symbol, MassNo, Abundance) in the line.
+        # If the marker line is encountered, then the panel has been parsed.
         while "end of composition input" not in line:
             atomicSymbol = firstword(line)
             massNo = nthint(line, 1)
             abundance = nthfloat(line, 2)
+
+            # Create an Element object and append to the composition list.
             composition.append(Element(atomicSymbol, massNo, abundance))
             n+=1
             line = lines[i+n]
+
+        # Create a Composition object from the dataFiles list constructed.
         sample.composition = Composition(composition, sample.name)
+
+        # Calculate the index we must continue from.
+        # By adding the number of elements+1 to the current index.
         i+=n+1
 
+        # For enumerated attributes, where the member name of the attribute is
+        # the first 'word' in the line, and we must get the member,
+        # we do this: Enum[memberName].
         sample.geometry = Geometry[firstword(lines[i])]
 
+        # Is the geometry FLATPLATE?
         if (sample.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or sample.geometry == Geometry.FLATPLATE:
+
+            # If is is FLATPLATE, then extract the upstream and downstream
+            # thickness, the angle of rotation and sample width.
             sample.upstreamThickness = nthfloat(lines[i+1], 0)
             sample.downstreamThickness = nthfloat(lines[i+1], 1)
             sample.angleOfRotation = nthfloat(lines[i+2], 0)
             sample.sampleWidth = nthfloat(lines[i+2], 1)
         else:
+
+            # Otherwise, it is CYLINDRICAL, then extract the inner and outer
+            # radii and the sample height.
             sample.innerRadius = nthfloat(lines[i+1], 0)
             sample.outerRadius = nthfloat(lines[i+1], 1)
             sample.sampleHeight = nthfloat(lines[i+2], 0)
 
+        # Extract the density.
         density = nthfloat(lines[i+3], 0)
+
+        # Decide on the units of density.
+        # -ve density means it is atomic (atoms/A^3)
+        # +ve means it is chemical (gm/cm^3)
         sample.density = abs(density)
         sample.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
 
@@ -420,7 +565,10 @@ class GudrunFile:
         sample.minRadFT = nthfloat(lines[i+8], 0)
         sample.grBroadening = nthfloat(lines[i+9], 0)
 
-        # Extract resonance values
+        # Extract the resonance values.
+        # Each row consists of the first 2 floats.
+        # (minWavelength, maxWavelength) in the line.
+        # If the marker line is encountered, then the values has been parsed.
         n = 10
         line = lines[i+n]
         while "to finish specifying wavelength range of resonance" not in line:
@@ -429,7 +577,10 @@ class GudrunFile:
             line = lines[i+n]
         i+=n+1
 
-        # Extract exponential values
+        # Extract the exponential values.
+        # Each row consists of the first 3 numbers.
+        # (Amplitude, Decay, N) in the line.
+        # If the marker line is encountered, then the values has been parsed.
         n = 0
         line = lines[i+n]
         while "to specify end of exponential parameter input" not in line:
@@ -467,51 +618,92 @@ class GudrunFile:
         container : Container
             The Container that was parsed from the input lines.
         """
-
+        
+        # Create a new instance of Container.
         container = Container()
+
         # Extract the name from the lines,
         # and then discard the unnecessary lines.
         container.name = str(lines[0][:-2]).strip()
         lines[:] = lines[2:]
 
+        # The number of files and period number are both stored
+        # on the same line.
+        # So we extract the 0th integer for the number of files,
+        # and the 1st integer for the period number.
         container.numberOfFiles = nthint(lines[0], 0)
         container.periodNumber = nthint(lines[0], 1)
-        
+
+        # Extract data files
         dataFiles = []
         for i in range(container.numberOfFiles):
             dataFiles.append(firstword(lines[i+1]))
+
+        # Create a DataFiles object from the dataFiles list constructed.
         container.dataFiles = DataFiles(dataFiles, container.name)
+
+        # Calculate the index which we should continue from.
         i = 1 + container.numberOfFiles
 
         # Construct composition
         composition = []
         n = 0
         line = lines[i+n]
+        # Extract the composition.
+        # Each element in the composition consists of the first 'word',
+        # integer at the second position, and float t the first position,
+        # (Atomic Symbol, MassNo, Abundance) in the line.
+        # If the marker line is encountered, then the panel has been parsed.
         while not "end of composition input" in line:
             atomicSymbol = firstword(line)
             massNo = nthint(line, 1)
             abundance = nthfloat(line, 2)
+
+            # Create an Element object and append to the composition list.
             composition.append(Element(atomicSymbol, massNo, abundance))
             n+=1
             line = lines[i+n]
+
+        # Create a Composition object from the dataFiles list constructed.
         container.composition = Composition(composition, container.name)
+
+        # Calculate the index we must continue from.
+        # By adding the number of elements+1 to the current index.
         i+=n+1
-        
+
+        # For enumerated attributes, where the member name of the attribute is
+        # the first 'word' in the line, and we must get the member,
+        # we do this: Enum[memberName].
         container.geometry = Geometry[firstword(lines[i])]
 
+        # Is the geometry FLATPLATE?
         if (container.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or container.geometry == Geometry.FLATPLATE:
+
+            # If is is FLATPLATE, then extract the upstream and downstream
+            # thickness, the angle of rotation and sample width.
             container.upstreamThickness = nthfloat(lines[i+1], 0)
             container.downstreamThickness = nthfloat(lines[i+1], 1)
             container.angleOfRotation = nthfloat(lines[i+2], 0)
             container.sampleWidth = nthfloat(lines[i+2], 1)
         else:
+
+            # Otherwise, it is CYLINDRICAL, then extract the inner and outer
+            # radii and the sample height.
             container.innerRadius = nthfloat(lines[i+1], 0)
             container.outerRadius = nthfloat(lines[i+1], 1)
             container.sampleHeight = nthfloat(lines[i+2], 0)
 
+        # Extract the density.
         density = nthfloat(lines[i+3], 0)
+
+        # Take the absolute value of the density - since it could be -ve.
         container.density = abs(density)
+
+        # Decide on the units of density.
+        # -ve density means it is atomic (atoms/A^3)
+        # +ve means it is chemical (gm/cm^3)
         container.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
+
         container.totalCrossSectionSource = firstword(lines[i+4])
         container.tweakFactor = nthfloat(lines[i+5], 0)
         container.scatteringFraction = nthfloat(lines[i+6], 0)

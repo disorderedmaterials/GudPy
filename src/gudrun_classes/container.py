@@ -21,7 +21,7 @@ class Container:
     composition : Composition
         Composition object storing the atomic composition of the container.
     geometry : Geometry
-        Geometry of the container.
+        Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
     upstreamThickness : float
         Upstream thickness of the container - if its geometry is FLATPLATE.
     downstreamThickness : float
