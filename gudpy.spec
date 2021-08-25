@@ -1,17 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 VERSION = "0.0.1"
 SEP = os.path.sep
-SUFFIX = ""
-if os.name == "nt":
-    SUFFIX = ".exe"
+binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
 block_cipher = None
-print(os.name)
 import sys
 
 a = Analysis(['main.py'],
              pathex=[os.path.dirname(os.path.abspath('main.py'))],
-             binaries=[('bin' + SEP + 'gudrun_dcs' + SUFFIX, '.'), ('bin' + SEP + 'calc_corrsx_in_out' + SUFFIX, '.'), ('bin' + SEP + 'purge_det' + SUFFIX, '.'), ('bin' + SEP + 'tophatsub' + SUFFIX, '.')],
-             datas=[('bin' + SEP + 'StartupFiles', '.')],
+             binaries=binaries,
+             datas=[(os.path.join("bin", "StartupFiles"), ".")],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
