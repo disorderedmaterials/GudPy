@@ -64,7 +64,7 @@ class Normalisation:
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], "NORMALISATION")
-        self.geometry = Geometry.FLATPLATE
+        self.geometry = Geometry.SameAsBeam
         self.upstreamThickness = 0.0
         self.downstreamThickness = 0.0
         self.angleOfRotation = 0.0

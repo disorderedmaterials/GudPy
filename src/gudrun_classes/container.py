@@ -53,7 +53,7 @@ class Container:
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition([], "CONTAINER")
-        self.geometry = Geometry.FLATPLATE
+        self.geometry = Geometry.SameAsBeam
         self.upstreamThickness = 0.0
         self.downstreamThickness = 0.0
         self.angleOfRotation = 0.0
