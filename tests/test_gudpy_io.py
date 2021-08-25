@@ -4,7 +4,6 @@ from unittest import TestCase, skip
 import random
 from copy import deepcopy
 from shutil import copyfile
-from tests.config import TEST_NUMBER
 
 from src.scripts.utils import spacify, numifyBool
 from src.gudrun_classes.gudrun_file import GudrunFile
