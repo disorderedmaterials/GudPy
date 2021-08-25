@@ -4,7 +4,6 @@ from os.path import isfile
 import subprocess
 import time
 from copy import deepcopy
-
 from src.scripts.utils import (
         extract_nums_from_string, iteristype, isin,
         firstword, boolifyNum,
@@ -31,7 +30,7 @@ from src.gudrun_classes.enums import (
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
-
+from src.gudrun_classes.config import geometry
 
 class GudrunFile:
     """
@@ -221,6 +220,7 @@ class GudrunFile:
         self.beam = Beam()
 
         self.beam.sampleGeometry = Geometry[firstword(lines[0])]
+        geometry = self.beam.sampleGeometry
         self.beam.noBeamProfileValues = nthint(lines[1], 0)
         self.beam.beamProfileValues = extract_floats_from_string(lines[2])
         self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
@@ -299,7 +299,7 @@ class GudrunFile:
         j+=n+1
         self.normalisation.geometry = Geometry[firstword(lines[j])]
 
-        if (self.normalisation.geometry == Geometry.SameAsBeam and self.beam.sampleGeometry == Geometry.FLATPLATE) or self.normalisation.geometry == Geometry.FLATPLATE:
+        if (self.normalisation.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or self.normalisation.geometry == Geometry.FLATPLATE:
             self.normalisation.upstreamThickness = nthfloat(lines[j+1], 0)
             self.normalisation.downstreamThickness = nthfloat(lines[j+1], 1)
             self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
@@ -395,7 +395,7 @@ class GudrunFile:
 
         sample.geometry = Geometry[firstword(lines[i])]
 
-        if (sample.geometry == Geometry.SameAsBeam and self.beam.sampleGeometry == Geometry.FLATPLATE) or sample.geometry == Geometry.FLATPLATE:
+        if (sample.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or sample.geometry == Geometry.FLATPLATE:
             sample.upstreamThickness = nthfloat(lines[i+1], 0)
             sample.downstreamThickness = nthfloat(lines[i+1], 1)
             sample.angleOfRotation = nthfloat(lines[i+2], 0)
@@ -491,7 +491,7 @@ class GudrunFile:
         
         container.geometry = Geometry[firstword(lines[i])]
 
-        if (container.geometry == Geometry.SameAsBeam and self.beam.sampleGeometry == Geometry.FLATPLATE) or container.geometry == Geometry.FLATPLATE:
+        if (container.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE) or container.geometry == Geometry.FLATPLATE:
             container.upstreamThickness = nthfloat(lines[i+1], 0)
             container.downstreamThickness = nthfloat(lines[i+1], 1)
             container.angleOfRotation = nthfloat(lines[i+2], 0)
@@ -505,7 +505,6 @@ class GudrunFile:
         container.scatteringFraction = nthfloat(lines[i+6], 0)
         container.attenuationCoefficient = nthfloat(lines[i+6], 1)
 
-        print(str(container))
         return container
 
     def makeParse(self, lines, key):
