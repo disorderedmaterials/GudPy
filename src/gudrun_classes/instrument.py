@@ -10,7 +10,7 @@ class Instrument:
 
     Attributes
     ----------
-    name : str
+    name : Instrument
         Name of the instrument.
     GudrunInputFileDir : str
         Input file directory for Gudrun.
