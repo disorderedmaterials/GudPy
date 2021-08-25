@@ -18,7 +18,8 @@ class InstrumentWidget(GudPyWidget):
         uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
         uic.loadUi(uifile, self)
 
-        self.nameComboBox.addItems([i.name for i in Instruments])
+        for i in Instruments:
+            self.nameComboBox.addItem(i.name, i)
         self.nameComboBox.setCurrentIndex(self.instrument.name.value)
         self.widgetMap[self.nameComboBox] = "name"
         
@@ -106,7 +107,8 @@ class InstrumentWidget(GudPyWidget):
         self.mergePowerLineEdit.setText(str(self.instrument.mergePower))
         self.widgetMap[ self.mergePowerLineEdit] = "mergePower"
 
-        self.mergeWeightsComboBox.addItems([m.name for m in MergeWeights])
+        for m in MergeWeights:
+            self.mergeWeightsComboBox.addItem(m.name, m)
         self.mergeWeightsComboBox.setCurrentIndex(self.instrument.mergeWeights.value)
         self.widgetMap[self.mergeWeightsComboBox] = "mergeWeights"
 
@@ -120,5 +122,3 @@ class InstrumentWidget(GudPyWidget):
 
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
         self.widgetMap[self.hardGroupEdgesCheckBox] = "hardGroupEdges"
-
-        print(self.widgetMap)

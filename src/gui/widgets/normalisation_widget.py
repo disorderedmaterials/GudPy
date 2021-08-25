@@ -33,7 +33,8 @@ class NormalisationWidget(GudPyWidget):
         # self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)
 
         self.densityLineEdit.setText(str(self.normalisation.density))
-        self.densityUnitsComboBox.addItems([du.name for du in UnitsOfDensity])
+        for du in UnitsOfDensity:
+            self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.normalisation.densityUnits.value)
         
         self.upstreamLineEdit.setText(str(self.normalisation.thickness[0]))

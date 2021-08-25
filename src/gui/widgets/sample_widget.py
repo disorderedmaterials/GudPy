@@ -29,7 +29,8 @@ class SampleWidget(GudPyWidget):
             self.sampleCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
             self.sampleCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
 
-        self.geometryComboBox.addItems([g.name for g in Geometry])
+        for g in Geometry:
+            self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
         self.upstreamLineEdit.setText(str(self.sample.thickness[0]))
         self.downstreamLineEdit.setText(str(self.sample.thickness[1]))
@@ -37,7 +38,8 @@ class SampleWidget(GudPyWidget):
 
 
         self.densityLineEdit.setText(str(self.sample.density))
-        self.densityUnitsComboBox.addItems([du.name for du in UnitsOfDensity])
+        for du in UnitsOfDensity:
+            self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.sample.densityUnits.value)
         
 
@@ -64,10 +66,12 @@ class SampleWidget(GudPyWidget):
 
         self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
 
-        self.normaliseToComboBox.addItems([n.name for n in NormalisationType])
+        for n in NormalisationType:
+            self.normaliseToComboBox.addItem(n.name, n)
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
 
-        self.outputUnitsComboBox.addItems([u.name for u in OutputUnits])
+        for u in OutputUnits:
+            self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
 
         self.angleOfRotationLineEdit.setText(str(self.sample.angleOfRotationSampleWidth[0]))

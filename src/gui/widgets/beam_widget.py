@@ -61,7 +61,8 @@ class BeamWidget(GudPyWidget):
         uic.loadUi(uifile, self)
 
         # Populate the Geometry combo box with the names of the members of the Geometry enum.
-        self.sampleGeometryComboBox.addItems([g.name for g in Geometry])
+        for g in Geometry:
+            self.sampleGeometryComboBox.addItem(g.name, g)
         # Set the selected item to that defined in the Beam object.
         self.sampleGeometryComboBox.setCurrentIndex(self.beam.sampleGeometry.value)
 

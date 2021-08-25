@@ -75,7 +75,8 @@ class ContainerWidget(GudPyWidget):
 
 
         self.densityLineEdit.setText(str(self.container.density))
-        self.densityUnitsComboBox.addItems([du.name for du in UnitsOfDensity])
+        for du in UnitsOfDensity:
+            self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.container.densityUnits.value)
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
