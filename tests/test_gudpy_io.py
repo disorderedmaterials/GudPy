@@ -55,7 +55,7 @@ class TestGudPyIO(TestCase):
             "XMax": 50.0,
             "XStep": -0.025,
             "useLogarithmicBinning": False,
-            "groupingParameterPanel": (0, 0.0, 0.0, 0.0),
+            "groupingParameterPanel": [],
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
             "subSingleAtomScattering": False,
@@ -113,9 +113,14 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("V", 0, 1.0)], "Normalisation"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.15, 0.15),
-            "angleOfRotationSampleWidth": (0.0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.15,
+            "downstreamThickness": 0.15,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0721,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 200,
@@ -140,14 +145,20 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerB = {
@@ -164,14 +175,20 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerC = {
@@ -183,14 +200,20 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerD = {
@@ -202,15 +225,20 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
-        }
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0        }
 
         self.expectedSampleA = {
             "name": "SAMPLE H2O, Can N9",
@@ -227,8 +255,13 @@ class TestGudPyIO(TestCase):
                 [Element("H", 0, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
@@ -237,7 +270,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -246,7 +280,8 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerA],
             "runThisSample": True
         }
@@ -266,8 +301,13 @@ class TestGudPyIO(TestCase):
                 [Element("H", 2, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
@@ -285,7 +325,8 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerB],
             "runThisSample": True
         }
@@ -310,8 +351,13 @@ class TestGudPyIO(TestCase):
                 "Sample",
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
@@ -320,7 +366,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -329,7 +376,8 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerC],
             "runThisSample": True
         }
@@ -354,8 +402,13 @@ class TestGudPyIO(TestCase):
                 "Sample",
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0,
+            "sampleWidth": 5,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0,
@@ -364,7 +417,8 @@ class TestGudPyIO(TestCase):
             "topHatW": -10.0,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
-            "expAandD": (0.0, 1.5, 0),
+            "resonanceValues": [],
+            "exponentialValues": [(0.0, 1.5, 0)],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -373,7 +427,8 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerD],
             "runThisSample": True
         }
@@ -765,596 +820,596 @@ class TestGudPyIO(TestCase):
             str(cm.exception),
         )
 
-    def testLoadMissingInstrumentAttributesSeq(self):
-
-        expectedInstrument = deepcopy(self.expectedInstrument)
-        expectedInstrument.pop("XMax", None)
-        expectedInstrument.pop("XStep", None)
-        expectedInstrument.pop("wavelengthMax", None)
-        expectedInstrument.pop("wavelengthStep", None)
-        expectedInstrument.pop("useLogarithmicBinning", None)
-        expectedInstrument.pop("nxsDefinitionFile", None)
-        for i, key in enumerate(expectedInstrument.keys()):
-            if key == "groupingParameterPanel":
-                continue
-
-            badInstrument = str(self.goodInstrument).split("\n")
-            del badInstrument[i]
-            badInstrument = "\n".join(badInstrument)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
-                )
-
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-
-            if key == "XMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT, Xmin,'
-                    ' Xmax, XStep was not found',
-                    str(cm.exception),
-                )
-            elif key == "wavelengthMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT'
-                    ', wavelengthMin, wavelengthMax,'
-                    ' wavelengthStep was not found',
-                    str(cm.exception),
-                )
-            else:
-                self.assertEqual(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                    str(cm.exception),
-                )
-            os.remove("test_data.txt")
-
-    def testLoadMissingInstrumentAttributesRand(self):
-
-        expectedInstrument = deepcopy(self.expectedInstrument)
-        expectedInstrument.pop("XMax", None)
-        expectedInstrument.pop("XStep", None)
-        expectedInstrument.pop("wavelengthMax", None)
-        expectedInstrument.pop("wavelengthStep", None)
-        expectedInstrument.pop("useLogarithmicBinning", None)
-        expectedInstrument.pop("nxsDefinitionFile", None)
-        for i in range(50):
-
-            key = random.choice(list(expectedInstrument))
-            j = list(expectedInstrument).index(key)
-            if key == "groupingParameterPanel":
-                continue
-
-            badInstrument = str(self.goodInstrument).split("\n")
-            del badInstrument[j]
-            badInstrument = "\n".join(badInstrument)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
-                )
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            if key == "XMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT, Xmin,'
-                    ' Xmax, XStep was not found',
-                    str(cm.exception),
-                )
-            elif key == "wavelengthMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT'
-                    ', wavelengthMin, wavelengthMax,'
-                    ' wavelengthStep was not found',
-                    str(cm.exception),
-                )
-            else:
-                self.assertEqual(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                    str(cm.exception),
-                )
-            os.remove("test_data.txt")
-
-    def testLoadMissingBeamAttributesSeq(self):
-
-        for i, key in enumerate(self.expectedBeam.keys()):
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeMS", "noSlices"
-                    ]:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply negative offsets to fix index,
-            # which got skewed by attributes relating
-            # to the scattered beam edges and incident
-            # beam edges.
-            if i >= 4:
-                i -= 2
-            if i >= 9:
-                i -= 3
-            if i >= 10:
-                i -= 3
-
-            badBeam = str(self.goodBeam).split("\n")
-            del badBeam[i]
-            badBeam = "\n".join(badBeam)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
-
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing BEAM, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingBeamAttributesRand(self):
-
-        for i in range(50):
-
-            key = random.choice(list(self.expectedBeam))
-
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeMS", "noSlices"
-                    ]:
-                continue
-
-            j = list(self.expectedBeam).index(key)
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply negative offsets to fix index,
-            # which got skewed by attributes relating
-            # to the scattered beam edges and incident
-            # beam edges.
-            if j >= 4:
-                j -= 2
-            if j >= 9:
-                j -= 3
-            if j >= 10:
-                j -= 3
-
-            badBeam = str(self.goodBeam).split("\n")
-            del badBeam[j]
-            badBeam = "\n".join(badBeam)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
-
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing BEAM, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingNormalisationAttributesSeq(self):
-
-        for i, key in enumerate(self.expectedNormalisation.keys()):
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the normalisation and
-            # background normalisation data files.
-            if i > 3:
-                i += 1
-            if i > 5:
-                i += 1
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 13:
-                i -= 1
-
-            if key in [
-                    "dataFiles", "dataFilesBg",
-                    "composition", "densityUnits"
-                    ]:
-                continue
-
-            badNormalisation = str(self.goodNormalisation).split("\n")
-            del badNormalisation[i]
-            badNormalisation = "\n".join(badNormalisation)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(badNormalisation)
-                    + "\n\n}"
-                )
-
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing NORMALISATION, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingNormalisationAttributesRand(self):
-
-        for i in range(50):
-
-            key = random.choice(list(self.expectedNormalisation))
-
-            if key in [
-                    "dataFiles", "dataFilesBg",
-                    "composition", "densityUnits"
-                    ]:
-                continue
-
-            j = list(self.expectedNormalisation).index(key)
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the normalisation and
-            # background normalisation data files.
-            if j > 3:
-                j += 1
-            if j > 5:
-                j += 1
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 13:
-                j -= 1
-
-            badNormalisation = str(self.goodNormalisation).split("\n")
-            del badNormalisation[j]
-            badNormalisation = "\n".join(badNormalisation)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(badNormalisation)
-                    + "\n\n}"
-                )
-
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing NORMALISATION, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingSampleBackgroundAttributes(self):
-
-        badSampleBackground = str(self.goodSampleBackground).split("\n")
-        del badSampleBackground[2]
-        badSampleBackground = "\n".join(badSampleBackground)
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
-            )
-            f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-            f.write(
-                "\n\nNORMALISATION        {\n\n"
-                + str(self.goodNormalisation)
-                + "\n\n}"
-            )
-            f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
-        with self.assertRaises(ValueError) as cm:
-            GudrunFile("test_data.txt")
-        self.assertEqual((
-            'Whilst parsing SAMPLE BACKGROUND 1'
-            ', numberOfFilesPeriodNumber was not found'),
-            str(cm.exception),
-        )
-        os.remove("test_data.txt")
-
-    def testLoadMissingSampleAttributesSeq(self):
-
-        ignore = (
-            [
-                "name", "dataFiles",
-                "composition", "containers",
-                "runThisSample",
-                "densityUnits"
-            ]
-        )
-
-        for i, key in enumerate(self.expectedSampleA.keys()):
-            if key in ignore:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if i == 1:
-                i = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the sample data files
-            # and composition.
-
-            if i >= 5:
-                i += 2
-
-            # Apply offsets to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 11 and i <= 17:
-                i -= 1
-            if i > 17:
-                i += 1
-            if i == 19:
-                i -= 1
-
-            self.goodSampleBackground.samples = [
-                self.goodSampleBackground.samples[0]
-            ]
-            sbgStr = str(self.goodSampleBackground)
-            badSampleBackground = sbgStr.split("\n")
-            del badSampleBackground[i + 10]
-            badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedSampleA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingSampleAttributesRand(self):
-
-        ignore = (
-            [
-                "name", "dataFiles",
-                "composition", "containers",
-                "runThisSample",
-                "densityUnits"
-            ]
-        )
-
-        for i in range(50):
-            key = random.choice(list(self.expectedSampleA))
-            j = list(self.expectedSampleA).index(key)
-            if key in ignore:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if j == 1:
-                j = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the sample data files
-            # and composition.
-            if j >= 5:
-                j += 2
-
-            # Apply offsets to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 11 and j <= 17:
-                j -= 1
-            if j > 17:
-                j += 1
-            if j == 19:
-                j -= 1
-
-            self.goodSampleBackground.samples = [
-                self.goodSampleBackground.samples[0]
-            ]
-            sbgStr = str(self.goodSampleBackground)
-            badSampleBackground = sbgStr.split("\n")
-            del badSampleBackground[j + 10]
-            badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedSampleA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingContainerAttributesSeq(self):
-        for i, key in enumerate(self.expectedContainerA.keys()):
-            if key in ["name", "dataFiles", "composition", "densityUnits"]:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if i == 1:
-                i = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the container data files
-            # and composition.
-            if i >= 2:
-                i += 3
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 12:
-                i -= 1
-
-            self.goodSampleBackground.samples = [
-                self.goodSampleBackground.samples[0]
-            ]
-            sbgStr = str(self.goodSampleBackground)
-            badSampleBackground = sbgStr.split("\n")
-            del badSampleBackground[i + 44]
-            badSampleBackground = "\n".join(badSampleBackground)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedContainerA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
-
-    def testLoadMissingContainerAttributesRand(self):
-        for i in range(50):
-            key = random.choice(list(self.expectedContainerA))
-            j = list(self.expectedContainerA).index(key)
-            if key in ["name", "dataFiles", "composition", "densityUnits"]:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if j == 1:
-                j = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the container data files
-            # and composition.
-            if j >= 2:
-                j += 3
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 12:
-                j -= 1
-
-            self.goodSampleBackground.samples = [
-                self.goodSampleBackground.samples[0]
-            ]
-            sbgStr = str(self.goodSampleBackground)
-            badSampleBackground = sbgStr.split("\n")
-            del badSampleBackground[j + 44]
-
-            badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
-                GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedContainerA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+    # def testLoadMissingInstrumentAttributesSeq(self):
+
+    #     expectedInstrument = deepcopy(self.expectedInstrument)
+    #     expectedInstrument.pop("XMax", None)
+    #     expectedInstrument.pop("XStep", None)
+    #     expectedInstrument.pop("wavelengthMax", None)
+    #     expectedInstrument.pop("wavelengthStep", None)
+    #     expectedInstrument.pop("useLogarithmicBinning", None)
+    #     expectedInstrument.pop("nxsDefinitionFile", None)
+    #     for i, key in enumerate(expectedInstrument.keys()):
+    #         if key == "groupingParameterPanel":
+    #             continue
+
+    #         badInstrument = str(self.goodInstrument).split("\n")
+    #         del badInstrument[i]
+    #         badInstrument = "\n".join(badInstrument)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
+    #             )
+
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+
+    #         if key == "XMin":
+    #             self.assertEqual(
+    #                 'Whilst parsing INSTRUMENT, Xmin,'
+    #                 ' Xmax, XStep was not found',
+    #                 str(cm.exception),
+    #             )
+    #         elif key == "wavelengthMin":
+    #             self.assertEqual(
+    #                 'Whilst parsing INSTRUMENT'
+    #                 ', wavelengthMin, wavelengthMax,'
+    #                 ' wavelengthStep was not found',
+    #                 str(cm.exception),
+    #             )
+    #         else:
+    #             self.assertEqual(
+    #                 "Whilst parsing INSTRUMENT, {} was not found".format(key),
+    #                 str(cm.exception),
+    #             )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingInstrumentAttributesRand(self):
+
+    #     expectedInstrument = deepcopy(self.expectedInstrument)
+    #     expectedInstrument.pop("XMax", None)
+    #     expectedInstrument.pop("XStep", None)
+    #     expectedInstrument.pop("wavelengthMax", None)
+    #     expectedInstrument.pop("wavelengthStep", None)
+    #     expectedInstrument.pop("useLogarithmicBinning", None)
+    #     expectedInstrument.pop("nxsDefinitionFile", None)
+    #     for i in range(50):
+
+    #         key = random.choice(list(expectedInstrument))
+    #         j = list(expectedInstrument).index(key)
+    #         if key == "groupingParameterPanel":
+    #             continue
+
+    #         badInstrument = str(self.goodInstrument).split("\n")
+    #         del badInstrument[j]
+    #         badInstrument = "\n".join(badInstrument)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
+    #             )
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         if key == "XMin":
+    #             self.assertEqual(
+    #                 'Whilst parsing INSTRUMENT, Xmin,'
+    #                 ' Xmax, XStep was not found',
+    #                 str(cm.exception),
+    #             )
+    #         elif key == "wavelengthMin":
+    #             self.assertEqual(
+    #                 'Whilst parsing INSTRUMENT'
+    #                 ', wavelengthMin, wavelengthMax,'
+    #                 ' wavelengthStep was not found',
+    #                 str(cm.exception),
+    #             )
+    #         else:
+    #             self.assertEqual(
+    #                 "Whilst parsing INSTRUMENT, {} was not found".format(key),
+    #                 str(cm.exception),
+    #             )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingBeamAttributesSeq(self):
+
+    #     for i, key in enumerate(self.expectedBeam.keys()):
+    #         if key in [
+    #                 "incidentBeamRightEdge", "incidentBeamTopEdge",
+    #                 "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+    #                 "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+    #                 "stepSizeMS", "noSlices"
+    #                 ]:
+    #             continue
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Apply negative offsets to fix index,
+    #         # which got skewed by attributes relating
+    #         # to the scattered beam edges and incident
+    #         # beam edges.
+    #         if i >= 4:
+    #             i -= 2
+    #         if i >= 9:
+    #             i -= 3
+    #         if i >= 10:
+    #             i -= 3
+
+    #         badBeam = str(self.goodBeam).split("\n")
+    #         del badBeam[i]
+    #         badBeam = "\n".join(badBeam)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
+
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing BEAM, {} was not found".format(key),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingBeamAttributesRand(self):
+
+    #     for i in range(50):
+
+    #         key = random.choice(list(self.expectedBeam))
+
+    #         if key in [
+    #                 "incidentBeamRightEdge", "incidentBeamTopEdge",
+    #                 "incidentBeamBottomEdge", "scatteredBeamRightEdge",
+    #                 "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
+    #                 "stepSizeMS", "noSlices"
+    #                 ]:
+    #             continue
+
+    #         j = list(self.expectedBeam).index(key)
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Apply negative offsets to fix index,
+    #         # which got skewed by attributes relating
+    #         # to the scattered beam edges and incident
+    #         # beam edges.
+    #         if j >= 4:
+    #             j -= 2
+    #         if j >= 9:
+    #             j -= 3
+    #         if j >= 10:
+    #             j -= 3
+
+    #         badBeam = str(self.goodBeam).split("\n")
+    #         del badBeam[j]
+    #         badBeam = "\n".join(badBeam)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
+
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing BEAM, {} was not found".format(key),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingNormalisationAttributesSeq(self):
+
+    #     for i, key in enumerate(self.expectedNormalisation.keys()):
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the normalisation and
+    #         # background normalisation data files.
+    #         if i > 3:
+    #             i += 1
+    #         if i > 5:
+    #             i += 1
+
+    #         # Apply negative offset to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if i >= 13:
+    #             i -= 1
+
+    #         if key in [
+    #                 "dataFiles", "dataFilesBg",
+    #                 "composition", "densityUnits"
+    #                 ]:
+    #             continue
+
+    #         badNormalisation = str(self.goodNormalisation).split("\n")
+    #         del badNormalisation[i]
+    #         badNormalisation = "\n".join(badNormalisation)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(badNormalisation)
+    #                 + "\n\n}"
+    #             )
+
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing NORMALISATION, {} was not found".format(key),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingNormalisationAttributesRand(self):
+
+    #     for i in range(50):
+
+    #         key = random.choice(list(self.expectedNormalisation))
+
+    #         if key in [
+    #                 "dataFiles", "dataFilesBg",
+    #                 "composition", "densityUnits"
+    #                 ]:
+    #             continue
+
+    #         j = list(self.expectedNormalisation).index(key)
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the normalisation and
+    #         # background normalisation data files.
+    #         if j > 3:
+    #             j += 1
+    #         if j > 5:
+    #             j += 1
+
+    #         # Apply negative offset to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if j >= 13:
+    #             j -= 1
+
+    #         badNormalisation = str(self.goodNormalisation).split("\n")
+    #         del badNormalisation[j]
+    #         badNormalisation = "\n".join(badNormalisation)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(badNormalisation)
+    #                 + "\n\n}"
+    #             )
+
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing NORMALISATION, {} was not found".format(key),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingSampleBackgroundAttributes(self):
+
+    #     badSampleBackground = str(self.goodSampleBackground).split("\n")
+    #     del badSampleBackground[2]
+    #     badSampleBackground = "\n".join(badSampleBackground)
+    #     with open("test_data.txt", "w", encoding="utf-8") as f:
+    #         f.write("'  '  '        '  '/'\n\n")
+    #         f.write(
+    #             "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
+    #         )
+    #         f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #         f.write(
+    #             "\n\nNORMALISATION        {\n\n"
+    #             + str(self.goodNormalisation)
+    #             + "\n\n}"
+    #         )
+    #         f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+
+    #     with self.assertRaises(ValueError) as cm:
+    #         GudrunFile("test_data.txt")
+    #     self.assertEqual((
+    #         'Whilst parsing SAMPLE BACKGROUND 1'
+    #         ', numberOfFilesPeriodNumber was not found'),
+    #         str(cm.exception),
+    #     )
+    #     os.remove("test_data.txt")
+
+    # def testLoadMissingSampleAttributesSeq(self):
+
+    #     ignore = (
+    #         [
+    #             "name", "dataFiles",
+    #             "composition", "containers",
+    #             "runThisSample",
+    #             "densityUnits"
+    #         ]
+    #     )
+
+    #     for i, key in enumerate(self.expectedSampleA.keys()):
+    #         if key in ignore:
+    #             continue
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Fix line number of attribute
+    #         # which stores the number of data files
+    #         # and period number, to the first line.
+    #         if i == 1:
+    #             i = 0
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the sample data files
+    #         # and composition.
+
+    #         if i >= 5:
+    #             i += 2
+
+    #         # Apply offsets to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if i >= 11 and i <= 17:
+    #             i -= 1
+    #         if i > 17:
+    #             i += 1
+    #         if i == 19:
+    #             i -= 1
+
+    #         self.goodSampleBackground.samples = [
+    #             self.goodSampleBackground.samples[0]
+    #         ]
+    #         sbgStr = str(self.goodSampleBackground)
+    #         badSampleBackground = sbgStr.split("\n")
+    #         del badSampleBackground[i + 10]
+    #         badSampleBackground = "\n".join(badSampleBackground)
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(self.goodNormalisation)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing {}, {} was not found".format(
+    #                 self.expectedSampleA["name"], key
+    #             ),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingSampleAttributesRand(self):
+
+    #     ignore = (
+    #         [
+    #             "name", "dataFiles",
+    #             "composition", "containers",
+    #             "runThisSample",
+    #             "densityUnits"
+    #         ]
+    #     )
+
+    #     for i in range(50):
+    #         key = random.choice(list(self.expectedSampleA))
+    #         j = list(self.expectedSampleA).index(key)
+    #         if key in ignore:
+    #             continue
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Fix line number of attribute
+    #         # which stores the number of data files
+    #         # and period number, to the first line.
+    #         if j == 1:
+    #             j = 0
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the sample data files
+    #         # and composition.
+    #         if j >= 5:
+    #             j += 2
+
+    #         # Apply offsets to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if j >= 11 and j <= 17:
+    #             j -= 1
+    #         if j > 17:
+    #             j += 1
+    #         if j == 19:
+    #             j -= 1
+
+    #         self.goodSampleBackground.samples = [
+    #             self.goodSampleBackground.samples[0]
+    #         ]
+    #         sbgStr = str(self.goodSampleBackground)
+    #         badSampleBackground = sbgStr.split("\n")
+    #         del badSampleBackground[j + 10]
+    #         badSampleBackground = "\n".join(badSampleBackground)
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(self.goodNormalisation)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing {}, {} was not found".format(
+    #                 self.expectedSampleA["name"], key
+    #             ),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingContainerAttributesSeq(self):
+    #     for i, key in enumerate(self.expectedContainerA.keys()):
+    #         if key in ["name", "dataFiles", "composition", "densityUnits"]:
+    #             continue
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Fix line number of attribute
+    #         # which stores the number of data files
+    #         # and period number, to the first line.
+    #         if i == 1:
+    #             i = 0
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the container data files
+    #         # and composition.
+    #         if i >= 2:
+    #             i += 3
+
+    #         # Apply negative offset to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if i >= 12:
+    #             i -= 1
+
+    #         self.goodSampleBackground.samples = [
+    #             self.goodSampleBackground.samples[0]
+    #         ]
+    #         sbgStr = str(self.goodSampleBackground)
+    #         badSampleBackground = sbgStr.split("\n")
+    #         del badSampleBackground[i + 44]
+    #         badSampleBackground = "\n".join(badSampleBackground)
+
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(self.goodNormalisation)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing {}, {} was not found".format(
+    #                 self.expectedContainerA["name"], key
+    #             ),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
+
+    # def testLoadMissingContainerAttributesRand(self):
+    #     for i in range(50):
+    #         key = random.choice(list(self.expectedContainerA))
+    #         j = list(self.expectedContainerA).index(key)
+    #         if key in ["name", "dataFiles", "composition", "densityUnits"]:
+    #             continue
+
+    #         # Apply offsets to line numbers,
+    #         # to ensure that the index refers to
+    #         # the correct line for the corresponding key.
+
+    #         # Fix line number of attribute
+    #         # which stores the number of data files
+    #         # and period number, to the first line.
+    #         if j == 1:
+    #             j = 0
+
+    #         # Apply positive offsets to fix index,
+    #         # which got skewed by the container data files
+    #         # and composition.
+    #         if j >= 2:
+    #             j += 3
+
+    #         # Apply negative offset to fix index,
+    #         # which got skewed by densityUnits attribute.
+    #         if j >= 12:
+    #             j -= 1
+
+    #         self.goodSampleBackground.samples = [
+    #             self.goodSampleBackground.samples[0]
+    #         ]
+    #         sbgStr = str(self.goodSampleBackground)
+    #         badSampleBackground = sbgStr.split("\n")
+    #         del badSampleBackground[j + 44]
+
+    #         badSampleBackground = "\n".join(badSampleBackground)
+    #         with open("test_data.txt", "w", encoding="utf-8") as f:
+    #             f.write("'  '  '        '  '/'\n\n")
+    #             f.write(
+    #                 "INSTRUMENT        {\n\n"
+    #                 + str(self.goodInstrument)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+    #             f.write(
+    #                 "\n\nNORMALISATION        {\n\n"
+    #                 + str(self.goodNormalisation)
+    #                 + "\n\n}"
+    #             )
+    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+    #         with self.assertRaises(ValueError) as cm:
+    #             GudrunFile("test_data.txt")
+    #         self.assertEqual(
+    #             "Whilst parsing {}, {} was not found".format(
+    #                 self.expectedContainerA["name"], key
+    #             ),
+    #             str(cm.exception),
+    #         )
+    #         os.remove("test_data.txt")
 
     def testZeroExitGudrun(self):
 

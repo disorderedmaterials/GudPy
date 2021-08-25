@@ -164,7 +164,7 @@ class GudrunFile:
         self.instrument.spectrumNumbersForIncidentBeamMonitor = extract_ints_from_string(lines[8])
 
         # For integer pair attributes, we extract the first 2 integers from the line.
-        self.instrument.wavelengthRangeForMonitorNormalisation = firstNInts(lines[9], 2)
+        self.instrument.wavelengthRangeForMonitorNormalisation = tuple(firstNInts(lines[9], 2))
 
         self.instrument.spectrumNumbersForTransmissionMonitor = extract_ints_from_string(lines[10])
 
@@ -200,10 +200,10 @@ class GudrunFile:
         # If the marker line is encountered, then the panel has been parsed.
         i = 18
         line = lines[i]
-        while "end input of specified values" not in line:
+        while "to end input of specified values" not in line:
             self.instrument.groupingParameterPanel.append(tuple(firstNInts(line, 4)))
             i += 1
-        
+            
         # The groupingParameterPanel alters our indexing, which can no longer be absolute,
         # we must account for the offset, by adding 18+i+1+n for each next n attributes.
         # where i is the number of rows in the grouping parameter panel.
