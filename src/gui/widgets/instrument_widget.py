@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QLineEdit, QWidget
 from PyQt5 import uic
 from src.gui.widgets.gudpy_widget import GudPyWidget
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
@@ -12,7 +12,8 @@ class InstrumentWidget(GudPyWidget):
 
         super(InstrumentWidget, self).__init__(object=self.instrument, parent=self.parent)
         self.initComponents()
-    
+        self.setUpSignals()
+
     def initComponents(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
