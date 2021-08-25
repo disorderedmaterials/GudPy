@@ -26,12 +26,22 @@ class Sample:
         from the file, if it exists.
     composition : Composition
         Composition object storing the atomic composition of the sample.
-    geometry : str
-        Geometry of the sample (FLATPLATE / CYLINDRICAL).
-    thickness : tuple(float, float)
-        Upstream and downstream thickness.
-    angleOfRotationSampleWidth : tuple(float, float)
-        Angle of rotation of the sample and its width.
+    geometry : Geometry
+        Geometry of the sample (FLATPLATE / CYLINDRICAL / SameAsBeam).
+    upstreamThickness : float
+        Upstream thickness of the sample - if its geometry is FLATPLATE.
+    downstreamThickness : float
+        Downstream thickness of the sample - if its geometry is FLATPLATE.
+    angleOfRotation : float
+        Angle of rotation of the sample - if its geometry is FLATPLATE.
+    sampleWidth : float
+        Width of the sample - if its geometry is FLATPLATE.
+    innerRadius : float
+        Inner radius of the sample - if its geometry is CYLINDRICAL.
+    outerRadius : float
+        Outer radius of the sample - if its geometry is CYLINDRICAL.
+    sampleHeight : float
+        Height of the sample - if its geometry is CYLINDRICAL.
     density : str
         Density of the sample
     densityUnits : int

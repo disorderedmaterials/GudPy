@@ -10,8 +10,8 @@ class Beam:
 
     Attributes
     ----------
-    sampleGeometry : str
-        geometry of the sample (FLATPLATE / CYLINDRICAL).
+    sampleGeometry : Geometry
+        geometry of the beam (FLATPLATE / CYLINDRICAL).
     noBeamProfileValues : int
         number of beam profile values.
     beamProfileValues : int[]

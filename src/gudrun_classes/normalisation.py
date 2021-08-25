@@ -23,11 +23,21 @@ class Normalisation:
     composition : Composition
         Composition object storing the atomic composition of the container.
     geometry : Geometry
-        Geometry of the container.
-    thickness : tuple(float, float)
-        Upstream and downstream thickness.
-    angleOfRotationSampleWidth : tuple(float, float)
-        Angle of rotation of the container and its width.
+        Geometry of the normalisation (FLATPLATE / CYLINDRICAL / SameAsBeam).
+    upstreamThickness : float
+        Upstream thickness of the normalisation - if its geometry is FLATPLATE.
+    downstreamThickness : float
+        Downstream thickness of the normalisation - if its geometry is FLATPLATE.
+    angleOfRotation : float
+        Angle of rotation of the normalisation - if its geometry is FLATPLATE.
+    sampleWidth : float
+        Width of the normalisation - if its geometry is FLATPLATE.
+    innerRadius : float
+        Inner radius of the normalisation - if its geometry is CYLINDRICAL.
+    outerRadius : float
+        Outer radius of the normalisation - if its geometry is CYLINDRICAL.
+    sampleHeight : float
+        Height of the normalisation - if its geometry is CYLINDRICAL.
     density : float
         Density of normalisation
     densityUnits : int
