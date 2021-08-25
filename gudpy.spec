@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 VERSION = "0.0.1"
-SEP = os.path.sep
 binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
 block_cipher = None
 import sys
