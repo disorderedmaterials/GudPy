@@ -33,7 +33,7 @@ steps:
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin
-  - script: |
+  - bash: |
       pip install nose2
       LOGICAL_CORES=$(python -c 'import multiprocessing as mp; print(mp.cpu_count())')
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml --plugin nose2.plugins.mp -N $LOGICAL_CORES tests
