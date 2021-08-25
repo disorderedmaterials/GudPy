@@ -466,14 +466,14 @@ class TestGudPyIO(TestCase):
 
     def tearDown(self) -> None:
 
-        if os.path.isfile("test_data.txt"):
-            os.remove("test_data.txt")
-        if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
-            os.remove("tests/TestData/NIMROD-water/good_water.txt")
+        # if os.path.isfile("test_data.txt"):
+        #     os.remove("test_data.txt")
+        # if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
+        #     os.remove("tests/TestData/NIMROD-water/good_water.txt")
 
-        for f in os.listdir():
-            if f not in self.keepsakes:
-                os.remove(f)
+        # for f in os.listdir():
+        #     if f not in self.keepsakes:
+        #         os.remove(f)
 
         return super().tearDown()
 
