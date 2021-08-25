@@ -35,7 +35,7 @@ steps:
       mv StartupFiles bin
   - script: |
       pip install nose2
-      LOGICAL_CORES=$(python -c 'import multiprocessing as mp; print(mp.cpu_count()')
+      LOGICAL_CORES=$(python -c 'import multiprocessing as mp; print(mp.cpu_count())')
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml --plugin nose2.plugins.mp -N $LOGICAL_CORES tests
     displayName: 'Run tests'
 
