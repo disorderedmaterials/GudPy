@@ -304,6 +304,10 @@ class GudrunFile:
             self.normalisation.downstreamThickness = nthfloat(lines[j+1], 1)
             self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
             self.normalisation.sampleWidth = nthfloat(lines[j+2], 1)
+        else:
+            self.normalisation.innerRadius = nthfloat(lines[j+1], 0)
+            self.normalisation.outerRadius = nthfloat(lines[j+1], 1)
+            self.normalisation.sampleHeight = nthfloat(lines[j+2], 0)
         
         density = nthfloat(lines[j+3], 0)
         self.normalisation.density = abs(density)
@@ -400,6 +404,10 @@ class GudrunFile:
             sample.downstreamThickness = nthfloat(lines[i+1], 1)
             sample.angleOfRotation = nthfloat(lines[i+2], 0)
             sample.sampleWidth = nthfloat(lines[i+2], 1)
+        else:
+            sample.innerRadius = nthfloat(lines[i+1], 0)
+            sample.outerRadius = nthfloat(lines[i+1], 1)
+            sample.sampleHeight = nthfloat(lines[i+2], 0)
 
         density = nthfloat(lines[i+3], 0)
         sample.density = abs(density)
@@ -496,6 +504,10 @@ class GudrunFile:
             container.downstreamThickness = nthfloat(lines[i+1], 1)
             container.angleOfRotation = nthfloat(lines[i+2], 0)
             container.sampleWidth = nthfloat(lines[i+2], 1)
+        else:
+            container.innerRadius = nthfloat(lines[i+1], 0)
+            container.outerRadius = nthfloat(lines[i+1], 1)
+            container.sampleHeight = nthfloat(lines[i+2], 0)
 
         density = nthfloat(lines[i+3], 0)
         container.density = abs(density)
