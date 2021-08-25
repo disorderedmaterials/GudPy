@@ -48,10 +48,15 @@ steps:
           brew install npm
           npm install -g create-dmg
       fi
-      
   - bash: |
       pyinstaller gudpy.spec
       if [[ "${{ parameters.osName }}" == "osx" ]]; then
           create-dmg dist/*.app
           [ $? -eq 2 ]  || exit 0
+      fi
+    - bash: |
+      if [[ "${{ parameters.osName }}" == "windows" ]]; then
+          echo "Zipping unpacked version of GudPy, for Windows."
+          VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+          7z a GudPy-VERSION-windows.zip GudPy-VERSION/
       fi
