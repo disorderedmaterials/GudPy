@@ -1,14 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 VERSION = "0.0.1"
-SEP = os.path.sep
 binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
+print(binaries)
 block_cipher = None
 import sys
 
 a = Analysis(['main.py'],
              pathex=[os.path.dirname(os.path.abspath('main.py'))],
              binaries=binaries,
-             datas=[(os.path.join("bin", "StartupFiles"), ".")],
+             datas=[(os.path.join("bin", "StartupFiles"), "StartupFiles")],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
