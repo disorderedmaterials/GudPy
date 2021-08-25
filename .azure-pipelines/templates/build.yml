@@ -55,8 +55,8 @@ steps:
           [ $? -eq 2 ]  || exit 0
       fi
     - bash: |
-      if [[ "${{ parameters.osName }}" == "windows" ]]; then
-          echo "Zipping unpacked version of GudPy, for Windows."
-          VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-          7z a GudPy-VERSION-windows.zip GudPy-VERSION/
-      fi
+        if [[ "${{ parameters.osName }}" == "windows" ]]; then
+            echo "Zipping unpacked version of GudPy, for Windows."
+            VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+            7z a GudPy-VERSION-windows.zip GudPy-VERSION/
+        fi
