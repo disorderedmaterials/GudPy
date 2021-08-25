@@ -57,7 +57,7 @@ elif os.name == "nt":
             target_arch=None,
             codesign_identity=None,
             entitlements_file=None )
-    coll = COLLECT(exe,
+    coll = COLLECT(exe1,
                 a.binaries,
                 a.zipfiles,
                 a.datas, 
