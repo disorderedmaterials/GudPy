@@ -1,4 +1,4 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 
 
@@ -191,13 +191,13 @@ class Instrument:
         XScaleLine = (
             f'{self.XMin}  {self.XMax}  {self.XStep}'
         )
-
+        joined = bjoin(
+            self.groupingParameterPanel,
+            " Group, Xmin, Xmax, Background factor\n",
+            sameseps=True
+        )
         groupingParameterPanelLine = (
-            f'{spacify(self.groupingParameterPanel)}{TAB}'
-            f'Group, Xmin, Xmax, Background factor\n'
-            f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
-            if all(self.groupingParameterPanel)
-            else
+            f'{joined}'
             f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
         )
 
