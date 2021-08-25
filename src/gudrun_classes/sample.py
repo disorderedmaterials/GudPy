@@ -4,6 +4,7 @@ from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
     UnitsOfDensity, NormalisationType, OutputUnits, Geometry
 )
+from src.gudrun_classes.config import geometry
 
 
 class Sample:
@@ -96,6 +97,9 @@ class Sample:
         self.downstreamThickness = 0.0
         self.angleOfRotation = 0.0
         self.sampleWidth = 0.0
+        self.innerRadius = 0.0
+        self.outerRadius = 0.0
+        self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0
@@ -142,6 +146,21 @@ class Sample:
             else
             ''
         )
+
+        geometryLines = (
+            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
+            f'Upstream and downstream thickness [cm]\n'
+            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'Angle of rotation and sample width (cm)\n'
+            if (self.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE)
+            or self.geometry == Geometry.FLATPLATE
+            else
+            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'Inner and outer radii [cm]\n'
+            f'{self.sampleHeight}{TAB}'
+            f'Sample height (cm)\n'
+        )
+
         if self.densityUnits == UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
             density = self.density*-1
@@ -221,10 +240,7 @@ class Sample:
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
             f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
-            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
-            f'Upstream and downstream thickness [cm]\n'
-            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
-            f'Angle of rotation and sample width (cm)\n'
+            f'{geometryLines}'
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for sample Placzek correction\n'
