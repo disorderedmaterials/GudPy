@@ -474,7 +474,6 @@ class TestGudPyIO(TestCase):
         for f in os.listdir():
             if f not in self.keepsakes:
                 os.remove(f)
-
         return super().tearDown()
 
     def testLoadGudrunFile(self):
