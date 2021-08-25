@@ -17,8 +17,10 @@ class Sample:
     ----------
     name : str
         Name of the sample.
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    numberFiles : int
+        Number of data files.
+    periodNumber : int
+        Period number of data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
     forceCalculationOfCorrections : bool
@@ -78,9 +80,12 @@ class Sample:
         Step size in radius for final g(r).
     include : bool
         Should the sample be included in analysis?
-    environementScatteringFuncAttenuationCoeff : tuple(float, float)
-        Sample environment factors used to compensate
-        for different attenuation and scattering in different containers.
+    scatteringFraction : float
+        Sample environment scattering fraction to compensate
+        for different scattering in different containers.
+    attenuationCoefficient : float
+        Sample environment attenuation coefficient to
+        compensate for different attenuation in different containers.
     containers : Container[]
         List of Container objects attached to this sample.
     runThisSample : bool

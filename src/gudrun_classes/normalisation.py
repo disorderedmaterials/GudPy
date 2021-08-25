@@ -12,12 +12,16 @@ class Normalisation:
 
     Attributes
     ----------
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    numberOfFiles : int
+        Number of data files.
+    periodNumber : int
+        Period number for data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
-    numberOfFilesPeriodNumberBg : tuple(int, int)
-        Number of background data files and their period number.
+    numberOfFilesBg : int
+        Number of background data files.
+    periodNumberBg : int
+        Period number for background data files.
     dataFilesBg : DataFiles
         DataFiles object storing background data files.
     composition : Composition
