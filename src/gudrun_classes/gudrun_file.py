@@ -270,6 +270,7 @@ class GudrunFile:
             self.beam.sampleGeometry = Geometry[firstword(lines[0])]
             
             # Set the global geometry.
+            global geometry
             geometry = self.beam.sampleGeometry
 
             # For single integer attributes, we extract the zeroth int from the line.
