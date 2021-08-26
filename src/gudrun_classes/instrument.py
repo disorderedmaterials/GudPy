@@ -29,7 +29,7 @@ class Instrument:
         module and data acquisition dead times.
     spectrumNumbersForIncidentBeamMonitor : int[]
         Number of spectra of incident beam monitor.
-    wavelengthRangeForMonitorNormalisation : tuple(int, int)
+    wavelengthRangeForMonitorNormalisation : tuple(float, float)
         Input wavelength range for monitor normalisation.
         0 0 signals to divide channel by channel.
     spectrumNumbersForTransmissionMonitor : int[]
@@ -41,7 +41,7 @@ class Instrument:
     channelNosSpikeAnalysis : tuple(int, int)
         First and last channel numbers to check for spikes.
         0 0 signals to use all channels.
-    spikeAnalysisAcceptanceFactor : int
+    spikeAnalysisAcceptanceFactor : float
         Acceptance factor for spike analysis.
     wavelengthMin : float
         Minimum incident wavelength.
@@ -122,12 +122,12 @@ class Instrument:
         self.groupFileName = ""
         self.deadtimeConstantsFileName = ""
         self.spectrumNumbersForIncidentBeamMonitor = []
-        self.wavelengthRangeForMonitorNormalisation = (0, 0)
+        self.wavelengthRangeForMonitorNormalisation = (0., 0.)
         self.spectrumNumbersForTransmissionMonitor = []
         self.incidentMonitorQuietCountConst = 0.0
         self.transmissionMonitorQuietCountConst = 0.0
         self.channelNosSpikeAnalysis = (0, 0)
-        self.spikeAnalysisAcceptanceFactor = 0
+        self.spikeAnalysisAcceptanceFactor = 0.0
         self.wavelengthMin = 0.
         self.wavelengthMax = 0.
         self.wavelengthStep = 0.

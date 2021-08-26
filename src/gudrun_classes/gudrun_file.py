@@ -165,7 +165,7 @@ class GudrunFile:
             self.instrument.spectrumNumbersForIncidentBeamMonitor = extract_ints_from_string(lines[8])
 
             # For integer pair attributes, we extract the first 2 integers from the line.
-            self.instrument.wavelengthRangeForMonitorNormalisation = tuple(firstNInts(lines[9], 2))
+            self.instrument.wavelengthRangeForMonitorNormalisation = tuple(firstNFloats(lines[9], 2))
 
             self.instrument.spectrumNumbersForTransmissionMonitor = extract_ints_from_string(lines[10])
 
@@ -174,7 +174,7 @@ class GudrunFile:
             self.instrument.transmissionMonitorQuietCountConst = nthfloat(lines[12], 0)
 
             self.instrument.channelNosSpikeAnalysis = tuple(firstNInts(lines[13], 2))
-            self.instrument.spikeAnalysisAcceptanceFactor = nthint(lines[14], 0)
+            self.instrument.spikeAnalysisAcceptanceFactor = nthfloat(lines[14], 0)
 
             # Extract wavelength range
             # Which consists of the first 3 floats (min, max, step) in the line.
