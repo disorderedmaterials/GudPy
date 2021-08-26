@@ -124,6 +124,8 @@ class Normalisation:
             ''
         )
 
+        compositionSuffix = "" if str(self.composition) == "" else "\n"
+
         geometryLines = (
             f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
             f'Upstream and downstream thickness [cm]\n'
@@ -159,7 +161,7 @@ class Normalisation:
             f'{dataFilesLineB}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
             f'Force calculation of corrections?\n'
-            f'{str(self.composition)}\n'
+            f'{str(self.composition)}{compositionSuffix}'
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
             f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
