@@ -22,7 +22,7 @@ class Beam:
         Step size for m.s calculation.
     noSlices : int
         Number of slices for m.s calculation.
-    angularStepForCorrections : float
+    angularStepForCorrections : int
         Angular step size to be used in corrections [deg.].
     incidentBeamLeftEdge : float
         Left edge of incident beam relative to centre of sample.
@@ -65,7 +65,7 @@ class Beam:
         self.stepSizeAbsorption = 0.0
         self.stepSizeMS = 0.0
         self.noSlices = 0
-        self.angularStepForCorrections = 0.0
+        self.angularStepForCorrections = 0
         self.incidentBeamLeftEdge = 0.0
         self.incidentBeamRightEdge = 0.0
         self.incidentBeamTopEdge = 0.0

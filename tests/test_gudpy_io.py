@@ -83,7 +83,7 @@ class TestGudPyIO(TestCase):
             "stepSizeAbsorption": 0.05,
             "stepSizeMS": 0.2,
             "noSlices": 100,
-            "angularStepForCorrections": 10.0,
+            "angularStepForCorrections": 10,
             "incidentBeamLeftEdge": -1.5,
             "incidentBeamRightEdge": 1.5,
             "incidentBeamTopEdge": -1.5,

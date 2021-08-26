@@ -338,7 +338,7 @@ class GudrunFile:
             self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
             self.beam.stepSizeMS = nthfloat(lines[3], 1)
             self.beam.noSlices = nthint(lines[3], 2)
-            self.beam.angularStepForCorrections = nthfloat(lines[4], 0)
+            self.beam.angularStepForCorrections = nthint(lines[4], 0)
 
             # Extract the incident beam edges
             # relative to the centroid of the sample.
