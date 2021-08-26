@@ -60,8 +60,10 @@ class Sample:
         Minimum radius for Fourier transform.
     grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
-    expAandD : tuple(float, float, int)
-        Sample exponential paramaters.
+    resonanceValues : tuple[]
+        List of tuples storing wavelength ranges for resonance values.
+    exponentialValues : tuple[]
+        List of tuples storing exponential amplitude and decay values.
     normalisationCorrectionFactor : float
         Factor to multiply normalisation by prior to dividing into sample.
     fileSelfScattering : str
