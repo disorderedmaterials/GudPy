@@ -20,9 +20,9 @@ class Beam:
         Step size for absorption calculations.
     stepSizeMS : float
         Step size for m.s calculation.
-    noSlices : float
+    noSlices : int
         Number of slices for m.s calculation.
-    angularStepForCorrections : int
+    angularStepForCorrections : float
         Angular step size to be used in corrections [deg.].
     incidentBeamLeftEdge : float
         Left edge of incident beam relative to centre of sample.
