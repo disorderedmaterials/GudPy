@@ -44,4 +44,4 @@ class Composition:
         string : str
             String representation of Composition.
         """
-        return "\n".join(self.str)
+        return "\n".join(self.str) if len(self.str)>0 else ""
