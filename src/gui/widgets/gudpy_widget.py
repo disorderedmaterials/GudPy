@@ -12,11 +12,14 @@ class GudPyWidget(QWidget):
 
 
     def save(self, widget, value):
-        print(f"Previous value: {self.object.__dict__[self.widgetMap[widget]]}")
-        self.object.__dict__[self.widgetMap[widget]] = value
-        print(f"New value: {self.object.__dict__[self.widgetMap[widget]]}")
-
-    def setUpSignals(self):
-        for widget in self.widgetMap.keys():
-            if isinstance(widget, QLineEdit):
-                widget.textChanged.connect(lambda text : self.save(widget, text))
+        key = self.widgetMap[widget]
+        if isinstance(key, tuple):
+            key, index = key
+            print(key, index)
+            print(f"Previous value: {self.object.__dict__[key][index]}")
+            self.object.__dict__[key][index] = value
+            print(f"New value: {self.object.__dict__[key][index]}")        
+        else:    
+            print(f"Previous value: {self.object.__dict__[key]}")
+            self.object.__dict__[key] = value
+            print(f"New value: {self.object.__dict__[key]}")

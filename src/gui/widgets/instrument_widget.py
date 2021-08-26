@@ -12,7 +12,6 @@ class InstrumentWidget(GudPyWidget):
 
         super(InstrumentWidget, self).__init__(object=self.instrument, parent=self.parent)
         self.initComponents()
-        self.setUpSignals()
 
     def initComponents(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -23,31 +22,40 @@ class InstrumentWidget(GudPyWidget):
             self.nameComboBox.addItem(i.name, i)
         self.nameComboBox.setCurrentIndex(self.instrument.name.value)
         self.widgetMap[self.nameComboBox] = "name"
-        
+        self.nameComboBox.currentIndexChanged.connect(lambda index : self.save(self.nameComboBox, self.nameComboBox.itemData(index)))
+
         self.dataFileDirectoryLineEdit.setText(self.instrument.dataFileDir)
         self.widgetMap[self.dataFileDirectoryLineEdit] = "dataFileDir"
+        self.dataFileDirectoryLineEdit.textChanged.connect(lambda text : self.save(self.dataFileDirectoryLineEdit, text))
 
         dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
         self.dataFileTypeCombo.addItems(dataFileTypes)
         self.dataFileTypeCombo.setCurrentIndex(dataFileTypes.index(self.instrument.dataFileType))
         self.widgetMap[self.dataFileTypeCombo] = "dataFileType"
+        self.dataFileTypeCombo.currentIndexChanged.connect(lambda index : self.save(self.dataFileTypeCombo, self.dataFileTypeCombo.itemText(index)))
 
         self.detCalibrationLineEdit.setText(self.instrument.detectorCalibrationFileName)
         self.widgetMap[self.detCalibrationLineEdit] = "detectorCalibrationFileName"
+        self.detCalibrationLineEdit.textChanged.connect(lambda text : self.save(self.detCalibrationLineEdit, text))
 
         self.phiValuesColumnLineEdit.setText(str(self.instrument.columnNoPhiVals))
         self.widgetMap[self.phiValuesColumnLineEdit] = "columnNoPhiVals"
+        self.phiValuesColumnLineEdit.textChanged.connect(lambda text : self.save(self.phiValuesColumnLineEdit, text))
 
         self.groupsFileLineEdit.setText(self.instrument.groupFileName)
         self.widgetMap[self.groupsFileLineEdit] = "groupFileName"
+        self.groupsFileLineEdit.textChanged.connect(lambda text : self.save(self.groupsFileLineEdit, text))
 
         self.deadtimeFileLineEdit.setText(self.instrument.deadtimeConstantsFileName)
         self.widgetMap[self.deadtimeFileLineEdit] = "deadtimeConstantsFileName"
+        self.deadtimeFileLineEdit.textChanged.connect(lambda text : self.save(self.deadtimeLineEdit, text))
 
         self.minWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[0]))
         self.maxWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[1]))
         self.widgetMap[self.minWavelengthMonNormLineEdit] = ("wavelengthRangeForMonitorNormalisation", 0)
         self.widgetMap[self.maxWavelengthMonNormLineEdit] = ("wavelengthRangeForMonitorNormalisation", 1)
+        self.minWavelengthMonNormLineEdit.textChanged.connect(lambda text : self.save(self.minWavelengthMonNormLineEdit, text))
+        self.maxWavelengthMonNormLineEdit.textChanged.connect(lambda text : self.save(self.maxWavelengthMonNormLineEdit, text))
 
         self.spectrumNumbersIBLineEdit.setText(spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor))
         self.widgetMap[self.spectrumNumbersIBLineEdit] = "spectrumNumbersForIncidentBeamMonitor"
