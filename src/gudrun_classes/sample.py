@@ -209,6 +209,7 @@ class Sample:
                 sameseps=True
             )
         )
+
         selfScatteringLine = (
             f'{self.fileSelfScattering}{TAB}'
             f'Name of file containing self scattering'

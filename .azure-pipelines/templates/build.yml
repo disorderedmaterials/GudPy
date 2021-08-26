@@ -38,20 +38,28 @@ steps:
       pip install pyinstaller
       
   - bash: |
-      if [[ "${{ parameters.osName }}" == "osx" ]]; then
-          echo "Increasing timeouts on OSX."
-          PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
-          PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
-          PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
-          sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
-          curl -fsSL -o install.sh https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
-          brew install npm
-          npm install -g create-dmg
-      fi
-      
+      PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
+      PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
+      PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
+      sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
+      brew install npm
+      npm install -g create-dmg
+    condition: eq('${{ parameters.osName }}', 'osx')  
+    displayName: 'Increase timeouts for OSX'
+
   - bash: |
       pyinstaller gudpy.spec
-      if [[ "${{ parameters.osName }}" == "osx" ]]; then
-          create-dmg dist/*.app
-          [ $? -eq 2 ]  || exit 0
-      fi
+    displayName: 'Create executables.'
+  
+  - bash: |
+      create-dmg dist/*.app
+      [ $? -eq 2 ]  || exit 0
+    condition: eq('${{ parameters.osName }}', 'osx')
+    displayName: 'Create DMG for OSX.'
+
+  - bash: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
+    condition: eq('${{ parameters.osName }}', 'windows')
+    displayName: 'Zip windows non-bundled version.'
+

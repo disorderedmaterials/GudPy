@@ -255,8 +255,10 @@ class GudrunFile:
             self.instrument.spectrumNumberForOutputDiagnosticFiles = (
                 nthint(lines[i+6], 0)
             )
+
             self.instrument.neutronScatteringParametersFile = (
                 firstword(lines[i+7])
+
             )
             self.instrument.scaleSelection = (
                 Scales[Scales(nthint(lines[i+8], 0)).name]
@@ -382,6 +384,7 @@ class GudrunFile:
         -------
         None
         """
+
 
         try:
             # Initialise normalisation attribute

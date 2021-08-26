@@ -1,17 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 VERSION = "0.0.1"
-SEP = os.path.sep
-SUFFIX = ""
-if os.name == "nt":
-    SUFFIX = ".exe"
+binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
 block_cipher = None
-print(os.name)
-import sys
 
 a = Analysis(['main.py'],
              pathex=[os.path.dirname(os.path.abspath('main.py'))],
-             binaries=[('bin' + SEP + 'gudrun_dcs' + SUFFIX, '.'), ('bin' + SEP + 'calc_corrsx_in_out' + SUFFIX, '.'), ('bin' + SEP + 'purge_det' + SUFFIX, '.'), ('bin' + SEP + 'tophatsub' + SUFFIX, '.')],
-             datas=[('bin' + SEP + 'StartupFiles', '.')],
+             binaries=binaries,
+             datas=[(os.path.join("bin", "StartupFiles"), "StartupFiles")],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
@@ -43,6 +38,31 @@ exe = EXE(pyz,
           codesign_identity=None,
           entitlements_file=None )
 
+import sys
 if sys.platform == "darwin":
     app = BUNDLE(exe,
                 name=f'GudPy-{VERSION}.app')
+elif os.name == "nt":
+    exe1 = EXE(pyz,
+            a.scripts,
+            [],
+            exclude_binaries=True,
+            name=f'GudPy-{VERSION}',
+            debug=False,
+            bootloader_ignore_signals=False,
+            strip=False,
+            upx=True,
+            console=True,
+            disable_windowed_traceback=False,
+            target_arch=None,
+            codesign_identity=None,
+            entitlements_file=None )
+    coll = COLLECT(exe1,
+                a.binaries,
+                a.zipfiles,
+                a.datas, 
+                strip=False,
+                upx=True,
+                upx_exclude=[],
+                name=f'GudPy-{VERSION}')
+    

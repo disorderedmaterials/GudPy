@@ -542,7 +542,6 @@ class TestGudPyIO(TestCase):
         for f in os.listdir():
             if f not in self.keepsakes:
                 os.remove(f)
-
         return super().tearDown()
 
     def testLoadGudrunFile(self):
@@ -1108,6 +1107,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         for i in range(len(expectedSampleA.keys())):
+
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
