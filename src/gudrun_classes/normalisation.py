@@ -1,8 +1,9 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from src.gudrun_classes.config import geometry
+
 
 class Normalisation:
     """
@@ -31,7 +32,8 @@ class Normalisation:
     upstreamThickness : float
         Upstream thickness of the normalisation - if its geometry is FLATPLATE.
     downstreamThickness : float
-        Downstream thickness of the normalisation - if its geometry is FLATPLATE.
+        Downstream thickness of the normalisation - if its geometry
+        is FLATPLATE.
     angleOfRotation : float
         Angle of rotation of the normalisation - if its geometry is FLATPLATE.
     sampleWidth : float
@@ -50,7 +52,7 @@ class Normalisation:
         Temperature for Placzek correction.
     totalCrossSectionSource : str
         TABLES / TRANSMISSION monitor / filename
-    normalisationDifferentialCrossSectionFilename : str
+    normalisationDifferentialCrossSectionFile : str
         Name of the normalisation differential cross section file.
     lowerLimitSmoothedNormalisation : float
         Lowest accepted value for smoothed Vanadium.
@@ -83,14 +85,14 @@ class Normalisation:
         self.downstreamThickness = 0.0
         self.angleOfRotation = 0.0
         self.sampleWidth = 0.0
-        self.innerRadius = 0.0 
+        self.innerRadius = 0.0
         self.outerRadius = 0.0
         self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0.0
         self.totalCrossSectionSource = ""
-        self.normalisationDifferentialCrossSectionFilename = ""
+        self.normalisationDifferentialCrossSectionFile = ""
         self.lowerLimitSmoothedNormalisation = 0.0
         self.normalisationDegreeSmoothing = 0.0
         self.minNormalisationSignalBR = 0.0
@@ -131,8 +133,12 @@ class Normalisation:
             f'Upstream and downstream thickness [cm]\n'
             f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
-            if (self.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE)
-            or self.geometry == Geometry.FLATPLATE
+            if (
+                (
+                    self.geometry == Geometry.SameAsBeam
+                    and geometry == Geometry.FLATPLATE
+                )
+                or self.geometry == Geometry.FLATPLATE)
             else
             f'{self.innerRadius}  {self.outerRadius}{TAB}'
             f'Inner and outer radii [cm]\n'
@@ -171,7 +177,7 @@ class Normalisation:
             f'Temperature for normalisation Placzek correction\n'
             f'{self.totalCrossSectionSource}{TAB}'
             f'Total cross section source\n'
-            f'{self.normalisationDifferentialCrossSectionFilename}{TAB}'
+            f'{self.normalisationDifferentialCrossSectionFile}{TAB}'
             f'Normalisation differential cross section filename\n'
             f'{self.lowerLimitSmoothedNormalisation}{TAB}'
             f'Lower limit on smoothed normalisation\n'

@@ -48,6 +48,7 @@ def extract_floats_from_string(string):
             break
     return ret
 
+
 def isfloat(string):
     try:
         float(string)
@@ -64,6 +65,7 @@ def extract_nums_from_string(string):
     if string:
         ret = [x for x in string.split(" ") if isnumeric(x)]
         return [float(x) if '.' in x else int(x) for x in ret]
+
 
 def consume(iterable, n):
 
@@ -90,14 +92,18 @@ def isin(iter1, iter2):
                 return True, j
         return False, 0
 
+
 def nthword(string, n):
     return string.split()[n]
+
 
 def nthint(string, n):
     return int(nthword(string, n))
 
+
 def nthfloat(string, n):
     return float(nthword(string, n))
+
 
 def firstNInts(string, n):
     ints = [int(x) for x in string.split()[:n]]
@@ -106,12 +112,15 @@ def firstNInts(string, n):
     else:
         return ints
 
+
 def firstNFloats(string, n):
     floats = [float(x) for x in string.split()[:n]]
     if len(floats) != n:
         raise ValueError(f"Could not find {n} floats in {string}")
     else:
         return floats
+
+
 def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
     iterable = [
         str(i)

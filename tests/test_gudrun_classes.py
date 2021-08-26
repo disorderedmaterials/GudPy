@@ -136,7 +136,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.tempForNormalisationPC, float)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
         self.assertIsInstance(
-            normalisation.normalisationDifferentialCrossSectionFilename, str
+            normalisation.normalisationDifferentialCrossSectionFile, str
         )
         self.assertIsInstance(
             normalisation.lowerLimitSmoothedNormalisation, float

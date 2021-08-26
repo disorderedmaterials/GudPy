@@ -1,4 +1,4 @@
-from src.scripts.utils import bjoin, spacify, numifyBool
+from src.scripts.utils import bjoin, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
@@ -171,7 +171,10 @@ class Sample:
             f'Upstream and downstream thickness [cm]\n'
             f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
             f'Angle of rotation and sample width (cm)\n'
-            if (self.geometry == Geometry.SameAsBeam and geometry == Geometry.FLATPLATE)
+            if (
+                self.geometry == Geometry.SameAsBeam
+                and geometry == Geometry.FLATPLATE
+            )
             or self.geometry == Geometry.FLATPLATE
             else
             f'{self.innerRadius}  {self.outerRadius}{TAB}'

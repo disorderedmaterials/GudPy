@@ -1,4 +1,3 @@
-from src.scripts.utils import spacify
 from src.gudrun_classes.data_files import DataFiles
 
 
