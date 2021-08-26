@@ -14,7 +14,7 @@ class Beam:
         geometry of the beam (FLATPLATE / CYLINDRICAL).
     noBeamProfileValues : int
         number of beam profile values.
-    beamProfileValues : int[]
+    beamProfileValues : float[]
         list of beam profile values.
     stepSizeAbsorption : float
         Step size for absorption calculations.
@@ -65,7 +65,7 @@ class Beam:
         self.stepSizeAbsorption = 0.0
         self.stepSizeMS = 0.0
         self.noSlices = 0
-        self.angularStepForCorrections = 0
+        self.angularStepForCorrections = 0.0
         self.incidentBeamLeftEdge = 0.0
         self.incidentBeamRightEdge = 0.0
         self.incidentBeamTopEdge = 0.0
