@@ -428,7 +428,7 @@ class GudrunFile:
             # +ve means it is chemical (gm/cm^3)
             self.normalisation.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
 
-            self.normalisation.tempForNormalisationPC = nthint(lines[j+4], 0)
+            self.normalisation.tempForNormalisationPC = nthfloat(lines[j+4], 0)
             self.normalisation.totalCrossSectionSource = firstword(lines[j+5])
             self.normalisation.normalisationDifferentialCrossSectionFilename = firstword(lines[j+6])
             self.normalisation.lowerLimitSmoothedNormalisation = nthfloat(lines[j+7], 0)

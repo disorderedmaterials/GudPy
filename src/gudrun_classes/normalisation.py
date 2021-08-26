@@ -46,7 +46,7 @@ class Normalisation:
         Density of normalisation
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
-    tempForNormalisationPC : int
+    tempForNormalisationPC : float
         Temperature for Placzek correction.
     totalCrossSectionSource : str
         TABLES / TRANSMISSION monitor / filename
@@ -88,7 +88,7 @@ class Normalisation:
         self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
-        self.tempForNormalisationPC = 0
+        self.tempForNormalisationPC = 0.0
         self.totalCrossSectionSource = ""
         self.normalisationDifferentialCrossSectionFilename = ""
         self.lowerLimitSmoothedNormalisation = 0.0
