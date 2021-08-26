@@ -385,7 +385,6 @@ class GudrunFile:
         None
         """
 
-
         try:
             # Initialise normalisation attribute
             # to a new instance of Normalisation.
