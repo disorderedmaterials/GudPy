@@ -100,11 +100,18 @@ def nthfloat(string, n):
     return float(nthword(string, n))
 
 def firstNInts(string, n):
-    return [int(x) for x in string.split()[:n]]
+    ints = [int(x) for x in string.split()[:n]]
+    if len(ints) != n:
+        raise ValueError(f"Could not find {n} ints in {string}")
+    else:
+        return ints
 
 def firstNFloats(string, n):
-    return [float(x) for x in string.split()[:n]]
-
+    floats = [float(x) for x in string.split()[:n]]
+    if len(floats) != n:
+        raise ValueError(f"Could not find {n} floats in {string}")
+    else:
+        return floats
 def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
     iterable = [
         str(i)
