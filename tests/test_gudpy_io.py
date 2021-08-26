@@ -1080,7 +1080,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)
         expectedSampleA.pop("sampleHeight", None)
-
+        self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         for i in range(len(expectedSampleA.keys())):
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1103,7 +1103,6 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            # print(list(expectedSampleA.keys())[i])
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 with self.assertRaises(ParserException) as cm:
@@ -1123,6 +1122,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)
         expectedSampleA.pop("sampleHeight", None)
+        self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         for i in range(50):
             key = random.choice(list(expectedSampleA))
             j = list(expectedSampleA).index(key)
@@ -1132,7 +1132,6 @@ class TestGudPyIO(TestCase):
             ]
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
-            print(badSampleBackground)
             del badSampleBackground[j + 10]
             badSampleBackground = "\n".join(badSampleBackground)
             with open("test_data.txt", "w", encoding="utf-8") as f:
@@ -1149,7 +1148,6 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            print(list(expectedSampleA.keys())[i])
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 with self.assertRaises(ParserException) as cm:
@@ -1157,123 +1155,91 @@ class TestGudPyIO(TestCase):
                     self.assertEqual(("Whilst parsing Sample, an exception occured. The input file is most likely of an incorrect format, and some attributes were missing.",
                     str(cm.exception)))
 
-    # def testLoadMissingContainerAttributesSeq(self):
-    #     for i, key in enumerate(self.expectedContainerA.keys()):
-    #         if key in ["name", "dataFiles", "composition", "densityUnits"]:
-    #             continue
+    def testLoadMissingContainerAttributesSeq(self):
 
-    #         # Apply offsets to line numbers,
-    #         # to ensure that the index refers to
-    #         # the correct line for the corresponding key.
+        expectedContainerA = deepcopy(self.expectedContainerA)
+        expectedContainerA.pop("name", None)
+        expectedContainerA.pop("dataFiles", None)
+        expectedContainerA.pop("composition", None)
+        expectedContainerA.pop("densityUnits", None)
+        expectedContainerA.pop("innerRadius", None)
+        expectedContainerA.pop("outerRadius", None)
+        expectedContainerA.pop("sampleHeight", None)
+        self.goodSampleBackground.samples[0].containers[0].dataFiles = DataFiles([], "")
+        for i in range(len(expectedContainerA.keys())):
+            self.goodSampleBackground.samples = [
+                self.goodSampleBackground.samples[0]
+            ]
+            sbgStr = str(self.goodSampleBackground)
+            badSampleBackground = sbgStr.split("\n")
+            del badSampleBackground[i + 44]
+            badSampleBackground = "\n".join(badSampleBackground)
 
-    #         # Fix line number of attribute
-    #         # which stores the number of data files
-    #         # and period number, to the first line.
-    #         if i == 1:
-    #             i = 0
+            with open("test_data.txt", "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n"
+                    + str(self.goodInstrument)
+                    + "\n\n}"
+                )
+                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                f.write(
+                    "\n\nNORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}"
+                )
+                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+            with self.assertRaises(ParserException) as cm:
+                GudrunFile("test_data.txt")
+                with self.assertRaises(ParserException) as cm:
+                    GudrunFile("test_data.txt")
+                    self.assertEqual(("Whilst parsing Container, an exception occured. The input file is most likely of an incorrect format, and some attributes were missing.",
+                    str(cm.exception)))
 
-    #         # Apply positive offsets to fix index,
-    #         # which got skewed by the container data files
-    #         # and composition.
-    #         if i >= 2:
-    #             i += 3
+    def testLoadMissingContainerAttributesRand(self):
 
-    #         # Apply negative offset to fix index,
-    #         # which got skewed by densityUnits attribute.
-    #         if i >= 12:
-    #             i -= 1
+        expectedContainerA = deepcopy(self.expectedContainerA)
+        expectedContainerA.pop("name", None)
+        expectedContainerA.pop("dataFiles", None)
+        expectedContainerA.pop("composition", None)
+        expectedContainerA.pop("densityUnits", None)
+        expectedContainerA.pop("innerRadius", None)
+        expectedContainerA.pop("outerRadius", None)
+        expectedContainerA.pop("sampleHeight", None)
+        self.goodSampleBackground.samples[0].containers[0].dataFiles = DataFiles([], "")
+        
+        for i in range(50):
+            key = random.choice(list(expectedContainerA))
+            j = list(expectedContainerA).index(key)
 
-    #         self.goodSampleBackground.samples = [
-    #             self.goodSampleBackground.samples[0]
-    #         ]
-    #         sbgStr = str(self.goodSampleBackground)
-    #         badSampleBackground = sbgStr.split("\n")
-    #         del badSampleBackground[i + 44]
-    #         badSampleBackground = "\n".join(badSampleBackground)
+            self.goodSampleBackground.samples = [
+                self.goodSampleBackground.samples[0]
+            ]
+            sbgStr = str(self.goodSampleBackground)
+            badSampleBackground = sbgStr.split("\n")
+            del badSampleBackground[j + 44]
 
-    #         with open("test_data.txt", "w", encoding="utf-8") as f:
-    #             f.write("'  '  '        '  '/'\n\n")
-    #             f.write(
-    #                 "INSTRUMENT        {\n\n"
-    #                 + str(self.goodInstrument)
-    #                 + "\n\n}"
-    #             )
-    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-    #             f.write(
-    #                 "\n\nNORMALISATION        {\n\n"
-    #                 + str(self.goodNormalisation)
-    #                 + "\n\n}"
-    #             )
-    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-    #         with self.assertRaises(ValueError) as cm:
-    #             GudrunFile("test_data.txt")
-    #         self.assertEqual(
-    #             "Whilst parsing {}, {} was not found".format(
-    #                 self.expectedContainerA["name"], key
-    #             ),
-    #             str(cm.exception),
-    #         )
-    #         os.remove("test_data.txt")
-
-    # def testLoadMissingContainerAttributesRand(self):
-    #     for i in range(50):
-    #         key = random.choice(list(self.expectedContainerA))
-    #         j = list(self.expectedContainerA).index(key)
-    #         if key in ["name", "dataFiles", "composition", "densityUnits"]:
-    #             continue
-
-    #         # Apply offsets to line numbers,
-    #         # to ensure that the index refers to
-    #         # the correct line for the corresponding key.
-
-    #         # Fix line number of attribute
-    #         # which stores the number of data files
-    #         # and period number, to the first line.
-    #         if j == 1:
-    #             j = 0
-
-    #         # Apply positive offsets to fix index,
-    #         # which got skewed by the container data files
-    #         # and composition.
-    #         if j >= 2:
-    #             j += 3
-
-    #         # Apply negative offset to fix index,
-    #         # which got skewed by densityUnits attribute.
-    #         if j >= 12:
-    #             j -= 1
-
-    #         self.goodSampleBackground.samples = [
-    #             self.goodSampleBackground.samples[0]
-    #         ]
-    #         sbgStr = str(self.goodSampleBackground)
-    #         badSampleBackground = sbgStr.split("\n")
-    #         del badSampleBackground[j + 44]
-
-    #         badSampleBackground = "\n".join(badSampleBackground)
-    #         with open("test_data.txt", "w", encoding="utf-8") as f:
-    #             f.write("'  '  '        '  '/'\n\n")
-    #             f.write(
-    #                 "INSTRUMENT        {\n\n"
-    #                 + str(self.goodInstrument)
-    #                 + "\n\n}"
-    #             )
-    #             f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-    #             f.write(
-    #                 "\n\nNORMALISATION        {\n\n"
-    #                 + str(self.goodNormalisation)
-    #                 + "\n\n}"
-    #             )
-    #             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-    #         with self.assertRaises(ValueError) as cm:
-    #             GudrunFile("test_data.txt")
-    #         self.assertEqual(
-    #             "Whilst parsing {}, {} was not found".format(
-    #                 self.expectedContainerA["name"], key
-    #             ),
-    #             str(cm.exception),
-    #         )
-    #         os.remove("test_data.txt")
+            badSampleBackground = "\n".join(badSampleBackground)
+            with open("test_data.txt", "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n"
+                    + str(self.goodInstrument)
+                    + "\n\n}"
+                )
+                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                f.write(
+                    "\n\nNORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}"
+                )
+                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+            with self.assertRaises(ParserException) as cm:
+                GudrunFile("test_data.txt")
+                with self.assertRaises(ParserException) as cm:
+                    GudrunFile("test_data.txt")
+                    self.assertEqual(("Whilst parsing Container, an exception occured. The input file is most likely of an incorrect format, and some attributes were missing.",
+                    str(cm.exception)))
 
     def testZeroExitGudrun(self):
 
