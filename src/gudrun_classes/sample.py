@@ -48,6 +48,8 @@ class Sample:
         Density of the sample
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
+    tempForNormalisationPC : float
+        Temperature for Placzek Correction.
     overallBackgroundFactor : float
         Background factor.
     totalCrossSectionSource : str
@@ -78,7 +80,7 @@ class Sample:
     powerForBroadening : float
         Broadening power
         0 = constant, 0.5 = sqrt(r), 1 = r
-    stepSize : int
+    stepSize : float
         Step size in radius for final g(r).
     include : bool
         Should the sample be included in analysis?
@@ -119,7 +121,7 @@ class Sample:
         self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
-        self.tempForNormalisationPC = 0
+        self.tempForNormalisationPC = 0.0
         self.totalCrossSectionSource = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0

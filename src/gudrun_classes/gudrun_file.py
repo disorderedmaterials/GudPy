@@ -575,7 +575,7 @@ class GudrunFile:
             sample.density = abs(density)
             sample.densityUnits = UnitsOfDensity.ATOMIC if density < 0 else UnitsOfDensity.CHEMICAL
 
-            sample.tempForNormalisationPC = nthint(lines[i+4], 0)
+            sample.tempForNormalisationPC = nthfloat(lines[i+4], 0)
             sample.totalCrossSectionSource = firstword(lines[i+5])
             sample.sampleTweakFactor = nthfloat(lines[i+6], 0)
             sample.topHatW = nthfloat(lines[i+7], 0)
