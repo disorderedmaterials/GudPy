@@ -55,7 +55,7 @@ class TestGudrunClasses(TestCase):
             instrument.transmissionMonitorQuietCountConst, float
         )
         self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
-        self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, int)
+        self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, float)
         self.assertIsInstance(instrument.wavelengthMin, float)
         self.assertIsInstance(instrument.wavelengthMax, float)
         self.assertIsInstance(instrument.wavelengthStep, float)
@@ -133,7 +133,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.sampleHeight, float)
         self.assertIsInstance(normalisation.density, float)
         self.assertIsInstance(normalisation.densityUnits, UnitsOfDensity)
-        self.assertIsInstance(normalisation.tempForNormalisationPC, int)
+        self.assertIsInstance(normalisation.tempForNormalisationPC, float)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
         self.assertIsInstance(
             normalisation.normalisationDifferentialCrossSectionFilename, str
@@ -177,7 +177,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.sampleHeight, float)
         self.assertIsInstance(sample.density, float)
         self.assertIsInstance(sample.densityUnits, UnitsOfDensity)
-        self.assertIsInstance(sample.tempForNormalisationPC, int)
+        self.assertIsInstance(sample.tempForNormalisationPC, float)
         self.assertIsInstance(sample.totalCrossSectionSource, str)
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
