@@ -662,16 +662,26 @@ class TestGudPyIO(TestCase):
                     self.assertTrue(
                         spacify(value) in lines
                         or spacify(value, num_spaces=2) in lines
+                        or spacify([int(x) for x in value]) in lines
+                        or spacify(
+                            [int(x) for x in value], num_spaces=2
+                        ) in lines
                     )
             elif isinstance(value, bool):
                 self.assertTrue(str(numifyBool(value)) in lines)
             elif isinstance(value, Enum):
-                self.assertTrue(str(value.value) in lines)
+                self.assertTrue(
+                    str(value.value) in lines
+                    or value.name in lines
+                )
             else:
                 if "        " in str(value):
                     self.assertTrue(str(value).split("        ")[0] in lines)
                 else:
-                    self.assertTrue(str(value) in lines)
+                    self.assertTrue(
+                        str(value) in lines
+                        or str(int(value)) in lines
+                    )
 
         for dic in self.dicts:
             for value in dic.values():
@@ -1083,15 +1093,14 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
-            with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Sample Background, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+        with self.assertRaises(ParserException) as cm:
+            GudrunFile("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing Sample Background, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing.",
+                str(cm.exception)
+            )
 
     def testLoadMissingSampleAttributesSeq(self):
 
