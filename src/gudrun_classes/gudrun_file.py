@@ -174,6 +174,10 @@ class GudrunFile:
             self.instrument.wavelengthRangeForMonitorNormalisation = (
                 tuple(firstNFloats(lines[9], 2))
             )
+
+            if all(self.instrument.wavelengthRangeForMonitorNormalisation) == 0.0:
+                self.instrument.wavelengthRangeForMonitorNormalisation = (0, 0)
+
             self.instrument.spectrumNumbersForTransmissionMonitor = (
                 extract_ints_from_string(lines[10])
             )

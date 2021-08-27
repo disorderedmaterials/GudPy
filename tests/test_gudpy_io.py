@@ -42,7 +42,7 @@ class TestGudPyIO(TestCase):
             "deadtimeConstantsFileName":
                 "StartupFiles/NIMROD/NIMRODdeadtimeNone.cor",
             "spectrumNumbersForIncidentBeamMonitor": [4, 5],
-            "wavelengthRangeForMonitorNormalisation": (0.0, 0.0),
+            "wavelengthRangeForMonitorNormalisation": (0, 0),
             "spectrumNumbersForTransmissionMonitor": [8, 9],
             "incidentMonitorQuietCountConst": 0.0001,
             "transmissionMonitorQuietCountConst": 0.0001,
@@ -55,7 +55,7 @@ class TestGudPyIO(TestCase):
             "XMin": 0.01,
             "XMax": 50.0,
             "XStep": -0.025,
-            "useLogarithmicBinning": False,
+            "useLogarithmicBinning": True,
             "groupingParameterPanel": [],
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
@@ -987,7 +987,9 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         self.goodNormalisation.dataFiles = DataFiles([], "")
-
+        self.goodNormalisation.composition = (
+            Composition([], "")
+        )
         for i in range(len(expectedNormalisation.keys())):
 
             badNormalisation = str(self.goodNormalisation).split("\n")
@@ -1028,7 +1030,9 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         self.goodNormalisation.dataFiles = DataFiles([], "")
-
+        self.goodNormalisation.composition = (
+            Composition([], "")
+        )
         for i in range(50):
 
             key = random.choice(list(expectedNormalisation))
@@ -1100,7 +1104,14 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)
         expectedSampleA.pop("sampleHeight", None)
+        expectedSampleA.pop("resonanceValues", None)
+        expectedSampleA.pop("exponentialValues", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
+        self.goodSampleBackground.samples[0].composition = (
+            Composition([], "")
+        )
+        self.goodSampleBackground.samples[0].resonanceValues = []
+        self.goodSampleBackground.samples[0].exponentialValues = []
         for i in range(len(expectedSampleA.keys())):
 
             self.goodSampleBackground.samples = [
@@ -1146,7 +1157,14 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)
         expectedSampleA.pop("sampleHeight", None)
+        expectedSampleA.pop("resonanceValues", None)
+        expectedSampleA.pop("exponentialValues", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
+        self.goodSampleBackground.samples[0].composition = (
+            Composition([], "")
+        )
+        self.goodSampleBackground.samples[0].resonanceValues = []
+        self.goodSampleBackground.samples[0].exponentialValues = []
         for i in range(50):
             key = random.choice(list(expectedSampleA))
             j = list(expectedSampleA).index(key)
@@ -1157,6 +1175,7 @@ class TestGudPyIO(TestCase):
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
             del badSampleBackground[j + 10]
+
             badSampleBackground = "\n".join(badSampleBackground)
             with open("test_data.txt", "w", encoding="utf-8") as f:
                 f.write("'  '  '        '  '/'\n\n")
@@ -1192,8 +1211,12 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("innerRadius", None)
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
+        expectedContainerA.pop("geometry", None)
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
+        )
+        self.goodSampleBackground.samples[0].containers[0].composition = (
+            Composition([], "")
         )
         for i in range(len(expectedContainerA.keys())):
             self.goodSampleBackground.samples = [
@@ -1218,7 +1241,6 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 self.assertEqual(
@@ -1238,10 +1260,13 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("innerRadius", None)
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
+        expectedContainerA.pop("geometry", None)
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
-
+        self.goodSampleBackground.samples[0].containers[0].composition = (
+            Composition([], "")
+        )
         for i in range(50):
             key = random.choice(list(expectedContainerA))
             j = list(expectedContainerA).index(key)
@@ -1268,7 +1293,6 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 self.assertEqual(
