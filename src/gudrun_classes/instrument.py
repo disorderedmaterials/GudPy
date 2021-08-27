@@ -230,6 +230,9 @@ class Instrument:
             ""
         )
 
+        if self.wavelengthRangeForMonitorNormalisation == (0.,0.):
+            self.wavelengthRangeForMonitorNormalisation = (0,0)
+
         return (
             f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
