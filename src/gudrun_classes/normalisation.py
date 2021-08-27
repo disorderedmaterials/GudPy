@@ -16,7 +16,7 @@ class Normalisation:
     periodNumber : int
         Period number for data files.
     dataFiles : DataFiles
-        DataFiles object storing data files belonging to the container.
+        DataFiles object storing data files belonging to the normalisation.
     periodNumberBg : int
         Period number for background data files.
     dataFilesBg : DataFiles
