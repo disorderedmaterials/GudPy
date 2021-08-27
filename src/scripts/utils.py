@@ -93,6 +93,34 @@ def isin(iter1, iter2):
         return False, 0
 
 
+def nthword(string, n):
+    return string.split()[n]
+
+
+def nthint(string, n):
+    return int(nthword(string, n))
+
+
+def nthfloat(string, n):
+    return float(nthword(string, n))
+
+
+def firstNInts(string, n):
+    ints = [int(x) for x in string.split()[:n]]
+    if len(ints) != n:
+        raise ValueError(f"Could not find {n} ints in {string}")
+    else:
+        return ints
+
+
+def firstNFloats(string, n):
+    floats = [float(x) for x in string.split()[:n]]
+    if len(floats) != n:
+        raise ValueError(f"Could not find {n} floats in {string}")
+    else:
+        return floats
+
+
 def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
     iterable = [
         str(i)

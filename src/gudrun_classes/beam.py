@@ -10,17 +10,17 @@ class Beam:
 
     Attributes
     ----------
-    sampleGeometry : str
-        geometry of the sample (FLATPLATE / CYLINDRICAL).
+    sampleGeometry : Geometry
+        geometry of the beam (FLATPLATE / CYLINDRICAL).
     noBeamProfileValues : int
         number of beam profile values.
-    beamProfileValues : int[]
+    beamProfileValues : float[]
         list of beam profile values.
     stepSizeAbsorption : float
         Step size for absorption calculations.
     stepSizeMS : float
         Step size for m.s calculation.
-    noSlices : float
+    noSlices : int
         Number of slices for m.s calculation.
     angularStepForCorrections : int
         Angular step size to be used in corrections [deg.].

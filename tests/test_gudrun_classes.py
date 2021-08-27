@@ -55,7 +55,7 @@ class TestGudrunClasses(TestCase):
             instrument.transmissionMonitorQuietCountConst, float
         )
         self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
-        self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, int)
+        self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, float)
         self.assertIsInstance(instrument.wavelengthMin, float)
         self.assertIsInstance(instrument.wavelengthMax, float)
         self.assertIsInstance(instrument.wavelengthStep, float)
@@ -80,6 +80,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.startupFileFolder, str)
         self.assertIsInstance(instrument.logarithmicStepSize, float)
         self.assertIsInstance(instrument.hardGroupEdges, bool)
+        self.assertIsInstance(instrument.nxsDefinitionFile, str)
         self.assertIsInstance(instrument.numberIterations, int)
         self.assertIsInstance(instrument.tweakTweakFactors, bool)
 
@@ -112,23 +113,28 @@ class TestGudrunClasses(TestCase):
         normalisation = Normalisation()
 
         self.assertIsInstance(normalisation, Normalisation)
-        self.assertIsInstance(normalisation.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(normalisation.periodNumber, int)
         self.assertIsInstance(normalisation.dataFiles, DataFiles)
-        self.assertIsInstance(normalisation.numberOfFilesPeriodNumberBg, tuple)
+        self.assertIsInstance(normalisation.periodNumberBg, int)
         self.assertIsInstance(normalisation.dataFilesBg, DataFiles)
         self.assertIsInstance(
             normalisation.forceCalculationOfCorrections, bool
         )
         self.assertIsInstance(normalisation.composition, Composition)
-        self.assertIsInstance(normalisation.geometry, str)
-        self.assertIsInstance(normalisation.thickness, tuple)
-        self.assertIsInstance(normalisation.angleOfRotationSampleWidth, tuple)
+        self.assertIsInstance(normalisation.geometry, Geometry)
+        self.assertIsInstance(normalisation.upstreamThickness, float)
+        self.assertIsInstance(normalisation.downstreamThickness, float)
+        self.assertIsInstance(normalisation.angleOfRotation, float)
+        self.assertIsInstance(normalisation.sampleWidth, float)
+        self.assertIsInstance(normalisation.innerRadius, float)
+        self.assertIsInstance(normalisation.outerRadius, float)
+        self.assertIsInstance(normalisation.sampleHeight, float)
         self.assertIsInstance(normalisation.density, float)
         self.assertIsInstance(normalisation.densityUnits, UnitsOfDensity)
-        self.assertIsInstance(normalisation.tempForNormalisationPC, int)
+        self.assertIsInstance(normalisation.tempForNormalisationPC, float)
         self.assertIsInstance(normalisation.totalCrossSectionSource, str)
         self.assertIsInstance(
-            normalisation.normalisationDifferentialCrossSectionFilename, str
+            normalisation.normalisationDifferentialCrossSectionFile, str
         )
         self.assertIsInstance(
             normalisation.lowerLimitSmoothedNormalisation, float
@@ -143,9 +149,7 @@ class TestGudrunClasses(TestCase):
         sampleBackground = SampleBackground()
 
         self.assertIsInstance(sampleBackground, SampleBackground)
-        self.assertIsInstance(
-            sampleBackground.numberOfFilesPeriodNumber, tuple
-        )
+        self.assertIsInstance(sampleBackground.periodNumber, int)
         self.assertIsInstance(sampleBackground.dataFiles, DataFiles)
         self.assertIsInstance(sampleBackground.samples, list)
 
@@ -155,23 +159,38 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(sample, Sample)
         self.assertIsInstance(sample.name, str)
-        self.assertIsInstance(sample.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(sample.periodNumber, int)
         self.assertIsInstance(sample.dataFiles, DataFiles)
         self.assertIsInstance(sample.forceCalculationOfCorrections, bool)
         self.assertIsInstance(sample.composition, Composition)
         self.assertIsInstance(sample.geometry, Geometry)
-        self.assertIsInstance(sample.thickness, tuple)
-        self.assertIsInstance(sample.angleOfRotationSampleWidth, tuple)
+        self.assertIsInstance(sample.upstreamThickness, float)
+        self.assertIsInstance(sample.downstreamThickness, float)
+        self.assertIsInstance(sample.angleOfRotation, float)
+        self.assertIsInstance(sample.sampleWidth, float)
+        self.assertIsInstance(sample.innerRadius, float)
+        self.assertIsInstance(sample.outerRadius, float)
+        self.assertIsInstance(sample.sampleHeight, float)
         self.assertIsInstance(sample.density, float)
         self.assertIsInstance(sample.densityUnits, UnitsOfDensity)
-        self.assertIsInstance(sample.tempForNormalisationPC, int)
+        self.assertIsInstance(sample.tempForNormalisationPC, float)
         self.assertIsInstance(sample.totalCrossSectionSource, str)
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
         self.assertIsInstance(sample.minRadFT, float)
-        self.assertIsInstance(sample.maxRadFT, float)
+        self.assertIsInstance(sample.grBroadening, float)
+        self.assertIsInstance(sample.resonanceValues, list)
+        self.assertIsInstance(sample.exponentialValues, list)
+        self.assertIsInstance(sample.fileSelfScattering, str)
         self.assertIsInstance(sample.normaliseTo, NormalisationType)
+        self.assertIsInstance(sample.maxRadFT, float)
         self.assertIsInstance(sample.outputUnits, OutputUnits)
+        self.assertIsInstance(sample.powerForBroadening, float)
+        self.assertIsInstance(sample.include, bool)
+        self.assertIsInstance(sample.scatteringFraction, float)
+        self.assertIsInstance(sample.attenuationCoefficient, float)
+        self.assertIsInstance(sample.containers, list)
+        self.assertIsInstance(sample.runThisSample, bool)
 
     def testContainerInitDataTypes(self):
 
@@ -179,19 +198,23 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(container, Container)
         self.assertIsInstance(container.name, str)
-        self.assertIsInstance(container.numberOfFilesPeriodNumber, tuple)
+        self.assertIsInstance(container.periodNumber, int)
         self.assertIsInstance(container.dataFiles, DataFiles)
         self.assertIsInstance(container.composition, Composition)
-        self.assertIsInstance(container.geometry, str)
-        self.assertIsInstance(container.thickness, tuple)
-        self.assertIsInstance(container.angleOfRotationSampleWidth, tuple)
+        self.assertIsInstance(container.geometry, Geometry)
+        self.assertIsInstance(container.upstreamThickness, float)
+        self.assertIsInstance(container.downstreamThickness, float)
+        self.assertIsInstance(container.angleOfRotation, float)
+        self.assertIsInstance(container.sampleWidth, float)
+        self.assertIsInstance(container.innerRadius, float)
+        self.assertIsInstance(container.outerRadius, float)
+        self.assertIsInstance(container.sampleHeight, float)
         self.assertIsInstance(container.density, float)
         self.assertIsInstance(container.densityUnits, UnitsOfDensity)
         self.assertIsInstance(container.totalCrossSectionSource, str)
         self.assertIsInstance(container.tweakFactor, float)
-        self.assertIsInstance(
-            container.scatteringFractionAttenuationCoefficient, tuple
-        )
+        self.assertIsInstance(container.scatteringFraction, float)
+        self.assertIsInstance(container.attenuationCoefficient, float)
 
     def testCompositionInitDataTypes(self):
 

@@ -62,10 +62,10 @@ class TestPurgeFile(TestCase):
             "standardDeviation": (10, 10),
             "ignoreBad": True,
             "normalisationPeriodNo": (
-                self.g.normalisation.numberOfFilesPeriodNumber[1]
+                self.g.normalisation.periodNumber
                 ),
             "normalisationPeriodNoBg": (
-                self.g.normalisation.numberOfFilesPeriodNumberBg[1]
+                self.g.normalisation.periodNumberBg
             ),
             "normalisationDataFiles": (
                 f'{self.g.normalisation.dataFiles.dataFiles[0]}  1{TAB}\n'

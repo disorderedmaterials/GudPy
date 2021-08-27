@@ -1,17 +1,20 @@
+from src.gudrun_classes.exception import ParserException
 import sys
 import os
 from os.path import isfile
 import subprocess
 import time
 from copy import deepcopy
-
 from src.scripts.utils import (
-        iteristype, isin,
+        extract_nums_from_string,
         firstword, boolifyNum,
         extract_ints_from_string,
         extract_floats_from_string,
-        extract_nums_from_string,
-        count_occurrences)
+        firstNFloats,
+        firstNInts,
+        nthfloat,
+        nthint
+)
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
@@ -27,6 +30,7 @@ from src.gudrun_classes.enums import (
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
+from src.gudrun_classes.config import geometry
 
 
 class GudrunFile:
@@ -141,398 +145,158 @@ class GudrunFile:
         -------
         None
         """
+        try:
+            # Initialise instrument attribute to a new instance of Intrument.
+            self.instrument = Instrument()
 
-        self.instrument = Instrument()
+            # For string attributes,
+            # we simply extract the firstword in the line.
+            self.instrument.name = Instruments[firstword(lines[0])]
+            self.instrument.GudrunInputFileDir = firstword(lines[1])
+            self.instrument.dataFileDir = firstword(lines[2])
+            self.instrument.dataFileType = firstword(lines[3])
+            self.instrument.detectorCalibrationFileName = firstword(lines[4])
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "name": "Instrument name",
-            "GudrunInputFileDir": "Gudrun input file dir",
-            "dataFileDir": "Data file dir",
-            "dataFileType": "Data file type",
-            "detectorCalibrationFileName": "Detector calibration",
-            "columnNoPhiVals": "phi values",
-            "groupFileName": "Groups file name",
-            "deadtimeConstantsFileName": "Deadtime constants",
-            "spectrumNumbersForIncidentBeamMonitor": [
-                "Spectrum",
-                "number",
-                "incident",
-            ],
-            "wavelengthRangeForMonitorNormalisation": [
-                "Wavelength",
-                "range",
-                "normalisation",
-            ],
-            "spectrumNumbersForTransmissionMonitor": [
-                "Spectrum",
-                "number",
-                "transmission",
-            ],
-            "incidentMonitorQuietCountConst": ["Incident", "quiet", "count"],
-            "transmissionMonitorQuietCountConst": [
-                "Transmission",
-                "quiet",
-                "count",
-            ],
-            "channelNosSpikeAnalysis": "Channel numbers",
-            "spikeAnalysisAcceptanceFactor": "Spike analysis acceptance",
-            "wavelengthMin": ["Wavelength", "range", "step", "size"],
-            "NoSmoothsOnMonitor": "smooths on monitor",
-            "XMin": "x-scale",
-            "groupsAcceptanceFactor": "Groups acceptance",
-            "mergePower": "Merge power",
-            "subSingleAtomScattering": ["single", "atom", "scattering?"],
-            "mergeWeights": ["By", "?"],
-            "incidentFlightPath": "Incident flight path",
-            "spectrumNumberForOutputDiagnosticFiles": [
-                "Spectrum",
-                "number",
-                "diagnostic",
-            ],
-            "neutronScatteringParametersFile": "Neutron scattering parameters",
-            "scaleSelection": "Scale selection",
-            "subWavelengthBinnedData": ["Subtract", "wavelength-binned"],
-            "GudrunStartFolder": "Folder where Gudrun started",
-            "startupFileFolder": "Folder containing the startup file",
-            "logarithmicStepSize": "Logarithmic step size",
-            "hardGroupEdges": "edges?",
-            "numberIterations": "iterations",
-            "tweakTweakFactors": "tweak",
-        }
+            # For single integer attributes,
+            # we extract the zeroth int from the line.
+            self.instrument.columnNoPhiVals = nthint(lines[5], 0)
+            self.instrument.groupFileName = firstword(lines[6])
+            self.instrument.deadtimeConstantsFileName = firstword(lines[7])
 
-        # Extract marker line
-        lines = [
-            line
-            for line in lines
-            if "end input of specified values" not in line
-        ]
-
-        # Check if the grouping parameter panel
-        # attribute is present in the file
-        isGroupingParameterPanelUsed = [
-            line
-            for line in lines
-            if "Group, Xmin, Xmax, Background factor" in line
-        ]
-
-        for line in isGroupingParameterPanelUsed:
-            self.instrument.groupingParameterPanel.append(
-                tuple(
-                    extract_nums_from_string(line)
-                )
+            # For N integer attributes,
+            # we extract the first N integers from the line.
+            self.instrument.spectrumNumbersForIncidentBeamMonitor = (
+                extract_ints_from_string(lines[8])
             )
 
-        isNXS = [
-            line
-            for line in lines
-            if "NXS" in line or "nxs" in line or "NeXus" in line
-        ]
-
-        # If grouping parameter panel is not being used,
-        # remove its key from the dict
-        auxVars = deepcopy(self.instrument.__dict__)
-
-        # Pop these attributes, we will deal with them separately.
-        auxVars.pop("wavelengthMax", None)
-        auxVars.pop("wavelengthStep", None)
-        auxVars.pop("XMax", None)
-        auxVars.pop("XStep", None)
-        auxVars.pop("useLogarithmicBinning", None)
-        auxVars.pop("nxsDefinitionFile", None)
-        auxVars.pop("groupingParameterPanel", None)
-
-        # Map the attributes of the Instrument class to line numbers.
-
-        FORMAT_MAP = dict.fromkeys(auxVars.keys())
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-        # Categorise attributes by variables, for easier handling.
-
-        if isGroupingParameterPanelUsed:
-            for key in FORMAT_MAP.keys():
-                if FORMAT_MAP[key] > FORMAT_MAP["XMin"]:
-                    FORMAT_MAP[key] += len(isGroupingParameterPanelUsed)
-
-        if isNXS:
-            FORMAT_MAP["numberIterations"] += 1
-            FORMAT_MAP["tweakTweakFactors"] += 1
-
-        STRINGS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], str)
-            and not x == "nxsDefinitionFile"
-        ]
-        LISTS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], list)
-            and not x == "groupingParameterPanel"
-        ]
-        INTS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], int)
-            and not isinstance(self.instrument.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], float)
-        ]
-        BOOLS = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], bool)
-        ]
-        TUPLES = [
-            x
-            for x in self.instrument.__dict__.keys()
-            if isinstance(self.instrument.__dict__[x], tuple)
-        ]
-        TUPLE_INTS = [
-            x for x in TUPLES if iteristype(self.instrument.__dict__[x], int)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(self.instrument.__dict__[x], float)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Instrument name
-            - Gudrun input file directory
-            - Data file directory
-            - Data file type
-            - Detector calibration file name
-            - Group file name
-            - Deadtime constants file name
-            - Neutron scattering parameters file
-            - Gudrun start folder
-            - Startup file folder
-        """
-
-        for key in STRINGS:
-            try:
-                isin_, i = isin(KEYPHRASES[key], lines)
-                if not isin_:
-                    raise ValueError(
-                        "Whilst parsing INSTRUMENT, {} was not found".format(
-                            key
-                        )
-                    )
-                if i != FORMAT_MAP[key]:
-                    FORMAT_MAP[key] = i
-                self.instrument.__dict__[key] = firstword(
-                    lines[FORMAT_MAP[key]]
-                )
-            except IndexError:
-                continue
-        """
-        Get all attributes that are integers:
-            - User table column number for phi values
-            - Spike analysis acceptance factor
-            - Number of smooths on monitor
-            - Merge power
-            - Channel for subtracting single atom scattering
-            - Spectrum number for output diagnostic files
-            - Scale selection
-            - Number of iterations
-        """
-
-        for key in INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = int(
-                firstword(lines[FORMAT_MAP[key]])
+            # For integer pair attributes,
+            # we extract the first 2 integers from the line.
+            self.instrument.wavelengthRangeForMonitorNormalisation = (
+                tuple(firstNFloats(lines[9], 2))
             )
 
-        """
-        Get all attributes that are floats (doubles):
-            - Incident monitor quiet count constant
-            - Transmission monitor quiet count constant
-            - Groups acceptance factor
-            - Incident flight path
-            - Logarithmic step size
-        """
-
-        for key in FLOATS:
-            if key in ["XMax", "XStep", "wavelengthMax", "wavelengthStep"]:
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                if key == "XMin":
-                    raise ValueError(
-                        'Whilst parsing INSTRUMENT'
-                        ', Xmin, Xmax, XStep was not found'
-                    )
-                elif key == "wavelengthMin":
-                    raise ValueError(
-                        'Whilst parsing INSTRUMENT'
-                        ', wavelengthMin, wavelengthMax,'
-                        ' wavelengthStep was not found'
-                    )
-                else:
-                    raise ValueError(
-                        f'Whilst parsing INSTRUMENT, {key} was not found'
-                    )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "XMin":
-                XScale = extract_floats_from_string(
-                    lines[FORMAT_MAP[key]]
-                )
-                self.instrument.__dict__["XMin"] = XScale[0]
-                self.instrument.__dict__["XMax"] = XScale[1]
-                self.instrument.__dict__["XStep"] = XScale[2]
-                if len(XScale) > 3:
-                    if XScale[3] == -0.01:
-                        self.instrument.__dict__["useLogarithmicBinning"] = (
-                            True
-                        )
-            elif key == "wavelengthMin":
-                wScale = extract_floats_from_string(
-                    lines[FORMAT_MAP[key]]
-                )
-                self.instrument.__dict__["wavelengthMin"] = wScale[0]
-                self.instrument.__dict__["wavelengthMax"] = wScale[1]
-                self.instrument.__dict__["wavelengthStep"] = wScale[2]
-            else:
-                self.instrument.__dict__[key] = float(
-                    firstword(lines[FORMAT_MAP[key]])
+            if all(
+                self.instrument.wavelengthRangeForMonitorNormalisation
+            ) == 0.0:
+                self.instrument.wavelengthRangeForMonitorNormalisation = (
+                    0, 0
                 )
 
-        """
-        Get all attributes that are boolean values:
-            - Subtract single atom scattering?
-            - Subtract wavelength-binned data?
-            - Hard group edges?
-            - Tweak the tweak factor(s)?
-        """
-
-        for key in BOOLS:
-            if key == "useLogarithmicBinning":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = boolifyNum(
-                int(firstword(lines[FORMAT_MAP[key]]))
+            self.instrument.spectrumNumbersForTransmissionMonitor = (
+                extract_ints_from_string(lines[10])
             )
 
-        """
-        Get all attributes that need to be stored in arbitrary sized lists:
-            - Spectrum numbers for incident beam monitor
-            - Spectrum numbers for transmission monitor
-        """
+            # For single float attributes,
+            # we extract the zeroth float from the line.
+            self.instrument.incidentMonitorQuietCountConst = (
+                nthfloat(lines[11], 0)
+            )
+            self.instrument.transmissionMonitorQuietCountConst = (
+                nthfloat(lines[12], 0)
+            )
 
-        for key in LISTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
+            self.instrument.channelNosSpikeAnalysis = (
+                tuple(firstNInts(lines[13], 2))
+            )
+            self.instrument.spikeAnalysisAcceptanceFactor = (
+                nthfloat(lines[14], 0)
+            )
+
+            # Extract wavelength range
+            # Which consists of the first 3 floats
+            # (min, max, step) in the line.
+            wavelengthRange = firstNFloats(lines[15], 3)
+            self.instrument.wavelengthMin = wavelengthRange[0]
+            self.instrument.wavelengthMax = wavelengthRange[1]
+            self.instrument.wavelengthStep = wavelengthRange[2]
+
+            self.instrument.NoSmoothsOnMonitor = nthint(lines[16], 0)
+
+            # Extract X range
+            # Which consists of the first 3 floats
+            # (min, max, step) in the line.
+            XRange = firstNFloats(lines[17], 3)
+
+            self.instrument.XMin = XRange[0]
+            self.instrument.XMax = XRange[1]
+            self.instrument.XStep = XRange[2]
+
+            # Extract the grouping parameter panel.
+            # Each row in the panel consists of the first 4 ints
+            # (Group, XMin, XMax, Background Factor) in the line.
+            # If the marker line is encountered,
+            # then the panel has been parsed.
+            i = 18
+            line = lines[i]
+            while "to end input of specified values" not in line:
+                self.instrument.groupingParameterPanel.append(
+                    tuple(firstNInts(line, 4))
                 )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = extract_ints_from_string(
-                lines[FORMAT_MAP[key]]
+                i += 1
+
+            # The groupingParameterPanel alters our indexing,
+            # which can no longer be absolute,
+            # we must account for the offset,
+            # by adding 18+i+1+n for each next n attributes.
+            # where i is the number of rows in the grouping parameter panel.
+
+            self.instrument.groupsAcceptanceFactor = nthfloat(lines[i+1], 0)
+            self.instrument.mergePower = nthint(lines[i+2], 0)
+
+            # For boolean attributes, we convert the first
+            # integer in the line to its boolean value.
+            self.instrument.subSingleAtomScattering = (
+                boolifyNum(nthint(lines[i+3], 0))
             )
 
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Wavelength range for monitor normalisation
-            - Channel numbers for spike analysis
-        """
-
-        for key in TUPLE_INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
+            # For enumerated attributes, where the value  of the attribute is
+            # the first integer in the line, and we must get the member,
+            # we do this: Enum[Enum(value).name]
+            self.instrument.mergeWeights = (
+                MergeWeights[MergeWeights(nthint(lines[i+4], 0)).name]
+            )
+            self.instrument.incidentFlightPath = nthfloat(lines[i+5], 0)
+            self.instrument.spectrumNumberForOutputDiagnosticFiles = (
+                nthint(lines[i+6], 0)
             )
 
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Wavelength range to use and step size.
-        """
+            self.instrument.neutronScatteringParametersFile = (
+                firstword(lines[i+7])
 
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.instrument.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
+            )
+            self.instrument.scaleSelection = (
+                Scales[Scales(nthint(lines[i+8], 0)).name]
+            )
+            self.instrument.subWavelengthBinnedData = (
+                boolifyNum(nthint(lines[i+9], 0))
+            )
+            self.instrument.GudrunStartFolder = firstword(lines[i+10])
+            self.instrument.startupFileFolder = firstword(lines[i+11])
+            self.instrument.logarithmicStepSize = nthfloat(lines[i+12], 0)
+            self.instrument.hardGroupEdges = (
+                boolifyNum(nthint(lines[i+13], 0))
             )
 
-        """
-        Get mergeWeights attribute.
-        """
-        key = "mergeWeights"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        mergeWeights = int(firstword(lines[FORMAT_MAP[key]]))
-        mergeWeights = MergeWeights[MergeWeights(mergeWeights).name]
-        self.instrument.__dict__[key] = mergeWeights
-        """
-        Get scaleSelection attribute.
-        """
-        key = "scaleSelection"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        scaleSelection = int(firstword(lines[FORMAT_MAP[key]]))
-        scaleSelection = Scales[Scales(scaleSelection).name]
-        self.instrument.__dict__[key] = scaleSelection
-        """
-        Get name attribute.
-        """
-        key = "name"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing INSTRUMENT, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        name = firstword(lines[FORMAT_MAP[key]])
-        name = Instruments[name]
-        self.instrument.__dict__[key] = name
+            # If NeXus files are being used, then we expect a NeXus definition
+            # file to be present, and extract it.
+            if (
+                self.instrument.dataFileType == "NXS"
+                or self.instrument.dataFileType == "nxs"
+            ):
+                self.instrument.nxsDefinitionFile = firstword(lines[i+14])
 
-        if self.instrument.dataFileType.lower() == "nxs":
-            isin_, i = isin("NeXus", lines)
-            if not isin_:
-                raise ValueError(
-                    'Whilst parsing INSTRUMENT,'
-                    ' nxsDefinitionFile was not found'
-                )
-            self.instrument.nxsDefinitionFile = firstword(lines[i])
+                # Increment i to account for the NeXus definition file.
+                i += 1
+            self.instrument.numberIterations = nthint(lines[i+14], 0)
+            self.instrument.tweakTweakFactors = (
+                boolifyNum(nthint(lines[i+15], 0))
+            )
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Instrument, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def parseBeam(self, lines):
         """
@@ -551,225 +315,62 @@ class GudrunFile:
         None
         """
 
-        self.beam = Beam()
+        try:
+            # Initialise beam attribute to a new instance of Beam.
+            self.beam = Beam()
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "sampleGeometry": "Sample geometry",
-            "noBeamProfileValues": ["number", "beam", "profile", "values"],
-            "beamProfileValues": ["Beam", "profile", "values", "("],
-            "stepSizeAbsorption": ["Step", "size", "m.s"],
-            "angularStepForCorrections": "Angular step",
-            "incidentBeamLeftEdge": "Incident beam edges",
-            "scatteredBeamLeftEdge": "Scattered beam edges",
-            "filenameIncidentBeamSpectrumParams": [
-                "Filename",
-                "incident",
-                "spectrum",
-                "parameters",
-            ],
-            "overallBackgroundFactor": "Overall background factor",
-            "sampleDependantBackgroundFactor": "Sample dependent background",
-            "shieldingAttenuationCoefficient": [
-                "Shielding",
-                "attenuation",
-                "coefficient",
-            ],
-        }
+            # For enumerated attributes,
+            # where the member name of the attribute is
+            # the first 'word' in the line, and we must get the member,
+            # we do this: Enum[memberName].
+            self.beam.sampleGeometry = Geometry[firstword(lines[0])]
 
-        # Map the attributes of the Beam class to line numbers.
+            # Set the global geometry.
+            global geometry
+            geometry = self.beam.sampleGeometry
 
-        FORMAT_MAP = dict.fromkeys(self.beam.__dict__.keys())
-        FORMAT_MAP.pop("incidentBeamRightEdge", None)
-        FORMAT_MAP.pop("incidentBeamTopEdge", None)
-        FORMAT_MAP.pop("incidentBeamBottomEdge", None)
-        FORMAT_MAP.pop("scatteredBeamRightEdge", None)
-        FORMAT_MAP.pop("scatteredBeamTopEdge", None)
-        FORMAT_MAP.pop("scatteredBeamBottomEdge", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
+            # For single integer attributes,
+            # we extract the zeroth int from the line.
+            self.beam.noBeamProfileValues = nthint(lines[1], 0)
 
-        # Categorise attributes by variables, for easier handling.
+            # For N float attributes,
+            # we extract the first N floats from the line.
+            self.beam.beamProfileValues = extract_floats_from_string(lines[2])
 
-        STRINGS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], str)
-        ]
-        LISTS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], list)
-        ]
-        INTS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], int)
-            and not isinstance(self.beam.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], float)
-        ]
-        TUPLES = [
-            x
-            for x in self.beam.__dict__.keys()
-            if isinstance(self.beam.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(self.beam.__dict__[x], float)
-        ]
+            # For single float attributes,
+            # we extract the zeroth float from the line.
+            self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
+            self.beam.stepSizeMS = nthfloat(lines[3], 1)
+            self.beam.noSlices = nthint(lines[3], 2)
+            self.beam.angularStepForCorrections = nthint(lines[4], 0)
 
-        """
-        Get all attributes that are strings:
-            - Sample geometry
-            - Filename for incident beam spectrum parameters
-        """
+            # Extract the incident beam edges
+            # relative to the centroid of the sample.
+            self.beam.incidentBeamLeftEdge = nthfloat(lines[5], 0)
+            self.beam.incidentBeamRightEdge = nthfloat(lines[5], 1)
+            self.beam.incidentBeamTopEdge = nthfloat(lines[5], 2)
+            self.beam.incidentBeamBottomEdge = nthfloat(lines[5], 3)
 
-        for key in STRINGS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
+            # Extract the scattered beam edges
+            # relative to the centroid of the sample.
+            self.beam.scatteredBeamLeftEdge = nthfloat(lines[6], 0)
+            self.beam.scatteredBeamRightEdge = nthfloat(lines[6], 1)
+            self.beam.scatteredBeamTopEdge = nthfloat(lines[6], 2)
+            self.beam.scatteredBeamBottomEdge = nthfloat(lines[6], 3)
 
-        """
-        Get all attributes that are integers:
-            - Number of beam profile values
-            - Angular step for corrections
-        """
+            # For string attributes,
+            # we simply extract the firstword in the line.
+            self.beam.filenameIncidentBeamSpectrumParams = firstword(lines[7])
 
-        for key in INTS:
-            if key == "noSlices":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
-
-        """
-        Get all attributes that are floats (doubles):
-            - Overall background factor
-            - Sample dependant background factor
-            - Shielding attenuation coefficient
-        """
-
-        for key in FLOATS:
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeAbsorption", "stepSizeMS"
-                    ]:
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-
-            if key == "incidentBeamLeftEdge":
-                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
-                (
-                    self.beam.incidentBeamLeftEdge,
-                    self.beam.incidentBeamRightEdge,
-                    self.beam.incidentBeamTopEdge,
-                    self.beam.incidentBeamBottomEdge,
-                    *rest
-                ) = edges
-            elif key == "scatteredBeamLeftEdge":
-                edges = extract_floats_from_string(lines[FORMAT_MAP[key]])
-                (
-                    self.beam.scatteredBeamLeftEdge,
-                    self.beam.scatteredBeamRightEdge,
-                    self.beam.scatteredBeamTopEdge,
-                    self.beam.scatteredBeamBottomEdge,
-                    *rest
-                ) = edges
-            else:
-                self.beam.__dict__[key] = float(
-                    firstword(lines[FORMAT_MAP[key]])
-                )
-
-        """
-        Get all attributes that need to be stored in arbitrary sized lists:
-            - Beam profile values
-        """
-
-        for key in LISTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = extract_floats_from_string(
-                lines[FORMAT_MAP[key]]
-            )
-
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Incident beam edges relative to centre of sample
-            - Scattered beam edges relative to centre of sample
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing BEAM, {} was not found".format(key)
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.beam.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        """
-        Get the step size for absorption
-        and m.s. calculation and number of slices
-        """
-
-        key = "stepSizeAbsorption"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing BEAM, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        stepSizeAbsorptionMS = extract_floats_from_string(
-            lines[FORMAT_MAP[key]]
-        )
-        (
-            self.beam.stepSizeAbsorption,
-            self.beam.stepSizeMS,
-            self.beam.noSlices,
-            *rest
-        ) = stepSizeAbsorptionMS
-        self.beam.noSlices = int(self.beam.noSlices)
-        key = "sampleGeometry"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing BEAM, {} was not found".format(key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        geom = firstword(lines[FORMAT_MAP[key]])
-        geom = Geometry[geom]
-        self.beam.sampleGeometry = geom
+            self.beam.overallBackgroundFactor = nthfloat(lines[8], 0)
+            self.beam.sampleDependantBackgroundFactor = nthfloat(lines[9], 0)
+            self.beam.shieldingAttenuationCoefficient = nthfloat(lines[10], 0)
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Beam, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def parseNormalisation(self, lines):
         """
@@ -788,307 +389,157 @@ class GudrunFile:
         None
         """
 
-        self.normalisation = Normalisation()
+        try:
+            # Initialise normalisation attribute
+            # to a new instance of Normalisation.
+            self.normalisation = Normalisation()
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "forceCalculationOfCorrections": ["Force", "corrections?"],
-            "geometry": "Geometry",
-            "thickness": ["Upstream", "downstream", "thickness"],
-            "angleOfRotationSampleWidth": "Angle of rotation",
-            "density": "Density",
-            "tempForNormalisationPC": "Placzek correction",
-            "totalCrossSectionSource": "Total cross",
-            "normalisationDifferentialCrossSectionFilename": [
-                "Normalisation",
-                "cross section",
-                "filename",
-            ],
-            "lowerLimitSmoothedNormalisation": "Lower limit",
-            "normalisationDegreeSmoothing": "Normalisation degree",
-            "minNormalisationSignalBR": "background ratio",
-        }
+            # The number of files and period number are both stored
+            # on the same line.
+            # So we extract the 0th integer for the number of files,
+            # and the 1st integer for the period number.
+            numberOfFiles = nthint(lines[0], 0)
+            self.normalisation.periodNumber = nthint(lines[0], 1)
 
-        # Count the number of data files and background data files.
+            # Extract data files
+            dataFiles = []
+            for i in range(numberOfFiles):
+                dataFiles.append(firstword(lines[i+1]))
 
-        if not isin(["number", "files", "period"], lines) == (True, 0):
-            raise ValueError((
-                'Whilst parsing NORMALISATION, '
-                'numberOfFilesPeriodNumber was not found'
-            ))
-
-        if not isin(["number", "files", "period"], deepcopy(lines[1:]))[0]:
-            raise ValueError((
-                'Whilst parsing NORMALISATION, '
-                'numberOfFilesPeriodNumberBg was not found'
-            ))
-
-        numberFiles = extract_ints_from_string(lines[0])[0]
-        numberFilesBG = extract_ints_from_string(lines[numberFiles + 1])[0]
-
-        # Count the number of elements
-        numberElements = count_occurrences(
-            "Normalisation atomic composition", lines
-        ) + count_occurrences("Composition", lines)
-
-        # Map the attributes of the Beam class to line numbers.
-
-        FORMAT_MAP = dict.fromkeys(self.normalisation.__dict__.keys())
-        FORMAT_MAP.pop("dataFiles", None)
-        FORMAT_MAP.pop("dataFilesBg", None)
-        FORMAT_MAP.pop("composition", None)
-        FORMAT_MAP.pop("densityUnits", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-
-        # Index arithmetic to fix indexes,
-        # which get skewed by data files and elements
-
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > 0:
-                FORMAT_MAP[key] += numberFiles
-
-        marker = 0
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] - numberFiles == 1:
-                marker = FORMAT_MAP[key]
-                continue
-            if marker:
-                if FORMAT_MAP[key] > marker:
-                    FORMAT_MAP[key] += numberFilesBG
-
-        marker = 0
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] - numberFilesBG - numberFiles == 2:
-                marker = FORMAT_MAP[key]
-                continue
-            if marker:
-                if FORMAT_MAP[key] > marker:
-                    FORMAT_MAP[key] += numberElements + 1
-
-        # Categorise attributes by variables, for easier handling.
-        STRINGS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], str)
-        ]
-        INTS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], int)
-            and not isinstance(self.normalisation.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], float)
-        ]
-        BOOLS = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], bool)
-        ]
-        TUPLES = [
-            x
-            for x in self.normalisation.__dict__.keys()
-            if isinstance(self.normalisation.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x
-            for x in TUPLES
-            if iteristype(self.normalisation.__dict__[x], float)
-        ]
-        TUPLE_INTS = [
-            x
-            for x in TUPLES
-            if iteristype(self.normalisation.__dict__[x], int)
-        ]
-
-        """
-        Get all attributes that are strings:
-            - Geometry
-            - Total cross section source
-            - Normalisation differential cross section filename
-        """
-
-        for key in STRINGS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = firstword(
-                lines[FORMAT_MAP[key]]
+            # Create a DataFiles object from the dataFiles list constructed.
+            self.normalisation.dataFiles = (
+                DataFiles(dataFiles, "NORMALISATION")
             )
 
-        """
-        Get all attributes that are integers:
-            - Temperature for normalisation Placzek correction
-        """
+            # Calculate the index which we should continue from.
+            i = 1 + numberOfFiles
 
-        for key in INTS:
-            if key == "densityUnits":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = int(
-                firstword(lines[FORMAT_MAP[key]])
+            # The number of background files and
+            # background period number are both stored
+            # on the same line.
+            # So we extract the 0th integer for the number of background files,
+            # and the 1st integer for the background riod number.
+            numberOfFilesBg = nthint(lines[i], 0)
+            self.normalisation.periodNumberBg = nthint(lines[i], 1)
+
+            # Extract background data files
+            dataFilesBg = []
+            for j in range(numberOfFilesBg):
+                dataFilesBg.append(firstword(lines[i+j+1]))
+
+            # Create a DataFiles object from the dataFiles list constructed.
+            self.normalisation.dataFilesBg = (
+                DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
             )
 
-        """
-        Get all attributes that are floats (doubles):
-            - Density of atoms
-            - Lower limit on smoothed normalisation
-            - Normalisation degree smoothing
-            - Minimum normalisation signal to background ratio
-        """
+            # Calculate the index which we should continue from.
+            # Account for the number of data files
+            # and number of background data files.
+            j = 1 + i + numberOfFilesBg
 
-        for key in FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "density":
-                density = float(firstword(lines[FORMAT_MAP[key]]))
-                if density < 0:
-                    density = abs(density)
-                    self.normalisation.densityUnits = (
-                        UnitsOfDensity.ATOMIC
-                    )
-                else:
-                    self.normalisation.densityUnits = (
-                        UnitsOfDensity.CHEMICAL
-                    )
-                self.normalisation.__dict__[key] = density
-            else:
-                self.normalisation.__dict__[key] = (
-                    float(firstword(lines[FORMAT_MAP[key]]))
-                )
-
-        """
-        Get all attributes that are boolean values:
-            - Subtract single atom scattering?
-            - Subtract wavelength-binned data?
-            - Hard group edges?
-            - Tweak the tweak factor(s)?
-        """
-
-        for key in BOOLS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = boolifyNum(
-                int(firstword(lines[FORMAT_MAP[key]]))
+            # For boolean attributes, we convert the first
+            # integer in the line to its boolean value.
+            self.normalisation.forceCalculationOfCorrections = (
+                boolifyNum(nthint(lines[j], 0))
             )
 
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Upstream and downstream thickness
-            - Angle of rotation and sample width
-        """
+            # Construct composition
+            composition = []
+            n = 1
+            line = lines[j+n]
+            # Extract the composition.
+            # Each element in the composition consists of the first 'word',
+            # integer at the second position, and float t the first position,
+            # (Atomic Symbol, MassNo, Abundance) in the line.
+            # If the marker line is encountered,
+            # then the panel has been parsed.
+            while "end of composition input" not in line:
+                atomicSymbol = firstword(line)
+                massNo = nthint(line, 1)
+                abundance = nthfloat(line, 2)
 
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing NORMALISATION, {} was not found".format(
-                        key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            self.normalisation.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-            if key == "angleOfRotationSampleWidth":
-                self.normalisation.__dict__[key] = (
-                    self.normalisation.__dict__[key][0],
-                    int(self.normalisation.__dict__[key][1]),
+                # Create an Element object and append to the composition list.
+                composition.append(
+                    Element(atomicSymbol, massNo, abundance)
                 )
 
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Number of files and period number
-            - Number of background files and period number
-        """
+                n += 1
+                line = lines[j+n]
 
-        for key in TUPLE_INTS:
-            self.normalisation.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
+            # Create a Composition object from the dataFiles list constructed.
+            self.normalisation.composition = (
+                Composition(composition, "Normalisation")
             )
 
-        # Get all of the normalisation datafiles and their information.
+            # Calculate the index we must continue from.
+            # By adding the number of elements+1 to the current index.
+            j += n + 1
 
-        dataFiles = []
-        for j in range(self.normalisation.numberOfFilesPeriodNumber[0]):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumber"] + j + 1]
-            if "data files" in curr or "Data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        self.normalisation.dataFiles = DataFiles(
-            deepcopy(dataFiles), "NORMALISATION"
-        )
+            # For enumerated attributes,
+            # where the member name of the attribute is
+            # the first 'word' in the line, and we must get the member,
+            # we do this: Enum[memberName].
+            self.normalisation.geometry = Geometry[firstword(lines[j])]
 
-        # Get all of the normalisation
-        # background datafiles and their information.
-
-        dataFiles = []
-        for j in range(self.normalisation.numberOfFilesPeriodNumberBg[0]):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumberBg"] + j + 1]
-            if "data files" in curr or "Data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        self.normalisation.dataFilesBg = DataFiles(
-            deepcopy(dataFiles), "NORMALISATION BACKGROUND"
-        )
-
-        # Get all of the elements and their information,
-        # and then build the composition
-
-        elements = []
-        for j in range(numberElements):
-            curr = lines[FORMAT_MAP["forceCalculationOfCorrections"] + j + 1]
+            # Is the geometry FLATPLATE?
             if (
-                "Normalisation atomic composition" in curr
-                or "Composition" in curr
-            ):
-                elementInfo = [x for x in curr.split(" ") if x][:3]
-                element = Element(
-                    elementInfo[0], int(elementInfo[1]), float(elementInfo[2])
+                (
+                    self.normalisation.geometry == Geometry.SameAsBeam
+                    and geometry == Geometry.FLATPLATE
                 )
-                elements.append(element)
+                    or self.normalisation.geometry == Geometry.FLATPLATE):
+                # If is is FLATPLATE, then extract the upstream and downstream
+                # thickness, the angle of rotation and sample width.
+                self.normalisation.upstreamThickness = nthfloat(lines[j+1], 0)
+                self.normalisation.downstreamThickness = (
+                    nthfloat(lines[j+1], 1)
+                )
+                self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
+                self.normalisation.sampleWidth = nthfloat(lines[j+2], 1)
+            else:
 
-        self.normalisation.composition = Composition(elements, "Normalisation")
+                # Otherwise, it is CYLINDRICAL,
+                # then extract the inner and outer
+                # radii and the sample height.
+                self.normalisation.innerRadius = nthfloat(lines[j+1], 0)
+                self.normalisation.outerRadius = nthfloat(lines[j+1], 1)
+                self.normalisation.sampleHeight = nthfloat(lines[j+2], 0)
+
+            # Extract the density.
+            density = nthfloat(lines[j+3], 0)
+
+            # Take the absolute value of the density - since it could be -ve.
+            self.normalisation.density = abs(density)
+
+            # Decide on the units of density.
+            # -ve density means it is atomic (atoms/A^3)
+            # +ve means it is chemical (gm/cm^3)
+            self.normalisation.densityUnits = (
+                UnitsOfDensity.ATOMIC if
+                density < 0
+                else UnitsOfDensity.CHEMICAL
+            )
+
+            self.normalisation.tempForNormalisationPC = nthfloat(lines[j+4], 0)
+            self.normalisation.totalCrossSectionSource = firstword(lines[j+5])
+            self.normalisation.normalisationDifferentialCrossSectionFile = (
+                firstword(lines[j+6])
+            )
+            self.normalisation.lowerLimitSmoothedNormalisation = (
+                nthfloat(lines[j+7], 0)
+            )
+            self.normalisation.normalisationDegreeSmoothing = (
+                nthfloat(lines[j+8], 0)
+            )
+            self.normalisation.minNormalisationSignalBR = (
+                nthfloat(lines[j+9], 0)
+            )
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Normalisation, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def parseSampleBackground(self, lines):
         """
@@ -1107,31 +558,26 @@ class GudrunFile:
             The SampleBackground that was parsed from the input lines.
         """
 
-        sampleBackground = SampleBackground()
+        try:
+            sampleBackground = SampleBackground()
 
-        # Get the number of files and period number.
-        if not isin(["files", "period"], lines)[0]:
-            raise ValueError((
-                'Whilst parsing SAMPLE BACKGROUND 1, '
-                'numberOfFilesPeriodNumber was not found'
-            ))
-        sampleBackground.numberOfFilesPeriodNumber = tuple(
-            extract_ints_from_string(str(lines[0]))
-        )
+            numberOfFiles = nthint(lines[0], 0)
+            sampleBackground.periodNumber = nthint(lines[0], 1)
 
-        # Get the associated data files.
-        dataFiles = []
-        for i in range(sampleBackground.numberOfFilesPeriodNumber[0]):
-            if "data files" in lines[i + 1]:
-                dataFiles.append(firstword(lines[i + 1]))
-            else:
-                raise ValueError(
-                    "Number of data files does not\
-                     match number of data files specified"
-                )
-        sampleBackground.dataFiles = DataFiles(dataFiles, "SAMPLE BACKGROUND")
+            dataFiles = []
+            for i in range(numberOfFiles):
+                dataFiles.append(firstword(lines[i+1]))
+            sampleBackground.dataFiles = (
+                DataFiles(dataFiles, "SAMPLE BACKGROUND")
+            )
 
-        return sampleBackground
+            return sampleBackground
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Sample Background, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def parseSample(self, lines):
         """
@@ -1150,372 +596,169 @@ class GudrunFile:
             The Sample that was parsed from the input lines.
         """
 
-        sample = Sample()
+        try:
+            # Create a new instance of Sample.
+            sample = Sample()
 
-        # Extract the name from the lines,
-        # and then discard the unnecessary lines.
-        sample.name = str(lines[0][:-2]).strip()
-        lines[:] = lines[2:]
+            # Extract the sample name, and then discard whitespace lines.
+            sample.name = str(lines[0][:-2]).strip()
+            lines[:] = lines[2:]
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "numberOfFilesPeriodNumber": ["files", "period"],
-            "forceCalculationOfCorrections": ["Force", "corrections?"],
-            "geometry": "Geometry",
-            "thickness": ["Upstream", "downstream", "thickness"],
-            "angleOfRotationSampleWidth": "Angle of rotation",
-            "density": "Density",
-            "tempForNormalisationPC": "Placzek correction",
-            "totalCrossSectionSource": "Total cross",
-            "sampleTweakFactor": "tweak factor",
-            "topHatW": "Top hat width",
-            "minRadFT": "Minimum radius for FT",
-            "grBroadening": ["g(r)", "broadening"],
-            "normalisationCorrectionFactor": "Normalisation correction factor",
-            "fileSelfScattering": ["file", "self scattering", "function"],
-            "normaliseTo": "Normalise",
-            "maxRadFT": "Maximum radius for FT",
-            "outputUnits": "Output units",
-            "powerForBroadening": "Power for broadening",
-            "stepSize": "Step size",
-            "include": ["Analyse", "sample?"],
-            "environementScatteringFuncAttenuationCoeff": [
-                "environment",
-                "scattering fraction",
-                "attenuation coefficient",
-            ],
-        }
+            # The number of files and period number are both stored
+            # on the same line.
+            # So we extract the 0th integer for the number of files,
+            # and the 1st integer for the period number.
+            numberOfFiles = nthint(lines[0], 0)
+            sample.periodNumber = nthint(lines[0], 1)
 
-        # Discard lines which don't contain information.
-        lines = [
-            line
-            for line in lines
-            if "end of" not in line and "to finish" not in line
-        ]
+            # Extract data files
+            dataFiles = []
+            for i in range(numberOfFiles):
+                dataFiles.append(firstword(lines[i+1]))
 
-        # Count the number of files and the number of elements.
-        numberFiles = count_occurrences("data files", lines)
-        numberElements = count_occurrences(
-            "Sample atomic composition", lines
-        ) + count_occurrences("Composition", lines)
+            # Create a DataFiles object from the dataFiles list constructed.
+            sample.dataFiles = DataFiles(dataFiles, sample.name)
 
-        # Count the number of resonance values
-        numberResonanceValues = count_occurrences(
-            "resonance wavelength", lines
-        )
+            # Calculate the index which we should continue from.
+            i = 1 + numberOfFiles
 
-        resonanceLines = [
-            line
-            for line in lines
-            if "resonance wavelength" in line
-        ]
+            # For boolean attributes, we convert the first
+            # integer in the line to its boolean value.
+            sample.forceCalculationOfCorrections = (
+                boolifyNum(nthint(lines[i], 0))
+            )
 
-        resonanceValues = []
-        for line in resonanceLines:
-            resonanceWavelength = extract_floats_from_string(line)
-            resonanceValues.append(tuple(resonanceWavelength))
+            # Construct composition
+            composition = []
+            n = 1
+            line = lines[i+n]
+            # Extract the composition.
+            # Each element in the composition consists of the first 'word',
+            # integer at the second position, and float t the first position,
+            # (Atomic Symbol, MassNo, Abundance) in the line.
+            # If the marker line is encountered,
+            # then the panel has been parsed.
+            while "end of composition input" not in line:
+                atomicSymbol = firstword(line)
+                massNo = nthint(line, 1)
+                abundance = nthfloat(line, 2)
 
-        # Count the number of exponential values
-        numberExponentialValues = count_occurrences(
-            "amplitude and decay", lines
-        )
+                # Create an Element object and append to the composition list.
+                composition.append(Element(atomicSymbol, massNo, abundance))
+                n += 1
+                line = lines[i+n]
 
-        exponentialLines = [
-            line
-            for line in lines
-            if "amplitude and decay" in line
-        ]
+            # Create a Composition object from the dataFiles list constructed.
+            sample.composition = Composition(composition, "Sample")
 
-        exponentialValues = []
-        for line in exponentialLines:
-            exponentialPair = extract_nums_from_string(line)
-            exponentialValues.append(tuple(exponentialPair))
+            # Calculate the index we must continue from.
+            # By adding the number of elements+1 to the current index.
+            i += n + 1
 
-        # Map the attributes of the Sample class to line numbers.
+            # For enumerated attributes,
+            # where the member name of the attribute is
+            # the first 'word' in the line, and we must get the member,
+            # we do this: Enum[memberName].
+            sample.geometry = Geometry[firstword(lines[i])]
 
-        FORMAT_MAP = dict.fromkeys(sample.__dict__.keys())
-        FORMAT_MAP.pop("name", None)
-        FORMAT_MAP.pop("dataFiles", None)
-        FORMAT_MAP.pop("composition", None)
-        FORMAT_MAP.pop("sampleBackground", None)
-        FORMAT_MAP.pop("containers", None)
-        FORMAT_MAP.pop("runThisSample", None)
-        FORMAT_MAP.pop("densityUnits", None)
-        FORMAT_MAP.pop("resonanceValues", None)
-        FORMAT_MAP.pop("exponentialValues", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
-
-        # Index arithmetic to fix indexes,
-        # which get skewed by data files, elements,
-        # resonance and exponential values
-
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > 0:
-                FORMAT_MAP[key] += numberFiles
-
-        marker = 0
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] - numberFiles == 1:
-                marker = FORMAT_MAP[key]
-                continue
-            if marker:
-                if FORMAT_MAP[key] > marker:
-                    FORMAT_MAP[key] += numberElements
-
-        marker = FORMAT_MAP["grBroadening"]
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > marker:
-                FORMAT_MAP[key] += (
-                    numberResonanceValues + numberExponentialValues
+            # Is the geometry FLATPLATE?
+            if (
+                (
+                    sample.geometry == Geometry.SameAsBeam
+                    and geometry == Geometry.FLATPLATE
                 )
-
-        # Categorise attributes by variables, for easier handling.
-        STRINGS = [
-            x
-            for x in sample.__dict__.keys()
-            if isinstance(sample.__dict__[x], str)
-        ]
-        INTS = [
-            x
-            for x in sample.__dict__.keys()
-            if isinstance(sample.__dict__[x], int)
-            and not isinstance(sample.__dict__[x], bool)
-        ]
-        FLOATS = [
-            x
-            for x in sample.__dict__.keys()
-            if isinstance(sample.__dict__[x], float)
-        ]
-        BOOLS = [
-            x
-            for x in sample.__dict__.keys()
-            if isinstance(sample.__dict__[x], bool)
-            and not x == "runThisSample"
-        ]
-        TUPLES = [
-            x
-            for x in sample.__dict__.keys()
-            if isinstance(sample.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(sample.__dict__[x], float)
-        ]
-        TUPLE_INTS = [x for x in TUPLES if iteristype(sample.__dict__[x], int)]
-
-        # Resonance values
-        sample.resonanceValues = resonanceValues
-        sample.exponentialValues = exponentialValues
-
-        """
-        Get all attributes that are strings:
-            - Geometry
-            - Total cross section source
-            - File containing self scattering as a function of wavelength [A]
-        """
-
-        for key in STRINGS:
-            try:
-                isin_, i = isin(KEYPHRASES[key], lines)
-                if not isin_:
-                    raise ValueError(
-                        "Whilst parsing {}, {} was not found".format(
-                            sample.name, key
-                        )
-                    )
-                if i != FORMAT_MAP[key]:
-                    FORMAT_MAP[key] = i
-                sample.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
-            except KeyError:
-                continue
-
-        """
-        Get all attributes that are integers:
-            - Temperature for normalisation Placzek correction
-            - Top hat width (1/\u212b) for cleaning up Fourier Transform
-            - Normalise to
-            - Output units
-        """
-
-        for key in INTS:
-            if key == "densityUnits":
-                continue
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        sample.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            sample.__dict__[key] = int(firstword(lines[FORMAT_MAP[key]]))
-
-        """
-        Get all attributes that are floats (doubles):
-            - Density of atoms
-            - Sample tweak factor
-            - Minimum radius for Fourier Transform
-            - g(r) broadening at r= 1A
-            - Maximum radius for Fourier Transform
-            - Power for broadening function
-            - Step size
-        """
-
-        for key in FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        sample.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "density":
-                density = float(firstword(lines[FORMAT_MAP[key]]))
-                if density < 0:
-                    density = abs(density)
-                    sample.densityUnits = UnitsOfDensity.ATOMIC
-                else:
-                    sample.densityUnits = UnitsOfDensity.CHEMICAL
-                sample.__dict__[key] = density
+                    or sample.geometry == Geometry.FLATPLATE):
+                # If is is FLATPLATE, then extract the upstream and downstream
+                # thickness, the angle of rotation and sample width.
+                sample.upstreamThickness = nthfloat(lines[i+1], 0)
+                sample.downstreamThickness = nthfloat(lines[i+1], 1)
+                sample.angleOfRotation = nthfloat(lines[i+2], 0)
+                sample.sampleWidth = nthfloat(lines[i+2], 1)
             else:
-                sample.__dict__[key] = float(firstword(lines[FORMAT_MAP[key]]))
 
-        """
-        Get all attributes that are boolean values:
-            - Force calculation of corrections?
-            - Analyse this sample?
-        """
+                # Otherwise, it is CYLINDRICAL,
+                # then extract the inner and outer
+                # radii and the sample height.
+                sample.innerRadius = nthfloat(lines[i+1], 0)
+                sample.outerRadius = nthfloat(lines[i+1], 1)
+                sample.sampleHeight = nthfloat(lines[i+2], 0)
 
-        for key in BOOLS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        sample.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            sample.__dict__[key] = boolifyNum(
-                int(firstword(lines[FORMAT_MAP[key]]))
+            # Extract the density.
+            density = nthfloat(lines[i+3], 0)
+
+            # Decide on the units of density.
+            # -ve density means it is atomic (atoms/A^3)
+            # +ve means it is chemical (gm/cm^3)
+            sample.density = abs(density)
+            sample.densityUnits = (
+                UnitsOfDensity.ATOMIC if
+                density < 0
+                else UnitsOfDensity.CHEMICAL
             )
+            sample.tempForNormalisationPC = nthfloat(lines[i+4], 0)
+            sample.totalCrossSectionSource = firstword(lines[i+5])
+            sample.sampleTweakFactor = nthfloat(lines[i+6], 0)
+            sample.topHatW = nthfloat(lines[i+7], 0)
+            sample.minRadFT = nthfloat(lines[i+8], 0)
+            sample.grBroadening = nthfloat(lines[i+9], 0)
 
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Upstream and downstream thickness
-            - Angle of rotation and sample width
-            - Sample environment scattering fraction
-                and attenuation coefficient
-        """
-
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        sample.name, key
-                    )
+            # Extract the resonance values.
+            # Each row consists of the first 2 floats.
+            # (minWavelength, maxWavelength) in the line.
+            # If the marker line is encountered,
+            # then the values has been parsed.
+            n = 10
+            line = lines[i+n]
+            while (
+                    "to finish specifying wavelength range of resonance"
+                    not in line
+                    ):
+                sample.resonanceValues.append(
+                    tuple(extract_floats_from_string(line))
                 )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            sample.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
-            )
-            if key == "angleOfRotationSampleWidth":
-                sample.__dict__[key] = (
-                    sample.__dict__[key][0],
-                    int(sample.__dict__[key][1]),
+                n += 1
+                line = lines[i+n]
+            i += n + 1
+
+            # Extract the exponential values.
+            # Each row consists of the first 3 numbers.
+            # (Amplitude, Decay, N) in the line.
+            # If the marker line is encountered,
+            # then the values has been parsed.
+            n = 0
+            line = lines[i+n]
+            while "to specify end of exponential parameter input" not in line:
+                sample.exponentialValues.append(
+                    tuple(extract_nums_from_string(line))
                 )
+                n += 1
+                line = lines[i+n]
+            i += n + 1
 
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Number of files and period number
-        """
-
-        for key in TUPLE_INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        sample.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            sample.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
+            sample.normalisationCorrectionFactor = nthfloat(lines[i], 0)
+            sample.fileSelfScattering = firstword(lines[i+1])
+            sample.normaliseTo = (
+                NormalisationType[
+                    NormalisationType(nthint(lines[i+2], 0)).name
+                ]
             )
-
-        # Get all of the sample datafiles and their information.
-
-        dataFiles = []
-        for j in range(sample.numberOfFilesPeriodNumber[0]):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumber"] + j + 1]
-            if "data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not\
-                     match number of data files specified"
-                )
-        sample.dataFiles = DataFiles(
-            deepcopy(dataFiles), "{}".format(sample.name)
-        )
-
-        # Get all of the elements and their information,
-        # and then build the composition
-
-        elements = []
-        for j in range(numberElements):
-            curr = lines[FORMAT_MAP["forceCalculationOfCorrections"] + j + 1]
-            if "Sample atomic composition" in curr or "Composition" in curr:
-                elementInfo = [x for x in curr.split(" ") if x][:3]
-                element = Element(
-                    elementInfo[0], int(elementInfo[1]), float(elementInfo[2])
-                )
-                elements.append(element)
-
-        sample.composition = Composition(elements, "Sample")
-
-        key = "normaliseTo"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing {}, {} was not found".format(sample.name, key)
+            sample.maxRadFT = nthfloat(lines[i+3], 0)
+            sample.outputUnits = (
+                OutputUnits[OutputUnits(nthint(lines[i+4], 0)).name]
             )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        normaliseTo = NormalisationType(int(
-            firstword(lines[FORMAT_MAP[key]]))
-            ).name
-        sample.normaliseTo = NormalisationType[normaliseTo]
+            sample.powerForBroadening = nthfloat(lines[i+5], 0)
+            sample.stepSize = nthfloat(lines[i+6], 0)
+            sample.include = boolifyNum(nthint(lines[i+7], 0))
+            sample.scatteringFraction = nthfloat(lines[i+8], 0)
+            sample.attenuationCoefficient = nthfloat(lines[i+8], 1)
 
-        key = "outputUnits"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing {}, {} was not found".format(sample.name, key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        outputUnits = OutputUnits(int(firstword(lines[FORMAT_MAP[key]]))).name
-        sample.outputUnits = OutputUnits[outputUnits]
-
-        key = "geometry"
-        isin_, i = isin(KEYPHRASES[key], lines)
-        if not isin_:
-            raise ValueError(
-                "Whilst parsing {}, {} was not found".format(sample.name, key)
-            )
-        if i != FORMAT_MAP[key]:
-            FORMAT_MAP[key] = i
-        geometry = firstword(lines[FORMAT_MAP[key]])
-        sample.geometry = Geometry[geometry]
-
-        return sample
+            return sample
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Sample, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def parseContainer(self, lines):
         """
@@ -1534,199 +777,114 @@ class GudrunFile:
             The Container that was parsed from the input lines.
         """
 
-        container = Container()
-        # Extract the name from the lines,
-        # and then discard the unnecessary lines.
-        container.name = str(lines[0][:-2]).strip()
-        lines[:] = lines[2:]
+        try:
+            # Create a new instance of Container.
+            container = Container()
 
-        # Dictionary of key phrases for ensuring expected data is on
-        # the expected lines.
-        KEYPHRASES = {
-            "numberOfFilesPeriodNumber": ["files", "period"],
-            "geometry": "Geometry",
-            "thickness": ["Upstream", "downstream", "thickness"],
-            "angleOfRotationSampleWidth": "Angle of rotation",
-            "density": "Density",
-            "totalCrossSectionSource": "Total cross",
-            "tweakFactor": "tweak factor",
-            "scatteringFractionAttenuationCoefficient": [
-                "environment",
-                "scattering fraction",
-                "attenuation coefficient",
-            ],
-        }
+            # Extract the name from the lines,
+            # and then discard the unnecessary lines.
+            container.name = str(lines[0][:-2]).strip()
+            lines[:] = lines[2:]
 
-        lines = [line for line in lines if "end of" not in line]
+            # The number of files and period number are both stored
+            # on the same line.
+            # So we extract the 0th integer for the number of files,
+            # and the 1st integer for the period number.
+            numberOfFiles = nthint(lines[0], 0)
+            container.periodNumber = nthint(lines[0], 1)
 
-        # Count the number of files and number of elements.
-        numberFiles = count_occurrences("data files", lines)
-        numberElements = count_occurrences(
-            "Container atomic composition", lines
-        ) + count_occurrences("Composition", lines)
+            # Extract data files
+            dataFiles = []
+            for i in range(numberOfFiles):
+                dataFiles.append(firstword(lines[i+1]))
 
-        # Map the attributes of the Beam class to line numbers.
+            # Create a DataFiles object from the dataFiles list constructed.
+            container.dataFiles = DataFiles(dataFiles, container.name)
 
-        FORMAT_MAP = dict.fromkeys(container.__dict__.keys())
-        FORMAT_MAP.pop("name", None)
-        FORMAT_MAP.pop("dataFiles", None)
-        FORMAT_MAP.pop("composition", None)
-        FORMAT_MAP.pop("densityUnits", None)
-        FORMAT_MAP.update((k, i) for i, k in enumerate(FORMAT_MAP))
+            # Calculate the index which we should continue from.
+            i = 1 + numberOfFiles
 
-        for key in FORMAT_MAP.keys():
-            if FORMAT_MAP[key] > 0:
-                FORMAT_MAP[key] += numberFiles + numberElements
+            # Construct composition
+            composition = []
+            n = 0
+            line = lines[i+n]
+            # Extract the composition.
+            # Each element in the composition consists of the first 'word',
+            # integer at the second position, and float t the first position,
+            # (Atomic Symbol, MassNo, Abundance) in the line.
+            # If the marker line is encountered,
+            # then the panel has been parsed.
+            while "end of composition input" not in line:
+                atomicSymbol = firstword(line)
+                massNo = nthint(line, 1)
+                abundance = nthfloat(line, 2)
 
-        # Categorise attributes by variables, for easier handling.
-        STRINGS = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], str)
-        ]
-        FLOATS = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], float)
-        ]
-        TUPLES = [
-            x
-            for x in container.__dict__.keys()
-            if isinstance(container.__dict__[x], tuple)
-        ]
-        TUPLE_FLOATS = [
-            x for x in TUPLES if iteristype(container.__dict__[x], float)
-        ]
-        TUPLE_INTS = [
-            x for x in TUPLES if iteristype(container.__dict__[x], int)
-        ]
+                # Create an Element object and append to the composition list.
+                composition.append(Element(atomicSymbol, massNo, abundance))
+                n += 1
+                line = lines[i+n]
 
-        """
-        Get all attributes that are strings:
-            - Geometry
-            - Total cross section source
-        """
+            # Create a Composition object from the dataFiles list constructed.
+            container.composition = Composition(composition, "Container")
 
-        for key in STRINGS:
-            try:
-                isin_, i = isin(KEYPHRASES[key], lines)
-                if not isin_:
-                    raise ValueError(
-                        "Whilst parsing {}, {} was not found".format(
-                            container.name, key
-                        )
-                    )
-                if i != FORMAT_MAP[key]:
-                    FORMAT_MAP[key] = i
-                container.__dict__[key] = firstword(lines[FORMAT_MAP[key]])
-            except KeyError:
-                continue
+            # Calculate the index we must continue from.
+            # By adding the number of elements+1 to the current index.
+            i += n + 1
 
-        """
-        Get all attributes that are floats (doubles):
-            - Density of atoms
-            - Tweak factor
-        """
+            # For enumerated attributes,
+            # where the member name of the attribute is
+            # the first 'word' in the line, and we must get the member,
+            # we do this: Enum[memberName].
+            container.geometry = Geometry[firstword(lines[i])]
 
-        for key in FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
+            # Is the geometry FLATPLATE?
+            if (
+                (
+                    container.geometry == Geometry.SameAsBeam
+                    and geometry == Geometry.FLATPLATE
                 )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            if key == "density":
-                density = float(firstword(lines[FORMAT_MAP[key]]))
-                if density < 0:
-                    density = abs(density)
-                    container.densityUnits = UnitsOfDensity.ATOMIC
-                else:
-                    container.densityUnits = UnitsOfDensity.CHEMICAL
-                container.__dict__[key] = density
+                    or container.geometry == Geometry.FLATPLATE):
+                # If is is FLATPLATE, then extract the upstream and downstream
+                # thickness, the angle of rotation and sample width.
+                container.upstreamThickness = nthfloat(lines[i+1], 0)
+                container.downstreamThickness = nthfloat(lines[i+1], 1)
+                container.angleOfRotation = nthfloat(lines[i+2], 0)
+                container.sampleWidth = nthfloat(lines[i+2], 1)
             else:
-                container.__dict__[key] = (
-                    float(firstword(lines[FORMAT_MAP[key]]))
-                )
 
-        """
-        Get all attributes that need to be stored as a tuple of floats:
-            - Upstream and downstream thickness
-            - Angle of rotation and sample width
-            - Sample environment scattering fraction
-                and attenuation coefficient
-        """
+                # Otherwise, it is CYLINDRICAL,
+                # then extract the inner and outer
+                # radii and the sample height.
+                container.innerRadius = nthfloat(lines[i+1], 0)
+                container.outerRadius = nthfloat(lines[i+1], 1)
+                container.sampleHeight = nthfloat(lines[i+2], 0)
 
-        for key in TUPLE_FLOATS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            container.__dict__[key] = tuple(
-                extract_floats_from_string(lines[FORMAT_MAP[key]])
+            # Extract the density.
+            density = nthfloat(lines[i+3], 0)
+
+            # Take the absolute value of the density - since it could be -ve.
+            container.density = abs(density)
+
+            # Decide on the units of density.
+            # -ve density means it is atomic (atoms/A^3)
+            # +ve means it is chemical (gm/cm^3)
+            container.densityUnits = (
+                UnitsOfDensity.ATOMIC if
+                density < 0
+                else UnitsOfDensity.CHEMICAL
             )
+            container.totalCrossSectionSource = firstword(lines[i+4])
+            container.tweakFactor = nthfloat(lines[i+5], 0)
+            container.scatteringFraction = nthfloat(lines[i+6], 0)
+            container.attenuationCoefficient = nthfloat(lines[i+6], 1)
 
-        """
-        Get all attributes that need to be stored as a tuple of ints:
-            - Number of files and period number
-        """
-
-        for key in TUPLE_INTS:
-            isin_, i = isin(KEYPHRASES[key], lines)
-            if not isin_:
-                raise ValueError(
-                    "Whilst parsing {}, {} was not found".format(
-                        container.name, key
-                    )
-                )
-            if i != FORMAT_MAP[key]:
-                FORMAT_MAP[key] = i
-            container.__dict__[key] = tuple(
-                extract_ints_from_string(lines[FORMAT_MAP[key]])
-            )
-
-        # Get all of the container datafiles and their information.
-
-        dataFiles = []
-        for j in range(numberFiles):
-            curr = lines[FORMAT_MAP["numberOfFilesPeriodNumber"] + j + 1]
-            if "data files" in curr:
-                dataFiles.append(firstword(curr))
-            else:
-                raise ValueError(
-                    "Number of data files does not \
-                    match number of data files specified"
-                )
-        container.dataFiles = DataFiles(
-            deepcopy(dataFiles), "{}".format(container.name)
-        )
-
-        # Get all elements in the composition and their details.
-
-        elements = []
-        for j in range(numberElements):
-            curr = lines[
-                FORMAT_MAP["numberOfFilesPeriodNumber"] + j + numberFiles + 1
-            ]
-            if "atomic composition" in curr or "Composition" in curr:
-                elementInfo = [x for x in curr.split(" ") if x][:3]
-                element = Element(
-                    elementInfo[0], int(elementInfo[1]), float(elementInfo[2])
-                )
-                elements.append(element)
-            else:
-                print("ERROR " + str(curr))
-
-        container.composition = Composition(elements, "Container")
-
-        return container
+            return container
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Container, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
 
     def makeParse(self, lines, key):
         """
@@ -2041,4 +1199,4 @@ if __name__ == "__main__":
     g = GudrunFile(
         path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
         )
-    print(g.dcs())
+    # print(g.dcs())

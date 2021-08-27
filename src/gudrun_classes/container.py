@@ -1,7 +1,7 @@
-from src.scripts.utils import spacify
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import UnitsOfDensity
+from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.config import geometry
 
 
 class Container:
@@ -14,18 +14,28 @@ class Container:
     ----------
     name : str
         Name of the container.
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    periodNumber : int
+        Period number for the data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
     composition : Composition
         Composition object storing the atomic composition of the container.
-    geometry : str
-        Geometry of the container.
-    thickness : tuple(float, float)
-        Upstream and downstream thickness.
-    angleOfRotationSampleWidth : tuple(float, float)
-        Angle of rotation of the container and its width.
+    geometry : Geometry
+        Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
+    upstreamThickness : float
+        Upstream thickness of the container - if its geometry is FLATPLATE.
+    downstreamThickness : float
+        Downstream thickness of the container - if its geometry is FLATPLATE.
+    angleOfRotation : float
+        Angle of rotation of the container - if its geometry is FLATPLATE.
+    sampleWidth : float
+        Width of the container - if its geometry is FLATPLATE.
+    innerRadius : float
+        Inner radius of the container - if its geometry is CYLINDRICAL.
+    outerRadius : float
+        Outer radius of the container - if its geometry is CYLINDRICAL.
+    sampleHeight : float
+        Height of the container - if its geometry is CYLINDRICAL.
     density : float
         Density of the container.
     densityUnits : int
@@ -49,17 +59,23 @@ class Container:
         None
         """
         self.name = ""
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition([], "CONTAINER")
-        self.geometry = ""
-        self.thickness = (0.0, 0.0)
-        self.angleOfRotationSampleWidth = (0.0, 0.0)
+        self.geometry = Geometry.SameAsBeam
+        self.upstreamThickness = 0.0
+        self.downstreamThickness = 0.0
+        self.angleOfRotation = 0.0
+        self.sampleWidth = 0.0
+        self.innerRadius = 0.0
+        self.outerRadius = 0.0
+        self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.totalCrossSectionSource = ""
         self.tweakFactor = 0.0
-        self.scatteringFractionAttenuationCoefficient = (0.0, 0.0)
+        self.scatteringFraction = 0.0
+        self.attenuationCoefficient = 0.0
 
     def __str__(self):
         """
@@ -90,6 +106,26 @@ class Container:
             units = 'gm/cm^3'
             density = self.density
 
+        compositionSuffix = "" if str(self.composition) == "" else "\n"
+
+        geometryLines = (
+            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
+            f'Upstream and downstream thickness [cm]\n'
+            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'Angle of rotation and sample width (cm)\n'
+            if
+            (
+                self.geometry == Geometry.SameAsBeam
+                and geometry == Geometry.FLATPLATE
+            )
+            or self.geometry == Geometry.FLATPLATE
+            else
+            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'Inner and outer radii [cm]\n'
+            f'{self.sampleHeight}{TAB}'
+            f'Sample height (cm)\n'
+        )
+
         densityLine = (
             f'{density}{TAB}'
             f'Density {units}?\n'
@@ -97,24 +133,21 @@ class Container:
 
         return (
             f'{self.name}{TAB}{{\n\n'
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
-            f'{str(self.composition)}\n'
+            f'{str(self.composition)}{compositionSuffix}'
             f'*  0  0{TAB}'
             f'* 0 0 to specify end of composition input\n'
-            f'{self.geometry}{TAB}'
+            f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
-            f'{spacify(self.thickness)}{TAB}'
-            f'Upstream and downstream thickness [cm]\n'
-            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
-            f'Angle of rotation and sample width (cm)\n'
+            f'{geometryLines}'
             f'{densityLine}'
             f'{self.totalCrossSectionSource}{TAB}'
             f'Total cross section source\n'
             f'{self.tweakFactor}{TAB}'
             f'Tweak factor\n'
-            f'{spacify(self.scatteringFractionAttenuationCoefficient)}'
+            f'{self.scatteringFraction}  {self.attenuationCoefficient}'
             f'{TAB}'
             f'Sample environment scattering fraction '
             f'and attenuation coefficient [per \u212b]\n'

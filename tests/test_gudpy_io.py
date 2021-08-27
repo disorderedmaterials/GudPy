@@ -1,5 +1,6 @@
 from enum import Enum
 import os
+from src.gudrun_classes.exception import ParserException
 from unittest import TestCase, skip
 import random
 from copy import deepcopy
@@ -99,9 +100,9 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedNormalisation = {
-            "numberOfFilesPeriodNumber": (1, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(["NIMROD00016702_V.raw"], "NORMALISATION"),
-            "numberOfFilesPeriodNumberBg": (2, 1),
+            "periodNumberBg": 1,
             "dataFilesBg": DataFiles(
                 [
                     "NIMROD00016698_EmptyInst.raw",
@@ -113,14 +114,19 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("V", 0, 1.0)], "Normalisation"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.15, 0.15),
-            "angleOfRotationSampleWidth": (0.0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.15,
+            "downstreamThickness": 0.15,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0721,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "tempForNormalisationPC": 200,
+            "tempForNormalisationPC": 200.0,
             "totalCrossSectionSource": "TABLES",
-            "normalisationDifferentialCrossSectionFilename": "*",
+            "normalisationDifferentialCrossSectionFile": "*",
             "lowerLimitSmoothedNormalisation": 0.01,
             "normalisationDegreeSmoothing": 1.00,
             "minNormalisationSignalBR": 0.0,
@@ -128,7 +134,7 @@ class TestGudPyIO(TestCase):
 
         self.expectedContainerA = {
             "name": "CONTAINER N9",
-            "numberOfFilesPeriodNumber": (3, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016694_Empty_N9.raw",
@@ -140,19 +146,25 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerB = {
             "name": "CONTAINER N10",
-            "numberOfFilesPeriodNumber": (3, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016695_Empty_N10.raw",
@@ -164,57 +176,75 @@ class TestGudPyIO(TestCase):
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerC = {
             "name": "CONTAINER N6",
-            "numberOfFilesPeriodNumber": (1, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 ["NIMROD00014908_Empty_N6.raw"], "CONTAINER N6"
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedContainerD = {
             "name": "CONTAINER N8",
-            "numberOfFilesPeriodNumber": (1, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 ["NIMROD00016994_Empty_N8.raw"], "CONTAINER N8"
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
             ),
-            "geometry": "SameAsBeam",
-            "thickness": (0.1, 0.1),
-            "angleOfRotationSampleWidth": (0, 5),
+            "geometry": Geometry.SameAsBeam,
+            "upstreamThickness": 0.1,
+            "downstreamThickness": 0.1,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "totalCrossSectionSource": "TABLES",
             "tweakFactor": 1.0,
-            "scatteringFractionAttenuationCoefficient": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0
         }
 
         self.expectedSampleA = {
             "name": "SAMPLE H2O, Can N9",
-            "numberOfFilesPeriodNumber": (2, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016608_H2O_in_N9.raw",
@@ -227,11 +257,16 @@ class TestGudPyIO(TestCase):
                 [Element("H", 0, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "tempForNormalisationPC": 0,
+            "tempForNormalisationPC": 0.0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
@@ -247,14 +282,15 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerA],
             "runThisSample": True
         }
 
         self.expectedSampleB = {
             "name": "SAMPLE D2O, Can N10",
-            "numberOfFilesPeriodNumber": (2, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016609_D2O_in_N10.raw",
@@ -267,11 +303,16 @@ class TestGudPyIO(TestCase):
                 [Element("H", 2, 2.0), Element("O", 0, 1.0)], "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "tempForNormalisationPC": 0,
+            "tempForNormalisationPC": 0.0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
@@ -287,14 +328,15 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerB],
             "runThisSample": True
         }
 
         self.expectedSampleC = {
             "name": "SAMPLE HDO, Can N6",
-            "numberOfFilesPeriodNumber": (2, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016741_HDO_in_N6.raw",
@@ -312,11 +354,16 @@ class TestGudPyIO(TestCase):
                 "Sample",
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "tempForNormalisationPC": 0,
+            "tempForNormalisationPC": 0.0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
@@ -332,14 +379,15 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerC],
             "runThisSample": True
         }
 
         self.expectedSampleD = {
             "name": "SAMPLE Null Water, Can N8",
-            "numberOfFilesPeriodNumber": (2, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016742_NullWater_in_N8.raw",
@@ -357,11 +405,16 @@ class TestGudPyIO(TestCase):
                 "Sample",
             ),
             "geometry": Geometry.SameAsBeam,
-            "thickness": (0.05, 0.05),
-            "angleOfRotationSampleWidth": (0, 5),
+            "upstreamThickness": 0.05,
+            "downstreamThickness": 0.05,
+            "angleOfRotation": 0.0,
+            "sampleWidth": 5.0,
+            "innerRadius": 0.0,
+            "outerRadius": 0.0,
+            "sampleHeight": 0.0,
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "tempForNormalisationPC": 0,
+            "tempForNormalisationPC": 0.0,
             "totalCrossSectionSource": "TRANSMISSION",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
@@ -377,13 +430,14 @@ class TestGudPyIO(TestCase):
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
             "include": True,
-            "environementScatteringFuncAttenuationCoeff": (1.0, 0.0),
+            "scatteringFraction": 1.0,
+            "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerD],
             "runThisSample": True
         }
 
         self.expectedSampleBackground = {
-            "numberOfFilesPeriodNumber": (2, 1),
+            "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016698_EmptyInst.raw",
@@ -405,8 +459,8 @@ class TestGudPyIO(TestCase):
         self.goodNormalisation = Normalisation()
         self.goodNormalisation.__dict__ = self.expectedNormalisation
         self.goodSampleBackground = SampleBackground()
-        self.goodSampleBackground.numberOfFilesPeriodNumber = (
-            self.expectedSampleBackground["numberOfFilesPeriodNumber"]
+        self.goodSampleBackground.periodNumber = (
+            self.expectedSampleBackground["periodNumber"]
         )
         self.goodSampleBackground.dataFiles = self.expectedSampleBackground[
             "dataFiles"
@@ -580,11 +634,11 @@ class TestGudPyIO(TestCase):
             elif isinstance(value, (list, tuple)):
                 if len(value) == 0:
                     return
-                if isinstance(value[0], dict):
+                elif isinstance(value[0], dict):
                     for val in value:
                         for val_ in val.values():
                             valueInLines(val_, lines)
-                elif isinstance(value[0], tuple):
+                elif isinstance(value[0], (list, tuple)):
                     for val in value:
                         self.assertTrue(
                             spacify(val) in lines
@@ -594,16 +648,26 @@ class TestGudPyIO(TestCase):
                     self.assertTrue(
                         spacify(value) in lines
                         or spacify(value, num_spaces=2) in lines
+                        or spacify([int(x) for x in value]) in lines
+                        or spacify(
+                            [int(x) for x in value], num_spaces=2
+                        ) in lines
                     )
             elif isinstance(value, bool):
                 self.assertTrue(str(numifyBool(value)) in lines)
             elif isinstance(value, Enum):
-                self.assertTrue(str(value.value) in lines)
+                self.assertTrue(
+                    str(value.value) in lines
+                    or value.name in lines
+                )
             else:
                 if "        " in str(value):
                     self.assertTrue(str(value).split("        ")[0] in lines)
                 else:
-                    self.assertTrue(str(value) in lines)
+                    self.assertTrue(
+                        str(value) in lines
+                        or str(int(value)) in lines
+                    )
 
         for dic in self.dicts:
             for value in dic.values():
@@ -667,11 +731,11 @@ class TestGudPyIO(TestCase):
     def testLoadMissingInstrument(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
             f.write("'  '  '        '  '/'\n\n")
-            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
             f.write(
                 "NORMALISATION        {\n\n"
                 + str(self.goodNormalisation)
-                + "\n\n}"
+                + "\n\n}\n\n"
             )
 
         with self.assertRaises(ValueError) as cm:
@@ -688,14 +752,14 @@ class TestGudPyIO(TestCase):
         with open("test_data.txt", "w", encoding="utf-8") as f:
             f.write("'  '  '        '  '/'\n\n")
             f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
+                "INSTRUMENT        {\n\n" + str(self.goodInstrument)
+                + "\n\n}\n\n"
             )
             f.write(
                 "NORMALISATION        {\n\n"
                 + str(self.goodNormalisation)
                 + "\n\n}"
             )
-
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
@@ -710,9 +774,10 @@ class TestGudPyIO(TestCase):
         with open("test_data.txt", "w", encoding="utf-8") as f:
             f.write("'  '  '        '  '/'\n\n")
             f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
+                "INSTRUMENT        {\n\n" + str(self.goodInstrument)
+                + "\n\n}\n\n"
             )
-            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
 
         with self.assertRaises(ValueError) as cm:
             GudrunFile("test_data.txt")
@@ -783,9 +848,8 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("wavelengthStep", None)
         expectedInstrument.pop("useLogarithmicBinning", None)
         expectedInstrument.pop("nxsDefinitionFile", None)
-        for i, key in enumerate(expectedInstrument.keys()):
-            if key == "groupingParameterPanel":
-                continue
+        expectedInstrument.pop("groupingParameterPanel")
+        for i in range(len(expectedInstrument.keys())):
 
             badInstrument = str(self.goodInstrument).split("\n")
             del badInstrument[i]
@@ -797,28 +861,14 @@ class TestGudPyIO(TestCase):
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
 
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-
-            if key == "XMin":
                 self.assertEqual(
-                    'Whilst parsing INSTRUMENT, Xmin,'
-                    ' Xmax, XStep was not found',
-                    str(cm.exception),
+                    "Whilst parsing Instrument, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
                 )
-            elif key == "wavelengthMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT'
-                    ', wavelengthMin, wavelengthMax,'
-                    ' wavelengthStep was not found',
-                    str(cm.exception),
-                )
-            else:
-                self.assertEqual(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                    str(cm.exception),
-                )
-            os.remove("test_data.txt")
 
     def testLoadMissingInstrumentAttributesRand(self):
 
@@ -829,12 +879,11 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("wavelengthStep", None)
         expectedInstrument.pop("useLogarithmicBinning", None)
         expectedInstrument.pop("nxsDefinitionFile", None)
+        expectedInstrument.pop("groupingParameterPanel", None)
         for i in range(50):
 
             key = random.choice(list(expectedInstrument))
             j = list(expectedInstrument).index(key)
-            if key == "groupingParameterPanel":
-                continue
 
             badInstrument = str(self.goodInstrument).split("\n")
             del badInstrument[j]
@@ -845,54 +894,28 @@ class TestGudPyIO(TestCase):
                 f.write(
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            if key == "XMin":
                 self.assertEqual(
-                    'Whilst parsing INSTRUMENT, Xmin,'
-                    ' Xmax, XStep was not found',
-                    str(cm.exception),
+                    "Whilst parsing Instrument, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
                 )
-            elif key == "wavelengthMin":
-                self.assertEqual(
-                    'Whilst parsing INSTRUMENT'
-                    ', wavelengthMin, wavelengthMax,'
-                    ' wavelengthStep was not found',
-                    str(cm.exception),
-                )
-            else:
-                self.assertEqual(
-                    "Whilst parsing INSTRUMENT, {} was not found".format(key),
-                    str(cm.exception),
-                )
-            os.remove("test_data.txt")
 
     def testLoadMissingBeamAttributesSeq(self):
 
-        for i, key in enumerate(self.expectedBeam.keys()):
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeMS", "noSlices"
-                    ]:
-                continue
+        expectedBeam = deepcopy(self.expectedBeam)
+        expectedBeam.pop("incidentBeamRightEdge", None)
+        expectedBeam.pop("incidentBeamTopEdge", None)
+        expectedBeam.pop("incidentBeamBottomEdge", None)
+        expectedBeam.pop("scatteredBeamRightEdge", None)
+        expectedBeam.pop("scatteredBeamTopEdge", None)
+        expectedBeam.pop("scatteredBeamBottomEdge", None)
+        expectedBeam.pop("stepSizeMS", None)
+        expectedBeam.pop("noSlices", None)
 
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply negative offsets to fix index,
-            # which got skewed by attributes relating
-            # to the scattered beam edges and incident
-            # beam edges.
-            if i >= 4:
-                i -= 2
-            if i >= 9:
-                i -= 3
-            if i >= 10:
-                i -= 3
-
+        for i in range(len(expectedBeam.keys())):
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[i]
             badBeam = "\n".join(badBeam)
@@ -906,44 +929,30 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing BEAM, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Beam, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingBeamAttributesRand(self):
 
+        expectedBeam = deepcopy(self.expectedBeam)
+        expectedBeam.pop("incidentBeamRightEdge", None)
+        expectedBeam.pop("incidentBeamTopEdge", None)
+        expectedBeam.pop("incidentBeamBottomEdge", None)
+        expectedBeam.pop("scatteredBeamRightEdge", None)
+        expectedBeam.pop("scatteredBeamTopEdge", None)
+        expectedBeam.pop("scatteredBeamBottomEdge", None)
+        expectedBeam.pop("stepSizeMS", None)
+        expectedBeam.pop("noSlices", None)
         for i in range(50):
 
-            key = random.choice(list(self.expectedBeam))
-
-            if key in [
-                    "incidentBeamRightEdge", "incidentBeamTopEdge",
-                    "incidentBeamBottomEdge", "scatteredBeamRightEdge",
-                    "scatteredBeamTopEdge", "scatteredBeamBottomEdge",
-                    "stepSizeMS", "noSlices"
-                    ]:
-                continue
-
-            j = list(self.expectedBeam).index(key)
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply negative offsets to fix index,
-            # which got skewed by attributes relating
-            # to the scattered beam edges and incident
-            # beam edges.
-            if j >= 4:
-                j -= 2
-            if j >= 9:
-                j -= 3
-            if j >= 10:
-                j -= 3
+            key = random.choice(list(expectedBeam))
+            j = list(expectedBeam).index(key)
 
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[j]
@@ -958,39 +967,30 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing BEAM, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Beam, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingNormalisationAttributesSeq(self):
 
-        for i, key in enumerate(self.expectedNormalisation.keys()):
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the normalisation and
-            # background normalisation data files.
-            if i > 3:
-                i += 1
-            if i > 5:
-                i += 1
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 13:
-                i -= 1
-
-            if key in [
-                    "dataFiles", "dataFilesBg",
-                    "composition", "densityUnits"
-                    ]:
-                continue
+        expectedNormalisation = deepcopy(self.expectedNormalisation)
+        expectedNormalisation.pop("dataFiles", None)
+        expectedNormalisation.pop("dataFilesBg", None)
+        expectedNormalisation.pop("composition", None)
+        expectedNormalisation.pop("densityUnits", None)
+        expectedNormalisation.pop("innerRadius", None)
+        expectedNormalisation.pop("outerRadius", None)
+        expectedNormalisation.pop("sampleHeight", None)
+        self.goodNormalisation.dataFiles = DataFiles([], "")
+        self.goodNormalisation.composition = (
+            Composition([], "")
+        )
+        for i in range(len(expectedNormalisation.keys())):
 
             badNormalisation = str(self.goodNormalisation).split("\n")
             del badNormalisation[i]
@@ -1010,44 +1010,34 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
 
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing NORMALISATION, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Beam, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingNormalisationAttributesRand(self):
 
+        expectedNormalisation = deepcopy(self.expectedNormalisation)
+        expectedNormalisation.pop("dataFiles", None)
+        expectedNormalisation.pop("dataFilesBg", None)
+        expectedNormalisation.pop("composition", None)
+        expectedNormalisation.pop("densityUnits", None)
+        expectedNormalisation.pop("innerRadius", None)
+        expectedNormalisation.pop("outerRadius", None)
+        expectedNormalisation.pop("sampleHeight", None)
+        self.goodNormalisation.dataFiles = DataFiles([], "")
+        self.goodNormalisation.composition = (
+            Composition([], "")
+        )
         for i in range(50):
 
-            key = random.choice(list(self.expectedNormalisation))
+            key = random.choice(list(expectedNormalisation))
 
-            if key in [
-                    "dataFiles", "dataFilesBg",
-                    "composition", "densityUnits"
-                    ]:
-                continue
-
-            j = list(self.expectedNormalisation).index(key)
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the normalisation and
-            # background normalisation data files.
-            if j > 3:
-                j += 1
-            if j > 5:
-                j += 1
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 13:
-                j -= 1
+            j = list(expectedNormalisation).index(key)
 
             badNormalisation = str(self.goodNormalisation).split("\n")
             del badNormalisation[j]
@@ -1067,13 +1057,14 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
 
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing NORMALISATION, {} was not found".format(key),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Normalisation, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingSampleBackgroundAttributes(self):
 
@@ -1092,60 +1083,37 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
-        self.assertEqual((
-            'Whilst parsing SAMPLE BACKGROUND 1'
-            ', numberOfFilesPeriodNumber was not found'),
-            str(cm.exception),
-        )
-        os.remove("test_data.txt")
+            self.assertEqual(
+                "Whilst parsing Sample Background, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing.",
+                str(cm.exception)
+            )
 
     def testLoadMissingSampleAttributesSeq(self):
 
-        ignore = (
-            [
-                "name", "dataFiles",
-                "composition", "containers",
-                "runThisSample",
-                "densityUnits",
-                "resonanceValues",
-                "exponentialValues"
-            ]
+        expectedSampleA = deepcopy(self.expectedSampleA)
+        expectedSampleA.pop("name", None)
+        expectedSampleA.pop("dataFiles", None)
+        expectedSampleA.pop("composition", None)
+        expectedSampleA.pop("containers", None)
+        expectedSampleA.pop("runThisSample", None)
+        expectedSampleA.pop("densityUnits", None)
+        expectedSampleA.pop("innerRadius", None)
+        expectedSampleA.pop("outerRadius", None)
+        expectedSampleA.pop("sampleHeight", None)
+        expectedSampleA.pop("resonanceValues", None)
+        expectedSampleA.pop("exponentialValues", None)
+        self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
+        self.goodSampleBackground.samples[0].composition = (
+            Composition([], "")
         )
+        self.goodSampleBackground.samples[0].resonanceValues = []
+        self.goodSampleBackground.samples[0].exponentialValues = []
+        for i in range(len(expectedSampleA.keys())):
 
-        for i, key in enumerate(self.expectedSampleA.keys()):
-            if key in ignore:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if i == 1:
-                i = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the sample data files
-            # and composition.
-
-            if i >= 5:
-                i += 2
-
-            # Apply offsets to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 11 and i <= 17:
-                i -= 1
-            if i > 17:
-                i += 1
-            if i == 19:
-                i -= 1
-            if i >= 21:
-                i -= 1
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1167,61 +1135,39 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
+
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedSampleA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Sample, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingSampleAttributesRand(self):
 
-        ignore = (
-            [
-                "name", "dataFiles",
-                "composition", "containers",
-                "runThisSample",
-                "densityUnits",
-                "resonanceValues",
-                "exponentialValues"
-            ]
+        expectedSampleA = deepcopy(self.expectedSampleA)
+        expectedSampleA.pop("name", None)
+        expectedSampleA.pop("dataFiles", None)
+        expectedSampleA.pop("composition", None)
+        expectedSampleA.pop("containers", None)
+        expectedSampleA.pop("runThisSample", None)
+        expectedSampleA.pop("densityUnits", None)
+        expectedSampleA.pop("innerRadius", None)
+        expectedSampleA.pop("outerRadius", None)
+        expectedSampleA.pop("sampleHeight", None)
+        expectedSampleA.pop("resonanceValues", None)
+        expectedSampleA.pop("exponentialValues", None)
+        self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
+        self.goodSampleBackground.samples[0].composition = (
+            Composition([], "")
         )
-
+        self.goodSampleBackground.samples[0].resonanceValues = []
+        self.goodSampleBackground.samples[0].exponentialValues = []
         for i in range(50):
-            key = random.choice(list(self.expectedSampleA))
-            j = list(self.expectedSampleA).index(key)
-            if key in ignore:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if j == 1:
-                j = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the sample data files
-            # and composition.
-            if j >= 5:
-                j += 2
-
-            # Apply offsets to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 11 and j <= 17:
-                j -= 1
-            if j > 17:
-                j += 1
-            if j == 19:
-                j -= 1
-            if j >= 21:
-                j -= 1
+            key = random.choice(list(expectedSampleA))
+            j = list(expectedSampleA).index(key)
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1229,6 +1175,7 @@ class TestGudPyIO(TestCase):
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
             del badSampleBackground[j + 10]
+
             badSampleBackground = "\n".join(badSampleBackground)
             with open("test_data.txt", "w", encoding="utf-8") as f:
                 f.write("'  '  '        '  '/'\n\n")
@@ -1244,42 +1191,34 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
+
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedSampleA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Sample, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingContainerAttributesSeq(self):
-        for i, key in enumerate(self.expectedContainerA.keys()):
-            if key in ["name", "dataFiles", "composition", "densityUnits"]:
-                continue
 
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if i == 1:
-                i = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the container data files
-            # and composition.
-            if i >= 2:
-                i += 3
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if i >= 12:
-                i -= 1
-
+        expectedContainerA = deepcopy(self.expectedContainerA)
+        expectedContainerA.pop("name", None)
+        expectedContainerA.pop("dataFiles", None)
+        expectedContainerA.pop("composition", None)
+        expectedContainerA.pop("densityUnits", None)
+        expectedContainerA.pop("innerRadius", None)
+        expectedContainerA.pop("outerRadius", None)
+        expectedContainerA.pop("sampleHeight", None)
+        expectedContainerA.pop("geometry", None)
+        self.goodSampleBackground.samples[0].containers[0].dataFiles = (
+            DataFiles([], "")
+        )
+        self.goodSampleBackground.samples[0].containers[0].composition = (
+            Composition([], "")
+        )
+        for i in range(len(expectedContainerA.keys())):
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
             ]
@@ -1302,43 +1241,35 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedContainerA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Container, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testLoadMissingContainerAttributesRand(self):
+
+        expectedContainerA = deepcopy(self.expectedContainerA)
+        expectedContainerA.pop("name", None)
+        expectedContainerA.pop("dataFiles", None)
+        expectedContainerA.pop("composition", None)
+        expectedContainerA.pop("densityUnits", None)
+        expectedContainerA.pop("innerRadius", None)
+        expectedContainerA.pop("outerRadius", None)
+        expectedContainerA.pop("sampleHeight", None)
+        expectedContainerA.pop("geometry", None)
+        self.goodSampleBackground.samples[0].containers[0].dataFiles = (
+            DataFiles([], "")
+        )
+        self.goodSampleBackground.samples[0].containers[0].composition = (
+            Composition([], "")
+        )
         for i in range(50):
-            key = random.choice(list(self.expectedContainerA))
-            j = list(self.expectedContainerA).index(key)
-            if key in ["name", "dataFiles", "composition", "densityUnits"]:
-                continue
-
-            # Apply offsets to line numbers,
-            # to ensure that the index refers to
-            # the correct line for the corresponding key.
-
-            # Fix line number of attribute
-            # which stores the number of data files
-            # and period number, to the first line.
-            if j == 1:
-                j = 0
-
-            # Apply positive offsets to fix index,
-            # which got skewed by the container data files
-            # and composition.
-            if j >= 2:
-                j += 3
-
-            # Apply negative offset to fix index,
-            # which got skewed by densityUnits attribute.
-            if j >= 12:
-                j -= 1
+            key = random.choice(list(expectedContainerA))
+            j = list(expectedContainerA).index(key)
 
             self.goodSampleBackground.samples = [
                 self.goodSampleBackground.samples[0]
@@ -1362,15 +1293,14 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing {}, {} was not found".format(
-                    self.expectedContainerA["name"], key
-                ),
-                str(cm.exception),
-            )
-            os.remove("test_data.txt")
+                self.assertEqual(
+                    "Whilst parsing Container, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing.",
+                    str(cm.exception)
+                )
 
     def testZeroExitGudrun(self):
 

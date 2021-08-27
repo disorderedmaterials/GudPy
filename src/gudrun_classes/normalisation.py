@@ -1,7 +1,8 @@
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import UnitsOfDensity
+from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.config import geometry
 
 
 class Normalisation:
@@ -12,31 +13,42 @@ class Normalisation:
 
     Attributes
     ----------
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    periodNumber : int
+        Period number for data files.
     dataFiles : DataFiles
-        DataFiles object storing data files belonging to the container.
-    numberOfFilesPeriodNumberBg : tuple(int, int)
-        Number of background data files and their period number.
+        DataFiles object storing data files belonging to the normalisation.
+    periodNumberBg : int
+        Period number for background data files.
     dataFilesBg : DataFiles
         DataFiles object storing background data files.
     composition : Composition
         Composition object storing the atomic composition of the container.
-    geometry : str
-        Geometry of the container.
-    thickness : tuple(float, float)
-        Upstream and downstream thickness.
-    angleOfRotationSampleWidth : tuple(float, float)
-        Angle of rotation of the container and its width.
+    geometry : Geometry
+        Geometry of the normalisation (FLATPLATE / CYLINDRICAL / SameAsBeam).
+    upstreamThickness : float
+        Upstream thickness of the normalisation - if its geometry is FLATPLATE.
+    downstreamThickness : float
+        Downstream thickness of the normalisation - if its geometry
+        is FLATPLATE.
+    angleOfRotation : float
+        Angle of rotation of the normalisation - if its geometry is FLATPLATE.
+    sampleWidth : float
+        Width of the normalisation - if its geometry is FLATPLATE.
+    innerRadius : float
+        Inner radius of the normalisation - if its geometry is CYLINDRICAL.
+    outerRadius : float
+        Outer radius of the normalisation - if its geometry is CYLINDRICAL.
+    sampleHeight : float
+        Height of the normalisation - if its geometry is CYLINDRICAL.
     density : float
         Density of normalisation
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
-    tempForNormalisationPC : int
+    tempForNormalisationPC : float
         Temperature for Placzek correction.
     totalCrossSectionSource : str
         TABLES / TRANSMISSION monitor / filename
-    normalisationDifferentialCrossSectionFilename : str
+    normalisationDifferentialCrossSectionFile : str
         Name of the normalisation differential cross section file.
     lowerLimitSmoothedNormalisation : float
         Lowest accepted value for smoothed Vanadium.
@@ -56,20 +68,25 @@ class Normalisation:
         ----------
         None
         """
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "NORMALISATION")
-        self.numberOfFilesPeriodNumberBg = (0, 0)
+        self.periodNumberBg = 0
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
         self.composition = Composition([], "NORMALISATION")
-        self.geometry = ""
-        self.thickness = (0.0, 0.0)
-        self.angleOfRotationSampleWidth = (0.0, 0.0)
+        self.geometry = Geometry.SameAsBeam
+        self.upstreamThickness = 0.0
+        self.downstreamThickness = 0.0
+        self.angleOfRotation = 0.0
+        self.sampleWidth = 0.0
+        self.innerRadius = 0.0
+        self.outerRadius = 0.0
+        self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
-        self.tempForNormalisationPC = 0
+        self.tempForNormalisationPC = 0.0
         self.totalCrossSectionSource = ""
-        self.normalisationDifferentialCrossSectionFilename = ""
+        self.normalisationDifferentialCrossSectionFile = ""
         self.lowerLimitSmoothedNormalisation = 0.0
         self.normalisationDegreeSmoothing = 0.0
         self.minNormalisationSignalBR = 0.0
@@ -103,6 +120,26 @@ class Normalisation:
             ''
         )
 
+        compositionSuffix = "" if str(self.composition) == "" else "\n"
+
+        geometryLines = (
+            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
+            f'Upstream and downstream thickness [cm]\n'
+            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'Angle of rotation and sample width (cm)\n'
+            if (
+                (
+                    self.geometry == Geometry.SameAsBeam
+                    and geometry == Geometry.FLATPLATE
+                )
+                or self.geometry == Geometry.FLATPLATE)
+            else
+            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'Inner and outer radii [cm]\n'
+            f'{self.sampleHeight}{TAB}'
+            f'Sample height (cm)\n'
+        )
+
         if self.densityUnits == UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
             density = -self.density
@@ -116,28 +153,25 @@ class Normalisation:
         )
 
         return (
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
-            f'{spacify(self.numberOfFilesPeriodNumberBg)}{TAB}'
+            f'{len(self.dataFilesBg)}  {self.periodNumberBg}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
             f'Force calculation of corrections?\n'
-            f'{str(self.composition)}\n'
+            f'{str(self.composition)}{compositionSuffix}'
             f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
-            f'{self.geometry}{TAB}'
+            f'{Geometry(self.geometry.value).name}{TAB}'
             f'Geometry\n'
-            f'{spacify(self.thickness)}{TAB}'
-            f'Upstream and downstream thickness [cm]\n'
-            f'{spacify(self.angleOfRotationSampleWidth)}{TAB}'
-            f'Angle of rotation and sample width (cm)\n'
+            f'{geometryLines}'
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for normalisation Placzek correction\n'
             f'{self.totalCrossSectionSource}{TAB}'
             f'Total cross section source\n'
-            f'{self.normalisationDifferentialCrossSectionFilename}{TAB}'
+            f'{self.normalisationDifferentialCrossSectionFile}{TAB}'
             f'Normalisation differential cross section filename\n'
             f'{self.lowerLimitSmoothedNormalisation}{TAB}'
             f'Lower limit on smoothed normalisation\n'

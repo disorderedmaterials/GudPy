@@ -1,4 +1,3 @@
-from src.scripts.utils import spacify
 from src.gudrun_classes.data_files import DataFiles
 
 
@@ -10,8 +9,8 @@ class SampleBackground:
 
     Attributes
     ----------
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    periodNumber : int
+        Period number for data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
     samples : Sample[]
@@ -28,7 +27,7 @@ class SampleBackground:
         ----------
         None
         """
-        self.numberOfFilesPeriodNumber = (0, 0)
+        self.periodNumber = 0
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
         self.samples = []
 
@@ -57,7 +56,7 @@ class SampleBackground:
 
         return (
             f'SAMPLE BACKGROUND{TAB}{{\n\n'
-            f'{spacify(self.numberOfFilesPeriodNumber)}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLine}\n'
             f'}}\n'
