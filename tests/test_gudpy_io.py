@@ -55,7 +55,7 @@ class TestGudPyIO(TestCase):
             "XMin": 0.01,
             "XMax": 50.0,
             "XStep": -0.025,
-            "useLogarithmicBinning": True,
+            "useLogarithmicBinning": False,
             "groupingParameterPanel": [],
             "groupsAcceptanceFactor": 1.0,
             "mergePower": 4,
