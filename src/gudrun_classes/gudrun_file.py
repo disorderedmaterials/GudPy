@@ -214,7 +214,7 @@ class GudrunFile:
 
             # If the XStep == -0.01, then enable logarithmic binning.
             self.instrument.useLogarithmicBinning = (
-                self.instrument.XStep == -0.01
+                self.instrument.XStep < 0
             )
 
             # Extract the grouping parameter panel.
