@@ -17,7 +17,6 @@ from src.gudrun_classes.enums import (
 
 
 class TestGudrunClasses(TestCase):
-    __test__=False
 
     def testEmptyPath(self):
 
