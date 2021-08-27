@@ -459,9 +459,6 @@ class TestGudPyIO(TestCase):
         self.goodNormalisation = Normalisation()
         self.goodNormalisation.__dict__ = self.expectedNormalisation
         self.goodSampleBackground = SampleBackground()
-        self.goodSampleBackground.numberOfFiles = (
-            self.expectedSampleBackground["numberOfFiles"]
-        )
         self.goodSampleBackground.periodNumber = (
             self.expectedSampleBackground["periodNumber"]
         )
