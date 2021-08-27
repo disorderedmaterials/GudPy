@@ -45,7 +45,7 @@ class DataFiles:
             String representation of DataFiles.
         """
         return """\n""".join(self.str)
-    
+
     def __len__(self):
         """
         Returns the length of the dataFiles list member.
