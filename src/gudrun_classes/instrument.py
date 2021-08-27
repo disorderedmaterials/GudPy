@@ -187,10 +187,10 @@ class Instrument:
             f'  {self.wavelengthStep}'
         )
 
-        if self.useLogarithmicBinning:
-            self.XStep = -0.01
-
         XScaleLine = (
+            f'{self.XMin}  {self.XMax}  -0.01'
+            if self.useLogarithmicBinning
+            else
             f'{self.XMin}  {self.XMax}  {self.XStep}'
         )
 

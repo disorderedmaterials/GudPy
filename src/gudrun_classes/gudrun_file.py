@@ -216,14 +216,10 @@ class GudrunFile:
             # Which consists of the first 3 floats
             # (min, max, step) in the line.
             XRange = firstNFloats(lines[17], 3)
+
             self.instrument.XMin = XRange[0]
             self.instrument.XMax = XRange[1]
             self.instrument.XStep = XRange[2]
-
-            # If the XStep == -0.01, then enable logarithmic binning.
-            self.instrument.useLogarithmicBinning = (
-                self.instrument.XStep < 0
-            )
 
             # Extract the grouping parameter panel.
             # Each row in the panel consists of the first 4 ints
