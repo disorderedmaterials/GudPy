@@ -106,6 +106,8 @@ class Container:
             units = 'gm/cm^3'
             density = self.density
 
+        compositionSuffix = "" if str(self.composition) == "" else "\n"
+
         geometryLines = (
             f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
             f'Upstream and downstream thickness [cm]\n'
@@ -134,7 +136,7 @@ class Container:
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
-            f'{str(self.composition)}\n'
+            f'{str(self.composition)}{compositionSuffix}'
             f'*  0  0{TAB}'
             f'* 0 0 to specify end of composition input\n'
             f'{Geometry(self.geometry.value).name}{TAB}'
