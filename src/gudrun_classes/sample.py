@@ -17,8 +17,6 @@ class Sample:
     ----------
     name : str
         Name of the sample.
-    numberFiles : int
-        Number of data files.
     periodNumber : int
         Period number of data files.
     dataFiles : DataFiles
@@ -106,7 +104,6 @@ class Sample:
         None
         """
         self.name = ""
-        self.numberOfFiles = 0
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "SAMPLE")
         self.forceCalculationOfCorrections = False
@@ -254,7 +251,7 @@ class Sample:
 
         return (
             f'\n{self.name}{TAB}{{\n\n'
-            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'

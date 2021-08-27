@@ -394,12 +394,12 @@ class GudrunFile:
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            self.normalisation.numberOfFiles = nthint(lines[0], 0)
+            numberOfFiles = nthint(lines[0], 0)
             self.normalisation.periodNumber = nthint(lines[0], 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(self.normalisation.numberOfFiles):
+            for i in range(numberOfFiles):
                 dataFiles.append(firstword(lines[i+1]))
 
             # Create a DataFiles object from the dataFiles list constructed.
@@ -408,19 +408,19 @@ class GudrunFile:
             )
 
             # Calculate the index which we should continue from.
-            i = 1 + self.normalisation.numberOfFiles
+            i = 1 + numberOfFiles
 
             # The number of background files and
             # background period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of background files,
             # and the 1st integer for the background riod number.
-            self.normalisation.numberOfFilesBg = nthint(lines[i], 0)
+            numberOfFilesBg = nthint(lines[i], 0)
             self.normalisation.periodNumberBg = nthint(lines[i], 1)
 
             # Extract background data files
             dataFilesBg = []
-            for j in range(self.normalisation.numberOfFilesBg):
+            for j in range(numberOfFilesBg):
                 dataFilesBg.append(firstword(lines[i+j+1]))
 
             # Create a DataFiles object from the dataFiles list constructed.
@@ -431,7 +431,7 @@ class GudrunFile:
             # Calculate the index which we should continue from.
             # Account for the number of data files
             # and number of background data files.
-            j = 1 + i + self.normalisation.numberOfFilesBg
+            j = 1 + i + numberOfFilesBg
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
@@ -557,11 +557,11 @@ class GudrunFile:
         try:
             sampleBackground = SampleBackground()
 
-            sampleBackground.numberOfFiles = nthint(lines[0], 0)
+            numberOfFiles = nthint(lines[0], 0)
             sampleBackground.periodNumber = nthint(lines[0], 1)
 
             dataFiles = []
-            for i in range(sampleBackground.numberOfFiles):
+            for i in range(numberOfFiles):
                 dataFiles.append(firstword(lines[i+1]))
             sampleBackground.dataFiles = (
                 DataFiles(dataFiles, "SAMPLE BACKGROUND")
@@ -604,19 +604,19 @@ class GudrunFile:
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            sample.numberOfFiles = nthint(lines[0], 0)
+            numberOfFiles = nthint(lines[0], 0)
             sample.periodNumber = nthint(lines[0], 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(sample.numberOfFiles):
+            for i in range(numberOfFiles):
                 dataFiles.append(firstword(lines[i+1]))
 
             # Create a DataFiles object from the dataFiles list constructed.
             sample.dataFiles = DataFiles(dataFiles, sample.name)
 
             # Calculate the index which we should continue from.
-            i = 1 + sample.numberOfFiles
+            i = 1 + numberOfFiles
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
@@ -786,19 +786,19 @@ class GudrunFile:
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            container.numberOfFiles = nthint(lines[0], 0)
+            numberOfFiles = nthint(lines[0], 0)
             container.periodNumber = nthint(lines[0], 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(container.numberOfFiles):
+            for i in range(numberOfFiles):
                 dataFiles.append(firstword(lines[i+1]))
 
             # Create a DataFiles object from the dataFiles list constructed.
             container.dataFiles = DataFiles(dataFiles, container.name)
 
             # Calculate the index which we should continue from.
-            i = 1 + container.numberOfFiles
+            i = 1 + numberOfFiles
 
             # Construct composition
             composition = []

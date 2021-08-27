@@ -9,8 +9,8 @@ class SampleBackground:
 
     Attributes
     ----------
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    periodNumber : int
+        Period number for data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
     samples : Sample[]
@@ -27,7 +27,6 @@ class SampleBackground:
         ----------
         None
         """
-        self.numberOfFiles = 0
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
         self.samples = []
@@ -57,7 +56,7 @@ class SampleBackground:
 
         return (
             f'SAMPLE BACKGROUND{TAB}{{\n\n'
-            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLine}\n'
             f'}}\n'

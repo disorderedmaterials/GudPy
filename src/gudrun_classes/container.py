@@ -14,8 +14,8 @@ class Container:
     ----------
     name : str
         Name of the container.
-    numberOfFilesPeriodNumber : tuple(int, int)
-        Number of data files and their period number.
+    periodNumber : int
+        Period number for the data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
     composition : Composition
@@ -59,7 +59,6 @@ class Container:
         None
         """
         self.name = ""
-        self.numberOfFiles = 0
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition([], "CONTAINER")
@@ -132,7 +131,7 @@ class Container:
 
         return (
             f'{self.name}{TAB}{{\n\n'
-            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
             f'{str(self.composition)}\n'

@@ -100,10 +100,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedNormalisation = {
-            "numberOfFiles": 1,
             "periodNumber": 1,
             "dataFiles": DataFiles(["NIMROD00016702_V.raw"], "NORMALISATION"),
-            "numberOfFilesBg": 2,
             "periodNumberBg": 1,
             "dataFilesBg": DataFiles(
                 [
@@ -136,7 +134,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedContainerA = {
             "name": "CONTAINER N9",
-            "numberOfFiles": 3,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -167,7 +164,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedContainerB = {
             "name": "CONTAINER N10",
-            "numberOfFiles": 3,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -198,7 +194,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedContainerC = {
             "name": "CONTAINER N6",
-            "numberOfFiles": 1,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 ["NIMROD00014908_Empty_N6.raw"], "CONTAINER N6"
@@ -224,7 +219,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedContainerD = {
             "name": "CONTAINER N8",
-            "numberOfFiles": 1,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 ["NIMROD00016994_Empty_N8.raw"], "CONTAINER N8"
@@ -250,7 +244,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedSampleA = {
             "name": "SAMPLE H2O, Can N9",
-            "numberOfFiles": 2,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -297,7 +290,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedSampleB = {
             "name": "SAMPLE D2O, Can N10",
-            "numberOfFiles": 2,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -344,7 +336,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedSampleC = {
             "name": "SAMPLE HDO, Can N6",
-            "numberOfFiles": 2,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -396,7 +387,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedSampleD = {
             "name": "SAMPLE Null Water, Can N8",
-            "numberOfFiles": 2,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -447,7 +437,6 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleBackground = {
-            "numberOfFiles": 2,
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [

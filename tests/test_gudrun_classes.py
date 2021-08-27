@@ -17,6 +17,7 @@ from src.gudrun_classes.enums import (
 
 
 class TestGudrunClasses(TestCase):
+    __test__=False
 
     def testEmptyPath(self):
 
@@ -113,10 +114,8 @@ class TestGudrunClasses(TestCase):
         normalisation = Normalisation()
 
         self.assertIsInstance(normalisation, Normalisation)
-        self.assertIsInstance(normalisation.numberOfFiles, int)
         self.assertIsInstance(normalisation.periodNumber, int)
         self.assertIsInstance(normalisation.dataFiles, DataFiles)
-        self.assertIsInstance(normalisation.numberOfFilesBg, int)
         self.assertIsInstance(normalisation.periodNumberBg, int)
         self.assertIsInstance(normalisation.dataFilesBg, DataFiles)
         self.assertIsInstance(
@@ -151,7 +150,6 @@ class TestGudrunClasses(TestCase):
         sampleBackground = SampleBackground()
 
         self.assertIsInstance(sampleBackground, SampleBackground)
-        self.assertIsInstance(sampleBackground.numberOfFiles, int)
         self.assertIsInstance(sampleBackground.periodNumber, int)
         self.assertIsInstance(sampleBackground.dataFiles, DataFiles)
         self.assertIsInstance(sampleBackground.samples, list)
@@ -162,7 +160,6 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(sample, Sample)
         self.assertIsInstance(sample.name, str)
-        self.assertIsInstance(sample.numberOfFiles, int)
         self.assertIsInstance(sample.periodNumber, int)
         self.assertIsInstance(sample.dataFiles, DataFiles)
         self.assertIsInstance(sample.forceCalculationOfCorrections, bool)
@@ -202,7 +199,6 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(container, Container)
         self.assertIsInstance(container.name, str)
-        self.assertIsInstance(container.numberOfFiles, int)
         self.assertIsInstance(container.periodNumber, int)
         self.assertIsInstance(container.dataFiles, DataFiles)
         self.assertIsInstance(container.composition, Composition)

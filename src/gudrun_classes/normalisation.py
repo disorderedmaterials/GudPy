@@ -13,14 +13,10 @@ class Normalisation:
 
     Attributes
     ----------
-    numberOfFiles : int
-        Number of data files.
     periodNumber : int
         Period number for data files.
     dataFiles : DataFiles
         DataFiles object storing data files belonging to the container.
-    numberOfFilesBg : int
-        Number of background data files.
     periodNumberBg : int
         Period number for background data files.
     dataFilesBg : DataFiles
@@ -72,10 +68,8 @@ class Normalisation:
         ----------
         None
         """
-        self.numberOfFiles = 0
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "NORMALISATION")
-        self.numberOfFilesBg = 0
         self.periodNumberBg = 0
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
@@ -159,10 +153,10 @@ class Normalisation:
         )
 
         return (
-            f'{self.numberOfFiles}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
-            f'{self.numberOfFilesBg}  {self.periodNumberBg}{TAB}'
+            f'{len(self.dataFilesBg)}  {self.periodNumberBg}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
