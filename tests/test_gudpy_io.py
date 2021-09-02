@@ -1212,6 +1212,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
+        expectedContainerA.pop("attenuationCoefficient")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1241,6 +1242,8 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+            with open("test_data.txt", "r") as f:
+                print(f.read())
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 self.assertEqual(
@@ -1261,6 +1264,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
+        expectedContainerA.pop("attenuationCoefficient")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
