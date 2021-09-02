@@ -153,24 +153,17 @@ class RunIndividualFiles():
         self.write_out_individually()
         return self.dcs()
 
-    def write_out(self, overwrite=False):
+    def write_out(self):
         """
         Writes out the string representation of the GudrunFile.
-        If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.txt'.
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
-
+        None
         Returns
         -------
         None
         """
-        if not overwrite:
-            f = open(self.outpath, "w", encoding="utf-8")
-        else:
-            f = open(self.path, "w", encoding="utf-8")
+        f = open(self.path, "w", encoding="utf-8")
         f.write(str(self.gudrunFile))
         f.close()
