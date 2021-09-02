@@ -711,7 +711,7 @@ class TestGudPyIO(TestCase):
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w", encoding="utf-8")
         f.close()
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -731,7 +731,7 @@ class TestGudPyIO(TestCase):
                 + "\n\n}\n\n"
             )
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -753,7 +753,7 @@ class TestGudPyIO(TestCase):
                 + str(self.goodNormalisation)
                 + "\n\n}"
             )
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -772,7 +772,7 @@ class TestGudPyIO(TestCase):
             )
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -791,7 +791,7 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
@@ -805,7 +805,7 @@ class TestGudPyIO(TestCase):
             f.write("'  '  '        '  '/'\n\n")
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -822,7 +822,7 @@ class TestGudPyIO(TestCase):
                 "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
             )
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ParserException) as cm:
             GudrunFile("test_data.txt")
         self.assertEqual((
                     'INSTRUMENT, BEAM and NORMALISATION'
@@ -1205,6 +1205,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
+        expectedContainerA.pop("attenuationCoefficient")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1234,6 +1235,8 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+            with open("test_data.txt", "r") as f:
+                print(f.read())
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 self.assertEqual(
@@ -1254,6 +1257,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
+        expectedContainerA.pop("attenuationCoefficient")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
