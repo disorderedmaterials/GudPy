@@ -13,7 +13,6 @@ from src.gudrun_classes.wavelength_subtraction_iterator import (
 
 
 class TestGudPyWorkflows(TestCase):
-
     def setUp(self) -> None:
 
         path = "TestData/NIMROD-water/water.txt"
@@ -52,15 +51,7 @@ class TestGudPyWorkflows(TestCase):
 
     def tearDown(self) -> None:
 
-        if os.path.isfile("test_data.txt"):
-            os.remove("test_data.txt")
-        if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
-            os.remove("tests/TestData/NIMROD-water/good_water.txt")
-
-        for f in os.listdir():
-            if f not in self.keepsakes:
-                os.remove(f)
-
+        [os.remove(f) for f in os.listdir() if not f in self.keepsakes]
         return super().tearDown()
 
     def testGudPyDCS(self):

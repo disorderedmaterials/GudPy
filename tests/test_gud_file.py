@@ -10,7 +10,6 @@ from src.scripts.utils import extract_floats_from_string
 class TestParseGudFile(TestCase):
 
     def setUp(self) -> None:
-
         self.expectedGudFileA = {
             "path": "NIMROD00016608_H2O_in_N9.gud",
             "name": "NIMROD00016608_H2O_in_N9.gud",
@@ -247,13 +246,7 @@ class TestParseGudFile(TestCase):
 
     def tearDown(self) -> None:
 
-        if os.path.isfile("tests/TestData/NIMROD-water/good_water.txt"):
-            os.remove("tests/TestData/NIMROD-water/good_water.txt")
-
-        for f in os.listdir():
-            if f not in self.keepsakes:
-                if not f.endswith("gud"):
-                    os.remove(f)
+        [os.remove(f) for f in os.listdir() if not f in self.keepsakes]
         return super().tearDown()
 
     def testEmptyPath(self):

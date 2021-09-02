@@ -8,7 +8,6 @@ from src.gudrun_classes.purge_file import PurgeFile
 
 
 class TestPurgeFile(TestCase):
-
     def setUp(self) -> None:
 
         path = "TestData/NIMROD-water/water.txt"
@@ -104,6 +103,11 @@ class TestPurgeFile(TestCase):
         }
 
         return super().setUp()
+    
+    def tearDown(self) -> None:
+
+        [os.remove(f) for f in os.listdir() if not f in self.keepsakes]
+        return super().tearDown()
 
     def testCreatePurgeClass(self):
 
