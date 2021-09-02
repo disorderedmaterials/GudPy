@@ -221,14 +221,13 @@ class GudrunFile:
         """
         Intialises an Instrument object and assigns it to the
         instrument attribute.
-        Parses the attributes of the Instrument from the input lines.
+        Parses the attributes of the Instrument from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
 
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Instrument from.
+        None
         Returns
         -------
         None
@@ -400,14 +399,13 @@ class GudrunFile:
         """
         Intialises a Beam object and assigns it to the
         beam attribute.
-        Parses the attributes of the Beam from the input lines.
+        Parses the attributes of the Beam from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
 
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Beam from.
+        None
         Returns
         -------
         None
@@ -495,14 +493,13 @@ class GudrunFile:
         """
         Intialises a Normalisation object and assigns it to the
         normalisation attribute.
-        Parses the attributes of the Normalisation from the input lines.
+        Parses the attributes of the Normalisation from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
 
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Normalisation from.
+        None
         Returns
         -------
         None
@@ -667,14 +664,13 @@ class GudrunFile:
     def parseSampleBackground(self):
         """
         Intialises a SampleBackground object.
-        Parses the attributes of the SampleBackground from the input lines.
+        Parses the attributes of the SampleBackground from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Instrument from.
+        None
         Returns
         -------
         sampleBackground : SampleBackground
@@ -709,14 +705,13 @@ class GudrunFile:
     def parseSample(self):
         """
         Intialises a Sample object.
-        Parses the attributes of the Sample from the input lines.
+        Parses the attributes of the Sample from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Instrument from.
+        None
         Returns
         -------
         sample : Sample
@@ -889,14 +884,13 @@ class GudrunFile:
     def parseContainer(self):
         """
         Intialises a Container object.
-        Parses the attributes of the Container from the input lines.
+        Parses the attributes of the Container from the input stream.
         Raises a ValueError if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
         ----------
-        lines : str
-            Input lines to parse the Instrument from.
+        None
         Returns
         -------
         container : Container
@@ -1017,15 +1011,12 @@ class GudrunFile:
     def makeParse(self, key):
         """
         Calls a parsing function from a dictionary of parsing functions
-        by the input key. The input lines are passed as an argument.
+        by the input key.
         Returns the result of the called parsing function.
         Only use case is as a helper function during parsing.
 
         Parameters
         ----------
-        lines : list
-            List of strings. Each element of the list is a line from the
-            input file.
         key : str
             Parsing function to call
             (INSTRUMENT/BEAM/NORMALISATION/SAMPLE BACKGROUND/SAMPLE/CONTAINER)
