@@ -54,36 +54,52 @@ class GudrunFile:
         Normalisation object extracted from the input file.
     sampleBackgrounds : SampleBackground[]
         List of SampleBackgrounds extracted from the input file.
+    stream : str[]
+        List of strings, where each item represents a line
+        in the input stream.
     Methods
     -------
-    parseInstrument(lines):
+    getNextToken():
+        Returns the next token in the input stream, whilst
+        removing it from said input stream.
+    peekNextToken():
+        Returns the next token in the input stream without
+        removing it.
+    consumeTokens(n):
+        Removes n tokens from the input stream.
+    consumeUpToDelim(delim):
+        Removes tokens until the delimiter is reached.
+    consumeWhitespace():
+        Removes tokens from the stream, until a non-whitespace
+        token is reached.
+    parseInstrument():
         Initialises an Intrument object and assigns it
         to the instrument attribute.
-        Parses the attributes of the Instrument from the input lines.
-    parseBeam(lines):
+        Parses the attributes of the Instrument from the input stream.
+    parseBeam():
         Initialises a Beam object and assigns it to the beam attribute.
-        Parses the attributes of the Beam from the input lines.
-    parseNormalisation(lines):
+        Parses the attributes of the Beam from the input stream.
+    parseNormalisation():
         Initialises a Normalisation object and assigns it
         to the normalisation attribute.
-        Parses the attributes of the Normalisation from the input lines.
-    parseSampleBackground(lines):
+        Parses the attributes of the Normalisation from the input stream.
+    parseSampleBackground():
         Initialises a SampleBackground object.
-        Parses the attributes of the SampleBackground from the input lines.
+        Parses the attributes of the SampleBackground from the input stream.
         Returns the SampleBackground object.
-    parseSample(lines):
+    parseSample():
         Initialises a Sample object.
-        Parses the attributes of the Sample from the input lines.
+        Parses the attributes of the Sample from the input stream.
         Returns the Sample object.
-    parseContainer(lines):
+    parseContainer():
         Initialises a Container object.
-        Parses the attributes of the Container from the input lines.
+        Parses the attributes of the Container from the input stream.
         Returns the Container object.
-    makeParse(lines, key):
+    makeParse(key):
         Uses the key to call a parsing function from a dictionary
-        of parsing functions. The lines are passed as an argument.
+        of parsing functions.
         Returns the result of the called parsing function.
-    sampleBackgroundHelper(lines):
+    sampleBackgroundHelper():
         Parses the SampleBackground, its Samples and their Containers.
         Returns the SampleBackground object.
     parse():
@@ -130,21 +146,72 @@ class GudrunFile:
         self.parse()
 
     def getNextToken(self):
-        return self.stream.pop(0)
+        """
+        Pops the 'next token' from the stream and returns it.
+        Essentially removes the first line in the stream and returns it.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        str | None
+        """
+        return self.stream.pop(0) if self.stream else None
 
     def peekNextToken(self):
+        """
+        Returns the next token in the input stream, without removing it.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        str | None
+        """
         return self.stream[0] if self.stream else None
 
     def consumeTokens(self, n):
+        """
+        Consume n tokens from the input stream.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
         for _ in range(n):
             self.getNextToken()
 
     def consumeUpToDelim(self, delim):
+        """
+        Consume tokens iteratively, until a delimiter is reached.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
         line = self.getNextToken()
         while line[0] != delim:
             line = self.getNextToken()
 
     def consumeWhitespace(self):
+        """
+        Consume tokens iteratively, while they are whitespace.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
         line = self.peekNextToken()
         if line.isspace():
             self.getNextToken()
