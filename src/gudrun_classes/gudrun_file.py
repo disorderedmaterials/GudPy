@@ -222,7 +222,7 @@ class GudrunFile:
         Intialises an Instrument object and assigns it to the
         instrument attribute.
         Parses the attributes of the Instrument from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
 
 
         Parameters
@@ -400,7 +400,7 @@ class GudrunFile:
         Intialises a Beam object and assigns it to the
         beam attribute.
         Parses the attributes of the Beam from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
 
 
         Parameters
@@ -494,7 +494,7 @@ class GudrunFile:
         Intialises a Normalisation object and assigns it to the
         normalisation attribute.
         Parses the attributes of the Normalisation from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
 
 
         Parameters
@@ -665,7 +665,7 @@ class GudrunFile:
         """
         Intialises a SampleBackground object.
         Parses the attributes of the SampleBackground from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
@@ -706,7 +706,7 @@ class GudrunFile:
         """
         Intialises a Sample object.
         Parses the attributes of the Sample from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
@@ -885,7 +885,7 @@ class GudrunFile:
         """
         Intialises a Container object.
         Parses the attributes of the Container from the input stream.
-        Raises a ValueError if any mandatory attributes are missing.
+        Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
         Parameters
@@ -1050,9 +1050,7 @@ class GudrunFile:
         Returns the SampleBackground object.
         Parameters
         ----------
-        lines : list
-            List of strings. Each element of the list is a line from the
-            input file.
+        None
         Returns
         -------
         SampleBackground
@@ -1087,7 +1085,8 @@ class GudrunFile:
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
-        Raises ValueError if Instrument, Beam or Normalisation are missing.
+        Raises ParserException if Instrument,
+        Beam or Normalisation are missing.
 
         Parameters
         ----------
@@ -1099,11 +1098,11 @@ class GudrunFile:
 
         # Ensure only valid files are given.
         if not self.path:
-            raise ValueError(
+            raise ParserException(
                 "Path not supplied. Cannot parse from an empty path!"
             )
         if not isfile(self.path):
-            raise ValueError(
+            raise ParserException(
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path"
             )
@@ -1132,7 +1131,7 @@ class GudrunFile:
 
         # If we didn't parse each one of the keywords, then panic.
         if not all(KEYWORDS.values()):
-            raise ValueError((
+            raise ParserException((
                 'INSTRUMENT, BEAM and NORMALISATION'
                 ' were not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
