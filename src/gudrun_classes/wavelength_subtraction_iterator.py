@@ -56,7 +56,8 @@ class WavelengthSubtractionIterator():
 
     def __init__(self, gudrunFile):
         """
-        Constructs all the necessary attributes for the PurgeFile object.
+        Constructs all the necessary attributes for the
+        WavelengthSubtractionIterator object.
 
         Parameters
         ----------
