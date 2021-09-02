@@ -103,10 +103,10 @@ class TestPurgeFile(TestCase):
         }
 
         return super().setUp()
-    
+
     def tearDown(self) -> None:
 
-        [os.remove(f) for f in os.listdir() if not f in self.keepsakes]
+        [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
         return super().tearDown()
 
     def testCreatePurgeClass(self):

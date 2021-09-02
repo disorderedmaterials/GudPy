@@ -246,7 +246,7 @@ class TestParseGudFile(TestCase):
 
     def tearDown(self) -> None:
 
-        [os.remove(f) for f in os.listdir() if not f in self.keepsakes]
+        [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
         return super().tearDown()
 
     def testEmptyPath(self):
