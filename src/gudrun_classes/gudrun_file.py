@@ -4,7 +4,6 @@ import os
 from os.path import isfile
 import subprocess
 import time
-from copy import deepcopy
 from src.scripts.utils import (
         extract_nums_from_string,
         firstword, boolifyNum,
@@ -127,9 +126,31 @@ class GudrunFile:
         self.sampleBackgrounds = []
 
         # Parse the GudrunFile.
+        self.stream = None
         self.parse()
 
-    def parseInstrument(self, lines):
+    def getNextToken(self):
+        return self.stream.pop(0)
+
+    def peekNextToken(self):
+        return self.stream[0] if self.stream else None
+
+    def consumeTokens(self, n):
+        for _ in range(n):
+            self.getNextToken()
+
+    def consumeUpToDelim(self, delim):
+        line = self.getNextToken()
+        while line[0] != delim:
+            line = self.getNextToken()
+
+    def consumeWhitespace(self):
+        line = self.peekNextToken()
+        if line.isspace():
+            self.getNextToken()
+            line = self.peekNextToken()
+
+    def parseInstrument(self):
         """
         Intialises an Instrument object and assigns it to the
         instrument attribute.
@@ -149,30 +170,36 @@ class GudrunFile:
             # Initialise instrument attribute to a new instance of Intrument.
             self.instrument = Instrument()
 
+            self.consumeWhitespace()
+
             # For string attributes,
             # we simply extract the firstword in the line.
-            self.instrument.name = Instruments[firstword(lines[0])]
-            self.instrument.GudrunInputFileDir = firstword(lines[1])
-            self.instrument.dataFileDir = firstword(lines[2])
-            self.instrument.dataFileType = firstword(lines[3])
-            self.instrument.detectorCalibrationFileName = firstword(lines[4])
+            self.instrument.name = Instruments[firstword(self.getNextToken())]
+            self.instrument.GudrunInputFileDir = firstword(self.getNextToken())
+            self.instrument.dataFileDir = firstword(self.getNextToken())
+            self.instrument.dataFileType = firstword(self.getNextToken())
+            self.instrument.detectorCalibrationFileName = (
+                firstword(self.getNextToken())
+            )
 
             # For single integer attributes,
             # we extract the zeroth int from the line.
-            self.instrument.columnNoPhiVals = nthint(lines[5], 0)
-            self.instrument.groupFileName = firstword(lines[6])
-            self.instrument.deadtimeConstantsFileName = firstword(lines[7])
+            self.instrument.columnNoPhiVals = nthint(self.getNextToken(), 0)
+            self.instrument.groupFileName = firstword(self.getNextToken())
+            self.instrument.deadtimeConstantsFileName = (
+                firstword(self.getNextToken())
+            )
 
             # For N integer attributes,
             # we extract the first N integers from the line.
             self.instrument.spectrumNumbersForIncidentBeamMonitor = (
-                extract_ints_from_string(lines[8])
+                extract_ints_from_string(self.getNextToken())
             )
 
             # For integer pair attributes,
             # we extract the first 2 integers from the line.
             self.instrument.wavelengthRangeForMonitorNormalisation = (
-                tuple(firstNFloats(lines[9], 2))
+                tuple(firstNFloats(self.getNextToken(), 2))
             )
 
             if all(
@@ -183,39 +210,39 @@ class GudrunFile:
                 )
 
             self.instrument.spectrumNumbersForTransmissionMonitor = (
-                extract_ints_from_string(lines[10])
+                extract_ints_from_string(self.getNextToken())
             )
 
             # For single float attributes,
             # we extract the zeroth float from the line.
             self.instrument.incidentMonitorQuietCountConst = (
-                nthfloat(lines[11], 0)
+                nthfloat(self.getNextToken(), 0)
             )
             self.instrument.transmissionMonitorQuietCountConst = (
-                nthfloat(lines[12], 0)
+                nthfloat(self.getNextToken(), 0)
             )
 
             self.instrument.channelNosSpikeAnalysis = (
-                tuple(firstNInts(lines[13], 2))
+                tuple(firstNInts(self.getNextToken(), 2))
             )
             self.instrument.spikeAnalysisAcceptanceFactor = (
-                nthfloat(lines[14], 0)
+                nthfloat(self.getNextToken(), 0)
             )
 
             # Extract wavelength range
             # Which consists of the first 3 floats
             # (min, max, step) in the line.
-            wavelengthRange = firstNFloats(lines[15], 3)
+            wavelengthRange = firstNFloats(self.getNextToken(), 3)
             self.instrument.wavelengthMin = wavelengthRange[0]
             self.instrument.wavelengthMax = wavelengthRange[1]
             self.instrument.wavelengthStep = wavelengthRange[2]
 
-            self.instrument.NoSmoothsOnMonitor = nthint(lines[16], 0)
+            self.instrument.NoSmoothsOnMonitor = nthint(self.getNextToken(), 0)
 
             # Extract X range
             # Which consists of the first 3 floats
             # (min, max, step) in the line.
-            XRange = firstNFloats(lines[17], 3)
+            XRange = firstNFloats(self.getNextToken(), 3)
 
             self.instrument.XMin = XRange[0]
             self.instrument.XMax = XRange[1]
@@ -226,55 +253,55 @@ class GudrunFile:
             # (Group, XMin, XMax, Background Factor) in the line.
             # If the marker line is encountered,
             # then the panel has been parsed.
-            i = 18
-            line = lines[i]
+
+            line = self.getNextToken()
             while "to end input of specified values" not in line:
                 self.instrument.groupingParameterPanel.append(
                     tuple(firstNInts(line, 4))
                 )
-                i += 1
+                line = self.getNextToken()
 
-            # The groupingParameterPanel alters our indexing,
-            # which can no longer be absolute,
-            # we must account for the offset,
-            # by adding 18+i+1+n for each next n attributes.
-            # where i is the number of rows in the grouping parameter panel.
-
-            self.instrument.groupsAcceptanceFactor = nthfloat(lines[i+1], 0)
-            self.instrument.mergePower = nthint(lines[i+2], 0)
+            self.instrument.groupsAcceptanceFactor = (
+                nthfloat(self.getNextToken(), 0)
+            )
+            self.instrument.mergePower = nthint(self.getNextToken(), 0)
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
             self.instrument.subSingleAtomScattering = (
-                boolifyNum(nthint(lines[i+3], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # For enumerated attributes, where the value  of the attribute is
             # the first integer in the line, and we must get the member,
             # we do this: Enum[Enum(value).name]
             self.instrument.mergeWeights = (
-                MergeWeights[MergeWeights(nthint(lines[i+4], 0)).name]
+                MergeWeights[MergeWeights(nthint(self.getNextToken(), 0)).name]
             )
-            self.instrument.incidentFlightPath = nthfloat(lines[i+5], 0)
+            self.instrument.incidentFlightPath = (
+                nthfloat(self.getNextToken(), 0)
+            )
             self.instrument.spectrumNumberForOutputDiagnosticFiles = (
-                nthint(lines[i+6], 0)
+                nthint(self.getNextToken(), 0)
             )
 
             self.instrument.neutronScatteringParametersFile = (
-                firstword(lines[i+7])
+                firstword(self.getNextToken())
 
             )
             self.instrument.scaleSelection = (
-                Scales[Scales(nthint(lines[i+8], 0)).name]
+                Scales[Scales(nthint(self.getNextToken(), 0)).name]
             )
             self.instrument.subWavelengthBinnedData = (
-                boolifyNum(nthint(lines[i+9], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
-            self.instrument.GudrunStartFolder = firstword(lines[i+10])
-            self.instrument.startupFileFolder = firstword(lines[i+11])
-            self.instrument.logarithmicStepSize = nthfloat(lines[i+12], 0)
+            self.instrument.GudrunStartFolder = firstword(self.getNextToken())
+            self.instrument.startupFileFolder = firstword(self.getNextToken())
+            self.instrument.logarithmicStepSize = (
+                nthfloat(self.getNextToken(), 0)
+            )
             self.instrument.hardGroupEdges = (
-                boolifyNum(nthint(lines[i+13], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # If NeXus files are being used, then we expect a NeXus definition
@@ -283,14 +310,18 @@ class GudrunFile:
                 self.instrument.dataFileType == "NXS"
                 or self.instrument.dataFileType == "nxs"
             ):
-                self.instrument.nxsDefinitionFile = firstword(lines[i+14])
+                self.instrument.nxsDefinitionFile = (
+                    firstword(self.getNextToken())
+                )
 
-                # Increment i to account for the NeXus definition file.
-                i += 1
-            self.instrument.numberIterations = nthint(lines[i+14], 0)
+            self.instrument.numberIterations = nthint(self.getNextToken(), 0)
             self.instrument.tweakTweakFactors = (
-                boolifyNum(nthint(lines[i+15], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Instrument, an exception occured."
@@ -298,7 +329,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def parseBeam(self, lines):
+    def parseBeam(self):
         """
         Intialises a Beam object and assigns it to the
         beam attribute.
@@ -319,11 +350,13 @@ class GudrunFile:
             # Initialise beam attribute to a new instance of Beam.
             self.beam = Beam()
 
+            self.consumeWhitespace()
+
             # For enumerated attributes,
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            self.beam.sampleGeometry = Geometry[firstword(lines[0])]
+            self.beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
 
             # Set the global geometry.
             global geometry
@@ -331,40 +364,59 @@ class GudrunFile:
 
             # For single integer attributes,
             # we extract the zeroth int from the line.
-            self.beam.noBeamProfileValues = nthint(lines[1], 0)
+            self.beam.noBeamProfileValues = nthint(self.getNextToken(), 0)
 
             # For N float attributes,
             # we extract the first N floats from the line.
-            self.beam.beamProfileValues = extract_floats_from_string(lines[2])
+            self.beam.beamProfileValues = (
+                extract_floats_from_string(self.getNextToken())
+            )
 
             # For single float attributes,
             # we extract the zeroth float from the line.
-            self.beam.stepSizeAbsorption = nthfloat(lines[3], 0)
-            self.beam.stepSizeMS = nthfloat(lines[3], 1)
-            self.beam.noSlices = nthint(lines[3], 2)
-            self.beam.angularStepForCorrections = nthint(lines[4], 0)
+            range = self.getNextToken()
+            self.beam.stepSizeAbsorption = nthfloat(range, 0)
+            self.beam.stepSizeMS = nthfloat(range, 1)
+            self.beam.noSlices = nthint(range, 2)
+            self.beam.angularStepForCorrections = (
+                nthint(self.getNextToken(), 0)
+            )
 
             # Extract the incident beam edges
             # relative to the centroid of the sample.
-            self.beam.incidentBeamLeftEdge = nthfloat(lines[5], 0)
-            self.beam.incidentBeamRightEdge = nthfloat(lines[5], 1)
-            self.beam.incidentBeamTopEdge = nthfloat(lines[5], 2)
-            self.beam.incidentBeamBottomEdge = nthfloat(lines[5], 3)
+            incidentBeamEdges = self.getNextToken()
+            self.beam.incidentBeamLeftEdge = nthfloat(incidentBeamEdges, 0)
+            self.beam.incidentBeamRightEdge = nthfloat(incidentBeamEdges, 1)
+            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 2)
+            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 3)
 
             # Extract the scattered beam edges
             # relative to the centroid of the sample.
-            self.beam.scatteredBeamLeftEdge = nthfloat(lines[6], 0)
-            self.beam.scatteredBeamRightEdge = nthfloat(lines[6], 1)
-            self.beam.scatteredBeamTopEdge = nthfloat(lines[6], 2)
-            self.beam.scatteredBeamBottomEdge = nthfloat(lines[6], 3)
+            scatteredBeamEdges = self.getNextToken()
+            self.beam.scatteredBeamLeftEdge = nthfloat(scatteredBeamEdges, 0)
+            self.beam.scatteredBeamRightEdge = nthfloat(scatteredBeamEdges, 1)
+            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 2)
+            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 3)
 
             # For string attributes,
             # we simply extract the firstword in the line.
-            self.beam.filenameIncidentBeamSpectrumParams = firstword(lines[7])
+            self.beam.filenameIncidentBeamSpectrumParams = (
+                firstword(self.getNextToken())
+            )
 
-            self.beam.overallBackgroundFactor = nthfloat(lines[8], 0)
-            self.beam.sampleDependantBackgroundFactor = nthfloat(lines[9], 0)
-            self.beam.shieldingAttenuationCoefficient = nthfloat(lines[10], 0)
+            self.beam.overallBackgroundFactor = (
+                nthfloat(self.getNextToken(), 0)
+            )
+            self.beam.sampleDependantBackgroundFactor = (
+                nthfloat(self.getNextToken(), 0)
+            )
+            self.beam.shieldingAttenuationCoefficient = (
+                nthfloat(self.getNextToken(), 0)
+            )
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Beam, an exception occured."
@@ -372,7 +424,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def parseNormalisation(self, lines):
+    def parseNormalisation(self):
         """
         Intialises a Normalisation object and assigns it to the
         normalisation attribute.
@@ -394,62 +446,57 @@ class GudrunFile:
             # to a new instance of Normalisation.
             self.normalisation = Normalisation()
 
+            self.consumeWhitespace()
+
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            numberOfFiles = nthint(lines[0], 0)
-            self.normalisation.periodNumber = nthint(lines[0], 1)
+            dataFileInfo = self.getNextToken()
+            numberOfFiles = nthint(dataFileInfo, 0)
+            self.normalisation.periodNumber = nthint(dataFileInfo, 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(numberOfFiles):
-                dataFiles.append(firstword(lines[i+1]))
+            for _ in range(numberOfFiles):
+                dataFiles.append(firstword(self.getNextToken()))
 
             # Create a DataFiles object from the dataFiles list constructed.
             self.normalisation.dataFiles = (
                 DataFiles(dataFiles, "NORMALISATION")
             )
 
-            # Calculate the index which we should continue from.
-            i = 1 + numberOfFiles
-
             # The number of background files and
             # background period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of background files,
             # and the 1st integer for the background riod number.
-            numberOfFilesBg = nthint(lines[i], 0)
-            self.normalisation.periodNumberBg = nthint(lines[i], 1)
+            dataFileInfoBg = self.getNextToken()
+            numberOfFilesBg = nthint(dataFileInfoBg, 0)
+            self.normalisation.periodNumberBg = nthint(dataFileInfoBg, 1)
 
             # Extract background data files
             dataFilesBg = []
             for j in range(numberOfFilesBg):
-                dataFilesBg.append(firstword(lines[i+j+1]))
+                dataFilesBg.append(firstword(self.getNextToken()))
 
             # Create a DataFiles object from the dataFiles list constructed.
             self.normalisation.dataFilesBg = (
                 DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
             )
 
-            # Calculate the index which we should continue from.
-            # Account for the number of data files
-            # and number of background data files.
-            j = 1 + i + numberOfFilesBg
-
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
             self.normalisation.forceCalculationOfCorrections = (
-                boolifyNum(nthint(lines[j], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # Construct composition
             composition = []
-            n = 1
-            line = lines[j+n]
+            line = self.getNextToken()
             # Extract the composition.
             # Each element in the composition consists of the first 'word',
-            # integer at the second position, and float t the first position,
+            # integer at the second position, and float at the third position,
             # (Atomic Symbol, MassNo, Abundance) in the line.
             # If the marker line is encountered,
             # then the panel has been parsed.
@@ -462,24 +509,20 @@ class GudrunFile:
                 composition.append(
                     Element(atomicSymbol, massNo, abundance)
                 )
-
-                n += 1
-                line = lines[j+n]
+                line = self.getNextToken()
 
             # Create a Composition object from the dataFiles list constructed.
             self.normalisation.composition = (
                 Composition(composition, "Normalisation")
             )
 
-            # Calculate the index we must continue from.
-            # By adding the number of elements+1 to the current index.
-            j += n + 1
-
             # For enumerated attributes,
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            self.normalisation.geometry = Geometry[firstword(lines[j])]
+            self.normalisation.geometry = (
+                Geometry[firstword(self.getNextToken())]
+            )
 
             # Is the geometry FLATPLATE?
             if (
@@ -490,23 +533,28 @@ class GudrunFile:
                     or self.normalisation.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
                 # thickness, the angle of rotation and sample width.
-                self.normalisation.upstreamThickness = nthfloat(lines[j+1], 0)
+                thickness = self.getNextToken()
+                self.normalisation.upstreamThickness = nthfloat(thickness, 0)
                 self.normalisation.downstreamThickness = (
-                    nthfloat(lines[j+1], 1)
+                    nthfloat(thickness, 1)
                 )
-                self.normalisation.angleOfRotation = nthfloat(lines[j+2], 0)
-                self.normalisation.sampleWidth = nthfloat(lines[j+2], 1)
+                geometryInfo = self.getNextToken()
+                self.normalisation.angleOfRotation = nthfloat(geometryInfo, 0)
+                self.normalisation.sampleWidth = nthfloat(geometryInfo, 1)
             else:
 
                 # Otherwise, it is CYLINDRICAL,
                 # then extract the inner and outer
                 # radii and the sample height.
-                self.normalisation.innerRadius = nthfloat(lines[j+1], 0)
-                self.normalisation.outerRadius = nthfloat(lines[j+1], 1)
-                self.normalisation.sampleHeight = nthfloat(lines[j+2], 0)
+                radii = self.getNextToken()
+                self.normalisation.innerRadius = nthfloat(radii, 0)
+                self.normalisation.outerRadius = nthfloat(radii, 1)
+                self.normalisation.sampleHeight = (
+                    nthfloat(self.getNextToken(), 0)
+                )
 
             # Extract the density.
-            density = nthfloat(lines[j+3], 0)
+            density = nthfloat(self.getNextToken(), 0)
 
             # Take the absolute value of the density - since it could be -ve.
             self.normalisation.density = abs(density)
@@ -520,20 +568,28 @@ class GudrunFile:
                 else UnitsOfDensity.CHEMICAL
             )
 
-            self.normalisation.tempForNormalisationPC = nthfloat(lines[j+4], 0)
-            self.normalisation.totalCrossSectionSource = firstword(lines[j+5])
+            self.normalisation.tempForNormalisationPC = (
+                nthfloat(self.getNextToken(), 0)
+            )
+            self.normalisation.totalCrossSectionSource = (
+                firstword(self.getNextToken())
+            )
             self.normalisation.normalisationDifferentialCrossSectionFile = (
-                firstword(lines[j+6])
+                firstword(self.getNextToken())
             )
             self.normalisation.lowerLimitSmoothedNormalisation = (
-                nthfloat(lines[j+7], 0)
+                nthfloat(self.getNextToken(), 0)
             )
             self.normalisation.normalisationDegreeSmoothing = (
-                nthfloat(lines[j+8], 0)
+                nthfloat(self.getNextToken(), 0)
             )
             self.normalisation.minNormalisationSignalBR = (
-                nthfloat(lines[j+9], 0)
+                nthfloat(self.getNextToken(), 0)
             )
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Normalisation, an exception occured."
@@ -541,7 +597,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def parseSampleBackground(self, lines):
+    def parseSampleBackground(self):
         """
         Intialises a SampleBackground object.
         Parses the attributes of the SampleBackground from the input lines.
@@ -561,15 +617,19 @@ class GudrunFile:
         try:
             sampleBackground = SampleBackground()
 
-            numberOfFiles = nthint(lines[0], 0)
-            sampleBackground.periodNumber = nthint(lines[0], 1)
+            dataFileInfo = self.getNextToken()
+            numberOfFiles = nthint(dataFileInfo, 0)
+            sampleBackground.periodNumber = nthint(dataFileInfo, 1)
 
             dataFiles = []
-            for i in range(numberOfFiles):
-                dataFiles.append(firstword(lines[i+1]))
+            for _ in range(numberOfFiles):
+                dataFiles.append(firstword(self.getNextToken()))
             sampleBackground.dataFiles = (
                 DataFiles(dataFiles, "SAMPLE BACKGROUND")
             )
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
 
             return sampleBackground
         except Exception as e:
@@ -579,7 +639,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def parseSample(self, lines):
+    def parseSample(self):
         """
         Intialises a Sample object.
         Parses the attributes of the Sample from the input lines.
@@ -601,37 +661,34 @@ class GudrunFile:
             sample = Sample()
 
             # Extract the sample name, and then discard whitespace lines.
-            sample.name = str(lines[0][:-2]).strip()
-            lines[:] = lines[2:]
+            sample.name = str(self.getNextToken()[:-2]).strip()
+            self.consumeWhitespace()
 
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            numberOfFiles = nthint(lines[0], 0)
-            sample.periodNumber = nthint(lines[0], 1)
+            dataFileInfo = self.getNextToken()
+            numberOfFiles = nthint(dataFileInfo, 0)
+            sample.periodNumber = nthint(dataFileInfo, 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(numberOfFiles):
-                dataFiles.append(firstword(lines[i+1]))
-
+            for _ in range(numberOfFiles):
+                dataFiles.append(firstword(self.getNextToken()))
             # Create a DataFiles object from the dataFiles list constructed.
             sample.dataFiles = DataFiles(dataFiles, sample.name)
-
-            # Calculate the index which we should continue from.
-            i = 1 + numberOfFiles
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
             sample.forceCalculationOfCorrections = (
-                boolifyNum(nthint(lines[i], 0))
+                boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # Construct composition
             composition = []
-            n = 1
-            line = lines[i+n]
+            line = self.getNextToken()
+
             # Extract the composition.
             # Each element in the composition consists of the first 'word',
             # integer at the second position, and float t the first position,
@@ -639,27 +696,23 @@ class GudrunFile:
             # If the marker line is encountered,
             # then the panel has been parsed.
             while "end of composition input" not in line:
+
                 atomicSymbol = firstword(line)
                 massNo = nthint(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
                 composition.append(Element(atomicSymbol, massNo, abundance))
-                n += 1
-                line = lines[i+n]
+                line = self.getNextToken()
 
             # Create a Composition object from the dataFiles list constructed.
             sample.composition = Composition(composition, "Sample")
-
-            # Calculate the index we must continue from.
-            # By adding the number of elements+1 to the current index.
-            i += n + 1
 
             # For enumerated attributes,
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            sample.geometry = Geometry[firstword(lines[i])]
+            sample.geometry = Geometry[firstword(self.getNextToken())]
 
             # Is the geometry FLATPLATE?
             if (
@@ -670,21 +723,25 @@ class GudrunFile:
                     or sample.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
                 # thickness, the angle of rotation and sample width.
-                sample.upstreamThickness = nthfloat(lines[i+1], 0)
-                sample.downstreamThickness = nthfloat(lines[i+1], 1)
-                sample.angleOfRotation = nthfloat(lines[i+2], 0)
-                sample.sampleWidth = nthfloat(lines[i+2], 1)
+                thickness = self.getNextToken()
+                sample.upstreamThickness = nthfloat(thickness, 0)
+                sample.downstreamThickness = nthfloat(thickness, 1)
+
+                geometryInfo = self.getNextToken()
+                sample.angleOfRotation = nthfloat(geometryInfo, 0)
+                sample.sampleWidth = nthfloat(geometryInfo, 1)
             else:
 
                 # Otherwise, it is CYLINDRICAL,
                 # then extract the inner and outer
                 # radii and the sample height.
-                sample.innerRadius = nthfloat(lines[i+1], 0)
-                sample.outerRadius = nthfloat(lines[i+1], 1)
-                sample.sampleHeight = nthfloat(lines[i+2], 0)
+                radii = self.getNextToken()
+                sample.innerRadius = nthfloat(radii, 0)
+                sample.outerRadius = nthfloat(radii, 1)
+                sample.sampleHeight = nthfloat(self.getNextToken(), 0)
 
             # Extract the density.
-            density = nthfloat(lines[i+3], 0)
+            density = nthfloat(self.getNextToken(), 0)
 
             # Decide on the units of density.
             # -ve density means it is atomic (atoms/A^3)
@@ -695,20 +752,19 @@ class GudrunFile:
                 density < 0
                 else UnitsOfDensity.CHEMICAL
             )
-            sample.tempForNormalisationPC = nthfloat(lines[i+4], 0)
-            sample.totalCrossSectionSource = firstword(lines[i+5])
-            sample.sampleTweakFactor = nthfloat(lines[i+6], 0)
-            sample.topHatW = nthfloat(lines[i+7], 0)
-            sample.minRadFT = nthfloat(lines[i+8], 0)
-            sample.grBroadening = nthfloat(lines[i+9], 0)
+            sample.tempForNormalisationPC = nthfloat(self.getNextToken(), 0)
+            sample.totalCrossSectionSource = firstword(self.getNextToken())
+            sample.sampleTweakFactor = nthfloat(self.getNextToken(), 0)
+            sample.topHatW = nthfloat(self.getNextToken(), 0)
+            sample.minRadFT = nthfloat(self.getNextToken(), 0)
+            sample.grBroadening = nthfloat(self.getNextToken(), 0)
 
             # Extract the resonance values.
             # Each row consists of the first 2 floats.
             # (minWavelength, maxWavelength) in the line.
             # If the marker line is encountered,
             # then the values has been parsed.
-            n = 10
-            line = lines[i+n]
+            line = self.getNextToken()
             while (
                     "to finish specifying wavelength range of resonance"
                     not in line
@@ -716,43 +772,46 @@ class GudrunFile:
                 sample.resonanceValues.append(
                     tuple(extract_floats_from_string(line))
                 )
-                n += 1
-                line = lines[i+n]
-            i += n + 1
+                line = self.getNextToken()
 
             # Extract the exponential values.
             # Each row consists of the first 3 numbers.
             # (Amplitude, Decay, N) in the line.
             # If the marker line is encountered,
             # then the values has been parsed.
-            n = 0
-            line = lines[i+n]
+            line = self.getNextToken()
             while "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues.append(
                     tuple(extract_nums_from_string(line))
                 )
-                n += 1
-                line = lines[i+n]
-            i += n + 1
 
-            sample.normalisationCorrectionFactor = nthfloat(lines[i], 0)
-            sample.fileSelfScattering = firstword(lines[i+1])
+                line = self.getNextToken()
+
+            sample.normalisationCorrectionFactor = (
+                nthfloat(self.getNextToken(), 0)
+            )
+            sample.fileSelfScattering = firstword(self.getNextToken())
             sample.normaliseTo = (
                 NormalisationType[
-                    NormalisationType(nthint(lines[i+2], 0)).name
+                    NormalisationType(nthint(self.getNextToken(), 0)).name
                 ]
             )
-            sample.maxRadFT = nthfloat(lines[i+3], 0)
+            sample.maxRadFT = nthfloat(self.getNextToken(), 0)
             sample.outputUnits = (
-                OutputUnits[OutputUnits(nthint(lines[i+4], 0)).name]
+                OutputUnits[OutputUnits(nthint(self.getNextToken(), 0)).name]
             )
-            sample.powerForBroadening = nthfloat(lines[i+5], 0)
-            sample.stepSize = nthfloat(lines[i+6], 0)
-            sample.include = boolifyNum(nthint(lines[i+7], 0))
-            sample.scatteringFraction = nthfloat(lines[i+8], 0)
-            sample.attenuationCoefficient = nthfloat(lines[i+8], 1)
+            sample.powerForBroadening = nthfloat(self.getNextToken(), 0)
+            sample.stepSize = nthfloat(self.getNextToken(), 0)
+            sample.include = boolifyNum(nthint(self.getNextToken(), 0))
+            environmentValues = self.getNextToken()
+            sample.scatteringFraction = nthfloat(environmentValues, 0)
+            sample.attenuationCoefficient = nthfloat(environmentValues, 1)
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
 
             return sample
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Sample, an exception occured."
@@ -760,7 +819,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def parseContainer(self, lines):
+    def parseContainer(self):
         """
         Intialises a Container object.
         Parses the attributes of the Container from the input lines.
@@ -783,31 +842,28 @@ class GudrunFile:
 
             # Extract the name from the lines,
             # and then discard the unnecessary lines.
-            container.name = str(lines[0][:-2]).strip()
-            lines[:] = lines[2:]
+            container.name = str(self.getNextToken()[:-2]).strip()
+            self.consumeWhitespace()
 
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
-            numberOfFiles = nthint(lines[0], 0)
-            container.periodNumber = nthint(lines[0], 1)
+            dataFileInfo = self.getNextToken()
+            numberOfFiles = nthint(dataFileInfo, 0)
+            container.periodNumber = nthint(dataFileInfo, 1)
 
             # Extract data files
             dataFiles = []
-            for i in range(numberOfFiles):
-                dataFiles.append(firstword(lines[i+1]))
+            for _ in range(numberOfFiles):
+                dataFiles.append(firstword(self.getNextToken()))
 
             # Create a DataFiles object from the dataFiles list constructed.
             container.dataFiles = DataFiles(dataFiles, container.name)
 
-            # Calculate the index which we should continue from.
-            i = 1 + numberOfFiles
-
             # Construct composition
             composition = []
-            n = 0
-            line = lines[i+n]
+            line = self.getNextToken()
             # Extract the composition.
             # Each element in the composition consists of the first 'word',
             # integer at the second position, and float t the first position,
@@ -815,27 +871,22 @@ class GudrunFile:
             # If the marker line is encountered,
             # then the panel has been parsed.
             while "end of composition input" not in line:
+
                 atomicSymbol = firstword(line)
                 massNo = nthint(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
                 composition.append(Element(atomicSymbol, massNo, abundance))
-                n += 1
-                line = lines[i+n]
-
+                line = self.getNextToken()
             # Create a Composition object from the dataFiles list constructed.
             container.composition = Composition(composition, "Container")
-
-            # Calculate the index we must continue from.
-            # By adding the number of elements+1 to the current index.
-            i += n + 1
 
             # For enumerated attributes,
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            container.geometry = Geometry[firstword(lines[i])]
+            container.geometry = Geometry[firstword(self.getNextToken())]
 
             # Is the geometry FLATPLATE?
             if (
@@ -846,21 +897,25 @@ class GudrunFile:
                     or container.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
                 # thickness, the angle of rotation and sample width.
-                container.upstreamThickness = nthfloat(lines[i+1], 0)
-                container.downstreamThickness = nthfloat(lines[i+1], 1)
-                container.angleOfRotation = nthfloat(lines[i+2], 0)
-                container.sampleWidth = nthfloat(lines[i+2], 1)
+                thickness = self.getNextToken()
+                container.upstreamThickness = nthfloat(thickness, 0)
+                container.downstreamThickness = nthfloat(thickness, 1)
+
+                geometryValues = self.getNextToken()
+                container.angleOfRotation = nthfloat(geometryValues, 0)
+                container.sampleWidth = nthfloat(geometryValues, 1)
             else:
 
                 # Otherwise, it is CYLINDRICAL,
                 # then extract the inner and outer
                 # radii and the sample height.
-                container.innerRadius = nthfloat(lines[i+1], 0)
-                container.outerRadius = nthfloat(lines[i+1], 1)
-                container.sampleHeight = nthfloat(lines[i+2], 0)
+                radii = self.getNextToken()
+                container.innerRadius = nthfloat(radii, 0)
+                container.outerRadius = nthfloat(radii, 1)
+                container.sampleHeight = nthfloat(self.getNextToken(), 0)
 
             # Extract the density.
-            density = nthfloat(lines[i+3], 0)
+            density = nthfloat(self.getNextToken(), 0)
 
             # Take the absolute value of the density - since it could be -ve.
             container.density = abs(density)
@@ -873,12 +928,18 @@ class GudrunFile:
                 density < 0
                 else UnitsOfDensity.CHEMICAL
             )
-            container.totalCrossSectionSource = firstword(lines[i+4])
-            container.tweakFactor = nthfloat(lines[i+5], 0)
-            container.scatteringFraction = nthfloat(lines[i+6], 0)
-            container.attenuationCoefficient = nthfloat(lines[i+6], 1)
+            container.totalCrossSectionSource = firstword(self.getNextToken())
+            container.tweakFactor = nthfloat(self.getNextToken(), 0)
+
+            environmentValues = self.getNextToken()
+            container.scatteringFraction = nthfloat(environmentValues, 0)
+            container.attenuationCoefficient = nthfloat(environmentValues, 1)
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
 
             return container
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Container, an exception occured."
@@ -886,7 +947,7 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
-    def makeParse(self, lines, key):
+    def makeParse(self, key):
         """
         Calls a parsing function from a dictionary of parsing functions
         by the input key. The input lines are passed as an argument.
@@ -922,9 +983,9 @@ class GudrunFile:
             "CONTAINER": self.parseContainer,
         }
         # Return the result of the parsing function that was called.
-        return parsingFunctions[key](lines)
+        return parsingFunctions[key]()
 
-    def sampleBackgroundHelper(self, lines):
+    def sampleBackgroundHelper(self):
         """
         Helper method for parsing Sample Background and its
         Samples and their Containers.
@@ -939,40 +1000,30 @@ class GudrunFile:
         SampleBackground
             The SampleBackground parsed from the lines.
         """
+        # Ignore the two obsolete lines before Sample Background begins.
+        self.consumeTokens(2)
 
-        KEYWORDS = {
-            "SAMPLE BACKGROUND": None,
-            "SAMPLE": [],
-            "CONTAINER": Container,
-        }
+        # Parse sample background.
+        sampleBackground = self.makeParse("SAMPLE BACKGROUND")
 
-        # Iterate through the lines, parsing any Samples,
-        #  backgrounds and containers found
-        parsing = ""
-        start = end = 0
-        for i, line in enumerate(lines):
-            for key in KEYWORDS.keys():
-                if key in line and firstword(line) in KEYWORDS.keys():
-                    parsing = key
-                    start = i
-                    break
-            if line[0] == "}":
-                end = i
-                if parsing == "SAMPLE BACKGROUND":
-                    start += 2
-                slice = deepcopy(lines[start: end - 1])
-                if parsing == "SAMPLE":
-                    KEYWORDS[parsing].append(self.makeParse(slice, parsing))
-                elif parsing == "CONTAINER":
-                    KEYWORDS["SAMPLE"][-1].containers.append(
-                        deepcopy(self.makeParse(slice, parsing))
-                    )
-                else:
-                    KEYWORDS[parsing] = self.makeParse(slice, parsing)
-                start = end = 0
-        KEYWORDS["SAMPLE BACKGROUND"].samples = KEYWORDS["SAMPLE"]
+        self.consumeWhitespace()
+        line = self.peekNextToken()
 
-        return KEYWORDS["SAMPLE BACKGROUND"]
+        # Parse all Samples and Containers belonging to the sample background.
+        while "END" not in line and "SAMPLE BACKGROUND" not in line:
+            if not line:
+                raise ParserException("Unexpected EOF during parsing.")
+            elif "GO" in line:
+                self.getNextToken()
+            elif "SAMPLE" in line and firstword(line) == "SAMPLE":
+                sampleBackground.samples.append(self.makeParse("SAMPLE"))
+            elif "CONTAINER" in line and firstword(line) == "CONTAINER":
+                sampleBackground.samples[-1].containers.append(
+                    self.makeParse("CONTAINER")
+                )
+            self.consumeWhitespace()
+            line = self.peekNextToken()
+        return sampleBackground
 
     def parse(self):
         """
@@ -1000,63 +1051,46 @@ class GudrunFile:
             )
         parsing = ""
 
-        start = end = 0
         KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
+
+        # Read the input stream into our attribute.
+        with open(self.path, encoding="utf-8") as fp:
+            self.stream = fp.readlines()
+
+        # Here we go! Get the first token and begin parsing.
+        line = self.getNextToken()
 
         # Iterate through the file,
         # parsing the Instrument, Beam and Normalisation.
-        with open(self.path, encoding="utf-8") as fp:
-            lines = fp.readlines()
-            split = 0
-            for i, line in enumerate(lines):
-                if (
-                    firstword(line) in KEYWORDS.keys()
-                    and not KEYWORDS[firstword(line)]
-                ):
-                    parsing = firstword(line)
-                    start = i
-                elif line[0] == "}":
-                    end = i
-                    slice = deepcopy(lines[start + 2: end - 1])
-                    self.makeParse(slice, parsing)
-                    KEYWORDS[parsing] = True
-                    if parsing == "NORMALISATION":
-                        split = end
-                        break
-                    start = end = 0
+        while self.stream and not all(value for value in KEYWORDS.values()):
+            if (
+                firstword(line) in KEYWORDS.keys()
+                and not KEYWORDS[firstword(line)]
+            ):
+                parsing = firstword(line)
+                self.makeParse(parsing)
+                KEYWORDS[parsing] = True
+            line = self.getNextToken()
 
-            # If we didn't parse each one of the keywords, then panic
-            if not all(KEYWORDS.values()):
-                raise ValueError((
-                    'INSTRUMENT, BEAM and NORMALISATION'
-                    ' were not parsed. It\'s possible the file'
-                    ' supplied is of an incorrect format!'
-                ))
-            # Get everything after the final item parsed
-            lines_split = deepcopy(lines[split + 1:])
-            start = end = 0
-            found = False
+        # If we didn't parse each one of the keywords, then panic.
+        if not all(KEYWORDS.values()):
+            raise ValueError((
+                'INSTRUMENT, BEAM and NORMALISATION'
+                ' were not parsed. It\'s possible the file'
+                ' supplied is of an incorrect format!'
+            ))
 
-            # Parse sample backgrounds and
-            # corresponding samples and containers.
-            for i, line in enumerate(lines_split):
-                if ("SAMPLE BACKGROUND" in line and "{" in line) and not found:
-                    start = i
-                    found = True
-                    continue
-                elif (
-                    ("SAMPLE BACKGROUND" in line and "{" in line)
-                    or ("END" in line)
-                ) and found:
-                    end = i
-                    found = False
-                    slice = deepcopy(lines_split[start:end])
-                    self.sampleBackgrounds.append(
-                        self.sampleBackgroundHelper(slice)
-                    )
-                    start = end + 1
-                else:
-                    continue
+        # Ignore whitespace.
+        self.consumeWhitespace()
+        line = self.peekNextToken()
+
+        # Parse sample backgrounds, alongside their samples and containers.
+        while self.stream:
+            if ("SAMPLE BACKGROUND") in line and "{" in line:
+                self.sampleBackgrounds.append(
+                    self.sampleBackgroundHelper()
+                )
+            line = self.getNextToken()
 
     def __str__(self):
         """
@@ -1199,4 +1233,3 @@ if __name__ == "__main__":
     g = GudrunFile(
         path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
         )
-    # print(g.dcs())
