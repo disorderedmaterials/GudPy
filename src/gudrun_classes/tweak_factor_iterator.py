@@ -23,7 +23,8 @@ class TweakFactorIterator():
     """
     def __init__(self, gudrunFile):
         """
-        Constructs all the necessary attributes for the TweakFactorIterator object.
+        Constructs all the necessary attributes for the
+        TweakFactorIterator object.
 
         Parameters
         ----------
