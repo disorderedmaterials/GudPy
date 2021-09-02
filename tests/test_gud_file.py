@@ -1,4 +1,5 @@
 import os
+from src.gudrun_classes.exception import ParserException
 from unittest import TestCase
 from shutil import copyfile
 
@@ -10,7 +11,6 @@ from src.scripts.utils import extract_floats_from_string
 class TestParseGudFile(TestCase):
 
     def setUp(self) -> None:
-
         self.expectedGudFileA = {
             "path": "NIMROD00016608_H2O_in_N9.gud",
             "name": "NIMROD00016608_H2O_in_N9.gud",
@@ -259,17 +259,17 @@ class TestParseGudFile(TestCase):
     def testEmptyPath(self):
 
         emptyPath = ""
-        self.assertRaises(ValueError, GudFile, emptyPath)
+        self.assertRaises(ParserException, GudFile, emptyPath)
 
     def testInvalidFileType(self):
 
         invalid_file_type = "NIMROD0001_H20_in_N9.txt"
-        self.assertRaises(ValueError, GudFile, invalid_file_type)
+        self.assertRaises(ParserException, GudFile, invalid_file_type)
 
     def testInvalidPath(self):
 
         invalid_path = "invalid_path.gud"
-        self.assertRaises(ValueError, GudFile, invalid_path)
+        self.assertRaises(ParserException, GudFile, invalid_path)
 
     def testValidPath(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")

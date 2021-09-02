@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.composition import Composition
@@ -21,12 +22,12 @@ class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
 
         emptyPath = ""
-        self.assertRaises(ValueError, GudrunFile, path=emptyPath)
+        self.assertRaises(ParserException, GudrunFile, path=emptyPath)
 
     def testInvalidPath(self):
 
         invalidPath = "invalid_path"
-        self.assertRaises(ValueError, GudrunFile, path=invalidPath)
+        self.assertRaises(ParserException, GudrunFile, path=invalidPath)
 
     def testInstrumentInitDataTypes(self):
 
