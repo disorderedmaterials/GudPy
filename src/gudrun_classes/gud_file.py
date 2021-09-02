@@ -1,5 +1,6 @@
 import os
 from os.path import isfile
+from src.gudrun_classes.exception import ParserException
 
 
 class GudFile:
@@ -111,10 +112,10 @@ class GudFile:
 
         # Handle edge cases - invalid extensions and paths.
         if self.path.split(".")[-1] != "gud":
-            raise ValueError("Only .gud files can be parsed.")
+            raise ParserException("Only .gud files can be parsed.")
 
         if not isfile(self.path):
-            raise ValueError("Please provide a valid path.")
+            raise ParserException("Please provide a valid path.")
 
         # Parse the GudFile
         self.parse()
