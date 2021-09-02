@@ -86,20 +86,20 @@ class RunIndividualFiles():
 
             # Enumerate samples.
             for j, sample in enumerate(samples):
+                if sample.runThisSample:
+                    # Enumerate the datafiles belonging to the sample.
+                    for k, dataFile in enumerate(sample.dataFiles.dataFiles):
 
-                # Enumerate the datafiles belonging to the sample.
-                for k, dataFile in enumerate(sample.dataFiles.dataFiles):
+                        # deepcopy the current sample
+                        childSample = deepcopy(sample)
 
-                    # deepcopy the current sample
-                    childSample = deepcopy(sample)
+                        # Only run one data file.
+                        childSample.dataFiles = (
+                            DataFiles([dataFile], childSample.name)
+                        )
 
-                    # Only run one data file.
-                    childSample.dataFiles = (
-                        DataFiles([dataFile], childSample.name)
-                    )
-
-                    # Append sample
-                    sampleBackgrounds[i].samples.append(childSample)
+                        # Append sample
+                        sampleBackgrounds[i].samples.append(childSample)
         # Update gudrunFile to use the newly constructed sample background.
 
         self.gudrunFile.sampleBackgrounds = sampleBackgrounds
