@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
+    <width>577</width>
     <height>875</height>
    </rect>
   </property>
@@ -68,8 +68,8 @@
   <widget class="QGroupBox" name="otherGroupBox">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>90</y>
+     <x>30</x>
+     <y>80</y>
      <width>561</width>
      <height>781</height>
     </rect>
@@ -257,16 +257,6 @@
      <string>Column for Phi Values</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="phiValuesColumnLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>100</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="spectrumNumbersIBLabel">
     <property name="geometry">
      <rect>
@@ -326,26 +316,6 @@
      <string>Wavelength range for monitor normalisation</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="minWavelengthMonNormLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>220</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxWavelengthMonNormLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>220</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="queitCountConstLabel">
     <property name="geometry">
      <rect>
@@ -372,17 +342,7 @@
      <string>Incident monitor</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="quietCountConstIMLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>250</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="quietCountConstTMLineEdit">
+   <widget class="QLineEdit" name="transmissionMonitorQuietCountConstSpinBox">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -405,16 +365,6 @@
      <string>Transmission monitor</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="channelNoBLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>280</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="channelNosLabel">
     <property name="geometry">
      <rect>
@@ -426,16 +376,6 @@
     </property>
     <property name="text">
      <string>Channel no.s for spike analysis</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="channelNoALineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>280</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="acceptanceFactorLabel">
@@ -461,16 +401,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="maxWavelengthLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>310</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="wavelengthRangeLabel">
     <property name="geometry">
      <rect>
@@ -482,36 +412,6 @@
     </property>
     <property name="text">
      <string>Wavelength range to use and step size</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minWavelengthLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>310</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="stepWavelengthLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>310</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="noSmoothsOnMonitorLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>340</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="noSmoothsOnMonitorLabel">
@@ -659,156 +559,6 @@
      <string notr="true">scaleSelectionButtonGroup</string>
     </attribute>
    </widget>
-   <widget class="QLineEdit" name="stepQLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>400</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minQLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>400</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxQLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>400</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="stepDSpacingLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>430</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minDSpacingLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>430</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxDSpacingLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>430</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="stepWavelength_LineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>460</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minWavelength_LineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>460</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxWavelength_LineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>460</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="stepEnergyLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>490</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minEnergyLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>490</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxEnergyLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>490</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="stepTOFLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>520</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="minTOFLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>520</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="maxTOFLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>520</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QTableWidget" name="groupingParameterTable">
     <property name="geometry">
      <rect>
@@ -865,32 +615,12 @@
      <string>Acceptance factor</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="groupsAcceptanceFactorLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>580</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="mergePowerLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>610</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="mergePowerLabel">
     <property name="geometry">
      <rect>
       <x>310</x>
       <y>610</y>
-      <width>131</width>
+      <width>71</width>
       <height>25</height>
      </rect>
     </property>
@@ -932,16 +662,6 @@
     </property>
     <property name="text">
      <string>Incident flight path [m]</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="incidentFlightPathLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>640</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
     </property>
    </widget>
    <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
@@ -1032,22 +752,12 @@
      <string>NeXus definition file</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="outputDiagSpectrumLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>690</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="outputDiagSpectrumLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>690</y>
-      <width>321</width>
+      <width>221</width>
       <height>25</height>
      </rect>
     </property>
@@ -1069,6 +779,296 @@
     </property>
     <property name="text">
      <string>Logarithmic binning?</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="phiValuesColumnSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>100</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minWavelengthMonNormSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>220</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxWavelengthMonNormSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>220</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>250</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="channelNoASpinBox">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>280</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="channelNoBSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>280</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minWavelengthSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>310</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxWavelengthSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>310</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="wavelengthStepSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>310</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="noSmoothsOnMonitorSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>340</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="stepQSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>400</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minQSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>400</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxQSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>400</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>430</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>430</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>430</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="wavelengthStep_SpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>460</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>460</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>460</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minEnergySpinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>490</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>490</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxEnergySpinBox">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>490</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="maxTOFSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>520</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="stepTOFSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>520</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="minTOFSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>520</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="groupsAcceptanceFactorSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>580</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="mergePowerSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>610</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="incidentFlightPathSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>640</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="outputDiagSpectrumSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>690</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>
