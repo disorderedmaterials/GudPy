@@ -36,6 +36,7 @@ class InstrumentWidget(QWidget):
         self.parent = parent
 
         super(InstrumentWidget, self).__init__(parent=self.parent)
+
         self.initComponents()
 
     def handleInstrumentNameChanged(self, index):
@@ -67,6 +68,89 @@ class InstrumentWidget(QWidget):
     
     def handleHardGroupEdgesSwitched(self, state):
         self.instrument.hardGroupEdges = state
+    
+    def handleColumnNoPhiValuesChanged(self, value):
+        self.instrument.columnNoPhiVals = value
+    
+    def handleMinWavelengthMonNormChanged(self, value):
+        self.instrument.wavelengthRangeForMonitorNormalisation = (
+            value,
+            self.instrument.wavelengthRangeForMonitorNormalisation[1]
+        )
+
+    def handleMaxWavelengthMonNormChanged(self, value):
+        self.instrument.wavelengthRangeForMonitorNormalisation = (
+            self.instrument.wavelengthRangeForMonitorNormaliastion[1],
+            value
+        )
+    
+    def handleIncidentMonitorQuietCountConstChanged(self, value):
+        self.instrument.incidentMonitorQuietCountConst = value
+    
+    def handleTransmissionMonitorQuietCountConstChanged(self, value):
+        self.instrument.incidentMonitorQuietCountConst = value
+    
+    def handleChannelNoAChanged(self, value):
+        self.instrument.channelNosSpikeAnalysis = (
+            value,
+            self.instrument.channelNosSpikeAnalysis[1]
+        )
+
+    def handleChannelNoBChanged(self, value):
+        self.instrument.channelNosSpikeAnalysis = (
+            self.instrument.channelNosSpikeAnalysis[0],
+            value
+        )
+    
+    def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
+        self.instrument.spikeAnalysisAcceptanceFactor = value
+
+    def handleMinWavelengthChanged(self, value):
+        self.instrument.wavelengthMin = value
+
+    def handleMaxWavelengthChanged(self, value):
+        self.instrument.wavelengthMax = value
+    
+    def handleStepWavelengthChanged(self, value):
+        self.instrument.wavelengthStep = value
+    
+    def handleNoSmoothsOnMonitorChanged(self, value):
+        self.instrument.NoSmoothsOnMonitor = value
+    
+    def handleQScaleStateChanged(self):
+        button, min, max, step = self.scales[Scales.Q]
+        state = button.isChecked()
+        min.setEnabled(state)
+        max.setEnabled(state)
+        step.setEnabled(state)
+    
+    def handleDSpacingScaleStateChanged(self):
+        button, min, max, step = self.scales[Scales.D_SPACING]
+        state = button.isChecked()
+        min.setEnabled(state)
+        max.setEnabled(state)
+        step.setEnabled(state)
+    
+    def handleWavelengthScaleStateChanged(self):
+        button, min, max, step = self.scales[Scales.WAVELENGTH]
+        state = button.isChecked()
+        min.setEnabled(state)
+        max.setEnabled(state)
+        step.setEnabled(state)
+
+    def handleEnergyScaleStateChanged(self):
+        button, min, max, step = self.scales[Scales.ENERGY]
+        state = button.isChecked()
+        min.setEnabled(state)
+        max.setEnabled(state)
+        step.setEnabled(state)
+
+    def handleTOFScaleStateChanged(self):
+        button, min, max, step = self.scales[Scales.TOF]
+        state = button.isChecked()
+        min.setEnabled(state)
+        max.setEnabled(state)
+        step.setEnabled(state)
 
     def initComponents(self):
         """
@@ -95,7 +179,7 @@ class InstrumentWidget(QWidget):
         self.detCalibrationLineEdit.textChanged.connect(self.handleDetectorCalibrationFileChanged)
 
         self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
-        # self.phiValuesColumnSpinBox.valueChanged.connect()
+        self.phiValuesColumnSpinBox.valueChanged.connect(self.handleColumnNoPhiValuesChanged)
 
         self.groupsFileLineEdit.setText(self.instrument.groupFileName)
         self.groupsFileLineEdit.textChanged.connect(self.handleGroupsFileChanged)
@@ -105,35 +189,36 @@ class InstrumentWidget(QWidget):
 
         self.minWavelengthMonNormSpinBox.setValue(self.instrument.wavelengthRangeForMonitorNormalisation[0])
         self.maxWavelengthMonNormSpinBox.setValue(self.instrument.wavelengthRangeForMonitorNormalisation[1])
-        # self.minWavelengthMonNormLineEdit.valueChanged.connect()
-        # self.maxWavelengthMonNormLineEdit.valueChanged.connect()
+        self.minWavelengthMonNormSpinBox.valueChanged.connect(self.handleMinWavelengthMonNormChanged)
+        self.maxWavelengthMonNormSpinBox.valueChanged.connect(self.handleMaxWavelengthMonNormChanged)
 
         self.spectrumNumbersIBLineEdit.setText(spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor))
 
         self.spectrumNumbersTLineEdit.setText(spacify(self.instrument.spectrumNumbersForTransmissionMonitor))
 
         self.incidentMonitorQuietCountConstSpinBox.setValue(self.instrument.incidentMonitorQuietCountConst)
-        # self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect()
+        self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect(self.handleIncidentMonitorQuietCountConstChanged)
         self.transmissionMonitorQuietCountConstSpinBox.setValue(self.instrument.transmissionMonitorQuietCountConst)
-        # self.transmissionMonitorQuietCountConstSpinBox.valueChanged.connect()
+        self.transmissionMonitorQuietCountConstSpinBox.valueChanged.connect(self.handleTransmissionMonitorQuietCountConstChanged)
 
         self.channelNoASpinBox.setValue(self.instrument.channelNosSpikeAnalysis[0])
-        # self.channelNoASpinBox.valueChanged.connect()
+        self.channelNoASpinBox.valueChanged.connect(self.handleChannelNoAChanged)
         self.channelNoBSpinBox.setValue(self.instrument.channelNosSpikeAnalysis[1])
-        # self.channelNoBSpinBox.valueChanged.connect()
+        self.channelNoBSpinBox.valueChanged.connect(self.handleChannelNoBChanged)
 
         self.acceptanceFactorSpinBox.setValue(self.instrument.spikeAnalysisAcceptanceFactor)
-        # self.acceptanceFactorSpinBox.valueChanged.connect()
+        self.acceptanceFactorSpinBox.valueChanged.connect(self.handleSpikeAnalysisAcceptanceFactorChanged)
 
         self.minWavelengthSpinBox.setValue(self.instrument.wavelengthMin)
-        # self.minWavelengthSpinBox.valueChanged.connect()
+        self.minWavelengthSpinBox.valueChanged.connect(self.handleMinWavelengthChanged)
         self.maxWavelengthSpinBox.setValue(self.instrument.wavelengthMax)
-        # self.maxWavelengthSpinBox.valueChanged.connect()
-        # self.stepWavelengthSpinBox.valueChanged.connect()
+        self.maxWavelengthSpinBox.valueChanged.connect(self.handleMaxWavelengthChanged)
         self.stepWavelengthSpinBox.setValue(self.instrument.wavelengthStep)
+        self.stepWavelengthSpinBox.valueChanged.connect(self.handleStepWavelengthChanged)
 
         self.noSmoothsOnMonitorSpinBox.setValue(self.instrument.NoSmoothsOnMonitor)
-
+        self.noSmoothsOnMonitorSpinBox.valueChanged.connect(self.handleNoSmoothsOnMonitorChanged)
+        
         self.scales = {
             Scales.Q: (self._QRadioButton, self.minQSpinBox, self.maxQSpinBox, self.stepQSpinBox),
             Scales.D_SPACING: (self.DSpacingRadioButton, self.minDSpacingSpinBox, self.maxDSpacingSpinBox, self.stepDSpacingSpinBox),
@@ -141,7 +226,12 @@ class InstrumentWidget(QWidget):
             Scales.ENERGY: (self.energyRadioButton, self.minEnergySpinBox, self.maxEnergySpinBox, self.stepEnergySpinBox),
             Scales.TOF: (self.TOFRadioButton, self.minTOFSpinBox, self.maxTOFSpinBox, self.stepTOFSpinBox)
         }
-
+        self._QRadioButton.toggled.connect(self.handleQScaleStateChanged)
+        self.DSpacingRadioButton.toggled.connect(self.handleDSpacingScaleStateChanged)
+        self.wavelengthRadioButton.toggled.connect(self.handleWavelengthScaleStateChanged)
+        self.energyRadioButton.toggled.connect(self.handleEnergyScaleStateChanged)
+        self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
+        
         selection, min, max, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
         min.setValue(self.instrument.XMin)

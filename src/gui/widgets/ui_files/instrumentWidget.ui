@@ -862,6 +862,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="stepQSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -872,6 +875,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="minQSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -882,6 +888,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="maxQSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -892,6 +901,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -902,6 +914,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -912,6 +927,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -922,6 +940,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -932,6 +953,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -942,6 +966,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -952,6 +979,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="minEnergySpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -962,6 +992,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -972,6 +1005,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="maxEnergySpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -982,6 +1018,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="maxTOFSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -992,6 +1031,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="stepTOFSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -1002,6 +1044,9 @@
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="minTOFSpinBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>200</x>
