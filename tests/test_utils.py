@@ -31,10 +31,6 @@ class TestUtils(TestCase):
 
         self.assertEqual(boolifyNum(1), True)
 
-    def testBoolifyNumBad(self):
-
-        self.assertRaises(ValueError, boolifyNum, 2)
-
     def testSpacifyNonStr(self):
 
         self.assertEqual(spacify([1, 2, 3]), "1 2 3")
