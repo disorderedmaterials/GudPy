@@ -152,6 +152,18 @@ class InstrumentWidget(QWidget):
         max.setEnabled(state)
         step.setEnabled(state)
 
+    def handleGroupsAcceptanceFactorChanged(self, value):
+        self.instrument.groupsAcceptanceFactor = value
+    
+    def handleMergePowerChanged(self, value):
+        self.instrument.mergePower = value
+
+    def handleIncidentFlightPathChanged(self, value):
+        self.instrument.incidentFlightPath = value
+    
+    def handleSpectrumNumberForOutputDiagChanged(self, value):
+        self.instrument.spectrumNumberForOutputDiagnosticFiles = value
+
     def initComponents(self):
         """
         Loads the UI file for the InstrumentWidget object,
@@ -231,7 +243,7 @@ class InstrumentWidget(QWidget):
         self.wavelengthRadioButton.toggled.connect(self.handleWavelengthScaleStateChanged)
         self.energyRadioButton.toggled.connect(self.handleEnergyScaleStateChanged)
         self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
-        
+
         selection, min, max, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
         min.setValue(self.instrument.XMin)
@@ -242,14 +254,16 @@ class InstrumentWidget(QWidget):
         self.logarithmicBinningCheckBox.stateChanged.connect(self.handleUseLogarithmicBinningSwitched)
 
         self.groupsAcceptanceFactorSpinBox.setValue(self.instrument.groupsAcceptanceFactor)
-
+        self.groupsAcceptanceFactorSpinBox.valueChanged.connect(self.handleGroupsAcceptanceFactorChanged)
         self.mergePowerSpinBox.setValue(self.instrument.mergePower)
+        self.mergePowerSpinBox.valueChanged.connect(self.handleMergePowerChanged)
 
         for m in MergeWeights:
             self.mergeWeightsComboBox.addItem(m.name, m)
         self.mergeWeightsComboBox.setCurrentIndex(self.instrument.mergeWeights.value)
         self.mergeWeightsComboBox.currentIndexChanged.connect(self.handleMergeWeightsChanged)
         self.incidentFlightPathSpinBox.setValue(self.instrument.incidentFlightPath)
+        self.incidentFlightPathSpinBox.valueChanged.connect(self.handleIncidentFlightPathChanged)
 
         self.outputDiagSpectrumSpinBox.setValue(self.instrument.spectrumNumberForOutputDiagnosticFiles)
         self.neutronScatteringParamsFileLineEdit.setText(self.instrument.neutronScatteringParametersFile)
