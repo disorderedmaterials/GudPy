@@ -1,11 +1,10 @@
 from PyQt5.QtWidgets import QLineEdit, QWidget
 from PyQt5 import uic
-from src.gui.widgets.gudpy_widget import GudPyWidget
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
 import os
 
-class InstrumentWidget(GudPyWidget):
+class InstrumentWidget(QWidget):
     """
     Class to represent a InstrumentWidget. Inherits QWidget.
 
@@ -39,6 +38,36 @@ class InstrumentWidget(GudPyWidget):
         super(InstrumentWidget, self).__init__(object=self.instrument, parent=self.parent)
         self.initComponents()
 
+    def handleInstrumentNameChanged(self, index):
+        self.instrument.name = self.nameComboBox.itemData(index)
+
+    def handleDataFileDirectoryChanged(self, text):
+        self.instrument.dataFileDir = text
+    
+    def handleDataFileTypeChanged(self, index):
+        self.instrument.dataFileType = self.dataFileTypeCombo.itemData(index)
+
+    def handleDetectorCalibrationFileChanged(self, text):
+        self.instrument.detectorCalibrationFileName = text
+    
+    def handleGroupsFileChanged(self, text):
+        self.instrument.groupFileName = text
+    
+    def handleDeadtimeFileChanged(self, text):
+        self.instrument.deadtimeConstantsFileName = text
+
+    def handleUseLogarithmicBinningSwitched(self, state):
+        self.instrument.useLogarithmicBinning = state    
+
+    def handleMergeWeightsChanged(self, index):
+        self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(index)
+
+    def handleNeutronScatteringParamsFileChanged(self, text):
+        self.instrument.neutronScatteringParametersFile = text
+    
+    def handleHardGroupEdgesSwitched(self, state):
+        self.instrument.hardGroupEdges = state
+
     def initComponents(self):
         """
         Loads the UI file for the InstrumentWidget object,
@@ -52,76 +81,56 @@ class InstrumentWidget(GudPyWidget):
         for i in Instruments:
             self.nameComboBox.addItem(i.name, i)
         self.nameComboBox.setCurrentIndex(self.instrument.name.value)
-        self.widgetMap[self.nameComboBox] = "name"
-        self.nameComboBox.currentIndexChanged.connect(lambda index : self.save(self.nameComboBox, self.nameComboBox.itemData(index)))
+        self.nameComboBox.currentIndexChanged.connect(self.handleInstrumentNameChanged)
 
         self.dataFileDirectoryLineEdit.setText(self.instrument.dataFileDir)
-        self.widgetMap[self.dataFileDirectoryLineEdit] = "dataFileDir"
-        self.dataFileDirectoryLineEdit.textChanged.connect(lambda text : self.save(self.dataFileDirectoryLineEdit, text))
+        self.dataFileDirectoryLineEdit.textChanged.connect(self.handleDataFileDirectoryChanged)
 
         dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
         self.dataFileTypeCombo.addItems(dataFileTypes)
         self.dataFileTypeCombo.setCurrentIndex(dataFileTypes.index(self.instrument.dataFileType))
-        self.widgetMap[self.dataFileTypeCombo] = "dataFileType"
-        self.dataFileTypeCombo.currentIndexChanged.connect(lambda index : self.save(self.dataFileTypeCombo, self.dataFileTypeCombo.itemText(index)))
+        self.dataFileTypeCombo.currentIndexChanged.connect(self.handleDataFileTypeChanged)
 
         self.detCalibrationLineEdit.setText(self.instrument.detectorCalibrationFileName)
-        self.widgetMap[self.detCalibrationLineEdit] = "detectorCalibrationFileName"
-        self.detCalibrationLineEdit.textChanged.connect(lambda text : self.save(self.detCalibrationLineEdit, text))
+        self.detCalibrationLineEdit.textChanged.connect(self.handleDetectorCalibrationFileChanged)
 
         self.phiValuesColumnLineEdit.setText(str(self.instrument.columnNoPhiVals))
-        self.widgetMap[self.phiValuesColumnLineEdit] = "columnNoPhiVals"
-        self.phiValuesColumnLineEdit.textChanged.connect(lambda text : self.save(self.phiValuesColumnLineEdit, text))
+        self.phiValuesColumnLineEdit.textChanged.connect()
 
         self.groupsFileLineEdit.setText(self.instrument.groupFileName)
-        self.widgetMap[self.groupsFileLineEdit] = "groupFileName"
-        self.groupsFileLineEdit.textChanged.connect(lambda text : self.save(self.groupsFileLineEdit, text))
+        self.groupsFileLineEdit.textChanged.connect(self.handleGroupsFileChanged)
 
         self.deadtimeFileLineEdit.setText(self.instrument.deadtimeConstantsFileName)
-        self.widgetMap[self.deadtimeFileLineEdit] = "deadtimeConstantsFileName"
-        self.deadtimeFileLineEdit.textChanged.connect(lambda text : self.save(self.deadtimeLineEdit, text))
+        self.deadtimeFileLineEdit.textChanged.connect(self.handleDeadtimeFileChanged)
 
         self.minWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[0]))
         self.maxWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[1]))
-        self.widgetMap[self.minWavelengthMonNormLineEdit] = ("wavelengthRangeForMonitorNormalisation", 0)
-        self.widgetMap[self.maxWavelengthMonNormLineEdit] = ("wavelengthRangeForMonitorNormalisation", 1)
-        self.minWavelengthMonNormLineEdit.textChanged.connect(lambda text : self.save(self.minWavelengthMonNormLineEdit, text))
-        self.maxWavelengthMonNormLineEdit.textChanged.connect(lambda text : self.save(self.maxWavelengthMonNormLineEdit, text))
+        self.minWavelengthMonNormLineEdit.textChanged.connect()
+        self.maxWavelengthMonNormLineEdit.textChanged.connect()
 
         self.spectrumNumbersIBLineEdit.setText(spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor))
-        self.widgetMap[self.spectrumNumbersIBLineEdit] = "spectrumNumbersForIncidentBeamMonitor"
 
         self.spectrumNumbersTLineEdit.setText(spacify(self.instrument.spectrumNumbersForTransmissionMonitor))
-        self.widgetMap[self.spectrumNumbersTLineEdit] = "spectrumNumbersForTransmissionMonitor"
 
         self.quietCountConstIMLineEdit.setText(str(self.instrument.incidentMonitorQuietCountConst))
-        self.widgetMap[self.quietCountConstIMLineEdit] = "incidentMonitorQuietCountConst"
 
         self.quietCountConstTMLineEdit.setText(str(self.instrument.transmissionMonitorQuietCountConst))
-        self.widgetMap[self.quietCountConstTMLineEdit] = "transmissionMonitorQuietCountConst"
 
         self.channelNoALineEdit.setText(str(self.instrument.channelNosSpikeAnalysis[0]))
-        self.widgetMap[self.channelNoALineEdit] = ("channelNosSpikeAnalysis", 0)
 
         self.channelNoBLineEdit.setText(str(self.instrument.channelNosSpikeAnalysis[1]))
-        self.widgetMap[self.channelNoBLineEdit] = ("channelNosSpikeAnalysis", 1)
 
         self.acceptanceFactorLineEdit.setText(str(self.instrument.spikeAnalysisAcceptanceFactor))
-        self.widgetMap[self.acceptanceFactorLineEdit] = "spikeAnalysisAcceptanceFactor"
 
         self.minWavelengthLineEdit.setText(str(self.instrument.wavelengthMin))
-        self.widgetMap[self.minWavelengthLineEdit] = "wavelengthMin"
 
         self.maxWavelengthLineEdit.setText(str(self.instrument.wavelengthMax))
-        self.widgetMap[self.maxWavelengthLineEdit] = "wavelengthMax"
 
         self.stepWavelengthLineEdit.setText(str(self.instrument.wavelengthStep))
-        self.widgetMap[self.stepWavelengthLineEdit] = "wavelengthStep"
 
         self.noSmoothsOnMonitorLineEdit.setText(str(self.instrument.NoSmoothsOnMonitor))
-        self.widgetMap[self.noSmoothsOnMonitorLineEdit] = "NoSmoothsOnMonitor"
 
-        scales = {
+        self.scales = {
             Scales.Q: (self._QRadioButton, self.minQLineEdit, self.maxQLineEdit, self.stepQLineEdit),
             Scales.D_SPACING: (self.DSpacingRadioButton, self.minDSpacingLineEdit, self.maxDSpacingLineEdit, self.stepDSpacingLineEdit),
             Scales.WAVELENGTH: (self.wavelengthRadioButton, self.minWavelength_LineEdit, self.maxWavelength_LineEdit, self.stepWavelength_LineEdit),
@@ -129,36 +138,27 @@ class InstrumentWidget(GudPyWidget):
             Scales.TOF: (self.TOFRadioButton, self.minTOFLineEdit, self.maxTOFLineEdit, self.stepTOFLineEdit)
         }
 
-        selection, min, max, step = scales[self.instrument.scaleSelection]
+        selection, min, max, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
         min.setText(str(self.instrument.XMin))
         max.setText(str(self.instrument.XMax))
         step.setText(str(self.instrument.XStep))
-        self.widgetMap[min] = "XMin"
-        self.widgetMap[max] = "XMax"
-        self.widgetMap[step] = "XStep"
 
         self.logarithmicBinningCheckBox.setChecked(self.instrument.useLogarithmicBinning)
-        self.widgetMap[self.logarithmicBinningCheckBox] = "useLogarithmicBinning"
+        self.logarithmicBinningCheckBox.stateChanged.connect(self.handleUseLogarithmicBinningSwitched)
 
         self.groupsAcceptanceFactorLineEdit.setText(str(self.instrument.groupsAcceptanceFactor))
-        self.widgetMap[self.groupsAcceptanceFactorLineEdit] = "groupsAcceptanceFactor"
 
         self.mergePowerLineEdit.setText(str(self.instrument.mergePower))
-        self.widgetMap[ self.mergePowerLineEdit] = "mergePower"
 
         for m in MergeWeights:
             self.mergeWeightsComboBox.addItem(m.name, m)
         self.mergeWeightsComboBox.setCurrentIndex(self.instrument.mergeWeights.value)
-        self.widgetMap[self.mergeWeightsComboBox] = "mergeWeights"
-
+        self.mergeWeightsComboBox.currentIndexChanged.connect(self.handleMergeWeightsChanged)
         self.incidentFlightPathLineEdit.setText(str(self.instrument.incidentFlightPath))
-        self.widgetMap[self.incidentFlightPathLineEdit] = "incidentFlightPath"
 
         self.outputDiagSpectrumLineEdit.setText(str(self.instrument.spectrumNumberForOutputDiagnosticFiles))
-        self.widgetMap[self.outputDiagSpectrumLineEdit] = "spectrumNumberForOutputDiagnosticFiles"
         self.neutronScatteringParamsFileLineEdit.setText(self.instrument.neutronScatteringParametersFile)
-        self.widgetMap[self.neutronScatteringParamsFileLineEdit] = "neutronScatteringParametersFile"
-
+        self.neutronScatteringParamsFileLineEdit.textChanged.connect(self.handleNeutronScatteringParamsFileChanged)
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
-        self.widgetMap[self.hardGroupEdgesCheckBox] = "hardGroupEdges"
+        self.hardGroupEdgesCheckBox.stateChanged.connect(self.handleHardGroupEdgesSwitched)
