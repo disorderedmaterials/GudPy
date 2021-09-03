@@ -342,16 +342,6 @@
      <string>Incident monitor</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="transmissionMonitorQuietCountConstSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>250</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="queitCountConstTMLabel">
     <property name="geometry">
      <rect>
@@ -389,16 +379,6 @@
     </property>
     <property name="text">
      <string>Acceptance factor</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="acceptanceFactorLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>280</y>
-      <width>41</width>
-      <height>25</height>
-     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="wavelengthRangeLabel">
@@ -861,7 +841,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="wavelengthStepSpinBox">
+   <widget class="QDoubleSpinBox" name="stepWavelengthSpinBox">
     <property name="geometry">
      <rect>
       <x>390</x>
@@ -941,7 +921,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="wavelengthStep_SpinBox">
+   <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -1067,6 +1047,26 @@
       <x>300</x>
       <y>690</y>
       <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>250</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="acceptanceFactorSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>280</y>
+      <width>62</width>
       <height>22</height>
      </rect>
     </property>

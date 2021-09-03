@@ -35,7 +35,7 @@ class InstrumentWidget(QWidget):
         self.instrument = instrument
         self.parent = parent
 
-        super(InstrumentWidget, self).__init__(object=self.instrument, parent=self.parent)
+        super(InstrumentWidget, self).__init__(parent=self.parent)
         self.initComponents()
 
     def handleInstrumentNameChanged(self, index):
@@ -94,8 +94,8 @@ class InstrumentWidget(QWidget):
         self.detCalibrationLineEdit.setText(self.instrument.detectorCalibrationFileName)
         self.detCalibrationLineEdit.textChanged.connect(self.handleDetectorCalibrationFileChanged)
 
-        self.phiValuesColumnLineEdit.setText(str(self.instrument.columnNoPhiVals))
-        self.phiValuesColumnLineEdit.textChanged.connect()
+        self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
+        # self.phiValuesColumnSpinBox.valueChanged.connect()
 
         self.groupsFileLineEdit.setText(self.instrument.groupFileName)
         self.groupsFileLineEdit.textChanged.connect(self.handleGroupsFileChanged)
@@ -103,61 +103,65 @@ class InstrumentWidget(QWidget):
         self.deadtimeFileLineEdit.setText(self.instrument.deadtimeConstantsFileName)
         self.deadtimeFileLineEdit.textChanged.connect(self.handleDeadtimeFileChanged)
 
-        self.minWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[0]))
-        self.maxWavelengthMonNormLineEdit.setText(str(self.instrument.wavelengthRangeForMonitorNormalisation[1]))
-        self.minWavelengthMonNormLineEdit.textChanged.connect()
-        self.maxWavelengthMonNormLineEdit.textChanged.connect()
+        self.minWavelengthMonNormSpinBox.setValue(self.instrument.wavelengthRangeForMonitorNormalisation[0])
+        self.maxWavelengthMonNormSpinBox.setValue(self.instrument.wavelengthRangeForMonitorNormalisation[1])
+        # self.minWavelengthMonNormLineEdit.valueChanged.connect()
+        # self.maxWavelengthMonNormLineEdit.valueChanged.connect()
 
         self.spectrumNumbersIBLineEdit.setText(spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor))
 
         self.spectrumNumbersTLineEdit.setText(spacify(self.instrument.spectrumNumbersForTransmissionMonitor))
 
-        self.quietCountConstIMLineEdit.setText(str(self.instrument.incidentMonitorQuietCountConst))
+        self.incidentMonitorQuietCountConstSpinBox.setValue(self.instrument.incidentMonitorQuietCountConst)
+        # self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect()
+        self.transmissionMonitorQuietCountConstSpinBox.setValue(self.instrument.transmissionMonitorQuietCountConst)
+        # self.transmissionMonitorQuietCountConstSpinBox.valueChanged.connect()
 
-        self.quietCountConstTMLineEdit.setText(str(self.instrument.transmissionMonitorQuietCountConst))
+        self.channelNoASpinBox.setValue(self.instrument.channelNosSpikeAnalysis[0])
+        # self.channelNoASpinBox.valueChanged.connect()
+        self.channelNoBSpinBox.setValue(self.instrument.channelNosSpikeAnalysis[1])
+        # self.channelNoBSpinBox.valueChanged.connect()
 
-        self.channelNoALineEdit.setText(str(self.instrument.channelNosSpikeAnalysis[0]))
+        self.acceptanceFactorSpinBox.setValue(self.instrument.spikeAnalysisAcceptanceFactor)
+        # self.acceptanceFactorSpinBox.valueChanged.connect()
 
-        self.channelNoBLineEdit.setText(str(self.instrument.channelNosSpikeAnalysis[1]))
+        self.minWavelengthSpinBox.setValue(self.instrument.wavelengthMin)
+        # self.minWavelengthSpinBox.valueChanged.connect()
+        self.maxWavelengthSpinBox.setValue(self.instrument.wavelengthMax)
+        # self.maxWavelengthSpinBox.valueChanged.connect()
+        # self.stepWavelengthSpinBox.valueChanged.connect()
+        self.stepWavelengthSpinBox.setValue(self.instrument.wavelengthStep)
 
-        self.acceptanceFactorLineEdit.setText(str(self.instrument.spikeAnalysisAcceptanceFactor))
-
-        self.minWavelengthLineEdit.setText(str(self.instrument.wavelengthMin))
-
-        self.maxWavelengthLineEdit.setText(str(self.instrument.wavelengthMax))
-
-        self.stepWavelengthLineEdit.setText(str(self.instrument.wavelengthStep))
-
-        self.noSmoothsOnMonitorLineEdit.setText(str(self.instrument.NoSmoothsOnMonitor))
+        self.noSmoothsOnMonitorSpinBox.setValue(self.instrument.NoSmoothsOnMonitor)
 
         self.scales = {
-            Scales.Q: (self._QRadioButton, self.minQLineEdit, self.maxQLineEdit, self.stepQLineEdit),
-            Scales.D_SPACING: (self.DSpacingRadioButton, self.minDSpacingLineEdit, self.maxDSpacingLineEdit, self.stepDSpacingLineEdit),
-            Scales.WAVELENGTH: (self.wavelengthRadioButton, self.minWavelength_LineEdit, self.maxWavelength_LineEdit, self.stepWavelength_LineEdit),
-            Scales.ENERGY: (self.energyRadioButton, self.minEnergyLineEdit, self.maxEnergyLineEdit, self.stepEnergyLineEdit),
-            Scales.TOF: (self.TOFRadioButton, self.minTOFLineEdit, self.maxTOFLineEdit, self.stepTOFLineEdit)
+            Scales.Q: (self._QRadioButton, self.minQSpinBox, self.maxQSpinBox, self.stepQSpinBox),
+            Scales.D_SPACING: (self.DSpacingRadioButton, self.minDSpacingSpinBox, self.maxDSpacingSpinBox, self.stepDSpacingSpinBox),
+            Scales.WAVELENGTH: (self.wavelengthRadioButton, self.minWavelength_SpinBox, self.maxWavelength_SpinBox, self.stepWavelength_SpinBox),
+            Scales.ENERGY: (self.energyRadioButton, self.minEnergySpinBox, self.maxEnergySpinBox, self.stepEnergySpinBox),
+            Scales.TOF: (self.TOFRadioButton, self.minTOFSpinBox, self.maxTOFSpinBox, self.stepTOFSpinBox)
         }
 
         selection, min, max, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
-        min.setText(str(self.instrument.XMin))
-        max.setText(str(self.instrument.XMax))
-        step.setText(str(self.instrument.XStep))
+        min.setValue(self.instrument.XMin)
+        max.setValue(self.instrument.XMax)
+        step.setValue(self.instrument.XStep)
 
         self.logarithmicBinningCheckBox.setChecked(self.instrument.useLogarithmicBinning)
         self.logarithmicBinningCheckBox.stateChanged.connect(self.handleUseLogarithmicBinningSwitched)
 
-        self.groupsAcceptanceFactorLineEdit.setText(str(self.instrument.groupsAcceptanceFactor))
+        self.groupsAcceptanceFactorSpinBox.setValue(self.instrument.groupsAcceptanceFactor)
 
-        self.mergePowerLineEdit.setText(str(self.instrument.mergePower))
+        self.mergePowerSpinBox.setValue(self.instrument.mergePower)
 
         for m in MergeWeights:
             self.mergeWeightsComboBox.addItem(m.name, m)
         self.mergeWeightsComboBox.setCurrentIndex(self.instrument.mergeWeights.value)
         self.mergeWeightsComboBox.currentIndexChanged.connect(self.handleMergeWeightsChanged)
-        self.incidentFlightPathLineEdit.setText(str(self.instrument.incidentFlightPath))
+        self.incidentFlightPathSpinBox.setValue(self.instrument.incidentFlightPath)
 
-        self.outputDiagSpectrumLineEdit.setText(str(self.instrument.spectrumNumberForOutputDiagnosticFiles))
+        self.outputDiagSpectrumSpinBox.setValue(self.instrument.spectrumNumberForOutputDiagnosticFiles)
         self.neutronScatteringParamsFileLineEdit.setText(self.instrument.neutronScatteringParametersFile)
         self.neutronScatteringParamsFileLineEdit.textChanged.connect(self.handleNeutronScatteringParamsFileChanged)
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
