@@ -1,5 +1,6 @@
 from collections import deque
 from itertools import islice
+import os
 
 
 def spacify(iterable, num_spaces=1):
@@ -139,3 +140,11 @@ def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
         return (iterable[0]) + sep
 
     return sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
+
+
+def resolve(*args):
+    relativePath = os.sep.join(args)
+    topLevel = os.sep.join(
+        os.path.realpath(__file__).split(os.sep)[:-3]
+    )
+    return os.path.join(topLevel, relativePath)

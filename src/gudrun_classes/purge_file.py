@@ -1,6 +1,6 @@
 import os
 import sys
-from src.scripts.utils import spacify, numifyBool
+from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
 
 
@@ -245,8 +245,9 @@ class PurgeFile():
         """
         self.write_out()
         try:
+            purge_det = resolve("bin", "purge_det")
             result = subprocess.run(
-                ["bin/purge_det", "purge_det.dat"],
+                [purge_det, "purge_det.dat"],
                 capture_output=True,
                 text=True
             )

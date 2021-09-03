@@ -12,7 +12,8 @@ from src.scripts.utils import (
         firstNFloats,
         firstNInts,
         nthfloat,
-        nthint
+        nthint,
+        resolve
 )
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
@@ -1240,8 +1241,9 @@ class GudrunFile:
             path = self.path
         self.purge()
         try:
+            gudrun_dcs = resolve("bin", "gudrun_dcs")
             result = subprocess.run(
-                ["bin/gudrun_dcs", path], capture_output=True, text=True
+                [gudrun_dcs, path], capture_output=True, text=True
             )
         except FileNotFoundError:
             gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
