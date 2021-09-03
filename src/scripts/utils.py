@@ -10,16 +10,11 @@ def spacify(iterable, num_spaces=1):
 
 
 def numifyBool(boolean):
-    try:
-        return {False: 0, True: 1}[boolean]
-    except KeyError:
-        return 0
+    return sum([boolean])
 
 
 def boolifyNum(num):
-    if num != 0 and num != 1:
-        raise ValueError("Only 1 and 0 can be represented in boolean.")
-    return {0: False, 1: True}[num]
+    return not not num
 
 
 def firstword(string):
