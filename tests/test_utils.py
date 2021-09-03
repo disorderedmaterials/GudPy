@@ -19,10 +19,6 @@ class TestUtils(TestCase):
 
         self.assertEqual(numifyBool(True), 1)
 
-    def testNumifyBoolBad(self):
-
-        self.assertEqual(numifyBool(None), 0)
-
     def testBoolifyNum0(self):
 
         self.assertEqual(boolifyNum(0), False)
