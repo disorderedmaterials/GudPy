@@ -6,7 +6,33 @@ from PyQt5.QtCore import Qt
 import os
 
 class NormalisationWidget(GudPyWidget):
+    """
+    Class to represent a NormalisationWidget. Inherits QWidget.
+
+    ...
+
+    Attributes
+    ----------
+    normalisation : Normalisation
+        Normalisation object belonging to the GudrunFile.
+    parent : QWidget
+        Parent widget.
+    Methods
+    -------
+    initComponents()
+        Loads UI file, and then populates data from the Normalisation.
+    """
     def __init__(self, normalisation, parent=None):
+        """
+        Constructs all the necessary attributes for the NormalisationWidget object.
+        Calls the initComponents method, to load the UI file and populate data.
+        Parameters
+        ----------
+        normalisation : Normalisation
+            Normalisation object belonging to the GudrunFile.
+        parent : QWidget
+            Parent widget.
+        """
         self.normalisation = normalisation
         self.parent = parent
 
@@ -14,6 +40,11 @@ class NormalisationWidget(GudPyWidget):
         self.initComponents()
     
     def initComponents(self):
+        """
+        Loads the UI file for the NormalisationWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Normalisation object.
+        """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/normalisationWidget.ui")
         uic.loadUi(uifile, self)

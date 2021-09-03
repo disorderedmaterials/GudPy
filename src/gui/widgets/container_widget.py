@@ -29,7 +29,7 @@ class ContainerWidget(GudPyWidget):
         ----------
         container : Container
             Container object belonging to the GudrunFile.
-        parent : QWidget
+        parent : QWidget, optional
             Parent widget.
         """
         self.container = container
@@ -43,12 +43,6 @@ class ContainerWidget(GudPyWidget):
         Loads the UI file for the ContainerWidget object,
         and then populates the child widgets with their
         corresponding data from the attributes of the Container object.
-        ----------
-        Parameters
-        container : Container
-            Container object belonging to the GudrunFile.
-        parent : QWidget
-            Parent widget.
         """
 
         # Get the current directory that we are residing in.

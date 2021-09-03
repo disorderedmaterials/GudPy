@@ -6,7 +6,33 @@ from src.scripts.utils import spacify
 import os
 
 class InstrumentWidget(GudPyWidget):
+    """
+    Class to represent a InstrumentWidget. Inherits QWidget.
+
+    ...
+
+    Attributes
+    ----------
+    instrument : Instrument
+        Instrument object belonging to the GudrunFile.
+    parent : QWidget
+        Parent widget.
+    Methods
+    -------
+    initComponents()
+        Loads UI file, and then populates data from the Instrument.
+    """
     def __init__(self, instrument, parent=None):
+        """
+        Constructs all the necessary attributes for the InstrumentWidget object.
+        Calls the initComponents method, to load the UI file and populate data.
+        Parameters
+        ----------
+        instrument : Instrument
+            Instrument object belonging to the GudrunFile.
+        parent : QWidget, optional
+            Parent widget.
+        """
         self.instrument = instrument
         self.parent = parent
 
@@ -14,6 +40,11 @@ class InstrumentWidget(GudPyWidget):
         self.initComponents()
 
     def initComponents(self):
+        """
+        Loads the UI file for the InstrumentWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Instrument object.
+        """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
         uic.loadUi(uifile, self)

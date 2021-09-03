@@ -29,7 +29,7 @@ class BeamWidget(GudPyWidget):
         ----------
         beam : Beam
             Beam object belonging to the GudrunFile
-        parent : QWidget
+        parent : QWidget, optional
             Parent widget.
         """
         self.beam = beam
@@ -45,11 +45,6 @@ class BeamWidget(GudPyWidget):
         and then populates the child widgets with their
         corresponding data from the attributes of the Beam object.
         Parameters
-        ----------
-        beam : Beam
-            Beam object belonging to the GudrunFile
-        parent : QWidget
-            Parent widget.
         """
 
         # Get the current directory that we are residing in.
