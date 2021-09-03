@@ -74,26 +74,6 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="6" colspan="2">
-     <widget class="QLineEdit" name="shieldingLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="6">
-     <widget class="QLineEdit" name="overallBackgroundFactorLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="3" column="0" colspan="5">
      <widget class="QLabel" name="incidentBeamEdgesLabel">
       <property name="minimumSize">
@@ -177,26 +157,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="6">
-     <widget class="QLineEdit" name="absorptionStepSizeLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="11">
-     <widget class="QLineEdit" name="sampleDependantBackgroundFactorLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="7">
      <widget class="QLabel" name="msCalculationStepSizeLabel">
       <property name="minimumSize">
@@ -229,96 +189,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="10">
-     <widget class="QLineEdit" name="msCalculationStepSizeLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="11">
-     <widget class="QLineEdit" name="bottomIncidentBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="11">
-     <widget class="QLineEdit" name="bottomScatteredBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="10">
-     <widget class="QLineEdit" name="topScatteredBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="10">
-     <widget class="QLineEdit" name="topIncidentBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="8">
-     <widget class="QLineEdit" name="rightScatteredBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="8">
-     <widget class="QLineEdit" name="rightIncidentBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="7">
-     <widget class="QLineEdit" name="leftScatteredBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="7">
-     <widget class="QLineEdit" name="leftIncidentBeamLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0" colspan="3">
      <widget class="QLabel" name="sampleGeometryLabel">
       <property name="minimumSize">
@@ -342,16 +212,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="13">
-     <widget class="QLineEdit" name="noSlicesLineEdit">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="11" colspan="2">
      <widget class="QLabel" name="noSlicesLabel">
       <property name="maximumSize">
@@ -365,9 +225,6 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="7">
-     <widget class="QLineEdit" name="stepForCorrectionsLineEdit"/>
-    </item>
     <item row="2" column="0" colspan="5">
      <widget class="QLabel" name="stepForCorrectionsLabel">
       <property name="maximumSize">
@@ -380,6 +237,51 @@
        <string>Angular step for corrections</string>
       </property>
      </widget>
+    </item>
+    <item row="1" column="6">
+     <widget class="QDoubleSpinBox" name="absorptionStepSizeSpinBox"/>
+    </item>
+    <item row="1" column="10">
+     <widget class="QDoubleSpinBox" name="msCalculationStepSizeSpinBox"/>
+    </item>
+    <item row="1" column="13">
+     <widget class="QSpinBox" name="noSlicesSpinBox"/>
+    </item>
+    <item row="2" column="7">
+     <widget class="QSpinBox" name="stepForCorrectionsSpinBox"/>
+    </item>
+    <item row="3" column="7">
+     <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox"/>
+    </item>
+    <item row="3" column="8">
+     <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox"/>
+    </item>
+    <item row="3" column="10">
+     <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox"/>
+    </item>
+    <item row="3" column="11">
+     <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox"/>
+    </item>
+    <item row="4" column="7">
+     <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox"/>
+    </item>
+    <item row="4" column="8">
+     <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox"/>
+    </item>
+    <item row="4" column="10">
+     <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox"/>
+    </item>
+    <item row="4" column="11">
+     <widget class="QDoubleSpinBox" name="bottomScatteredBeamLineEdit"/>
+    </item>
+    <item row="6" column="6">
+     <widget class="QDoubleSpinBox" name="overallBackgroundFactorSpinBox"/>
+    </item>
+    <item row="6" column="11">
+     <widget class="QDoubleSpinBox" name="sampleDependantBackgroundFactorSpinBox"/>
+    </item>
+    <item row="7" column="6">
+     <widget class="QDoubleSpinBox" name="shieldingSpinBox"/>
     </item>
    </layout>
   </widget>
