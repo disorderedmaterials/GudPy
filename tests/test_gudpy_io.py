@@ -1235,8 +1235,6 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with open("test_data.txt", "r") as f:
-                print(f.read())
             with self.assertRaises(ParserException) as cm:
                 GudrunFile("test_data.txt")
                 self.assertEqual(
