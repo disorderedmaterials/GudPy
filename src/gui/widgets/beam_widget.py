@@ -1,10 +1,9 @@
-from src.gui.widgets.gudpy_widget import GudPyWidget
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.enums import Geometry
 
-class BeamWidget(GudPyWidget):
+class BeamWidget(QWidget):
     """
     Class to represent a BeamWidget. Inherits QWidget.
 
