@@ -8,8 +8,11 @@ trigger:
     include:
     - main
   paths:
-    include:
-      - .azure-pipelines/*
+    exclude:
+      - .azure-pipelines/release.yml
+      - .azure-pipelines/pr.yml
+      - README.md
+
 pr: none
 
 variables:
