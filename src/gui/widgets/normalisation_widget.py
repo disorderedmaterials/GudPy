@@ -52,24 +52,24 @@ class NormalisationWidget(GudPyWidget):
         self.dataFilesList.addItems([df for df in self.normalisation.dataFiles.dataFiles])
         self.backgroundDataFilesList.addItems([df for df in self.normalisation.dataFilesBg.dataFiles])
 
-        self.periodNoLineEdit.setText(str(self.normalisation.numberOfFilesPeriodNumber[1]))
-        self.backgroundPeriodNoLineEdit.setText(str(self.normalisation.numberOfFilesPeriodNumberBg[1]))
+        self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
+        self.backgroundPeriodNoSpinBox.setValue(self.normalisation.periodNumberBg)
 
         for i, element in enumerate(self.normalisation.composition.elements):
             self.normalisationCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
             self.normalisationCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
             self.normalisationCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
         
-        # self.geometryComboBox.addItems([g.name for g in Geometry])
-        # self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)
+        self.geometryComboBox.addItems([g.name for g in Geometry])
+        self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)
 
-        self.densityLineEdit.setText(str(self.normalisation.density))
+        self.densitySpinBox.setValue(self.normalisation.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.normalisation.densityUnits.value)
         
-        self.upstreamLineEdit.setText(str(self.normalisation.thickness[0]))
-        self.downstreamLineEdit.setText(str(self.normalisation.thickness[1]))
+        self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
+        self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.normalisation.totalCrossSectionSource:
@@ -82,8 +82,8 @@ class NormalisationWidget(GudPyWidget):
         self.totalCrossSectionComboBox.setCurrentIndex(index)
 
         self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.normalisation.forceCalculationOfCorrections else Qt.Unchecked)
-        self.placzekCorrectionLineEdit.setText(str(self.normalisation.tempForNormalisationPC))
-        self.differentialCrossSectionFileLineEdit.setText(self.normalisation.normalisationDifferentialCrossSectionFilename)
-        self.smoothingDegreeLineEdit.setText(str(self.normalisation.normalisationDegreeSmoothing))
-        self.lowerLimitSmoothingLineEdit.setText(str(self.normalisation.lowerLimitSmoothedNormalisation))
-        self.minNormalisationSignalLineEdit.setText(str(self.normalisation.minNormalisationSignalBR))
+        self.placzekCorrectionSpinBox.setValue(self.normalisation.tempForNormalisationPC)
+        self.differentialCrossSectionFileLineEdit.setValue(self.normalisation.normalisationDifferentialCrossSectionFilename)
+        self.smoothingDegreeSpinBox.setValue(self.normalisation.normalisationDegreeSmoothing)
+        self.lowerLimitSmoothingSpinBox.setValue(self.normalisation.lowerLimitSmoothedNormalisation)
+        self.minNormalisationSignalSpinBoxsetValue(self.normalisation.minNormalisationSignalBR)
