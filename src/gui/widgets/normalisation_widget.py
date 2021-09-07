@@ -5,7 +5,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
 
-class NormalisationWidget(GudPyWidget):
+class NormalisationWidget(QWidget):
     """
     Class to represent a NormalisationWidget. Inherits QWidget.
 
@@ -39,6 +39,46 @@ class NormalisationWidget(GudPyWidget):
         super(NormalisationWidget, self).__init__(object=self.normalisation, parent=self.parent)
         self.initComponents()
     
+    def handlePeriodNoChanged(self, value):
+        self.normalisation.periodNo = value
+    
+    def handlePeriodNoBgChanged(self, value):
+        self.normalisation.periodNoBg = value
+
+    def handleGeometryChanged(self, index):
+        self.normalisation.geometry = self.geometryComboBox.itemData(index)
+
+    def handleDensityUnitsChanged(self, index):
+        self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(index)
+    
+    def handleUpstreamThicknessChanged(self, value):
+        self.normalisation.upstreamThickness = value
+
+    def handleDownstreamThicknessChanged(self, value):
+        self.normalisation.downstreamThickness = value
+
+    def handleTotalCrossSectionChanged(self, index):
+        self.normalisation.totalCrossSectionSource = self.totalCrossSectionComboBox.itemData(index)
+    
+    def handleForceCorrectionsSwitched(self, state):
+        self.normalisation.forceCalculationsOfCorrections = state
+
+    def handlePlaczekCorrectionChanged(self, value):
+        self.normalisation.tempForNormalisationPC = value
+    
+    def handleDifferentialCrossSectionFileChanged(self, value):
+        self.normalisation.normalisationDifferentialCrossSectionFile = value
+    
+    def handleNormalisationDegreeSmoothingChanged(self, value):
+        self.normalisation.normalisationDegreeSmoothing = value
+    
+    def handleLowerlimitSmoothingChanged(self, value):
+        self.normalisation.lowerLimitSmoothedNormalisation = value
+    
+    def handleMinNormalisationSignalChanged(self, value):
+        self.normalisation.minNormalisationSignalBR = value
+
+
     def initComponents(self):
         """
         Loads the UI file for the NormalisationWidget object,
@@ -53,7 +93,9 @@ class NormalisationWidget(GudPyWidget):
         self.backgroundDataFilesList.addItems([df for df in self.normalisation.dataFilesBg.dataFiles])
 
         self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
+        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
         self.backgroundPeriodNoSpinBox.setValue(self.normalisation.periodNumberBg)
+        self.backgroundPeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoBgChanged)
 
         for i, element in enumerate(self.normalisation.composition.elements):
             self.normalisationCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
@@ -62,14 +104,18 @@ class NormalisationWidget(GudPyWidget):
         
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)
+        self.geometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
 
         self.densitySpinBox.setValue(self.normalisation.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.normalisation.densityUnits.value)
-        
+        self.densityUnits.currentIndexChanged.connect(self.handleDensityUnitsChanged)
+
         self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
+        self.upstreamSpinBox.valueChanged.connect(self.handleUpstreamThicknessChanged)
         self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
+        self.upstreamSpinBox.valueChanged.connect(self.handleDownstreamThicknessChanged)
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.normalisation.totalCrossSectionSource:
@@ -80,10 +126,17 @@ class NormalisationWidget(GudPyWidget):
             index = 2
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.currentIndexChanged.connect(self.handleTotalCrossSectionChanged)
 
         self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.normalisation.forceCalculationOfCorrections else Qt.Unchecked)
+        self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
         self.placzekCorrectionSpinBox.setValue(self.normalisation.tempForNormalisationPC)
+        self.placzekCorrectionSpinBox.valueChanged.connect(self.handlePlaczekCorrectionChanged)
         self.differentialCrossSectionFileLineEdit.setValue(self.normalisation.normalisationDifferentialCrossSectionFilename)
+        self.differentialCrossSectionFileLineEdit.textChanged.connect(self.handleDifferentialCrossSectionFileChanged)
         self.smoothingDegreeSpinBox.setValue(self.normalisation.normalisationDegreeSmoothing)
+        self.smoothingDegreeSpinBox.valueChanged.connect(self.handleNormalisationDegreeSmoothingChanged)
         self.lowerLimitSmoothingSpinBox.setValue(self.normalisation.lowerLimitSmoothedNormalisation)
-        self.minNormalisationSignalSpinBoxsetValue(self.normalisation.minNormalisationSignalBR)
+        self.lowerLimitSmoothingSpinBox.valueChanged.connect(self.handleLowerlimitSmoothingChanged)
+        self.minNormalisationSignalSpinBox.setValue(self.normalisation.minNormalisationSignalBR)
+        self.minNormalisationSignalSpinBox.valueChanged.connect(self.handleMinNormalisationSignalChanged)
