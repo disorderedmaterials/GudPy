@@ -1,9 +1,8 @@
-from src.gui.widgets.gudpy_widget import GudPyWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 import os
 
-class SampleBackgroundWidget(GudPyWidget):
+class SampleBackgroundWidget(QWidget):
     """
     Class to represent a SampleBackgroundWidget. Inherits QWidget.
 
