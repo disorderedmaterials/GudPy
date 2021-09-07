@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -99,14 +99,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLineEdit" name="periodNoLineEdit">
-           <property name="maximumSize">
-            <size>
-             <width>31</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="QSpinBox" name="periodNoSpinBox"/>
          </item>
         </layout>
        </widget>
@@ -129,16 +122,6 @@
          <string>Background Data Files</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0" rowspan="2" colspan="5">
-          <widget class="QListWidget" name="backgroundDataFilesList">
-           <property name="minimumSize">
-            <size>
-             <width>181</width>
-             <height>101</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="backgroundPeriodNoLabel">
            <property name="minimumSize">
@@ -158,7 +141,17 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
+         <item row="0" column="0" rowspan="2" colspan="4">
+          <widget class="QListWidget" name="backgroundDataFilesList">
+           <property name="minimumSize">
+            <size>
+             <width>181</width>
+             <height>101</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
           <widget class="QPushButton" name="addBackgroundDataFileButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -171,7 +164,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="5">
+         <item row="1" column="4">
           <widget class="QPushButton" name="removeBackgroundDataFileButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -185,14 +178,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLineEdit" name="backgroundPeriodNoLineEdit">
-           <property name="maximumSize">
-            <size>
-             <width>31</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="QSpinBox" name="backgroundPerionNoSpinBox"/>
          </item>
         </layout>
        </widget>
@@ -205,6 +191,50 @@
        <string>Normalisation Composition</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="2">
+        <widget class="QDoubleSpinBox" name="densitySpinBox"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="geometryLabel">
+         <property name="text">
+          <string>Geometry</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="3">
+        <widget class="QComboBox" name="geometryComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>21</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3" colspan="2">
+        <widget class="QComboBox" name="densityUnitsComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>21</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="upstreamLabel">
+         <property name="text">
+          <string>Upstream</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="thicknessLabel">
+         <property name="text">
+          <string>Thickness:</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0" rowspan="4">
         <widget class="QTableWidget" name="normalisationCompositionTable">
          <row>
@@ -264,83 +294,10 @@
          </column>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="geometryLabel">
-         <property name="text">
-          <string>Geometry</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" colspan="3">
-        <widget class="QComboBox" name="geometryComboBox">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>21</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QLabel" name="densityLabel">
          <property name="text">
           <string>Density</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="densityLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3" colspan="2">
-        <widget class="QComboBox" name="densityUnitsComboBox">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>21</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="thicknessLabel">
-         <property name="text">
-          <string>Thickness:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="upstreamLabel">
-         <property name="text">
-          <string>Upstream</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="upstreamLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -351,21 +308,11 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="3">
+        <widget class="QDoubleSpinBox" name="upstreamSpinBox"/>
+       </item>
        <item row="2" column="5">
-        <widget class="QLineEdit" name="downstreamLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QDoubleSpinBox" name="downstreamSpinBox"/>
        </item>
       </layout>
      </widget>
@@ -376,6 +323,12 @@
        <string>Configuration</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="2" column="4">
+        <widget class="QDoubleSpinBox" name="placzekCorrectionSpinBox"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QDoubleSpinBox" name="smoothingDegreeSpinBox"/>
+       </item>
        <item row="1" column="0" colspan="2">
         <widget class="QLabel" name="totalCrossSectionLabel">
          <property name="text">
@@ -397,22 +350,6 @@
         <widget class="QLabel" name="placzekCorrectionLabel">
          <property name="text">
           <string>Temperature for Placzek correction</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLineEdit" name="placzekCorrectionLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -452,7 +389,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="smoothingDegreeLabel">
          <property name="maximumSize">
           <size>
@@ -465,65 +402,10 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1" colspan="2">
-        <widget class="QLineEdit" name="smoothingDegreeLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3" colspan="4">
-        <widget class="QLabel" name="lowerLimitSmoothingLabel">
-         <property name="text">
-          <string>Lower limit on smoothed normalisation</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="7">
-        <widget class="QLineEdit" name="lowerLimitSmoothingLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="5">
+       <item row="6" column="0" colspan="5">
         <widget class="QLabel" name="minNormalisationSignalLabel">
          <property name="text">
           <string>Min normalisation signal to background ratio</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="5">
-        <widget class="QLineEdit" name="minNormalisationSignalLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -536,6 +418,19 @@
           <string>Force corrections</string>
          </property>
         </widget>
+       </item>
+       <item row="5" column="3" colspan="3">
+        <widget class="QLabel" name="lowerLimitSmoothingLabel">
+         <property name="text">
+          <string>Lower limit on smoothed normalisation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="6">
+        <widget class="QDoubleSpinBox" name="lowerLimitSmoothingSpinBox"/>
+       </item>
+       <item row="6" column="5">
+        <widget class="QDoubleSpinBox" name="minNormalisationSignalSpinBox"/>
        </item>
       </layout>
      </widget>
