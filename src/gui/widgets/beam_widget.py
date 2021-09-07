@@ -40,6 +40,54 @@ class BeamWidget(QWidget):
     def handleGeometryChanged(self, index):
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
 
+    def handleAbsorptionStepSizeChanged(self, value):
+        self.beam.stepSizeAbsorption = value
+    
+    def handleMSStepSizeChanged(self, value):
+        self.beam.stepSizeMS = value
+    
+    def handleNoSlicesChanged(self, value):
+        self.beam.noSlices = value
+    
+    def handleStepSizeForCorrectionsChanged(self, value):
+        self.beam.angularStepForCorrections = value
+
+    def handleLeftIncidentBeamEdgeChanged(self, value):
+        self.beam.incidentBeamLeftEdge = value
+    
+    def handleRightIncidentBeamEdgeChanged(self, value):
+        self.beam.incidentBeamRightEdge = value
+    
+    def handleTopIncidentBeamEdgeChanged(self, value):
+        self.beam.incidentBeamTopEdge = value
+    
+    def handleBottomIncidentBeamEdgeChanged(self, value):
+        self.beam.incidentBeamBottomEdge = value
+
+    def handleLeftScatteredBeamEdgeChanged(self, value):
+        self.beam.scatteredBeamLeftEdge = value
+    
+    def handleRightScatteredBeamEdgeChanged(self, value):
+        self.beam.scatteredBeamRightEdge = value
+    
+    def handleTopScatteredBeamEdgeChanged(self, value):
+        self.beam.scatteredBeamTopEdge = value
+    
+    def handleBottomScatteredBeamEdgeChanged(self, value):
+        self.beam.scatteredBeamBottomEdge = value
+
+    def handleIncidentBeamSpectrumParamsFileChanged(self, value):
+        self.beam.filenameIncidentBeamSpectrumParams = value
+
+    def handleOverallBackgroundFactorChanged(self, value):
+        self.beam.overallBackgroundFactor = value
+    
+    def handleSampleDependantBackgroundFactorChanged(self, value):
+        self.beam.sampleDependantBackgroundFactor = value
+    
+    def handleShieldingAbsorptionFileChanged(self, value):
+        self.beam.shieldingAttenuationCoefficient = value
+
     def initComponents(self):
         """
         Loads the UI file for the BeamWidget object,
@@ -67,25 +115,43 @@ class BeamWidget(QWidget):
         # Load the rest of the attributes, by setting the text of their corresponding
         # QLineEdits to their string value.
         self.absorptionStepSizeSpinBox.setValue(self.beam.stepSizeAbsorption)
+        self.absorptionStepSizeSpinBox.valueChanged.connect(self.handleAbsorptionStepSizeChanged)
         self.msCalculationStepSizeSpinBox.setValue(self.beam.stepSizeMS)
+        self.msCalculationStepSizeSpinBox.valueChanged.connect(self.handleMSStepSizeChanged)
         self.noSlicesSpinBox.setValue(self.beam.noSlices)
+        self.noSlicesSpinBox.valueChanged.connect(self.handleNoSlicesChanged)
         self.stepForCorrectionsSpinBox.setValue(self.beam.angularStepForCorrections)
+        self.stepForCorrectionsSpinBox.valueChanged.connect(self.handleStepSizeForCorrectionsChanged)
+
 
         self.leftIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamLeftEdge)
+        self.leftIncidentBeamEdgeSpinBox.valueChanged.connect(self.handleLeftIncidentBeamEdgeChanged)
         self.rightIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamRightEdge)
+        self.rightIncidentBeamEdgeSpinBox.valueChanged.connect(self.handleRightIncidentBeamEdgeChanged)
         self.topIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamTopEdge)
+        self.topIncidentBeamEdgeSpinBox.valueChanged.connect(self.handleTopIncidentBeamEdgeChanged)
         self.bottomIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamBottomEdge)
+        self.bottomIncidentBeamEdgeSpinBox.valueChanged.connect(self.handleBottomIncidentBeamEdgeChanged)
 
         self.leftScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamLeftEdge)
+        self.leftScatteredBeamEdgeSpinBox.valueChanged.connect(self.handleLeftScatteredBeamEdgeChanged)
         self.rightScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamRightEdge)
+        self.rightScatteredBeamEdgeSpinBox.valueChanged.connect(self.handleRightScatteredBeamEdgeChanged)
         self.topScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamTopEdge)
+        self.topScatteredBeamEdgeSpinBox.valueChanged.connect(self.handleTopScatteredBeamEdgeChanged)
         self.bottomScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamBottomEdge)
+        self.bottomScatteredBeamEdgeSpinBox.valueChanged.connect(self.handleBottomScatteredBeamEdgeChanged)
 
         self.incidentBeamSpectrumParametersLineEdit.setText(self.beam.filenameIncidentBeamSpectrumParams)
+        self.incidentBeamSpectrumParametersLineEdit.textChanged.connect(self.handleIncidentBeamSpectrumParamsFileChanged)
 
         self.overallBackgroundFactorSpinBox.setValue(self.beam.overallBackgroundFactor)
+        self.overallBackgroundFactorSpinBox.valueChanged.connect(self.handleOverallBackgroundFactorChanged)
+
         self.sampleDependantBackgroundFactorSpinBox.setValue(self.beam.sampleDependantBackgroundFactor)
+        self.sampleDependantBackgroundFactorSpinBox.valueChanged.connect(self.handleSampleDependantBackgroundFactorChanged)
         self.shieldingSpinBox.setValue(self.beam.shieldingAttenuationCoefficient)
+        self.shieldingSpinBox.valueChanged.connect(self.handleShieldingAbsorptionFileChanged)
 
         # Fill the Beam Profile Values table.
         for i, val in enumerate(self.beam.beamProfileValues):
