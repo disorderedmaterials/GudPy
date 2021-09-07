@@ -5,7 +5,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
 
-class SampleWidget(GudPyWidget):
+class SampleWidget(QWidget):
     """
     Class to represent a SampleWidget. Inherits QWidget.
 
