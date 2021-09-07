@@ -1,4 +1,3 @@
-from src.gui.widgets.gudpy_widget import GudPyWidget
 from src.gudrun_classes.enums import Geometry, OutputUnits, UnitsOfDensity
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
