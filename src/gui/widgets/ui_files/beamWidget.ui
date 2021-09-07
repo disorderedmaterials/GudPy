@@ -272,7 +272,7 @@
      <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox"/>
     </item>
     <item row="4" column="11">
-     <widget class="QDoubleSpinBox" name="bottomScatteredBeamLineEdit"/>
+     <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox"/>
     </item>
     <item row="6" column="6">
      <widget class="QDoubleSpinBox" name="overallBackgroundFactorSpinBox"/>
@@ -309,10 +309,10 @@
     <property name="rowCount">
      <number>10</number>
     </property>
-    <attribute name="horizontalHeaderMinimumSectionSize">
+    <attribute name="horizontalHeaderDefaultSectionSize">
      <number>52</number>
     </attribute>
-    <attribute name="horizontalHeaderDefaultSectionSize">
+    <attribute name="horizontalHeaderMinimumSectionSize">
      <number>52</number>
     </attribute>
     <row>

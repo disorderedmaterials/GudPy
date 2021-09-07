@@ -37,6 +37,8 @@ class BeamWidget(QWidget):
         super(BeamWidget, self).__init__(object=self.beam, parent=self.parent)
         self.initComponents()
     
+    def handleGeometryChanged(self, index):
+        self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
 
     def initComponents(self):
         """
@@ -59,30 +61,31 @@ class BeamWidget(QWidget):
             self.sampleGeometryComboBox.addItem(g.name, g)
         # Set the selected item to that defined in the Beam object.
         self.sampleGeometryComboBox.setCurrentIndex(self.beam.sampleGeometry.value)
+        self.sampleGeometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
 
 
         # Load the rest of the attributes, by setting the text of their corresponding
         # QLineEdits to their string value.
-        self.absorptionStepSizeLineEdit.setText(str(self.beam.stepSizeAbsorption))
-        self.msCalculationStepSizeLineEdit.setText(str(self.beam.stepSizeMS))
-        self.noSlicesLineEdit.setText(str(self.beam.noSlices))
-        self.stepForCorrectionsLineEdit.setText(str(self.beam.angularStepForCorrections))
+        self.absorptionStepSizeSpinBox.setValue(self.beam.stepSizeAbsorption)
+        self.msCalculationStepSizeSpinBox.setValue(self.beam.stepSizeMS)
+        self.noSlicesSpinBox.setValue(self.beam.noSlices)
+        self.stepForCorrectionsSpinBox.setValue(self.beam.angularStepForCorrections)
 
-        self.leftIncidentBeamLineEdit.setText(str(self.beam.incidentBeamLeftEdge))
-        self.rightIncidentBeamLineEdit.setText(str(self.beam.incidentBeamRightEdge))
-        self.topIncidentBeamLineEdit.setText(str(self.beam.incidentBeamTopEdge))
-        self.bottomIncidentBeamLineEdit.setText(str(self.beam.incidentBeamBottomEdge))
+        self.leftIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamLeftEdge)
+        self.rightIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamRightEdge)
+        self.topIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamTopEdge)
+        self.bottomIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamBottomEdge)
 
-        self.leftScatteredBeamLineEdit.setText(str(self.beam.scatteredBeamLeftEdge))
-        self.rightScatteredBeamLineEdit.setText(str(self.beam.scatteredBeamRightEdge))
-        self.topScatteredBeamLineEdit.setText(str(self.beam.scatteredBeamTopEdge))
-        self.bottomScatteredBeamLineEdit.setText(str(self.beam.scatteredBeamBottomEdge))
+        self.leftScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamLeftEdge)
+        self.rightScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamRightEdge)
+        self.topScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamTopEdge)
+        self.bottomScatteredBeamEdgeSpinBox.setValue(self.beam.scatteredBeamBottomEdge)
 
         self.incidentBeamSpectrumParametersLineEdit.setText(self.beam.filenameIncidentBeamSpectrumParams)
 
-        self.overallBackgroundFactorLineEdit.setText(str(self.beam.overallBackgroundFactor))
-        self.sampleDependantBackgroundFactorLineEdit.setText(str(self.beam.sampleDependantBackgroundFactor))
-        self.shieldingLineEdit.setText(str(self.beam.shieldingAttenuationCoefficient))
+        self.overallBackgroundFactorSpinBox.setValue(self.beam.overallBackgroundFactor)
+        self.sampleDependantBackgroundFactorSpinBox.setValue(self.beam.sampleDependantBackgroundFactor)
+        self.shieldingSpinBox.setValue(self.beam.shieldingAttenuationCoefficient)
 
         # Fill the Beam Profile Values table.
         for i, val in enumerate(self.beam.beamProfileValues):
