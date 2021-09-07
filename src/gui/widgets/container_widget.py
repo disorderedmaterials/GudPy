@@ -38,6 +38,39 @@ class ContainerWidget(QWidget):
         super(ContainerWidget, self).__init__(object=self.container, parent=self.parent)
         self.initComponents()
     
+    def handlePeriodNoChanged(self, value):
+        self.container.periodNo = value
+    
+    def handleGeometryChanged(self, index):
+        self.container.geometry = self.geometryComboBox.itemData(index)
+
+    def handleUpstreamThicknessChanged(self, value):
+        self.container.upstreamThickness = value
+    
+    def handleDownstreamThicknessChanged(self, value):
+        self.container.downstreamThickness = value
+    
+    def handleDensityChanged(self, value):
+        self.container.density = value
+    
+    def handleTotalCrossSectionChanged(self, index):
+        self.container.totalCrossSectionSource = self.totalCrossSectionComboBox.itemData(index)
+    
+    def handleTweakFactorChanged(self, value):
+        self.container.tweakFactor = value
+    
+    def handleAngleOfRotationChanged(self, value):
+        self.container.angleOfRotation = value
+
+    def handleSampleWidthChanged(self, value):
+        self.container.sampleWidth = value
+    
+    def handleScatteringFractionChanged(self, value):
+        self.container.scatteringFraction = value
+    
+    def handleAttenuationCoefficientChanged(self, value):
+        self.container.attenuationCoefficient = value
+
     def initComponents(self):
         """
         Loads the UI file for the ContainerWidget object,
@@ -54,6 +87,7 @@ class ContainerWidget(QWidget):
         uic.loadUi(uifile, self)
 
         self.periodNoSpinBox.setValue(self.container.periodNumber)
+        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
         self.dataFilesList.addItems([df for df in self.container.dataFiles.dataFiles])
 
         for i, element in enumerate(self.container.composition.elements):
@@ -63,12 +97,16 @@ class ContainerWidget(QWidget):
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
+        self.geometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
+
         self.upstreamSpinBox.setValue(self.container.upstreamThickness)
+        self.upstreamSpinBox.valueChanged.connect(self.handleUpstreamThicknessChanged)
         self.downstreamSpinBox.setValue(self.container.downstreamThickness)
+        self.downstreamSpinBox.valueChanged.connect(self.handleDownstreamThicknessChanged)
 
+        self.densitySpinBox.setValue(self.container.density)
+        self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
-
-        self.densityLineEdit.setText(str(self.container.density))
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.container.densityUnits.value)
@@ -82,11 +120,17 @@ class ContainerWidget(QWidget):
             index = 2
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.currentIndexChanged.connect(self.handleTotalCrossSectionChanged)
 
         self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
+        self.tweakFactorSpinBox.valueChanged.connect(self.handleTweakFactorChanged)
 
         self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
+        self.angleOfRotationSpinBox.valueChanged.connect(self.handleAngleOfRotationChanged)
         self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
+        self.sampleWidthSpinBox.valueChanged.connect(self.handleSampleWidthChanged)
 
         self.scatteringFractionSpinBox.setValue(self.container.scatteringFraction)
+        self.scatteringFractionSpinBox.valueChanged.connect(self.handleScatteringFractionChanged)
         self.attenuationCoefficienSpinBox.setValue(self.container.attenuationCoefficient)
+        self.attenuationCoefficienSpinBox.valueChanged.connect(self.handleAttenuationCoefficientChanged)
