@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 
-class ContainerWidget(GudPyWidget):
+class ContainerWidget(QWidget):
     """
     Class to represent a ContainerWidget. Inherits QWidget.
 
@@ -53,7 +53,7 @@ class ContainerWidget(GudPyWidget):
         # Use pyuic to load to the UI file into the ContainerWidget.
         uic.loadUi(uifile, self)
 
-        self.periodNoLineEdit.setText(str(self.container.numberOfFilesPeriodNumber[1]))
+        self.periodNoSpinBox.setValue(self.container.periodNumber)
         self.dataFilesList.addItems([df for df in self.container.dataFiles.dataFiles])
 
         for i, element in enumerate(self.container.composition.elements):
@@ -61,10 +61,10 @@ class ContainerWidget(GudPyWidget):
             self.containerCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
             self.containerCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
 
-        # self.geometryComboBox.addItems([g.name for g in Geometry])
-        # self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
-        self.upstreamLineEdit.setText(str(self.container.thickness[0]))
-        self.downstreamLineEdit.setText(str(self.container.thickness[1]))
+        self.geometryComboBox.addItems([g.name for g in Geometry])
+        self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
+        self.upstreamSpinBox.setValue(self.container.upstreamThickness)
+        self.downstreamSpinBox.setValue(self.container.downstreamThickness)
 
 
 
@@ -83,10 +83,10 @@ class ContainerWidget(GudPyWidget):
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
 
-        self.tweakFactorLineEdit.setText(str(self.container.tweakFactor))
+        self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
 
-        self.angleOfRotationLineEdit.setText(str(self.container.angleOfRotationSampleWidth[0]))
-        self.sampleWidthLineEdit.setText(str(self.container.angleOfRotationSampleWidth[1]))
+        self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
+        self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
 
-        self.scatteringFractionLineEdit.setText(str(self.container.scatteringFractionAttenuationCoefficient[0]))
-        self.attenuationCoefficientLineEdit.setText(str(self.container.scatteringFractionAttenuationCoefficient[1]))
+        self.scatteringFractionSpinBox.setValue(self.container.scatteringFraction)
+        self.attenuationCoefficienSpinBox.setValue(self.container.attenuationCoefficient)
