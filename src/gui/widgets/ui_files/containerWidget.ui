@@ -121,20 +121,14 @@
           <string>-</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="periodNoLineEdit">
+        <widget class="QSpinBox" name="periodNoSpinBox">
          <property name="geometry">
           <rect>
-           <x>103</x>
-           <y>209</y>
-           <width>31</width>
-           <height>21</height>
+           <x>100</x>
+           <y>210</y>
+           <width>48</width>
+           <height>24</height>
           </rect>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>31</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </widget>
@@ -157,28 +151,6 @@
          <string>Configuration</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="1" colspan="2">
-          <widget class="QLineEdit" name="angleOfRotationLineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0" colspan="2">
           <widget class="QLabel" name="totalCrossSectionLabel">
            <property name="minimumSize">
@@ -254,66 +226,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="sampleWidthLineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QLineEdit" name="attenuationCoefficientLineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="tweakFactorLineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="sampleWidthLabel">
            <property name="minimumSize">
@@ -327,27 +239,20 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="sampleWidthSpinBox"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
+         </item>
          <item row="5" column="2">
-          <widget class="QLineEdit" name="scatteringFractionLineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
+         </item>
+         <item row="6" column="2">
+          <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
          </item>
         </layout>
        </widget>
@@ -360,6 +265,9 @@
        <string>Composition</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_6">
+       <item row="2" column="3">
+        <widget class="QDoubleSpinBox" name="upstreamSpinBox"/>
+       </item>
        <item row="1" column="3" colspan="2">
         <widget class="QComboBox" name="densityUnitsComboBox">
          <property name="maximumSize">
@@ -371,18 +279,26 @@
         </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QLineEdit" name="densityLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QDoubleSpinBox" name="densitySpinBox"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="geometryLabel">
+         <property name="text">
+          <string>Geometry</string>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLabel" name="downstreamLabel">
+         <property name="text">
+          <string>Downstream</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="thicknessLabel">
+         <property name="text">
+          <string>Thickness:</string>
          </property>
         </widget>
        </item>
@@ -396,49 +312,10 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="5">
-        <widget class="QLineEdit" name="downstreamLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="upstreamLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="upstreamLabel">
+       <item row="1" column="1">
+        <widget class="QLabel" name="densityLabel">
          <property name="text">
-          <string>Upstream</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="geometryLabel">
-         <property name="text">
-          <string>Geometry</string>
+          <string>Density</string>
          </property>
         </widget>
        </item>
@@ -501,26 +378,15 @@
          </column>
         </widget>
        </item>
-       <item row="2" column="4">
-        <widget class="QLabel" name="downstreamLabel">
+       <item row="2" column="2">
+        <widget class="QLabel" name="upstreamLabel">
          <property name="text">
-          <string>Downstream</string>
+          <string>Upstream</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="thicknessLabel">
-         <property name="text">
-          <string>Thickness:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="densityLabel">
-         <property name="text">
-          <string>Density</string>
-         </property>
-        </widget>
+       <item row="2" column="5">
+        <widget class="QDoubleSpinBox" name="downstreamSpinBox"/>
        </item>
       </layout>
      </widget>
