@@ -18,8 +18,8 @@
     <rect>
      <x>3</x>
      <y>0</y>
-     <width>793</width>
-     <height>778</height>
+     <width>975</width>
+     <height>780</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="mainLayout">
@@ -398,13 +398,6 @@
        <string>Advanced</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="periodNoLabel">
-         <property name="text">
-          <string>Period Number</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="4">
         <widget class="QLabel" name="resonanceValuesLabel">
          <property name="sizePolicy">
@@ -418,7 +411,14 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="4" rowspan="3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="periodNoLabel">
+         <property name="text">
+          <string>Period Number</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4" rowspan="4">
         <widget class="QTableWidget" name="resonanceValuesTable">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -494,28 +494,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="angleOfRotationLabel">
-         <property name="text">
-          <string>Angle of Rotation</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="sampleWidthLabel">
-         <property name="text">
-          <string>Sample Width</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="3">
-        <widget class="QLabel" name="correctionFactorLabel">
-         <property name="text">
-          <string>Normalisation Correction Factor</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="4">
+       <item row="5" column="4">
         <widget class="QLabel" name="exponentialValuesLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -528,7 +507,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="4" rowspan="3">
+       <item row="6" column="4" rowspan="3">
         <widget class="QTableWidget" name="exponentialValuesTable">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -560,34 +539,115 @@
        <item row="0" column="1">
         <widget class="QSpinBox" name="periodNoSpinBox"/>
        </item>
-       <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
+       <item row="3" column="0" colspan="3">
+        <widget class="QStackedWidget" name="geometryInfoStack">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="FLATPLATE">
+          <widget class="QLabel" name="angleOfRotationLabel">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>244</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Angle of Rotation</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox">
+           <property name="geometry">
+            <rect>
+             <x>120</x>
+             <y>10</y>
+             <width>68</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="sampleWidthLabel">
+           <property name="geometry">
+            <rect>
+             <x>190</x>
+             <y>10</y>
+             <width>85</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Sample Width</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="sampleWidthSpinBox">
+           <property name="geometry">
+            <rect>
+             <x>290</x>
+             <y>10</y>
+             <width>74</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="CYLINDRICAL">
+          <widget class="QLabel" name="sampleHeightLabel">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>111</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Sample Height</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="sampleHeightSpinBox">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>20</y>
+             <width>68</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+        </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QDoubleSpinBox" name="sampleWidthSpinBox"/>
+       <item row="7" column="2">
+        <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
        </item>
-       <item row="4" column="3">
+       <item row="5" column="3">
         <widget class="QDoubleSpinBox" name="correctionFactorSpinBox"/>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="scatteringFractionLabel">
+       <item row="5" column="0" colspan="3">
+        <widget class="QLabel" name="correctionFactorLabel">
          <property name="text">
-          <string>Sample Environment Scattering Fraction</string>
+          <string>Normalisation Correction Factor</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="attenuationCoefficientLabel">
          <property name="text">
           <string>Attenuation Coefficient</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
+       <item row="6" column="2">
         <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
        </item>
-       <item row="6" column="2">
-        <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
+       <item row="6" column="0">
+        <widget class="QLabel" name="scatteringFractionLabel">
+         <property name="text">
+          <string>Sample Environment Scattering Fraction</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

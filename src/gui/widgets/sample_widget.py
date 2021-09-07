@@ -46,6 +46,7 @@ class SampleWidget(QWidget):
 
     def handleGeometryChanged(self, index):
         self.sample.geometry = self.geometryComboBox.itemData(index)
+        self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
     
     def handleUpstreamThicknessChanged(self, value):
         self.sample.upstreamThickness = value
@@ -94,6 +95,9 @@ class SampleWidget(QWidget):
     
     def handleSampleWidthChanged(self, value):
         self.sample.sampleWidth = value
+    
+    def handleSampleHeightChanged(self, value):
+        self.sample.sampleHeight = value
 
     def handleCorrectionFactorChanged(self, value):
         self.sample.normalisationCorrectionFactor = value
@@ -187,10 +191,15 @@ class SampleWidget(QWidget):
             self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
         self.outputUnitsComboBox.currentIndexChanged.connect(self.handleOutputUnitsChanged)
-        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotationSample)
+
+        self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
+
+        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(self.handleAngleOfRotationChanged)
         self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
         self.sampleWidthSpinBox.valueChanged.connect(self.handleSampleWidthChanged)
+        self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
+        self.sampleHeightSpinBox.valueChanged.connect(self.handleSampleHeightChanged)
 
         self.correctionFactorSpinBox.setValue(self.sample.normalisationCorrectionFactor)
         self.correctionFactorSpinBox.valueChanged.connect(self.handleCorrectionFactorChanged)
