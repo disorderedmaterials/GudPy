@@ -39,6 +39,17 @@ class SampleWidget(GudPyWidget):
         super(SampleWidget, self).__init__(object=self.sample, parent=self.parent)
         self.initComponents()
     
+    def handlePeriodNoChanged(self, value):
+        self.sample.periodNo = value
+
+    def handleForceCorrectionsSwitched(self, state):
+        self.sample.forceCalculationOfCorrections = state
+
+    def handleGeometryChanged(self, index):
+        self.sample.geometry = self.geometryComboBox.itemData(index)
+    
+
+
     def initComponents(self):
         """
         Loads the UI file for the SampleWidget object,
@@ -49,10 +60,11 @@ class SampleWidget(GudPyWidget):
         uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
         uic.loadUi(uifile, self)
 
-        self.periodNoLineEdit.setText(str(self.sample.numberOfFilesPeriodNumber[1]))
+        self.periodNoSpinBox.setValue(self.sample.periodNumber)
         self.dataFilesList.addItems([df for df in self.sample.dataFiles.dataFiles])
 
         self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.sample.forceCalculationOfCorrections else Qt.Unchecked)
+        self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
 
 
         for i, element in enumerate(self.sample.composition.elements):
@@ -63,12 +75,14 @@ class SampleWidget(GudPyWidget):
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
-        self.upstreamLineEdit.setText(str(self.sample.thickness[0]))
-        self.downstreamLineEdit.setText(str(self.sample.thickness[1]))
+        self.geometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
+
+        self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
+        self.downstreamSpinBox.setValue(self.sample.downstreamThickness)
 
 
 
-        self.densityLineEdit.setText(str(self.sample.density))
+        self.densitySpinBox.setValue(self.sample.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.sample.densityUnits.value)
@@ -84,16 +98,16 @@ class SampleWidget(GudPyWidget):
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
 
-        self.tweakFactorLineEdit.setText(str(self.sample.sampleTweakFactor))
+        self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
 
-        self.topHatWidthLineEdit.setText(str(self.sample.topHatW))
-        self.minLineEdit.setText(str(self.sample.minRadFT))
-        self.maxLineEdit.setText(str(self.sample.maxRadFT))
+        self.topHatWidthSpinBox.setValue(self.sample.topHatW)
+        self.minSpinBox.setValue(self.sample.minRadFT)
+        self.maxSpinBox.setValue(self.sample.maxRadFT)
 
-        self.broadeningFunctionLineEdit.setText(str(self.sample.grBroadening))
-        self.broadeningPowerLineEdit.setText(str(self.sample.powerForBroadening))
+        self.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
+        self.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
 
-        self.stepSizeLineEdit.setText(str(self.sample.stepSize))
+        self.stepSizeSpinBox.setValue(self.sample.stepSize)
 
         self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
 
@@ -105,9 +119,9 @@ class SampleWidget(GudPyWidget):
             self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
 
-        self.angleOfRotationLineEdit.setText(str(self.sample.angleOfRotationSampleWidth[0]))
-        self.sampleWidthLineEdit.setText(str(self.sample.angleOfRotationSampleWidth[1]))
+        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotationSample)
+        self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
 
-        self.correctionFactorLineEdit.setText(str(self.sample.normalisationCorrectionFactor))
-        self.scatteringFractionLineEdit.setText(str(self.sample.environementScatteringFuncAttenuationCoeff[0]))
-        self.attenuationCoefficientLineEdit.setText(str(self.sample.environementScatteringFuncAttenuationCoeff[1]))
+        self.correctionFactorSpinBox.setValue(self.sample.normalisationCorrectionFactor)
+        self.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
+        self.attenuationCoefficientSpinBox.setValue(self.sample.attenuationCoefficient)
