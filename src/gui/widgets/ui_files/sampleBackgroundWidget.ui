@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>20</y>
-     <width>366</width>
-     <height>270</height>
+     <width>335</width>
+     <height>251</height>
     </rect>
    </property>
    <property name="minimumSize">
@@ -32,10 +32,10 @@
     <string>Data Files</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" rowspan="2">
+    <item row="0" column="0" rowspan="2" colspan="2">
      <widget class="QListWidget" name="dataFilesList"/>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="2">
      <widget class="QPushButton" name="addDataFileButton">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -48,7 +48,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="1" column="2">
      <widget class="QPushButton" name="removeDataFileButton">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -60,6 +60,16 @@
        <string>-</string>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="periodNoLabel">
+      <property name="text">
+       <string>Period No:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="periodNoSpinBox"/>
     </item>
    </layout>
   </widget>

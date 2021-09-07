@@ -37,6 +37,9 @@ class SampleBackgroundWidget(GudPyWidget):
         super(SampleBackgroundWidget, self).__init__(object=self.sampleBackground, parent=self.parent)
         self.initComponents()
     
+    def handlePeriodNoChanged(self, value):
+        self.sampleBackground.periodNo = value
+    
     def initComponents(self):
         """
         Loads the UI file for the SampleBackgroundWidget object,
@@ -48,3 +51,6 @@ class SampleBackgroundWidget(GudPyWidget):
         uic.loadUi(uifile, self)
 
         self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])
+
+        self.periodNoSpinBox.setValue(self.sampleBackground.periodNo)
+        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
