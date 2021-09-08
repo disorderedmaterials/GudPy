@@ -34,7 +34,7 @@ class ContainerWidget(QWidget):
         self.container = container
         self.parent = parent
 
-        super(ContainerWidget, self).__init__(object=self.container, parent=self.parent)
+        super(ContainerWidget, self).__init__(parent=self.parent)
         self.initComponents()
     
     def handlePeriodNoChanged(self, value):
@@ -138,5 +138,5 @@ class ContainerWidget(QWidget):
 
         self.scatteringFractionSpinBox.setValue(self.container.scatteringFraction)
         self.scatteringFractionSpinBox.valueChanged.connect(self.handleScatteringFractionChanged)
-        self.attenuationCoefficienSpinBox.setValue(self.container.attenuationCoefficient)
-        self.attenuationCoefficienSpinBox.valueChanged.connect(self.handleAttenuationCoefficientChanged)
+        self.attenuationCoefficientSpinBox.setValue(self.container.attenuationCoefficient)
+        self.attenuationCoefficientSpinBox.valueChanged.connect(self.handleAttenuationCoefficientChanged)

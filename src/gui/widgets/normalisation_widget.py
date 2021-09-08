@@ -35,7 +35,7 @@ class NormalisationWidget(QWidget):
         self.normalisation = normalisation
         self.parent = parent
 
-        super(NormalisationWidget, self).__init__(object=self.normalisation, parent=self.parent)
+        super(NormalisationWidget, self).__init__(parent=self.parent)
         self.initComponents()
     
     def handlePeriodNoChanged(self, value):
@@ -109,7 +109,7 @@ class NormalisationWidget(QWidget):
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(self.normalisation.densityUnits.value)
-        self.densityUnits.currentIndexChanged.connect(self.handleDensityUnitsChanged)
+        self.densityUnitsComboBox.currentIndexChanged.connect(self.handleDensityUnitsChanged)
 
         self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(self.handleUpstreamThicknessChanged)
@@ -131,7 +131,7 @@ class NormalisationWidget(QWidget):
         self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
         self.placzekCorrectionSpinBox.setValue(self.normalisation.tempForNormalisationPC)
         self.placzekCorrectionSpinBox.valueChanged.connect(self.handlePlaczekCorrectionChanged)
-        self.differentialCrossSectionFileLineEdit.setValue(self.normalisation.normalisationDifferentialCrossSectionFilename)
+        self.differentialCrossSectionFileLineEdit.setText(self.normalisation.normalisationDifferentialCrossSectionFile)
         self.differentialCrossSectionFileLineEdit.textChanged.connect(self.handleDifferentialCrossSectionFileChanged)
         self.smoothingDegreeSpinBox.setValue(self.normalisation.normalisationDegreeSmoothing)
         self.smoothingDegreeSpinBox.valueChanged.connect(self.handleNormalisationDegreeSmoothingChanged)

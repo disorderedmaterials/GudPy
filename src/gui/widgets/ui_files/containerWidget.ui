@@ -289,131 +289,214 @@
       <property name="title">
        <string>Composition</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="2" column="3">
-        <widget class="QDoubleSpinBox" name="upstreamSpinBox"/>
-       </item>
-       <item row="1" column="3" colspan="2">
-        <widget class="QComboBox" name="densityUnitsComboBox">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>21</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QDoubleSpinBox" name="densitySpinBox"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="geometryLabel">
-         <property name="text">
-          <string>Geometry</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLabel" name="downstreamLabel">
-         <property name="text">
-          <string>Downstream</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
+      <widget class="QComboBox" name="densityUnitsComboBox">
+       <property name="geometry">
+        <rect>
+         <x>432</x>
+         <y>61</y>
+         <width>161</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>21</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="densitySpinBox">
+       <property name="geometry">
+        <rect>
+         <x>357</x>
+         <y>59</y>
+         <width>68</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="geometryLabel">
+       <property name="geometry">
+        <rect>
+         <x>283</x>
+         <y>33</y>
+         <width>60</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Geometry</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="geometryComboBox">
+       <property name="geometry">
+        <rect>
+         <x>354</x>
+         <y>31</y>
+         <width>239</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>21</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QLabel" name="densityLabel">
+       <property name="geometry">
+        <rect>
+         <x>283</x>
+         <y>59</y>
+         <width>46</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Density</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="containerCompositionTable">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>33</y>
+         <width>256</width>
+         <height>192</height>
+        </rect>
+       </property>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string/>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>Element</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Mass No</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Abundance</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="geometry">
+        <rect>
+         <x>283</x>
+         <y>127</y>
+         <width>331</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="page_3">
         <widget class="QLabel" name="thicknessLabel">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>66</width>
+           <height>16</height>
+          </rect>
+         </property>
          <property name="text">
           <string>Thickness:</string>
          </property>
         </widget>
-       </item>
-       <item row="0" column="2" colspan="3">
-        <widget class="QComboBox" name="geometryComboBox">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>21</height>
-          </size>
+        <widget class="QDoubleSpinBox" name="downstreamSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>40</y>
+           <width>68</width>
+           <height>24</height>
+          </rect>
          </property>
         </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="densityLabel">
+        <widget class="QDoubleSpinBox" name="upstreamSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>162</x>
+           <y>10</y>
+           <width>68</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="downstreamLabel">
+         <property name="geometry">
+          <rect>
+           <x>80</x>
+           <y>40</y>
+           <width>77</width>
+           <height>16</height>
+          </rect>
+         </property>
          <property name="text">
-          <string>Density</string>
+          <string>Downstream</string>
          </property>
         </widget>
-       </item>
-       <item row="0" column="0" rowspan="4">
-        <widget class="QTableWidget" name="containerCompositionTable">
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string/>
-          </property>
-         </row>
-         <column>
-          <property name="text">
-           <string>Element</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Mass No</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Abundance</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="2" column="2">
         <widget class="QLabel" name="upstreamLabel">
+         <property name="geometry">
+          <rect>
+           <x>84</x>
+           <y>10</y>
+           <width>60</width>
+           <height>16</height>
+          </rect>
+         </property>
          <property name="text">
           <string>Upstream</string>
          </property>
         </widget>
-       </item>
-       <item row="2" column="5">
-        <widget class="QDoubleSpinBox" name="downstreamSpinBox"/>
-       </item>
-      </layout>
+       </widget>
+       <widget class="QWidget" name="page_4"/>
+      </widget>
      </widget>
     </item>
    </layout>

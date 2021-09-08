@@ -35,7 +35,7 @@ class SampleWidget(QWidget):
         self.sample = sample
         self.parent = parent
 
-        super(SampleWidget, self).__init__(object=self.sample, parent=self.parent)
+        super(SampleWidget, self).__init__(parent=self.parent)
         self.initComponents()
     
     def handlePeriodNoChanged(self, value):

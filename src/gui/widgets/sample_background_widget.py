@@ -33,11 +33,11 @@ class SampleBackgroundWidget(QWidget):
         self.sampleBackground = sampleBackground
         self.parent = parent
 
-        super(SampleBackgroundWidget, self).__init__(object=self.sampleBackground, parent=self.parent)
+        super(SampleBackgroundWidget, self).__init__(parent=self.parent)
         self.initComponents()
     
     def handlePeriodNoChanged(self, value):
-        self.sampleBackground.periodNo = value
+        self.sampleBackground.periodNumber = value
     
     def initComponents(self):
         """
@@ -51,5 +51,5 @@ class SampleBackgroundWidget(QWidget):
 
         self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])
 
-        self.periodNoSpinBox.setValue(self.sampleBackground.periodNo)
+        self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)

@@ -34,7 +34,7 @@ class BeamWidget(QWidget):
         self.beam = beam
         self.parent = parent
 
-        super(BeamWidget, self).__init__(object=self.beam, parent=self.parent)
+        super(BeamWidget, self).__init__(parent=self.parent)
         self.initComponents()
     
     def handleGeometryChanged(self, index):
