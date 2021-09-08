@@ -19,7 +19,7 @@
      <x>20</x>
      <y>10</y>
      <width>685</width>
-     <height>535</height>
+     <height>672</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -225,7 +225,7 @@
          <item row="0" column="0" colspan="3">
           <widget class="QStackedWidget" name="geometryInfoStack">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="page">
             <layout class="QGridLayout" name="gridLayout_2">
@@ -286,6 +286,12 @@
     </item>
     <item>
      <widget class="QGroupBox" name="containerCompositionGroupBox">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>250</height>
+       </size>
+      </property>
       <property name="title">
        <string>Composition</string>
       </property>
