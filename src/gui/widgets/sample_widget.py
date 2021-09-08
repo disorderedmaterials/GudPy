@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
+from src.gudrun_classes.config import geometry
 
 class SampleWidget(QWidget):
     """
@@ -192,7 +193,7 @@ class SampleWidget(QWidget):
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
         self.outputUnitsComboBox.currentIndexChanged.connect(self.handleOutputUnitsChanged)
 
-        self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
+        self.geometryInfoStack.setCurrentIndex(geometry.value)
 
         self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(self.handleAngleOfRotationChanged)
