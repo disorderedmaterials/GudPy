@@ -35,7 +35,24 @@ class SampleBackgroundWidget(QWidget):
 
         super(SampleBackgroundWidget, self).__init__(parent=self.parent)
         self.initComponents()
-    
+
+    def handleDataFilesAltered(self, item):
+        index = item.row()
+        value = item.text()
+        if not value:
+            self.sampleBackground.dataFiles.dataFiles.remove(index)
+        else:
+            self.sampleBackground.dataFiles.dataFiles[index] = value
+        self.updateDataFilesList()
+
+    def handleDataFileInserted(self, item):
+        value = item.text()
+        self.sampleBackground.dataFiles.dataFiles.append(value)
+
+    def updateDataFilesList(self):
+        self.dataFilesList.clear()
+        self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])    
+
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
     
@@ -49,7 +66,9 @@ class SampleBackgroundWidget(QWidget):
         uifile = os.path.join(current_dir, "ui_files/sampleBackgroundWidget.ui")
         uic.loadUi(uifile, self)
 
-        self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])
+        self.updateDataFilesList()
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
 
         self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)

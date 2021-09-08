@@ -76,6 +76,23 @@ class ContainerWidget(QWidget):
     def handleAttenuationCoefficientChanged(self, value):
         self.container.attenuationCoefficient = value
 
+    def handleDataFilesAltered(self, item):
+        index = item.row()
+        value = item.text()
+        if not value:
+            self.container.dataFiles.dataFiles.remove(index)
+        else:
+            self.container.dataFiles.dataFiles[index] = value
+        self.updateDataFilesList()
+
+    def handleDataFileInserted(self, item):
+        value = item.text()
+        self.container.dataFiles.dataFiles.append(value)
+
+    def updateDataFilesList(self):
+        self.dataFilesList.clear()
+        self.dataFilesList.addItems([df for df in self.container.dataFiles.dataFiles])    
+
     def initComponents(self):
         """
         Loads the UI file for the ContainerWidget object,
@@ -93,7 +110,10 @@ class ContainerWidget(QWidget):
 
         self.periodNoSpinBox.setValue(self.container.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
-        self.dataFilesList.addItems([df for df in self.container.dataFiles.dataFiles])
+
+        self.updateDataFilesList()
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
 
         for i, element in enumerate(self.container.composition.elements):
             self.containerCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))

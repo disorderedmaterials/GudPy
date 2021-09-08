@@ -109,6 +109,23 @@ class SampleWidget(QWidget):
     def handleAttenuationCoefficientChanged(self, value):
         self.sample.attenuationCoefficient = value
 
+    def handleDataFilesAltered(self, item):
+        index = item.row()
+        value = item.text()
+        if not value:
+            self.sample.dataFiles.dataFiles.remove(index)
+        else:
+            self.sample.dataFiles.dataFiles[index] = value
+        self.updateDataFilesList()
+
+    def handleDataFileInserted(self, item):
+        value = item.text()
+        self.sample.dataFiles.dataFiles.append(value)
+
+    def updateDataFilesList(self):
+        self.dataFilesList.clear()
+        self.dataFilesList.addItems([df for df in self.sample.dataFiles.dataFiles])    
+
     def initComponents(self):
         """
         Loads the UI file for the SampleWidget object,
@@ -121,7 +138,10 @@ class SampleWidget(QWidget):
 
         self.periodNoSpinBox.setValue(self.sample.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
-        self.dataFilesList.addItems([df for df in self.sample.dataFiles.dataFiles])
+
+        self.updateDataFilesList()
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
 
         self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.sample.forceCalculationOfCorrections else Qt.Unchecked)
         self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
