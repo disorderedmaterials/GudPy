@@ -135,6 +135,7 @@ class ContainerWidget(QWidget):
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
+        self.geometryComboBox.setDisabled(True)
 
         self.upstreamSpinBox.setValue(self.container.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(

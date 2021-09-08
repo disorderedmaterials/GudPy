@@ -180,6 +180,7 @@ class SampleWidget(QWidget):
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
+        self.geometryComboBox.setDisabled(True)
 
         self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
