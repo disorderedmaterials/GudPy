@@ -82,7 +82,6 @@ class GudPyTreeView(QTreeView):
             sampleBackgroundItem = QStandardItem(f'Sample Background {i+1}')
             sampleBackgroundItem.setEditable(False)
             root.appendRow(sampleBackgroundItem)
-            self.map[f'Sample Background {i+1}'] = Attribute(f'Sample Background {i+1}', sampleBackground, sampleBackground.__str__)
             for sample in sampleBackground.samples:
                 sampleItem = QStandardItem(sample.name)
                 sampleItem.setCheckable(True)
