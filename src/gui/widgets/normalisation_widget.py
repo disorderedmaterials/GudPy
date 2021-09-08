@@ -128,6 +128,8 @@ class NormalisationWidget(QWidget):
         for path in paths:
             if path:
                 target.addItem(path)
+    
+
 
     def addDataFiles(self, target, title, regex):
         self.addFiles(target, title, regex)
@@ -136,6 +138,18 @@ class NormalisationWidget(QWidget):
     def addBgDataFiles(self, target, title, regex):
         self.addFiles(target, title, regex)
         self.handleBgDataFileInserted(target.item(target.count()-1))
+
+    def removeFile(self, target, dataFiles):
+        remove = target.takeItem(target.currentRow()).text()
+        dataFiles.dataFiles.remove(remove)
+
+    def removeDataFile(self, target, dataFiles):
+        self.removeFile(target, dataFiles)
+        self.updateDataFilesList()
+    
+    def removeBgDataFile(self, target, dataFiles):
+        self.removeFile(target, dataFiles)
+        self.updateBgDataFilesList()
 
     def initComponents(self):
         """
@@ -163,6 +177,13 @@ class NormalisationWidget(QWidget):
             )
         )
 
+        self.removeDataFileButton.clicked.connect(
+            lambda : self.removeDataFile(
+                self.dataFilesList,
+                self.normalisation.dataFiles
+            )
+        )
+
         self.updateBgDataFilesList()
         self.backgroundDataFilesList.itemChanged.connect(
             self.handleBgDataFilesAltered
@@ -173,9 +194,16 @@ class NormalisationWidget(QWidget):
 
         self.addBackgroundDataFileButton.clicked.connect(
             lambda : self.addBgDataFiles(
-                self.dataFilesList,
+                self.backgroundDataFilesList,
                 "Add background data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+            )
+        )
+
+        self.removeBackgroundDataFileButton.clicked.connect(
+            lambda : self.removeBgDataFile(
+                self.backgroundDataFilesList,
+                self.normalisation.dataFilesBg
             )
         )
 

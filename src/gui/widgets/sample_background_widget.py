@@ -66,6 +66,11 @@ class SampleBackgroundWidget(QWidget):
                 target.addItem(path)
                 self.handleDataFileInserted(target.item(target.count()-1))
 
+    def removeFile(self, target, dataFiles):
+        remove = target.takeItem(target.currentRow()).text()
+        dataFiles.dataFiles.remove(remove)
+        self.updateDataFilesList()
+
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
 
@@ -89,6 +94,12 @@ class SampleBackgroundWidget(QWidget):
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+            )
+        )
+        self.removeDataFileButton.clicked.connect(
+            lambda : self.removeFile(
+                self.dataFilesList,
+                self.sampleBackground.dataFiles
             )
         )
 
