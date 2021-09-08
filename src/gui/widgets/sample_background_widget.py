@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QFileDialog, QWidget
 from PyQt5 import uic
 import os
 
@@ -59,6 +59,13 @@ class SampleBackgroundWidget(QWidget):
             [df for df in self.sampleBackground.dataFiles.dataFiles]
         )
 
+    def addFiles(self, target, title, regex):
+        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        for path in paths:
+            if path:
+                target.addItem(path)
+                self.handleDataFileInserted(target.item(target.count()-1))
+
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
 
@@ -77,6 +84,13 @@ class SampleBackgroundWidget(QWidget):
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.addDataFileButton.clicked.connect(
+            lambda : self.addFiles(
+                self.dataFilesList,
+                "Add data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+            )
+        )
 
         self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
