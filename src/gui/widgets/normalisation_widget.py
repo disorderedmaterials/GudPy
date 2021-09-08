@@ -77,6 +77,40 @@ class NormalisationWidget(QWidget):
     def handleMinNormalisationSignalChanged(self, value):
         self.normalisation.minNormalisationSignalBR = value
 
+    def handleDataFilesAltered(self, item):
+        index = item.row()
+        value = item.text()
+        if not value:
+            self.normalisation.dataFiles.dataFiles.remove(index)
+        else:
+            self.normalisation.dataFiles.dataFiles[index] = value
+        self.updateDataFilesList()
+
+    def handleDataFileInserted(self, item):
+        value = item.text()
+        self.normalisation.dataFiles.dataFiles.append(value)
+
+    def updateDataFilesList(self):
+        self.dataFilesList.clear()
+        self.dataFilesList.addItems([df for df in self.normalisation.dataFiles.dataFiles])
+
+    def handleBgDataFilesAltered(self, item):
+        index = item.row()
+        value = item.text()
+        if not value:
+            self.normalisation.dataFilesBg.dataFiles.remove(index)
+        else:
+            self.normalisation.dataFilesBg.dataFiles[index] = value
+        self.updateBgDataFilesList()
+
+    def handleBgDataFileInserted(self, item):
+        value = item.text()
+        self.normalisation.dataFilesBg.dataFiles.append(value)
+
+    def updateBgDataFilesList(self):
+        self.backgroundDataFilesList.clear()
+        self.backgroundDataFilesList.addItems([df for df in self.normalisation.dataFilesBg.dataFiles])
+
 
     def initComponents(self):
         """
@@ -88,8 +122,12 @@ class NormalisationWidget(QWidget):
         uifile = os.path.join(current_dir, "ui_files/normalisationWidget.ui")
         uic.loadUi(uifile, self)
 
-        self.dataFilesList.addItems([df for df in self.normalisation.dataFiles.dataFiles])
-        self.backgroundDataFilesList.addItems([df for df in self.normalisation.dataFilesBg.dataFiles])
+        self.updateDataFilesList()
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.updateBgDataFilesList()
+        self.backgroundDataFilesList.itemChanged.connect(self.handleBgDataFilesAltered)
+        self.backgroundDataFilesList.itemEntered.connect(self.handleBgDataFileInserted) 
 
         self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)

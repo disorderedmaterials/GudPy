@@ -105,7 +105,11 @@ class BeamWidget(QWidget):
         col = item.column()
         
         index = (row*5) + col
-        self.beam.beamProfileValues[index] = float(value)
+        if not value:
+            self.beam.beamProfileValues.remove(index)
+        else:
+            self.beam.beamProfileValues[index] = float(value)
+        self.updateBeamProfileValues()
     
     def handleBeamValueInserted(self, item):
         value = item.text()
@@ -178,4 +182,4 @@ class BeamWidget(QWidget):
 
         self.updateBeamProfileValues()
         self.beamProfileValuesTable.itemChanged.connect(self.handleBeamValueChanged)
-        self.beamProfileValuesTable.itemEntered.conncet(self.handleBeamValueInserted)
+        self.beamProfileValuesTable.itemEntered.connect(self.handleBeamValueInserted)
