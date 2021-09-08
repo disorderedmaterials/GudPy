@@ -1,13 +1,16 @@
-from PyQt5.QtWidgets import QAction, QDialog, QMainWindow, QWidget, QTextEdit
+from PyQt5.QtWidgets import QAction, QMainWindow, QTextEdit
+
 
 class ViewInput(QMainWindow):
-
-    def __init__(self, gudrunFile,parent=None):
+    def __init__(self, gudrunFile, parent=None):
         self.gudrunFile = gudrunFile
         self.parent = parent
         super(ViewInput, self).__init__(self.parent)
-        self.setGeometry(0,0,self.parent.size().width()//2, self.parent.size().height()//2)
-        
+        self.setGeometry(
+            0, 0,
+            self.parent.size().width() // 2, self.parent.size().height() // 2
+        )
+
         self.initComponents()
         self.show()
 
@@ -15,7 +18,9 @@ class ViewInput(QMainWindow):
 
         self.textEdit = QTextEdit(self)
         self.textEdit.setText(str(self.gudrunFile))
-        self.textEdit.setGeometry(0,0, self.size().width(), self.size().height())
+        self.textEdit.setGeometry(
+            0, 0,
+            self.size().width(), self.size().height())
 
         menuBar = self.menuBar()
         menuBar.setNativeMenuBar(False)
@@ -24,7 +29,7 @@ class ViewInput(QMainWindow):
         saveAction.triggered.connect(self.save)
 
     def save(self):
-        
-        with open(self.gudrunFile.path, 'w', encoding='utf-8') as fp:
+
+        with open(self.gudrunFile.path, "w", encoding="utf-8") as fp:
             fp.write(self.textEdit.toPlainText())
         self.parent.updateFromFile()

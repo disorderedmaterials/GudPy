@@ -1,4 +1,3 @@
-
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import Qt
@@ -25,18 +24,23 @@ class GudPyTreeView(QTreeView):
     click(modelIndex)
         Slot method for clicked signal on GudPyTreeView.
     siblings(modelIndex)
-        Helper method that returns a list of all siblings associated with a QModelIndex.
+        Helper method that returns a list
+        of all siblings associated with a QModelIndex.
     children(modelIndex)
-        Helper method that returns a list of all children associated with a QModelIndex.
+        Helper method that returns a list of
+        all children associated with a QModelIndex.
     absoluteIndex(modelIndex)
         Returns the 'absolute' index of a QModelIndex object.
     depth(modelIndex, depth)
-        Recursive method for calulcating the depth in the tree of a QModelIndex object.
+        Recursive method for calulcating the
+        depth in the tree of a QModelIndex object.
     """
+
     def __init__(self, parent, gudrunFile):
         """
         Constructs all the necessary attributes for the GudPyTreeView object.
-        Calls the makeModel method, to create a QStandardItemModel for the tree view.
+        Calls the makeModel method,
+        to create a QStandardItemModel for the tree view.
         Parameters
         ----------
         parent : QWidget
@@ -64,7 +68,8 @@ class GudPyTreeView(QTreeView):
         # Create root.
         root = self.model.invisibleRootItem()
 
-        # Add QStandardItems for the Instrument, Beam and Normalisation objects.
+        # Add QStandardItems for the Instrument,
+        # Beam and Normalisation objects.
 
         instrumentItem = QStandardItem("Instrument")
         instrumentItem.setEditable(False)
@@ -76,17 +81,25 @@ class GudPyTreeView(QTreeView):
         root.appendRow(beamItem)
         root.appendRow(normalistionItem)
 
-        # Iterate through SampleBackgrounds belonging to the GudrunFile.
-        # Add QStandardItems, in order, for all SampleBackgrounds, Samples and Containers.
-        for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
-            sampleBackgroundItem = QStandardItem(f'Sample Background {i+1}')
+        # Iterate through SampleBackgrounds
+        # belonging to the GudrunFile.
+        # Add QStandardItems, in order,
+        # for all SampleBackgrounds, Samples and Containers.
+        for i, sampleBackground in enumerate(
+            self.gudrunFile.sampleBackgrounds
+        ):
+            sampleBackgroundItem = QStandardItem(f"Sample Background {i+1}")
             sampleBackgroundItem.setEditable(False)
             root.appendRow(sampleBackgroundItem)
             for sample in sampleBackground.samples:
                 sampleItem = QStandardItem(sample.name)
                 sampleItem.setCheckable(True)
-                sampleItem.setFlags(sampleItem.flags() | Qt.ItemIsUserCheckable)
-                sampleItem.setCheckState(Qt.Checked if sample.include else Qt.Unchecked)
+                sampleItem.setFlags(
+                    sampleItem.flags() | Qt.ItemIsUserCheckable
+                )
+                sampleItem.setCheckState(
+                    Qt.Checked if sample.include else Qt.Unchecked
+                )
                 sampleBackgroundItem.appendRow(sampleItem)
                 for container in sample.containers:
                     containerItem = QStandardItem(container.name)
@@ -102,8 +115,7 @@ class GudPyTreeView(QTreeView):
         modelIndex : QModelIndex
             QModelIndex of the QStandardItem that was clicked in the tree view.
         """
-        self.parent.stack.setCurrentIndex(self.absoluteIndex(modelIndex))            
-
+        self.parent.stack.setCurrentIndex(self.absoluteIndex(modelIndex))
 
     def siblings(self, modelIndex):
         """
@@ -119,19 +131,20 @@ class GudPyTreeView(QTreeView):
             QModelIndexes that are siblings of the input modelIndex.
         """
         s = []
-        sibling = modelIndex.sibling(0,0)
+        sibling = modelIndex.sibling(0, 0)
         i = 0
         while sibling.row() != -1:
             if modelIndex.parent() == sibling.parent():
                 s.append(sibling)
-            i+=1
-            sibling = modelIndex.sibling(i,0)
+            i += 1
+            sibling = modelIndex.sibling(i, 0)
         return s
 
     def children(self, modelIndex):
         """
         Helper method that returns all children associated with a QModelIndex.
-        Iterates over all children, checking if their parent is the input modelIndex.
+        Iterates over all children,
+        checking if their parent is the input modelIndex.
         Parameters
         ----------
         modelIndex : QModelIndex
@@ -142,20 +155,21 @@ class GudPyTreeView(QTreeView):
             QModelIndexes that are children of the input modelIndex.
         """
         c = []
-        child = modelIndex.child(0,0)
+        child = modelIndex.child(0, 0)
         i = 0
         while child.row() != -1:
             if child.parent() == modelIndex:
                 c.append(child)
-            i+=1
-            child = modelIndex.child(i,0)
+            i += 1
+            child = modelIndex.child(i, 0)
         return c
-
 
     def absoluteIndex(self, modelIndex):
         """
-        Helper method that returns the 'absolute' index of a QModelIndex object.
-        Absolute index is calculated by determining the index of the QModelIndex
+        Helper method that returns the 'absolute'
+        index of a QModelIndex object.
+        Absolute index is calculated by determining
+        the index of the QModelIndex
         in a flattened model.
         Parameters
         ----------
@@ -168,19 +182,21 @@ class GudPyTreeView(QTreeView):
         """
         index = 1
         if modelIndex.parent().row() == -1:
-            return modelIndex.row()                
+            return modelIndex.row()
         else:
             siblings = self.siblings(modelIndex)
             for sibling in siblings:
                 if sibling.row() < modelIndex.row():
-                    index+=1+len(self.children(sibling))
-            index+=self.absoluteIndex(modelIndex.parent())
-        return index            
+                    index += 1 + len(self.children(sibling))
+            index += self.absoluteIndex(modelIndex.parent())
+        return index
 
     def depth(self, modelIndex, depth):
         """
-        Recursive helper method that returns the 'depth' of a QModelIndex object.
-        This is calculated by recursing up, and incrementing the depth, the tree view,
+        Recursive helper method that returns the
+        'depth' of a QModelIndex object.
+        This is calculated by recursing up,
+        and incrementing the depth, the tree view,
         until no more parents exist.
         Parameters
         ----------
@@ -194,4 +210,4 @@ class GudPyTreeView(QTreeView):
         row = modelIndex.parent().row()
         if row < 0:
             return depth
-        return self.depth(modelIndex.parent(), depth+1)
+        return self.depth(modelIndex.parent(), depth + 1)

@@ -1,12 +1,10 @@
-from PyQt5.QtWidgets import (
-    QApplication
-)
+from PyQt5.QtWidgets import QApplication
 import sys
 
 from src.gui.widgets.main_window import GudPyMainWindow
 
-class GudPy(QApplication):
 
+class GudPy(QApplication):
     def __init__(self, args):
 
         super(GudPy, self).__init__(args)

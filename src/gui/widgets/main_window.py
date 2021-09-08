@@ -1,6 +1,13 @@
-from PyQt5.QtCore import QAbstractItemModel, QModelIndex
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QMainWindow, QMenu, QStackedWidget,QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (
+    QAction,
+    QHBoxLayout,
+    QMainWindow,
+    QMenu,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 from PyQt5.QtGui import QResizeEvent
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.view_input import ViewInput
@@ -10,6 +17,7 @@ from src.gui.widgets.beam_widget import BeamWidget
 from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
 from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
+
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -30,19 +38,21 @@ class GudPyMainWindow(QMainWindow):
         leftLayout.addWidget(self.objectTree)
         leftLayout.addStretch(5)
         leftWidget = QWidget()
-        # leftWidget.setMaximumSize(self.size().width()*0.2, self.size().height()*0.3)
         leftWidget.setLayout(leftLayout)
-        # centralWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         self.stack = QStackedWidget(self)
         instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
-        normalisationWidget = NormalisationWidget(self.gudrunFile.normalisation, self)
+        normalisationWidget = NormalisationWidget(
+            self.gudrunFile.normalisation, self
+        )
         self.stack.addWidget(instrumentWidget)
         self.stack.addWidget(beamWidget)
         self.stack.addWidget(normalisationWidget)
 
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            sampleBackgroundWidget = SampleBackgroundWidget(sampleBackground, self)
+            sampleBackgroundWidget = SampleBackgroundWidget(
+                sampleBackground, self
+            )
             self.stack.addWidget(sampleBackgroundWidget)
 
             for sample in sampleBackground.samples:
@@ -52,7 +62,6 @@ class GudPyMainWindow(QMainWindow):
                 for container in sample.containers:
                     containerWidget = ContainerWidget(container, self)
                     self.stack.addWidget(containerWidget)
-
 
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftWidget, 20)
@@ -72,9 +81,11 @@ class GudPyMainWindow(QMainWindow):
         runMenu.addAction(runPurge)
         runMenu.addAction(runGudrun)
         runMenu.addAction(iterateGudrun)
-        writePurgeFile.triggered.connect(lambda : PurgeFile(self.gudrunFile).write_out())
-        runPurge.triggered.connect(lambda : PurgeFile(self.gudrunFile).purge())
-        runGudrun.triggered.connect(lambda : self.gudrunFile.dcs())
+        writePurgeFile.triggered.connect(
+            lambda: PurgeFile(self.gudrunFile).write_out()
+        )
+        runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
+        runGudrun.triggered.connect(lambda: self.gudrunFile.dcs())
         menuBar.addMenu(runMenu)
 
         loadMenu = QMenu("&Load", menuBar)
@@ -90,7 +101,9 @@ class GudPyMainWindow(QMainWindow):
         viewMenu = QMenu("&View", menuBar)
         viewInputFile = QAction("View input file", viewMenu)
         viewMenu.addAction(viewInputFile)
-        viewInputFile.triggered.connect(lambda : ViewInput(self.gudrunFile, parent=self))
+        viewInputFile.triggered.connect(
+            lambda: ViewInput(self.gudrunFile, parent=self)
+        )
         menuBar.addMenu(viewMenu)
 
         self.setMenuBar(menuBar)
@@ -101,5 +114,3 @@ class GudPyMainWindow(QMainWindow):
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
         super().resizeEvent(a0)
-        # for child in self.findChildren((GudrunFileTextArea, InstrumentPane, BeamPane)):
-        #     child.updateArea()

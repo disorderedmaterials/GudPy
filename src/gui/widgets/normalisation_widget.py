@@ -4,6 +4,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
 
+
 class NormalisationWidget(QWidget):
     """
     Class to represent a NormalisationWidget. Inherits QWidget.
@@ -21,10 +22,13 @@ class NormalisationWidget(QWidget):
     initComponents()
         Loads UI file, and then populates data from the Normalisation.
     """
+
     def __init__(self, normalisation, parent=None):
         """
-        Constructs all the necessary attributes for the NormalisationWidget object.
-        Calls the initComponents method, to load the UI file and populate data.
+        Constructs all the necessary attributes
+        for the NormalisationWidget object.
+        Calls the initComponents method,
+        to load the UI file and populate data.
         Parameters
         ----------
         normalisation : Normalisation
@@ -37,10 +41,10 @@ class NormalisationWidget(QWidget):
 
         super(NormalisationWidget, self).__init__(parent=self.parent)
         self.initComponents()
-    
+
     def handlePeriodNoChanged(self, value):
         self.normalisation.periodNo = value
-    
+
     def handlePeriodNoBgChanged(self, value):
         self.normalisation.periodNoBg = value
 
@@ -48,8 +52,10 @@ class NormalisationWidget(QWidget):
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
 
     def handleDensityUnitsChanged(self, index):
-        self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(index)
-    
+        self.normalisation.densityUnits = (
+            self.densityUnitsComboBox.itemData(index)
+        )
+
     def handleUpstreamThicknessChanged(self, value):
         self.normalisation.upstreamThickness = value
 
@@ -57,23 +63,25 @@ class NormalisationWidget(QWidget):
         self.normalisation.downstreamThickness = value
 
     def handleTotalCrossSectionChanged(self, index):
-        self.normalisation.totalCrossSectionSource = self.totalCrossSectionComboBox.itemData(index)
-    
+        self.normalisation.totalCrossSectionSource = (
+            self.totalCrossSectionComboBox.itemData(index)
+        )
+
     def handleForceCorrectionsSwitched(self, state):
         self.normalisation.forceCalculationsOfCorrections = state
 
     def handlePlaczekCorrectionChanged(self, value):
         self.normalisation.tempForNormalisationPC = value
-    
+
     def handleDifferentialCrossSectionFileChanged(self, value):
         self.normalisation.normalisationDifferentialCrossSectionFile = value
-    
+
     def handleNormalisationDegreeSmoothingChanged(self, value):
         self.normalisation.normalisationDegreeSmoothing = value
-    
+
     def handleLowerlimitSmoothingChanged(self, value):
         self.normalisation.lowerLimitSmoothedNormalisation = value
-    
+
     def handleMinNormalisationSignalChanged(self, value):
         self.normalisation.minNormalisationSignalBR = value
 
@@ -92,7 +100,9 @@ class NormalisationWidget(QWidget):
 
     def updateDataFilesList(self):
         self.dataFilesList.clear()
-        self.dataFilesList.addItems([df for df in self.normalisation.dataFiles.dataFiles])
+        self.dataFilesList.addItems(
+            [df for df in self.normalisation.dataFiles.dataFiles]
+        )
 
     def handleBgDataFilesAltered(self, item):
         index = item.row()
@@ -109,8 +119,9 @@ class NormalisationWidget(QWidget):
 
     def updateBgDataFilesList(self):
         self.backgroundDataFilesList.clear()
-        self.backgroundDataFilesList.addItems([df for df in self.normalisation.dataFilesBg.dataFiles])
-
+        self.backgroundDataFilesList.addItems(
+            [df for df in self.normalisation.dataFilesBg.dataFiles]
+        )
 
     def initComponents(self):
         """
@@ -123,36 +134,70 @@ class NormalisationWidget(QWidget):
         uic.loadUi(uifile, self)
 
         self.updateDataFilesList()
-        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.dataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.dataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
         self.updateBgDataFilesList()
-        self.backgroundDataFilesList.itemChanged.connect(self.handleBgDataFilesAltered)
-        self.backgroundDataFilesList.itemEntered.connect(self.handleBgDataFileInserted) 
+        self.backgroundDataFilesList.itemChanged.connect(
+            self.handleBgDataFilesAltered
+        )
+        self.backgroundDataFilesList.itemEntered.connect(
+            self.handleBgDataFileInserted
+        )
 
         self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
-        self.backgroundPeriodNoSpinBox.setValue(self.normalisation.periodNumberBg)
-        self.backgroundPeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoBgChanged)
+        self.backgroundPeriodNoSpinBox.setValue(
+            self.normalisation.periodNumberBg
+        )
+        self.backgroundPeriodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoBgChanged
+        )
 
         for i, element in enumerate(self.normalisation.composition.elements):
-            self.normalisationCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
-            self.normalisationCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
-            self.normalisationCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
-        
+            self.normalisationCompositionTable.setItem(
+                i, 0, QTableWidgetItem(str(element.atomicSymbol))
+            )
+            self.normalisationCompositionTable.setItem(
+                i, 1, QTableWidgetItem(str(element.massNo))
+            )
+            self.normalisationCompositionTable.setItem(
+                i, 2, QTableWidgetItem(str(element.abundance))
+            )
+
         self.geometryComboBox.addItems([g.name for g in Geometry])
-        self.geometryComboBox.setCurrentIndex(self.normalisation.geometry.value)
-        self.geometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
+        self.geometryComboBox.setCurrentIndex(
+            self.normalisation.geometry.value
+        )
+        self.geometryComboBox.currentIndexChanged.connect(
+            self.handleGeometryChanged
+        )
 
         self.densitySpinBox.setValue(self.normalisation.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
-        self.densityUnitsComboBox.setCurrentIndex(self.normalisation.densityUnits.value)
-        self.densityUnitsComboBox.currentIndexChanged.connect(self.handleDensityUnitsChanged)
+        self.densityUnitsComboBox.setCurrentIndex(
+            self.normalisation.densityUnits.value
+        )
+        self.densityUnitsComboBox.currentIndexChanged.connect(
+            self.handleDensityUnitsChanged
+        )
 
-        self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
-        self.upstreamSpinBox.valueChanged.connect(self.handleUpstreamThicknessChanged)
-        self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
-        self.upstreamSpinBox.valueChanged.connect(self.handleDownstreamThicknessChanged)
+        self.upstreamSpinBox.setValue(
+            self.normalisation.upstreamThickness
+        )
+        self.upstreamSpinBox.valueChanged.connect(
+            self.handleUpstreamThicknessChanged
+        )
+        self.downstreamSpinBox.setValue(
+            self.normalisation.downstreamThickness
+        )
+        self.upstreamSpinBox.valueChanged.connect(
+            self.handleDownstreamThicknessChanged
+        )
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.normalisation.totalCrossSectionSource:
@@ -163,17 +208,45 @@ class NormalisationWidget(QWidget):
             index = 2
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
-        self.totalCrossSectionComboBox.currentIndexChanged.connect(self.handleTotalCrossSectionChanged)
+        self.totalCrossSectionComboBox.currentIndexChanged.connect(
+            self.handleTotalCrossSectionChanged
+        )
 
-        self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.normalisation.forceCalculationOfCorrections else Qt.Unchecked)
-        self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
-        self.placzekCorrectionSpinBox.setValue(self.normalisation.tempForNormalisationPC)
-        self.placzekCorrectionSpinBox.valueChanged.connect(self.handlePlaczekCorrectionChanged)
-        self.differentialCrossSectionFileLineEdit.setText(self.normalisation.normalisationDifferentialCrossSectionFile)
-        self.differentialCrossSectionFileLineEdit.textChanged.connect(self.handleDifferentialCrossSectionFileChanged)
-        self.smoothingDegreeSpinBox.setValue(self.normalisation.normalisationDegreeSmoothing)
-        self.smoothingDegreeSpinBox.valueChanged.connect(self.handleNormalisationDegreeSmoothingChanged)
-        self.lowerLimitSmoothingSpinBox.setValue(self.normalisation.lowerLimitSmoothedNormalisation)
-        self.lowerLimitSmoothingSpinBox.valueChanged.connect(self.handleLowerlimitSmoothingChanged)
-        self.minNormalisationSignalSpinBox.setValue(self.normalisation.minNormalisationSignalBR)
-        self.minNormalisationSignalSpinBox.valueChanged.connect(self.handleMinNormalisationSignalChanged)
+        self.forceCorrectionsCheckBox.setChecked(
+            Qt.Checked
+            if self.normalisation.forceCalculationOfCorrections
+            else Qt.Unchecked
+        )
+        self.forceCorrectionsCheckBox.stateChanged.connect(
+            self.handleForceCorrectionsSwitched
+        )
+        self.placzekCorrectionSpinBox.setValue(
+            self.normalisation.tempForNormalisationPC
+        )
+        self.placzekCorrectionSpinBox.valueChanged.connect(
+            self.handlePlaczekCorrectionChanged
+        )
+        self.differentialCrossSectionFileLineEdit.setText(
+            self.normalisation.normalisationDifferentialCrossSectionFile
+        )
+        self.differentialCrossSectionFileLineEdit.textChanged.connect(
+            self.handleDifferentialCrossSectionFileChanged
+        )
+        self.smoothingDegreeSpinBox.setValue(
+            self.normalisation.normalisationDegreeSmoothing
+        )
+        self.smoothingDegreeSpinBox.valueChanged.connect(
+            self.handleNormalisationDegreeSmoothingChanged
+        )
+        self.lowerLimitSmoothingSpinBox.setValue(
+            self.normalisation.lowerLimitSmoothedNormalisation
+        )
+        self.lowerLimitSmoothingSpinBox.valueChanged.connect(
+            self.handleLowerlimitSmoothingChanged
+        )
+        self.minNormalisationSignalSpinBox.setValue(
+            self.normalisation.minNormalisationSignalBR
+        )
+        self.minNormalisationSignalSpinBox.valueChanged.connect(
+                self.handleMinNormalisationSignalChanged
+        )

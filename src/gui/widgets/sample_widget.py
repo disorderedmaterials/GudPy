@@ -1,9 +1,15 @@
-from src.gudrun_classes.enums import Geometry, NormalisationType, OutputUnits, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    Geometry,
+    NormalisationType,
+    OutputUnits,
+    UnitsOfDensity,
+)
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
 from src.gudrun_classes.config import geometry
+
 
 class SampleWidget(QWidget):
     """
@@ -22,6 +28,7 @@ class SampleWidget(QWidget):
     initComponents()
         Loads UI file, and then populates data from the Sample.
     """
+
     def __init__(self, sample, parent=None):
         """
         Constructs all the necessary attributes for the SampleWidget object.
@@ -38,7 +45,7 @@ class SampleWidget(QWidget):
 
         super(SampleWidget, self).__init__(parent=self.parent)
         self.initComponents()
-    
+
     def handlePeriodNoChanged(self, value):
         self.sample.periodNo = value
 
@@ -48,10 +55,10 @@ class SampleWidget(QWidget):
     def handleGeometryChanged(self, index):
         self.sample.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
-    
+
     def handleUpstreamThicknessChanged(self, value):
         self.sample.upstreamThickness = value
-    
+
     def handleDownstreamThicknessChanged(self, value):
         self.sample.downstreamThickness = value
 
@@ -59,53 +66,55 @@ class SampleWidget(QWidget):
         self.sample.densityUnits = self.densityUnitsComboBox.itemData(index)
 
     def handleCrossSectionSourceChanged(self, index):
-        self.sample.totalCrossSectionSource = self.totalCrossSectionComboBox.itemData(index)
+        self.sample.totalCrossSectionSource = (
+            self.totalCrossSectionComboBox.itemData(index)
+        )
 
     def handleTweakFactorChanged(self, value):
         self.sample.tweakFactor = value
-    
+
     def handleTopHatWidthChanged(self, value):
         self.sample.topHatW = value
-    
+
     def handleMinChanged(self, value):
         self.sample.minRadFT = value
-    
+
     def handleMaxChanged(self, value):
         self.sample.maxRadFT = value
-    
+
     def handleBroadeningFunctionChanged(self, value):
         self.sample.grBroadening = value
-    
+
     def handleBroadeningPowerChanged(self, value):
         self.sample.powerForBroadening = value
-    
+
     def handleStepSizeChanged(self, value):
         self.sample.stepSize = value
-    
+
     def handleSelfScatteringFileChanged(self, value):
         self.sample.fileSelfScattering = value
-    
+
     def handleNormaliseToChanged(self, index):
         self.sample.normaliseTo = self.normaliseToComboBox.itemData(index)
-    
+
     def handleOutputUnitsChanged(self, index):
         self.sample.outputUnits = self.outputUnitsComboBox.itemData(index)
 
     def handleAngleOfRotationChanged(self, value):
         self.sample.angleOfRotation = value
-    
+
     def handleSampleWidthChanged(self, value):
         self.sample.sampleWidth = value
-    
+
     def handleSampleHeightChanged(self, value):
         self.sample.sampleHeight = value
 
     def handleCorrectionFactorChanged(self, value):
         self.sample.normalisationCorrectionFactor = value
-    
+
     def handleScatteringFractionChanged(self, value):
         self.sample.scatteringFraction = value
-    
+
     def handleAttenuationCoefficientChanged(self, value):
         self.sample.attenuationCoefficient = value
 
@@ -124,7 +133,9 @@ class SampleWidget(QWidget):
 
     def updateDataFilesList(self):
         self.dataFilesList.clear()
-        self.dataFilesList.addItems([df for df in self.sample.dataFiles.dataFiles])    
+        self.dataFilesList.addItems(
+            [df for df in self.sample.dataFiles.dataFiles]
+        )
 
     def initComponents(self):
         """
@@ -143,32 +154,51 @@ class SampleWidget(QWidget):
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
 
-        self.forceCorrectionsCheckBox.setChecked(Qt.Checked if self.sample.forceCalculationOfCorrections else Qt.Unchecked)
-        self.forceCorrectionsCheckBox.stateChanged.connect(self.handleForceCorrectionsSwitched)
-
+        self.forceCorrectionsCheckBox.setChecked(
+            Qt.Checked
+            if self.sample.forceCalculationOfCorrections
+            else Qt.Unchecked
+        )
+        self.forceCorrectionsCheckBox.stateChanged.connect(
+            self.handleForceCorrectionsSwitched
+        )
 
         for i, element in enumerate(self.sample.composition.elements):
-            self.sampleCompositionTable.setItem(i, 0, QTableWidgetItem(str(element.atomicSymbol)))
-            self.sampleCompositionTable.setItem(i, 1, QTableWidgetItem(str(element.massNo)))
-            self.sampleCompositionTable.setItem(i, 2, QTableWidgetItem(str(element.abundance)))
+            self.sampleCompositionTable.setItem(
+                i, 0, QTableWidgetItem(str(element.atomicSymbol))
+            )
+            self.sampleCompositionTable.setItem(
+                i, 1, QTableWidgetItem(str(element.massNo))
+            )
+            self.sampleCompositionTable.setItem(
+                i, 2, QTableWidgetItem(str(element.abundance))
+            )
 
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
-        self.geometryComboBox.currentIndexChanged.connect(self.handleGeometryChanged)
+        self.geometryComboBox.currentIndexChanged.connect(
+            self.handleGeometryChanged
+        )
 
         self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
-        self.upstreamSpinBox.valueChanged.connect(self.handleUpstreamThicknessChanged)
+        self.upstreamSpinBox.valueChanged.connect(
+            self.handleUpstreamThicknessChanged
+        )
         self.downstreamSpinBox.setValue(self.sample.downstreamThickness)
-        self.downstreamSpinBox.valueChanged.connect(self.handleDownstreamThicknessChanged)
-
-
+        self.downstreamSpinBox.valueChanged.connect(
+            self.handleDownstreamThicknessChanged
+        )
 
         self.densitySpinBox.setValue(self.sample.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
-        self.densityUnitsComboBox.setCurrentIndex(self.sample.densityUnits.value)
-        self.densityUnitsComboBox.currentIndexChanged.connect(self.handleDensityUnitsChanged)
+        self.densityUnitsComboBox.setCurrentIndex(
+            self.sample.densityUnits.value
+        )
+        self.densityUnitsComboBox.currentIndexChanged.connect(
+            self.handleDensityUnitsChanged
+        )
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.sample.totalCrossSectionSource:
@@ -179,52 +209,89 @@ class SampleWidget(QWidget):
             index = 2
         self.totalCrossSectionComboBox.addItems(crossSectionSources)
         self.totalCrossSectionComboBox.setCurrentIndex(index)
-        self.totalCrossSectionComboBox.currentIndexChanged.connect(self.handleCrossSectionSourceChanged)
+        self.totalCrossSectionComboBox.currentIndexChanged.connect(
+            self.handleCrossSectionSourceChanged
+        )
 
         self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
-        self.tweakFactorSpinBox.valueChanged.connect(self.handleTweakFactorChanged)
+        self.tweakFactorSpinBox.valueChanged.connect(
+            self.handleTweakFactorChanged
+        )
 
         self.topHatWidthSpinBox.setValue(self.sample.topHatW)
-        self.topHatWidthSpinBox.valueChanged.connect(self.handleTopHatWidthChanged)
+        self.topHatWidthSpinBox.valueChanged.connect(
+            self.handleTopHatWidthChanged
+        )
         self.minSpinBox.setValue(self.sample.minRadFT)
         self.minSpinBox.valueChanged.connect(self.handleMinChanged)
         self.maxSpinBox.setValue(self.sample.maxRadFT)
         self.maxSpinBox.valueChanged.connect(self.handleMaxChanged)
 
-
         self.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
-        self.broadeningFunctionSpinBox.valueChanged.connect(self.handleBroadeningFunctionChanged)
+        self.broadeningFunctionSpinBox.valueChanged.connect(
+            self.handleBroadeningFunctionChanged
+        )
         self.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
-        self.broadeningPowerSpinBox.valueChanged.connect(self.handleBroadeningPowerChanged)
+        self.broadeningPowerSpinBox.valueChanged.connect(
+            self.handleBroadeningPowerChanged
+        )
 
         self.stepSizeSpinBox.setValue(self.sample.stepSize)
         self.stepSizeSpinBox.valueChanged.connect(self.handleStepSizeChanged)
 
         self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
-        self.scatteringFileLineEdit.textChanged.connect(self.handleSelfScatteringFileChanged)
+        self.scatteringFileLineEdit.textChanged.connect(
+            self.handleSelfScatteringFileChanged
+        )
 
         for n in NormalisationType:
             self.normaliseToComboBox.addItem(n.name, n)
-        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
-        self.normaliseToComboBox.currentIndexChanged.connect(self.handleNormaliseToChanged)
+        self.normaliseToComboBox.setCurrentIndex(
+            self.sample.normaliseTo.value
+        )
+        self.normaliseToComboBox.currentIndexChanged.connect(
+            self.handleNormaliseToChanged
+        )
 
         for u in OutputUnits:
             self.outputUnitsComboBox.addItem(u.name, u)
-        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
-        self.outputUnitsComboBox.currentIndexChanged.connect(self.handleOutputUnitsChanged)
+        self.outputUnitsComboBox.setCurrentIndex(
+            self.sample.outputUnits.value
+        )
+        self.outputUnitsComboBox.currentIndexChanged.connect(
+            self.handleOutputUnitsChanged
+        )
 
         self.geometryInfoStack.setCurrentIndex(geometry.value)
 
         self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
-        self.angleOfRotationSpinBox.valueChanged.connect(self.handleAngleOfRotationChanged)
+        self.angleOfRotationSpinBox.valueChanged.connect(
+            self.handleAngleOfRotationChanged
+        )
         self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
-        self.sampleWidthSpinBox.valueChanged.connect(self.handleSampleWidthChanged)
+        self.sampleWidthSpinBox.valueChanged.connect(
+            self.handleSampleWidthChanged
+        )
         self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
-        self.sampleHeightSpinBox.valueChanged.connect(self.handleSampleHeightChanged)
+        self.sampleHeightSpinBox.valueChanged.connect(
+            self.handleSampleHeightChanged
+        )
 
-        self.correctionFactorSpinBox.setValue(self.sample.normalisationCorrectionFactor)
-        self.correctionFactorSpinBox.valueChanged.connect(self.handleCorrectionFactorChanged)
-        self.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
-        self.scatteringFractionSpinBox.valueChanged.connect(self.handleScatteringFractionChanged)
-        self.attenuationCoefficientSpinBox.setValue(self.sample.attenuationCoefficient)
-        self.attenuationCoefficientSpinBox.valueChanged.connect(self.handleAttenuationCoefficientChanged)
+        self.correctionFactorSpinBox.setValue(
+            self.sample.normalisationCorrectionFactor
+        )
+        self.correctionFactorSpinBox.valueChanged.connect(
+            self.handleCorrectionFactorChanged
+        )
+        self.scatteringFractionSpinBox.setValue(
+            self.sample.scatteringFraction
+        )
+        self.scatteringFractionSpinBox.valueChanged.connect(
+            self.handleScatteringFractionChanged
+        )
+        self.attenuationCoefficientSpinBox.setValue(
+            self.sample.attenuationCoefficient
+        )
+        self.attenuationCoefficientSpinBox.valueChanged.connect(
+            self.handleAttenuationCoefficientChanged
+        )

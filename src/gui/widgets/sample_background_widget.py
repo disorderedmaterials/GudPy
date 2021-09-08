@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 import os
 
+
 class SampleBackgroundWidget(QWidget):
     """
     Class to represent a SampleBackgroundWidget. Inherits QWidget.
@@ -19,10 +20,13 @@ class SampleBackgroundWidget(QWidget):
     initComponents()
         Loads UI file, and then populates data from the SampleBackground.
     """
+
     def __init__(self, sampleBackground, parent=None):
         """
-        Constructs all the necessary attributes for the SampleBackgroundWidget object.
-        Calls the initComponents method, to load the UI file and populate data.
+        Constructs all the necessary attributes
+        for the SampleBackgroundWidget object.
+        Calls the initComponents method,
+        to load the UI file and populate data.
         Parameters
         ----------
         sampleBackground : SampleBackground
@@ -51,11 +55,13 @@ class SampleBackgroundWidget(QWidget):
 
     def updateDataFilesList(self):
         self.dataFilesList.clear()
-        self.dataFilesList.addItems([df for df in self.sampleBackground.dataFiles.dataFiles])    
+        self.dataFilesList.addItems(
+            [df for df in self.sampleBackground.dataFiles.dataFiles]
+        )
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
-    
+
     def initComponents(self):
         """
         Loads the UI file for the SampleBackgroundWidget object,
@@ -63,7 +69,9 @@ class SampleBackgroundWidget(QWidget):
         corresponding data from the attributes of the SampleBackground object.
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/sampleBackgroundWidget.ui")
+        uifile = os.path.join(
+            current_dir, "ui_files/sampleBackgroundWidget.ui"
+        )
         uic.loadUi(uifile, self)
 
         self.updateDataFilesList()
