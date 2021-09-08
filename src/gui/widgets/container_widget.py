@@ -63,6 +63,9 @@ class ContainerWidget(QWidget):
 
     def handleSampleWidthChanged(self, value):
         self.container.sampleWidth = value
+
+    def handleSampleHeightChanged(self, value):
+        self.container.sampleHeight = value
     
     def handleScatteringFractionChanged(self, value):
         self.container.scatteringFraction = value
@@ -124,10 +127,14 @@ class ContainerWidget(QWidget):
         self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
         self.tweakFactorSpinBox.valueChanged.connect(self.handleTweakFactorChanged)
 
+
+        self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
         self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(self.handleAngleOfRotationChanged)
         self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
         self.sampleWidthSpinBox.valueChanged.connect(self.handleSampleWidthChanged)
+        self.sampleHeightSpinBox.setValue(self.container.sampleHeight)
+        self.sampleHeightSpinBox.valueChanged.connect(self.handleSampleHeightChanged)
 
         self.scatteringFractionSpinBox.setValue(self.container.scatteringFraction)
         self.scatteringFractionSpinBox.valueChanged.connect(self.handleScatteringFractionChanged)

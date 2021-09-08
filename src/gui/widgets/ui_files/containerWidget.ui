@@ -18,8 +18,8 @@
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>618</width>
-     <height>529</height>
+     <width>685</width>
+     <height>535</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -151,7 +151,7 @@
          <string>Configuration</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="2" column="0" colspan="2">
+         <item row="1" column="0" colspan="2">
           <widget class="QLabel" name="totalCrossSectionLabel">
            <property name="minimumSize">
             <size>
@@ -164,7 +164,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="2">
+         <item row="1" column="2">
           <widget class="QComboBox" name="totalCrossSectionComboBox">
            <property name="minimumSize">
             <size>
@@ -180,20 +180,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="angleOfRotationLabel">
-           <property name="minimumSize">
-            <size>
-             <width>113</width>
-             <height>21</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Angle of Rotation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="tweakFactorLabel">
            <property name="minimumSize">
             <size>
@@ -206,7 +193,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="scatteringFractionLabel">
            <property name="minimumSize">
             <size>
@@ -219,40 +206,78 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
+         <item row="5" column="0" colspan="2">
           <widget class="QLabel" name="attenuationCoefficientLabel">
            <property name="text">
             <string>Attenuation Coefficient</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="sampleWidthLabel">
-           <property name="minimumSize">
-            <size>
-             <width>104</width>
-             <height>21</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Sample Width</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="sampleWidthSpinBox"/>
-         </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
          </item>
-         <item row="5" column="2">
+         <item row="4" column="2">
           <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
          </item>
-         <item row="6" column="2">
+         <item row="5" column="2">
           <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QStackedWidget" name="geometryInfoStack">
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="page">
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0" colspan="2">
+              <widget class="QLabel" name="angleOfRotationLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>113</width>
+                 <height>21</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Angle of Rotation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="sampleWidthLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>104</width>
+                 <height>21</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Sample Width</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" colspan="2">
+              <widget class="QDoubleSpinBox" name="sampleWidthSpinBox"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_2">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="sampleHeightLabel">
+               <property name="text">
+                <string>Sample Height</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="sampleHeightSpinBox"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
          </item>
         </layout>
        </widget>
