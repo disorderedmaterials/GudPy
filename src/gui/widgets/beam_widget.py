@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.config import geometry
 
 class BeamWidget(QWidget):
     """
@@ -39,6 +40,8 @@ class BeamWidget(QWidget):
     
     def handleGeometryChanged(self, index):
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
+        global geometry
+        geometry = self.beam.sampleGeometry
 
     def handleAbsorptionStepSizeChanged(self, value):
         self.beam.stepSizeAbsorption = value
