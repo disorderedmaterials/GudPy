@@ -4,7 +4,7 @@ from src.gudrun_classes.enums import (
     OutputUnits,
     UnitsOfDensity,
 )
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
@@ -137,6 +137,13 @@ class SampleWidget(QWidget):
             [df for df in self.sample.dataFiles.dataFiles]
         )
 
+    def addFiles(self, target, title, regex):
+        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        for path in paths:
+            if path:
+                target.addItem(path)
+                self.handleDataFileInserted(target.item(target.count()-1))
+
     def initComponents(self):
         """
         Loads the UI file for the SampleWidget object,
@@ -153,7 +160,13 @@ class SampleWidget(QWidget):
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
-
+        self.addDataFileButton.clicked.connect(
+            lambda : self.addFiles(
+                self.dataFilesList,
+                "Add data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+            )
+        )
         self.forceCorrectionsCheckBox.setChecked(
             Qt.Checked
             if self.sample.forceCalculationOfCorrections

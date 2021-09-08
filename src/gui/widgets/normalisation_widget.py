@@ -156,7 +156,7 @@ class NormalisationWidget(QWidget):
         )
 
         self.addDataFileButton.clicked.connect(
-            lambda : self.addDataFiless(
+            lambda : self.addDataFiles(
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"

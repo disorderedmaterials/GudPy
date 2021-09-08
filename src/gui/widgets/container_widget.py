@@ -1,5 +1,5 @@
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.config import geometry
@@ -97,6 +97,13 @@ class ContainerWidget(QWidget):
             [df for df in self.container.dataFiles.dataFiles]
         )
 
+    def addFiles(self, target, title, regex):
+        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        for path in paths:
+            if path:
+                target.addItem(path)
+                self.handleDataFileInserted(target.item(target.count()-1))
+
     def initComponents(self):
         """
         Loads the UI file for the ContainerWidget object,
@@ -118,7 +125,13 @@ class ContainerWidget(QWidget):
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
-
+        self.addDataFileButton.clicked.connect(
+            lambda : self.addFiles(
+                self.dataFilesList,
+                "Add data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+            )
+        )
         for i, element in enumerate(self.container.composition.elements):
             self.containerCompositionTable.setItem(
                 i, 0, QTableWidgetItem(str(element.atomicSymbol))
