@@ -50,7 +50,9 @@ class InstrumentWidget(QWidget):
         self.instrument.dataFileDir = text
 
     def handleDataFileTypeChanged(self, index):
-        self.instrument.dataFileType = self.dataFileTypeCombo.itemData(index)
+        self.instrument.dataFileType = self.dataFileTypeCombo.itemText(index)
+        self.nexusDefintionFileLineEdit.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
+        self.browseNexusDefinitionButton.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
 
     def handleDetectorCalibrationFileChanged(self, text):
         self.instrument.detectorCalibrationFileName = text
@@ -416,13 +418,16 @@ class InstrumentWidget(QWidget):
         self.nexusDefintionFileLineEdit.setText(
             self.instrument.nxsDefinitionFile
         )
+
+
         self.nexusDefintionFileLineEdit.textChanged.connect(
             self.handleNexusDefinitionFileChanged
         )
 
+        self.nexusDefintionFileLineEdit.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
+        self.browseNexusDefinitionButton.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
+
         self.browseNexusDefinitionButton.clicked.connect(lambda : self.handleBrowse(self.nexusDefinitionFileLineEdit, "NeXus defnition file"))
-
-
 
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
         self.hardGroupEdgesCheckBox.stateChanged.connect(
