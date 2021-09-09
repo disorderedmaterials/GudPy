@@ -193,7 +193,7 @@ class InstrumentWidget(QWidget):
         # Fill the GroupingParameterPanel table.
         for i, row in enumerate(self.instrument.groupingParameterPanel):
             for j, col in enumerate(row):
-                self.groupingParameterTable.setItem(i, j, str(col))
+                self.groupingParameterTable.setItem(i, j, col)
 
     def handleGroupingParameterPanelChanged(self, item):
         value = item.text()

@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 from PyQt5.QtGui import QResizeEvent
-from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.view_input import ViewInput
 from src.gui.widgets.sample_widget import SampleWidget
 from src.gui.widgets.instrument_widget import InstrumentWidget
