@@ -91,9 +91,16 @@ class InstrumentWidget(QWidget):
 
     def handleMaxWavelengthMonNormChanged(self, value):
         self.instrument.wavelengthRangeForMonitorNormalisation = (
-            self.instrument.wavelengthRangeForMonitorNormaliastion[1],
+            self.instrument.wavelengthRangeForMonitorNormalisation[1],
             value,
         )
+
+    def handleSpectrumNumbersIBChanged(self, text):
+        self.instrument.incidentMonitorQuietCountConst = [int(x) for x in text.split()]
+
+    def handleSpectrumNumbersTChanged(self, text):
+        self.instrument.transmissionMonitorQuietCountConst = [int(x) for x in text.split()]
+
 
     def handleIncidentMonitorQuietCountConstChanged(self, value):
         self.instrument.incidentMonitorQuietCountConst = value
@@ -261,9 +268,13 @@ class InstrumentWidget(QWidget):
             spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
         )
 
+        self.spectrumNumbersIBLineEdit.textChanged.connect(self.handleSpectrumNumbersIBChanged)
+
         self.spectrumNumbersTLineEdit.setText(
             spacify(self.instrument.spectrumNumbersForTransmissionMonitor)
         )
+
+        self.spectrumNumbersTLineEdit.textChanged.connect(self.handleSpectrumNumbersTChanged)
 
         self.incidentMonitorQuietCountConstSpinBox.setValue(
             self.instrument.incidentMonitorQuietCountConst
