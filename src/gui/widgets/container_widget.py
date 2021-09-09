@@ -1,3 +1,5 @@
+from src.gudrun_classes.element import Element
+from src.scripts.utils import isnumeric
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
 from PyQt5 import uic
@@ -109,6 +111,29 @@ class ContainerWidget(QWidget):
         dataFiles.dataFiles.remove(remove)
         self.updateDataFilesList()
 
+    def handleElementChanged(self, item):
+        value = item.text()
+        row = item.row()
+        col = item.column()
+        if row < len(self.container.composition.elements):
+            element = self.container.composition.elements[row]
+            attribute = {0: ("atomicSymbol", str), 1 : ("massNo", int), 2 : ("abundance", float)}[col]
+            element.__dict__[attribute[0]] = attribute[1](value)
+            self.container.composition.elements[row] = element
+        else:
+            self.handleElementInserted(item)
+
+    def handleElementInserted(self, item):
+        row = item.row()
+        print(item.text())
+        atomicSymbol = self.containerCompositionTable.itemAt(row, 0).text()
+        massNo = self.containerCompositionTable.itemAt(row, 1).text()
+        abundance = self.containerCompositionTable.itemAt(row, 2).text()
+        if len(atomicSymbol) and isnumeric(massNo) and isnumeric(abundance):
+            print(atomicSymbol, massNo, abundance)
+            element = Element(atomicSymbol, int(massNo), float(abundance))
+            self.container.composition.elements.append(element)
+
     def initComponents(self):
         """
         Loads the UI file for the ContainerWidget object,
@@ -153,6 +178,9 @@ class ContainerWidget(QWidget):
             self.containerCompositionTable.setItem(
                 i, 2, QTableWidgetItem(str(element.abundance))
             )
+        
+        self.containerCompositionTable.itemChanged.connect(self.handleElementChanged)
+        self.containerCompositionTable.itemEntered.connect(self.handleElementInserted)
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)

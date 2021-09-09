@@ -1,3 +1,5 @@
+from src.scripts.utils import isnumeric
+from src.gudrun_classes.element import Element
 from src.gudrun_classes.enums import (
     Geometry,
     NormalisationType,
@@ -149,6 +151,29 @@ class SampleWidget(QWidget):
         dataFiles.dataFiles.remove(remove)
         self.updateDataFilesList()
 
+    def handleElementChanged(self, item):
+        value = item.text()
+        row = item.row()
+        col = item.column()
+        if row < len(self.sample.composition.elements):
+            element = self.sample.composition.elements[row]
+            attribute = {0: ("atomicSymbol", str), 1 : ("massNo", int), 2 : ("abundance", float)}[col]
+            element.__dict__[attribute[0]] = attribute[1](value)
+            self.sample.composition.elements[row] = element
+        else:
+            self.handleElementInserted(item)
+
+    def handleElementInserted(self, item):
+        row = item.row()
+        atomicSymbol = self.sampleCompositionTable.itemAt(row, 0).text()
+        massNo = self.sampleCompositionTable.itemAt(row, 1).text()
+        abundance = self.sampleCompositionTable.itemAt(row, 2).text()
+        if len(atomicSymbol) and isnumeric(massNo) and isnumeric(abundance):
+            print(atomicSymbol, massNo, abundance)
+            element = Element(atomicSymbol, int(massNo), float(abundance))
+            self.sample.composition.elements.append(element)
+
+
     def initComponents(self):
         """
         Loads the UI file for the SampleWidget object,
@@ -197,6 +222,9 @@ class SampleWidget(QWidget):
             self.sampleCompositionTable.setItem(
                 i, 2, QTableWidgetItem(str(element.abundance))
             )
+        self.sampleCompositionTable.itemChanged.connect(self.handleElementChanged)
+        self.sampleCompositionTable.itemEntered.connect(self.handleElementInserted)
+
 
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
