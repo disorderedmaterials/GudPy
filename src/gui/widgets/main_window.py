@@ -17,96 +17,58 @@ from src.gui.widgets.beam_widget import BeamWidget
 from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
 from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
-
+import os
+from PyQt5 import uic
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
         super(GudPyMainWindow, self).__init__()
-
-        self.setGeometry(0, 0, 1366, 768)
-        self.setMinimumHeight(1366)
-        self.setMinimumWidth(768)
         self.setWindowTitle("GudPy")
         self.show()
         self.initComponents()
 
     def initComponents(self):
-        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-        self.objectTree = GudPyTreeView(self, self.gudrunFile)
+        """
+        Loads the UI file for the NormalisationWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Normalisation object.
+        """
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
+        uic.loadUi(uifile, self)
 
-        leftLayout = QVBoxLayout()
-        leftLayout.addWidget(self.objectTree)
-        leftLayout.addStretch(5)
-        leftWidget = QWidget()
-        leftWidget.setLayout(leftLayout)
-        self.stack = QStackedWidget(self)
+        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
+        self.objectTree.buildTree(self.gudrunFile, self)
+
         instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
         normalisationWidget = NormalisationWidget(
             self.gudrunFile.normalisation, self
         )
-        self.stack.addWidget(instrumentWidget)
-        self.stack.addWidget(beamWidget)
-        self.stack.addWidget(normalisationWidget)
+        self.objectStack.addWidget(instrumentWidget)
+        self.objectStack.addWidget(beamWidget)
+        self.objectStack.addWidget(normalisationWidget)
 
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             sampleBackgroundWidget = SampleBackgroundWidget(
                 sampleBackground, self
             )
-            self.stack.addWidget(sampleBackgroundWidget)
+            self.objectStack.addWidget(sampleBackgroundWidget)
 
             for sample in sampleBackground.samples:
                 sampleWidget = SampleWidget(sample, self)
-                self.stack.addWidget(sampleWidget)
+                self.objectStack.addWidget(sampleWidget)
 
                 for container in sample.containers:
                     containerWidget = ContainerWidget(container, self)
-                    self.stack.addWidget(containerWidget)
+                    self.objectStack.addWidget(containerWidget)
 
-        mainLayout = QHBoxLayout()
-        mainLayout.addWidget(leftWidget, 20)
-        mainLayout.addWidget(self.stack, 80)
-        mainWidget = QWidget()
-        mainWidget.setLayout(mainLayout)
-        self.setCentralWidget(mainWidget)
+        self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
+        self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))
 
-        menuBar = self.menuBar()
-        menuBar.setNativeMenuBar(False)
-        runMenu = QMenu("&Run", menuBar)
-        writePurgeFile = QAction("Write Purge File", runMenu)
-        runPurge = QAction("Run Purge", runMenu)
-        runGudrun = QAction("Run Gudrun", runMenu)
-        iterateGudrun = QAction("Iterate Gudrun", runMenu)
-        runMenu.addAction(writePurgeFile)
-        runMenu.addAction(runPurge)
-        runMenu.addAction(runGudrun)
-        runMenu.addAction(iterateGudrun)
-        writePurgeFile.triggered.connect(
-            lambda: PurgeFile(self.gudrunFile).write_out()
-        )
-        runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
-        runGudrun.triggered.connect(lambda: self.gudrunFile.dcs())
-        menuBar.addMenu(runMenu)
-
-        loadMenu = QMenu("&Load", menuBar)
-        loadFile = QAction("Load Input File", loadMenu)
-        loadConfiguration = QAction("Load Configuration", loadMenu)
-        loadMenu.addAction(loadFile)
-        loadMenu.addAction(loadConfiguration)
-        menuBar.addMenu(loadMenu)
-
-        plotMenu = QMenu("&Plot", menuBar)
-        menuBar.addMenu(plotMenu)
-
-        viewMenu = QMenu("&View", menuBar)
-        viewInputFile = QAction("View input file", viewMenu)
-        viewMenu.addAction(viewInputFile)
-        viewInputFile.triggered.connect(
+        self.viewInputFile.triggered.connect(
             lambda: ViewInput(self.gudrunFile, parent=self)
         )
-        menuBar.addMenu(viewMenu)
-
-        self.setMenuBar(menuBar)
 
     def updateFromFile(self):
         self.initComponents()

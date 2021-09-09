@@ -36,7 +36,7 @@ class GudPyTreeView(QTreeView):
         depth in the tree of a QModelIndex object.
     """
 
-    def __init__(self, parent, gudrunFile):
+    def __init__(self, parent):
         """
         Constructs all the necessary attributes for the GudPyTreeView object.
         Calls the makeModel method,
@@ -50,9 +50,9 @@ class GudPyTreeView(QTreeView):
         """
         super(GudPyTreeView, self).__init__(parent)
 
+    def buildTree(self, gudrunFile, sibling):
         self.gudrunFile = gudrunFile
-        self.parent = parent
-
+        self.sibling = sibling
         self.model = QStandardItemModel()
         self.makeModel()
         self.setModel(self.model)
@@ -115,7 +115,7 @@ class GudPyTreeView(QTreeView):
         modelIndex : QModelIndex
             QModelIndex of the QStandardItem that was clicked in the tree view.
         """
-        self.parent.stack.setCurrentIndex(self.absoluteIndex(modelIndex))
+        self.sibling.objectStack.setCurrentIndex(self.absoluteIndex(modelIndex))
 
     def siblings(self, modelIndex):
         """
