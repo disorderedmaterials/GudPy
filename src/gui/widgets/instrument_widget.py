@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QFileDialog
+from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QFileDialog
 from PyQt5 import uic
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
@@ -188,6 +188,23 @@ class InstrumentWidget(QWidget):
     def browseFile(self, title, dir=False):
         filename = QFileDialog.getOpenFileName(self, title, '') if not dir else QFileDialog.getExistingDirectory(self, title, '')
         return filename
+
+    def updateGroupingParameterPanel(self):
+        # Fill the GroupingParameterPanel table.
+        for i, row in enumerate(self.instrument.groupingParameterPanel):
+            for j, col in enumerate(row):
+                self.groupingParameterTable.setItem(i, j, str(col))
+
+    def handleGroupingParameterPanelChanged(self, item):
+        value = item.text()
+        row = item.row()
+        col = item.column()
+        
+        immutableRow = self.instrument.groupingParameterPanel[row]
+        mutableRow = list(immutableRow)
+        mutableRow[col] = float(value)
+        self.instrument.groupingParameterPanel[row] = mutableRow
+        print(self.instrument.groupingParameterPanel)
 
     def initComponents(self):
         """
@@ -444,3 +461,6 @@ class InstrumentWidget(QWidget):
         self.hardGroupEdgesCheckBox.stateChanged.connect(
             self.handleHardGroupEdgesSwitched
         )
+
+        self.updateGroupingParameterPanel()
+        self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)
