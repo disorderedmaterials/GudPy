@@ -1143,6 +1143,68 @@
         <height>111</height>
        </size>
       </property>
+      <property name="rowCount">
+       <number>10</number>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="horizontalHeaderHighlightSections">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderHighlightSections">
+       <bool>false</bool>
+      </attribute>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string/>
+       </property>
+      </row>
       <column>
        <property name="text">
         <string>Group</string>
@@ -1163,6 +1225,11 @@
         <string>Background Factor</string>
        </property>
       </column>
+      <item row="7" column="0">
+       <property name="text">
+        <string/>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="27" column="12" colspan="12">
