@@ -38,7 +38,6 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
 
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-        self.objectTree.buildTree(self.gudrunFile, self)
 
         instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
         beamWidget = BeamWidget(self.gudrunFile.beam, self)
@@ -62,6 +61,9 @@ class GudPyMainWindow(QMainWindow):
                 for container in sample.containers:
                     containerWidget = ContainerWidget(container, self)
                     self.objectStack.addWidget(containerWidget)
+
+        self.objectTree.buildTree(self.gudrunFile, self.objectStack)
+
 
         self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
         self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))

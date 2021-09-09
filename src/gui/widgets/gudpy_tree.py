@@ -17,8 +17,13 @@ class GudPyTreeView(QTreeView):
         Parent widget.
     model : QStandardItemModel
         Model to be used for the tree view.
+    sibling : QStackedWidget
+        Sibling widget to communicate signals and slots to/from.
     Methods
     -------
+    buildTree(gudrunFile, sibling)
+        Builds the tree view from the gudrunFile, pairing
+        the modelIndexes with pages of the sibling QStackedWidget.
     makeModel()
         Creates the model for the tree view from the GudrunFile.
     click(modelIndex)
@@ -38,19 +43,25 @@ class GudPyTreeView(QTreeView):
 
     def __init__(self, parent):
         """
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
+        super(GudPyTreeView, self).__init__(parent)
+
+    def buildTree(self, gudrunFile, sibling):
+        """
         Constructs all the necessary attributes for the GudPyTreeView object.
         Calls the makeModel method,
         to create a QStandardItemModel for the tree view.
         Parameters
         ----------
-        parent : QWidget
-            Parent widget.
         gudrunFile : GudrunFile
-            GudrunFile object to build the tree from.
+            GudrunFile object to create the tree from.
+        sibling : QStackedWidget
+            Sibling widget to communicate signals and slots to/from.
         """
-        super(GudPyTreeView, self).__init__(parent)
-
-    def buildTree(self, gudrunFile, sibling):
         self.gudrunFile = gudrunFile
         self.sibling = sibling
         self.model = QStandardItemModel()
@@ -108,14 +119,14 @@ class GudPyTreeView(QTreeView):
     def click(self, modelIndex):
         """
         Slot method for clicked signal of GudPyTreeView.
-        Sets the current index of the parent's QStackedWidget
+        Sets the current index of the sibling QStackedWidget
         to the absolute index of the modelIndex.
         Parameters
         ----------
         modelIndex : QModelIndex
             QModelIndex of the QStandardItem that was clicked in the tree view.
         """
-        self.sibling.objectStack.setCurrentIndex(self.absoluteIndex(modelIndex))
+        self.sibling.setCurrentIndex(self.absoluteIndex(modelIndex))
 
     def siblings(self, modelIndex):
         """
