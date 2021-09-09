@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QFileDialog
 from PyQt5 import uic
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
@@ -71,6 +71,9 @@ class InstrumentWidget(QWidget):
 
     def handleNeutronScatteringParamsFileChanged(self, text):
         self.instrument.neutronScatteringParametersFile = text
+
+    def handleNexusDefinitionFileChanged(self, text):
+        self.instrument.nxsDefinitionFile = text
 
     def handleHardGroupEdgesSwitched(self, state):
         self.instrument.hardGroupEdges = state
@@ -169,6 +172,13 @@ class InstrumentWidget(QWidget):
 
     def handleSpectrumNumberForOutputDiagChanged(self, value):
         self.instrument.spectrumNumberForOutputDiagnosticFiles = value
+    
+    def handleBrowse(self, target, title, dir=False):
+        target.setText(self.browseFile(title, dir=dir)[0])
+
+    def browseFile(self, title, dir=False):
+        filename = QFileDialog.getOpenFileName(self, title, '') if not dir else QFileDialog.getExistingDirectory(self, title, '')
+        return filename
 
     def initComponents(self):
         """
@@ -192,6 +202,8 @@ class InstrumentWidget(QWidget):
             self.handleDataFileDirectoryChanged
         )
 
+        self.browseDataFileDirectoryButton.clicked.connect(lambda : self.handleBrowse(self.dataFileDirectoryLineEdit, "Data file directory", dir=True))
+
         dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
         self.dataFileTypeCombo.addItems(dataFileTypes)
         self.dataFileTypeCombo.setCurrentIndex(
@@ -207,6 +219,9 @@ class InstrumentWidget(QWidget):
         self.detCalibrationLineEdit.textChanged.connect(
             self.handleDetectorCalibrationFileChanged
         )
+
+        self.browseDetCalibrationButton.clicked.connect(lambda : self.handleBrowse(self.detCalibrationLineEdit, "Detector calibration file"))
+
 
         self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
         self.phiValuesColumnSpinBox.valueChanged.connect(
@@ -224,6 +239,8 @@ class InstrumentWidget(QWidget):
         self.deadtimeFileLineEdit.textChanged.connect(
             self.handleDeadtimeFileChanged
         )
+
+        self.browseDeadtimeFileButton.clicked.connect(lambda : self.handleBrowse(self.deadtimeFileLineEdit, "Deadtime constants file"))
 
         self.minWavelengthMonNormSpinBox.setValue(
             self.instrument.wavelengthRangeForMonitorNormalisation[0]
@@ -393,6 +410,20 @@ class InstrumentWidget(QWidget):
         self.neutronScatteringParamsFileLineEdit.textChanged.connect(
             self.handleNeutronScatteringParamsFileChanged
         )
+
+        self.browseNeutronScatteringParamsButton.clicked.connect(lambda : self.handleBrowse(self.neutronScatteringParamsFileLineEdit, "Neutron scattering parameters file"))
+
+        self.nexusDefintionFileLineEdit.setText(
+            self.instrument.nxsDefinitionFile
+        )
+        self.nexusDefintionFileLineEdit.textChanged.connect(
+            self.handleNexusDefinitionFileChanged
+        )
+
+        self.browseNexusDefinitionButton.clicked.connect(lambda : self.handleBrowse(self.nexusDefinitionFileLineEdit, "NeXus defnition file"))
+
+
+
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
         self.hardGroupEdgesCheckBox.stateChanged.connect(
             self.handleHardGroupEdgesSwitched
