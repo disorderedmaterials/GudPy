@@ -31,446 +31,306 @@
      <property name="title">
       <string>Beam Configuration</string>
      </property>
-     <widget class="QPushButton" name="browseIncidentBeamSpectrumParametersButton">
-      <property name="geometry">
-       <rect>
-        <x>502</x>
-        <y>183</y>
-        <width>80</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>89</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Browse</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="incidentBeamSpectrumParametersLineEdit">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>187</y>
-        <width>113</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>113</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-     <widget class="QLabel" name="scatteredBeamEdgesLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>153</y>
-        <width>191</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>191</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>191</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Scattered beam edges [cm]</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="incidentBeamEdgesLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>123</y>
-        <width>181</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>181</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>181</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Incident beam edges [cm]</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="sampleDependantBackgroundFactorLabel">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>221</y>
-        <width>131</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>131</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>131</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>sample dependant</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="stepSizeLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>63</y>
-        <width>171</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>171</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>171</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Step size for: absorption</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="shieldingLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>251</y>
-        <width>196</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Shielding attenuation coefficient</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="backgroundFactorLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>221</y>
-        <width>200</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>200</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Background factor: overall</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="msCalculationStepSizeLabel">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>64</y>
-        <width>106</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>106</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>111</width>
-        <height>17</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>m.s. calculation</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="incidentBeamSpectrumParametersLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>187</y>
-        <width>220</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>251</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Incident beam spectrum parameters</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="sampleGeometryLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>33</y>
-        <width>133</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>133</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Sample Geometry</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="sampleGeometryComboBox">
-      <property name="geometry">
-       <rect>
-        <x>145</x>
-        <y>31</y>
-        <width>133</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>133</width>
-        <height>0</height>
-       </size>
-      </property>
-     </widget>
-     <widget class="QLabel" name="noSlicesLabel">
-      <property name="geometry">
-       <rect>
-        <x>457</x>
-        <y>63</y>
-        <width>57</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>71</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>no. slices</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="stepForCorrectionsLabel">
-      <property name="geometry">
-       <rect>
-        <x>15</x>
-        <y>94</y>
-        <width>170</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>201</width>
-        <height>17</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Angular step for corrections</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="absorptionStepSizeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>243</x>
-        <y>63</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="msCalculationStepSizeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>406</x>
-        <y>63</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="noSlicesSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>535</x>
-        <y>63</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="stepForCorrectionsSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>93</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>123</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>345</x>
-        <y>123</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>406</x>
-        <y>123</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>457</x>
-        <y>123</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>294</x>
-        <y>153</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>345</x>
-        <y>153</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>406</x>
-        <y>153</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>457</x>
-        <y>153</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="overallBackgroundFactorSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>243</x>
-        <y>221</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="sampleDependantBackgroundFactorSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>457</x>
-        <y>221</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="shieldingSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>243</x>
-        <y>251</y>
-        <width>41</width>
-        <height>19</height>
-       </rect>
-      </property>
-     </widget>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="3">
+       <widget class="QSpinBox" name="stepForCorrectionsSpinBox"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="backgroundFactorLabel">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Background factor: overall</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>69</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="7">
+       <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox"/>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="msCalculationStepSizeLabel">
+        <property name="minimumSize">
+         <size>
+          <width>106</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>111</width>
+          <height>17</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>m.s. calculation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="5">
+       <widget class="QLabel" name="sampleDependantBackgroundFactorLabel">
+        <property name="minimumSize">
+         <size>
+          <width>131</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>131</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>sample dependant</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="4">
+       <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>69</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="5">
+       <widget class="QDoubleSpinBox" name="shieldingSpinBox"/>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QLabel" name="scatteredBeamEdgesLabel">
+        <property name="minimumSize">
+         <size>
+          <width>191</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>191</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Scattered beam edges [cm]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="8">
+       <widget class="QDoubleSpinBox" name="sampleDependantBackgroundFactorSpinBox"/>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QLabel" name="incidentBeamEdgesLabel">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>181</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Incident beam edges [cm]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="sampleGeometryLabel">
+        <property name="minimumSize">
+         <size>
+          <width>133</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Sample Geometry</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="4">
+       <widget class="QDoubleSpinBox" name="overallBackgroundFactorSpinBox"/>
+      </item>
+      <item row="4" column="5">
+       <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>69</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0" colspan="5">
+       <widget class="QLabel" name="shieldingLabel">
+        <property name="maximumSize">
+         <size>
+          <width>230</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Shielding attenuation coefficient</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>69</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="7">
+       <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox"/>
+      </item>
+      <item row="1" column="8">
+       <widget class="QSpinBox" name="noSlicesSpinBox"/>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QLabel" name="stepSizeLabel">
+        <property name="minimumSize">
+         <size>
+          <width>171</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>171</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Step size for: absorption</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLabel" name="noSlicesLabel">
+        <property name="maximumSize">
+         <size>
+          <width>71</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>no. slices</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="8">
+       <widget class="QPushButton" name="browseIncidentBeamSpectrumParametersButton">
+        <property name="maximumSize">
+         <size>
+          <width>89</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox"/>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="stepForCorrectionsLabel">
+        <property name="maximumSize">
+         <size>
+          <width>201</width>
+          <height>17</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Angular step for corrections</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="2">
+       <widget class="QComboBox" name="sampleGeometryComboBox">
+        <property name="minimumSize">
+         <size>
+          <width>133</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QDoubleSpinBox" name="msCalculationStepSizeSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>69</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QDoubleSpinBox" name="absorptionStepSizeSpinBox"/>
+      </item>
+      <item row="5" column="0" colspan="5">
+       <widget class="QLabel" name="incidentBeamSpectrumParametersLabel">
+        <property name="minimumSize">
+         <size>
+          <width>251</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>251</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Incident beam spectrum parameters</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="5" colspan="3">
+       <widget class="QLineEdit" name="incidentBeamSpectrumParametersLineEdit">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -496,10 +356,10 @@
       <property name="rowCount">
        <number>10</number>
       </property>
-      <attribute name="horizontalHeaderDefaultSectionSize">
+      <attribute name="horizontalHeaderMinimumSectionSize">
        <number>52</number>
       </attribute>
-      <attribute name="horizontalHeaderMinimumSectionSize">
+      <attribute name="horizontalHeaderDefaultSectionSize">
        <number>52</number>
       </attribute>
       <row>
