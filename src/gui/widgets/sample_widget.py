@@ -157,7 +157,11 @@ class SampleWidget(QWidget):
         col = item.column()
         if row < len(self.sample.composition.elements):
             element = self.sample.composition.elements[row]
-            attribute = {0: ("atomicSymbol", str), 1 : ("massNo", int), 2 : ("abundance", float)}[col]
+            attribute = {
+                0: ("atomicSymbol", str),
+                1: ("massNo", int),
+                2: ("abundance", float)
+            }[col]
             element.__dict__[attribute[0]] = attribute[1](value)
             self.sample.composition.elements[row] = element
         else:
@@ -172,7 +176,6 @@ class SampleWidget(QWidget):
             print(atomicSymbol, massNo, abundance)
             element = Element(atomicSymbol, int(massNo), float(abundance))
             self.sample.composition.elements.append(element)
-
 
     def initComponents(self):
         """
@@ -191,14 +194,15 @@ class SampleWidget(QWidget):
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
-            lambda : self.addFiles(
+            lambda: self.addFiles(
                 self.dataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
             )
         )
         self.removeDataFileButton.clicked.connect(
-            lambda : self.removeFile(
+            lambda: self.removeFile(
                 self.dataFilesList,
                 self.sample.dataFiles
             )
@@ -222,9 +226,12 @@ class SampleWidget(QWidget):
             self.sampleCompositionTable.setItem(
                 i, 2, QTableWidgetItem(str(element.abundance))
             )
-        self.sampleCompositionTable.itemChanged.connect(self.handleElementChanged)
-        self.sampleCompositionTable.itemEntered.connect(self.handleElementInserted)
-
+        self.sampleCompositionTable.itemChanged.connect(
+            self.handleElementChanged
+        )
+        self.sampleCompositionTable.itemEntered.connect(
+            self.handleElementInserted
+        )
 
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)

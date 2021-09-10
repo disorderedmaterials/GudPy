@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QMessageBox,
-    QScrollArea,
 )
 from PyQt5.QtGui import QResizeEvent
 from src.gui.widgets.view_input import ViewInput
@@ -16,6 +15,7 @@ from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
 import os
 from PyQt5 import uic
+
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -34,9 +34,11 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
 
         # self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-        
+
         if self.gudrunFile:
-            instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
+            instrumentWidget = InstrumentWidget(
+                self.gudrunFile.instrument, self
+            )
             beamWidget = BeamWidget(self.gudrunFile.beam, self)
             normalisationWidget = NormalisationWidget(
                 self.gudrunFile.normalisation, self
@@ -61,24 +63,31 @@ class GudPyMainWindow(QMainWindow):
 
             self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
-            self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
-            self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))
+            self.runPurge.triggered.connect(
+                lambda: PurgeFile(self.gudrunFile).purge()
+            )
+            self.runGudrun.triggered.connect(
+                lambda: self.gudrunFile.dcs(path="gudpy.txt")
+            )
 
             self.viewInputFile.triggered.connect(
                 lambda: ViewInput(self.gudrunFile, parent=self)
             )
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
-    
+
     def loadInputFile_(self):
-        filename = QFileDialog.getOpenFileName(self, "Select Input file for GudPy", ".", "GudPy input (*.txt)")[0] 
+        filename = QFileDialog.getOpenFileName(
+            self,
+            "Select Input file for GudPy",
+            ".", "GudPy input (*.txt)"
+        )[0]
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
             except ParserException as e:
                 QMessageBox.critical(self, "GudPy Error", str(e))
             self.initComponents()
-
 
     def updateFromFile(self):
         self.initComponents()

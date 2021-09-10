@@ -130,8 +130,6 @@ class NormalisationWidget(QWidget):
         for path in paths:
             if path:
                 target.addItem(path)
-    
-
 
     def addDataFiles(self, target, title, regex):
         self.addFiles(target, title, regex)
@@ -148,7 +146,7 @@ class NormalisationWidget(QWidget):
     def removeDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
         self.updateDataFilesList()
-    
+
     def removeBgDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
         self.updateBgDataFilesList()
@@ -159,7 +157,11 @@ class NormalisationWidget(QWidget):
         col = item.column()
         if row < len(self.normalisation.composition.elements):
             element = self.normalisation.composition.elements[row]
-            attribute = {0: ("atomicSymbol", str), 1 : ("massNo", int), 2 : ("abundance", float)}[col]
+            attribute = {
+                0: ("atomicSymbol", str),
+                1: ("massNo", int),
+                2: ("abundance", float)
+            }[col]
             element.__dict__[attribute[0]] = attribute[1](value)
             self.normalisation.composition.elements[row] = element
         else:
@@ -195,15 +197,16 @@ class NormalisationWidget(QWidget):
         )
 
         self.addDataFileButton.clicked.connect(
-            lambda : self.addDataFiles(
+            lambda: self.addDataFiles(
                 self.dataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
             )
         )
 
         self.removeDataFileButton.clicked.connect(
-            lambda : self.removeDataFile(
+            lambda: self.removeDataFile(
                 self.dataFilesList,
                 self.normalisation.dataFiles
             )
@@ -218,15 +221,16 @@ class NormalisationWidget(QWidget):
         )
 
         self.addBackgroundDataFileButton.clicked.connect(
-            lambda : self.addBgDataFiles(
+            lambda: self.addBgDataFiles(
                 self.backgroundDataFilesList,
                 "Add background data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
             )
         )
 
         self.removeBackgroundDataFileButton.clicked.connect(
-            lambda : self.removeBgDataFile(
+            lambda: self.removeBgDataFile(
                 self.backgroundDataFilesList,
                 self.normalisation.dataFilesBg
             )
@@ -251,9 +255,13 @@ class NormalisationWidget(QWidget):
             self.normalisationCompositionTable.setItem(
                 i, 2, QTableWidgetItem(str(element.abundance))
             )
-        
-        self.normalisationCompositionTable.itemChanged.connect(self.handleElementChanged)
-        self.normalisationCompositionTable.itemEntered.connect(self.handleElementInserted)
+
+        self.normalisationCompositionTable.itemChanged.connect(
+            self.handleElementChanged
+        )
+        self.normalisationCompositionTable.itemEntered.connect(
+            self.handleElementInserted
+        )
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(
             self.normalisation.geometry.value

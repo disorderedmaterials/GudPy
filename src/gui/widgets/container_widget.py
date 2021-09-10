@@ -117,7 +117,11 @@ class ContainerWidget(QWidget):
         col = item.column()
         if row < len(self.container.composition.elements):
             element = self.container.composition.elements[row]
-            attribute = {0: ("atomicSymbol", str), 1 : ("massNo", int), 2 : ("abundance", float)}[col]
+            attribute = {
+                0: ("atomicSymbol", str),
+                1: ("massNo", int),
+                2: ("abundance", float)
+            }[col]
             element.__dict__[attribute[0]] = attribute[1](value)
             self.container.composition.elements[row] = element
         else:
@@ -156,14 +160,15 @@ class ContainerWidget(QWidget):
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
-            lambda : self.addFiles(
+            lambda: self.addFiles(
                 self.dataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
             )
         )
         self.removeDataFileButton.clicked.connect(
-            lambda : self.removeFile(
+            lambda: self.removeFile(
                 self.dataFilesList,
                 self.container.dataFiles
             )
@@ -178,9 +183,13 @@ class ContainerWidget(QWidget):
             self.containerCompositionTable.setItem(
                 i, 2, QTableWidgetItem(str(element.abundance))
             )
-        
-        self.containerCompositionTable.itemChanged.connect(self.handleElementChanged)
-        self.containerCompositionTable.itemEntered.connect(self.handleElementInserted)
+
+        self.containerCompositionTable.itemChanged.connect(
+            self.handleElementChanged
+        )
+        self.containerCompositionTable.itemEntered.connect(
+            self.handleElementInserted
+        )
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)

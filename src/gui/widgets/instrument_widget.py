@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDoubleSpinBox, QTableWidgetItem, QWidget, QFileDialog
+from PyQt5.QtWidgets import QWidget, QFileDialog
 from PyQt5 import uic
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
@@ -51,8 +51,12 @@ class InstrumentWidget(QWidget):
 
     def handleDataFileTypeChanged(self, index):
         self.instrument.dataFileType = self.dataFileTypeCombo.itemText(index)
-        self.nexusDefintionFileLineEdit.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
-        self.browseNexusDefinitionButton.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
+        self.nexusDefintionFileLineEdit.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
+        self.browseNexusDefinitionButton.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
 
     def handleDetectorCalibrationFileChanged(self, text):
         self.instrument.detectorCalibrationFileName = text
@@ -96,11 +100,14 @@ class InstrumentWidget(QWidget):
         )
 
     def handleSpectrumNumbersIBChanged(self, text):
-        self.instrument.incidentMonitorQuietCountConst = [int(x) for x in text.split()]
+        self.instrument.incidentMonitorQuietCountConst = (
+            [int(x) for x in text.split()]
+        )
 
     def handleSpectrumNumbersTChanged(self, text):
-        self.instrument.transmissionMonitorQuietCountConst = [int(x) for x in text.split()]
-
+        self.instrument.transmissionMonitorQuietCountConst = (
+            [int(x) for x in text.split()]
+        )
 
     def handleIncidentMonitorQuietCountConstChanged(self, value):
         self.instrument.incidentMonitorQuietCountConst = value
@@ -181,25 +188,32 @@ class InstrumentWidget(QWidget):
 
     def handleSpectrumNumberForOutputDiagChanged(self, value):
         self.instrument.spectrumNumberForOutputDiagnosticFiles = value
-    
+
     def handleBrowse(self, target, title, dir=False):
         target.setText(self.browseFile(title, dir=dir)[0])
 
     def browseFile(self, title, dir=False):
-        filename = QFileDialog.getOpenFileName(self, title, '') if not dir else QFileDialog.getExistingDirectory(self, title, '')
+        filename = QFileDialog.getOpenFileName(
+            self,
+            title,
+            ''
+        ) if not dir else (
+            QFileDialog.getExistingDirectory(
+                self,
+                title,
+                ''
+            )
+        )
         return filename
 
     def updateGroupingParameterPanel(self):
         # Fill the GroupingParameterPanel table.
-        self.instrument.groupingParameterPanel = [(1, 0.1, 0.2, 2.0)]
-        self.groupingParameterTable.makeModel(self.instrument.groupingParameterPanel)
-        return
-        for i, row in enumerate(self.instrument.groupingParameterPanel):
-            for j, col in enumerate(row):
-                # print(self.groupingParameterTable.item(i,j))
-                self.groupingParameterTable.setValue((i, j, col))
+        self.groupingParameterTable.makeModel(
+            self.instrument.groupingParameterPanel
+        )
 
     def handleGroupingParameterPanelChanged(self, item):
+        print(item)
         pass
         print("changfed")
         value = item.text()
@@ -220,8 +234,6 @@ class InstrumentWidget(QWidget):
                     # len(self.groupingParameterTable.item(row, j).value())
                 ]
             )
-            print(newRow)
-
 
     def initComponents(self):
         """
@@ -245,7 +257,13 @@ class InstrumentWidget(QWidget):
             self.handleDataFileDirectoryChanged
         )
 
-        self.browseDataFileDirectoryButton.clicked.connect(lambda : self.handleBrowse(self.dataFileDirectoryLineEdit, "Data file directory", dir=True))
+        self.browseDataFileDirectoryButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.dataFileDirectoryLineEdit,
+                "Data file directory",
+                dir=True
+            )
+        )
 
         dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
         self.dataFileTypeCombo.addItems(dataFileTypes)
@@ -263,8 +281,12 @@ class InstrumentWidget(QWidget):
             self.handleDetectorCalibrationFileChanged
         )
 
-        self.browseDetCalibrationButton.clicked.connect(lambda : self.handleBrowse(self.detCalibrationLineEdit, "Detector calibration file"))
-
+        self.browseDetCalibrationButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.detCalibrationLineEdit,
+                "Detector calibration file"
+            )
+        )
 
         self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
         self.phiValuesColumnSpinBox.valueChanged.connect(
@@ -283,7 +305,12 @@ class InstrumentWidget(QWidget):
             self.handleDeadtimeFileChanged
         )
 
-        self.browseDeadtimeFileButton.clicked.connect(lambda : self.handleBrowse(self.deadtimeFileLineEdit, "Deadtime constants file"))
+        self.browseDeadtimeFileButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.deadtimeFileLineEdit,
+                "Deadtime constants file"
+            )
+        )
 
         self.minWavelengthMonNormSpinBox.setValue(
             self.instrument.wavelengthRangeForMonitorNormalisation[0]
@@ -302,13 +329,17 @@ class InstrumentWidget(QWidget):
             spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
         )
 
-        self.spectrumNumbersIBLineEdit.textChanged.connect(self.handleSpectrumNumbersIBChanged)
+        self.spectrumNumbersIBLineEdit.textChanged.connect(
+            self.handleSpectrumNumbersIBChanged
+        )
 
         self.spectrumNumbersTLineEdit.setText(
             spacify(self.instrument.spectrumNumbersForTransmissionMonitor)
         )
 
-        self.spectrumNumbersTLineEdit.textChanged.connect(self.handleSpectrumNumbersTChanged)
+        self.spectrumNumbersTLineEdit.textChanged.connect(
+            self.handleSpectrumNumbersTChanged
+        )
 
         self.incidentMonitorQuietCountConstSpinBox.setValue(
             self.instrument.incidentMonitorQuietCountConst
@@ -458,27 +489,43 @@ class InstrumentWidget(QWidget):
             self.handleNeutronScatteringParamsFileChanged
         )
 
-        self.browseNeutronScatteringParamsButton.clicked.connect(lambda : self.handleBrowse(self.neutronScatteringParamsFileLineEdit, "Neutron scattering parameters file"))
+        self.browseNeutronScatteringParamsButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.neutronScatteringParamsFileLineEdit,
+                "Neutron scattering parameters file"
+            )
+        )
 
         self.nexusDefintionFileLineEdit.setText(
             self.instrument.nxsDefinitionFile
         )
 
-
         self.nexusDefintionFileLineEdit.textChanged.connect(
             self.handleNexusDefinitionFileChanged
         )
 
-        self.nexusDefintionFileLineEdit.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
-        self.browseNexusDefinitionButton.setEnabled(self.instrument.dataFileType in ["nxs", "NXS"])
+        self.nexusDefintionFileLineEdit.setEnabled(
+            self.instrument.dataFileType
+            in ["nxs", "NXS"]
+        )
+        self.browseNexusDefinitionButton.setEnabled(
+            self.instrument.dataFileType
+            in ["nxs", "NXS"]
+        )
 
-        self.browseNexusDefinitionButton.clicked.connect(lambda : self.handleBrowse(self.nexusDefinitionFileLineEdit, "NeXus defnition file"))
+        self.browseNexusDefinitionButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.nexusDefinitionFileLineEdit,
+                "NeXus defnition file"
+            )
+        )
 
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
         self.hardGroupEdgesCheckBox.stateChanged.connect(
             self.handleHardGroupEdgesSwitched
         )
 
-        # self.groupingParameterTable.model = GroupingParameterModel(self, self.instrument.groupingParameterPanel, ["Group", "XMin", "XMax", "Background Factor"])
+        #  self.groupingParameterTable.model = GroupingParameterModel(self, self.instrument.groupingParameterPanel, ["Group", "XMin", "XMax", "Background Factor"])
         self.updateGroupingParameterPanel()
-        # self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)
+        self.groupingParameterTable.model().dataChanged.connect(self.handleGroupingParameterPanelChanged)
+        #  self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)

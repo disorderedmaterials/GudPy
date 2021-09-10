@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QSpinBox,
-    QStyledItemDelegate,
     QTableView,
     QTableWidget,
 )
@@ -15,23 +14,35 @@ class GudPyTableModel(QAbstractTableModel):
         super(GudPyTableModel, self).__init__(parent=parent)
         self._data = data
         self.headers = headers
-        
+
     def rowCount(self, parent):
         return len(self._data)
-    
+
     def columnCount(self, parent):
         return len(self._data[0]) if self.data else 0
-    
+
     def data(self, index, role):
         row = index.row()
         col = index.column()
-        return self._data[row][col] if (role == Qt.DisplayRole & Qt.EditRole) else None
+        return (
+            self._data[row][col]
+            if (role == Qt.DisplayRole & Qt.EditRole)
+            else None
+        )
 
     def headerData(self, section, orientation, role):
-        return self.headers[section] if orientation == Qt.Horizontal and role == Qt.DisplayRole else QVariant()
+        return (
+            self.headers[section]
+            if (
+                orientation == Qt.Horizontal
+                and role == Qt.DisplayRole
+            )
+            else QVariant()
+        )
 
     def flags(self, parent):
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
+
 
 class GudPyDelegate(QItemDelegate):
 
@@ -51,13 +62,19 @@ class GudPyDelegate(QItemDelegate):
 class GroupingParameterModel(GudPyTableModel):
 
     def __init__(self, data, headers, parent):
-        super(GroupingParameterModel, self).__init__(data, headers, parent)        
+        super(GroupingParameterModel, self).__init__(
+            data, headers, parent
+        )
 
 
 class GroupingParameterDelegate(GudPyDelegate):
 
     def createEditor(self, parent, option, index):
-        editor = QSpinBox(parent) if index.column() == 0 else QDoubleSpinBox(parent)
+        editor = (
+            QSpinBox(parent)
+            if index.column() == 0
+            else QDoubleSpinBox(parent)
+        )
         editor.setMinimum(0)
         editor.setMaximum(100)
         return editor
@@ -70,24 +87,43 @@ class GroupingParameterTable(QTableView):
         super(GroupingParameterTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
-        data = [*data, *[(0, 0.0, 0.0, 0.0) for _ in range(10 - len(data))]] # pad
-        self.setModel(GroupingParameterModel(data, ["Group", "XMin", "XMax", "Background Factor"], self.parent))
-        self.setItemDelegate(GroupingParameterDelegate())    
+        data = [
+            *data,
+            *[
+                (0, 0.0, 0.0, 0.0)
+                for _ in range(10 - len(data))
+            ]
+        ]  # pad
+        self.setModel(
+            GroupingParameterModel(
+                data,
+                ["Group", "XMin", "XMax", "Background Factor"],
+                self.parent
+            )
+        )
+        self.setItemDelegate(GroupingParameterDelegate())
 
 
 class BeamProfileModel(GudPyTableModel):
     pass
 
+
 class BeamProfileDelegate(GudPyDelegate):
     pass
+
 
 class BeamProfileTable(QTableWidget):
 
     def __init__(self, parent):
         self.parent = parent
         super(BeamProfileTable, self).__init__(parent=parent)
-    
+
     def makeModel(self, data):
-        data = [*data, *[0 for _ in range(50 - len(data))]] # pad
+        data = [
+            *data,
+            *[
+                0 for _ in range(50 - len(data))
+            ]
+        ]  # pad or maybe not? since 0 is a valid value?
         self.setModel(BeamProfileModel(data, [], self.parent))
         self.setItemDelegate(BeamProfileDelegate())

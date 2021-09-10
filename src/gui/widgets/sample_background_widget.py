@@ -90,14 +90,15 @@ class SampleBackgroundWidget(QWidget):
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
-            lambda : self.addFiles(
+            lambda: self.addFiles(
                 self.dataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType} (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
             )
         )
         self.removeDataFileButton.clicked.connect(
-            lambda : self.removeFile(
+            lambda: self.removeFile(
                 self.dataFilesList,
                 self.sampleBackground.dataFiles
             )
