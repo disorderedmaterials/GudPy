@@ -54,7 +54,7 @@ class GroupingParameterModel(GudPyTableModel):
         super(GroupingParameterModel, self).__init__(data, headers, parent)        
 
 
-class GroupingParameterDelegate(QItemDelegate):
+class GroupingParameterDelegate(GudPyDelegate):
 
     def createEditor(self, parent, option, index):
         editor = QSpinBox(parent) if index.column() == 0 else QDoubleSpinBox(parent)
