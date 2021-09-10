@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import (
 )
 
 
-class GroupingParameterModel(QAbstractTableModel):
+class GudPyTableModel(QAbstractTableModel):
 
     def __init__(self, data, headers, parent):
-        super(GroupingParameterModel, self).__init__(parent=parent)
+        super(GudPyTableModel, self).__init__(parent=parent)
         self._data = data
         self.headers = headers
         
@@ -33,14 +33,10 @@ class GroupingParameterModel(QAbstractTableModel):
     def flags(self, parent):
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
 
-
-class GroupingParameterDelegate(QItemDelegate):
+class GudPyDelegate(QItemDelegate):
 
     def createEditor(self, parent, option, index):
-        editor = QSpinBox(parent) if index.column() == 0 else QDoubleSpinBox(parent)
-        editor.setMinimum(0)
-        editor.setMaximum(100)
-        return editor
+        return super(GudPyDelegate, self).createEditor(parent, option, index)
 
     def setEditorData(self, editor, index):
         value = index.model().data(index, Qt.EditRole)
@@ -50,6 +46,22 @@ class GroupingParameterDelegate(QItemDelegate):
         editor.interpretText()
         value = editor.value()
         model.setData(index, value, Qt.EditRole)
+
+
+class GroupingParameterModel(GudPyTableModel):
+
+    def __init__(self, data, headers, parent):
+        super(GroupingParameterModel, self).__init__(data, headers, parent)        
+
+
+class GroupingParameterDelegate(QItemDelegate):
+
+    def createEditor(self, parent, option, index):
+        editor = QSpinBox(parent) if index.column() == 0 else QDoubleSpinBox(parent)
+        editor.setMinimum(0)
+        editor.setMaximum(100)
+        return editor
+
 
 class GroupingParameterTable(QTableView):
 
@@ -63,5 +75,19 @@ class GroupingParameterTable(QTableView):
         self.setItemDelegate(GroupingParameterDelegate())    
 
 
-class BeamProfileTable(QTableWidget):
+class BeamProfileModel(GudPyTableModel):
     pass
+
+class BeamProfileDelegate(GudPyDelegate):
+    pass
+
+class BeamProfileTable(QTableWidget):
+
+    def __init__(self, parent):
+        self.parent = parent
+        super(BeamProfileTable, self).__init__(parent=parent)
+    
+    def makeModel(self, data):
+        data = [*data, *[0 for _ in range(50 - len(data))]] # pad
+        self.setModel(BeamProfileModel(data, [], self.parent))
+        self.setItemDelegate(BeamProfileDelegate())
