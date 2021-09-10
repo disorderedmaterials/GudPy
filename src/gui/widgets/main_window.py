@@ -1,7 +1,9 @@
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
+from src.gudrun_classes.exception import ParserException
 from PyQt5.QtWidgets import (
     QFileDialog,
     QMainWindow,
+    QMessageBox,
     QScrollArea,
 )
 from PyQt5.QtGui import QResizeEvent
@@ -73,7 +75,10 @@ class GudPyMainWindow(QMainWindow):
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(self, "Select Input file for GudPy", ".", "GudPy input (*.txt)")[0] 
         if filename:
-            self.gudrunFile = GudrunFile(filename)
+            try:
+                self.gudrunFile = GudrunFile(filename)
+            except ParserException as e:
+                QMessageBox.critical(self, "GudPy Error", str(e))
             self.initComponents()
 
 
