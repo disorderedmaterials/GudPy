@@ -1081,6 +1081,39 @@
         <height>113</height>
        </size>
       </property>
+      <property name="rowCount">
+       <number>10</number>
+      </property>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <column>
+       <property name="text">
+        <string>Group</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>XMin</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Xmax</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Background Factor</string>
+       </property>
+      </column>
      </widget>
     </item>
     <item row="15" column="0" colspan="2">
