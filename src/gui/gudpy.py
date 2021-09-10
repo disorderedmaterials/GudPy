@@ -18,7 +18,6 @@ class GudPy(QApplication):
 
 
 def main(argv):
-    print(sys.path)
     GudPy(argv)
 
 

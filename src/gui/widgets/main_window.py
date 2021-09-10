@@ -1,6 +1,8 @@
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from PyQt5.QtWidgets import (
+    QFileDialog,
     QMainWindow,
+    QScrollArea,
 )
 from PyQt5.QtGui import QResizeEvent
 from src.gui.widgets.view_input import ViewInput
@@ -18,6 +20,7 @@ class GudPyMainWindow(QMainWindow):
         super(GudPyMainWindow, self).__init__()
         self.setWindowTitle("GudPy")
         self.show()
+        self.gudrunFile = None
         self.initComponents()
 
     def initComponents(self):
@@ -30,39 +33,49 @@ class GudPyMainWindow(QMainWindow):
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         uic.loadUi(uifile, self)
 
-        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-
-        instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
-        beamWidget = BeamWidget(self.gudrunFile.beam, self)
-        normalisationWidget = NormalisationWidget(
-            self.gudrunFile.normalisation, self
-        )
-        self.objectStack.addWidget(instrumentWidget)
-        self.objectStack.addWidget(beamWidget)
-        self.objectStack.addWidget(normalisationWidget)
-
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            sampleBackgroundWidget = SampleBackgroundWidget(
-                sampleBackground, self
+        # self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
+        
+        if self.gudrunFile:
+            instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
+            beamWidget = BeamWidget(self.gudrunFile.beam, self)
+            normalisationWidget = NormalisationWidget(
+                self.gudrunFile.normalisation, self
             )
-            self.objectStack.addWidget(sampleBackgroundWidget)
+            self.objectStack.addWidget(instrumentWidget)
+            self.objectStack.addWidget(beamWidget)
+            self.objectStack.addWidget(normalisationWidget)
 
-            for sample in sampleBackground.samples:
-                sampleWidget = SampleWidget(sample, self)
-                self.objectStack.addWidget(sampleWidget)
+            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+                sampleBackgroundWidget = SampleBackgroundWidget(
+                    sampleBackground, self
+                )
+                self.objectStack.addWidget(sampleBackgroundWidget)
 
-                for container in sample.containers:
-                    containerWidget = ContainerWidget(container, self)
-                    self.objectStack.addWidget(containerWidget)
+                for sample in sampleBackground.samples:
+                    sampleWidget = SampleWidget(sample, self)
+                    self.objectStack.addWidget(sampleWidget)
 
-        self.objectTree.buildTree(self.gudrunFile, self.objectStack)
+                    for container in sample.containers:
+                        containerWidget = ContainerWidget(container, self)
+                        self.objectStack.addWidget(containerWidget)
 
-        self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
-        self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))
+            self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
-        self.viewInputFile.triggered.connect(
-            lambda: ViewInput(self.gudrunFile, parent=self)
-        )
+            self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
+            self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))
+
+            self.viewInputFile.triggered.connect(
+                lambda: ViewInput(self.gudrunFile, parent=self)
+            )
+
+        self.loadInputFile.triggered.connect(self.loadInputFile_)
+    
+    def loadInputFile_(self):
+        filename = QFileDialog.getOpenFileName(self, "Select Input file for GudPy", ".", "GudPy input (*.txt)")[0] 
+        if filename:
+            self.gudrunFile = GudrunFile(filename)
+            self.initComponents()
+
 
     def updateFromFile(self):
         self.initComponents()
