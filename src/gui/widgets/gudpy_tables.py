@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QAbstractTableModel, Qt
+from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt
 from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
@@ -27,6 +27,9 @@ class GroupingParameterModel(QAbstractTableModel):
         col = index.column()
         return self._data[row][col] if role == Qt.DisplayRole else None
 
+    def headerData(self, section, orientation, role):
+        return self.headers[section] if orientation == Qt.Horizontal and role == Qt.DisplayRole else QVariant()
+
     def flags(self, parent):
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
 
@@ -42,7 +45,6 @@ class GroupingParameterDelegate(QItemDelegate):
     def setEditorData(self, editor, model, index):
         editor.interpretText()
         value = editor.value()
-
         model.setData(index, value, Qt.EditRole)
 
 class GroupingParameterTable(QTableView):
@@ -50,10 +52,9 @@ class GroupingParameterTable(QTableView):
     def __init__(self, parent):
         self.parent = parent
         super(GroupingParameterTable, self).__init__(parent=parent)
-        # self.initComponents()
-    
+        self.setItemDelegate(GroupingParameterDelegate())    
+
     def makeModel(self, data):
-        self.setItemDelegate(GroupingParameterDelegate())
         data = [*data, *[(0, 0.0, 0.0, 0.0) for _ in range(10 - len(data))]]
         self.setModel(GroupingParameterModel(data, ["Group", "XMin", "XMax", "Background Factor"], self.parent))
     
