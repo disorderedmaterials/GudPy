@@ -1,12 +1,6 @@
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from PyQt5.QtWidgets import (
-    QAction,
-    QHBoxLayout,
     QMainWindow,
-    QMenu,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
 )
 from PyQt5.QtGui import QResizeEvent
 from src.gui.widgets.view_input import ViewInput
@@ -62,7 +56,6 @@ class GudPyMainWindow(QMainWindow):
                     self.objectStack.addWidget(containerWidget)
 
         self.objectTree.buildTree(self.gudrunFile, self.objectStack)
-
 
         self.runPurge.triggered.connect(lambda: PurgeFile(self.gudrunFile).purge())
         self.runGudrun.triggered.connect(lambda: self.gudrunFile.dcs(path="gudpy.txt"))
