@@ -1073,49 +1073,6 @@
       </property>
      </widget>
     </item>
-    <item row="18" column="0" rowspan="4" colspan="9">
-     <widget class="GroupingParameterTable" name="groupingParameterTable">
-      <property name="minimumSize">
-       <size>
-        <width>270</width>
-        <height>113</height>
-       </size>
-      </property>
-      <property name="rowCount">
-       <number>10</number>
-      </property>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <column>
-       <property name="text">
-        <string>Group</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>XMin</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Xmax</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Background Factor</string>
-       </property>
-      </column>
-     </widget>
-    </item>
     <item row="15" column="0" colspan="2">
      <widget class="QRadioButton" name="energyRadioButton">
       <property name="minimumSize">
@@ -1230,13 +1187,23 @@
       </property>
      </widget>
     </item>
+    <item row="18" column="0" rowspan="4" colspan="9">
+     <widget class="GroupingParameterTable" name="groupingParameterTable">
+      <property name="minimumSize">
+       <size>
+        <width>270</width>
+        <height>113</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
    <class>GroupingParameterTable</class>
-   <extends>QTableWidget</extends>
+   <extends>QTableView</extends>
    <header>src.gui.widgets.gudpy_tables</header>
   </customwidget>
  </customwidgets>

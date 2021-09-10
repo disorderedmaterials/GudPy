@@ -27,9 +27,7 @@ class GudPyMainWindow(QMainWindow):
 
     def initComponents(self):
         """
-        Loads the UI file for the NormalisationWidget object,
-        and then populates the child widgets with their
-        corresponding data from the attributes of the Normalisation object.
+        Loads the UI file for the GudPyMainWindow
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")

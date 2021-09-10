@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QFileDialog
+from PyQt5.QtWidgets import QDoubleSpinBox, QTableWidgetItem, QWidget, QFileDialog
 from PyQt5 import uic
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
@@ -191,20 +191,37 @@ class InstrumentWidget(QWidget):
 
     def updateGroupingParameterPanel(self):
         # Fill the GroupingParameterPanel table.
+        self.instrument.groupingParameterPanel = [(1, 0.1, 0.2, 2.0)]
+        self.groupingParameterTable.makeModel(self.instrument.groupingParameterPanel)
+        return
         for i, row in enumerate(self.instrument.groupingParameterPanel):
             for j, col in enumerate(row):
-                self.groupingParameterTable.setItem(i, j, col)
+                # print(self.groupingParameterTable.item(i,j))
+                self.groupingParameterTable.setValue((i, j, col))
 
     def handleGroupingParameterPanelChanged(self, item):
+        pass
+        print("changfed")
         value = item.text()
         row = item.row()
         col = item.column()
-        
-        immutableRow = self.instrument.groupingParameterPanel[row]
-        mutableRow = list(immutableRow)
-        mutableRow[col] = float(value)
-        self.instrument.groupingParameterPanel[row] = mutableRow
-        print(self.instrument.groupingParameterPanel)
+        if row < len(self.instrument.groupingParameterPanel):
+            immutableRow = self.instrument.groupingParameterPanel[row]
+            mutableRow = list(immutableRow)
+            mutableRow[col] = float(value)
+            self.instrument.groupingParameterPanel[row] = mutableRow
+        else:
+            newRow = tuple(
+                [
+                    float(self.groupingParameterTable.item(row, j).value())
+                    for j in range(3)
+                    if self.groupingParameterTable.item(row, j)
+                    # and
+                    # len(self.groupingParameterTable.item(row, j).value())
+                ]
+            )
+            print(newRow)
+
 
     def initComponents(self):
         """
@@ -462,5 +479,6 @@ class InstrumentWidget(QWidget):
             self.handleHardGroupEdgesSwitched
         )
 
+        # self.groupingParameterTable.model = GroupingParameterModel(self, self.instrument.groupingParameterPanel, ["Group", "XMin", "XMax", "Background Factor"])
         self.updateGroupingParameterPanel()
-        self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)
+        # self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)
