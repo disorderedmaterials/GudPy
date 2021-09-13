@@ -16,10 +16,10 @@ class GudPyTableModel(QAbstractTableModel):
         self.headers = headers
 
     def rowCount(self, parent):
-        return len(self._data) if self.data else 0
+        return len(self._data) if self._data else 0
 
     def columnCount(self, parent):
-        return len(self._data[0]) if self.data else 0
+        return len(self._data[0]) if self._data else 0
 
     def setData(self, index, value, role):
         row = index.row()
@@ -102,13 +102,6 @@ class GroupingParameterTable(QTableView):
         super(GroupingParameterTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
-        data = [
-            *data,
-            *[
-                (0, 0.0, 0.0, 0.0)
-                for _ in range(10 - len(data))
-            ]
-        ]  # pad
         self.setModel(
             GroupingParameterModel(
                 data,
