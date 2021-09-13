@@ -216,7 +216,6 @@ class InstrumentWidget(QWidget):
     
     def handleAddGroupingParameter(self):
         self.groupingParameterTable.insertRow()
-        print(self.instrument.groupingParameterPanel)
 
     def handleRemoveGroupingParameter(self):
         self.groupingParameterTable.removeRow(self.groupingParameterTable.selectionModel().selectedRows())
