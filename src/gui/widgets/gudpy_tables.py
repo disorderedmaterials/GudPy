@@ -16,7 +16,7 @@ class GudPyTableModel(QAbstractTableModel):
         self.headers = headers
 
     def rowCount(self, parent):
-        return len(self._data)
+        return len(self._data) if self.data else 0
 
     def columnCount(self, parent):
         return len(self._data[0]) if self.data else 0

@@ -30,7 +30,7 @@ from src.gudrun_classes.enums import (
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
-from src.gudrun_classes.config import geometry
+from src.gudrun_classes import config
 
 
 class GudrunFile:
@@ -425,8 +425,7 @@ class GudrunFile:
             self.beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
 
             # Set the global geometry.
-            global geometry
-            geometry = self.beam.sampleGeometry
+            config.geometry = self.beam.sampleGeometry
 
             # For single integer attributes,
             # we extract the zeroth int from the line.

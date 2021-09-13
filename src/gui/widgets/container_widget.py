@@ -4,7 +4,7 @@ from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
 from PyQt5 import uic
 import os
-from src.gudrun_classes.config import geometry
+from src.gudrun_classes import config
 
 
 class ContainerWidget(QWidget):
@@ -234,7 +234,7 @@ class ContainerWidget(QWidget):
             self.handleTweakFactorChanged
         )
 
-        self.geometryInfoStack.setCurrentIndex(geometry.value)
+        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
         self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(
             self.handleAngleOfRotationChanged
