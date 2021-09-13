@@ -209,7 +209,6 @@ class CompositionModel(GudPyTableModel):
     def setData(self, index, value, role):
         row = index.row()
         col = index.column()
-        print(value)
         if role == Qt.EditRole:
             self._data[row].__dict__[self.attrs[col]] = value
 
@@ -266,9 +265,94 @@ class CompositionTable(QTableView):
         super(CompositionTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
-        print(data)
         self.setModel(CompositionModel(data, ["Element", "Mass No", "Abundance"], self.parent))
         self.setItemDelegate(CompositionDelegate())
+
+    def insertRow(self):
+        self.model().insertRow()
+
+    def removeRow(self, rows):
+        for _row in rows:
+            self.model().removeRow(_row.row())
+
+class ExponentialModel(GudPyTableModel):
+    def __init__(self, data, headers, parent):
+        super(ExponentialModel, self).__init__(
+            data, headers, parent
+        )
+
+    def columnCount(self, parent):
+        return 2
+
+    def setData(self, index, value, role):
+        row = index.row()
+        col = index.column()
+        mutable = list(self._data[row])
+        mutable[col] = value
+        if role == Qt.EditRole:
+            self._data[row] = tuple(mutable)
+class ExponentialDelegate(GudPyDelegate):
+
+    def createEditor(self, parent, option, index):
+        editor = QDoubleSpinBox(parent)
+        editor.setMinimum(0)
+        editor.setMaximum(100)
+        return editor
+
+
+class ExponentialTable(QTableView):
+
+    def __init__(self, parent):
+        self.parent = parent
+        super(ExponentialTable, self).__init__(parent=parent)
+
+    def makeModel(self, data):
+        self.setModel(ExponentialModel(data, ["Amplitudate", "Decay [1/A]"], self.parent))
+        self.setItemDelegate(ExponentialDelegate())
+
+    def insertRow(self):
+        self.model().insertRow()
+
+    def removeRow(self, rows):
+        for _row in rows:
+            self.model().removeRow(_row.row())
+
+class ResonanceModel(GudPyTableModel):
+    def __init__(self, data, headers, parent):
+        super(ResonanceModel, self).__init__(
+            data, headers, parent
+        )
+
+    def columnCount(self, parent):
+        return 2
+
+    def setData(self, index, value, role):
+        row = index.row()
+        col = index.column()
+        mutable = list(self._data[row])
+        mutable[col] = value
+        if role == Qt.EditRole:
+            self._data[row] = tuple(mutable)
+
+
+class ResonanceDelegate(GudPyDelegate):
+
+    def createEditor(self, parent, option, index):
+        editor = QDoubleSpinBox(parent)
+        editor.setMinimum(0)
+        editor.setMaximum(100)
+        return editor
+
+
+class ResonanceTable(QTableView):
+
+    def __init__(self, parent):
+        self.parent = parent
+        super(ResonanceTable, self).__init__(parent=parent)
+
+    def makeModel(self, data):
+        self.setModel(ResonanceModel(data, ["Wavelength min", "Wavelength max"], self.parent))
+        self.setItemDelegate(ResonanceDelegate())
 
     def insertRow(self):
         self.model().insertRow()

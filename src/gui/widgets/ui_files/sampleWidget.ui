@@ -427,14 +427,14 @@
     <rect>
      <x>9</x>
      <y>467</y>
-     <width>631</width>
+     <width>650</width>
      <height>376</height>
     </rect>
    </property>
    <property name="title">
     <string>Advanced</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout_3">
+   <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="QLabel" name="periodNoLabel">
       <property name="text">
@@ -452,7 +452,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="3">
+    <item row="1" column="1" colspan="2">
      <widget class="QLineEdit" name="scatteringFileLineEdit">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -474,7 +474,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="5">
+    <item row="1" column="6" colspan="2">
      <widget class="QPushButton" name="browseScatteringFileButton">
       <property name="text">
        <string>Browse</string>
@@ -504,7 +504,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="4">
+    <item row="3" column="5">
      <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
     </item>
     <item row="4" column="0" colspan="2">
@@ -526,10 +526,10 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="4">
+    <item row="4" column="5">
      <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
     </item>
-    <item row="5" column="0" colspan="6">
+    <item row="5" column="0" colspan="5">
      <widget class="QStackedWidget" name="geometryInfoStack">
       <property name="currentIndex">
        <number>1</number>
@@ -616,7 +616,7 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="3" colspan="2">
+    <item row="6" column="4" colspan="2">
      <widget class="QLabel" name="resonanceValuesLabel">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -629,8 +629,8 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="0" colspan="3">
-     <widget class="QTableWidget" name="exponentialValuesTable">
+    <item row="7" column="0" rowspan="2" colspan="3">
+     <widget class="ExponentialTable" name="exponentialValuesTable">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -643,23 +643,29 @@
         <height>100</height>
        </size>
       </property>
-      <attribute name="horizontalHeaderStretchLastSection">
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <attribute name="verticalHeaderCascadingSectionResizes">
        <bool>true</bool>
       </attribute>
-      <column>
-       <property name="text">
-        <string>Amplitude</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Decay [1/A]</string>
-       </property>
-      </column>
      </widget>
     </item>
-    <item row="7" column="3" colspan="3">
-     <widget class="QTableWidget" name="resonanceValuesTable">
+    <item row="7" column="3">
+     <widget class="QPushButton" name="insertExponentialButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="4" rowspan="2" colspan="3">
+     <widget class="ResonanceTable" name="resonanceValuesTable">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -672,37 +678,63 @@
         <height>100</height>
        </size>
       </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>true</bool>
-      </attribute>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>128</number>
       </attribute>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>128</number>
+       <number>57</number>
       </attribute>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>
       </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
+      <attribute name="verticalHeaderCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderMinimumSectionSize">
        <number>50</number>
       </attribute>
-      <attribute name="verticalHeaderShowSortIndicator" stdset="0">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderStretchLastSection">
-       <bool>false</bool>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>Min Wavelength</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Max Wavelength</string>
-       </property>
-      </column>
+     </widget>
+    </item>
+    <item row="7" column="7">
+     <widget class="QPushButton" name="insertResonanceButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="3">
+     <widget class="QPushButton" name="removeExponentialButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="7">
+     <widget class="QPushButton" name="removeResonanceButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
      </widget>
     </item>
    </layout>
@@ -711,6 +743,16 @@
  <customwidgets>
   <customwidget>
    <class>CompositionTable</class>
+   <extends>QTableView</extends>
+   <header>src.gui.widgets.gudpy_tables</header>
+  </customwidget>
+  <customwidget>
+   <class>ExponentialTable</class>
+   <extends>QTableView</extends>
+   <header>src.gui.widgets.gudpy_tables</header>
+  </customwidget>
+  <customwidget>
+   <class>ResonanceTable</class>
    <extends>QTableView</extends>
    <header>src.gui.widgets.gudpy_tables</header>
   </customwidget>

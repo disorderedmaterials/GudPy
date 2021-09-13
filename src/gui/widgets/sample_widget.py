@@ -164,7 +164,29 @@ class SampleWidget(QWidget):
     def handleRemoveElement(self):
         self.sampleCompositionTable.removeRow(self.sampleCompositionTable.selectionModel().selectedRows())
 
+    def updateExponentialTable(self):
 
+        self.exponentialValuesTable.makeModel(
+            self.sample.exponentialValues
+        )
+    
+    def updateResonanceTable(self):
+
+        self.resonanceValuesTable.makeModel(
+            self.sample.resonanceValues
+        )
+
+    def handleInsertExponentialValue(self):
+        self.exponentialValuesTable.insertRow()
+
+    def handleRemoveExponentialValue(self):
+        self.exponentialValuesTable.removeRow(self.exponentialValuesTable.selectionModel().selectedRows())
+    
+    def handleInsertResonanceValue(self):
+        self.resonanceValuesTable.insertRow()
+
+    def handleRemoveResonanceValue(self):
+        self.resonanceValuesTable.removeRow(self.resonanceValuesTable.selectionModel().selectedRows())
 
     def initComponents(self):
         """
@@ -331,3 +353,11 @@ class SampleWidget(QWidget):
         self.updateCompositionTable()
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
+
+        self.updateExponentialTable()
+        self.insertExponentialButton.clicked.connect(self.handleInsertExponentialValue)
+        self.removeExponentialButton.clicked.connect(self.handleRemoveExponentialValue)
+
+        self.updateResonanceTable()
+        self.insertResonanceButton.clicked.connect(self.handleInsertResonanceValue)
+        self.removeResonanceButton.clicked.connect(self.handleRemoveResonanceValue)
