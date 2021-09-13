@@ -1,5 +1,6 @@
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
+from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
     QFileDialog,
     QMainWindow,
@@ -75,12 +76,11 @@ class GudPyMainWindow(QMainWindow):
             )
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
+        self.objectStack.currentChanged.connect(self.cascadeGeometries)
 
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(
-            self,
-            "Select Input file for GudPy",
-            ".", "GudPy input (*.txt)"
+            self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
         )[0]
         if filename:
             try:
@@ -91,6 +91,13 @@ class GudPyMainWindow(QMainWindow):
 
     def updateFromFile(self):
         self.initComponents()
+    
+    def cascadeGeometries(self):
+        for i in range(self.objectStack.count()):
+            target = self.objectStack.widget(i)
+            if isinstance(target, (NormalisationWidget, SampleWidget, ContainerWidget)):
+                target.geometryComboBox.setCurrentIndex(config.geometry.value)
+
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
