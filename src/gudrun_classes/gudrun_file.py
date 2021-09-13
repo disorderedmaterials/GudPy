@@ -592,7 +592,7 @@ class GudrunFile:
             if (
                 (
                     self.normalisation.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or self.normalisation.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -953,7 +953,7 @@ class GudrunFile:
             if (
                 (
                     container.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or container.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
