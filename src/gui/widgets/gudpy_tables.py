@@ -21,6 +21,13 @@ class GudPyTableModel(QAbstractTableModel):
     def columnCount(self, parent):
         return len(self._data[0]) if self.data else 0
 
+    def setData(self, index, value, role):
+        row = index.row()
+        col = index.column()
+        if role == Qt.EditRole:
+            self._data[row][col] = value
+    
+
     def data(self, index, role):
         row = index.row()
         col = index.column()
