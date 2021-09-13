@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QSpinBox,
     QTableView,
-    QTableWidget,
 )
 
 from src.gudrun_classes.element import Element
