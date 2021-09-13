@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
 from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
@@ -46,6 +46,16 @@ class GudPyTableModel(QAbstractTableModel):
             else QVariant()
         )
 
+    def insertRow(self):
+        self.beginInsertRows(QModelIndex(), self.rowCount(self), self.rowCount(self))
+        self._data.append((0, 0., 0., 0.))
+        self.endInsertRows()
+            
+    def removeRow(self, index):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._data.pop(index)
+        self.endRemoveRows()
+
     def flags(self, parent):
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
 
@@ -62,9 +72,11 @@ class GudPyDelegate(QItemDelegate):
 
     def setModelData(self, editor, model, index):
         editor.interpretText()
-        value = editor.value()
-        model.setData(index, value, Qt.EditRole)
-
+        try:
+            value = editor.value()
+            model.setData(index, value, Qt.EditRole)
+        except:
+            model.setData(index, 0, Qt.EditRole)
 
 class GroupingParameterModel(GudPyTableModel):
 
@@ -111,6 +123,14 @@ class GroupingParameterTable(QTableView):
         )
         self.setItemDelegate(GroupingParameterDelegate())
 
+    def insertRow(self):
+        self.model().insertRow()
+        print("Insert row!")
+
+    def removeRow(self, rows):
+        print(rows)
+        for _row in rows:
+            self.model().removeRow(_row.row())
 
 class BeamProfileModel(GudPyTableModel):
     pass
