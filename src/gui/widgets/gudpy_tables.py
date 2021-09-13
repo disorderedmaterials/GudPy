@@ -86,6 +86,9 @@ class GroupingParameterModel(GudPyTableModel):
             data, headers, parent
         )
 
+    def columnCount(self, parent):
+        return 4
+
     def setData(self, index, value, role):
         row = index.row()
         col = index.column()
@@ -137,9 +140,6 @@ class BeamProfileModel(GudPyTableModel):
         super(BeamProfileModel, self).__init__(
             data, headers, parent
         )
-
-    def rowCount(self, parent):
-        return len(self._data) if self._data else 0
 
     def columnCount(self, parent):
         return 5
