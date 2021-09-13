@@ -93,31 +93,16 @@ class BeamWidget(QWidget):
         self.beam.shieldingAttenuationCoefficient = value
 
     def updateBeamProfileValues(self):
-        # Fill the Beam Profile Values table.
-        for i, val in enumerate(self.beam.beamProfileValues):
-            # Integer division by 5 of the current
-            # beam profile values index gives the row.
-            # The current beam profile values
-            # index modulo 5 gives the column.
-            self.beamProfileValuesTable.setItem(
-                i // 5, i % 5, QTableWidgetItem(str(val))
-            )
+        # Fill the Beam Profile table.
+        self.beamProfileValuesTable.makeModel(
+            self.beam.beamProfileValues
+        )
 
-    def handleBeamValueChanged(self, item):
-        value = item.text()
-        row = item.row()
-        col = item.column()
+    def handleAddBeamProfileValue(self):
+        self.beamProfileValuesTable.insertRow()
 
-        index = (row * 5) + col
-        if not value:
-            self.beam.beamProfileValues.remove(index)
-        else:
-            self.beam.beamProfileValues[index] = float(value)
-        self.updateBeamProfileValues()
-
-    def handleBeamValueInserted(self, item):
-        value = item.text()
-        self.beam.beamProfileValues.append(float(value))
+    def handleRemoveBeamProfileValue(self):
+        self.beamProfileValuesTable.removeRow(self.beamProfileValuesTable.selectionModel().selectedRows())
 
     def initComponents(self):
         """
@@ -246,9 +231,5 @@ class BeamWidget(QWidget):
         )
 
         self.updateBeamProfileValues()
-        self.beamProfileValuesTable.itemChanged.connect(
-            self.handleBeamValueChanged
-        )
-        self.beamProfileValuesTable.itemEntered.connect(
-            self.handleBeamValueInserted
-        )
+        self.addBeamValueButton.clicked.connect(self.handleAddBeamProfileValue)
+        self.removeBeamValueButton.clicked.connect(self.handleRemoveBeamProfileValue)

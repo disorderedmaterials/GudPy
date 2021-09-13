@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
     QTableView,
     QTableWidget,
 )
+import numpy as np
 
 
 class GudPyTableModel(QAbstractTableModel):
@@ -125,33 +126,65 @@ class GroupingParameterTable(QTableView):
 
     def insertRow(self):
         self.model().insertRow()
-        print("Insert row!")
 
     def removeRow(self, rows):
-        print(rows)
         for _row in rows:
             self.model().removeRow(_row.row())
 
 class BeamProfileModel(GudPyTableModel):
-    pass
+
+    def __init__(self, data, headers, parent):
+        super(BeamProfileModel, self).__init__(
+            data, headers, parent
+        )
+
+    def rowCount(self, parent):
+        return len(self._data) if self._data else 0
+
+    def columnCount(self, parent):
+        return 5
+
+    def headerData(self, section, orientation, role):
+        pass
+
+    def setData(self, index, value, role):
+        row = index.row()
+        if role == Qt.EditRole:
+            self._data[row] = value
+
+    def data(self, index, role):
+        row = index.row()
+        return (
+            self._data[row]
+            if (role == Qt.DisplayRole & Qt.EditRole)
+            else None
+        )
 
 
 class BeamProfileDelegate(GudPyDelegate):
-    pass
+
+    def createEditor(self, parent, option, index):
+        editor = QDoubleSpinBox(parent)
+        editor.setMinimum(0)
+        editor.setMaximum(1)
+        editor.setSingleStep(0.01)
+        return editor
 
 
-class BeamProfileTable(QTableWidget):
+class BeamProfileTable(QTableView):
 
     def __init__(self, parent):
         self.parent = parent
         super(BeamProfileTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
-        data = [
-            *data,
-            *[
-                0 for _ in range(50 - len(data))
-            ]
-        ]  # pad or maybe not? since 0 is a valid value?
         self.setModel(BeamProfileModel(data, [], self.parent))
         self.setItemDelegate(BeamProfileDelegate())
+
+    def insertRow(self):
+        self.model().insertRow()
+
+    def removeRow(self, rows):
+        print(rows)
+        for _row in rows:
+            self.model().removeRow(_row.row())
