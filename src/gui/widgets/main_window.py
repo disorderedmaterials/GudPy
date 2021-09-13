@@ -33,7 +33,7 @@ class GudPyMainWindow(QMainWindow):
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         uic.loadUi(uifile, self)
 
-        # self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
+        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
 
         if self.gudrunFile:
             instrumentWidget = InstrumentWidget(

@@ -107,9 +107,10 @@ class ContainerWidget(QWidget):
                 self.handleDataFileInserted(target.item(target.count()-1))
 
     def removeFile(self, target, dataFiles):
-        remove = target.takeItem(target.currentRow()).text()
-        dataFiles.dataFiles.remove(remove)
-        self.updateDataFilesList()
+        if target.currentIndex().isValid():
+            remove = target.takeItem(target.currentRow()).text()
+            dataFiles.dataFiles.remove(remove)
+            self.updateDataFilesList()
 
     def handleElementChanged(self, item):
         value = item.text()

@@ -67,9 +67,10 @@ class SampleBackgroundWidget(QWidget):
                 self.handleDataFileInserted(target.item(target.count()-1))
 
     def removeFile(self, target, dataFiles):
-        remove = target.takeItem(target.currentRow()).text()
-        dataFiles.dataFiles.remove(remove)
-        self.updateDataFilesList()
+        if target.currentIndex().isValid():
+            remove = target.takeItem(target.currentRow()).text()
+            dataFiles.dataFiles.remove(remove)
+            self.updateDataFilesList()
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value

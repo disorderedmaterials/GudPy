@@ -185,6 +185,5 @@ class BeamProfileTable(QTableView):
         self.model().insertRow()
 
     def removeRow(self, rows):
-        print(rows)
         for _row in rows:
             self.model().removeRow(_row.row())

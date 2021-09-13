@@ -1,7 +1,7 @@
 from src.scripts.utils import isnumeric
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
+from PyQt5.QtWidgets import QFileDialog, QTableWidget, QTableWidgetItem, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
@@ -140,8 +140,9 @@ class NormalisationWidget(QWidget):
         self.handleBgDataFileInserted(target.item(target.count()-1))
 
     def removeFile(self, target, dataFiles):
-        remove = target.takeItem(target.currentRow()).text()
-        dataFiles.dataFiles.remove(remove)
+        if target.currentIndex().isValid():
+            remove = target.takeItem(target.currentRow()).text()
+            dataFiles.dataFiles.remove(remove)
 
     def removeDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
