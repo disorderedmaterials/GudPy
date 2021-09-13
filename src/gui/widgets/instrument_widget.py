@@ -213,29 +213,13 @@ class InstrumentWidget(QWidget):
         self.groupingParameterTable.makeModel(
             self.instrument.groupingParameterPanel
         )
+    
+    def handleAddGroupingParameter(self):
+        self.groupingParameterTable.insertRow()
+        print(self.instrument.groupingParameterPanel)
 
-    def handleGroupingParameterPanelChanged(self, item):
-        print(item)
-        pass
-        print("changfed")
-        value = item.text()
-        row = item.row()
-        col = item.column()
-        if row < len(self.instrument.groupingParameterPanel):
-            immutableRow = self.instrument.groupingParameterPanel[row]
-            mutableRow = list(immutableRow)
-            mutableRow[col] = float(value)
-            self.instrument.groupingParameterPanel[row] = mutableRow
-        else:
-            newRow = tuple(
-                [
-                    float(self.groupingParameterTable.item(row, j).value())
-                    for j in range(3)
-                    if self.groupingParameterTable.item(row, j)
-                    # and
-                    # len(self.groupingParameterTable.item(row, j).value())
-                ]
-            )
+    def handleRemoveGroupingParameter(self):
+        self.groupingParameterTable.removeRow(self.groupingParameterTable.selectionModel().selectedRows())
 
     def initComponents(self):
         """
@@ -527,7 +511,6 @@ class InstrumentWidget(QWidget):
             self.handleHardGroupEdgesSwitched
         )
 
-        #  self.groupingParameterTable.model = GroupingParameterModel(self, self.instrument.groupingParameterPanel, ["Group", "XMin", "XMax", "Background Factor"])
         self.updateGroupingParameterPanel()
-        self.groupingParameterTable.model().dataChanged.connect(self.handleGroupingParameterPanelChanged)
-        #  self.groupingParameterTable.itemChanged.connect(self.handleGroupingParameterPanelChanged)
+        self.addGroupingParameterButton.clicked.connect(self.handleAddGroupingParameter)
+        self.removeGroupingParameterButton.clicked.connect(self.handleRemoveGroupingParameter)
