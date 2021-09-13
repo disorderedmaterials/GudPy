@@ -123,7 +123,8 @@ class BeamWidget(QWidget):
         # Populate the Geometry combo box
         # with the names of the members of the Geometry enum.
         for g in Geometry:
-            self.sampleGeometryComboBox.addItem(g.name, g)
+            if not g == Geometry.SameAsBeam:
+                self.sampleGeometryComboBox.addItem(g.name, g)
 
         # Set the selected item to that defined in the Beam object.
         self.sampleGeometryComboBox.setCurrentIndex(
