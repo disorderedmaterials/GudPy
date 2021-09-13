@@ -780,7 +780,7 @@ class GudrunFile:
             if (
                 (
                     sample.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or sample.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
