@@ -291,6 +291,11 @@ class ExponentialModel(GudPyTableModel):
         mutable[col] = value
         if role == Qt.EditRole:
             self._data[row] = tuple(mutable)
+
+    def insertRow(self):
+        if self.rowCount(self) < 5:
+            super(ResonanceModel, self).insertRow()
+
 class ExponentialDelegate(GudPyDelegate):
 
     def createEditor(self, parent, option, index):
@@ -334,6 +339,9 @@ class ResonanceModel(GudPyTableModel):
         if role == Qt.EditRole:
             self._data[row] = tuple(mutable)
 
+    def insertRow(self):
+        if self.rowCount(self) < 5:
+            super(ResonanceModel, self).insertRow()
 
 class ResonanceDelegate(GudPyDelegate):
 
