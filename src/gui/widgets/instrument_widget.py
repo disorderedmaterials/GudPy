@@ -190,7 +190,9 @@ class InstrumentWidget(QWidget):
         self.instrument.spectrumNumberForOutputDiagnosticFiles = value
 
     def handleBrowse(self, target, title, dir=False):
-        target.setText(self.browseFile(title, dir=dir)[0])
+        filename = self.browseFile(title, dir=dir)
+        if filename:
+            target.setText(self.browseFile(filename)[0])
 
     def browseFile(self, title, dir=False):
         filename = QFileDialog.getOpenFileName(
