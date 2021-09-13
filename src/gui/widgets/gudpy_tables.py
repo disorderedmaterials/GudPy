@@ -26,7 +26,6 @@ class GudPyTableModel(QAbstractTableModel):
         col = index.column()
         if role == Qt.EditRole:
             self._data[row][col] = value
-    
 
     def data(self, index, role):
         row = index.row()
@@ -58,7 +57,8 @@ class GudPyDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
         value = index.model().data(index, Qt.EditRole)
-        editor.setValue(value)
+        if value:
+            editor.setValue(value)
 
     def setModelData(self, editor, model, index):
         editor.interpretText()
@@ -72,6 +72,14 @@ class GroupingParameterModel(GudPyTableModel):
         super(GroupingParameterModel, self).__init__(
             data, headers, parent
         )
+
+    def setData(self, index, value, role):
+        row = index.row()
+        col = index.column()
+        mutable = list(self._data[row])
+        mutable[col] = value
+        if role == Qt.EditRole:
+            self._data[row] = tuple(mutable)
 
 
 class GroupingParameterDelegate(GudPyDelegate):
