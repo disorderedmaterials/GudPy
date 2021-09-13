@@ -92,7 +92,7 @@ class GudPyMainWindow(QMainWindow):
     def updateFromFile(self):
         self.initComponents()
     
-    def cascadeGeometries(self):
+    def updateGeometries(self):
         for i in range(self.objectStack.count()):
             target = self.objectStack.widget(i)
             if isinstance(target, (NormalisationWidget, SampleWidget, ContainerWidget)):
