@@ -94,15 +94,15 @@ class BeamWidget(QWidget):
 
     def updateBeamProfileValues(self):
         # Fill the Beam Profile table.
-        self.beamProfileValuesTable.makeModel(
-            self.beam.beamProfileValues
-        )
+        self.beamProfileValuesTable.makeModel(self.beam.beamProfileValues)
 
     def handleAddBeamProfileValue(self):
         self.beamProfileValuesTable.insertRow()
 
     def handleRemoveBeamProfileValue(self):
-        self.beamProfileValuesTable.removeRow(self.beamProfileValuesTable.selectionModel().selectedRows())
+        self.beamProfileValuesTable.removeRow(
+            self.beamProfileValuesTable.selectionModel().selectedRows()
+        )
 
     def initComponents(self):
         """
@@ -143,9 +143,7 @@ class BeamWidget(QWidget):
         )
         self.noSlicesSpinBox.setValue(self.beam.noSlices)
 
-        self.noSlicesSpinBox.valueChanged.connect(
-            self.handleNoSlicesChanged
-        )
+        self.noSlicesSpinBox.valueChanged.connect(self.handleNoSlicesChanged)
         self.stepForCorrectionsSpinBox.setValue(
             self.beam.angularStepForCorrections
         )
@@ -165,9 +163,7 @@ class BeamWidget(QWidget):
         self.rightIncidentBeamEdgeSpinBox.valueChanged.connect(
             self.handleRightIncidentBeamEdgeChanged
         )
-        self.topIncidentBeamEdgeSpinBox.setValue(
-            self.beam.incidentBeamTopEdge
-        )
+        self.topIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamTopEdge)
         self.topIncidentBeamEdgeSpinBox.valueChanged.connect(
             self.handleTopIncidentBeamEdgeChanged
         )
@@ -232,4 +228,6 @@ class BeamWidget(QWidget):
 
         self.updateBeamProfileValues()
         self.addBeamValueButton.clicked.connect(self.handleAddBeamProfileValue)
-        self.removeBeamValueButton.clicked.connect(self.handleRemoveBeamProfileValue)
+        self.removeBeamValueButton.clicked.connect(
+            self.handleRemoveBeamProfileValue
+        )

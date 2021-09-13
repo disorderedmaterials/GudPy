@@ -140,11 +140,11 @@ class SampleWidget(QWidget):
         )
 
     def addFiles(self, target, title, regex):
-        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
-                self.handleDataFileInserted(target.item(target.count()-1))
+                self.handleDataFileInserted(target.item(target.count() - 1))
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
@@ -154,39 +154,39 @@ class SampleWidget(QWidget):
 
     def updateCompositionTable(self):
 
-        self.sampleCompositionTable.makeModel(
-            self.sample.composition.elements
-        )
+        self.sampleCompositionTable.makeModel(self.sample.composition.elements)
 
     def handleInsertElement(self):
         self.sampleCompositionTable.insertRow()
 
     def handleRemoveElement(self):
-        self.sampleCompositionTable.removeRow(self.sampleCompositionTable.selectionModel().selectedRows())
+        self.sampleCompositionTable.removeRow(
+            self.sampleCompositionTable.selectionModel().selectedRows()
+        )
 
     def updateExponentialTable(self):
 
-        self.exponentialValuesTable.makeModel(
-            self.sample.exponentialValues
-        )
-    
+        self.exponentialValuesTable.makeModel(self.sample.exponentialValues)
+
     def updateResonanceTable(self):
 
-        self.resonanceValuesTable.makeModel(
-            self.sample.resonanceValues
-        )
+        self.resonanceValuesTable.makeModel(self.sample.resonanceValues)
 
     def handleInsertExponentialValue(self):
         self.exponentialValuesTable.insertRow()
 
     def handleRemoveExponentialValue(self):
-        self.exponentialValuesTable.removeRow(self.exponentialValuesTable.selectionModel().selectedRows())
-    
+        self.exponentialValuesTable.removeRow(
+            self.exponentialValuesTable.selectionModel().selectedRows()
+        )
+
     def handleInsertResonanceValue(self):
         self.resonanceValuesTable.insertRow()
 
     def handleRemoveResonanceValue(self):
-        self.resonanceValuesTable.removeRow(self.resonanceValuesTable.selectionModel().selectedRows())
+        self.resonanceValuesTable.removeRow(
+            self.resonanceValuesTable.selectionModel().selectedRows()
+        )
 
     def initComponents(self):
         """
@@ -209,14 +209,11 @@ class SampleWidget(QWidget):
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
         self.removeDataFileButton.clicked.connect(
-            lambda: self.removeFile(
-                self.dataFilesList,
-                self.sample.dataFiles
-            )
+            lambda: self.removeFile(self.dataFilesList, self.sample.dataFiles)
         )
         self.forceCorrectionsCheckBox.setChecked(
             Qt.Checked
@@ -300,18 +297,14 @@ class SampleWidget(QWidget):
 
         for n in NormalisationType:
             self.normaliseToComboBox.addItem(n.name, n)
-        self.normaliseToComboBox.setCurrentIndex(
-            self.sample.normaliseTo.value
-        )
+        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
         self.normaliseToComboBox.currentIndexChanged.connect(
             self.handleNormaliseToChanged
         )
 
         for u in OutputUnits:
             self.outputUnitsComboBox.addItem(u.name, u)
-        self.outputUnitsComboBox.setCurrentIndex(
-            self.sample.outputUnits.value
-        )
+        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
         self.outputUnitsComboBox.currentIndexChanged.connect(
             self.handleOutputUnitsChanged
         )
@@ -337,9 +330,7 @@ class SampleWidget(QWidget):
         self.correctionFactorSpinBox.valueChanged.connect(
             self.handleCorrectionFactorChanged
         )
-        self.scatteringFractionSpinBox.setValue(
-            self.sample.scatteringFraction
-        )
+        self.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
         self.scatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
         )
@@ -355,9 +346,17 @@ class SampleWidget(QWidget):
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
 
         self.updateExponentialTable()
-        self.insertExponentialButton.clicked.connect(self.handleInsertExponentialValue)
-        self.removeExponentialButton.clicked.connect(self.handleRemoveExponentialValue)
+        self.insertExponentialButton.clicked.connect(
+            self.handleInsertExponentialValue
+        )
+        self.removeExponentialButton.clicked.connect(
+            self.handleRemoveExponentialValue
+        )
 
         self.updateResonanceTable()
-        self.insertResonanceButton.clicked.connect(self.handleInsertResonanceValue)
-        self.removeResonanceButton.clicked.connect(self.handleRemoveResonanceValue)
+        self.insertResonanceButton.clicked.connect(
+            self.handleInsertResonanceValue
+        )
+        self.removeResonanceButton.clicked.connect(
+            self.handleRemoveResonanceValue
+        )

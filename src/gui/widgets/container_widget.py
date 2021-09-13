@@ -100,11 +100,11 @@ class ContainerWidget(QWidget):
         )
 
     def addFiles(self, target, title, regex):
-        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
-                self.handleDataFileInserted(target.item(target.count()-1))
+                self.handleDataFileInserted(target.item(target.count() - 1))
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
@@ -122,8 +122,9 @@ class ContainerWidget(QWidget):
         self.containerCompositionTable.insertRow()
 
     def handleRemoveElement(self):
-        self.containerCompositionTable.removeRow(self.containerCompositionTable.selectionModel().selectedRows())
-
+        self.containerCompositionTable.removeRow(
+            self.containerCompositionTable.selectionModel().selectedRows()
+        )
 
     def initComponents(self):
         """
@@ -151,16 +152,14 @@ class ContainerWidget(QWidget):
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
         self.removeDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.dataFilesList,
-                self.container.dataFiles
+                self.dataFilesList, self.container.dataFiles
             )
         )
-
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)

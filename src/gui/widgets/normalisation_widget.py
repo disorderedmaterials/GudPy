@@ -1,7 +1,12 @@
 from src.scripts.utils import isnumeric
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
-from PyQt5.QtWidgets import QFileDialog, QTableWidget, QTableWidgetItem, QWidget
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QTableWidget,
+    QTableWidgetItem,
+    QWidget,
+)
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import os
@@ -54,8 +59,8 @@ class NormalisationWidget(QWidget):
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
 
     def handleDensityUnitsChanged(self, index):
-        self.normalisation.densityUnits = (
-            self.densityUnitsComboBox.itemData(index)
+        self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(
+            index
         )
 
     def handleUpstreamThicknessChanged(self, value):
@@ -126,18 +131,18 @@ class NormalisationWidget(QWidget):
         )
 
     def addFiles(self, target, title, regex):
-        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
 
     def addDataFiles(self, target, title, regex):
         self.addFiles(target, title, regex)
-        self.handleDataFileInserted(target.item(target.count()-1))
+        self.handleDataFileInserted(target.item(target.count() - 1))
 
     def addBgDataFiles(self, target, title, regex):
         self.addFiles(target, title, regex)
-        self.handleBgDataFileInserted(target.item(target.count()-1))
+        self.handleBgDataFileInserted(target.item(target.count() - 1))
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
@@ -162,8 +167,9 @@ class NormalisationWidget(QWidget):
         self.normalisationCompositionTable.insertRow()
 
     def handleRemoveElement(self):
-        self.normalisationCompositionTable.removeRow(self.normalisationCompositionTable.selectionModel().selectedRows())
-
+        self.normalisationCompositionTable.removeRow(
+            self.normalisationCompositionTable.selectionModel().selectedRows()
+        )
 
     def initComponents(self):
         """
@@ -176,26 +182,21 @@ class NormalisationWidget(QWidget):
         uic.loadUi(uifile, self)
 
         self.updateDataFilesList()
-        self.dataFilesList.itemChanged.connect(
-            self.handleDataFilesAltered
-        )
-        self.dataFilesList.itemEntered.connect(
-            self.handleDataFileInserted
-        )
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
 
         self.addDataFileButton.clicked.connect(
             lambda: self.addDataFiles(
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
 
         self.removeDataFileButton.clicked.connect(
             lambda: self.removeDataFile(
-                self.dataFilesList,
-                self.normalisation.dataFiles
+                self.dataFilesList, self.normalisation.dataFiles
             )
         )
 
@@ -212,14 +213,13 @@ class NormalisationWidget(QWidget):
                 self.backgroundDataFilesList,
                 "Add background data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
 
         self.removeBackgroundDataFileButton.clicked.connect(
             lambda: self.removeBgDataFile(
-                self.backgroundDataFilesList,
-                self.normalisation.dataFilesBg
+                self.backgroundDataFilesList, self.normalisation.dataFilesBg
             )
         )
 
@@ -250,15 +250,11 @@ class NormalisationWidget(QWidget):
             self.handleDensityUnitsChanged
         )
 
-        self.upstreamSpinBox.setValue(
-            self.normalisation.upstreamThickness
-        )
+        self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.downstreamSpinBox.setValue(
-            self.normalisation.downstreamThickness
-        )
+        self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
@@ -312,7 +308,7 @@ class NormalisationWidget(QWidget):
             self.normalisation.minNormalisationSignalBR
         )
         self.minNormalisationSignalSpinBox.valueChanged.connect(
-                self.handleMinNormalisationSignalChanged
+            self.handleMinNormalisationSignalChanged
         )
 
         self.updateCompositionTable()

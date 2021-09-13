@@ -60,11 +60,11 @@ class SampleBackgroundWidget(QWidget):
         )
 
     def addFiles(self, target, title, regex):
-        paths = QFileDialog.getOpenFileNames(self, title, '.', regex)
+        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
-                self.handleDataFileInserted(target.item(target.count()-1))
+                self.handleDataFileInserted(target.item(target.count() - 1))
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
@@ -95,13 +95,12 @@ class SampleBackgroundWidget(QWidget):
                 self.dataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
         self.removeDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.dataFilesList,
-                self.sampleBackground.dataFiles
+                self.dataFilesList, self.sampleBackground.dataFiles
             )
         )
 

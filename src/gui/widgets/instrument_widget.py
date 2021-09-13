@@ -71,8 +71,8 @@ class InstrumentWidget(QWidget):
         self.instrument.useLogarithmicBinning = state
 
     def handleMergeWeightsChanged(self, index):
-        self.instrument.mergeWeights = (
-            self.mergeWeightsComboBox.itemData(index)
+        self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(
+            index
         )
 
     def handleNeutronScatteringParamsFileChanged(self, text):
@@ -100,14 +100,14 @@ class InstrumentWidget(QWidget):
         )
 
     def handleSpectrumNumbersIBChanged(self, text):
-        self.instrument.incidentMonitorQuietCountConst = (
-            [int(x) for x in text.split()]
-        )
+        self.instrument.incidentMonitorQuietCountConst = [
+            int(x) for x in text.split()
+        ]
 
     def handleSpectrumNumbersTChanged(self, text):
-        self.instrument.transmissionMonitorQuietCountConst = (
-            [int(x) for x in text.split()]
-        )
+        self.instrument.transmissionMonitorQuietCountConst = [
+            int(x) for x in text.split()
+        ]
 
     def handleIncidentMonitorQuietCountConstChanged(self, value):
         self.instrument.incidentMonitorQuietCountConst = value
@@ -195,16 +195,10 @@ class InstrumentWidget(QWidget):
             target.setText(self.browseFile(filename)[0])
 
     def browseFile(self, title, dir=False):
-        filename = QFileDialog.getOpenFileName(
-            self,
-            title,
-            ''
-        ) if not dir else (
-            QFileDialog.getExistingDirectory(
-                self,
-                title,
-                ''
-            )
+        filename = (
+            QFileDialog.getOpenFileName(self, title, "")
+            if not dir
+            else (QFileDialog.getExistingDirectory(self, title, ""))
         )
         return filename
 
@@ -213,12 +207,14 @@ class InstrumentWidget(QWidget):
         self.groupingParameterTable.makeModel(
             self.instrument.groupingParameterPanel
         )
-    
+
     def handleAddGroupingParameter(self):
         self.groupingParameterTable.insertRow()
 
     def handleRemoveGroupingParameter(self):
-        self.groupingParameterTable.removeRow(self.groupingParameterTable.selectionModel().selectedRows())
+        self.groupingParameterTable.removeRow(
+            self.groupingParameterTable.selectionModel().selectedRows()
+        )
 
     def initComponents(self):
         """
@@ -244,9 +240,7 @@ class InstrumentWidget(QWidget):
 
         self.browseDataFileDirectoryButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.dataFileDirectoryLineEdit,
-                "Data file directory",
-                dir=True
+                self.dataFileDirectoryLineEdit, "Data file directory", dir=True
             )
         )
 
@@ -268,8 +262,7 @@ class InstrumentWidget(QWidget):
 
         self.browseDetCalibrationButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.detCalibrationLineEdit,
-                "Detector calibration file"
+                self.detCalibrationLineEdit, "Detector calibration file"
             )
         )
 
@@ -292,8 +285,7 @@ class InstrumentWidget(QWidget):
 
         self.browseDeadtimeFileButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.deadtimeFileLineEdit,
-                "Deadtime constants file"
+                self.deadtimeFileLineEdit, "Deadtime constants file"
             )
         )
 
@@ -423,9 +415,7 @@ class InstrumentWidget(QWidget):
         )
         self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
 
-        selection, min, max, step = self.scales[
-            self.instrument.scaleSelection
-        ]
+        selection, min, max, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
         min.setValue(self.instrument.XMin)
         max.setValue(self.instrument.XMax)
@@ -477,7 +467,7 @@ class InstrumentWidget(QWidget):
         self.browseNeutronScatteringParamsButton.clicked.connect(
             lambda: self.handleBrowse(
                 self.neutronScatteringParamsFileLineEdit,
-                "Neutron scattering parameters file"
+                "Neutron scattering parameters file",
             )
         )
 
@@ -490,18 +480,15 @@ class InstrumentWidget(QWidget):
         )
 
         self.nexusDefintionFileLineEdit.setEnabled(
-            self.instrument.dataFileType
-            in ["nxs", "NXS"]
+            self.instrument.dataFileType in ["nxs", "NXS"]
         )
         self.browseNexusDefinitionButton.setEnabled(
-            self.instrument.dataFileType
-            in ["nxs", "NXS"]
+            self.instrument.dataFileType in ["nxs", "NXS"]
         )
 
         self.browseNexusDefinitionButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.nexusDefinitionFileLineEdit,
-                "NeXus defnition file"
+                self.nexusDefinitionFileLineEdit, "NeXus defnition file"
             )
         )
 
@@ -511,5 +498,9 @@ class InstrumentWidget(QWidget):
         )
 
         self.updateGroupingParameterPanel()
-        self.addGroupingParameterButton.clicked.connect(self.handleAddGroupingParameter)
-        self.removeGroupingParameterButton.clicked.connect(self.handleRemoveGroupingParameter)
+        self.addGroupingParameterButton.clicked.connect(
+            self.handleAddGroupingParameter
+        )
+        self.removeGroupingParameterButton.clicked.connect(
+            self.handleRemoveGroupingParameter
+        )
