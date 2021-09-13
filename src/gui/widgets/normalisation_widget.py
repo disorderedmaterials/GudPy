@@ -152,32 +152,18 @@ class NormalisationWidget(QWidget):
         self.removeFile(target, dataFiles)
         self.updateBgDataFilesList()
 
-    def handleElementChanged(self, item):
-        value = item.text()
-        row = item.row()
-        col = item.column()
-        if row < len(self.normalisation.composition.elements):
-            element = self.normalisation.composition.elements[row]
-            attribute = {
-                0: ("atomicSymbol", str),
-                1: ("massNo", int),
-                2: ("abundance", float)
-            }[col]
-            element.__dict__[attribute[0]] = attribute[1](value)
-            self.normalisation.composition.elements[row] = element
-        else:
-            self.handleElementInserted(item)
+    def updateCompositionTable(self):
 
-    def handleElementInserted(self, item):
-        row = item.row()
-        print(item.text())
-        atomicSymbol = self.normalisationCompositionTable.itemAt(row, 0).text()
-        massNo = self.normalisationCompositionTable.itemAt(row, 1).text()
-        abundance = self.normalisationCompositionTable.itemAt(row, 2).text()
-        if len(atomicSymbol) and isnumeric(massNo) and isnumeric(abundance):
-            print(atomicSymbol, massNo, abundance)
-            element = Element(atomicSymbol, int(massNo), float(abundance))
-            self.normalisation.composition.elements.append(element)
+        self.normalisationCompositionTable.makeModel(
+            self.normalisation.composition.elements
+        )
+
+    def handleInsertElement(self):
+        self.normalisationCompositionTable.insertRow()
+
+    def handleRemoveElement(self):
+        self.normalisationCompositionTable.removeRow(self.normalisationCompositionTable.selectionModel().selectedRows())
+
 
     def initComponents(self):
         """
@@ -246,23 +232,6 @@ class NormalisationWidget(QWidget):
             self.handlePeriodNoBgChanged
         )
 
-        for i, element in enumerate(self.normalisation.composition.elements):
-            self.normalisationCompositionTable.setItem(
-                i, 0, QTableWidgetItem(str(element.atomicSymbol))
-            )
-            self.normalisationCompositionTable.setItem(
-                i, 1, QTableWidgetItem(str(element.massNo))
-            )
-            self.normalisationCompositionTable.setItem(
-                i, 2, QTableWidgetItem(str(element.abundance))
-            )
-
-        self.normalisationCompositionTable.itemChanged.connect(
-            self.handleElementChanged
-        )
-        self.normalisationCompositionTable.itemEntered.connect(
-            self.handleElementInserted
-        )
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(
             self.normalisation.geometry.value
@@ -345,3 +314,7 @@ class NormalisationWidget(QWidget):
         self.minNormalisationSignalSpinBox.valueChanged.connect(
                 self.handleMinNormalisationSignalChanged
         )
+
+        self.updateCompositionTable()
+        self.insertElementButton.clicked.connect(self.handleInsertElement)
+        self.removeElementButton.clicked.connect(self.handleRemoveElement)

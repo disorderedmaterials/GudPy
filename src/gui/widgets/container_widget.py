@@ -112,32 +112,18 @@ class ContainerWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             self.updateDataFilesList()
 
-    def handleElementChanged(self, item):
-        value = item.text()
-        row = item.row()
-        col = item.column()
-        if row < len(self.container.composition.elements):
-            element = self.container.composition.elements[row]
-            attribute = {
-                0: ("atomicSymbol", str),
-                1: ("massNo", int),
-                2: ("abundance", float)
-            }[col]
-            element.__dict__[attribute[0]] = attribute[1](value)
-            self.container.composition.elements[row] = element
-        else:
-            self.handleElementInserted(item)
+    def updateCompositionTable(self):
 
-    def handleElementInserted(self, item):
-        row = item.row()
-        print(item.text())
-        atomicSymbol = self.containerCompositionTable.itemAt(row, 0).text()
-        massNo = self.containerCompositionTable.itemAt(row, 1).text()
-        abundance = self.containerCompositionTable.itemAt(row, 2).text()
-        if len(atomicSymbol) and isnumeric(massNo) and isnumeric(abundance):
-            print(atomicSymbol, massNo, abundance)
-            element = Element(atomicSymbol, int(massNo), float(abundance))
-            self.container.composition.elements.append(element)
+        self.containerCompositionTable.makeModel(
+            self.container.composition.elements
+        )
+
+    def handleInsertElement(self):
+        self.containerCompositionTable.insertRow()
+
+    def handleRemoveElement(self):
+        self.containerCompositionTable.removeRow(self.containerCompositionTable.selectionModel().selectedRows())
+
 
     def initComponents(self):
         """
@@ -174,23 +160,7 @@ class ContainerWidget(QWidget):
                 self.container.dataFiles
             )
         )
-        for i, element in enumerate(self.container.composition.elements):
-            self.containerCompositionTable.setItem(
-                i, 0, QTableWidgetItem(str(element.atomicSymbol))
-            )
-            self.containerCompositionTable.setItem(
-                i, 1, QTableWidgetItem(str(element.massNo))
-            )
-            self.containerCompositionTable.setItem(
-                i, 2, QTableWidgetItem(str(element.abundance))
-            )
 
-        self.containerCompositionTable.itemChanged.connect(
-            self.handleElementChanged
-        )
-        self.containerCompositionTable.itemEntered.connect(
-            self.handleElementInserted
-        )
 
         self.geometryComboBox.addItems([g.name for g in Geometry])
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
@@ -261,3 +231,7 @@ class ContainerWidget(QWidget):
         self.attenuationCoefficientSpinBox.valueChanged.connect(
             self.handleAttenuationCoefficientChanged
         )
+
+        self.updateCompositionTable()
+        self.insertElementButton.clicked.connect(self.handleInsertElement)
+        self.removeElementButton.clicked.connect(self.handleRemoveElement)

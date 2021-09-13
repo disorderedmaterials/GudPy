@@ -2,11 +2,13 @@ from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
 from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
+    QLineEdit,
     QSpinBox,
     QTableView,
     QTableWidget,
 )
-import numpy as np
+
+from src.gudrun_classes.element import Element
 
 
 class GudPyTableModel(QAbstractTableModel):
@@ -180,6 +182,93 @@ class BeamProfileTable(QTableView):
     def makeModel(self, data):
         self.setModel(BeamProfileModel(data, [], self.parent))
         self.setItemDelegate(BeamProfileDelegate())
+
+    def insertRow(self):
+        self.model().insertRow()
+
+    def removeRow(self, rows):
+        for _row in rows:
+            self.model().removeRow(_row.row())
+
+
+class CompositionModel(GudPyTableModel):
+
+    def __init__(self, data, headers, parent):
+        super(CompositionModel, self).__init__(
+            data, headers, parent
+        )
+        self.attrs = {
+            0: "atomicSymbol",
+            1: "massNo",
+            2: "abundance"
+        }
+
+    def columnCount(self, parent):
+        return 3
+
+    def setData(self, index, value, role):
+        row = index.row()
+        col = index.column()
+        print(value)
+        if role == Qt.EditRole:
+            self._data[row].__dict__[self.attrs[col]] = value
+
+    def insertRow(self):
+        self.beginInsertRows(QModelIndex(), self.rowCount(self), self.rowCount(self))
+        self._data.append(Element("", 0, 0))
+        self.endInsertRows()
+            
+    def removeRow(self, index):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._data.pop(index)
+        self.endRemoveRows()
+
+    def data(self, index, role):
+        row = index.row()
+        col = index.column()
+        return (
+            self._data[row].__dict__[self.attrs[col]]
+            if (role == Qt.DisplayRole & Qt.EditRole)
+            else None
+        )
+
+class CompositionDelegate(GudPyDelegate):
+
+    def createEditor(self, parent, option, index):
+        col = index.column()
+        if col == 0:
+            editor = QLineEdit(parent)
+        elif col == 1:
+            editor = QSpinBox(parent)
+        else:
+            editor = QDoubleSpinBox(parent)
+            editor.setMinimum(0)
+            editor.setMaximum(1)
+            editor.setSingleStep(0.01)
+        return editor    
+
+    def setModelData(self, editor, model, index):
+        if index.column() != 0:
+            editor.interpretText()
+            try:
+                value = editor.value()
+                model.setData(index, value, Qt.EditRole)
+            except:
+                model.setData(index, 0, Qt.EditRole)
+        else:
+            value = editor.text()
+            model.setData(index, value, Qt.EditRole)
+
+class CompositionTable(QTableView):
+
+    def __init__(self, parent):
+        self.parent = parent
+        super(CompositionTable, self).__init__(parent=parent)
+
+    def makeModel(self, data):
+        print(data)
+        self.setModel(CompositionModel(data, ["Element", "Mass No", "Abundance"], self.parent))
+        self.setItemDelegate(CompositionDelegate())
 
     def insertRow(self):
         self.model().insertRow()
