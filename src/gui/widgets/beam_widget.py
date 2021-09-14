@@ -89,7 +89,7 @@ class BeamWidget(QWidget):
         geometry too.
         Parameters
         ----------
-        index : QModelIndex
+        index : int
             The new current index of the sampleGeometryComboBox.
         """
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
