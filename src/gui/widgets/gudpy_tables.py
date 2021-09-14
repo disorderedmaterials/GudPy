@@ -67,7 +67,6 @@ class GudPyDelegate(QItemDelegate):
     def setEditorData(self, editor, index):
         value = index.model().data(index, Qt.EditRole)
         if value:
-            print(value)
             editor.setValue(value)
 
     def setModelData(self, editor, model, index):
@@ -227,6 +226,13 @@ class CompositionDelegate(GudPyDelegate):
             editor.setSingleStep(0.01)
         return editor
 
+    def setEditorData(self, editor, index):
+        value = index.model().data(index, Qt.EditRole)
+        if value:
+            if index.column() != 0:
+                editor.setValue(value)
+            else:
+                editor.setText(value)
     def setModelData(self, editor, model, index):
         if index.column() != 0:
             editor.interpretText()
@@ -263,8 +269,8 @@ class CompositionTable(QTableView):
             self.model().removeRow(_row.row())
 
     def farmCompositions(self):
-
         grandparent = self.parent.parent().parent
+        self.compositions.clear()
         self.compositions = [("Normalisation", grandparent.gudrunFile.normalisation.composition)]
         for sampleBackground in grandparent.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
@@ -280,7 +286,7 @@ class CompositionTable(QTableView):
         pasteMenu = self.menu.addMenu("Paste from")
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", pasteMenu)
-            action.triggered.connect(lambda: self.pasteFrom(composition[1]))
+            action.triggered.connect(lambda chk, comp=composition[1]: self.pasteFrom(comp))
             pasteMenu.addAction(action)
         self.menu.popup(QCursor.pos())
 
