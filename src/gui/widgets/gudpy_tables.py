@@ -33,7 +33,7 @@ class GudPyTableModel(QAbstractTableModel):
         col = index.column()
         return (
             self._data[row][col]
-            if (role == Qt.DisplayRole & Qt.EditRole)
+            if (role == role & (Qt.DisplayRole | Qt.EditRole))
             else None
         )
 
@@ -145,7 +145,7 @@ class BeamProfileModel(GudPyTableModel):
     def data(self, index, role):
         row = index.row()
         return (
-            self._data[row] if (role == Qt.DisplayRole & Qt.EditRole) else None
+            self._data[row] if (role == role & (Qt.DisplayRole | Qt.EditRole)) else None
         )
 
 
@@ -206,7 +206,7 @@ class CompositionModel(GudPyTableModel):
         col = index.column()
         return (
             self._data[row].__dict__[self.attrs[col]]
-            if (role == Qt.DisplayRole & Qt.EditRole)
+            if (role == role & (Qt.DisplayRole | Qt.EditRole))
             else None
         )
 
