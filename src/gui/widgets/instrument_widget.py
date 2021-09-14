@@ -494,10 +494,10 @@ class InstrumentWidget(QWidget):
         state : int
             The new state of the _QRadioButton (1: True, 0: False)
         """
-        button, min, max, step = self.scales[Scales.Q]
+        button, min_, max_, step = self.scales[Scales.Q]
         state = button.isChecked()
-        min.setEnabled(state)
-        max.setEnabled(state)
+        min_.setEnabled(state)
+        max_.setEnabled(state)
         step.setEnabled(state)
 
     def handleDSpacingScaleStateChanged(self):
@@ -511,10 +511,10 @@ class InstrumentWidget(QWidget):
         state : int
             The new state of the DSpacingRadioButton (1: True, 0: False)
         """
-        button, min, max, step = self.scales[Scales.D_SPACING]
+        button, min_, max_, step = self.scales[Scales.D_SPACING]
         state = button.isChecked()
-        min.setEnabled(state)
-        max.setEnabled(state)
+        min_.setEnabled(state)
+        max_.setEnabled(state)
         step.setEnabled(state)
 
     def handleWavelengthScaleStateChanged(self):
@@ -528,10 +528,10 @@ class InstrumentWidget(QWidget):
         state : int
             The new state of the wavelengthRadioButton (1: True, 0: False)
         """
-        button, min, max, step = self.scales[Scales.WAVELENGTH]
+        button, min_, max_, step = self.scales[Scales.WAVELENGTH]
         state = button.isChecked()
-        min.setEnabled(state)
-        max.setEnabled(state)
+        min_.setEnabled(state)
+        max_.setEnabled(state)
         step.setEnabled(state)
 
     def handleEnergyScaleStateChanged(self):
@@ -545,10 +545,10 @@ class InstrumentWidget(QWidget):
         state : int
             The new state of the energyRadioButton (1: True, 0: False)
         """
-        button, min, max, step = self.scales[Scales.ENERGY]
+        button, min_, max_, step = self.scales[Scales.ENERGY]
         state = button.isChecked()
-        min.setEnabled(state)
-        max.setEnabled(state)
+        min_.setEnabled(state)
+        max_.setEnabled(state)
         step.setEnabled(state)
 
     def handleTOFScaleStateChanged(self):
@@ -562,10 +562,10 @@ class InstrumentWidget(QWidget):
         state : int
             The new state of the TOFRadioButton (1: True, 0: False)
         """
-        button, min, max, step = self.scales[Scales.TOF]
+        button, min_, max_, step = self.scales[Scales.TOF]
         state = button.isChecked()
-        min.setEnabled(state)
-        max.setEnabled(state)
+        min_.setEnabled(state)
+        max_.setEnabled(state)
         step.setEnabled(state)
 
     def handleGroupsAcceptanceFactorChanged(self, value):
