@@ -101,7 +101,3 @@ class GudPyMainWindow(QMainWindow):
                     target.geometryComboBox.setCurrentIndex(config.geometry.value)
             elif isinstance(target, (SampleWidget, ContainerWidget)):
                 target.geometryComboBox.setCurrentIndex(config.geometry.value)
-
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-
-        super().resizeEvent(a0)
