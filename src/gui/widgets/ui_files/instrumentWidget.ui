@@ -130,39 +130,49 @@
     <string>Other</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="12" column="0" colspan="2">
-     <widget class="QRadioButton" name="_QRadioButton">
+    <item row="8" column="5" colspan="2">
+     <widget class="QSpinBox" name="channelNoASpinBox">
       <property name="minimumSize">
        <size>
-        <width>81</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Q [1/A]</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">scaleSelectionButtonGroup</string>
-      </attribute>
-     </widget>
-    </item>
-    <item row="14" column="9" colspan="2">
-     <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
+        <width>42</width>
         <height>22</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>62</width>
+        <width>42</width>
         <height>16777215</height>
        </size>
       </property>
+     </widget>
+    </item>
+    <item row="0" column="10" colspan="3">
+     <widget class="QPushButton" name="browseDataFileDirectoryButton">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="0" colspan="3">
+     <widget class="QRadioButton" name="wavelengthRadioButton">
+      <property name="minimumSize">
+       <size>
+        <width>121</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>wavelength [A]</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">scaleSelectionButtonGroup</string>
+      </attribute>
      </widget>
     </item>
     <item row="12" column="9" colspan="2">
@@ -184,322 +194,6 @@
       </property>
      </widget>
     </item>
-    <item row="16" column="0" colspan="3">
-     <widget class="QRadioButton" name="TOFRadioButton">
-      <property name="minimumSize">
-       <size>
-        <width>121</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>TOF [mus]</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">scaleSelectionButtonGroup</string>
-      </attribute>
-     </widget>
-    </item>
-    <item row="1" column="12" colspan="2">
-     <widget class="QPushButton" name="browseDetCalibrationButton">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Browse</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="14" colspan="4">
-     <widget class="QDoubleSpinBox" name="maxWavelengthMonNormSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>63</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="10" colspan="3">
-     <widget class="QLabel" name="acceptanceFactorLabel">
-      <property name="minimumSize">
-       <size>
-        <width>131</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Acceptance factor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="5">
-     <widget class="QLabel" name="detCalibrationLabel">
-      <property name="minimumSize">
-       <size>
-        <width>171</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Detector Calibration File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="5" colspan="2">
-     <widget class="QSpinBox" name="channelNoASpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>42</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>42</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="5">
-     <widget class="QLineEdit" name="groupsFileLineEdit">
-      <property name="minimumSize">
-       <size>
-        <width>150</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0" colspan="8">
-     <widget class="QLabel" name="wavelengthRangeMonNormLabel">
-      <property name="minimumSize">
-       <size>
-        <width>311</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Wavelength range for monitor normalisation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="0" colspan="4">
-     <widget class="QLabel" name="xScaleLabel">
-      <property name="minimumSize">
-       <size>
-        <width>144</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>X-scale for final DCS: </string>
-      </property>
-     </widget>
-    </item>
-    <item row="23" column="6" colspan="7">
-     <widget class="QLineEdit" name="neutronScatteringParamsFileLineEdit">
-      <property name="minimumSize">
-       <size>
-        <width>223</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="7">
-     <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>62</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="18" column="0" rowspan="4" colspan="7">
-     <widget class="GroupingParameterTable" name="groupingParameterTable">
-      <property name="minimumSize">
-       <size>
-        <width>270</width>
-        <height>113</height>
-       </size>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="2" colspan="5">
-     <widget class="QLabel" name="queitCountConstIMLabel">
-      <property name="minimumSize">
-       <size>
-        <width>131</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Incident monitor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="20" column="9" colspan="4">
-     <widget class="QLabel" name="incidentFlightPathLabel">
-      <property name="minimumSize">
-       <size>
-        <width>161</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Incident flight path [m]</string>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="7">
-     <widget class="QDoubleSpinBox" name="maxQSpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>62</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="9">
-     <widget class="QDoubleSpinBox" name="minWavelengthSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>74</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="15" column="9" colspan="2">
-     <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>62</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="16">
-     <widget class="QSpinBox" name="phiValuesColumnSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>42</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="7" colspan="3">
-     <widget class="QPushButton" name="browseGroupsFileButton">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Browse</string>
-      </property>
-     </widget>
-    </item>
-    <item row="20" column="14">
-     <widget class="QDoubleSpinBox" name="incidentFlightPathSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="18" column="9" colspan="4">
-     <widget class="QLabel" name="groupsAcceptanceFactorLabel">
-      <property name="minimumSize">
-       <size>
-        <width>131</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Acceptance factor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="13" colspan="2">
-     <widget class="QLabel" name="dataFileTypeLabel">
-      <property name="minimumSize">
-       <size>
-        <width>41</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Type</string>
-      </property>
-     </widget>
-    </item>
     <item row="24" column="0" colspan="4">
      <widget class="QLabel" name="nexusDefinitionFileLabel">
       <property name="minimumSize">
@@ -513,64 +207,18 @@
       </property>
      </widget>
     </item>
-    <item row="14" column="5">
-     <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="5">
-     <widget class="QDoubleSpinBox" name="minQSpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="groupsFileLabel">
-      <property name="minimumSize">
-       <size>
-        <width>81</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Groups File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="16" column="5">
-     <widget class="QDoubleSpinBox" name="minTOFSpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="6">
-     <widget class="QSpinBox" name="noSmoothsOnMonitorSpinBox">
+    <item row="8" column="7">
+     <widget class="QSpinBox" name="channelNoBSpinBox">
       <property name="minimumSize">
        <size>
         <width>42</width>
         <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>42</width>
+        <height>16777215</height>
        </size>
       </property>
      </widget>
@@ -591,150 +239,40 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="11">
-     <widget class="QDoubleSpinBox" name="maxWavelengthSpinBox">
+    <item row="18" column="9" colspan="4">
+     <widget class="QLabel" name="groupsAcceptanceFactorLabel">
       <property name="minimumSize">
        <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="18" column="13">
-     <widget class="QDoubleSpinBox" name="groupsAcceptanceFactorSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="5" colspan="5">
-     <widget class="QLineEdit" name="detCalibrationLineEdit">
-      <property name="minimumSize">
-       <size>
-        <width>150</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0" colspan="4">
-     <widget class="QLabel" name="noSmoothsOnMonitorLabel">
-      <property name="minimumSize">
-       <size>
-        <width>171</width>
+        <width>131</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>No. smooths on monitor</string>
+       <string>Acceptance factor</string>
       </property>
      </widget>
     </item>
-    <item row="7" column="14">
-     <widget class="QDoubleSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
+    <item row="11" column="0" colspan="4">
+     <widget class="QLabel" name="xScaleLabel">
       <property name="minimumSize">
        <size>
-        <width>63</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>69</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="12" colspan="3">
-     <widget class="QPushButton" name="browseDeadtimeFileButton">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
+        <width>144</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>Browse</string>
+       <string>X-scale for final DCS: </string>
       </property>
      </widget>
     </item>
-    <item row="8" column="14">
-     <widget class="QDoubleSpinBox" name="acceptanceFactorSpinBox">
+    <item row="2" column="16">
+     <widget class="QSpinBox" name="phiValuesColumnSpinBox">
       <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
        <size>
         <width>42</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="13" column="5">
-     <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
         <height>22</height>
        </size>
       </property>
-     </widget>
-    </item>
-    <item row="9" column="13">
-     <widget class="QDoubleSpinBox" name="stepWavelengthSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>74</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="19" column="9" colspan="3">
-     <widget class="QLabel" name="mergePowerLabel">
-      <property name="minimumSize">
-       <size>
-        <width>91</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Merge power</string>
-      </property>
-     </widget>
-    </item>
-    <item row="13" column="0" colspan="3">
-     <widget class="QRadioButton" name="DSpacingRadioButton">
-      <property name="minimumSize">
-       <size>
-        <width>111</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>d-spacing [A]</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">scaleSelectionButtonGroup</string>
-      </attribute>
      </widget>
     </item>
     <item row="11" column="5">
@@ -750,13 +288,26 @@
       </property>
      </widget>
     </item>
-    <item row="22" column="7">
-     <widget class="QSpinBox" name="outputDiagSpectrumSpinBox">
+    <item row="5" column="10" colspan="3">
+     <widget class="QLineEdit" name="spectrumNumbersTLineEdit">
       <property name="minimumSize">
        <size>
-        <width>42</width>
-        <height>22</height>
+        <width>91</width>
+        <height>25</height>
        </size>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="9">
+     <widget class="QLabel" name="stepXScaleLabel">
+      <property name="minimumSize">
+       <size>
+        <width>61</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Step size</string>
       </property>
      </widget>
     </item>
@@ -767,6 +318,22 @@
         <width>150</width>
         <height>25</height>
        </size>
+      </property>
+     </widget>
+    </item>
+    <item row="21" column="8" colspan="5">
+     <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
+      <property name="minimumSize">
+       <size>
+        <width>151</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text">
+       <string>Hard group edges?</string>
       </property>
      </widget>
     </item>
@@ -789,31 +356,40 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4" colspan="4">
-     <widget class="QLineEdit" name="dataFileDirectoryLineEdit">
+    <item row="4" column="0" colspan="8">
+     <widget class="QLabel" name="spectrumNumbersIBLabel">
       <property name="minimumSize">
        <size>
-        <width>150</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="24" column="14">
-     <widget class="QPushButton" name="browseNexusDefinitionButton">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
+        <width>311</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>Browse</string>
+       <string>Spectrum numbers for incident beam monitor</string>
       </property>
      </widget>
     </item>
-    <item row="7" column="7" colspan="2">
-     <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
+    <item row="13" column="7">
+     <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="19" column="12">
+     <widget class="QSpinBox" name="mergePowerSpinBox">
       <property name="minimumSize">
        <size>
         <width>42</width>
@@ -822,32 +398,35 @@
       </property>
      </widget>
     </item>
-    <item row="20" column="8">
-     <widget class="QPushButton" name="removeGroupingParameterButton">
-      <property name="maximumSize">
+    <item row="8" column="10" colspan="3">
+     <widget class="QLabel" name="acceptanceFactorLabel">
+      <property name="minimumSize">
        <size>
-        <width>30</width>
-        <height>16777215</height>
+        <width>131</width>
+        <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>-</string>
+       <string>Acceptance factor</string>
       </property>
      </widget>
     </item>
-    <item row="21" column="8" colspan="5">
-     <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
+    <item row="13" column="9" colspan="2">
+     <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>151</width>
-        <height>23</height>
+        <width>62</width>
+        <height>22</height>
        </size>
       </property>
-      <property name="layoutDirection">
-       <enum>Qt::RightToLeft</enum>
-      </property>
-      <property name="text">
-       <string>Hard group edges?</string>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>16777215</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -867,6 +446,94 @@
         <width>62</width>
         <height>16777215</height>
        </size>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="5">
+     <widget class="QDoubleSpinBox" name="minTOFSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="8">
+     <widget class="QLabel" name="wavelengthRangeMonNormLabel">
+      <property name="minimumSize">
+       <size>
+        <width>311</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Wavelength range for monitor normalisation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="12" colspan="3">
+     <widget class="QPushButton" name="browseDeadtimeFileButton">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="5">
+     <widget class="QDoubleSpinBox" name="minQSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="13">
+     <widget class="QDoubleSpinBox" name="groupsAcceptanceFactorSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="8">
+     <widget class="QLabel" name="spectrumNumbersTLabel">
+      <property name="minimumSize">
+       <size>
+        <width>311</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Spectrum numbers for transmission monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="24" column="14">
+     <widget class="QPushButton" name="browseNexusDefinitionButton">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
       </property>
      </widget>
     </item>
@@ -893,19 +560,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="8">
-     <widget class="QLabel" name="spectrumNumbersIBLabel">
-      <property name="minimumSize">
-       <size>
-        <width>311</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Spectrum numbers for incident beam monitor</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0" colspan="4">
      <widget class="QLabel" name="dataFileDirectoryLabel">
       <property name="minimumSize">
@@ -919,76 +573,53 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="0" colspan="7">
-     <widget class="QLabel" name="wavelengthRangeLabel">
+    <item row="7" column="14">
+     <widget class="QDoubleSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
       <property name="minimumSize">
        <size>
-        <width>261</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Wavelength range to use and step size</string>
-      </property>
-     </widget>
-    </item>
-    <item row="19" column="8">
-     <widget class="QPushButton" name="addGroupingParameterButton">
-      <property name="maximumSize">
-       <size>
-        <width>30</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-    </item>
-    <item row="22" column="0" colspan="7">
-     <widget class="QLabel" name="outputDiagSpectrumLabel">
-      <property name="minimumSize">
-       <size>
-        <width>221</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Spectrum number for output diagnostic files</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="7">
-     <widget class="QSpinBox" name="channelNoBSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>42</width>
+        <width>63</width>
         <height>22</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>42</width>
+        <width>69</width>
         <height>16777215</height>
        </size>
       </property>
      </widget>
     </item>
-    <item row="2" column="10" colspan="4">
-     <widget class="QLabel" name="phiValuesColumnLabel">
+    <item row="19" column="14">
+     <widget class="QLabel" name="mergeWeightsLabel">
       <property name="minimumSize">
        <size>
-        <width>160</width>
+        <width>31</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>Column for Phi Values</string>
+       <string>By?</string>
       </property>
      </widget>
     </item>
-    <item row="13" column="9" colspan="2">
-     <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
+    <item row="6" column="14" colspan="4">
+     <widget class="QDoubleSpinBox" name="maxWavelengthMonNormSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>63</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="7">
+     <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -1006,75 +637,16 @@
       </property>
      </widget>
     </item>
-    <item row="24" column="5" colspan="7">
-     <widget class="QLineEdit" name="nexusDefintionFileLineEdit">
+    <item row="19" column="9" colspan="3">
+     <widget class="QLabel" name="mergePowerLabel">
       <property name="minimumSize">
        <size>
-        <width>223</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="10" colspan="3">
-     <widget class="QPushButton" name="browseDataFileDirectoryButton">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
+        <width>91</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>Browse</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0" colspan="8">
-     <widget class="QLabel" name="spectrumNumbersTLabel">
-      <property name="minimumSize">
-       <size>
-        <width>311</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Spectrum numbers for transmission monitor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0" colspan="2">
-     <widget class="QLabel" name="queitCountConstLabel">
-      <property name="text">
-       <string>Quiet count const:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="0" colspan="3">
-     <widget class="QRadioButton" name="wavelengthRadioButton">
-      <property name="minimumSize">
-       <size>
-        <width>121</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>wavelength [A]</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">scaleSelectionButtonGroup</string>
-      </attribute>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="4">
-     <widget class="QLabel" name="deadtimeFileLabel">
-      <property name="minimumSize">
-       <size>
-        <width>171</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Deadtime Constants File</string>
+       <string>Merge power</string>
       </property>
      </widget>
     </item>
@@ -1091,37 +663,8 @@
       </property>
      </widget>
     </item>
-    <item row="15" column="0" colspan="3">
-     <widget class="QRadioButton" name="energyRadioButton">
-      <property name="minimumSize">
-       <size>
-        <width>121</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>energy [meV]</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">scaleSelectionButtonGroup</string>
-      </attribute>
-     </widget>
-    </item>
-    <item row="11" column="7">
-     <widget class="QLabel" name="maxXScaleLabel">
-      <property name="minimumSize">
-       <size>
-        <width>31</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Max</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="11" colspan="2">
-     <widget class="QDoubleSpinBox" name="minWavelengthMonNormSpinBox">
+    <item row="20" column="14">
+     <widget class="QDoubleSpinBox" name="incidentFlightPathSpinBox">
       <property name="minimumSize">
        <size>
         <width>62</width>
@@ -1130,26 +673,140 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="10" colspan="3">
-     <widget class="QLineEdit" name="spectrumNumbersIBLineEdit">
+    <item row="10" column="0" colspan="4">
+     <widget class="QLabel" name="noSmoothsOnMonitorLabel">
       <property name="minimumSize">
        <size>
-        <width>91</width>
+        <width>171</width>
         <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>No. smooths on monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="5">
+     <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
        </size>
       </property>
      </widget>
     </item>
-    <item row="11" column="9">
-     <widget class="QLabel" name="stepXScaleLabel">
+    <item row="16" column="0" colspan="3">
+     <widget class="QRadioButton" name="TOFRadioButton">
+      <property name="minimumSize">
+       <size>
+        <width>121</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>TOF [mus]</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">scaleSelectionButtonGroup</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="0" column="15" colspan="2">
+     <widget class="QComboBox" name="dataFileTypeCombo">
       <property name="minimumSize">
        <size>
         <width>61</width>
         <height>25</height>
        </size>
       </property>
+     </widget>
+    </item>
+    <item row="15" column="9" colspan="2">
+     <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="5" colspan="5">
+     <widget class="QLineEdit" name="detCalibrationLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4" colspan="4">
+     <widget class="QLineEdit" name="dataFileDirectoryLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0" colspan="7">
+     <widget class="QLabel" name="wavelengthRangeLabel">
+      <property name="minimumSize">
+       <size>
+        <width>261</width>
+        <height>25</height>
+       </size>
+      </property>
       <property name="text">
-       <string>Step size</string>
+       <string>Wavelength range to use and step size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="24" column="5" colspan="7">
+     <widget class="QLineEdit" name="nexusDefintionFileLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>223</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="6">
+     <widget class="QSpinBox" name="noSmoothsOnMonitorSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>42</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="0" rowspan="4" colspan="7">
+     <widget class="GroupingParameterTable" name="groupingParameterTable">
+      <property name="minimumSize">
+       <size>
+        <width>270</width>
+        <height>113</height>
+       </size>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
       </property>
      </widget>
     </item>
@@ -1172,31 +829,8 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="10" colspan="3">
-     <widget class="QLineEdit" name="spectrumNumbersTLineEdit">
-      <property name="minimumSize">
-       <size>
-        <width>91</width>
-        <height>25</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="23" column="0" colspan="6">
-     <widget class="QLabel" name="neutronScatteringParamsFileLabel">
-      <property name="minimumSize">
-       <size>
-        <width>211</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Neutron scattering params file</string>
-      </property>
-     </widget>
-    </item>
-    <item row="13" column="7">
-     <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
+    <item row="12" column="7">
+     <widget class="QDoubleSpinBox" name="maxQSpinBox">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -1214,29 +848,42 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="10" colspan="4">
-     <widget class="QLabel" name="queitCountConstTMLabel">
+    <item row="20" column="8">
+     <widget class="QPushButton" name="removeGroupingParameterButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="13" colspan="2">
+     <widget class="QLabel" name="dataFileTypeLabel">
       <property name="minimumSize">
        <size>
-        <width>151</width>
+        <width>41</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>Transmission monitor</string>
+       <string>Type</string>
       </property>
      </widget>
     </item>
-    <item row="15" column="5">
-     <widget class="QDoubleSpinBox" name="minEnergySpinBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
+    <item row="20" column="9" colspan="4">
+     <widget class="QLabel" name="incidentFlightPathLabel">
       <property name="minimumSize">
        <size>
-        <width>62</width>
-        <height>22</height>
+        <width>161</width>
+        <height>25</height>
        </size>
+      </property>
+      <property name="text">
+       <string>Incident flight path [m]</string>
       </property>
      </widget>
     </item>
@@ -1253,8 +900,322 @@
       </property>
      </widget>
     </item>
-    <item row="19" column="12">
-     <widget class="QSpinBox" name="mergePowerSpinBox">
+    <item row="14" column="9" colspan="2">
+     <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="2">
+     <widget class="QLabel" name="queitCountConstLabel">
+      <property name="text">
+       <string>Quiet count const:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="23" column="6" colspan="7">
+     <widget class="QLineEdit" name="neutronScatteringParamsFileLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>223</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2" colspan="5">
+     <widget class="QLabel" name="queitCountConstIMLabel">
+      <property name="minimumSize">
+       <size>
+        <width>131</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Incident monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="5">
+     <widget class="QDoubleSpinBox" name="minEnergySpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="10" colspan="4">
+     <widget class="QLabel" name="queitCountConstTMLabel">
+      <property name="minimumSize">
+       <size>
+        <width>151</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Transmission monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="19" column="8">
+     <widget class="QPushButton" name="addGroupingParameterButton">
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="11" colspan="2">
+     <widget class="QDoubleSpinBox" name="minWavelengthMonNormSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="23" column="0" colspan="6">
+     <widget class="QLabel" name="neutronScatteringParamsFileLabel">
+      <property name="minimumSize">
+       <size>
+        <width>211</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Neutron scattering params file</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="5">
+     <widget class="QLineEdit" name="groupsFileLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="13">
+     <widget class="QDoubleSpinBox" name="stepWavelengthSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>74</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QLabel" name="deadtimeFileLabel">
+      <property name="minimumSize">
+       <size>
+        <width>171</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Deadtime Constants File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0" colspan="2">
+     <widget class="QRadioButton" name="_QRadioButton">
+      <property name="minimumSize">
+       <size>
+        <width>81</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Q [1/A]</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">scaleSelectionButtonGroup</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="5">
+     <widget class="QLabel" name="detCalibrationLabel">
+      <property name="minimumSize">
+       <size>
+        <width>171</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Detector Calibration File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="groupsFileLabel">
+      <property name="minimumSize">
+       <size>
+        <width>81</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Groups File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="10" colspan="3">
+     <widget class="QLineEdit" name="spectrumNumbersIBLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>91</width>
+        <height>25</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="0" colspan="3">
+     <widget class="QRadioButton" name="energyRadioButton">
+      <property name="minimumSize">
+       <size>
+        <width>121</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>energy [meV]</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">scaleSelectionButtonGroup</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="2" column="9">
+     <widget class="QPushButton" name="browseGroupsFileButton">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="12" colspan="2">
+     <widget class="QPushButton" name="browseDetCalibrationButton">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="7">
+     <widget class="QLabel" name="maxXScaleLabel">
+      <property name="minimumSize">
+       <size>
+        <width>31</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Max</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="0" colspan="3">
+     <widget class="QRadioButton" name="DSpacingRadioButton">
+      <property name="minimumSize">
+       <size>
+        <width>111</width>
+        <height>23</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>d-spacing [A]</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">scaleSelectionButtonGroup</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="8" column="14">
+     <widget class="QDoubleSpinBox" name="acceptanceFactorSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>42</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="5">
+     <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="7" colspan="2">
+     <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
       <property name="minimumSize">
        <size>
         <width>42</width>
@@ -1263,26 +1224,65 @@
       </property>
      </widget>
     </item>
-    <item row="19" column="14">
-     <widget class="QLabel" name="mergeWeightsLabel">
+    <item row="2" column="12">
+     <widget class="QLabel" name="phiValuesColumnLabel">
       <property name="minimumSize">
        <size>
-        <width>31</width>
+        <width>160</width>
         <height>25</height>
        </size>
       </property>
       <property name="text">
-       <string>By?</string>
+       <string>Column for Phi Values</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="15" colspan="2">
-     <widget class="QComboBox" name="dataFileTypeCombo">
+    <item row="9" column="8">
+     <widget class="QDoubleSpinBox" name="minWavelengthSpinBox">
       <property name="minimumSize">
        <size>
-        <width>61</width>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>74</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="11">
+     <widget class="QDoubleSpinBox" name="maxWavelengthSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="22" column="8">
+     <widget class="QSpinBox" name="outputDiagSpectrumSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>42</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="22" column="0" colspan="8">
+     <widget class="QLabel" name="outputDiagSpectrumLabel">
+      <property name="minimumSize">
+       <size>
+        <width>221</width>
         <height>25</height>
        </size>
+      </property>
+      <property name="text">
+       <string>Spectrum number for output diagnostic files</string>
       </property>
      </widget>
     </item>
