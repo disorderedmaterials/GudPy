@@ -23,6 +23,44 @@ class ContainerWidget(QWidget):
     -------
     initComponents()
         Loads UI file, and then populates data from the Container.
+    handlePeriodNoChanged(value)
+        Slot for handling change in the period number.
+    handleGeometryChanged(index)
+        Slot for handling change in the geometry.
+    handleUpstreamThicknessChanged(value)
+        Slot for handling change in the upstream thickness.
+    handleDownstreamThicknessChanged(value)
+        Slot for handling change in the downstream thickness.
+    handleDensityChanged(value)
+        Slot for handling change in the density.
+    handleTotalCrossSectionChanged(index)
+        Slot for handling change in the total cross section source.
+    handleTweakFactorChanged(value)
+        Slot for handling change in the sample tweak factor.
+    handleAngleOfRotationChanged(value)
+        Slot for handling change in the angle of rotation.
+    handleSampleWidthChanged(value)
+        Slot for handling change in the sample width.
+    handleScatteringFractionChanged(value)
+        Slot for handling change in the environment scattering fraction.
+    handleAttenuationCoefficientChanged(value)
+        Slot for handling change in the environment attenuation coefficient.
+    handleDataFilesAltered(item)
+        Slot for handling changes to the data files list.
+    handleDataFileInserted(item)
+        Slot for handling insertion to the data files list.
+    updateDataFilesList()
+        Fills the data files list.
+    addFiles(target, title, regex)
+        Slot for adding files to the data files list.
+    removeFile(target, dataFiles)
+        Slot for removing data files from the list.
+    updateCompositionTable()
+        Fills the composition table.
+    handleInsertElement()
+        Slot for handling insertion to the composition table.
+    handleRemoveElement()
+        Slot for removing the selected element from the composition table.
     """
 
     def __init__(self, container, parent=None):
@@ -43,44 +81,176 @@ class ContainerWidget(QWidget):
         self.initComponents()
 
     def handlePeriodNoChanged(self, value):
+        """
+        Slot for handling change in the period number.
+        Called when a valueChanged signal is emitted,
+        from the periodNoSpinBox.
+        Alters the container's period number as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the periodNoSpinBox.
+        """
         self.container.periodNo = value
 
     def handleGeometryChanged(self, index):
+        """
+        Slot for handling change in sample geometry.
+        Called when a currentIndexChanged signal is emitted,
+        from the geometryComboBox.
+        Alters the container geometry as such.
+        Parameters
+        ----------
+        index : QModelIndex
+            The new current index of the geometryComboBox.
+        """
         self.container.geometry = self.geometryComboBox.itemData(index)
 
     def handleUpstreamThicknessChanged(self, value):
+        """
+        Slot for handling change in the upstream thickness.
+        Called when a valueChanged signal is emitted,
+        from the upstreamSpinBox.
+        Alters the container's upstream thickness as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the upstreamSpinBox.
+        """
         self.container.upstreamThickness = value
 
     def handleDownstreamThicknessChanged(self, value):
+        """
+        Slot for handling change in the downstream thickness.
+        Called when a valueChanged signal is emitted,
+        from the downstreamSpinBox.
+        Alters the container's downstream thickness as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the downstreamSpinBox.
+        """
         self.container.downstreamThickness = value
 
     def handleDensityChanged(self, value):
+        """
+        Slot for handling change in the density.
+        Called when a valueChanged signal is emitted,
+        from the densitySpinBox.
+        Alters the container's density as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the densitySpinBox.
+        """
         self.container.density = value
 
     def handleTotalCrossSectionChanged(self, index):
+        """
+        Slot for handling change in total cross ection source.
+        Called when a currentIndexChanged signal is emitted,
+        from the totalCrossSectionComboBox.
+        Alters the container's total cross section source as such.
+        Parameters
+        ----------
+        index : QModelIndex
+            The new current index of the totalCrossSectionComboBox.
+        """
         self.container.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
 
     def handleTweakFactorChanged(self, value):
+        """
+        Slot for handling change in the sample tweak factor.
+        Called when a valueChanged signal is emitted,
+        from the tweakFactorSpinBox.
+        Alters the container's density as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the tweakFactorSpinBox.
+        """
         self.container.tweakFactor = value
 
     def handleAngleOfRotationChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the angleOfRotationSpinBox.
+        Alters the container's angle of rotation as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the angleOfRotationSpinBox.
+        """
         self.container.angleOfRotation = value
 
     def handleSampleWidthChanged(self, value):
+        """
+        Slot for handling change in the sample width.
+        Called when a valueChanged signal is emitted,
+        from the sampleWidthSpinBox.
+        Alters the container's sample width as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the sampleWidthSpinBox.
+        """
         self.container.sampleWidth = value
 
     def handleSampleHeightChanged(self, value):
+        """
+        Slot for handling change in the sample height.
+        Called when a valueChanged signal is emitted,
+        from the sampleHeightSpinBox.
+        Alters the container's sample height as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the sampleHeightSpinBox.
+        """
         self.container.sampleHeight = value
 
     def handleScatteringFractionChanged(self, value):
+        """
+        Slot for handling change in the container's environment
+        scattering fraction.
+        Called when a valueChanged signal is emitted,
+        from the scatteringFractionSpinBox.
+        Alters the container's scattering fraction as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the scatteringFractionSpinBox.
+        """
         self.container.scatteringFraction = value
 
     def handleAttenuationCoefficientChanged(self, value):
+        """
+        Slot for handling change in the container's environment
+        attenuation coefficient.
+        Called when a valueChanged signal is emitted,
+        from the attenuationCoefficientSpinBox.
+        Alters the container's attenuation coefficient as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the attenuationCoefficientSpinBox.
+        """
         self.container.attenuationCoefficient = value
 
     def handleDataFilesAltered(self, item):
+        """
+        Slot for handling an item in the data files list being changed.
+        Called when an itemChanged signal is emitted,
+        from the dataFilesList.
+        Alters the container's data files as such.
+        Parameters
+        ----------
+        item : QListWidgetItem
+            The item altered.
+        """
         index = item.row()
         value = item.text()
         if not value:
@@ -90,16 +260,34 @@ class ContainerWidget(QWidget):
         self.updateDataFilesList()
 
     def handleDataFileInserted(self, item):
+        """
+        Slot for handling an item in the data files list being entered.
+        Called when an itemEntered signal is emitted,
+        from the dataFilesList.
+        Alters the container's data files as such.
+        Parameters
+        ----------
+        item : QListWidgetItem
+            The item entered.
+        """
         value = item.text()
         self.container.dataFiles.dataFiles.append(value)
 
     def updateDataFilesList(self):
+        """
+        Fills the data files list.
+        """
         self.dataFilesList.clear()
         self.dataFilesList.addItems(
             [df for df in self.container.dataFiles.dataFiles]
         )
 
     def addFiles(self, target, title, regex):
+        """
+        Slot for adding files to the data files list.
+        Called when a clicked signal is emitted,
+        from the addDataFileButton.
+        """
         paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
             if path:
@@ -107,21 +295,38 @@ class ContainerWidget(QWidget):
                 self.handleDataFileInserted(target.item(target.count() - 1))
 
     def removeFile(self, target, dataFiles):
+        """
+        Slot for removing files from the data files list.
+        Called when a clicked signal is emitted,
+        from the removeDataFileButton.
+        """
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
             self.updateDataFilesList()
 
     def updateCompositionTable(self):
-
+        """
+        Fills the composition list.
+        """
         self.containerCompositionTable.makeModel(
             self.container.composition.elements
         )
 
     def handleInsertElement(self):
+        """
+        Slot for handling insertion to the composition table.
+        Called when a clicked signal is emitted, from the
+        insertElementButton.
+        """
         self.containerCompositionTable.insertRow()
 
     def handleRemoveElement(self):
+        """
+        Slot for removing files from the data files list.
+        Called when a clicked signal is emitted,
+        from the removeDataFileButton.
+        """
         self.containerCompositionTable.removeRow(
             self.containerCompositionTable.selectionModel().selectedRows()
         )
