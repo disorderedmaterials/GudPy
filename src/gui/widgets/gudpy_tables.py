@@ -31,11 +31,8 @@ class GudPyTableModel(QAbstractTableModel):
     def data(self, index, role):
         row = index.row()
         col = index.column()
-        return (
-            self._data[row][col]
-            if (role == role & (Qt.DisplayRole | Qt.EditRole))
-            else None
-        )
+        if role == role & (Qt.DisplayRole | Qt.EditRole):
+            return self._data[row][col]
 
     def headerData(self, section, orientation, role):
         return (
@@ -44,11 +41,11 @@ class GudPyTableModel(QAbstractTableModel):
             else QVariant()
         )
 
-    def insertRow(self):
+    def insertRow(self, data):
         self.beginInsertRows(
             QModelIndex(), self.rowCount(self), self.rowCount(self)
         )
-        self._data.append((0, 0.0, 0.0, 0.0))
+        self._data.append(data)
         self.endInsertRows()
 
     def removeRow(self, index):
@@ -67,6 +64,7 @@ class GudPyDelegate(QItemDelegate):
     def setEditorData(self, editor, index):
         value = index.model().data(index, Qt.EditRole)
         if value:
+            print(value)
             editor.setValue(value)
 
     def setModelData(self, editor, model, index):
@@ -93,6 +91,8 @@ class GroupingParameterModel(GudPyTableModel):
         if role == Qt.EditRole:
             self._data[row] = tuple(mutable)
 
+    def insertRow(self):
+        return super(GroupingParameterModel, self).insertRow((0, 0., 0., 0.))
 
 class GroupingParameterDelegate(GudPyDelegate):
     def createEditor(self, parent, option, index):
@@ -144,9 +144,11 @@ class BeamProfileModel(GudPyTableModel):
 
     def data(self, index, role):
         row = index.row()
-        return (
-            self._data[row] if (role == role & (Qt.DisplayRole | Qt.EditRole)) else None
-        )
+        if role == role & (Qt.DisplayRole | Qt.EditRole):
+            return self._data[row]
+
+    def insertRow(self):
+        return super(BeamProfileModel, self).insertRow(0.)
 
 
 class BeamProfileDelegate(GudPyDelegate):
@@ -204,11 +206,8 @@ class CompositionModel(GudPyTableModel):
     def data(self, index, role):
         row = index.row()
         col = index.column()
-        return (
-            self._data[row].__dict__[self.attrs[col]]
-            if (role == role & (Qt.DisplayRole | Qt.EditRole))
-            else None
-        )
+        if role == role & (Qt.DisplayRole | Qt.EditRole):
+            return self._data[row].__dict__[self.attrs[col]]
 
 
 class CompositionDelegate(GudPyDelegate):
