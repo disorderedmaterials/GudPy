@@ -415,10 +415,10 @@ class InstrumentWidget(QWidget):
         )
         self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
 
-        selection, min, max, step = self.scales[self.instrument.scaleSelection]
+        selection, min_, max_, step = self.scales[self.instrument.scaleSelection]
         selection.setChecked(True)
-        min.setValue(self.instrument.XMin)
-        max.setValue(self.instrument.XMax)
+        min_.setValue(self.instrument.XMin)
+        max_.setValue(self.instrument.XMax)
         step.setValue(self.instrument.XStep)
 
         self.logarithmicBinningCheckBox.setChecked(
