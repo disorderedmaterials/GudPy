@@ -275,7 +275,7 @@ class ExponentialModel(GudPyTableModel):
 
     def insertRow(self):
         if self.rowCount(self) < 5:
-            super(ResonanceModel, self).insertRow()
+            super(ExponentialModel, self).insertRow((0.,0.))
 
 
 class ExponentialDelegate(GudPyDelegate):
@@ -322,7 +322,7 @@ class ResonanceModel(GudPyTableModel):
 
     def insertRow(self):
         if self.rowCount(self) < 5:
-            super(ResonanceModel, self).insertRow()
+            super(ResonanceModel, self).insertRow((0.,0.))
 
 
 class ResonanceDelegate(GudPyDelegate):
