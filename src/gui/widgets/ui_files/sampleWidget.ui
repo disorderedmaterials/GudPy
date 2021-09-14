@@ -277,6 +277,9 @@
       <property name="selectionBehavior">
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>83</number>
+      </attribute>
      </widget>
     </item>
     <item row="0" column="3" colspan="3">
