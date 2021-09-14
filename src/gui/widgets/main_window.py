@@ -76,7 +76,7 @@ class GudPyMainWindow(QMainWindow):
             )
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.objectStack.currentChanged.connect(self.cascadeGeometries)
+        self.objectStack.currentChanged.connect(self.updateGeometries)
 
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(
