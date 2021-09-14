@@ -293,7 +293,7 @@ class BeamWidget(QWidget):
 
     def handleShieldingAbsorptionCoeffChanged(self, value):
         """
-        Slot for handling change in the shielding absorption attenuatio coefficient.
+        Slot for handling change in the shielding absorption attenuation coefficient.
         Called when a valueChanged signal is emitted,
         from the shieldingSpinBox.
         Alters the beam's absorption shielding attenuation coefficient as such.
