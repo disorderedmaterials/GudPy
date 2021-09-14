@@ -14,6 +14,7 @@ from src.gui.widgets.beam_widget import BeamWidget
 from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
 from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
+from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
 
