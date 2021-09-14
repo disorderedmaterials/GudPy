@@ -5,7 +5,10 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QSpinBox,
     QTableView,
+    QMenu,
+    QAction
 )
+from PyQt5.QtGui import QCursor
 
 from src.gudrun_classes.element import Element
 
@@ -240,6 +243,7 @@ class CompositionDelegate(GudPyDelegate):
 class CompositionTable(QTableView):
     def __init__(self, parent):
         self.parent = parent
+        self.compositions = []
         super(CompositionTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
@@ -249,6 +253,7 @@ class CompositionTable(QTableView):
             )
         )
         self.setItemDelegate(CompositionDelegate())
+        self.farmCompositions()
 
     def insertRow(self):
         self.model().insertRow()
@@ -257,6 +262,27 @@ class CompositionTable(QTableView):
         for _row in rows:
             self.model().removeRow(_row.row())
 
+    def farmCompositions(self):
+
+        grandparent = self.parent.parent().parent
+        self.compositions = [("Normalisation", grandparent.gudrunFile.normalisation.composition)]
+        for sampleBackground in grandparent.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                self.compositions.append((sample.name, sample.composition))
+                for container in sample.containers:
+                    self.compositions.append((container.name, container.composition))
+
+    def pasteFrom(self, composition):
+        self.makeModel(composition.elements)
+
+    def contextMenuEvent(self, event):
+        self.menu = QMenu(self)
+        pasteMenu = self.menu.addMenu("Paste from")
+        for composition in self.compositions:
+            action = QAction(f"{composition[0]}", pasteMenu)
+            action.triggered.connect(lambda: self.pasteFrom(composition[1]))
+            pasteMenu.addAction(action)
+        self.menu.popup(QCursor.pos())
 
 class ExponentialModel(GudPyTableModel):
     def __init__(self, data, headers, parent):

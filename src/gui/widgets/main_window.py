@@ -77,7 +77,7 @@ class GudPyMainWindow(QMainWindow):
             )
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.objectStack.currentChanged.connect(self.updateGeometries)
+        self.objectStack.currentChanged.connect(self.updateComponents)
 
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(
@@ -101,3 +101,17 @@ class GudPyMainWindow(QMainWindow):
                     target.geometryComboBox.setCurrentIndex(config.geometry.value)
             elif isinstance(target, (SampleWidget, ContainerWidget)):
                 target.geometryComboBox.setCurrentIndex(config.geometry.value)
+
+    def updateCompositions(self):
+        for i in range(self.objectStack.count()):
+            target = self.objectStack.widget(i)
+            if isinstance(target, NormalisationWidget):
+                target.normalisationCompositionTable.farmCompositions()
+            elif isinstance(target, SampleWidget):
+                target.sampleCompositionTable.farmCompositions()
+            elif isinstance(target, ContainerWidget):
+                target.containerCompositionTable.farmCompositions()
+
+    def updateComponents(self):
+        self.updateGeometries()
+        self.updateCompositions()
