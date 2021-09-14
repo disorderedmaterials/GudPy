@@ -95,9 +95,11 @@ class GudPyMainWindow(QMainWindow):
     def updateGeometries(self):
         for i in range(self.objectStack.count()):
             target = self.objectStack.widget(i)
-            if isinstance(target, (NormalisationWidget, SampleWidget, ContainerWidget)):
+            if isinstance(target, NormalisationWidget):
+                if target.normalisation.geometry == Geometry.SameAsBeam:
+                    target.geometryComboBox.setCurrentIndex(config.geometry.value)
+            else:
                 target.geometryComboBox.setCurrentIndex(config.geometry.value)
-
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
