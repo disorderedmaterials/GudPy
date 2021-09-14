@@ -21,6 +21,88 @@ class InstrumentWidget(QWidget):
     -------
     initComponents()
         Loads UI file, and then populates data from the Instrument.
+    handleInstrumentNameChanged(index)
+       Slot for handling change to the instrument name.
+    handleDataFileDirectoryChanged(text)
+        Slot for handling change to the data file directory.
+    handleDataFileTypeChanged(index)
+        Slot for handling hange to the data file type.
+    handleDetectorCalibrationFileChanged(text)
+        Slot for handling change to the detector calibration file name.
+    handleGroupsFileChanged(text)
+        Slot for handling change to the groups file name.
+    handleDeadtimeFileChanged(text)
+        Slot for handling change to the deadtime constants file name.
+    handleUseLogarithmicBinningSwitched(state)
+        Slot for handling switching logarithmic binning on/off.
+    handleMergeWeightsChanged(index)
+        Slot for handling change to what to merge weights by.
+    handleNeutronScatteringParamsFileChanged(text)
+        Slot for handling change to the neutron scattering parameters file name.
+    handleNexusDefinitionFileChanged(text)
+        Slot for handling change to the NeXus definition file name.
+    handleHardGroupEdgesSwitched(state)
+        Slot for handling switching hard group edges on/off.
+    handleColumnNoPhiValuesChanged(value)
+        Slot for handling change to the column numbers for phi values.
+    handleMinWavelengthMonNormChanged(value)
+        Slot for handling change to the minimum wavelength for
+        monitor normalisation.
+    handleMaxWavelengthMonNormChanged(value)
+        Slot for handling change to the maximum wavelength for
+        monitor normalisation.
+    handleSpectrumNumbersIBChanged(text)
+        Slot for handling change to the spectrum numbers
+        for the incident beam monitor.
+    handleSpectrumNumbersTChanged(text)
+        Slot for handling change to the spectrum numbers
+        for the transmission monitor
+    handleIncidentMonitorQuietCountConstChanged(value)
+        Slot for handling change to the incident monitor quiet count constant.
+    handleTransmissionMonitorQuietCountConstChanged(value)
+        Slot for handling change to the transmission monitor quiet count constant.
+    handleChannelNoAChanged(value)
+        Slot for handling change to the lower channel number.
+    handleChannelNoBChanged(value)
+        Slot for handling change to the upper channel number.
+    handleSpikeAnalysisAcceptanceFactorChanged(value)
+        Slot for handling change to the spike analysis acceptance factor.
+    handleMinWavelengthChanged(value)
+        Slot for handling change to the minimum wavelength.
+    handleMaxWavelengthChanged(value)
+        Slot for handling change to the maximum wavelength.
+    handleStepWavelengthChanged(value)
+        Slot for handling change to the wavelength step size.
+    handleNoSmoothsOnMonitorChanged(value)
+        Slot for handling change to the number of smooths on the monitor.
+    handleQScaleStateChanged()
+        Slot for handling switching to/from the Q-Scale for final DCS.
+    handleDSpacingScaleStateChanged()
+        Slot for handling switching to/from the D-Spacing scale for final DCS.
+    handleWavelengthScaleStateChanged()
+        Slot for handling switching to/from the wavelength scale for final DCS.
+    handleEnergyScaleStateChanged()
+        Slot for handling switching to/from the energy scale for final DCS.
+    handleTOFScaleStateChanged()
+        Slot for handling switching to/from the TOF scale for final DCS.
+    handleGroupsAcceptanceFactorChanged(value)
+        Slot for handling change to the groups acceptance factor.
+    handleMergePowerChanged(value)
+        Slot for handling change to the merge power.
+    handleIncidentFlightPathChanged(value)
+        Slot for handling change to the incident flight path.
+    handleSpectrumNumberForOutputDiagChanged(value)
+        Slot for handling change to the spectrum number for output diagnostics.
+    handleBrowse(target, title, dir=False)
+        Slot for handling browsing files.
+    browseFile( title, dir=False)
+        Helper method for browsing files.
+    updateGroupingParameterPanel()
+        Fill the grouping parameter panel.
+    handleAddGroupingParameter()
+        Slot for handling adding a row to the grouping parameter panel.
+    handleRemoveGroupingParameter()
+        Slot for removing a row from the grouping parameter panel.
     """
 
     def __init__(self, instrument, parent=None):
@@ -44,12 +126,42 @@ class InstrumentWidget(QWidget):
         self.initComponents()
 
     def handleInstrumentNameChanged(self, index):
+        """
+        Slot for handling change to the instrument name.
+        Called when a valueChanged signal is emitted,
+        from the nameComboBox.
+        Alters the instrument's name as such.
+        Parameters
+        ----------
+        index : int
+            New current index of the nameComboBox.
+        """
         self.instrument.name = self.nameComboBox.itemData(index)
 
     def handleDataFileDirectoryChanged(self, text):
+        """
+        Slot for handling change to the instrument name.
+        Called when a textChanged signal is emitted,
+        from the dataFileDirectoryLineEdit.
+        Alters the instrument's data file directory as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the dataFileDirectoryLineEdit.
+        """
         self.instrument.dataFileDir = text
 
     def handleDataFileTypeChanged(self, index):
+        """
+        Slot for handling change to the data file type.
+        Called when a valueChanged signal is emitted,
+        from the dataFileTypeCombo.
+        Alters the instrument's data file type as such.
+        Parameters
+        ----------
+        index : int
+            New current index of the dataFileTypeCombo.
+        """
         self.instrument.dataFileType = self.dataFileTypeCombo.itemText(index)
         self.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
@@ -59,90 +171,329 @@ class InstrumentWidget(QWidget):
         )
 
     def handleDetectorCalibrationFileChanged(self, text):
+        """
+        Slot for handling change to the detector calibration file name.
+        Called when a textChanged signal is emitted,
+        from the detCalibrationLineEdit.
+        Alters the instrument's detector calibration file name as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the detCalibrationLineEdit.
+        """
         self.instrument.detectorCalibrationFileName = text
 
     def handleGroupsFileChanged(self, text):
+        """
+        Slot for handling change to the groups file name.
+        Called when a textChanged signal is emitted,
+        from the groupsFileLineEdit.
+        Alters the instrument's groups file name as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the groupsFileLineEdit.
+        """
         self.instrument.groupFileName = text
 
     def handleDeadtimeFileChanged(self, text):
+        """
+        Slot for handling change to the deadtime constants file name.
+        Called when a textChanged signal is emitted,
+        from the deadtimeFileLineEdit.
+        Alters the instrument's deadtime constants file name as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the deadtimeFileLineEdit.
+        """
         self.instrument.deadtimeConstantsFileName = text
 
     def handleUseLogarithmicBinningSwitched(self, state):
+        """
+        Slot for handling switching logarithmic binning on/off.
+        Called when the stateChanged signal is emitted,
+        from the logarithmicBinningCheckBox.
+        Updates the instrument as such.
+        Parameters
+        ----------
+        state : int
+            The new state of the logarithmicBinningCheckBox (1: True, 0: False)
+        """
         self.instrument.useLogarithmicBinning = state
 
     def handleMergeWeightsChanged(self, index):
+        """
+        Slot for handling change to what to merge weights by.
+        Called when a valueChanged signal is emitted,
+        from the mergeWeightsComboBox.
+        Alters the instrument's name as such.
+        Parameters
+        ----------
+        index : int
+            New current index of the mergeWeightsComboBox.
+        """
         self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(
             index
         )
 
     def handleNeutronScatteringParamsFileChanged(self, text):
+        """
+        Slot for handling change to the neutron scattering parameters file name.
+        Called when a textChanged signal is emitted,
+        from the neutronScatteringParamsFileLineEdit.
+        Alters the instrument's neutron scattering parameters file name as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the neutronScatteringParamsFileLineEdit.
+        """
         self.instrument.neutronScatteringParametersFile = text
 
     def handleNexusDefinitionFileChanged(self, text):
+        """
+        Slot for handling change to the NeXus definition file name.
+        Called when a textChanged signal is emitted,
+        from the nexusDefintionFileLineEdit.
+        Alters the instrument's NeXus definition file name as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the nexusDefintionFileLineEdit.
+        """
         self.instrument.nxsDefinitionFile = text
 
     def handleHardGroupEdgesSwitched(self, state):
+        """
+        Slot for handling switching hard group edges on/off.
+        Called when the stateChanged signal is emitted,
+        from the hardGroupEdgesCheckBox.
+        Updates the instrument as such.
+        Parameters
+        ----------
+        state : int
+            The new state of the hardGroupEdgesCheckBox (1: True, 0: False)
+        """
         self.instrument.hardGroupEdges = state
 
     def handleColumnNoPhiValuesChanged(self, value):
+        """
+        Slot for handling change to the column numbers for phi values.
+        Called when a valueChanged signal is emitted,
+        from the phiValuesColumnSpinBox.
+        Alters the instrument's column no. for phi values as such.
+        Parameters
+        ----------
+        value : int
+            The new value of the phiValuesColumnSpinBox.
+        """
         self.instrument.columnNoPhiVals = value
 
     def handleMinWavelengthMonNormChanged(self, value):
+        """
+        Slot for handling change to the minimum wavelength for
+        monitor normalisation.
+        Called when a valueChanged signal is emitted,
+        from the minWavelengthMonNormSpinBox.
+        Alters the instrument's minimum wavelength for monitor normalisation as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the minWavelengthMonNormSpinBox.
+        """
         self.instrument.wavelengthRangeForMonitorNormalisation = (
             value,
             self.instrument.wavelengthRangeForMonitorNormalisation[1],
         )
 
     def handleMaxWavelengthMonNormChanged(self, value):
+        """
+        Slot for handling change to the maximum wavelength for
+        monitor normalisation.
+        Called when a valueChanged signal is emitted,
+        from the maxWavelengthMonNormSpinBox.
+        Alters the instrument's maximum wavelength for monitor normalisation as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the maxWavelengthMonNormSpinBox.
+        """
         self.instrument.wavelengthRangeForMonitorNormalisation = (
             self.instrument.wavelengthRangeForMonitorNormalisation[1],
             value,
         )
 
     def handleSpectrumNumbersIBChanged(self, text):
+        """
+        Slot for handling change to the spectrum numbers
+        for the incident beam monitor.
+        Called when the textChanged signal is emitted,
+        from the spectrumNumbersIBLineEdit.
+        Alters the instrument's spectrum numbers for the incident
+        beam monitor as such.
+        Parameters
+        ----------
+        text : str
+            The new value of the spectrumNumbersIBLineEdit.
+        """
         self.instrument.incidentMonitorQuietCountConst = [
             int(x) for x in text.split()
         ]
 
     def handleSpectrumNumbersTChanged(self, text):
+        """
+        Slot for handling change to the spectrum numbers
+        for the transmission monitor.
+        Called when the textChanged signal is emitted,
+        from the spectrumNumbersTLineEdit.
+        Alters the instrument's spectrum numbers for the transmission
+        monitor as such.
+        Parameters
+        ----------
+        text : str
+            The new value of the spectrumNumbersTLineEdit.
+        """
         self.instrument.transmissionMonitorQuietCountConst = [
             int(x) for x in text.split()
         ]
 
     def handleIncidentMonitorQuietCountConstChanged(self, value):
+        """
+        Slot for handling change to the incident monitor quiet count constant.
+        Called when the valueChanged signal is emitted,
+        form the incidentMonitorQuietCountConstSpinBox.
+        Alters the instrument's quiet count constant for the
+        incident beam monitor as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the incidentMonitorQuietCountConstSpinBox.
+        """
         self.instrument.incidentMonitorQuietCountConst = value
 
     def handleTransmissionMonitorQuietCountConstChanged(self, value):
+        """
+        Slot for handling change to the incident monitor quiet count constant.
+        Called when the valueChanged signal is emitted,
+        form the transmissionMonitorQuietCountConstSpinBox.
+        Alters the instrument's quiet count constant for the
+        transmission monitor as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the transmissionMonitorQuietCountConstSpinBox.
+        """
         self.instrument.incidentMonitorQuietCountConst = value
 
     def handleChannelNoAChanged(self, value):
+        """
+        Slot for handling change to the lower channel number.
+        Called when the valueChanged signal is emitted,
+        form the channelNoASpinBox.
+        Alters the instrument's lower channel number as such.
+        Parameters
+        ----------
+        value : int
+            The new value of the channelNoASpinBox.
+        """
         self.instrument.channelNosSpikeAnalysis = (
             value,
             self.instrument.channelNosSpikeAnalysis[1],
         )
 
     def handleChannelNoBChanged(self, value):
+        """
+        Slot for handling change to the upper channel number.
+        Called when the valueChanged signal is emitted,
+        form the channelNoBSpinBox.
+        Alters the instrument's upper channel number as such.
+        Parameters
+        ----------
+        value : int
+            The new value of the channelNoBSpinBox.
+        """
         self.instrument.channelNosSpikeAnalysis = (
             self.instrument.channelNosSpikeAnalysis[0],
             value,
         )
 
     def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
+        """
+        Slot for handling change to the spike analysis acceptance factor.
+        Called when the valueChanged signal is emitted,
+        from the acceptanceFactorSpinBox.
+        Alters the instrument's spike analysis acceptane factor
+        as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the acceptanceFactorSpinBox.
+        """
         self.instrument.spikeAnalysisAcceptanceFactor = value
 
     def handleMinWavelengthChanged(self, value):
+        """
+        Slot for handling change to the minimum wavelength.
+        Called when the valueChanged signal is emitted,
+        from the minWavelengthSpinBox.
+        Alters the instrument's minimum wavelength as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the minWavelengthSpinBox.
+        """
         self.instrument.wavelengthMin = value
 
     def handleMaxWavelengthChanged(self, value):
+        """
+        Slot for handling change to the maximum wavelength.
+        Called when the valueChanged signal is emitted,
+        from the minWavelengthSpinBox.
+        Alters the instrument's maximum wavelength as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the maxWavelengthSpinBox.
+        """
         self.instrument.wavelengthMax = value
 
     def handleStepWavelengthChanged(self, value):
+        """
+        Slot for handling change to the step size in  wavelength.
+        Called when the valueChanged signal is emitted,
+        from the stepWavelengthSpinBox.
+        Alters the instrument's wavelength step size as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the stepWavelengthSpinBox.
+        """
         self.instrument.wavelengthStep = value
 
     def handleNoSmoothsOnMonitorChanged(self, value):
+        """
+        Slot for handling change to the number of smooths on the monitor.
+        Called when the valueChanged signal is emitted,
+        from the noSmoothsOnMonitorSpinBox.
+        Alters the instrument's number of smooths on the monitor as such.
+        Parameters
+        ----------
+        value : int
+            The new value of the noSmoothsOnMonitorSpinBox.
+        """
         self.instrument.NoSmoothsOnMonitor = value
 
     def handleQScaleStateChanged(self):
+        """
+        Slot for handling switching to/from the Q-Scale for final DCS.
+        Called when the stateChanged signal is emitted,
+        from the _QRadioButton.
+        Updates the interface, to reflect the change in scale selection.
+        Parameters
+        ----------
+        state : int
+            The new state of the _QRadioButton (1: True, 0: False)
+        """
         button, min, max, step = self.scales[Scales.Q]
         state = button.isChecked()
         min.setEnabled(state)
@@ -150,6 +501,16 @@ class InstrumentWidget(QWidget):
         step.setEnabled(state)
 
     def handleDSpacingScaleStateChanged(self):
+        """
+        Slot for handling switching to/from the D-Spacing scale for final DCS.
+        Called when the stateChanged signal is emitted,
+        from the DSpacingRadioButton.
+        Updates the interface, to reflect the change in scale selection.
+        Parameters
+        ----------
+        state : int
+            The new state of the DSpacingRadioButton (1: True, 0: False)
+        """
         button, min, max, step = self.scales[Scales.D_SPACING]
         state = button.isChecked()
         min.setEnabled(state)
@@ -157,6 +518,16 @@ class InstrumentWidget(QWidget):
         step.setEnabled(state)
 
     def handleWavelengthScaleStateChanged(self):
+        """
+        Slot for handling switching to/from the wavelength scale for final DCS.
+        Called when the stateChanged signal is emitted,
+        from the wavelengthRadioButton.
+        Updates the interface, to reflect the change in scale selection.
+        Parameters
+        ----------
+        state : int
+            The new state of the wavelengthRadioButton (1: True, 0: False)
+        """
         button, min, max, step = self.scales[Scales.WAVELENGTH]
         state = button.isChecked()
         min.setEnabled(state)
@@ -164,6 +535,16 @@ class InstrumentWidget(QWidget):
         step.setEnabled(state)
 
     def handleEnergyScaleStateChanged(self):
+        """
+        Slot for handling switching to/from the energy scale for final DCS.
+        Called when the stateChanged signal is emitted,
+        from the energyRadioButton.
+        Updates the interface, to reflect the change in scale selection.
+        Parameters
+        ----------
+        state : int
+            The new state of the energyRadioButton (1: True, 0: False)
+        """
         button, min, max, step = self.scales[Scales.ENERGY]
         state = button.isChecked()
         min.setEnabled(state)
@@ -171,6 +552,16 @@ class InstrumentWidget(QWidget):
         step.setEnabled(state)
 
     def handleTOFScaleStateChanged(self):
+        """
+        Slot for handling switching to/from the TOF scale for final DCS.
+        Called when the stateChanged signal is emitted,
+        from the TOFRadioButton.
+        Updates the interface, to reflect the change in scale selection.
+        Parameters
+        ----------
+        state : int
+            The new state of the TOFRadioButton (1: True, 0: False)
+        """
         button, min, max, step = self.scales[Scales.TOF]
         state = button.isChecked()
         min.setEnabled(state)
@@ -178,23 +569,90 @@ class InstrumentWidget(QWidget):
         step.setEnabled(state)
 
     def handleGroupsAcceptanceFactorChanged(self, value):
+        """
+        Slot for handling change to the groups acceptance factor.
+        Called when the valueChanged signal is emitted,
+        from the groupsAcceptanceFactorSpinBox.
+        Alters the instrument's groups acceptane factor
+        as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the groupsAcceptanceFactorSpinBox.
+        """
         self.instrument.groupsAcceptanceFactor = value
 
     def handleMergePowerChanged(self, value):
+        """
+        Slot for handling change to the merge power.
+        Called when the valueChanged signal is emitted,
+        from the mergePowerSpinBox.
+        Alters the instrument's merge power.
+        as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the mergePowerSpinBox.
+        """
         self.instrument.mergePower = value
 
     def handleIncidentFlightPathChanged(self, value):
+        """
+        Slot for handling change to the incident flight path.
+        Called when the valueChanged signal is emitted,
+        from the incidentFlightPathSpinBox.
+        Alters the instrument's incident flight path.
+        as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the incidentFlightPathSpinBox.
+        """
         self.instrument.incidentFlightPath = value
 
     def handleSpectrumNumberForOutputDiagChanged(self, value):
+        """
+        Slot for handling change to the spectrum number for output diagnostics.
+        Called when the valueChanged signal is emitted,
+        from the outputDiagSpectrumSpinBox.
+        Alters the instrument's incident flight path.
+        as such.
+        Parameters
+        ----------
+        value : int
+            The new value of the outputDiagSpectrumSpinBox.
+        """
         self.instrument.spectrumNumberForOutputDiagnosticFiles = value
 
     def handleBrowse(self, target, title, dir=False):
+        """
+        Slot for handling browsing files.
+        Parameters
+        ----------
+        target : QWidget
+            Target widget.
+        title : str
+            Title for QFileDialog to use.
+        dir : bool, optional
+            Defaults to false. True means accept a directory.
+        """
         filename = self.browseFile(title, dir=dir)
         if filename:
             target.setText(self.browseFile(filename)[0])
 
     def browseFile(self, title, dir=False):
+        """
+        Helper function for browsing files.
+        Parameters
+        ----------
+        title : str
+            Title for QFileDialog to use.
+        dir : bool, optional
+            Defaults to false. True means accept a directory.
+        Returns
+        -------
+        str[]
+        """
         filename = (
             QFileDialog.getOpenFileName(self, title, "")
             if not dir
@@ -203,15 +661,27 @@ class InstrumentWidget(QWidget):
         return filename
 
     def updateGroupingParameterPanel(self):
-        # Fill the GroupingParameterPanel table.
+        """
+        Fills the GroupingParameterPanel table.
+        """
         self.groupingParameterTable.makeModel(
             self.instrument.groupingParameterPanel
         )
 
     def handleAddGroupingParameter(self):
+        """
+        Slot for handling insertion to the grouping parameter panel.
+        Called when a clicked signal is emitted, from the
+        addGroupingParameterButton.
+        """
         self.groupingParameterTable.insertRow()
 
     def handleRemoveGroupingParameter(self):
+        """
+        Slot for removing files from grouping parameter panel.
+        Called when a clicked signal is emitted,
+        from the removeGroupingParameterButton.
+        """
         self.groupingParameterTable.removeRow(
             self.groupingParameterTable.selectionModel().selectedRows()
         )
