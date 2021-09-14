@@ -101,7 +101,7 @@ class ContainerWidget(QWidget):
         Alters the container geometry as such.
         Parameters
         ----------
-        index : QModelIndex
+        index : int
             The new current index of the geometryComboBox.
         """
         self.container.geometry = self.geometryComboBox.itemData(index)
@@ -153,7 +153,7 @@ class ContainerWidget(QWidget):
         Alters the container's total cross section source as such.
         Parameters
         ----------
-        index : QModelIndex
+        index : int
             The new current index of the totalCrossSectionComboBox.
         """
         self.container.totalCrossSectionSource = (
