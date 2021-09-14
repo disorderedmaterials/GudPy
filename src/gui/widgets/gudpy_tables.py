@@ -283,11 +283,11 @@ class CompositionTable(QTableView):
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        pasteMenu = self.menu.addMenu("Paste from")
+        copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
-            action = QAction(f"{composition[0]}", pasteMenu)
+            action = QAction(f"{composition[0]}", copyMenu)
             action.triggered.connect(lambda chk, comp=composition[1]: self.pasteFrom(comp))
-            pasteMenu.addAction(action)
+            copyeMenu.addAction(action)
         self.menu.popup(QCursor.pos())
 
 class ExponentialModel(GudPyTableModel):
