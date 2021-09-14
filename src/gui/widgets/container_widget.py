@@ -287,6 +287,14 @@ class ContainerWidget(QWidget):
         Slot for adding files to the data files list.
         Called when a clicked signal is emitted,
         from the addDataFileButton.
+        Parameters
+        ----------
+        target : QListWidget
+            Target widget to add to.
+        title : str
+            Window title for QFileDialog.
+        regex : str
+            Regex-like expression to use for specifying file types.
         """
         paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for path in paths:
