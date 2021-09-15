@@ -278,7 +278,7 @@ class CompositionTable(QTableView):
                 for container in sample.containers:
                     self.compositions.append((container.name, container.composition))
 
-    def pasteFrom(self, composition):
+    def copyFrom(self, composition):
         self.makeModel(composition.elements)
 
     def contextMenuEvent(self, event):
@@ -286,7 +286,7 @@ class CompositionTable(QTableView):
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
-            action.triggered.connect(lambda chk, comp=composition[1]: self.pasteFrom(comp))
+            action.triggered.connect(lambda chk, comp=composition[1]: self.copyFrom(comp))
             copyMenu.addAction(action)
         self.menu.popup(QCursor.pos())
 
