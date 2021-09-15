@@ -1,10 +1,6 @@
-from src.scripts.utils import isnumeric
-from src.gudrun_classes.element import Element
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from PyQt5.QtWidgets import (
     QFileDialog,
-    QTableWidget,
-    QTableWidgetItem,
     QWidget,
 )
 from PyQt5 import uic

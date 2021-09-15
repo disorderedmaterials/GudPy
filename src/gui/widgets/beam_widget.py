@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget
+from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.enums import Geometry
@@ -48,7 +48,8 @@ class BeamWidget(QWidget):
     handleBottomScatteredBeamEdgeChanged(value)
         Slot for handling change in the bottom scattered beam edge.
     handleIncidentBeamSpectrumParamsFileChanged(value)
-        Slot for handling change in the file for incident beam spectrum parameters.
+        Slot for handling change in the file
+        for incident beam spectrum parameters.
     handleOverallBackgroundFactorChanged(value)
         Slot for handling change in the overall background factor.
     handleSampleDependantBackgroundFactorChanged(value)
@@ -253,7 +254,8 @@ class BeamWidget(QWidget):
 
     def handleIncidentBeamSpectrumParamsFileChanged(self, value):
         """
-        Slot for handling change in the file for incident beam spectrum parameters.
+        Slot for handling change in the file
+        for incident beam spectrum parameters.
         Called when a textChanged signal is emitted,
         from the incidentBeamSpectrumParametersLineEdit.
         Alters the beam's filename for incident beam spectrum parameters
@@ -293,7 +295,8 @@ class BeamWidget(QWidget):
 
     def handleShieldingAbsorptionCoeffChanged(self, value):
         """
-        Slot for handling change in the shielding absorption attenuation coefficient.
+        Slot for handling change in the
+        shielding absorption attenuation coefficient.
         Called when a valueChanged signal is emitted,
         from the shieldingSpinBox.
         Alters the beam's absorption shielding attenuation coefficient as such.

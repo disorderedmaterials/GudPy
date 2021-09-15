@@ -38,7 +38,8 @@ class InstrumentWidget(QWidget):
     handleMergeWeightsChanged(index)
         Slot for handling change to what to merge weights by.
     handleNeutronScatteringParamsFileChanged(text)
-        Slot for handling change to the neutron scattering parameters file name.
+        Slot for handling change to the neutron
+        scattering parameters file name.
     handleNexusDefinitionFileChanged(text)
         Slot for handling change to the NeXus definition file name.
     handleHardGroupEdgesSwitched(state)
@@ -60,7 +61,8 @@ class InstrumentWidget(QWidget):
     handleIncidentMonitorQuietCountConstChanged(value)
         Slot for handling change to the incident monitor quiet count constant.
     handleTransmissionMonitorQuietCountConstChanged(value)
-        Slot for handling change to the transmission monitor quiet count constant.
+        Slot for handling change to the
+        transmission monitor quiet count constant.
     handleChannelNoAChanged(value)
         Slot for handling change to the lower channel number.
     handleChannelNoBChanged(value)
@@ -239,10 +241,12 @@ class InstrumentWidget(QWidget):
 
     def handleNeutronScatteringParamsFileChanged(self, text):
         """
-        Slot for handling change to the neutron scattering parameters file name.
+        Slot for handling change to the neutron
+        scattering parameters file name.
         Called when a textChanged signal is emitted,
         from the neutronScatteringParamsFileLineEdit.
-        Alters the instrument's neutron scattering parameters file name as such.
+        Alters the instrument's neutron scattering
+        parameters file name as such.
         Parameters
         ----------
         value : str
@@ -295,7 +299,8 @@ class InstrumentWidget(QWidget):
         monitor normalisation.
         Called when a valueChanged signal is emitted,
         from the minWavelengthMonNormSpinBox.
-        Alters the instrument's minimum wavelength for monitor normalisation as such.
+        Alters the instrument's minimum wavelength
+        for monitor normalisation as such.
         Parameters
         ----------
         value : float
@@ -312,7 +317,8 @@ class InstrumentWidget(QWidget):
         monitor normalisation.
         Called when a valueChanged signal is emitted,
         from the maxWavelengthMonNormSpinBox.
-        Alters the instrument's maximum wavelength for monitor normalisation as such.
+        Alters the instrument's maximum wavelength
+        for monitor normalisation as such.
         Parameters
         ----------
         value : float
@@ -885,7 +891,9 @@ class InstrumentWidget(QWidget):
         )
         self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
 
-        selection, min_, max_, step = self.scales[self.instrument.scaleSelection]
+        selection, min_, max_, step = (
+            self.scales[self.instrument.scaleSelection]
+        )
         selection.setChecked(True)
         min_.setValue(self.instrument.XMin)
         max_.setValue(self.instrument.XMax)

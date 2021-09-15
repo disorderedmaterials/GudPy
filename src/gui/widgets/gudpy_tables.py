@@ -74,7 +74,7 @@ class GudPyDelegate(QItemDelegate):
         try:
             value = editor.value()
             model.setData(index, value, Qt.EditRole)
-        except:
+        except Exception:
             model.setData(index, 0, Qt.EditRole)
 
 
@@ -95,6 +95,7 @@ class GroupingParameterModel(GudPyTableModel):
 
     def insertRow(self):
         return super(GroupingParameterModel, self).insertRow((0, 0., 0., 0.))
+
 
 class GroupingParameterDelegate(GudPyDelegate):
     def createEditor(self, parent, option, index):
@@ -233,13 +234,14 @@ class CompositionDelegate(GudPyDelegate):
                 editor.setValue(value)
             else:
                 editor.setText(value)
+
     def setModelData(self, editor, model, index):
         if index.column() != 0:
             editor.interpretText()
             try:
                 value = editor.value()
                 model.setData(index, value, Qt.EditRole)
-            except:
+            except Exception:
                 model.setData(index, 0, Qt.EditRole)
         else:
             value = editor.text()
@@ -271,12 +273,19 @@ class CompositionTable(QTableView):
     def farmCompositions(self):
         grandparent = self.parent.parent().parent
         self.compositions.clear()
-        self.compositions = [("Normalisation", grandparent.gudrunFile.normalisation.composition)]
+        self.compositions = [
+                (
+                    "Normalisation",
+                    grandparent.gudrunFile.normalisation.composition
+                )
+            ]
         for sampleBackground in grandparent.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 self.compositions.append((sample.name, sample.composition))
                 for container in sample.containers:
-                    self.compositions.append((container.name, container.composition))
+                    self.compositions.append(
+                        (container.name, container.composition)
+                    )
 
     def copyFrom(self, composition):
         self.makeModel(composition.elements)
@@ -286,9 +295,12 @@ class CompositionTable(QTableView):
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
-            action.triggered.connect(lambda _, comp=composition[1]: self.copyFrom(comp))
+            action.triggered.connect(
+                lambda _, comp=composition[1]: self.copyFrom(comp)
+            )
             copyMenu.addAction(action)
         self.menu.popup(QCursor.pos())
+
 
 class ExponentialModel(GudPyTableModel):
     def __init__(self, data, headers, parent):
@@ -307,7 +319,7 @@ class ExponentialModel(GudPyTableModel):
 
     def insertRow(self):
         if self.rowCount(self) < 5:
-            super(ExponentialModel, self).insertRow((0.,0.))
+            super(ExponentialModel, self).insertRow((0., 0.))
 
 
 class ExponentialDelegate(GudPyDelegate):
@@ -354,7 +366,7 @@ class ResonanceModel(GudPyTableModel):
 
     def insertRow(self):
         if self.rowCount(self) < 5:
-            super(ResonanceModel, self).insertRow((0.,0.))
+            super(ResonanceModel, self).insertRow((0., 0.))
 
 
 class ResonanceDelegate(GudPyDelegate):
