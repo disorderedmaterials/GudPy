@@ -286,7 +286,7 @@ class CompositionTable(QTableView):
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
-            action.triggered.connect(lambda chk, comp=composition[1]: self.copyFrom(comp))
+            action.triggered.connect(lambda _, comp=composition[1]: self.copyFrom(comp))
             copyMenu.addAction(action)
         self.menu.popup(QCursor.pos())
 
