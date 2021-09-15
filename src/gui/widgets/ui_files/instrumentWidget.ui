@@ -1018,6 +1018,12 @@
         <height>22</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>16777215</height>
+       </size>
+      </property>
      </widget>
     </item>
     <item row="6" column="15" colspan="2">
@@ -1049,35 +1055,6 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="9">
-     <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>62</width>
-        <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="11" colspan="2">
-     <widget class="QLabel" name="queitCountConstTMLabel">
-      <property name="minimumSize">
-       <size>
-        <width>155</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Transmission monitor</string>
-      </property>
-     </widget>
-    </item>
     <item row="9" column="0" colspan="8">
      <widget class="QLabel" name="channelNosLabel">
       <property name="minimumSize">
@@ -1097,19 +1074,6 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="11">
-     <widget class="QLabel" name="acceptanceFactorLabel">
-      <property name="minimumSize">
-       <size>
-        <width>131</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Acceptance factor</string>
-      </property>
-     </widget>
-    </item>
     <item row="9" column="16">
      <widget class="QDoubleSpinBox" name="acceptanceFactorSpinBox">
       <property name="minimumSize">
@@ -1126,22 +1090,6 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="8">
-     <widget class="QSpinBox" name="channelNoASpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>42</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>42</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="7" column="16" colspan="2">
      <widget class="QDoubleSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
       <property name="minimumSize">
@@ -1154,22 +1102,6 @@
        <size>
         <width>42</width>
         <height>22</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="9">
-     <widget class="QSpinBox" name="channelNoBSpinBox">
-      <property name="minimumSize">
-       <size>
-        <width>42</width>
-        <height>22</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>42</width>
-        <height>16777215</height>
        </size>
       </property>
      </widget>
@@ -1359,6 +1291,80 @@
       </property>
       <property name="text">
        <string>Type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="8">
+     <widget class="QSpinBox" name="channelNoASpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>42</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>42</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="10">
+     <widget class="QSpinBox" name="channelNoBSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>42</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>42</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="12">
+     <widget class="QLabel" name="acceptanceFactorLabel">
+      <property name="minimumSize">
+       <size>
+        <width>131</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Acceptance factor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="9">
+     <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
+      <property name="minimumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>62</width>
+        <height>22</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="11">
+     <widget class="QLabel" name="queitCountConstTMLabel">
+      <property name="minimumSize">
+       <size>
+        <width>155</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Transmission monitor</string>
       </property>
      </widget>
     </item>
