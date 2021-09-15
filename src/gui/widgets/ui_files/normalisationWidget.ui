@@ -211,14 +211,14 @@
         <attribute name="horizontalHeaderVisible">
          <bool>true</bool>
         </attribute>
-        <attribute name="horizontalHeaderMinimumSectionSize">
-         <number>19</number>
-        </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>67</number>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>true</bool>
+        </attribute>
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>19</number>
         </attribute>
         <attribute name="verticalHeaderHighlightSections">
          <bool>false</bool>
@@ -245,7 +245,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3" colspan="2">
+      <item row="0" column="3">
        <widget class="QComboBox" name="geometryComboBox">
         <property name="maximumSize">
          <size>
@@ -259,7 +259,7 @@
        <widget class="QLabel" name="densityLabel">
         <property name="maximumSize">
          <size>
-          <width>50</width>
+          <width>60</width>
           <height>16777215</height>
          </size>
         </property>
@@ -324,7 +324,7 @@
            <widget class="QLabel" name="thicknessLabel">
             <property name="maximumSize">
              <size>
-              <width>65</width>
+              <width>90</width>
               <height>21</height>
              </size>
             </property>
@@ -337,7 +337,7 @@
            <widget class="QLabel" name="upstreamLabel">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>90</width>
               <height>21</height>
              </size>
             </property>
@@ -360,7 +360,7 @@
            <widget class="QLabel" name="downstreamLabel">
             <property name="maximumSize">
              <size>
-              <width>76</width>
+              <width>90</width>
               <height>21</height>
              </size>
             </property>
