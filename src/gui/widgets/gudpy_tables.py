@@ -325,7 +325,7 @@ class ExponentialTable(QTableView):
 
     def makeModel(self, data):
         self.setModel(
-            ExponentialModel(data, ["Amplitudate", "Decay [1/A]"], self.parent)
+            ExponentialModel(data, ["Amplitude", "Decay [1/A]"], self.parent)
         )
         self.setItemDelegate(ExponentialDelegate())
 
