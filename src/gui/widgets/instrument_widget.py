@@ -638,7 +638,7 @@ class InstrumentWidget(QWidget):
         """
         filename = self.browseFile(title, dir=dir)
         if filename:
-            target.setText(self.browseFile(filename)[0])
+            target.setText(filename[0])
 
     def browseFile(self, title, dir=False):
         """
@@ -656,7 +656,7 @@ class InstrumentWidget(QWidget):
         filename = (
             QFileDialog.getOpenFileName(self, title, "")
             if not dir
-            else (QFileDialog.getExistingDirectory(self, title, ""))
+            else QFileDialog.getExistingDirectory(self, title, "")
         )
         return filename
 
@@ -958,7 +958,7 @@ class InstrumentWidget(QWidget):
 
         self.browseNexusDefinitionButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.nexusDefinitionFileLineEdit, "NeXus defnition file"
+                self.nexusDefintionFileLineEdit, "NeXus defnition file"
             )
         )
 
