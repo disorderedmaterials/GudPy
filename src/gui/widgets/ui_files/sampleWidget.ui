@@ -399,74 +399,6 @@
       <string>Advanced</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="5" column="0" colspan="2">
-       <widget class="QLabel" name="attenuationCoefficientLabel">
-        <property name="minimumSize">
-         <size>
-          <width>162</width>
-          <height>17</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>162</width>
-          <height>17</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Attenuation Coefficient</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="periodNoLabel">
-        <property name="text">
-         <string>Period Number</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="4" colspan="2">
-       <widget class="QLabel" name="resonanceValuesLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Resonance Values</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0" colspan="2">
-       <widget class="QLabel" name="exponentialValuesLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Exponential Values</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QDoubleSpinBox" name="correctionFactorSpinBox"/>
-      </item>
-      <item row="0" column="2" colspan="2">
-       <widget class="QSpinBox" name="periodNoSpinBox"/>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QLabel" name="scatteringFileLabel">
-        <property name="text">
-         <string>Scattering File</string>
-        </property>
-       </widget>
-      </item>
       <item row="6" column="0" colspan="5">
        <widget class="QStackedWidget" name="geometryInfoStack">
         <property name="maximumSize">
@@ -583,10 +515,10 @@
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
         </property>
-        <attribute name="horizontalHeaderMinimumSectionSize">
+        <attribute name="horizontalHeaderDefaultSectionSize">
          <number>128</number>
         </attribute>
-        <attribute name="horizontalHeaderDefaultSectionSize">
+        <attribute name="horizontalHeaderMinimumSectionSize">
          <number>128</number>
         </attribute>
         <attribute name="horizontalHeaderStretchLastSection">
@@ -620,29 +552,72 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="0" rowspan="2" colspan="3">
-       <widget class="ExponentialTable" name="exponentialValuesTable">
+      <item row="7" column="4" colspan="2">
+       <widget class="QLabel" name="resonanceValuesLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maximumSize">
+        <property name="text">
+         <string>Resonance Values</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QLabel" name="attenuationCoefficientLabel">
+        <property name="minimumSize">
          <size>
-          <width>200</width>
-          <height>100</height>
+          <width>162</width>
+          <height>17</height>
          </size>
         </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
+        <property name="maximumSize">
+         <size>
+          <width>162</width>
+          <height>17</height>
+         </size>
         </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
+        <property name="text">
+         <string>Attenuation Coefficient</string>
         </property>
-        <attribute name="verticalHeaderCascadingSectionResizes">
-         <bool>true</bool>
-        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="periodNoLabel">
+        <property name="text">
+         <string>Period Number</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
+      </item>
+      <item row="0" column="2" colspan="2">
+       <widget class="QSpinBox" name="periodNoSpinBox"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QDoubleSpinBox" name="correctionFactorSpinBox"/>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="scatteringFileLabel">
+        <property name="text">
+         <string>Scattering File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QLabel" name="exponentialValuesLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Exponential Values</string>
+        </property>
        </widget>
       </item>
       <item row="10" column="3">
@@ -658,11 +633,35 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QLabel" name="correctionFactorLabel">
-        <property name="text">
-         <string>Normalisation Correction Factor</string>
+      <item row="9" column="0" rowspan="2" colspan="3">
+       <widget class="ExponentialTable" name="exponentialValuesTable">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>256</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>120</number>
+        </attribute>
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>120</number>
+        </attribute>
+        <attribute name="verticalHeaderCascadingSectionResizes">
+         <bool>true</bool>
+        </attribute>
        </widget>
       </item>
       <item row="9" column="7">
@@ -688,6 +687,13 @@
         </property>
         <property name="text">
          <string>Sample Environment Scattering Fraction</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QLabel" name="correctionFactorLabel">
+        <property name="text">
+         <string>Normalisation Correction Factor</string>
         </property>
        </widget>
       </item>
