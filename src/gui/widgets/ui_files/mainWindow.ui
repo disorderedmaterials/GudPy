@@ -7,46 +7,41 @@
     <x>0</x>
     <y>0</y>
     <width>1366</width>
-    <height>950</height>
+    <height>959</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="mainWidget">
-   <widget class="GudPyTreeView" name="objectTree">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>256</width>
-      <height>891</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QStackedWidget" name="objectStack">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>20</y>
-      <width>651</width>
-      <height>881</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="plottingGroupBox">
-    <property name="geometry">
-     <rect>
-      <x>930</x>
-      <y>-10</y>
-      <width>431</width>
-      <height>911</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-   </widget>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="GudPyTreeView" name="objectTree">
+      <property name="maximumSize">
+       <size>
+        <width>256</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="objectStack"/>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="plottingGroupBox">
+      <property name="minimumSize">
+       <size>
+        <width>431</width>
+        <height>911</height>
+       </size>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -54,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>1366</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoad">
