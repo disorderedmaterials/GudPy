@@ -29,6 +29,7 @@ class NormalisationWidget(QWidget):
     handleGeometryChanged(index)
         Slot for handling change in the geometry.
     handleDensityUnitsChanged(index)
+        Slot for handling change to the density units.
     handleUpstreamThicknessChanged(value)
         Slot for handling change in the upstream thickness.
     handleDownstreamThicknessChanged(value)
@@ -140,6 +141,16 @@ class NormalisationWidget(QWidget):
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
 
     def handleDensityUnitsChanged(self, index):
+        """
+        Slot for handling change in density units.
+        Called when a currentIndexChanged signal is emitted,
+        from the densityUnitsComboBox.
+        Alters the normalisation density units as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the densityUnitsComboBox.
+        """
         self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(
             index
         )
