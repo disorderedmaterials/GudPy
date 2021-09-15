@@ -140,7 +140,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>291</width>
+         <width>310</width>
          <height>16777215</height>
         </size>
        </property>
@@ -148,77 +148,6 @@
         <string>Configuration</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0" colspan="2">
-         <widget class="QLabel" name="totalCrossSectionLabel">
-          <property name="minimumSize">
-           <size>
-            <width>156</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Total cross section source</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QComboBox" name="totalCrossSectionComboBox">
-          <property name="minimumSize">
-           <size>
-            <width>101</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>21</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="tweakFactorLabel">
-          <property name="minimumSize">
-           <size>
-            <width>94</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Tweak Factor</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="scatteringFractionLabel">
-          <property name="minimumSize">
-           <size>
-            <width>124</width>
-            <height>57</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Scattering Fraction</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QLabel" name="attenuationCoefficientLabel">
-          <property name="text">
-           <string>Attenuation Coefficient</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
-        </item>
         <item row="0" column="0" colspan="3">
          <widget class="QStackedWidget" name="geometryInfoStack">
           <property name="currentIndex">
@@ -255,8 +184,15 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="QDoubleSpinBox" name="sampleWidthSpinBox"/>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="sampleWidthSpinBox">
+              <property name="maximumSize">
+               <size>
+                <width>68</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -275,6 +211,83 @@
            </layout>
           </widget>
          </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QLabel" name="totalCrossSectionLabel">
+          <property name="minimumSize">
+           <size>
+            <width>191</width>
+            <height>21</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Total cross section source</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="totalCrossSectionComboBox">
+          <property name="minimumSize">
+           <size>
+            <width>101</width>
+            <height>21</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>21</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="tweakFactorLabel">
+          <property name="minimumSize">
+           <size>
+            <width>94</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Tweak Factor</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QLabel" name="scatteringFractionLabel">
+          <property name="minimumSize">
+           <size>
+            <width>124</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Scattering Fraction</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QLabel" name="attenuationCoefficientLabel">
+          <property name="text">
+           <string>Attenuation Coefficient</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
         </item>
        </layout>
       </widget>
