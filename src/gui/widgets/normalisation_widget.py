@@ -183,7 +183,7 @@ class NormalisationWidget(QWidget):
 
     def handleTotalCrossSectionChanged(self, index):
         """
-        Slot for handling change in total cross ection source.
+        Slot for handling change in total cross section source.
         Called when a currentIndexChanged signal is emitted,
         from the totalCrossSectionComboBox.
         Alters the normalisation's total cross section source as such.

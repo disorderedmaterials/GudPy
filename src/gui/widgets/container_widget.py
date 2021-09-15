@@ -305,6 +305,12 @@ class ContainerWidget(QWidget):
         Slot for removing files from the data files list.
         Called when a clicked signal is emitted,
         from the removeDataFileButton.
+        Parameters
+        ----------
+        target : QListWidget
+            Target widget to add to.
+        dataFiles : list
+            dataFiles attribute belonging to DataFiles object.
         """
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
