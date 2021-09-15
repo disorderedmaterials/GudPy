@@ -25,8 +25,6 @@ class NormalisationWidget(QWidget):
     initComponents()
         Loads UI file, and then populates data from the Normalisation.
     handlePeriodNoChanged(value)
-        
-    handlePeriodNoChanged(value)
         Slot for handling change in the period number.
     handleGeometryChanged(index)
         Slot for handling change in the geometry.
