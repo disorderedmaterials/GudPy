@@ -382,7 +382,8 @@ class GroupingParameterTable(QTableView):
     """
     def __init__(self, parent):
         """
-        Constructs all the necessary attributes for the GroupingParameterTable object.
+        Constructs all the necessary attributes
+        for the GroupingParameterTable object.
         Calls super().__init__.
         Parameters
         ----------
@@ -581,7 +582,8 @@ class BeamProfileTable(QTableView):
     """
     def __init__(self, parent):
         """
-        Constructs all the necessary attributes for the GroupingParameterTable object.
+        Constructs all the necessary attributes
+        for the BeamProfileTable object.
         Calls super().__init__
         which calls the dunder init method from GudPyTableModel.
         Parameters
@@ -654,7 +656,7 @@ class CompositionModel(GudPyTableModel):
         super(CompositionModel, self).__init__(data, headers, parent)
         self.attrs = {0: "atomicSymbol", 1: "massNo", 2: "abundance"}
 
-    def columnCount(self, parent):#
+    def columnCount(self, parent):
         """
         Returns the number of columns in the model.
         Parameters
@@ -831,7 +833,8 @@ class CompositionTable(QTableView):
     """
     def __init__(self, parent):
         """
-        Constructs all the necessary attributes for the GroupingParameterTable object.
+        Constructs all the necessary attributes
+        for the CompositionTable object.
         Calls super().__init__.
         Parameters
         ----------
@@ -898,7 +901,8 @@ class CompositionTable(QTableView):
 
     def copyFrom(self, composition):
         """
-        Create a new model from a given composition, and replaces the current model with it.
+        Create a new model from a given composition,
+        and replaces the current model with it.
         Parameters
         ----------
         composition : Composition
@@ -1054,7 +1058,8 @@ class ExponentialTable(QTableView):
 
     def __init__(self, parent):
         """
-        Constructs all the necessary attributes for the GroupingParameterTable object.
+        Constructs all the necessary attributes
+        for the ExponentialTable object.
         Calls super().__init__.
         Parameters
         ----------
@@ -1223,7 +1228,8 @@ class ResonanceTable(QTableView):
 
     def __init__(self, parent):
         """
-        Constructs all the necessary attributes for the GroupingParameterTable object.
+        Constructs all the necessary attributes
+        for the ResonanceTable object.
         Calls super().__init__.
         Parameters
         ----------

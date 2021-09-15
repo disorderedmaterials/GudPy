@@ -55,7 +55,7 @@ class NormalisationWidget(QWidget):
     handleDataFileInserted(item)
         Slot for handling insertion to the data files list.
     updateDataFilesList()
-        Fills the data files list.    
+        Fills the data files list.
     handleBgDataFilesAltered(item)
         Slot for handling changes to the background data files list.
     handleBgDataFileInserted(item)
@@ -229,7 +229,8 @@ class NormalisationWidget(QWidget):
         Slot for handling change to the differential cross section file name.
         Called when a textChanged signal is emitted,
         from the handleDifferentialCrossSectionFileChanged.
-        Alters the normalisation's differential cross section file name as such.
+        Alters the normalisation's differential
+        cross section file name as such.
         Parameters
         ----------
         value : str

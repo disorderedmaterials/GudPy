@@ -78,7 +78,7 @@ class SampleWidget(QWidget):
     handleDataFileInserted(item)
         Slot for handling insertion to the data files list.
     updateDataFilesList()
-        Fills the data files list.  
+        Fills the data files list.
     addFiles(target, title, regex)
         Slot for adding files to a target list.
     removeFile(target, dataFiles)
@@ -187,7 +187,7 @@ class SampleWidget(QWidget):
         """
         self.sample.downstreamThickness = value
 
-    def handleDensityUnitsChanged(self, index):#
+    def handleDensityUnitsChanged(self, index):
         """
         Slot for handling change in density units.
         Called when a currentIndexChanged signal is emitted,
@@ -302,7 +302,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the stepSizeSpinBox. 
+            The new current value of the stepSizeSpinBox.
         """
         self.sample.stepSize = value
 
@@ -315,7 +315,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : str
-            The new current text of the scatteringFileLineEdit. 
+            The new current text of the scatteringFileLineEdit.
         """
         self.sample.fileSelfScattering = value
 
@@ -354,7 +354,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the angleOfRotationSpinBox. 
+            The new current value of the angleOfRotationSpinBox.
         """
         self.sample.angleOfRotation = value
 
@@ -367,7 +367,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the sampleWidthSpinBox. 
+            The new current value of the sampleWidthSpinBox.
         """
         self.sample.sampleWidth = value
 
@@ -380,7 +380,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the sampleHeightSpinBox. 
+            The new current value of the sampleHeightSpinBox.
         """
         self.sample.sampleHeight = value
 
@@ -393,7 +393,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the correctionFactorSpinBox. 
+            The new current value of the correctionFactorSpinBox.
         """
         self.sample.normalisationCorrectionFactor = value
 
@@ -406,7 +406,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the scatteringFractionSpinBox. 
+            The new current value of the scatteringFractionSpinBox.
         """
         self.sample.scatteringFraction = value
 
@@ -419,7 +419,7 @@ class SampleWidget(QWidget):
         Parameters
         ----------
         value : float
-            The new current value of the attenuationCoefficientSpinBox. 
+            The new current value of the attenuationCoefficientSpinBox.
         """
         self.sample.attenuationCoefficient = value
 
