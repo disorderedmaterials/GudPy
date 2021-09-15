@@ -22,8 +22,6 @@ from PyQt5 import uic
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
         super(GudPyMainWindow, self).__init__()
-        self.setWindowTitle("GudPy")
-        self.show()
         self.gudrunFile = None
         self.initComponents()
 
@@ -34,7 +32,8 @@ class GudPyMainWindow(QMainWindow):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         uic.loadUi(uifile, self)
-
+        self.setWindowTitle("GudPy")
+        self.show()
         self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
 
         if self.gudrunFile:
