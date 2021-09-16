@@ -347,9 +347,9 @@
        </widget>
       </item>
       <item row="3" column="2" colspan="3">
-       <widget class="QStackedWidget" name="stackedWidget">
+       <widget class="QStackedWidget" name="geometryInfoStack_">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page_3">
          <layout class="QGridLayout" name="gridLayout_5">
@@ -402,7 +402,79 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_4"/>
+        <widget class="QWidget" name="page_4">
+         <widget class="QLabel" name="radiiLabel">
+          <property name="geometry">
+           <rect>
+            <x>40</x>
+            <y>20</y>
+            <width>47</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Radii:</string>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="innerRadiiSpinBox">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>50</y>
+            <width>62</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>62</width>
+            <height>22</height>
+           </size>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="outerRadiiSpinBox">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>90</y>
+            <width>62</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>62</width>
+            <height>22</height>
+           </size>
+          </property>
+         </widget>
+         <widget class="QLabel" name="innerRadiiLabel">
+          <property name="geometry">
+           <rect>
+            <x>40</x>
+            <y>50</y>
+            <width>47</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Inner</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="outerRadiiLabel">
+          <property name="geometry">
+           <rect>
+            <x>40</x>
+            <y>100</y>
+            <width>47</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Outer</string>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </item>
       <item row="1" column="4">

@@ -94,7 +94,7 @@ class GudPyMainWindow(QMainWindow):
             target = self.objectStack.widget(i)
             if isinstance(target, NormalisationWidget):
                 if target.normalisation.geometry == Geometry.SameAsBeam:
-                    target.geometryComboBox.setCurrentIndex(
+                    target.geometryInfoStack.setCurrentIndex(
                         config.geometry.value
                     )
             elif isinstance(target, (SampleWidget, ContainerWidget)):

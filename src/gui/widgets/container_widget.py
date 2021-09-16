@@ -29,6 +29,10 @@ class ContainerWidget(QWidget):
         Slot for handling change in the upstream thickness.
     handleDownstreamThicknessChanged(value)
         Slot for handling change in the downstream thickness.
+    handleInnerRadiiChanged(value)
+        Slot for handling change in the inner radii.
+    handleOuterRadiiChanged(value)
+        Slot for handling change to the outer radii.
     handleDensityChanged(value)
         Slot for handling change in the density.
     handleTotalCrossSectionChanged(index)
@@ -103,6 +107,8 @@ class ContainerWidget(QWidget):
             The new current index of the geometryComboBox.
         """
         self.container.geometry = self.geometryComboBox.itemData(index)
+        self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -129,6 +135,32 @@ class ContainerWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.container.downstreamThickness = value
+
+    def handleInnerRadiiChanged(self, value):
+        """
+        Slot for handling change in the inner radii.
+        Called when a valueChanged signal is emitted,
+        from the innerRadiiSpinBox.
+        Alters the container's inner radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the innerRadiiSpinBox.
+        """
+        self.container.innerRadius = value
+
+    def handleOuterRadiiChanged(self, value):
+        """
+        Slot for handling change in the outer radii.
+        Called when a valueChanged signal is emitted,
+        from the outerRadiiSpinBox.
+        Alters the container's outer radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the outerRadiiSpinBox.
+        """
+        self.container.outerRadius = value
 
     def handleDensityChanged(self, value):
         """
@@ -378,12 +410,16 @@ class ContainerWidget(QWidget):
             )
         )
 
-        self.geometryComboBox.addItems([g.name for g in Geometry])
+        for g in Geometry:
+            self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
         self.geometryComboBox.setDisabled(True)
+
+        self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
 
         self.upstreamSpinBox.setValue(self.container.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
@@ -392,6 +428,15 @@ class ContainerWidget(QWidget):
         self.downstreamSpinBox.setValue(self.container.downstreamThickness)
         self.downstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
+        )
+
+        self.innerRadiiSpinBox.setValue(self.container.innerRadius)
+        self.innerRadiiSpinBox.valueChanged.connect(
+            self.handleInnerRadiiChanged
+        )
+        self.outerRadiiSpinBox.setValue(self.container.outerRadius)
+        self.outerRadiiSpinBox.valueChanged.connect(
+            self.handleOuterRadiiChanged
         )
 
         self.densitySpinBox.setValue(self.container.density)

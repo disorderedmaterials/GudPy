@@ -34,6 +34,10 @@ class NormalisationWidget(QWidget):
         Slot for handling change in the upstream thickness.
     handleDownstreamThicknessChanged(value)
         Slot for handling change in the downstream thickness.
+    handleInnerRadiiChanged(value)
+        Slot for handling change in the inner radii.
+    handleOuterRadiiChanged(value)
+        Slot for handling change to the outer radii.
     handleTotalCrossSectionChanged(index)
         Slot for handling change in the total cross section source.
     handleForceCorrectionsSwitched(state)
@@ -139,6 +143,11 @@ class NormalisationWidget(QWidget):
             The new current index of the geometryComboBox.
         """
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
+        if self.normalisation.geometry == Geometry.SameAsBeam:
+            self.parent.updateGeometries()
+            self.geometryComboBox.setCurrentIndex(index)
+        else:
+            self.geometryInfoStack.setCurrentIndex(self.normalisation.geometry.value)
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -180,6 +189,32 @@ class NormalisationWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.normalisation.downstreamThickness = value
+    
+    def handleInnerRadiiChanged(self, value):
+        """
+        Slot for handling change in the inner radii.
+        Called when a valueChanged signal is emitted,
+        from the innerRadiiSpinBox.
+        Alters the normalisation's inner radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the innerRadiiSpinBox.
+        """
+        self.normalisation.innerRadius = value
+
+    def handleOuterRadiiChanged(self, value):
+        """
+        Slot for handling change in the outer radii.
+        Called when a valueChanged signal is emitted,
+        from the outerRadiiSpinBox.
+        Alters the normalisation's outer radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the outerRadiiSpinBox.
+        """
+        self.normalisation.outerRadius = value
 
     def handleTotalCrossSectionChanged(self, index):
         """
@@ -519,13 +554,15 @@ class NormalisationWidget(QWidget):
             self.handlePeriodNoBgChanged
         )
 
-        self.geometryComboBox.addItems([g.name for g in Geometry])
+        for g in Geometry:
+            self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(
             self.normalisation.geometry.value
         )
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
+        self.geometryInfoStack.setCurrentIndex(self.normalisation.geometry.value)
 
         self.densitySpinBox.setValue(self.normalisation.density)
         for du in UnitsOfDensity:
@@ -544,6 +581,15 @@ class NormalisationWidget(QWidget):
         self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
+        )
+
+        self.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
+        self.innerRadiiSpinBox.valueChanged.connect(
+            self.handleInnerRadiiChanged
+        )
+        self.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
+        self.outerRadiiSpinBox.valueChanged.connect(
+            self.handleOuterRadiiChanged
         )
 
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]

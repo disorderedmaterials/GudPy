@@ -37,6 +37,10 @@ class SampleWidget(QWidget):
         Slot for handling change in the upstream thickness.
     handleDownstreamThicknessChanged(value)
         Slot for handling change in the downstream thickness.
+    handleInnerRadiiChanged(value)
+        Slot for handling change in the inner radii.
+    handleOuterRadiiChanged(value)
+        Slot for handling change to the outer radii.
     handleDensityUnitsChanged(index)
         Slot for handling change to the density units.
     handleTotalCrossSectionChanged(index)
@@ -160,6 +164,7 @@ class SampleWidget(QWidget):
         """
         self.sample.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -186,6 +191,32 @@ class SampleWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.sample.downstreamThickness = value
+
+    def handleInnerRadiiChanged(self, value):
+        """
+        Slot for handling change in the inner radii.
+        Called when a valueChanged signal is emitted,
+        from the innerRadiiSpinBox.
+        Alters the normalisation's inner radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the innerRadiiSpinBox.
+        """
+        self.sample.innerRadius = value
+
+    def handleOuterRadiiChanged(self, value):
+        """
+        Slot for handling change in the outer radii.
+        Called when a valueChanged signal is emitted,
+        from the outerRadiiSpinBox.
+        Alters the normalisation's outer radius as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the outerRadiiSpinBox.
+        """
+        self.sample.outerRadius = value
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -627,6 +658,15 @@ class SampleWidget(QWidget):
             self.handleDownstreamThicknessChanged
         )
 
+        self.innerRadiiSpinBox.setValue(self.sample.innerRadius)
+        self.innerRadiiSpinBox.valueChanged.connect(
+            self.handleInnerRadiiChanged
+        )
+        self.outerRadiiSpinBox.setValue(self.sample.outerRadius)
+        self.outerRadiiSpinBox.valueChanged.connect(
+            self.handleOuterRadiiChanged
+        )
+
         self.densitySpinBox.setValue(self.sample.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
@@ -696,6 +736,7 @@ class SampleWidget(QWidget):
         )
 
         self.geometryInfoStack.setCurrentIndex(config.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
 
         self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(
