@@ -147,7 +147,9 @@ class NormalisationWidget(QWidget):
             self.parent.updateGeometries()
             self.geometryComboBox.setCurrentIndex(index)
         else:
-            self.geometryInfoStack.setCurrentIndex(self.normalisation.geometry.value)
+            self.geometryInfoStack.setCurrentIndex(
+                self.normalisation.geometry.value
+            )
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -189,7 +191,7 @@ class NormalisationWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.normalisation.downstreamThickness = value
-    
+
     def handleInnerRadiiChanged(self, value):
         """
         Slot for handling change in the inner radii.
@@ -562,7 +564,9 @@ class NormalisationWidget(QWidget):
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
-        self.geometryInfoStack.setCurrentIndex(self.normalisation.geometry.value)
+        self.geometryInfoStack.setCurrentIndex(
+            self.normalisation.geometry.value
+        )
 
         self.densitySpinBox.setValue(self.normalisation.density)
         for du in UnitsOfDensity:
