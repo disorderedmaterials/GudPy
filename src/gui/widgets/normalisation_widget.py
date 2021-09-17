@@ -38,6 +38,8 @@ class NormalisationWidget(QWidget):
         Slot for handling change in the inner radii.
     handleOuterRadiiChanged(value)
         Slot for handling change to the outer radii.
+    handleDensityChanged(value)
+        Slot for handling change in the density.
     handleTotalCrossSectionChanged(index)
         Slot for handling change in the total cross section source.
     handleForceCorrectionsSwitched(state)
@@ -217,6 +219,19 @@ class NormalisationWidget(QWidget):
             The new value of the outerRadiiSpinBox.
         """
         self.normalisation.outerRadius = value
+
+    def handleDensityChanged(self, value):
+        """
+        Slot for handling change in the density.
+        Called when a valueChanged signal is emitted,
+        from the densitySpinBox.
+        Alters the container's density as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the densitySpinBox.
+        """
+        self.normalisation.density = value
 
     def handleTotalCrossSectionChanged(self, index):
         """
@@ -505,6 +520,8 @@ class NormalisationWidget(QWidget):
         uifile = os.path.join(current_dir, "ui_files/normalisationWidget.ui")
         uic.loadUi(uifile, self)
 
+        # Setup widgets and slots for the data files
+        # and background data files.
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
@@ -547,6 +564,7 @@ class NormalisationWidget(QWidget):
             )
         )
 
+        # Setup widgets and slots for the period numbers.
         self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
         self.backgroundPeriodNoSpinBox.setValue(
@@ -556,6 +574,7 @@ class NormalisationWidget(QWidget):
             self.handlePeriodNoBgChanged
         )
 
+        # Setup widgets and slots for geometry.
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(
@@ -564,11 +583,19 @@ class NormalisationWidget(QWidget):
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
+
+        # Ensure the correct attributes are being
+        # shown for the correct geometry.
         self.geometryInfoStack.setCurrentIndex(
             self.normalisation.geometry.value
         )
 
+        # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.normalisation.density)
+        self.densitySpinBox.valueChanged.connect(
+            self.handleDensityChanged
+        )
+
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -578,6 +605,8 @@ class NormalisationWidget(QWidget):
             self.handleDensityUnitsChanged
         )
 
+        # Setup the widgets and slots for geometry specific attributes.
+        # Flatplate
         self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
@@ -587,6 +616,7 @@ class NormalisationWidget(QWidget):
             self.handleDownstreamThicknessChanged
         )
 
+        # Cylindrical
         self.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
         self.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
@@ -596,6 +626,7 @@ class NormalisationWidget(QWidget):
             self.handleOuterRadiiChanged
         )
 
+        # Setup the other normalisation configurations widgets and slots.
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.normalisation.totalCrossSectionSource:
             index = 0
@@ -648,6 +679,7 @@ class NormalisationWidget(QWidget):
             self.handleMinNormalisationSignalChanged
         )
 
+        # Setup the widgets and slots for the composition.
         self.updateCompositionTable()
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)

@@ -615,9 +615,11 @@ class SampleWidget(QWidget):
         uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
         uic.loadUi(uifile, self)
 
+        # Setup widgets and slots for the period numbers.
         self.periodNoSpinBox.setValue(self.sample.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
+        # Setup widgets and slots for the data files
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
@@ -632,6 +634,8 @@ class SampleWidget(QWidget):
         self.removeDataFileButton.clicked.connect(
             lambda: self.removeFile(self.dataFilesList, self.sample.dataFiles)
         )
+
+        # Setuo the widgets and slots for the run controls.
         self.forceCorrectionsCheckBox.setChecked(
             Qt.Checked
             if self.sample.forceCalculationOfCorrections
@@ -641,6 +645,7 @@ class SampleWidget(QWidget):
             self.handleForceCorrectionsSwitched
         )
 
+        # Setup the widgets and slots for the geometry.
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
@@ -649,6 +654,13 @@ class SampleWidget(QWidget):
         )
         self.geometryComboBox.setDisabled(True)
 
+        # Ensure the correct attributes are being shown
+        # for the correct geometry.
+        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
+
+        # Setup the widgets and slots for geometry specific attributes.
+        # Flatplate
         self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
@@ -658,6 +670,16 @@ class SampleWidget(QWidget):
             self.handleDownstreamThicknessChanged
         )
 
+        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
+        self.angleOfRotationSpinBox.valueChanged.connect(
+            self.handleAngleOfRotationChanged
+        )
+        self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
+        self.sampleWidthSpinBox.valueChanged.connect(
+            self.handleSampleWidthChanged
+        )
+
+        # Cylindrical
         self.innerRadiiSpinBox.setValue(self.sample.innerRadius)
         self.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
@@ -667,6 +689,12 @@ class SampleWidget(QWidget):
             self.handleOuterRadiiChanged
         )
 
+        self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
+        self.sampleHeightSpinBox.valueChanged.connect(
+            self.handleSampleHeightChanged
+        )
+
+        # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.sample.density)
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
@@ -677,6 +705,7 @@ class SampleWidget(QWidget):
             self.handleDensityUnitsChanged
         )
 
+        # Setup the other sample run controls widgets and slots.
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.sample.totalCrossSectionSource:
             index = 0
@@ -690,11 +719,27 @@ class SampleWidget(QWidget):
             self.handleCrossSectionSourceChanged
         )
 
+        for n in NormalisationType:
+            self.normaliseToComboBox.addItem(n.name, n)
+        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
+        self.normaliseToComboBox.currentIndexChanged.connect(
+            self.handleNormaliseToChanged
+        )
+
+        for u in OutputUnits:
+            self.outputUnitsComboBox.addItem(u.name, u)
+        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
+        self.outputUnitsComboBox.currentIndexChanged.connect(
+            self.handleOutputUnitsChanged
+        )
+
+        # Setup the widget and slot for the tweak factor.
         self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
         self.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
 
+        # Setup the widgets and slots for Fourier Transform.
         self.topHatWidthSpinBox.setValue(self.sample.topHatW)
         self.topHatWidthSpinBox.valueChanged.connect(
             self.handleTopHatWidthChanged
@@ -716,39 +761,10 @@ class SampleWidget(QWidget):
         self.stepSizeSpinBox.setValue(self.sample.stepSize)
         self.stepSizeSpinBox.valueChanged.connect(self.handleStepSizeChanged)
 
+        # Setup the widgets and slots for the advanced attributes.
         self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
         self.scatteringFileLineEdit.textChanged.connect(
             self.handleSelfScatteringFileChanged
-        )
-
-        for n in NormalisationType:
-            self.normaliseToComboBox.addItem(n.name, n)
-        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
-        self.normaliseToComboBox.currentIndexChanged.connect(
-            self.handleNormaliseToChanged
-        )
-
-        for u in OutputUnits:
-            self.outputUnitsComboBox.addItem(u.name, u)
-        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
-        self.outputUnitsComboBox.currentIndexChanged.connect(
-            self.handleOutputUnitsChanged
-        )
-
-        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
-        self.geometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
-
-        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
-        self.angleOfRotationSpinBox.valueChanged.connect(
-            self.handleAngleOfRotationChanged
-        )
-        self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
-        self.sampleWidthSpinBox.valueChanged.connect(
-            self.handleSampleWidthChanged
-        )
-        self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
-        self.sampleHeightSpinBox.valueChanged.connect(
-            self.handleSampleHeightChanged
         )
 
         self.correctionFactorSpinBox.setValue(
@@ -768,10 +784,12 @@ class SampleWidget(QWidget):
             self.handleAttenuationCoefficientChanged
         )
 
+        # Setup the widgets and slots for the Composition.
         self.updateCompositionTable()
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
 
+        # Setup the widgets and slots for the Exponential values.
         self.updateExponentialTable()
         self.insertExponentialButton.clicked.connect(
             self.handleInsertExponentialValue
@@ -780,6 +798,7 @@ class SampleWidget(QWidget):
             self.handleRemoveExponentialValue
         )
 
+        # Setup the widgets and slots for the Resonance values.
         self.updateResonanceTable()
         self.insertResonanceButton.clicked.connect(
             self.handleInsertResonanceValue

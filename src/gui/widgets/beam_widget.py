@@ -352,7 +352,7 @@ class BeamWidget(QWidget):
             if not g == Geometry.SameAsBeam:
                 self.sampleGeometryComboBox.addItem(g.name, g)
 
-        # Set the selected item to that defined in the Beam object.
+        # Set up the widget and slot, for Geometry.
         self.sampleGeometryComboBox.setCurrentIndex(
             self.beam.sampleGeometry.value
         )
@@ -360,24 +360,31 @@ class BeamWidget(QWidget):
             self.handleGeometryChanged
         )
 
+        # Setup widgets and slots, for
+        # step sizes for absorption / m.s. calculation and no slices.
         self.absorptionStepSizeSpinBox.setValue(self.beam.stepSizeAbsorption)
         self.absorptionStepSizeSpinBox.valueChanged.connect(
             self.handleAbsorptionStepSizeChanged
         )
+
         self.msCalculationStepSizeSpinBox.setValue(self.beam.stepSizeMS)
         self.msCalculationStepSizeSpinBox.valueChanged.connect(
             self.handleMSStepSizeChanged
         )
-        self.noSlicesSpinBox.setValue(self.beam.noSlices)
 
+        self.noSlicesSpinBox.setValue(self.beam.noSlices)
         self.noSlicesSpinBox.valueChanged.connect(self.handleNoSlicesChanged)
+
+        # Setup widgets and slots, for Step size for angular corrections.
         self.stepForCorrectionsSpinBox.setValue(
             self.beam.angularStepForCorrections
         )
+
         self.stepForCorrectionsSpinBox.valueChanged.connect(
             self.handleStepSizeForCorrectionsChanged
         )
 
+        # Setup widgets and slots, for Incident beam.
         self.leftIncidentBeamEdgeSpinBox.setValue(
             self.beam.incidentBeamLeftEdge
         )
@@ -390,7 +397,9 @@ class BeamWidget(QWidget):
         self.rightIncidentBeamEdgeSpinBox.valueChanged.connect(
             self.handleRightIncidentBeamEdgeChanged
         )
-        self.topIncidentBeamEdgeSpinBox.setValue(self.beam.incidentBeamTopEdge)
+        self.topIncidentBeamEdgeSpinBox.setValue(
+            self.beam.incidentBeamTopEdge
+        )
         self.topIncidentBeamEdgeSpinBox.valueChanged.connect(
             self.handleTopIncidentBeamEdgeChanged
         )
@@ -401,6 +410,14 @@ class BeamWidget(QWidget):
             self.handleBottomIncidentBeamEdgeChanged
         )
 
+        self.incidentBeamSpectrumParametersLineEdit.setText(
+            self.beam.filenameIncidentBeamSpectrumParams
+        )
+        self.incidentBeamSpectrumParametersLineEdit.textChanged.connect(
+            self.handleIncidentBeamSpectrumParamsFileChanged
+        )
+
+        # Setup widgets and slots, for Scattered beam.
         self.leftScatteredBeamEdgeSpinBox.setValue(
             self.beam.scatteredBeamLeftEdge
         )
@@ -426,13 +443,7 @@ class BeamWidget(QWidget):
             self.handleBottomScatteredBeamEdgeChanged
         )
 
-        self.incidentBeamSpectrumParametersLineEdit.setText(
-            self.beam.filenameIncidentBeamSpectrumParams
-        )
-        self.incidentBeamSpectrumParametersLineEdit.textChanged.connect(
-            self.handleIncidentBeamSpectrumParamsFileChanged
-        )
-
+        # Setup widgets and slots, foir background factors.
         self.overallBackgroundFactorSpinBox.setValue(
             self.beam.overallBackgroundFactor
         )
@@ -446,6 +457,8 @@ class BeamWidget(QWidget):
         self.sampleDependantBackgroundFactorSpinBox.valueChanged.connect(
             self.handleSampleDependantBackgroundFactorChanged
         )
+
+        # Setup widget and slot for the absorption coefficient for shielding.
         self.shieldingSpinBox.setValue(
             self.beam.shieldingAttenuationCoefficient
         )
@@ -453,6 +466,7 @@ class BeamWidget(QWidget):
             self.handleShieldingAbsorptionCoeffChanged
         )
 
+        # Setup widget and slot for the beam profile values.
         self.updateBeamProfileValues()
         self.addBeamValueButton.clicked.connect(self.handleAddBeamProfileValue)
         self.removeBeamValueButton.clicked.connect(

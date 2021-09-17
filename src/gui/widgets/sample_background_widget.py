@@ -87,6 +87,7 @@ class SampleBackgroundWidget(QWidget):
         )
         uic.loadUi(uifile, self)
 
+        # Setup widgets and slots for the data files.
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
@@ -104,5 +105,6 @@ class SampleBackgroundWidget(QWidget):
             )
         )
 
+        # Setup widgets and slots for the period number.
         self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)

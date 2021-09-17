@@ -702,6 +702,7 @@ class InstrumentWidget(QWidget):
         uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
         uic.loadUi(uifile, self)
 
+        # Setup the widget and slot for the instrument name.
         for i in Instruments:
             self.nameComboBox.addItem(i.name, i)
         self.nameComboBox.setCurrentIndex(self.instrument.name.value)
@@ -709,6 +710,7 @@ class InstrumentWidget(QWidget):
             self.handleInstrumentNameChanged
         )
 
+        # Setup the widgets and slots for configuration files.
         self.dataFileDirectoryLineEdit.setText(self.instrument.dataFileDir)
         self.dataFileDirectoryLineEdit.textChanged.connect(
             self.handleDataFileDirectoryChanged
@@ -742,11 +744,6 @@ class InstrumentWidget(QWidget):
             )
         )
 
-        self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
-        self.phiValuesColumnSpinBox.valueChanged.connect(
-            self.handleColumnNoPhiValuesChanged
-        )
-
         self.groupsFileLineEdit.setText(self.instrument.groupFileName)
         self.groupsFileLineEdit.textChanged.connect(
             self.handleGroupsFileChanged
@@ -765,6 +762,13 @@ class InstrumentWidget(QWidget):
             )
         )
 
+        self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
+        self.phiValuesColumnSpinBox.valueChanged.connect(
+            self.handleColumnNoPhiValuesChanged
+        )
+
+        # Setup the widgets and slots for the wavelength range and step size
+        # for monitor normalisation.
         self.minWavelengthMonNormSpinBox.setValue(
             self.instrument.wavelengthRangeForMonitorNormalisation[0]
         )
@@ -778,6 +782,8 @@ class InstrumentWidget(QWidget):
             self.handleMaxWavelengthMonNormChanged
         )
 
+        # Setup the widgets and slots for the spectrum numbers
+        # and quiet count const for the incident beam monitor.
         self.spectrumNumbersIBLineEdit.setText(
             spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
         )
@@ -786,6 +792,15 @@ class InstrumentWidget(QWidget):
             self.handleSpectrumNumbersIBChanged
         )
 
+        self.incidentMonitorQuietCountConstSpinBox.setValue(
+            self.instrument.incidentMonitorQuietCountConst
+        )
+        self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect(
+            self.handleIncidentMonitorQuietCountConstChanged
+        )
+
+        # Setup the widgets and slots for the spectrum numbers
+        # and quiet count const for the transmission beam monitor.
         self.spectrumNumbersTLineEdit.setText(
             spacify(self.instrument.spectrumNumbersForTransmissionMonitor)
         )
@@ -794,12 +809,6 @@ class InstrumentWidget(QWidget):
             self.handleSpectrumNumbersTChanged
         )
 
-        self.incidentMonitorQuietCountConstSpinBox.setValue(
-            self.instrument.incidentMonitorQuietCountConst
-        )
-        self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect(
-            self.handleIncidentMonitorQuietCountConstChanged
-        )
         self.transmissionMonitorQuietCountConstSpinBox.setValue(
             self.instrument.transmissionMonitorQuietCountConst
         )
@@ -807,6 +816,8 @@ class InstrumentWidget(QWidget):
             self.handleTransmissionMonitorQuietCountConstChanged
         )
 
+        # Setup the widgets and slots for the channel numbers
+        # to be used for spike analysis.
         self.channelNoASpinBox.setValue(
             self.instrument.channelNosSpikeAnalysis[0]
         )
@@ -820,6 +831,8 @@ class InstrumentWidget(QWidget):
             self.handleChannelNoBChanged
         )
 
+        # Setup the widget and slot for the
+        # acceptance factor for spike analysis.
         self.acceptanceFactorSpinBox.setValue(
             self.instrument.spikeAnalysisAcceptanceFactor
         )
@@ -827,6 +840,7 @@ class InstrumentWidget(QWidget):
             self.handleSpikeAnalysisAcceptanceFactorChanged
         )
 
+        # Setup the widgets and slots for the wavelength range and step size.
         self.minWavelengthSpinBox.setValue(self.instrument.wavelengthMin)
         self.minWavelengthSpinBox.valueChanged.connect(
             self.handleMinWavelengthChanged
@@ -840,6 +854,7 @@ class InstrumentWidget(QWidget):
             self.handleStepWavelengthChanged
         )
 
+        # Setup the widget and slot for the number of smoothings on monitor.
         self.noSmoothsOnMonitorSpinBox.setValue(
             self.instrument.NoSmoothsOnMonitor
         )
@@ -847,6 +862,7 @@ class InstrumentWidget(QWidget):
             self.handleNoSmoothsOnMonitorChanged
         )
 
+        # Dictionary, mapping enum members to tuples of widgets.
         self.scales = {
             Scales.Q: (
                 self._QRadioButton,
@@ -879,6 +895,8 @@ class InstrumentWidget(QWidget):
                 self.stepTOFSpinBox,
             ),
         }
+
+        # Setup the widgets and slots for the scales.
         self._QRadioButton.toggled.connect(self.handleQScaleStateChanged)
         self.DSpacingRadioButton.toggled.connect(
             self.handleDSpacingScaleStateChanged
@@ -899,6 +917,8 @@ class InstrumentWidget(QWidget):
         max_.setValue(self.instrument.XMax)
         step.setValue(self.instrument.XStep)
 
+        # Setup the widget and slot for enabling/disabling
+        # logarithmic binning.
         self.logarithmicBinningCheckBox.setChecked(
             self.instrument.useLogarithmicBinning
         )
@@ -906,12 +926,15 @@ class InstrumentWidget(QWidget):
             self.handleUseLogarithmicBinningSwitched
         )
 
+        # Setup the widget and slot for the groups acceptance factor.
         self.groupsAcceptanceFactorSpinBox.setValue(
             self.instrument.groupsAcceptanceFactor
         )
         self.groupsAcceptanceFactorSpinBox.valueChanged.connect(
             self.handleGroupsAcceptanceFactorChanged
         )
+
+        # Setup the widgets and slots for merging.
         self.mergePowerSpinBox.setValue(self.instrument.mergePower)
         self.mergePowerSpinBox.valueChanged.connect(
             self.handleMergePowerChanged
@@ -925,6 +948,8 @@ class InstrumentWidget(QWidget):
         self.mergeWeightsComboBox.currentIndexChanged.connect(
             self.handleMergeWeightsChanged
         )
+
+        # Setup the widget and slot for the incident flight path.
         self.incidentFlightPathSpinBox.setValue(
             self.instrument.incidentFlightPath
         )
@@ -932,9 +957,14 @@ class InstrumentWidget(QWidget):
             self.handleIncidentFlightPathChanged
         )
 
+        # Setup the widget and slot for the spectrum number
+        # for output diagnostics.
         self.outputDiagSpectrumSpinBox.setValue(
             self.instrument.spectrumNumberForOutputDiagnosticFiles
         )
+
+        # Setup the widgets and slots for the neutron
+        # scattering parameters file and NeXus definition file.
         self.neutronScatteringParamsFileLineEdit.setText(
             self.instrument.neutronScatteringParametersFile
         )
@@ -970,11 +1000,13 @@ class InstrumentWidget(QWidget):
             )
         )
 
+        # Setup the widget and slot for enabling/disablign hard group edges.
         self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
         self.hardGroupEdgesCheckBox.stateChanged.connect(
             self.handleHardGroupEdgesSwitched
         )
 
+        # Setup the widgets and slots for the grouping parameter panel.
         self.updateGroupingParameterPanel()
         self.addGroupingParameterButton.clicked.connect(
             self.handleAddGroupingParameter

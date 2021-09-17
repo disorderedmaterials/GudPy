@@ -390,9 +390,11 @@ class ContainerWidget(QWidget):
         # Use pyuic to load to the UI file into the ContainerWidget.
         uic.loadUi(uifile, self)
 
+        # Setup widget and slot for the period number.
         self.periodNoSpinBox.setValue(self.container.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
+        # Setup widgets and slots for the data files.
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
@@ -410,17 +412,23 @@ class ContainerWidget(QWidget):
             )
         )
 
+        # Setup widgets and slots for geometry.
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
+
         self.geometryComboBox.setDisabled(True)
 
-        self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
-        self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
+        # Ensure the correct attributes are being
+        # shown for the correct geometry.
+        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
 
+        # Setup the widgets and slots for geometry specific attributes.
+        # Flatplate
         self.upstreamSpinBox.setValue(self.container.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
@@ -430,6 +438,16 @@ class ContainerWidget(QWidget):
             self.handleDownstreamThicknessChanged
         )
 
+        self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
+        self.angleOfRotationSpinBox.valueChanged.connect(
+            self.handleAngleOfRotationChanged
+        )
+        self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
+        self.sampleWidthSpinBox.valueChanged.connect(
+            self.handleSampleWidthChanged
+        )
+
+        # Cylindrical
         self.innerRadiiSpinBox.setValue(self.container.innerRadius)
         self.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
@@ -439,6 +457,12 @@ class ContainerWidget(QWidget):
             self.handleOuterRadiiChanged
         )
 
+        self.sampleHeightSpinBox.setValue(self.container.sampleHeight)
+        self.sampleHeightSpinBox.valueChanged.connect(
+            self.handleSampleHeightChanged
+        )
+
+        # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.container.density)
         self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
@@ -448,6 +472,7 @@ class ContainerWidget(QWidget):
             self.container.densityUnits.value
         )
 
+        # Setup the other container configurations widgets and slots.
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
         if "TABLES" in self.container.totalCrossSectionSource:
             index = 0
@@ -466,20 +491,6 @@ class ContainerWidget(QWidget):
             self.handleTweakFactorChanged
         )
 
-        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
-        self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
-        self.angleOfRotationSpinBox.valueChanged.connect(
-            self.handleAngleOfRotationChanged
-        )
-        self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
-        self.sampleWidthSpinBox.valueChanged.connect(
-            self.handleSampleWidthChanged
-        )
-        self.sampleHeightSpinBox.setValue(self.container.sampleHeight)
-        self.sampleHeightSpinBox.valueChanged.connect(
-            self.handleSampleHeightChanged
-        )
-
         self.scatteringFractionSpinBox.setValue(
             self.container.scatteringFraction
         )
@@ -493,6 +504,7 @@ class ContainerWidget(QWidget):
             self.handleAttenuationCoefficientChanged
         )
 
+        # Setup the widgets and slots for the composition.
         self.updateCompositionTable()
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
