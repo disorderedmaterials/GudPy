@@ -8,148 +8,6 @@ from PyQt5.QtCore import (
 )
 
 
-class GudPyNode():
-    """
-    Class to represent a GudPyNode. To be used in a QTreeView.
-
-    ...
-
-    Attributes
-    ----------
-    _data : list
-        Data for node to contain,
-    parent : GudPyNode
-        Parent node.
-    children : GudPyNode[]
-        List of child nodes.
-    Methods
-    -------
-    appendChild(node)
-        Appends a child node to the current node.
-    child(row)
-        Returns child at specified row.
-    childCount()
-        Returns number of child nodes.
-    columnCount()
-        Returns number of columns.
-    data(column)
-        Returns data at specified column.
-    objectData()
-        Returns the object associated with the data.
-    parent()
-        Returns parent node.
-    row()
-        Returns row of node.
-    """
-    def __init__(self, data, parent):
-        """
-        Constructs all the necessary attributes for the GudPyNode object.
-        Parameters
-        ----------
-        _data : list
-            Data for node to contain,
-        parent : GudPyNode
-            Parent node.
-        """
-        self._data = data
-        self._parent = parent
-        self.children = []
-
-    def appendChild(self, node):
-        """
-        Appends a child node to the current node.
-        Parameters
-        ----------
-        node : GudPyNode
-            Parent node.
-        """
-        self.children.append(node)
-
-    def child(self, row):
-        """
-        Returns child at specified row.
-        Parameters
-        ----------
-        row : int
-            Row number.
-        Returns
-        -------
-        GudPyNode
-            Child node.
-        """
-        return self.children[row]
-
-    def childCount(self):
-        """
-        Returns number of child nodes.
-        Returns
-        -------
-        int
-            Number of child nodes
-        """
-        return len(self.children)
-
-    def columnCount(self):
-        """
-        Returns the number of columns.
-        Returns
-        -------
-        int
-            Number of columns - this is always 1.
-        """
-        return 1
-
-    def data(self, column):
-        """
-        Returns the data at a given column.
-        Parameters
-        ----------
-        column : int
-            Column to return data from.
-        Returns
-        -------
-        QVariant
-            Data at given column.
-        """
-        if isinstance(self._data, str):
-            return QVariant(self._data)
-        return (
-            QVariant(self._data[0])
-            if self._data and not column
-            else QVariant()
-        )
-
-    def objectData(self):
-        """
-        Returns the object associated with the data. Only works for samples.
-        Returns
-        -------
-        Sample
-            Sample object.
-        """
-        return self._data[1]
-
-    def parent(self):
-        """
-        Returns parent node.
-        Returns
-        -------
-        GudPyNode
-            Parent node
-        """
-        return self._parent
-
-    def row(self):
-        """
-        Returns row of node.
-        Returns
-        -------
-        int
-            Row number
-        """
-        return self._parent.children.index(self) if self._parent else 0
-
-
 class GudPyTreeModel(QAbstractItemModel):
     """
     Class to represent a GudPyTreeModel. To be used with a GudyTree object.
@@ -200,8 +58,6 @@ class GudPyTreeModel(QAbstractItemModel):
     def __init__(self, parent, gudrunFile):
         """
         Constructs all the necessary attributes for the GudPyTreeModel object.
-        Creates the tree data stucture in list format, and then using nodes
-        by calling makeModel(root, data).
         Calls super()._init__ which calls the dunder init method
         from QAbstractItemModel.
         Parameters
@@ -214,65 +70,6 @@ class GudPyTreeModel(QAbstractItemModel):
         super(GudPyTreeModel, self).__init__(parent)
         self.gudrunFile = gudrunFile
 
-        # Form a heirarchical list from the gudrunFile.
-        self._data = ["Instrument", "Beam", "Normalisation"]
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            self._data.append([])
-            for sample in sampleBackground.samples:
-                # For samples, include a tuple (name, object)
-                self._data[-1].append([(sample.name, sample), []])
-                for container in sample.containers:
-                    self._data[-1][-1][-1].append(container.name)
-
-        # Set the root node.
-        self.root = GudPyNode(None, None)
-        # Make the model!
-        self.makeModel(self.root, self._data)
-
-    def makeModel(self, root, data):
-        """
-        Recursive method that creates the internal tree data structure.
-        Elements which are strings are simply appended to the root.
-        Elements which are lists are appended as subtrees to the root.
-        Parameters
-        ----------
-        root : GudPyNode
-            Root node of tree.
-        data : list
-            Data to form tree from.
-        """
-        for element in data:
-            # String instances are appended as children to the root.
-            if isinstance(element, str):
-                item = GudPyNode(element, root)
-                root.appendChild(item)
-            elif isinstance(element, list):
-                # If there is no parent node, but the element is a list,
-                # then it must be a sample background.
-                if not root.parent():
-                    item = GudPyNode("Sample Background", root)
-                    root.appendChild(item)
-                    # Append a child tree to the root.
-                    # This tree consists of samples/containers.
-                    self.makeModel(item, element)
-                # If there is a parent node, but no grandparent,
-                # and the element is a list, then it must be a
-                # sample.
-                elif root.parent() and not root.parent().parent():
-                    item = GudPyNode(element[0], root)
-                    root.appendChild(item)
-                    # Append a child tree to the root.
-                    # This tree consists of containers.
-                    self.makeModel(item, element[1:])
-                # If there is a parent and grandparent node,
-                # then it must be a container.
-                else:
-                    item = GudPyNode(element[0], root)
-                    # Append a leaf node to the tree.
-                    root.appendChild(item)
-                    # Append the other containers to the same root.
-                    self.makeModel(root, element[1:])
-
     def rowCount(self, parent=QModelIndex()):
         """
         Returns the row count.
@@ -284,12 +81,20 @@ class GudPyTreeModel(QAbstractItemModel):
         int
             Row count
         """
-        return (
-            self.root.childCount()
-            if not parent.isValid()
-            else parent.internalPointer().childCount()
-        )
-
+        if not parent.isValid():
+            return 3 + len(self.gudrunFile.sampleBackgrounds)
+        elif parent.isValid() and not parent.parent().isValid():
+            if parent.row() >=3 and parent.row() < (3 + len(self.gudrunFile.sampleBackgrounds)):
+                return len(self.gudrunFile.sampleBackgrounds[parent.row()-3].samples)
+            else:
+                return 0
+        elif parent.isValid() and parent.parent().isValid():
+            # print(parent.parent().row())
+            # print(parent.row())
+            # print(self.data(parent, Qt.DisplayRole).value())
+            return len(self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers)
+        else:
+            return 0
     def columnCount(self, parent):
         """
         Returns the number of columns in the model.
@@ -300,23 +105,23 @@ class GudPyTreeModel(QAbstractItemModel):
         Returns
         -------
         int
-            Column count - this is always 1.
+            Column count - this is always 3.
         """
         return 1
-
-    def checkState(self, index):
-        """
-        Returns the check state of a given index.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to return check state from.
-        Returns
-        -------
-        QCheckState
-            The check state of the index.
-        """
-        return Qt.Checked if self.included(index) else Qt.Unchecked
+        # if parent.isValid():
+        #     return 3
+        # else:
+        #     return 1
+        # return 1
+        # if not parent.isValid():
+        #     return 1
+        # return 0
+        # if not parent.isValid():
+        #     return 1
+        # elif parent.isValid() and not parent.parent().isValid():
+        #     return 4
+        # elif parent.isValid() and parent.parent().isValid():
+        #     return 1
 
     def data(self, index, role):
         """
@@ -334,27 +139,21 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         if not index.isValid():
             return QVariant()
-        if role == Qt.CheckStateRole and self.isSample(index):
-            return self.checkState(QPersistentModelIndex(index))
-        return (
-            index.internalPointer().data(index.column())
-            if role == Qt.DisplayRole
-            else QVariant()
-        )
+        elif not index.parent().isValid():
+            dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
+            return QVariant(dic[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+        elif index.parent().isValid() and not index.parent().parent().isValid():
+            return QVariant(self.gudrunFile.sampleBackgrounds[index.parent().row()-3].samples[index.row()].name) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+        elif index.parent().isValid() and index.parent().parent().isValid():
+            return QVariant(self.gudrunFile.sampleBackgrounds[index.parent().parent().row()-3].samples[index.parent().row()].containers[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+        else:
+            return QVariant()
 
-    def objectData(self, index):
-        """
-        Returns the object associated with a given index.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to retrieve object data from.
-        Returns
-        -------
-        Sample
-            Sample object associated with index.
-        """
-        return index.internalPointer().objectData()
+    def flags(self, index):
+        flags = super(GudPyTreeModel, self).flags(index)
+        # if self.isSample(index):
+        #     flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
+        return flags
 
     def headerData(self, column, orientation, role):
         """
@@ -382,13 +181,19 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
-        child = (
-            self.root.child(row)
-            if not parent.isValid()
-            else
-            parent.internalPointer().child(row)
-        )
-        return self.createIndex(row, column, child) if child else QModelIndex()
+        if not parent.isValid():
+            child = 0
+        # elif parent.internalId() > 0xffffffff or parent.internalId() == 0:
+        #     child = parent.row() + 1
+        # elif parent.parent().internalId() > 0xffffffff or parent.parent().internalId() == 0:
+        #     child = parent.parent().row() + 1
+        elif parent.isValid() and not parent.parent().isValid():
+            child = parent.row() + 1
+        elif parent.isValid() and parent.parent().isValid():
+            child = parent.parent().row() + 1
+        else:
+            return QModelIndex()
+        return self.createIndex(row, 0, child)
 
     def parent(self, index):
         """
@@ -399,68 +204,18 @@ class GudPyTreeModel(QAbstractItemModel):
             Index to return parent from.
         Returns
         -------
-        QModelIndex
+        QModelIndexx§
             Parent index if there is any, otherwise empty QModelIndex
         """
-        if not index.isValid():
-            return QModelIndex()
-        child = index.internalPointer()
-        if not child:
-            return QModelIndex()
-        parent = child.parent()
-        return (
-            QModelIndex()
-            if parent == self.root
-            else
-            self.createIndex(parent.row(), 0, parent)
-        )
-
-    def flags(self, index):
-        """
-        Returns flags associated with a given index.
-        Returns default flags if index is associated with a sample,
-        otherwise appends sample-specific flags.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to return flags from.
-        Returns
-        -------
-        int
-            Flags.
-        """
-        flags = super(GudPyTreeModel, self).flags(index)
-        if self.isSample(index):
-            flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
-        return flags
-
-    def setData(self, index, value, role):
-        """
-        Sets data at a given index.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to set data at.
-        value : any
-            Value to set data at index.
-        role : int
-            Role.
-        Returns
-        bool
-            Was data successfully set or not?
-        """
-        if (
-            index.isValid()
-            and role == Qt.CheckStateRole
-            and self.isSample(index)
-        ):
-            self.objectData(QModelIndex(index)).runThisSample = (
-                True if value == Qt.Checked
-                else False
-            )
-            return True
-        return False
-
+        # child = index.internalPointer()
+        # parent = child.parentItem()
+        # if parent == 
+        internalID = index.internalId()
+        if internalID > 0xffffffff or internalID == 0: return QModelIndex()
+        # # if internalID >= 3 + len(self.gudrunFile.sampleBackgrounds):
+        # #     internalID = 0
+        #     # return self.createIndex(1, 0, 0)
+        return self.createIndex(internalID-1, 0, 0)
     def isSample(self, index):
         """
         Returns whether a given index is associated with a sample.
@@ -487,6 +242,12 @@ class GudPyTreeModel(QAbstractItemModel):
             Is the sample to be run or not?
         """
         return self.objectData(QModelIndex(index)).runThisSample
+    
+    def isContainer(self, index):
+        return (
+            self.parent(index).isValid()
+            and self.parent(self.parent(index)).isValid()
+        )
 
 
 class GudPyTreeView(QTreeView):
@@ -560,7 +321,8 @@ class GudPyTreeView(QTreeView):
         Creates the QStandardItemModel to be used for the GudPyTreeView.
         The model is constructed from the GudrunFile.
         """
-        self.setModel(GudPyTreeModel(self, self.gudrunFile))
+        self.model_ = GudPyTreeModel(self, self.gudrunFile)
+        self.setModel(self.model_)
 
     def click(self, modelIndex):
         """
