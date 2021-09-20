@@ -129,11 +129,26 @@ class GudPyTreeModel(QAbstractItemModel):
     def data(self, index, role):
         if not index.isValid():
             return QVariant()
-        elif isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
-            dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
-            return QVariant(dic[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
-        elif isinstance(index.internalPointer(), (Sample, Container)):
-            return QVariant(index.internalPointer().name) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+        if role == Qt.DisplayRole or role == Qt.EditRole:
+            if isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
+                dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
+                return QVariant(dic[index.row()])
+            elif isinstance(index.internalPointer(), (Sample, Container)):
+                return QVariant(index.internalPointer().name)
+        elif role == Qt.CheckStateRole and self.isSample(index):
+            return self.checkState(index)
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+        elif role == Qt.CheckStateRole and self.isSample(index):
+            index.internalPointer().runThisSample = True if value == Qt.Checked else False
+            return True
+        else:
+            return False
+
+    def checkState(self, index):
+        return Qt.Checked if self.isIncluded(index) else Qt.Unchecked
 
     def rowCount(self, parent=QModelIndex()):
         if not parent.isValid():
@@ -153,6 +168,18 @@ class GudPyTreeModel(QAbstractItemModel):
 
     def columnCount(self, parent=QModelIndex()):
         return 1
+
+    def flags(self, index):
+        flags = super(GudPyTreeModel, self).flags(index)
+        if self.isSample(index):
+            flags |= Qt.ItemIsUserCheckable
+        return flags
+
+    def isSample(self, index):
+        return isinstance(index.parent().internalPointer(), SampleBackground)
+
+    def isIncluded(self, index):
+        return self.isSample(index) and index.internalPointer().runThisSample
 
 class GudPyTreeView(QTreeView):
     """
