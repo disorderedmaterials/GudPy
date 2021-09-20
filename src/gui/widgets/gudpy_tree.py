@@ -30,24 +30,24 @@ class GudPyTreeModel(QAbstractItemModel):
         key is a GudPy object, value is a QPersistentIndex.
     Methods
     -------
-    rowCount(parent)
-        Returns the row count of an index.
-    columnCount(parent)
-        Returns the column count of an index.
-    checkState(index)
-        Returns the check state of a given index.
-    data(index, role)
-        Returns the data at a given index.
     index(row, column, parent)
         Returns index associated with given row, column and parent.
     parent(index)
         Returns parent of a given index.
     findParent(item)
         Finds the parent of a given Sample or Container.
-    flags(index)
-        Returns flags associated with a given index.
+    data(index, role)
+        Returns the data at a given index.
     setData(index, value, role)
         Sets data at a given index.
+    checkState(index)
+        Returns the check state of a given index.
+    rowCount(parent)
+        Returns the row count of an index.
+    columnCount(parent)
+        Returns the column count of an index.
+    flags(index)
+        Returns flags associated with a given index.
     isSample(index)
         Returns whether a given index is associated with a sample.
     isIncluded(index)
@@ -404,7 +404,7 @@ class GudPyTreeView(QTreeView):
     absoluteIndex(modelIndex)
         Returns the 'absolute' index of a QModelIndex object.
     depth(modelIndex, depth)
-        Recursive method for calulcating the
+        Recursive method for calculating the
         depth in the tree of a QModelIndex object.
     """
 
