@@ -484,7 +484,7 @@ class GudPyTreeModel(QAbstractItemModel):
             Index to check if the sample associated with it is to be ran.
         Returns
         bool
-            Is the sample to be ran or not?
+            Is the sample to be run or not?
         """
         return self.objectData(QModelIndex(index)).runThisSample
 
