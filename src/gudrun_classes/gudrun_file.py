@@ -865,7 +865,7 @@ class GudrunFile:
             )
             sample.powerForBroadening = nthfloat(self.getNextToken(), 0)
             sample.stepSize = nthfloat(self.getNextToken(), 0)
-            sample.include = boolifyNum(nthint(self.getNextToken(), 0))
+            sample.runThisSample = boolifyNum(nthint(self.getNextToken(), 0))
             environmentValues = self.getNextToken()
             sample.scatteringFraction = nthfloat(environmentValues, 0)
             sample.attenuationCoefficient = nthfloat(environmentValues, 1)

@@ -281,11 +281,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "include": True,
+            "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerA],
-            "runThisSample": True
+            "containers": [self.expectedContainerA]
         }
 
         self.expectedSampleB = {
@@ -327,11 +326,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.0,
             "stepSize": 0.03,
-            "include": True,
+            "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerB],
-            "runThisSample": True
+            "containers": [self.expectedContainerB]
         }
 
         self.expectedSampleC = {
@@ -378,11 +376,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "include": True,
+            "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerC],
-            "runThisSample": True
+            "containers": [self.expectedContainerC]
         }
 
         self.expectedSampleD = {
@@ -429,11 +426,10 @@ class TestGudPyIO(TestCase):
             "outputUnits": OutputUnits.BARNS_ATOM_SR,
             "powerForBroadening": 0.5,
             "stepSize": 0.03,
-            "include": True,
+            "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerD],
-            "runThisSample": True
+            "containers": [self.expectedContainerD]
         }
 
         self.expectedSampleBackground = {
@@ -1092,7 +1088,6 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("dataFiles", None)
         expectedSampleA.pop("composition", None)
         expectedSampleA.pop("containers", None)
-        expectedSampleA.pop("runThisSample", None)
         expectedSampleA.pop("densityUnits", None)
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)
@@ -1145,7 +1140,6 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("dataFiles", None)
         expectedSampleA.pop("composition", None)
         expectedSampleA.pop("containers", None)
-        expectedSampleA.pop("runThisSample", None)
         expectedSampleA.pop("densityUnits", None)
         expectedSampleA.pop("innerRadius", None)
         expectedSampleA.pop("outerRadius", None)

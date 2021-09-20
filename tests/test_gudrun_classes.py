@@ -187,11 +187,10 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.maxRadFT, float)
         self.assertIsInstance(sample.outputUnits, OutputUnits)
         self.assertIsInstance(sample.powerForBroadening, float)
-        self.assertIsInstance(sample.include, bool)
+        self.assertIsInstance(sample.runThisSample, bool)
         self.assertIsInstance(sample.scatteringFraction, float)
         self.assertIsInstance(sample.attenuationCoefficient, float)
         self.assertIsInstance(sample.containers, list)
-        self.assertIsInstance(sample.runThisSample, bool)
 
     def testContainerInitDataTypes(self):
 
