@@ -1,4 +1,3 @@
-from src.scripts.utils import isin
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import (
     QAbstractItemModel,
@@ -7,14 +6,13 @@ from PyQt5.QtCore import (
     QVariant,
     Qt
 )
-
-from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
+
 
 class GudPyTreeModel(QAbstractItemModel):
     """
@@ -98,7 +96,10 @@ class GudPyTreeModel(QAbstractItemModel):
             return QModelIndex()
         elif not parent.isValid():
             # Invalid parent means we are at the top level.
-            rows = {0: self.gudrunFile.instrument, 1: self.gudrunFile.beam, 2: self.gudrunFile.normalisation}
+            rows = {
+                0: self.gudrunFile.instrument, 1: self.gudrunFile.beam,
+                2: self.gudrunFile.normalisation
+            }
             # Instrument | Beam | Normalisation
             if row in rows.keys():
                 obj = rows[row]
@@ -107,16 +108,22 @@ class GudPyTreeModel(QAbstractItemModel):
         elif parent.isValid() and not parent.parent().isValid():
             # Valid parent and invalid grandparent, means that the index
             # corresponds to a sample.
-            obj = self.gudrunFile.sampleBackgrounds[parent.row()-3].samples[row]
+            obj = (
+                self.gudrunFile.sampleBackgrounds[parent.row()-3]
+                .samples[row]
+            )
         elif parent.isValid() and parent.parent().isValid():
             # Valid parent and grandparent means that the index
             # corresponds to a container.
-            obj = self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers[row]
+            obj = (
+                self.gudrunFile.sampleBackgrounds[parent.parent().row()-3]
+                .samples[parent.row()].containers[row]
+            )
         else:
             # Otherwise we return an invalid index.
             return QModelIndex()
         # Check that we don't already have the index in reference.
-        if not obj in self.persistentIndexes.keys():
+        if obj not in self.persistentIndexes.keys():
             # Create the index and add a QPersistentModelIndex
             # constructed from the index, to the dict.
             index = self.createIndex(row, 0, obj)
@@ -142,7 +149,10 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         if not index.isValid():
             return QModelIndex()
-        if isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
+        if isinstance(
+            index.internalPointer(),
+            (Instrument, Beam, Normalisation, SampleBackground)
+        ):
             return QModelIndex()
         elif isinstance(index.internalPointer(), Sample):
             parent = self.findParent(index.internalPointer())
@@ -152,7 +162,7 @@ class GudPyTreeModel(QAbstractItemModel):
             return QModelIndex(self.persistentIndexes[parent])
         else:
             return QModelIndex()
-    
+
     def findParent(self, item):
         """
         Finds the parent of a given Sample or Container.
@@ -165,7 +175,9 @@ class GudPyTreeModel(QAbstractItemModel):
         SampleBackground | Sample
             Parent object.
         """
-        for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
+        for i, sampleBackground in enumerate(
+            self.gudrunFile.sampleBackgrounds
+        ):
             if isinstance(item, Sample):
                 if item in sampleBackground.samples:
                     return self.gudrunFile.sampleBackgrounds[i]
@@ -196,8 +208,14 @@ class GudPyTreeModel(QAbstractItemModel):
         if not index.isValid():
             return QVariant()
         if role == Qt.DisplayRole or role == Qt.EditRole:
-            if isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
-                dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
+            if isinstance(
+                index.internalPointer(),
+                (Instrument, Beam, Normalisation, SampleBackground)
+            ):
+                dic = {
+                    0: "Instrument", 1: "Beam",
+                    2: "Normalisation", 3: "Sample Background"
+                }
                 return QVariant(dic[index.row()])
             elif isinstance(index.internalPointer(), (Sample, Container)):
                 return QVariant(index.internalPointer().name)
@@ -226,7 +244,10 @@ class GudPyTreeModel(QAbstractItemModel):
         if not index.isValid():
             return False
         elif role == Qt.CheckStateRole and self.isSample(index):
-            index.internalPointer().runThisSample = True if value == Qt.Checked else False
+            if value == Qt.Checked:
+                index.internalPointer().runThisSample = True
+            else:
+                index.internalPointer().runThisSample = False
             return True
         else:
             return False
@@ -266,13 +287,23 @@ class GudPyTreeModel(QAbstractItemModel):
             # If the parent is valid, but the grandparent is invalid
             # Return the number of samples of the sample background.
             if parent.row() >= 3:
-                return len(self.gudrunFile.sampleBackgrounds[parent.row()-3].samples)
+                return len(
+                    self.gudrunFile.sampleBackgrounds[parent.row()-3].samples
+                )
             else:
                 return 0
-        elif parent.isValid() and parent.parent().isValid() and not parent.parent().parent().isValid():
-            # If it is a leaf, then return the number of containers for the sample.
-            if parent.parent().row() >=3:
-                return len(self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers)
+        elif (
+            parent.isValid()
+            and parent.parent().isValid()
+            and not parent.parent().parent().isValid()
+        ):
+            # If it is a leaf, then return the number of
+            # containers for the sample.
+            if parent.parent().row() >= 3:
+                return len(
+                    self.gudrunFile.sampleBackgrounds[parent.parent().row()-3]
+                    .samples[parent.row()].containers
+                )
             else:
                 return 0
         else:
@@ -337,6 +368,7 @@ class GudPyTreeModel(QAbstractItemModel):
             Is it to be included?
         """
         return self.isSample(index) and index.internalPointer().runThisSample
+
 
 class GudPyTreeView(QTreeView):
     """
