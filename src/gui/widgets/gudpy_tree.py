@@ -1,3 +1,4 @@
+from src.scripts.utils import isin
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import (
     QAbstractItemModel,
@@ -78,7 +79,6 @@ class GudPyTreeModel(QAbstractItemModel):
         self.gudrunFile = gudrunFile
         self.persistentIndexes = {}
 
-
     def index(self, row, column, parent=QModelIndex()):
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
@@ -93,26 +93,28 @@ class GudPyTreeModel(QAbstractItemModel):
                 obj = self.gudrunFile.sampleBackgrounds[row-3]
         elif parent.isValid() and not parent.parent().isValid():
             obj = self.gudrunFile.sampleBackgrounds[parent.row()-3].samples[row]
-        elif parent.isValid() and parent.parent().isValid() and isinstance(parent.internalPointer(), Sample):
+        elif parent.isValid() and parent.parent().isValid():
             obj = self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers[row]
         else:
             return QModelIndex()
-        index = self.createIndex(row, 0, obj)    
-        self.persistentIndexes[obj] = QPersistentModelIndex(index)
-        return index
+        if not obj in self.persistentIndexes.keys():
+            index = self.createIndex(row, 0, obj)
+            self.persistentIndexes[obj] = QPersistentModelIndex(index)
+            return index
+        else:
+            return QModelIndex(self.persistentIndexes[obj])
 
     def parent(self, index):
         if not index.isValid():
             return QModelIndex()
-        elif isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
-            parent = index.internalPointer()
-        elif isinstance(index.internalPointer(), (Sample, Container)):
-            parent = self.findParent(index.internalPointer())
-            print(type(parent))
-            print(self.persistentIndexes[parent])
-        else:
+        if isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
             return QModelIndex()
-        return QModelIndex(self.persistentIndexes[parent])
+        elif isinstance(index.internalPointer(), Sample):
+            parent = self.findParent(index.internalPointer())
+            return QModelIndex(self.persistentIndexes[parent])
+        elif isinstance(index.internalPointer(), Container):
+            parent = self.findParent(index.internalPointer())
+            return QModelIndex(self.persistentIndexes[parent])
     
     def findParent(self, item):
         for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
@@ -124,25 +126,28 @@ class GudPyTreeModel(QAbstractItemModel):
                     if item in sample.containers:
                         return self.gudrunFile.sampleBackgrounds[i].samples[j]
 
-
     def data(self, index, role):
-        print(type(index.internalPointer()))
         if not index.isValid():
             return QVariant()
         elif isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
             dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
             return QVariant(dic[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
         elif isinstance(index.internalPointer(), (Sample, Container)):
-            return QVariant(index.internalPointer().name)
+            return QVariant(index.internalPointer().name) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+
     def rowCount(self, parent=QModelIndex()):
         if not parent.isValid():
             return 3 + len(self.gudrunFile.sampleBackgrounds)
-        elif isinstance(parent.internalPointer(), (Instrument, Beam, Normalisation)):
-            return 0
-        elif isinstance(parent.internalPointer(), SampleBackground):
-            return len(parent.internalPointer().samples)
-        elif isinstance(parent.internalPointer(), Sample):
-            return len(parent.internalPointer().containers)
+        elif parent.isValid() and not parent.parent().isValid():
+            if parent.row() >= 3:
+                return len(self.gudrunFile.sampleBackgrounds[parent.row()-3].samples)
+            else:
+                return 0
+        elif parent.isValid() and parent.parent().isValid() and not parent.parent().parent().isValid():
+            if parent.parent().row() >=3:
+                return len(self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers)
+            else:
+                return 0
         else:
             return 0
 
