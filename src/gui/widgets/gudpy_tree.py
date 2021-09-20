@@ -216,7 +216,7 @@ class GudPyTreeModel(QAbstractItemModel):
                     0: "Instrument", 1: "Beam",
                     2: "Normalisation", 3: "Sample Background"
                 }
-                return QVariant(dic[index.row()])
+                return QVariant(dic[index.row() if index.row() <= 3 else 3])
             elif isinstance(index.internalPointer(), (Sample, Container)):
                 return QVariant(index.internalPointer().name)
         elif role == Qt.CheckStateRole and self.isSample(index):
