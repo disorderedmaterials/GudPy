@@ -44,4 +44,4 @@ class OutputUnits(Enum):
 class Geometry(Enum):
     FLATPLATE = 0
     CYLINDRICAL = 1
-    SameAsBeam = 3
+    SameAsBeam = 2

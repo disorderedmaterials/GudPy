@@ -9,3 +9,4 @@ dist/
 *.gud
 *.txt
 nexus_*
+*.DS_STORE

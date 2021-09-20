@@ -4,7 +4,7 @@ from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
     UnitsOfDensity, NormalisationType, OutputUnits, Geometry
 )
-from src.gudrun_classes.config import geometry
+from src.gudrun_classes import config
 
 
 class Sample:
@@ -172,7 +172,7 @@ class Sample:
             f'Angle of rotation and sample width (cm)\n'
             if (
                 self.geometry == Geometry.SameAsBeam
-                and geometry == Geometry.FLATPLATE
+                and config.geometry == Geometry.FLATPLATE
             )
             or self.geometry == Geometry.FLATPLATE
             else

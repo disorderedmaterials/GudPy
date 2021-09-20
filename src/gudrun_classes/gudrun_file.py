@@ -30,7 +30,7 @@ from src.gudrun_classes.enums import (
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
-from src.gudrun_classes.config import geometry
+from src.gudrun_classes import config
 
 
 class GudrunFile:
@@ -425,8 +425,7 @@ class GudrunFile:
             self.beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
 
             # Set the global geometry.
-            global geometry
-            geometry = self.beam.sampleGeometry
+            config.geometry = self.beam.sampleGeometry
 
             # For single integer attributes,
             # we extract the zeroth int from the line.
@@ -593,7 +592,7 @@ class GudrunFile:
             if (
                 (
                     self.normalisation.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or self.normalisation.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -781,7 +780,7 @@ class GudrunFile:
             if (
                 (
                     sample.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or sample.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -954,7 +953,7 @@ class GudrunFile:
             if (
                 (
                     container.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                     or container.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream

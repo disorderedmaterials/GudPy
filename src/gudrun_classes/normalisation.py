@@ -2,7 +2,7 @@ from src.scripts.utils import numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
-from src.gudrun_classes.config import geometry
+from src.gudrun_classes import config
 
 
 class Normalisation:
@@ -130,7 +130,7 @@ class Normalisation:
             if (
                 (
                     self.geometry == Geometry.SameAsBeam
-                    and geometry == Geometry.FLATPLATE
+                    and config.geometry == Geometry.FLATPLATE
                 )
                 or self.geometry == Geometry.FLATPLATE)
             else
