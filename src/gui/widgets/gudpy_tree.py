@@ -7,6 +7,13 @@ from PyQt5.QtCore import (
     Qt
 )
 
+from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.instrument import Instrument
+from src.gudrun_classes.beam import Beam
+from src.gudrun_classes.normalisation import Normalisation
+from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.sample_background import SampleBackground
+from src.gudrun_classes.container import Container
 
 class GudPyTreeModel(QAbstractItemModel):
     """
@@ -69,186 +76,78 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         super(GudPyTreeModel, self).__init__(parent)
         self.gudrunFile = gudrunFile
+        self.persistentIndexes = {}
 
-    def rowCount(self, parent=QModelIndex()):
-        """
-        Returns the row count.
-        Parameters
-        ----------
-        parent : QModelIndex, optional
-            Parent index.
-        Returns
-        int
-            Row count
-        """
-        if not parent.isValid():
-            return 3 + len(self.gudrunFile.sampleBackgrounds)
-        elif parent.isValid() and not parent.parent().isValid():
-            if parent.row() >=3 and parent.row() < (3 + len(self.gudrunFile.sampleBackgrounds)):
-                return len(self.gudrunFile.sampleBackgrounds[parent.row()-3].samples)
-            else:
-                return 0
-        elif parent.isValid() and parent.parent().isValid():
-            # print(parent.parent().row())
-            # print(parent.row())
-            # print(self.data(parent, Qt.DisplayRole).value())
-            return len(self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers)
-        else:
-            return 0
-    def columnCount(self, parent):
-        """
-        Returns the number of columns in the model.
-        Parameters
-        ----------
-        parent : QModelIndex
-            Parent index.
-        Returns
-        -------
-        int
-            Column count - this is always 3.
-        """
-        return 1
-        # if parent.isValid():
-        #     return 3
-        # else:
-        #     return 1
-        # return 1
-        # if not parent.isValid():
-        #     return 1
-        # return 0
-        # if not parent.isValid():
-        #     return 1
-        # elif parent.isValid() and not parent.parent().isValid():
-        #     return 4
-        # elif parent.isValid() and parent.parent().isValid():
-        #     return 1
 
-    def data(self, index, role):
-        """
-        Returns the data at a given index.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to return data from.
-        role : int
-            Role
-        Returns
-        -------
-        QVariant | QCheckState
-            Data at given index.
-        """
-        if not index.isValid():
-            return QVariant()
-        elif not index.parent().isValid():
-            dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
-            return QVariant(dic[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
-        elif index.parent().isValid() and not index.parent().parent().isValid():
-            return QVariant(self.gudrunFile.sampleBackgrounds[index.parent().row()-3].samples[index.row()].name) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
-        elif index.parent().isValid() and index.parent().parent().isValid():
-            return QVariant(self.gudrunFile.sampleBackgrounds[index.parent().parent().row()-3].samples[index.parent().row()].containers[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
-        else:
-            return QVariant()
-
-    def flags(self, index):
-        flags = super(GudPyTreeModel, self).flags(index)
-        # if self.isSample(index):
-        #     flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
-        return flags
-
-    def headerData(self, column, orientation, role):
-        """
-        There are no headers, so this always returns nothing.
-        Returns
-        -------
-        None
-        """
-        pass
-
-    def index(self, row, column, parent):
-        """
-        Returns index associated with given row, column and parent.
-        Parameters
-        ----------
-        row : int
-            Row number.
-        column : int
-            Column number
-        parent : QModelIndex
-            Parent index.
-        Returns
-        QModelIndex
-            QModelIndex created, if possible, otherwise empty QModelIndex.
-        """
+    def index(self, row, column, parent=QModelIndex()):
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
-        if not parent.isValid():
-            child = 0
-        # elif parent.internalId() > 0xffffffff or parent.internalId() == 0:
-        #     child = parent.row() + 1
-        # elif parent.parent().internalId() > 0xffffffff or parent.parent().internalId() == 0:
-        #     child = parent.parent().row() + 1
+        elif not parent.isValid():
+            if row == 0:
+                obj = self.gudrunFile.instrument
+            elif row == 1:
+                obj = self.gudrunFile.beam
+            elif row == 2:
+                obj = self.gudrunFile.normalisation
+            else:
+                obj = self.gudrunFile.sampleBackgrounds[row-3]
         elif parent.isValid() and not parent.parent().isValid():
-            child = parent.row() + 1
-        elif parent.isValid() and parent.parent().isValid():
-            child = parent.parent().row() + 1
+            obj = self.gudrunFile.sampleBackgrounds[parent.row()-3].samples[row]
+        elif parent.isValid() and parent.parent().isValid() and isinstance(parent.internalPointer(), Sample):
+            obj = self.gudrunFile.sampleBackgrounds[parent.parent().row()-3].samples[parent.row()].containers[row]
         else:
             return QModelIndex()
-        return self.createIndex(row, 0, child)
+        index = self.createIndex(row, 0, obj)    
+        self.persistentIndexes[obj] = QPersistentModelIndex(index)
+        return index
 
     def parent(self, index):
-        """
-        Returns parent of a given index.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to return parent from.
-        Returns
-        -------
-        QModelIndexx§
-            Parent index if there is any, otherwise empty QModelIndex
-        """
-        # child = index.internalPointer()
-        # parent = child.parentItem()
-        # if parent == 
-        internalID = index.internalId()
-        if internalID > 0xffffffff or internalID == 0: return QModelIndex()
-        # # if internalID >= 3 + len(self.gudrunFile.sampleBackgrounds):
-        # #     internalID = 0
-        #     # return self.createIndex(1, 0, 0)
-        return self.createIndex(internalID-1, 0, 0)
-    def isSample(self, index):
-        """
-        Returns whether a given index is associated with a sample.
-        Parameters
-        index : QModelIndex
-            Index to check if sample is associated with.
-        Returns
-        bool
-            Is the index associated with a sample or not?
-        """
-        return (
-            self.parent(index).isValid()
-            and not self.parent(self.parent(index)).isValid()
-        )
-
-    def included(self, index):
-        """
-        Returns whether a given index of a sample is to be ran.
-        Parameters
-        index : QModelIndex
-            Index to check if the sample associated with it is to be ran.
-        Returns
-        bool
-            Is the sample to be run or not?
-        """
-        return self.objectData(QModelIndex(index)).runThisSample
+        if not index.isValid():
+            return QModelIndex()
+        elif isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
+            parent = index.internalPointer()
+        elif isinstance(index.internalPointer(), (Sample, Container)):
+            parent = self.findParent(index.internalPointer())
+            print(type(parent))
+            print(self.persistentIndexes[parent])
+        else:
+            return QModelIndex()
+        return QModelIndex(self.persistentIndexes[parent])
     
-    def isContainer(self, index):
-        return (
-            self.parent(index).isValid()
-            and self.parent(self.parent(index)).isValid()
-        )
+    def findParent(self, item):
+        for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
+            if isinstance(item, Sample):
+                if item in sampleBackground.samples:
+                    return self.gudrunFile.sampleBackgrounds[i]
+            elif isinstance(item, Container):
+                for j, sample in enumerate(sampleBackground.samples):
+                    if item in sample.containers:
+                        return self.gudrunFile.sampleBackgrounds[i].samples[j]
 
+
+    def data(self, index, role):
+        print(type(index.internalPointer()))
+        if not index.isValid():
+            return QVariant()
+        elif isinstance(index.internalPointer(), (Instrument, Beam, Normalisation, SampleBackground)):
+            dic = {0:"Instrument",1:"Beam",2:"Normalisation", 3:"Sample Background"}
+            return QVariant(dic[index.row()]) if role == Qt.DisplayRole or role == Qt.EditRole else QVariant()
+        elif isinstance(index.internalPointer(), (Sample, Container)):
+            return QVariant(index.internalPointer().name)
+    def rowCount(self, parent=QModelIndex()):
+        if not parent.isValid():
+            return 3 + len(self.gudrunFile.sampleBackgrounds)
+        elif isinstance(parent.internalPointer(), (Instrument, Beam, Normalisation)):
+            return 0
+        elif isinstance(parent.internalPointer(), SampleBackground):
+            return len(parent.internalPointer().samples)
+        elif isinstance(parent.internalPointer(), Sample):
+            return len(parent.internalPointer().containers)
+        else:
+            return 0
+
+    def columnCount(self, parent=QModelIndex()):
+        return 1
 
 class GudPyTreeView(QTreeView):
     """
