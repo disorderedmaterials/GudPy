@@ -81,7 +81,7 @@ class Sample:
     stepSize : float
         Step size in radius for final g(r).
     runThisSample : bool
-        Should the sample be runThisSampled in analysis?
+        Should the sample be included in analysis?
     scatteringFraction : float
         Sample environment scattering fraction to compensate
         for different scattering in different containers.
