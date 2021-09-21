@@ -80,7 +80,7 @@ class Sample:
         0 = constant, 0.5 = sqrt(r), 1 = r
     stepSize : float
         Step size in radius for final g(r).
-    include : bool
+    runThisSample : bool
         Should the sample be included in analysis?
     scatteringFraction : float
         Sample environment scattering fraction to compensate
@@ -90,8 +90,6 @@ class Sample:
         compensate for different attenuation in different containers.
     containers : Container[]
         List of Container objects attached to this sample.
-    runThisSample : bool
-        Should this sample be ran?
     Methods
     -------
     """
@@ -133,12 +131,11 @@ class Sample:
         self.outputUnits = OutputUnits.BARNS_ATOM_SR
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
-        self.include = False
+        self.runThisSample = True
         self.scatteringFraction = 0.0
         self.attenuationCoefficient = 0.0
 
         self.containers = []
-        self.runThisSample = True
 
     def __str__(self):
         """
@@ -293,7 +290,7 @@ class Sample:
             f'Power for broadening function e.g. 0.5\n'
             f'{self.stepSize}{TAB}'
             f'Step size [\u212b]\n'
-            f'{numifyBool(self.include)}{TAB}'
+            f'{numifyBool(self.runThisSample)}{TAB}'
             f'Analyse this sample?\n'
             f'{sampleEnvironmentLine}'
             f'\n}}\n\n'
