@@ -12,6 +12,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
+from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -104,20 +105,25 @@ class GudPyTreeModel(QAbstractItemModel):
             if row in rows.keys():
                 obj = rows[row]
             else:
-                obj = self.gudrunFile.sampleBackgrounds[row-3]
+                obj = self.gudrunFile.sampleBackgrounds[
+                    row-NUM_GUDPY_CORE_OBJECTS
+                ]
         elif parent.isValid() and not parent.parent().isValid():
             # Valid parent and invalid grandparent, means that the index
             # corresponds to a sample.
             obj = (
-                self.gudrunFile.sampleBackgrounds[parent.row()-3]
+                self.gudrunFile.sampleBackgrounds[
+                    parent.row()-NUM_GUDPY_CORE_OBJECTS
+                ]
                 .samples[row]
             )
         elif parent.isValid() and parent.parent().isValid():
             # Valid parent and grandparent means that the index
             # corresponds to a container.
             obj = (
-                self.gudrunFile.sampleBackgrounds[parent.parent().row()-3]
-                .samples[parent.row()].containers[row]
+                self.gudrunFile.sampleBackgrounds[
+                    parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                ].samples[parent.row()].containers[row]
             )
         else:
             # Otherwise we return an invalid index.
@@ -216,7 +222,12 @@ class GudPyTreeModel(QAbstractItemModel):
                     0: "Instrument", 1: "Beam",
                     2: "Normalisation", 3: "Sample Background"
                 }
-                return QVariant(dic[index.row() if index.row() <= 3 else 3])
+                return QVariant(
+                    dic[
+                        index.row() if index.row() <= NUM_GUDPY_CORE_OBJECTS
+                        else NUM_GUDPY_CORE_OBJECTS
+                    ]
+                )
             elif isinstance(index.internalPointer(), (Sample, Container)):
                 return QVariant(index.internalPointer().name)
         elif role == Qt.CheckStateRole and self.isSample(index):
@@ -282,13 +293,18 @@ class GudPyTreeModel(QAbstractItemModel):
         # If the parent is invalid, then it is a top level node.
         if not parent.isValid():
             # Instrument + Beam + Normalisation + N SampleBackgrounds
-            return 3 + len(self.gudrunFile.sampleBackgrounds)
+            return (
+                NUM_GUDPY_CORE_OBJECTS
+                + len(self.gudrunFile.sampleBackgrounds)
+            )
         elif parent.isValid() and not parent.parent().isValid():
             # If the parent is valid, but the grandparent is invalid
             # Return the number of samples of the sample background.
-            if parent.row() >= 3:
+            if parent.row() >= NUM_GUDPY_CORE_OBJECTS:
                 return len(
-                    self.gudrunFile.sampleBackgrounds[parent.row()-3].samples
+                    self.gudrunFile.sampleBackgrounds[
+                        parent.row()-NUM_GUDPY_CORE_OBJECTS
+                    ].samples
                 )
             else:
                 return 0
@@ -299,10 +315,11 @@ class GudPyTreeModel(QAbstractItemModel):
         ):
             # If it is a leaf, then return the number of
             # containers for the sample.
-            if parent.parent().row() >= 3:
+            if parent.parent().row() >= NUM_GUDPY_CORE_OBJECTS:
                 return len(
-                    self.gudrunFile.sampleBackgrounds[parent.parent().row()-3]
-                    .samples[parent.row()].containers
+                    self.gudrunFile.sampleBackgrounds[
+                        parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                    ].samples[parent.row()].containers
                 )
             else:
                 return 0
