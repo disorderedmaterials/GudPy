@@ -25,6 +25,8 @@ class SampleWidget(QWidget):
         Parent widget.
     Methods
     -------
+    loadUI()
+        Loads the UI file for the SampleWidget object.
     setSample(sample)
         Gives the focus of the SampleWidget to the sample.
     initComponents()
@@ -119,6 +121,7 @@ class SampleWidget(QWidget):
         """
         self.parent = parent
         super(SampleWidget, self).__init__(parent=self.parent)
+        self.loadUI()
 
     def setSample(self, sample):
         """
@@ -131,6 +134,14 @@ class SampleWidget(QWidget):
         """
         self.sample = sample
         self.initComponents()
+
+    def loadUI(self):
+        """
+        Loads the UI file for the SampleWidget object.
+        """
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
+        uic.loadUi(uifile, self)
 
     def handlePeriodNoChanged(self, value):
         """
@@ -615,13 +626,9 @@ class SampleWidget(QWidget):
 
     def initComponents(self):
         """
-        Loads the UI file for the SampleWidget object,
-        and then populates the child widgets with their
+        Populates the child widgets with their
         corresponding data from the attributes of the Sample object.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
-        uic.loadUi(uifile, self)
 
         # Setup widgets and slots for the period numbers.
         self.periodNoSpinBox.setValue(self.sample.periodNumber)

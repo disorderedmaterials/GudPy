@@ -19,6 +19,8 @@ class SampleBackgroundWidget(QWidget):
     -------
     setSampleBackground(sampleBackground)
         Gives the focus of the SampleBackgroundWidget to the sample.
+    loadUI()
+        Loads the UI file for the SampleBackgroundWidget object.
     initComponents()
         Loads UI file, and then populates data from the SampleBackground.
     """
@@ -35,6 +37,7 @@ class SampleBackgroundWidget(QWidget):
         self.parent = parent
 
         super(SampleBackgroundWidget, self).__init__(parent=self.parent)
+        self.loadUI()
 
     def setSampleBackground(self, sampleBackground):
         """
@@ -48,11 +51,9 @@ class SampleBackgroundWidget(QWidget):
         self.sampleBackground = sampleBackground
         self.initComponents()
 
-    def initComponents(self):
+    def loadUI(self):
         """
-        Loads the UI file for the SampleBackgroundWidget object,
-        and then populates the child widgets with their
-        corresponding data from the attributes of the SampleBackground object.
+        Loads the UI file for the SampleBackgroundWidget object.
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(
@@ -60,6 +61,11 @@ class SampleBackgroundWidget(QWidget):
         )
         uic.loadUi(uifile, self)
 
+    def initComponents(self):
+        """
+        Populates the child widgets with their
+        corresponding data from the attributes of the SampleBackground object.
+        """
         # Setup widgets and slots for the data files.
         self.updateDataFilesList()
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
@@ -81,7 +87,6 @@ class SampleBackgroundWidget(QWidget):
         # Setup widgets and slots for the period number.
         self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
-
 
     def handleDataFilesAltered(self, item):
         index = item.row()

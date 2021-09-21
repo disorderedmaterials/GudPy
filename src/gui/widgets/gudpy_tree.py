@@ -449,7 +449,6 @@ class GudPyTreeView(QTreeView):
         self.gudrunFile = gudrunFile
         self.sibling = sibling
         self.makeModel()
-        # self.setModel(self.model)
         self.setHeaderHidden(True)
         self.clicked.connect(self.click)
 
@@ -471,99 +470,15 @@ class GudPyTreeView(QTreeView):
         modelIndex : QModelIndex
             QModelIndex of the QStandardItem that was clicked in the tree view.
         """
-        self.sibling.setCurrentIndex(self.absoluteIndex(modelIndex))
-
-    def siblings(self, modelIndex):
-        """
-        Helper method that returns all siblings associated with a QModelIndex.
-        Iterates over all siblings, checking if they share the same parent.
-        Parameters
-        ----------
-        modelIndex : QModelIndex
-            Input modelIndex, to find siblings from.
-        Returns
-        -------
-        list
-            QModelIndexes that are siblings of the input modelIndex.
-        """
-        s = []
-        sibling = modelIndex.sibling(0, 0)
-        i = 0
-        while sibling.row() != -1:
-            if modelIndex.parent() == sibling.parent():
-                s.append(sibling)
-            i += 1
-            sibling = modelIndex.sibling(i, 0)
-        return s
-
-    def children(self, modelIndex):
-        """
-        Helper method that returns all children associated with a QModelIndex.
-        Iterates over all children,
-        checking if their parent is the input modelIndex.
-        Parameters
-        ----------
-        modelIndex : QModelIndex
-            Input modelIndex, to find children from.
-        Returns
-        -------
-        list
-            QModelIndexes that are children of the input modelIndex.
-        """
-        c = []
-        child = modelIndex.child(0, 0)
-        i = 0
-        while child.row() != -1:
-            if child.parent() == modelIndex:
-                c.append(child)
-            i += 1
-            child = modelIndex.child(i, 0)
-        return c
-
-    def absoluteIndex(self, modelIndex):
-        """
-        Helper method that returns the 'absolute'
-        index of a QModelIndex object.
-        Absolute index is calculated by determining
-        the index of the QModelIndex
-        in a flattened model.
-        Parameters
-        ----------
-        modelIndex : QModelIndex
-            QModelIndex of which to find the absolute index.
-        Returns
-        -------
-        int
-            Absolute index of input modelIndex.
-        """
-        index = 1
-        if modelIndex.parent().row() == -1:
-            return modelIndex.row()
-        else:
-            siblings = self.siblings(modelIndex)
-            for sibling in siblings:
-                if sibling.row() < modelIndex.row():
-                    index += 1 + len(self.children(sibling))
-            index += self.absoluteIndex(modelIndex.parent())
-        return index
-
-    def depth(self, modelIndex, depth):
-        """
-        Recursive helper method that returns the
-        'depth' of a QModelIndex object.
-        This is calculated by recursing up,
-        and incrementing the depth, the tree view,
-        until no more parents exist.
-        Parameters
-        ----------
-        modelIndex : QModelIndex
-            QModelIndex of which to find the depth.
-        Returns
-        -------
-        int
-            Depth of input modelIndex.
-        """
-        row = modelIndex.parent().row()
-        if row < 0:
-            return depth
-        return self.depth(modelIndex.parent(), depth + 1)
+        indexMap = {
+            Instrument: (0, None),
+            Beam: (1, None),
+            Normalisation: (2, None),
+            SampleBackground: (3, self.sibling.widget(3).setSampleBackground),
+            Sample: (4, self.sibling.widget(4).setSample),
+            Container: (5, self.sibling.widget(5).setContainer)
+        }
+        index, setter = indexMap[type(modelIndex.internalPointer())]
+        self.sibling.setCurrentIndex(index)
+        if setter:
+            setter(modelIndex.internalPointer())

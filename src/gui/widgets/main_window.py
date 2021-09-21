@@ -1,6 +1,6 @@
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
-from src.gudrun_classes import config, container, sample
+from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
     QFileDialog,
     QMainWindow,
@@ -54,12 +54,22 @@ class GudPyMainWindow(QMainWindow):
             self.objectStack.addWidget(containerWidget)
 
             if len(self.gudrunFile.sampleBackgrounds):
-                self.objectStack.addWidget(sampleBackgroundWidget)
+                sampleBackgroundWidget.setSampleBackground(
+                    self.gudrunFile.sampleBackgrounds[0]
+                )
                 if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    sampleWidget.setSample(self.gudrunFile.sampleBackgrounds[0].samples[0])
-                    if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):
-                        containerWidget.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
-    
+                    sampleWidget.setSample(
+                        self.gudrunFile.sampleBackgrounds[0].samples[0]
+                    )
+                    if len(
+                        self.gudrunFile.sampleBackgrounds[0]
+                        .samples[0].containers
+                    ):
+                        containerWidget.setContainer(
+                            self.gudrunFile.sampleBackgrounds[0]
+                            .samples[0].containers[0]
+                        )
+
             self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
             self.runPurge.triggered.connect(

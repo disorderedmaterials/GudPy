@@ -19,6 +19,8 @@ class ContainerWidget(QWidget):
         Parent widget.
     Methods
     -------
+    loadUI()
+        Loads the UI file for the ContainerWidget object,
     initComponents()
         Loads UI file, and then populates data from the Container.
     setContainer(container)
@@ -78,6 +80,22 @@ class ContainerWidget(QWidget):
         self.parent = parent
 
         super(ContainerWidget, self).__init__(parent=self.parent)
+        self.loadUI()
+
+    def loadUI(self):
+        """
+        Loads the UI file for the ContainerWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Container object.
+        """
+
+        # Get the current directory that we are residing in.
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        # Join the current directory with the relative path of the UI file.
+        uifile = os.path.join(current_dir, "ui_files/containerWidget.ui")
+
+        # Use pyuic to load to the UI file into the ContainerWidget.
+        uic.loadUi(uifile, self)
 
     def setContainer(self, container):
         """
@@ -386,18 +404,9 @@ class ContainerWidget(QWidget):
 
     def initComponents(self):
         """
-        Loads the UI file for the ContainerWidget object,
-        and then populates the child widgets with their
+        Populates the child widgets with their
         corresponding data from the attributes of the Container object.
         """
-
-        # Get the current directory that we are residing in.
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the current directory with the relative path of the UI file.
-        uifile = os.path.join(current_dir, "ui_files/containerWidget.ui")
-
-        # Use pyuic to load to the UI file into the ContainerWidget.
-        uic.loadUi(uifile, self)
 
         # Setup widget and slot for the period number.
         self.periodNoSpinBox.setValue(self.container.periodNumber)
