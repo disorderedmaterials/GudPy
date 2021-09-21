@@ -25,6 +25,8 @@ class SampleWidget(QWidget):
         Parent widget.
     Methods
     -------
+    setSample(sample)
+        Gives the focus of the SampleWidget to the sample.
     initComponents()
         Loads UI file, and then populates data from the Sample.
     handlePeriodNoChanged(value)
@@ -107,21 +109,27 @@ class SampleWidget(QWidget):
         Slot for handling removing values from the resonance table.
     """
 
-    def __init__(self, sample, parent=None):
+    def __init__(self, parent=None):
         """
         Constructs all the necessary attributes for the SampleWidget object.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
+        self.parent = parent
+        super(SampleWidget, self).__init__(parent=self.parent)
+
+    def setSample(self, sample):
+        """
+        Gives the focus of the SampleWidget to the sample.
         Calls the initComponents method, to load the UI file and populate data.
         Parameters
         ----------
         sample : Sample
             Sample object belonging to the GudrunFile.
-        parent : QWidget
-            Parent widget.
         """
         self.sample = sample
-        self.parent = parent
-
-        super(SampleWidget, self).__init__(parent=self.parent)
         self.initComponents()
 
     def handlePeriodNoChanged(self, value):

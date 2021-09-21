@@ -21,6 +21,8 @@ class ContainerWidget(QWidget):
     -------
     initComponents()
         Loads UI file, and then populates data from the Container.
+    setContainer(container)
+        Gives the focus of the ContainerWidget to the container.
     handlePeriodNoChanged(value)
         Slot for handling change in the period number.
     handleGeometryChanged(index)
@@ -65,21 +67,28 @@ class ContainerWidget(QWidget):
         Slot for removing the selected element from the composition table.
     """
 
-    def __init__(self, container, parent=None):
+    def __init__(self, parent=None):
         """
         Constructs all the necessary attributes for the ContainerWidget object.
-        Calls the initComponents method, to load the UI file and populate data.
+        Parameters
+        ----------
+        parent : QWidget, optional
+            Parent widget.
+        """
+        self.parent = parent
+
+        super(ContainerWidget, self).__init__(parent=self.parent)
+
+    def setContainer(self, container):
+        """
+        Gives the focus of the ContainerWidget to the container.
+        Constructs all the necessary attributes for the ContainerWidget object.
         Parameters
         ----------
         container : Container
             Container object belonging to the GudrunFile.
-        parent : QWidget, optional
-            Parent widget.
         """
         self.container = container
-        self.parent = parent
-
-        super(ContainerWidget, self).__init__(parent=self.parent)
         self.initComponents()
 
     def handlePeriodNoChanged(self, value):
