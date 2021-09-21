@@ -68,7 +68,13 @@ class GudPyMainWindow(QMainWindow):
                 lambda: self.gudrunFile.dcs(path="gudpy.txt")
             )
 
-            self.viewInputFile.triggered.connect(
+            self.save.triggered.connect(
+                lambda: self.gudrunFile.write_out(overwrite=True)
+            )
+
+            self.saveAs.triggered.connect(self.saveInputFile)
+
+            self.viewLiveInputFile.triggered.connect(
                 lambda: ViewInput(self.gudrunFile, parent=self)
             )
 
@@ -85,6 +91,14 @@ class GudPyMainWindow(QMainWindow):
             except ParserException as e:
                 QMessageBox.critical(self, "GudPy Error", str(e))
             self.initComponents()
+
+    def saveInputFile(self):
+        filename = QFileDialog.getSaveFileName(
+            self, "Save input file as..", "."
+        )[0]
+        if filename:
+            self.gudrunFile.outpath = filename
+            self.gudrunFile.write_out()
 
     def updateFromFile(self):
         self.initComponents()
