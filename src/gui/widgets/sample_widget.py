@@ -722,7 +722,9 @@ class SampleWidget(QWidget):
 
         # Setup the other sample run controls widgets and slots.
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if "TABLES" in self.sample.totalCrossSectionSource:
+        if not self.sample.totalCrossSectionSource:
+            index = 0
+        elif "TABLES" in self.sample.totalCrossSectionSource:
             index = 0
         elif "TRANSMISSION" in self.sample.totalCrossSectionSource:
             index = 1

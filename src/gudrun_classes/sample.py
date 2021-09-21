@@ -117,7 +117,7 @@ class Sample:
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0.0
-        self.totalCrossSectionSource = ""
+        self.totalCrossSectionSource = "TABLES"
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
         self.minRadFT = 0.0

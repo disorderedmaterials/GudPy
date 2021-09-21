@@ -492,7 +492,9 @@ class ContainerWidget(QWidget):
 
         # Setup the other container configurations widgets and slots.
         crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if "TABLES" in self.container.totalCrossSectionSource:
+        if not self.container.totalCrossSectionSource:
+            index = 0
+        elif "TABLES" in self.container.totalCrossSectionSource:
             index = 0
         elif "TRANSMISSION" in self.container.totalCrossSectionSource:
             index = 1

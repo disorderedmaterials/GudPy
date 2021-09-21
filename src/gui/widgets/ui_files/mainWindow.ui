@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1366</width>
-    <height>968</height>
+    <height>970</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,6 +95,12 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="insertSampleBackground"/>
+    <addaction name="insertSample"/>
+    <addaction name="insertContainer"/>
+    <addaction name="copy"/>
+    <addaction name="cut"/>
+    <addaction name="paste"/>
    </widget>
    <addaction name="menuLoad"/>
    <addaction name="menuEdit"/>
@@ -144,6 +150,36 @@
   <action name="saveAs">
    <property name="text">
     <string>Save As..</string>
+   </property>
+  </action>
+  <action name="insertSample">
+   <property name="text">
+    <string>Insert Sample</string>
+   </property>
+  </action>
+  <action name="insertContainer">
+   <property name="text">
+    <string>Insert Container</string>
+   </property>
+  </action>
+  <action name="insertSampleBackground">
+   <property name="text">
+    <string>Insert Sample Background</string>
+   </property>
+  </action>
+  <action name="copy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="cut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="paste">
+   <property name="text">
+    <string>Paste</string>
    </property>
   </action>
  </widget>

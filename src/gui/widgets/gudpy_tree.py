@@ -300,7 +300,7 @@ class GudPyTreeModel(QAbstractItemModel):
         elif parent.isValid() and not parent.parent().isValid():
             # If the parent is valid, but the grandparent is invalid
             # Return the number of samples of the sample background.
-            if parent.row() >= NUM_GUDPY_CORE_OBJECTS:
+            if parent.row() >= NUM_GUDPY_CORE_OBJECTS and len(self.gudrunFile.sampleBackgrounds):
                 return len(
                     self.gudrunFile.sampleBackgrounds[
                         parent.row()-NUM_GUDPY_CORE_OBJECTS
@@ -482,3 +482,6 @@ class GudPyTreeView(QTreeView):
         self.sibling.setCurrentIndex(index)
         if setter:
             setter(modelIndex.internalPointer())
+
+    def currentObject(self):
+        return self.currentIndex().internalPointer()
