@@ -128,15 +128,11 @@ class GudPyTreeModel(QAbstractItemModel):
         else:
             # Otherwise we return an invalid index.
             return QModelIndex()
-        # Check that we don't already have the index in reference.
-        if obj not in self.persistentIndexes.keys():
-            # Create the index and add a QPersistentModelIndex
-            # constructed from the index, to the dict.
-            index = self.createIndex(row, 0, obj)
-            self.persistentIndexes[obj] = QPersistentModelIndex(index)
-            return index
-        else:
-            return QModelIndex(self.persistentIndexes[obj])
+        # Create the index and add a QPersistentModelIndex
+        # constructed from the index, to the dict.
+        index = self.createIndex(row, 0, obj)
+        self.persistentIndexes[obj] = QPersistentModelIndex(index)
+        return index
 
     def parent(self, index):
         """
@@ -315,14 +311,11 @@ class GudPyTreeModel(QAbstractItemModel):
         ):
             # If it is a leaf, then return the number of
             # containers for the sample.
-            if parent.parent().row() >= NUM_GUDPY_CORE_OBJECTS:
-                return len(
-                    self.gudrunFile.sampleBackgrounds[
-                        parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
-                    ].samples[parent.row()].containers
-                )
-            else:
-                return 0
+            return len(
+                self.gudrunFile.sampleBackgrounds[
+                    parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                ].samples[parent.row()].containers
+            )
         else:
             return 0
 
@@ -386,7 +379,38 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         return self.isSample(index) and index.internalPointer().runThisSample
 
+    def insertRow(self, obj, parent):
+        validParents = {
+            SampleBackground: True,
+            Sample: isinstance(parent.internalPointer(), SampleBackground),
+            Container: isinstance(parent.internalPointer(), Sample)
+        }
 
+        if validParents[type(obj)]:
+            if isinstance(obj, SampleBackground):
+                parent = QModelIndex()
+                setter = self.gudrunFile.sampleBackgrounds.append
+            if isinstance(obj, Sample):
+                setter = parent.internalPointer().samples.append
+            elif isinstance(obj, Container):
+                setter = parent.internalPointer().containers.append
+            self.beginInsertRows(parent, self.rowCount(parent), self.rowCount(parent))
+            setter(obj)
+            self.endInsertRows()
+    
+    def removeRow(self, index):
+        parent = self.parent(index)
+        obj = index.internalPointer()
+        if isinstance(obj, SampleBackground):
+            remove = self.gudrunFile.sampleBackgrounds.remove
+        elif isinstance(obj, Sample):
+            remove = parent.internalPointer().samples.remove
+        elif isinstance(obj, Container):
+            remove = parent.internalPointer().containers.remove
+        self.beginRemoveRows(parent, index.row(), index.row())
+        del self.persistentIndexes[obj]
+        remove(obj)
+        self.endRemoveRows()
 class GudPyTreeView(QTreeView):
     """
     Custom QTreeView View class for GudPy objects. Inherits QTreeView.
@@ -485,3 +509,9 @@ class GudPyTreeView(QTreeView):
 
     def currentObject(self):
         return self.currentIndex().internalPointer()
+
+    def insertRow(self, obj):
+        self.model().insertRow(obj, self.currentIndex())
+    
+    def removeRow(self):
+        self.model().removeRow(self.currentIndex())

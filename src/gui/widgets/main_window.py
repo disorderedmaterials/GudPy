@@ -162,51 +162,37 @@ class GudPyMainWindow(QMainWindow):
         self.updateGeometries()
         self.updateCompositions()
 
-    def insertSampleBackground_(self):
-        self.gudrunFile.sampleBackgrounds.append(SampleBackground())
-        self.objectTree.buildTree(self.objectTree.model().gudrunFile, self.objectStack)
+    def insertSampleBackground_(self, sampleBackground=None):
+        if not sampleBackground:
+            sampleBackground = SampleBackground()
+        self.objectTree.insertRow(sampleBackground)
     
-    def insertSample_(self, sampleBackground):
-        sample = Sample()
-        sample.name = "SAMPLE" # for now, give a default name.
-        sampleBackground.samples.append(sample)
-        self.objectTree.buildTree(self.objectTree.model().gudrunFile, self.objectStack)
+    def insertSample_(self, sample=None):
+        if not sample:
+            sample = Sample()
+            sample.name = "SAMPLE" # for now, give a default name.
+        self.objectTree.insertRow(sample)
     
-    def insertContainer_(self, sample):
-        container = Container()
-        container.name = "CONTAINER" # for now, give a default name.
-        sample.containers.append(container)
-        self.objectTree.buildTree(self.objectTree.model().gudrunFile, self.objectStack)
+    def insertContainer_(self, container=Container()):
+        if not container.name:
+            container.name = "CONTAINER" # for now, give a default name.
+        self.objectTree.insertRow(container)
 
     def copy_(self):
+        self.clipboard = None
         obj = self.objectTree.currentObject()
         if isinstance(obj, (SampleBackground, Sample, Container)):
             self.clipboard = deepcopy(obj)
 
     def cut_(self):
-        obj = self.objectTree.currentObject()
-        if isinstance(obj, SampleBackground):
-            self.clipboard = deepcopy(obj)
-            self.gudrunFile.sampleBackgrounds.remove(obj)
-        elif isinstance(obj, Sample):
-            self.clipboard = deepcopy(obj)
-            for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
-                if obj in sampleBackground.samples:
-                    self.gudrunFile.sampleBackgrounds[i].samples.remove(obj)
-        elif isinstance(obj, Container):
-            self.clipboard = deepcopy(obj)
-            for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
-                for j, sample in enumerate(sampleBackground.samples):
-                    if obj in sample.containers:
-                        self.gudrunFile.sampleBackgrounds[i].samples[j].remove(obj)
-
+        self.copy_()
+        if self.clipboard:
+            self.objectTree.removeRow()
 
     def paste_(self):
-        if self.clipboard:
-            if isinstance(self.clipboard, SampleBackground):
-                self.gudrunFile.sampleBackgrounds.append(self.clipboard)
-            elif isinstance(self.clipboard, Sample):
-                self.objectTree.currentObject().samples.append(self.clipboard)
-            elif isinstance(self.clipboard, Container):
-                self.objectName.currentObject().containers.append(self.clipboard)
-            self.objectTree.buildTree(self.objectTree.model().gudrunFile, self.objectStack)
+        if isinstance(self.clipboard, SampleBackground):
+            self.insertSampleBackground_(sampleBackground=self.clipboard)
+        elif isinstance(self.clipboard, Sample):
+            self.insertSample_(sample=self.clipboard)
+        elif isinstance(self.clipboard, Container):
+            self.insertContainer_(container=self.clipboard)
