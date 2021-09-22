@@ -102,11 +102,11 @@ class GudPyMainWindow(QMainWindow):
             )
 
             self.insertSample.triggered.connect(
-                lambda: self.insertSample_(sampleBackgroundWidget.sampleBackground)
+                self.insertSample_
             )
 
             self.insertContainer.triggered.connect(
-                lambda: self.insertContainer_(sampleWidget.sample)
+                self.insertContainer_
             )
 
             self.copy.triggered.connect(self.copy_)
@@ -174,8 +174,9 @@ class GudPyMainWindow(QMainWindow):
             sample.name = "SAMPLE" # for now, give a default name.
         self.objectTree.insertRow(sample)
     
-    def insertContainer_(self, container=Container()):
-        if not container.name:
+    def insertContainer_(self, container=None):
+        if not container:
+            container = Container()
             container.name = "CONTAINER" # for now, give a default name.
         self.objectTree.insertRow(container)
 
@@ -192,8 +193,8 @@ class GudPyMainWindow(QMainWindow):
 
     def paste_(self):
         if isinstance(self.clipboard, SampleBackground):
-            self.insertSampleBackground_(sampleBackground=self.clipboard)
+            self.insertSampleBackground_(sampleBackground=deepcopy(self.clipboard))
         elif isinstance(self.clipboard, Sample):
-            self.insertSample_(sample=self.clipboard)
+            self.insertSample_(sample=deepcopy(self.clipboard))
         elif isinstance(self.clipboard, Container):
-            self.insertContainer_(container=self.clipboard)
+            self.insertContainer_(container=deepcopy(self.clipboard))

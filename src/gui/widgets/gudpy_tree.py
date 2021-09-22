@@ -132,10 +132,12 @@ class GudPyTreeModel(QAbstractItemModel):
         # constructed from the index, to the dict.
         # if obj in self.persistentIndexes.keys():
         #     del self.persistentIndexes[obj]
+        # if obj not in self.persistentIndexes.keys():
         index = self.createIndex(row, 0, obj)
-        persistentIndex = QPersistentModelIndex(index)
-        self.persistentIndexes[obj] = persistentIndex
+        self.persistentIndexes[obj] = QPersistentModelIndex(index)
         return index
+        # else:
+            # return QModelIndex(self.persistentIndexes[obj])
 
     def parent(self, index):
         """
@@ -394,9 +396,9 @@ class GudPyTreeModel(QAbstractItemModel):
                 parent = QModelIndex()
                 setter = self.gudrunFile.sampleBackgrounds.append
             if isinstance(obj, Sample):
-                setter = parent.internalPointer().samples.append
+                setter = self.gudrunFile.sampleBackgrounds[parent.row()-NUM_GUDPY_CORE_OBJECTS].samples.append
             elif isinstance(obj, Container):
-                setter = parent.internalPointer().containers.append
+                setter = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.row()].containers.append
             self.beginInsertRows(parent, self.rowCount(parent), self.rowCount(parent))
             setter(obj)
             self.endInsertRows()
@@ -409,7 +411,15 @@ class GudPyTreeModel(QAbstractItemModel):
         elif isinstance(obj, Sample):
             remove = self.gudrunFile.sampleBackgrounds[parent.row()-NUM_GUDPY_CORE_OBJECTS].samples.remove
         elif isinstance(obj, Container):
-            remove = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.row()].remove
+            remove = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.row()].containers.remove
+        invalidated = []
+        if isinstance(obj, Sample):
+            for sibling in self.persistentIndexes.keys():
+                if isinstance(sibling, Sample):
+                    if self.findParent(sibling) == parent.internalPointer():
+                        invalidated.append(sibling)
+            for index_ in invalidated:
+                del self.persistentIndexes[index_]
         self.beginRemoveRows(parent, index.row(), index.row())
         self.persistentIndexes.pop(obj)
         remove(obj)
