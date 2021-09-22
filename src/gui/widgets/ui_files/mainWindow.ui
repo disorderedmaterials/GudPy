@@ -114,6 +114,9 @@
    <property name="text">
     <string>Load input file</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="loadConfiguration">
    <property name="text">
@@ -124,20 +127,24 @@
    <property name="text">
     <string>Run Purge</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="runGudrun">
    <property name="text">
     <string>Run Gudrun</string>
    </property>
-  </action>
-  <action name="viewInputFile">
-   <property name="text">
-    <string>View live input file</string>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="iterateGudrun">
    <property name="text">
     <string>Iterate Gudrun</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="viewLiveInputFile">
@@ -149,6 +156,9 @@
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="saveAs">
    <property name="text">
@@ -159,30 +169,48 @@
    <property name="text">
     <string>Insert Sample</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
   </action>
   <action name="insertContainer">
    <property name="text">
     <string>Insert Container</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="insertSampleBackground">
    <property name="text">
     <string>Insert Sample Background</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="copy">
    <property name="text">
     <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="cut">
    <property name="text">
     <string>Cut</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="paste">
    <property name="text">
     <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>
