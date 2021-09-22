@@ -1,7 +1,4 @@
 import sys
-from src.gudrun_classes.normalisation import Normalisation
-from src.gudrun_classes.beam import Beam
-from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
@@ -22,8 +19,9 @@ from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
-from PyQt5 import QtGui, uic
+from PyQt5 import uic
 from copy import deepcopy
+
 
 class GudPyMainWindow(QMainWindow):
     def __init__(self):
@@ -117,6 +115,7 @@ class GudPyMainWindow(QMainWindow):
         self.loadInputFile.triggered.connect(self.loadInputFile_)
         self.objectStack.currentChanged.connect(self.updateComponents)
         self.exit.triggered.connect(self.exit_)
+
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(
             self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
@@ -168,17 +167,17 @@ class GudPyMainWindow(QMainWindow):
         if not sampleBackground:
             sampleBackground = SampleBackground()
         self.objectTree.insertRow(sampleBackground)
-    
+
     def insertSample_(self, sample=None):
         if not sample:
             sample = Sample()
-            sample.name = "SAMPLE" # for now, give a default name.
+            sample.name = "SAMPLE"  # for now, give a default name.
         self.objectTree.insertRow(sample)
-    
+
     def insertContainer_(self, container=None):
         if not container:
             container = Container()
-            container.name = "CONTAINER" # for now, give a default name.
+            container.name = "CONTAINER"  # for now, give a default name.
         self.objectTree.insertRow(container)
 
     def copy_(self):
@@ -194,15 +193,22 @@ class GudPyMainWindow(QMainWindow):
 
     def paste_(self):
         if isinstance(self.clipboard, SampleBackground):
-            self.insertSampleBackground_(sampleBackground=deepcopy(self.clipboard))
+            self.insertSampleBackground_(
+                sampleBackground=deepcopy(self.clipboard)
+            )
         elif isinstance(self.clipboard, Sample):
             self.insertSample_(sample=deepcopy(self.clipboard))
         elif isinstance(self.clipboard, Container):
             self.insertContainer_(container=deepcopy(self.clipboard))
-    
+
     def exit_(self):
         messageBox = QMessageBox
-        result = messageBox.question(self, '', "Do you want to save?", messageBox.No | messageBox.Yes)
+        result = (
+            messageBox.question(
+                self, '',
+                "Do you want to save?", messageBox.No | messageBox.Yes
+            )
+        )
 
         if result == messageBox.Yes:
             self.gudrunFile.write_out(overwrite=True)
