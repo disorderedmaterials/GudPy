@@ -1,3 +1,4 @@
+import sys
 from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.instrument import Instrument
@@ -21,7 +22,7 @@ from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
-from PyQt5 import uic
+from PyQt5 import QtGui, uic
 from copy import deepcopy
 
 class GudPyMainWindow(QMainWindow):
@@ -115,7 +116,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
         self.objectStack.currentChanged.connect(self.updateComponents)
-
+        self.exit.triggered.connect(self.exit_)
     def loadInputFile_(self):
         filename = QFileDialog.getOpenFileName(
             self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
@@ -198,3 +199,11 @@ class GudPyMainWindow(QMainWindow):
             self.insertSample_(sample=deepcopy(self.clipboard))
         elif isinstance(self.clipboard, Container):
             self.insertContainer_(container=deepcopy(self.clipboard))
+    
+    def exit_(self):
+        messageBox = QMessageBox
+        result = messageBox.question(self, '', "Do you want to save?", messageBox.No | messageBox.Yes)
+
+        if result == messageBox.Yes:
+            self.gudrunFile.write_out(overwrite=True)
+        sys.exit(0)
