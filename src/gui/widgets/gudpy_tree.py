@@ -386,11 +386,16 @@ class GudPyTreeModel(QAbstractItemModel):
 
     def insertRow(self, obj, parent):
         validParents = {
-            SampleBackground: True,
+            SampleBackground: isinstance(parent.internalPointer(), (Instrument, Beam, Normalisation)),
             Sample: isinstance(parent.internalPointer(), SampleBackground),
             Container: isinstance(parent.internalPointer(), Sample)
         }
 
+        validSiblings = {
+            SampleBackground: isinstance(obj, SampleBackground),
+            Sample: isinstance(obj, Sample),
+            Container: isinstance(obj, Container)
+        }
         if validParents[type(obj)]:
             if isinstance(obj, SampleBackground):
                 parent = QModelIndex()
@@ -402,7 +407,21 @@ class GudPyTreeModel(QAbstractItemModel):
             self.beginInsertRows(parent, self.rowCount(parent), self.rowCount(parent))
             setter(obj)
             self.endInsertRows()
-    
+        elif validSiblings[type(obj)]:
+            if isinstance(obj, SampleBackground):
+                index = self.gudrunFile.sampleBackgrounds.index(parent.internalPointer())
+                parent = QModelIndex()
+                setter = self.gudrunFile.sampleBackgrounds.insert
+            elif isinstance(obj, Sample):
+                index = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples.index(parent.internalPointer())
+                setter = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples.insert
+            elif isinstance(obj, Container):
+                index = self.gudrunFile.sampleBackgrounds[parent.parent().parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.parent().row()].containers.index(parent.internalPointer())
+                setter = self.gudrunFile.sampleBackgrounds[parent.parent().parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.parent().row()].containers.insert
+            self.beginInsertRows(parent.parent(), self.rowCount(parent.parent()), self.rowCount(parent.parent()))
+            setter(index+1, obj)
+            self.endInsertRows()
+
     def removeRow(self, index):
         parent = index.parent()
         obj = index.internalPointer()
