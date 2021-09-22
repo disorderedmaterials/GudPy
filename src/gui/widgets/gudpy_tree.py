@@ -130,6 +130,8 @@ class GudPyTreeModel(QAbstractItemModel):
             return QModelIndex()
         # Create the index and add a QPersistentModelIndex
         # constructed from the index, to the dict.
+        if obj in self.persistentIndexes.keys():
+            del self.persistentIndexes[obj]
         index = self.createIndex(row, 0, obj)
         self.persistentIndexes[obj] = QPersistentModelIndex(index)
         return index
