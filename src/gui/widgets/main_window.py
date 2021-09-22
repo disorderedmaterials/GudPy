@@ -24,7 +24,54 @@ from copy import deepcopy
 
 
 class GudPyMainWindow(QMainWindow):
+    """
+    Class to represent the GudPyMainWindow. Inherits QMainWindow.
+    This is the main window for the GudPy application.
+
+    ...
+
+    Attributes
+    ----------
+    gudrunFile : GudrunFile
+        GudrunFile object currently associated with the application.
+    clipboard : SampleBackground | Sample | Container
+        Stores copied objects.
+    Methods
+    -------
+    initComponents()
+        Loads the UI file for the GudPyMainWindow
+    loadInputFile_()
+        Loads an input file.
+    saveInputFile()
+        Saves the current GudPy file.
+    updateFromFile()
+        Updates from the original input file.
+    updateGeometries()
+        Updates geometries across objects.
+    updateCompositions()
+        Updates compositions across objects.
+    updateComponents()
+        Updates geometries and compositions.
+    insertSampleBackground_(sampleBackground)
+        Inserts a SampleBackground into the GudrunFile.
+    insertSample_(sample)
+        Inserts a Sample into the GudrunFile.
+    insertContainer_(container)
+        Inserts a Container into the GudrunFile.
+    copy_()
+        Copies the current object to the clipboard.
+    cut_()
+        Cuts the current object to the clipboard.
+    paste_()
+        Pastes the clipboard back into the GudrunFile.
+    exit_()
+        Exits GudPy.
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the GudPyMainWindow object.
+        Calls initComponents() to load the UI file.
+        """
         super(GudPyMainWindow, self).__init__()
         self.gudrunFile = None
         self.initComponents()
@@ -32,7 +79,7 @@ class GudPyMainWindow(QMainWindow):
 
     def initComponents(self):
         """
-        Loads the UI file for the GudPyMainWindow
+        Loads the UI file for the GudPyMainWindow.
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
@@ -117,6 +164,9 @@ class GudPyMainWindow(QMainWindow):
         self.exit.triggered.connect(self.exit_)
 
     def loadInputFile_(self):
+        """
+        Opens a QFileDialog to load an input file.
+        """
         filename = QFileDialog.getOpenFileName(
             self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
         )[0]
@@ -128,6 +178,9 @@ class GudPyMainWindow(QMainWindow):
             self.initComponents()
 
     def saveInputFile(self):
+        """
+        Saves the current state of the input file.
+        """
         filename = QFileDialog.getSaveFileName(
             self, "Save input file as..", "."
         )[0]
@@ -136,9 +189,16 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out()
 
     def updateFromFile(self):
+        """
+        Calls initComponents() again, to update the UI.
+        """
         self.initComponents()
 
     def updateGeometries(self):
+        """
+        Iteratively updates geometries of objects,
+        where the Geometry is SameAsBeam.
+        """
         for i in range(self.objectStack.count()):
             target = self.objectStack.widget(i)
             if isinstance(target, NormalisationWidget):
@@ -150,6 +210,10 @@ class GudPyMainWindow(QMainWindow):
                 target.geometryComboBox.setCurrentIndex(config.geometry.value)
 
     def updateCompositions(self):
+        """
+        Iteratively shares compositions between objects,
+        for copying and pasting compositions between eachother.
+        """
         for i in range(self.objectStack.count()):
             target = self.objectStack.widget(i)
             if isinstance(target, NormalisationWidget):
@@ -160,38 +224,75 @@ class GudPyMainWindow(QMainWindow):
                 target.containerCompositionTable.farmCompositions()
 
     def updateComponents(self):
+        """
+        Updates geometries and compositions.
+        """
         self.updateGeometries()
         self.updateCompositions()
 
     def insertSampleBackground_(self, sampleBackground=None):
+        """
+        Inserts a SampleBackground into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sampleBackground : SampleBackground, optional
+            SampleBackground object to insert.
+        """
         if not sampleBackground:
             sampleBackground = SampleBackground()
         self.objectTree.insertRow(sampleBackground)
 
     def insertSample_(self, sample=None):
+        """
+        Inserts a Sample into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sample : Sample, optional
+            Sample object to insert.
+        """
         if not sample:
             sample = Sample()
             sample.name = "SAMPLE"  # for now, give a default name.
         self.objectTree.insertRow(sample)
 
     def insertContainer_(self, container=None):
+        """
+        Inserts a Container into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        container : Container, optional
+            Container object to insert.
+        """
         if not container:
             container = Container()
             container.name = "CONTAINER"  # for now, give a default name.
         self.objectTree.insertRow(container)
 
     def copy_(self):
+        """
+        Copies the current object to the clipboard.
+        """
         self.clipboard = None
         obj = self.objectTree.currentObject()
         if isinstance(obj, (SampleBackground, Sample, Container)):
             self.clipboard = deepcopy(obj)
 
     def cut_(self):
+        """
+        Copies the current object to the clipboard, and removes
+        the object from the tree.
+        """
         self.copy_()
         if self.clipboard:
             self.objectTree.removeRow()
 
     def paste_(self):
+        """
+        Pastes the contents of the clipboard back into the GudrunFile.
+        """
         if isinstance(self.clipboard, SampleBackground):
             self.insertSampleBackground_(
                 sampleBackground=deepcopy(self.clipboard)
@@ -202,6 +303,9 @@ class GudPyMainWindow(QMainWindow):
             self.insertContainer_(container=deepcopy(self.clipboard))
 
     def exit_(self):
+        """
+        Exits GudPy - questions user if they want to save on exit or not.
+        """
         messageBox = QMessageBox
         result = (
             messageBox.question(

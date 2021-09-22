@@ -53,6 +53,10 @@ class GudPyTreeModel(QAbstractItemModel):
         Returns whether a given index is associated with a sample.
     isIncluded(index)
         Returns whether a given index of a sample is to be ran.
+    insertRow(obj, parent)
+        Insert a row containing an object to a parent index.
+    removeRow(index)
+        Remove a row from an index.
     """
 
     def __init__(self, parent, gudrunFile):
@@ -383,7 +387,19 @@ class GudPyTreeModel(QAbstractItemModel):
         return self.isSample(index) and index.internalPointer().runThisSample
 
     def insertRow(self, obj, parent):
+        """
+        Insert a row containing an object to a parent index.
+        Parameters
+        ----------
+        obj : SampleBackground | Sample | Container
+            Object to be inserted.
+        parent : QModelIndex
+            Parent index to append to.
+        """
+        # Get the parent object.
         parentObj = parent.internalPointer()
+
+        # Dict for deciding if the object has a valid parent.
         validParents = {
             SampleBackground: isinstance(parentObj, (
                 Instrument, Beam, Normalisation
@@ -392,13 +408,17 @@ class GudPyTreeModel(QAbstractItemModel):
             Container: isinstance(parentObj, Sample)
         }
 
+        # Dict for deciding if the parent object is actually a sibling.
         validSiblings = {
-            SampleBackground: isinstance(obj, SampleBackground),
-            Sample: isinstance(obj, Sample),
-            Container: isinstance(obj, Container)
+            SampleBackground: isinstance(parentObj, SampleBackground),
+            Sample: isinstance(parentObj, Sample),
+            Container: isinstance(parentObj, Container)
         }
+
         if validParents[type(obj)]:
+            # We are appending
             if isinstance(obj, SampleBackground):
+                # SampleBackground is top level, so the parent is the root.
                 parent = QModelIndex()
                 setter = self.gudrunFile.sampleBackgrounds.append
             if isinstance(obj, Sample):
@@ -413,13 +433,19 @@ class GudPyTreeModel(QAbstractItemModel):
                     self.gudrunFile.sampleBackgrounds[targetIndex]
                     .samples[parent.row()].containers.append
                 )
+            # Since we are only inserting one row, start = end.
             start = end = self.rowCount(parent)
+            # Begin inserting rows.
             self.beginInsertRows(parent, start, end)
+            # Call the setter.
             setter(obj)
+            # End inserting rows.
             self.endInsertRows()
         elif validSiblings[type(obj)]:
+            # We are inserting.
             if isinstance(obj, SampleBackground):
                 index = self.gudrunFile.sampleBackgrounds.index(parentObj)
+                # SampleBackground is top level, so the parent is the root.
                 parent = QModelIndex()
                 setter = self.gudrunFile.sampleBackgrounds.insert
             elif isinstance(obj, Sample):
@@ -444,14 +470,29 @@ class GudPyTreeModel(QAbstractItemModel):
                     self.gudrunFile.sampleBackgrounds[targetIndex].
                     samples[parent.parent().row()].containers.insert
                 )
-            start = end = self.rowCount(parent.parent)
+            # Again, start = end.
+            start = end = self.rowCount(parent.parent())
+            # Begin inserting rows.
             self.beginInsertRows(parent.parent(), start, end)
+            # Call the setter.
+            # index+1 to insert after the current index.
             setter(index+1, obj)
+            # End inserting rows.
             self.endInsertRows()
 
     def removeRow(self, index):
+        """
+        Remove a row from an index.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to remove.
+        """
+        # Get the parent index.
         parent = index.parent()
+        # Get the object associated with the current index.
         obj = index.internalPointer()
+        # Decide on the remove function.
         if isinstance(obj, SampleBackground):
             remove = self.gudrunFile.sampleBackgrounds.remove
         elif isinstance(obj, Sample):
@@ -466,6 +507,9 @@ class GudPyTreeModel(QAbstractItemModel):
                 .samples[parent.row()].containers.remove
             )
         invalidated = []
+
+        # Remove QPersistendIndexes from the dict that become invalidated
+        # by removing the current index.
         if isinstance(obj, Sample):
             for sibling in self.persistentIndexes.keys():
                 if isinstance(sibling, Sample):
@@ -473,9 +517,14 @@ class GudPyTreeModel(QAbstractItemModel):
                         invalidated.append(sibling)
             for index_ in invalidated:
                 del self.persistentIndexes[index_]
-        self.beginRemoveRows(parent, index.row(), index.row())
+        start = end = index.row()
+        # Begin inserting rows.
+        self.beginRemoveRows(parent, start, end)
+        # Pop the object from the dict.
         self.persistentIndexes.pop(obj)
+        # Remove the row.
         remove(obj)
+        # End inserting rows.
         self.endRemoveRows()
 
 
@@ -504,17 +553,12 @@ class GudPyTreeView(QTreeView):
         Creates the model for the tree view from the GudrunFile.
     click(modelIndex)
         Slot method for clicked signal on GudPyTreeView.
-    siblings(modelIndex)
-        Helper method that returns a list
-        of all siblings associated with a QModelIndex.
-    children(modelIndex)
-        Helper method that returns a list of
-        all children associated with a QModelIndex.
-    absoluteIndex(modelIndex)
-        Returns the 'absolute' index of a QModelIndex object.
-    depth(modelIndex, depth)
-        Recursive method for calculating the
-        depth in the tree of a QModelIndex object.
+    currentObject()
+        Returns the object associated with the current index.
+    insertRow(obj)
+        Inserts an object into the current row in the model.
+    removeRow()
+        Removes the current index from the model.
     """
 
     def __init__(self, parent):
@@ -576,10 +620,28 @@ class GudPyTreeView(QTreeView):
             setter(modelIndex.internalPointer())
 
     def currentObject(self):
+        """
+        Returns the object associated with the current index.
+        Returns
+        -------
+        Instrument | Beam | Normalisation |
+        SampleBackground | Sample | Container
+            Object associated with the current index.
+        """
         return self.currentIndex().internalPointer()
 
     def insertRow(self, obj):
+        """
+        Inserts an object into the current row in the model.
+        Parameters
+        ----------
+        obj : SampleBackground | Sample | Container
+            Object to be inserted.
+        """
         self.model().insertRow(obj, self.currentIndex())
 
     def removeRow(self):
+        """
+        Removes the current index from the model.
+        """
         self.model().removeRow(self.currentIndex())
