@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1366</width>
-    <height>970</height>
+    <height>984</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,8 +68,11 @@
      <x>0</x>
      <y>0</y>
      <width>1366</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>false</bool>
    </property>
    <widget class="QMenu" name="menuLoad">
     <property name="title">
