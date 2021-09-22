@@ -130,10 +130,11 @@ class GudPyTreeModel(QAbstractItemModel):
             return QModelIndex()
         # Create the index and add a QPersistentModelIndex
         # constructed from the index, to the dict.
-        if obj in self.persistentIndexes.keys():
-            del self.persistentIndexes[obj]
+        # if obj in self.persistentIndexes.keys():
+        #     del self.persistentIndexes[obj]
         index = self.createIndex(row, 0, obj)
-        self.persistentIndexes[obj] = QPersistentModelIndex(index)
+        persistentIndex = QPersistentModelIndex(index)
+        self.persistentIndexes[obj] = persistentIndex
         return index
 
     def parent(self, index):
@@ -401,18 +402,19 @@ class GudPyTreeModel(QAbstractItemModel):
             self.endInsertRows()
     
     def removeRow(self, index):
-        parent = self.parent(index)
+        parent = index.parent()
         obj = index.internalPointer()
         if isinstance(obj, SampleBackground):
             remove = self.gudrunFile.sampleBackgrounds.remove
         elif isinstance(obj, Sample):
-            remove = parent.internalPointer().samples.remove
+            remove = self.gudrunFile.sampleBackgrounds[parent.row()-NUM_GUDPY_CORE_OBJECTS].samples.remove
         elif isinstance(obj, Container):
-            remove = parent.internalPointer().containers.remove
+            remove = self.gudrunFile.sampleBackgrounds[parent.parent().row()-NUM_GUDPY_CORE_OBJECTS].samples[parent.row()].remove
         self.beginRemoveRows(parent, index.row(), index.row())
-        del self.persistentIndexes[obj]
+        self.persistentIndexes.pop(obj)
         remove(obj)
         self.endRemoveRows()
+
 class GudPyTreeView(QTreeView):
     """
     Custom QTreeView View class for GudPy objects. Inherits QTreeView.
