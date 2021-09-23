@@ -50,4 +50,4 @@ class Geometry(Enum):
 class CrossSectionSource(Enum):
     TABLES = 0
     TRANSMISSION = 1
-    FILENAME = 2
+    FILE = 2

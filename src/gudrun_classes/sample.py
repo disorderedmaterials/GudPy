@@ -200,7 +200,7 @@ class Sample:
         )
         crossSectionLine = (
             f"{crossSectionSource}{TAB}"
-            if self.totalCrossSectionSource != CrossSectionSource.FILENAME
+            if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
             f"{self.crossSectionFilename}{TAB}"
         )

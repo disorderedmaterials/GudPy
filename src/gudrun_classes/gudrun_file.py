@@ -645,7 +645,7 @@ class GudrunFile:
                 )
             else:
                 self.normalisation.totalCrossSectionSource = (
-                    CrossSectionSource.FILENAME
+                    CrossSectionSource.FILE
                 )
                 self.normalisation.crossSectionFilename = crossSectionSource
 
@@ -835,7 +835,7 @@ class GudrunFile:
                     CrossSectionSource[crossSectionSource]
                 )
             else:
-                sample.totalCrossSectionSource = CrossSectionSource.FILENAME
+                sample.totalCrossSectionSource = CrossSectionSource.FILE
                 sample.crossSectionFilename = crossSectionSource
             sample.sampleTweakFactor = nthfloat(self.getNextToken(), 0)
             sample.topHatW = nthfloat(self.getNextToken(), 0)
@@ -1019,7 +1019,7 @@ class GudrunFile:
                     CrossSectionSource[crossSectionSource]
                 )
             else:
-                container.totalCrossSectionSource = CrossSectionSource.FILENAME
+                container.totalCrossSectionSource = CrossSectionSource.FILE
                 container.crossSectionFilename = crossSectionSource
             container.tweakFactor = nthfloat(self.getNextToken(), 0)
 
