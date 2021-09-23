@@ -1,7 +1,7 @@
 from src.scripts.utils import numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import CrossSectionSource, Geometry, UnitsOfDensity
 from src.gudrun_classes import config
 
 
@@ -46,8 +46,10 @@ class Normalisation:
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     tempForNormalisationPC : float
         Temperature for Placzek correction.
-    totalCrossSectionSource : str
+    totalCrossSectionSource : CrossSectionSource
         TABLES / TRANSMISSION monitor / filename
+    crossSectionFilename : str
+        Filename for the total cross section source if applicable.
     normalisationDifferentialCrossSectionFile : str
         Name of the normalisation differential cross section file.
     lowerLimitSmoothedNormalisation : float
@@ -85,7 +87,8 @@ class Normalisation:
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0.0
-        self.totalCrossSectionSource = ""
+        self.totalCrossSectionSource = CrossSectionSource.TABLES
+        self.crossSectionFilename = ""
         self.normalisationDifferentialCrossSectionFile = ""
         self.lowerLimitSmoothedNormalisation = 0.0
         self.normalisationDegreeSmoothing = 0.0
@@ -152,6 +155,13 @@ class Normalisation:
             f'Density {units}?\n'
         )
 
+        crossSectionLine = (
+            f"{CrossSectionSource(self.totalCrossSectionSource.value).name}{TAB}"
+            if self.totalCrossSectionSource != CrossSectionSource.FILENAME
+            else
+            f"{self.crossSectionFilename}{TAB}"
+        )
+
         return (
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
@@ -169,7 +179,7 @@ class Normalisation:
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for normalisation Placzek correction\n'
-            f'{self.totalCrossSectionSource}{TAB}'
+            f'{crossSectionLine}'
             f'Total cross section source\n'
             f'{self.normalisationDifferentialCrossSectionFile}{TAB}'
             f'Normalisation differential cross section filename\n'

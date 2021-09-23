@@ -2,7 +2,7 @@ from src.scripts.utils import bjoin, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
-    UnitsOfDensity, NormalisationType, OutputUnits, Geometry
+    CrossSectionSource, UnitsOfDensity, NormalisationType, OutputUnits, Geometry
 )
 from src.gudrun_classes import config
 
@@ -50,8 +50,10 @@ class Sample:
         Temperature for Placzek Correction.
     overallBackgroundFactor : float
         Background factor.
-    totalCrossSectionSource : str
+    totalCrossSectionSource : CrossSectionSource
         TABLES / TRANSMISSION monitor / filename
+    crossSectionFilename : str
+        Filename for the total cross section source if applicable.
     sampleTweakFactor : float
         Tweak factor for the sample.
     topHatW : float
@@ -117,7 +119,8 @@ class Sample:
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0.0
-        self.totalCrossSectionSource = "TABLES"
+        self.totalCrossSectionSource = CrossSectionSource.TRANSMISSION
+        self.crossSectionFilename = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
         self.minRadFT = 0.0
@@ -189,6 +192,13 @@ class Sample:
         densityLine = (
             f'{density}{TAB}'
             f'Density {units}?\n'
+        )
+
+        crossSectionLine = (
+            f"{CrossSectionSource(self.totalCrossSectionSource.value).name}{TAB}"
+            if self.totalCrossSectionSource != CrossSectionSource.FILENAME
+            else
+            f"{self.crossSectionFilename}{TAB}"
         )
 
         resonanceLines = (
@@ -263,7 +273,7 @@ class Sample:
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{TAB}'
             f'Temperature for sample Placzek correction\n'
-            f'{self.totalCrossSectionSource}{TAB}'
+            f'{crossSectionLine}'
             f'Total cross section source\n'
             f'{self.sampleTweakFactor}{TAB}'
             f'Sample tweak factor\n'

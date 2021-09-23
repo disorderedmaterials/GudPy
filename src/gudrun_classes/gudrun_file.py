@@ -26,7 +26,7 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    Instruments, UnitsOfDensity, MergeWeights,
+    CrossSectionSource, Instruments, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
@@ -635,9 +635,13 @@ class GudrunFile:
             self.normalisation.tempForNormalisationPC = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.normalisation.totalCrossSectionSource = (
-                firstword(self.getNextToken())
-            )
+            crossSectionSource = firstword(self.getNextToken())
+            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
+                self.normalisation.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            else:
+                self.normalisation.totalCrossSectionSource = CrossSectionSource.FILENAME
+                self.normalisation.crossSectionFilename = crossSectionSource
+
             self.normalisation.normalisationDifferentialCrossSectionFile = (
                 firstword(self.getNextToken())
             )
@@ -815,7 +819,12 @@ class GudrunFile:
                 else UnitsOfDensity.CHEMICAL
             )
             sample.tempForNormalisationPC = nthfloat(self.getNextToken(), 0)
-            sample.totalCrossSectionSource = firstword(self.getNextToken())
+            crossSectionSource = firstword(self.getNextToken())
+            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
+                sample.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            else:
+                sample.totalCrossSectionSource = CrossSectionSource.FILENAME
+                sample.crossSectionFilename = crossSectionSource
             sample.sampleTweakFactor = nthfloat(self.getNextToken(), 0)
             sample.topHatW = nthfloat(self.getNextToken(), 0)
             sample.minRadFT = nthfloat(self.getNextToken(), 0)
@@ -989,7 +998,12 @@ class GudrunFile:
                 density < 0
                 else UnitsOfDensity.CHEMICAL
             )
-            container.totalCrossSectionSource = firstword(self.getNextToken())
+            crossSectionSource = firstword(self.getNextToken())
+            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
+                container.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            else:
+                container.totalCrossSectionSource = CrossSectionSource.FILENAME
+                container.crossSectionFilename = crossSectionSource
             container.tweakFactor = nthfloat(self.getNextToken(), 0)
 
             environmentValues = self.getNextToken()

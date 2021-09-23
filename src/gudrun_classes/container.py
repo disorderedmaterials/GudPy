@@ -2,7 +2,7 @@ from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from src.gudrun_classes import config
-
+from src.gudrun_classes.enums import CrossSectionSource
 
 class Container:
     """
@@ -42,8 +42,10 @@ class Container:
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
         Background factor.
-    totalCrossSectionSource : str
+    totalCrossSectionSource : CrossSectionSource
         TABLES / TRANSMISSION monitor / filename
+    crossSectionFilename : str
+        Filename for total cross section source if applicable.
     scatteringFractionAttenuationCoefficient : tuple(float, float)
         Sample environment scattering fraction and attenuation coefficient,
         per Angstrom
@@ -72,7 +74,8 @@ class Container:
         self.sampleHeight = 0.0
         self.density = 0.0
         self.densityUnits = UnitsOfDensity.ATOMIC
-        self.totalCrossSectionSource = ""
+        self.totalCrossSectionSource = CrossSectionSource.TABLES
+        self.crossSectionFilename = ""
         self.tweakFactor = 0.0
         self.scatteringFraction = 0.0
         self.attenuationCoefficient = 0.0
@@ -131,6 +134,13 @@ class Container:
             f'Density {units}?\n'
         )
 
+        crossSectionLine = (
+            f"{CrossSectionSource(self.totalCrossSectionSource.value).name}{TAB}"
+            if self.totalCrossSectionSource != CrossSectionSource.FILENAME
+            else
+            f"{self.crossSectionFilename}{TAB}"
+        )
+
         return (
             f'{self.name}{TAB}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
@@ -143,7 +153,7 @@ class Container:
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
-            f'{self.totalCrossSectionSource}{TAB}'
+            f'{crossSectionLine}'
             f'Total cross section source\n'
             f'{self.tweakFactor}{TAB}'
             f'Tweak factor\n'

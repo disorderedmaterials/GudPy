@@ -45,3 +45,8 @@ class Geometry(Enum):
     FLATPLATE = 0
     CYLINDRICAL = 1
     SameAsBeam = 2
+
+class CrossSectionSource(Enum):
+    TABLES = 0
+    TRANSMISSION = 1
+    FILENAME = 2

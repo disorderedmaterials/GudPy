@@ -1,4 +1,5 @@
 from src.gudrun_classes.enums import (
+    CrossSectionSource,
     Geometry,
     NormalisationType,
     OutputUnits,
@@ -661,6 +662,7 @@ class SampleWidget(QWidget):
         )
 
         # Setup the widgets and slots for the geometry.
+        self.geometryComboBox.clear()
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
@@ -711,6 +713,7 @@ class SampleWidget(QWidget):
 
         # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.sample.density)
+        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -721,21 +724,17 @@ class SampleWidget(QWidget):
         )
 
         # Setup the other sample run controls widgets and slots.
-        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if not self.sample.totalCrossSectionSource:
-            index = 0
-        elif "TABLES" in self.sample.totalCrossSectionSource:
-            index = 0
-        elif "TRANSMISSION" in self.sample.totalCrossSectionSource:
-            index = 1
-        else:
-            index = 2
-        self.totalCrossSectionComboBox.addItems(crossSectionSources)
-        self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.clear()
+        for c in CrossSectionSource:
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.sample.totalCrossSectionSource.value
+        )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
 
+        self.normaliseToComboBox.clear()
         for n in NormalisationType:
             self.normaliseToComboBox.addItem(n.name, n)
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
@@ -743,6 +742,7 @@ class SampleWidget(QWidget):
             self.handleNormaliseToChanged
         )
 
+        self.outputUnitsComboBox.clear()
         for u in OutputUnits:
             self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)

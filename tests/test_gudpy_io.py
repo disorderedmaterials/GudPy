@@ -18,7 +18,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.enums import (
-    Instruments, Scales, UnitsOfDensity,
+    CrossSectionSource, Instruments, Scales, UnitsOfDensity,
     MergeWeights, NormalisationType, OutputUnits,
     Geometry
 )
@@ -125,7 +125,8 @@ class TestGudPyIO(TestCase):
             "density": 0.0721,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 200.0,
-            "totalCrossSectionSource": "TABLES",
+            "totalCrossSectionSource": CrossSectionSource.TABLES,
+            "crossSectionFilename" : "",
             "normalisationDifferentialCrossSectionFile": "*",
             "lowerLimitSmoothedNormalisation": 0.01,
             "normalisationDegreeSmoothing": 1.00,
@@ -156,7 +157,8 @@ class TestGudPyIO(TestCase):
             "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "totalCrossSectionSource": "TABLES",
+            "totalCrossSectionSource": CrossSectionSource.TABLES,
+            "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
@@ -186,7 +188,8 @@ class TestGudPyIO(TestCase):
             "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "totalCrossSectionSource": "TABLES",
+            "totalCrossSectionSource": CrossSectionSource.TABLES,
+            "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
@@ -211,7 +214,8 @@ class TestGudPyIO(TestCase):
             "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "totalCrossSectionSource": "TABLES",
+            "totalCrossSectionSource": CrossSectionSource.TABLES,
+            "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
@@ -236,7 +240,8 @@ class TestGudPyIO(TestCase):
             "sampleHeight": 0.0,
             "density": 0.0542,
             "densityUnits": UnitsOfDensity.ATOMIC,
-            "totalCrossSectionSource": "TABLES",
+            "totalCrossSectionSource": CrossSectionSource.TABLES,
+            "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
@@ -267,7 +272,8 @@ class TestGudPyIO(TestCase):
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0.0,
-            "totalCrossSectionSource": "TRANSMISSION",
+            "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
+            "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
@@ -312,7 +318,8 @@ class TestGudPyIO(TestCase):
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0.0,
-            "totalCrossSectionSource": "TRANSMISSION",
+            "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
+            "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
@@ -362,7 +369,8 @@ class TestGudPyIO(TestCase):
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0.0,
-            "totalCrossSectionSource": "TRANSMISSION",
+            "totalCrossSectionSource":CrossSectionSource.TRANSMISSION,
+            "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
@@ -412,7 +420,8 @@ class TestGudPyIO(TestCase):
             "density": 0.1,
             "densityUnits": UnitsOfDensity.ATOMIC,
             "tempForNormalisationPC": 0.0,
-            "totalCrossSectionSource": "TRANSMISSION",
+            "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
+            "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
             "topHatW": -10.0,
             "minRadFT": 0.8,
@@ -975,6 +984,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("innerRadius", None)
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
+        expectedNormalisation.pop("crossSectionFilename")
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
             Composition([], "")
@@ -1018,6 +1028,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("innerRadius", None)
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
+        expectedNormalisation.pop("crossSectionFilename")
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
             Composition([], "")
@@ -1094,6 +1105,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         expectedSampleA.pop("resonanceValues", None)
         expectedSampleA.pop("exponentialValues", None)
+        expectedSampleA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition([], "")
@@ -1146,6 +1158,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         expectedSampleA.pop("resonanceValues", None)
         expectedSampleA.pop("exponentialValues", None)
+        expectedSampleA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition([], "")
@@ -1200,6 +1213,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
         expectedContainerA.pop("attenuationCoefficient")
+        expectedContainerA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1250,6 +1264,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
         expectedContainerA.pop("attenuationCoefficient")
+        expectedContainerA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )

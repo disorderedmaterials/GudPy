@@ -1,4 +1,4 @@
-from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import CrossSectionSource, Geometry, UnitsOfDensity
 from PyQt5.QtWidgets import QFileDialog, QWidget
 from PyQt5 import uic
 import os
@@ -431,6 +431,7 @@ class ContainerWidget(QWidget):
         )
 
         # Setup widgets and slots for geometry.
+        self.geometryComboBox.clear()
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
@@ -484,6 +485,7 @@ class ContainerWidget(QWidget):
         self.densitySpinBox.setValue(self.container.density)
         self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
+        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -491,17 +493,12 @@ class ContainerWidget(QWidget):
         )
 
         # Setup the other container configurations widgets and slots.
-        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if not self.container.totalCrossSectionSource:
-            index = 0
-        elif "TABLES" in self.container.totalCrossSectionSource:
-            index = 0
-        elif "TRANSMISSION" in self.container.totalCrossSectionSource:
-            index = 1
-        else:
-            index = 2
-        self.totalCrossSectionComboBox.addItems(crossSectionSources)
-        self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.clear()
+        for c in CrossSectionSource:
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.container.totalCrossSectionSource.value
+        )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
