@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QTreeView
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QAction, QMenu, QTreeView
 from PyQt5.QtCore import (
     QAbstractItemModel,
     QModelIndex,
@@ -568,6 +569,12 @@ class GudPyTreeView(QTreeView):
         Inserts an object into the current row in the model.
     removeRow()
         Removes the current index from the model.
+    insertSampleBackground_(sampleBackground)
+        Inserts a SampleBackground into the GudrunFile.
+    insertSample_(sample)
+        Inserts a Sample into the GudrunFile.
+    insertContainer_(container)
+        Inserts a Container into the GudrunFile.
     """
 
     def __init__(self, parent):
@@ -654,3 +661,76 @@ class GudPyTreeView(QTreeView):
         Removes the current index from the model.
         """
         self.model().removeRow(self.currentIndex())
+
+    def contextMenuEvent(self, event):
+        """
+        Creates context menu, so that on right clicking the table,
+        the user is able to perform menu actions.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        self.menu = QMenu(self)
+        editMenu = self.menu.addMenu("Edit")
+        insertSampleBackground = QAction("Insert Sample Background", editMenu)
+        insertSampleBackground.triggered.connect(
+            self.insertSampleBackground
+        )
+        editMenu.addAction(insertSampleBackground)
+        if isinstance(self.currentObject(), SampleBackground):
+            insertSample = QAction("Insert Sample", editMenu)
+            insertSample.triggered.connect(
+                self.insertSample
+            )
+            editMenu.addAction(insertSample)
+        elif isinstance(self.currentObject(), Sample):
+            insertContainer = QAction("Insert Container", editMenu)
+            insertContainer.triggered.connect(
+                self.insertContainer
+            )
+            editMenu.addAction(insertContainer)
+
+        self.menu.popup(QCursor.pos())
+
+    def insertSampleBackground(self, sampleBackground=None):
+        """
+        Inserts a SampleBackground into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sampleBackground : SampleBackground, optional
+            SampleBackground object to insert.
+        """
+        if not sampleBackground:
+            sampleBackground = SampleBackground()
+        self.insertRow(sampleBackground)
+
+    def insertSample(self, sample=None):
+        """
+        Inserts a Sample into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sample : Sample, optional
+            Sample object to insert.
+        """
+        if not sample:
+            sample = Sample()
+            sample.name = "SAMPLE"  # for now, give a default name.
+        self.insertRow(sample)
+
+    def insertContainer(self, container=None):
+        """
+        Inserts a Container into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        container : Container, optional
+            Container object to insert.
+        """
+        if not container:
+            container = Container()
+            container.name = "CONTAINER"  # for now, give a default name.
+        self.insertRow(container)
+    
