@@ -1269,17 +1269,21 @@ class GudrunFile:
         """
         if not path:
             path = self.path
-        self.purge()
+        if not self.purge():
+            return False
         try:
             gudrun_dcs = resolve("bin", "gudrun_dcs")
             result = subprocess.run(
                 [gudrun_dcs, path], capture_output=True, text=True
             )
         except FileNotFoundError:
-            gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
-            result = subprocess.run(
-                [gudrun_dcs, path], capture_output=True, text=True
-            )
+            if hasattr(sys, '_MEIPASS'):
+                gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
+                result = subprocess.run(
+                    [gudrun_dcs, path], capture_output=True, text=True
+                )
+            else:
+                result = False
         return result
 
     def process(self):

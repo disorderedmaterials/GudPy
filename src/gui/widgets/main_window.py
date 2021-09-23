@@ -128,10 +128,10 @@ class GudPyMainWindow(QMainWindow):
             self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
             self.runPurge.triggered.connect(
-                lambda: PurgeFile(self.gudrunFile).purge()
+                self.runPurge_
             )
             self.runGudrun.triggered.connect(
-                lambda: self.gudrunFile.dcs(path="gudpy.txt")
+                self.runGudrun_
             )
 
             self.save.triggered.connect(
@@ -325,3 +325,18 @@ class GudPyMainWindow(QMainWindow):
         if result == messageBox.Yes:
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
+
+    def runPurge_(self):
+        result = PurgeFile(self.gudrunFile).purge()
+        if not result:
+            QMessageBox.critical(
+                self, "GudPy Error", "Couldn't find purge_det binary."
+            )
+
+    def runGudrun_(self):
+        result = self.gudrunFile.dcs(path="gudpy.txt")
+        if not result:
+            QMessageBox.critical(
+                self, "GudPy Error",
+                "Couldn't find gudrun_dcs binary and/or purge_det binary."
+            )
