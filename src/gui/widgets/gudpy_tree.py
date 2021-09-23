@@ -575,6 +575,12 @@ class GudPyTreeView(QTreeView):
         Inserts a Sample into the GudrunFile.
     insertContainer_(container)
         Inserts a Container into the GudrunFile.
+    copy_()
+        Copies the current object to the clipboard.
+    cut_()
+        Cuts the current object to the clipboard.
+    paste_()
+        Pastes the clipboard back into the GudrunFile.
     """
 
     def __init__(self, parent):

@@ -52,14 +52,8 @@ class GudPyMainWindow(QMainWindow):
         Updates compositions across objects.
     updateComponents()
         Updates geometries and compositions.
-    copy_()
-        Copies the current object to the clipboard.
-    cut_()
-        Cuts the current object to the clipboard.
     del_()
         Deletes the current object.
-    paste_()
-        Pastes the clipboard back into the GudrunFile.
     exit_()
         Exits GudPy.
     """
@@ -150,10 +144,10 @@ class GudPyMainWindow(QMainWindow):
                 self.objectTree.insertContainer
             )
 
-            self.copy.triggered.connect(self.copy_)
-            self.cut.triggered.connect(self.cut_)
-            self.paste.triggered.connect(self.paste_)
-            self.delete_.triggered.connect(self.del_)
+            self.copy.triggered.connect(self.objectTree.copy)
+            self.cut.triggered.connect(self.objectTree.cut)
+            self.paste.triggered.connect(self.objectTree.paste)
+            self.delete_.triggered.connect(self.objectTree.del_)
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
         self.objectStack.currentChanged.connect(self.updateComponents)
@@ -225,43 +219,6 @@ class GudPyMainWindow(QMainWindow):
         """
         self.updateGeometries()
         self.updateCompositions()
-
-    def copy_(self):
-        """
-        Copies the current object to the clipboard.
-        """
-        self.clipboard = None
-        obj = self.objectTree.currentObject()
-        if isinstance(obj, (SampleBackground, Sample, Container)):
-            self.clipboard = deepcopy(obj)
-
-    def del_(self):
-        """
-        Deletes the current object.
-        """
-        self.objectTree.removeRow()
-
-    def cut_(self):
-        """
-        Copies the current object to the clipboard, and removes
-        the object from the tree.
-        """
-        self.copy_()
-        if self.clipboard:
-            self.objectTree.removeRow()
-
-    def paste_(self):
-        """
-        Pastes the contents of the clipboard back into the GudrunFile.
-        """
-        if isinstance(self.clipboard, SampleBackground):
-            self.objectTree.insertSampleBackground_(
-                sampleBackground=deepcopy(self.clipboard)
-            )
-        elif isinstance(self.clipboard, Sample):
-            self.objectTree.insertSample_(sample=deepcopy(self.clipboard))
-        elif isinstance(self.clipboard, Container):
-            self.objectTree.insertContainer_(container=deepcopy(self.clipboard))
 
     def exit_(self):
         """
