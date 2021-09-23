@@ -233,95 +233,73 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_14">
-          <item>
-           <widget class="QLabel" name="totalCrossSectionLabel">
-            <property name="minimumSize">
-             <size>
-              <width>191</width>
-              <height>21</height>
-             </size>
-            </property>
+         <layout class="QFormLayout" name="formLayout_2">
+          <property name="rowWrapPolicy">
+           <enum>QFormLayout::DontWrapRows</enum>
+          </property>
+          <property name="labelAlignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="totalCrossSectionComboBox"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="totalCrossSectionSourceLabel">
             <property name="text">
-             <string>Total cross section source</string>
+             <string>Total Cross Section Source</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QComboBox" name="totalCrossSectionComboBox">
-            <property name="minimumSize">
-             <size>
-              <width>101</width>
-              <height>21</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>21</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_15">
-          <item>
+          <item row="1" column="0">
            <widget class="QLabel" name="tweakFactorLabel">
-            <property name="minimumSize">
-             <size>
-              <width>94</width>
-              <height>20</height>
-             </size>
-            </property>
             <property name="text">
              <string>Tweak Factor</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="tweakFactorSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_16">
-          <item>
+          <item row="2" column="0">
            <widget class="QLabel" name="scatteringFractionLabel">
-            <property name="minimumSize">
-             <size>
-              <width>124</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>20</height>
-             </size>
-            </property>
             <property name="text">
              <string>Scattering Fraction</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_17">
-          <item>
+          <item row="3" column="0">
            <widget class="QLabel" name="attenuationCoefficientLabel">
             <property name="text">
              <string>Attenuation Coefficient</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -347,7 +325,7 @@
      <property name="title">
       <string>Composition</string>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>15</x>
