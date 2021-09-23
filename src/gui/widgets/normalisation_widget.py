@@ -577,9 +577,9 @@ class NormalisationWidget(QWidget):
         )
 
         # Setup widgets and slots for geometry.
-        self.geometryComboBox.clear()
         for g in Geometry:
-            self.geometryComboBox.addItem(g.name, g)
+            if self.geometryComboBox.findText(g.name) == -1:
+                self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(
             self.normalisation.geometry.value
         )
@@ -599,9 +599,9 @@ class NormalisationWidget(QWidget):
             self.handleDensityChanged
         )
 
-        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
-            self.densityUnitsComboBox.addItem(du.name, du)
+            if self.densityUnitsComboBox.findText(du.name) == -1:
+                self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
             self.normalisation.densityUnits.value
         )
@@ -631,9 +631,9 @@ class NormalisationWidget(QWidget):
         )
 
         # Setup the other normalisation configurations widgets and slots.
-        self.totalCrossSectionComboBox.clear()
         for c in CrossSectionSource:
-            self.totalCrossSectionComboBox.addItem(c.name, c)
+            if self.totalCrossSectionComboBox.findText(c.name) == -1:
+                self.totalCrossSectionComboBox.addItem(c.name, c)
         self.totalCrossSectionComboBox.setCurrentIndex(
             self.normalisation.totalCrossSectionSource.value
         )

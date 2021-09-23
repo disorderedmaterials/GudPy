@@ -433,9 +433,9 @@ class ContainerWidget(QWidget):
         )
 
         # Setup widgets and slots for geometry.
-        self.geometryComboBox.clear()
         for g in Geometry:
-            self.geometryComboBox.addItem(g.name, g)
+            if self.geometryComboBox.findText(g.name) == -1:
+                self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
@@ -487,17 +487,17 @@ class ContainerWidget(QWidget):
         self.densitySpinBox.setValue(self.container.density)
         self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
-        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
-            self.densityUnitsComboBox.addItem(du.name, du)
+            if self.densityUnitsComboBox.findText(du.name) == -1:
+                self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
             self.container.densityUnits.value
         )
 
         # Setup the other container configurations widgets and slots.
-        self.totalCrossSectionComboBox.clear()
         for c in CrossSectionSource:
-            self.totalCrossSectionComboBox.addItem(c.name, c)
+            if self.totalCrossSectionComboBox.findText(c.name) == -1:
+                self.totalCrossSectionComboBox.addItem(c.name, c)
         self.totalCrossSectionComboBox.setCurrentIndex(
             self.container.totalCrossSectionSource.value
         )

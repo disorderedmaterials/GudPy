@@ -46,6 +46,8 @@ class SampleWidget(QWidget):
         Slot for handling change in the inner radii.
     handleOuterRadiiChanged(value)
         Slot for handling change to the outer radii.
+    handleDensityChanged(value)
+        Slot for handling change to the density.
     handleDensityUnitsChanged(index)
         Slot for handling change to the density units.
     handleTotalCrossSectionChanged(index)
@@ -217,7 +219,7 @@ class SampleWidget(QWidget):
         Slot for handling change in the inner radii.
         Called when a valueChanged signal is emitted,
         from the innerRadiiSpinBox.
-        Alters the normalisation's inner radius as such.
+        Alters the sample's inner radius as such.
         Parameters
         ----------
         value : float
@@ -230,13 +232,26 @@ class SampleWidget(QWidget):
         Slot for handling change in the outer radii.
         Called when a valueChanged signal is emitted,
         from the outerRadiiSpinBox.
-        Alters the normalisation's outer radius as such.
+        Alters the sample's outer radius as such.
         Parameters
         ----------
         value : float
             The new value of the outerRadiiSpinBox.
         """
         self.sample.outerRadius = value
+
+    def handleDensityChanged(self, value):
+        """
+        Slot for handling change in density.
+        Called when a valueChanged signal is emitted,
+        from the densitySpinBox.
+        Alters the sample density as such.
+        Parameters
+        ----------
+        value : float
+            The new current index of the densitySpinBox.
+        """
+        self.sample.density = value
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -662,9 +677,9 @@ class SampleWidget(QWidget):
         )
 
         # Setup the widgets and slots for the geometry.
-        self.geometryComboBox.clear()
         for g in Geometry:
-            self.geometryComboBox.addItem(g.name, g)
+            if self.geometryComboBox.findText(g.name) == -1:
+                self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
@@ -713,9 +728,12 @@ class SampleWidget(QWidget):
 
         # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.sample.density)
-        self.densityUnitsComboBox.clear()
+        self.densitySpinBox.valueChanged.connect(
+            self.handleDensityChanged
+        )
         for du in UnitsOfDensity:
-            self.densityUnitsComboBox.addItem(du.name, du)
+            if self.densityUnitsComboBox.findText(du.name) == -1:
+                self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
             self.sample.densityUnits.value
         )
@@ -724,9 +742,9 @@ class SampleWidget(QWidget):
         )
 
         # Setup the other sample run controls widgets and slots.
-        self.totalCrossSectionComboBox.clear()
         for c in CrossSectionSource:
-            self.totalCrossSectionComboBox.addItem(c.name, c)
+            if self.totalCrossSectionComboBox.findText(c.name) == -1:
+                self.totalCrossSectionComboBox.addItem(c.name, c)
         self.totalCrossSectionComboBox.setCurrentIndex(
             self.sample.totalCrossSectionSource.value
         )
@@ -734,17 +752,17 @@ class SampleWidget(QWidget):
             self.handleCrossSectionSourceChanged
         )
 
-        self.normaliseToComboBox.clear()
         for n in NormalisationType:
-            self.normaliseToComboBox.addItem(n.name, n)
+            if self.normaliseToComboBox.findText(n.name) == -1:
+                self.normaliseToComboBox.addItem(n.name, n)
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
         self.normaliseToComboBox.currentIndexChanged.connect(
             self.handleNormaliseToChanged
         )
 
-        self.outputUnitsComboBox.clear()
         for u in OutputUnits:
-            self.outputUnitsComboBox.addItem(u.name, u)
+            if self.outputUnitsComboBox.findText(u.name) == -1:
+                self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
         self.outputUnitsComboBox.currentIndexChanged.connect(
             self.handleOutputUnitsChanged
