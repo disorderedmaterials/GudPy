@@ -401,9 +401,7 @@ class GudPyTreeModel(QAbstractItemModel):
 
         # Dict for deciding if the object has a valid parent.
         validParents = {
-            SampleBackground: isinstance(parentObj, (
-                Instrument, Beam, Normalisation
-            )),
+            SampleBackground: not isinstance(parentObj, SampleBackground),
             Sample: isinstance(parentObj, SampleBackground),
             Container: isinstance(parentObj, Sample)
         }
