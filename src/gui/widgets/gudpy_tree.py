@@ -509,12 +509,23 @@ class GudPyTreeModel(QAbstractItemModel):
         # Remove QPersistendIndexes from the dict that become invalidated
         # by removing the current index.
         if isinstance(obj, Sample):
-            for sibling in self.persistentIndexes.keys():
-                if isinstance(sibling, Sample):
-                    if self.findParent(sibling) == parent.internalPointer():
-                        invalidated.append(sibling)
-            for index_ in invalidated:
-                del self.persistentIndexes[index_]
+            for otherObj in self.persistentIndexes.keys():
+                if isinstance(otherObj, Sample):
+                    if self.findParent(otherObj) == parent.internalPointer():
+                        invalidated.append(otherObj)
+            for otherObj in self.persistentIndexes.keys():
+                if isinstance(otherObj, Container):
+                    if self.findParent(otherObj) in invalidated:
+                        invalidated.append(otherObj)
+                        print("appended")
+
+        elif isinstance(obj, Container):
+            for otherObj in self.persistentIndexes.keys():
+                if isinstance(otherObj, Container):
+                    if self.findParent(otherObj) == parent.internalPointer():
+                        invalidated.append(otherObj)
+        for index_ in invalidated:
+            del self.persistentIndexes[index_]
         start = end = index.row()
         # Begin inserting rows.
         self.beginRemoveRows(parent, start, end)
