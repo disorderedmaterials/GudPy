@@ -46,6 +46,7 @@ class Geometry(Enum):
     CYLINDRICAL = 1
     SameAsBeam = 2
 
+
 class CrossSectionSource(Enum):
     TABLES = 0
     TRANSMISSION = 1

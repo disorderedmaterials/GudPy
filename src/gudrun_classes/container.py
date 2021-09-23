@@ -4,6 +4,7 @@ from src.gudrun_classes.enums import Geometry, UnitsOfDensity
 from src.gudrun_classes import config
 from src.gudrun_classes.enums import CrossSectionSource
 
+
 class Container:
     """
     Class to represent a Container.
@@ -134,8 +135,11 @@ class Container:
             f'Density {units}?\n'
         )
 
+        crossSectionSource = (
+            CrossSectionSource(self.totalCrossSectionSource.value).name
+        )
         crossSectionLine = (
-            f"{CrossSectionSource(self.totalCrossSectionSource.value).name}{TAB}"
+            f"{crossSectionSource}{TAB}"
             if self.totalCrossSectionSource != CrossSectionSource.FILENAME
             else
             f"{self.crossSectionFilename}{TAB}"

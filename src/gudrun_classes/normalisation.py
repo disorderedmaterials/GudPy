@@ -1,7 +1,9 @@
 from src.scripts.utils import numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import CrossSectionSource, Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    CrossSectionSource, Geometry, UnitsOfDensity
+)
 from src.gudrun_classes import config
 
 
@@ -155,8 +157,11 @@ class Normalisation:
             f'Density {units}?\n'
         )
 
+        crossSectionSource = (
+            CrossSectionSource(self.totalCrossSectionSource.value).name
+        )
         crossSectionLine = (
-            f"{CrossSectionSource(self.totalCrossSectionSource.value).name}{TAB}"
+            f"{crossSectionSource}{TAB}"
             if self.totalCrossSectionSource != CrossSectionSource.FILENAME
             else
             f"{self.crossSectionFilename}{TAB}"

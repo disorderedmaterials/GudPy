@@ -636,10 +636,17 @@ class GudrunFile:
                 nthfloat(self.getNextToken(), 0)
             )
             crossSectionSource = firstword(self.getNextToken())
-            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
-                self.normalisation.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            if (
+                crossSectionSource == "TABLES"
+                or crossSectionSource == "TRANSMISSION"
+            ):
+                self.normalisation.totalCrossSectionSource = (
+                    CrossSectionSource[crossSectionSource]
+                )
             else:
-                self.normalisation.totalCrossSectionSource = CrossSectionSource.FILENAME
+                self.normalisation.totalCrossSectionSource = (
+                    CrossSectionSource.FILENAME
+                )
                 self.normalisation.crossSectionFilename = crossSectionSource
 
             self.normalisation.normalisationDifferentialCrossSectionFile = (
@@ -820,8 +827,13 @@ class GudrunFile:
             )
             sample.tempForNormalisationPC = nthfloat(self.getNextToken(), 0)
             crossSectionSource = firstword(self.getNextToken())
-            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
-                sample.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            if (
+                crossSectionSource == "TABLES"
+                or crossSectionSource == "TRANSMISSION"
+            ):
+                sample.totalCrossSectionSource = (
+                    CrossSectionSource[crossSectionSource]
+                )
             else:
                 sample.totalCrossSectionSource = CrossSectionSource.FILENAME
                 sample.crossSectionFilename = crossSectionSource
@@ -999,8 +1011,13 @@ class GudrunFile:
                 else UnitsOfDensity.CHEMICAL
             )
             crossSectionSource = firstword(self.getNextToken())
-            if crossSectionSource == "TABLES" or crossSectionSource == "TRANSMISSION":
-                container.totalCrossSectionSource = CrossSectionSource[crossSectionSource]
+            if (
+                crossSectionSource == "TABLES"
+                or crossSectionSource == "TRANSMISSION"
+            ):
+                container.totalCrossSectionSource = (
+                    CrossSectionSource[crossSectionSource]
+                )
             else:
                 container.totalCrossSectionSource = CrossSectionSource.FILENAME
                 container.crossSectionFilename = crossSectionSource

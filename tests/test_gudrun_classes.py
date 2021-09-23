@@ -133,7 +133,9 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(normalisation.density, float)
         self.assertIsInstance(normalisation.densityUnits, UnitsOfDensity)
         self.assertIsInstance(normalisation.tempForNormalisationPC, float)
-        self.assertIsInstance(normalisation.totalCrossSectionSource, CrossSectionSource)
+        self.assertIsInstance(
+            normalisation.totalCrossSectionSource, CrossSectionSource
+        )
         self.assertIsInstance(
             normalisation.normalisationDifferentialCrossSectionFile, str
         )
@@ -175,7 +177,9 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(sample.density, float)
         self.assertIsInstance(sample.densityUnits, UnitsOfDensity)
         self.assertIsInstance(sample.tempForNormalisationPC, float)
-        self.assertIsInstance(sample.totalCrossSectionSource, CrossSectionSource)
+        self.assertIsInstance(
+            sample.totalCrossSectionSource, CrossSectionSource
+        )
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
         self.assertIsInstance(sample.minRadFT, float)
@@ -211,7 +215,9 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(container.sampleHeight, float)
         self.assertIsInstance(container.density, float)
         self.assertIsInstance(container.densityUnits, UnitsOfDensity)
-        self.assertIsInstance(container.totalCrossSectionSource, CrossSectionSource)
+        self.assertIsInstance(
+            container.totalCrossSectionSource, CrossSectionSource
+        )
         self.assertIsInstance(container.tweakFactor, float)
         self.assertIsInstance(container.scatteringFraction, float)
         self.assertIsInstance(container.attenuationCoefficient, float)
