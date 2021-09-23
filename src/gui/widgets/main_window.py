@@ -62,6 +62,8 @@ class GudPyMainWindow(QMainWindow):
         Copies the current object to the clipboard.
     cut_()
         Cuts the current object to the clipboard.
+    del_()
+        Deletes the current object.
     paste_()
         Pastes the clipboard back into the GudrunFile.
     exit_()
@@ -158,6 +160,7 @@ class GudPyMainWindow(QMainWindow):
             self.copy.triggered.connect(self.copy_)
             self.cut.triggered.connect(self.cut_)
             self.paste.triggered.connect(self.paste_)
+            self.delete_.triggered.connect(self.del_)
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
         self.objectStack.currentChanged.connect(self.updateComponents)
@@ -279,6 +282,12 @@ class GudPyMainWindow(QMainWindow):
         obj = self.objectTree.currentObject()
         if isinstance(obj, (SampleBackground, Sample, Container)):
             self.clipboard = deepcopy(obj)
+
+    def del_(self):
+        """
+        Deletes the current object.
+        """
+        self.objectTree.removeRow()
 
     def cut_(self):
         """
