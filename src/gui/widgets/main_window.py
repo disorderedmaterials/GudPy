@@ -88,7 +88,6 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
         self.setWindowTitle("GudPy")
         self.show()
-        self.gudrunFile = GudrunFile("tests/TestData/NIMROD-water/water.txt")
         if self.gudrunFile:
             instrumentWidget = InstrumentWidget(
                 self.gudrunFile.instrument, self
