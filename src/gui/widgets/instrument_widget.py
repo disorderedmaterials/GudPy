@@ -1007,6 +1007,8 @@ class InstrumentWidget(QWidget):
         )
 
         # Setup the widgets and slots for the grouping parameter panel.
+
+        self.groupingParameterWidget.setVisible(False)
         self.updateGroupingParameterPanel()
         self.addGroupingParameterButton.clicked.connect(
             self.handleAddGroupingParameter
