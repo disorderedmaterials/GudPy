@@ -24,6 +24,12 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QGroupBox" name="dataFilesGroupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>291</width>
@@ -39,99 +45,101 @@
        <property name="title">
         <string>Data Files</string>
        </property>
-       <widget class="QPushButton" name="addDataFileButton">
-        <property name="geometry">
-         <rect>
-          <x>237</x>
-          <y>67</y>
-          <width>39</width>
-          <height>32</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>+</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="periodNoLabel">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>207</y>
-          <width>80</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>80</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>80</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Period no.</string>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="dataFilesList">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>54</y>
-          <width>212</width>
-          <height>122</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>181</width>
-          <height>101</height>
-         </size>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="removeDataFileButton">
-        <property name="geometry">
-         <rect>
-          <x>237</x>
-          <y>143</y>
-          <width>36</width>
-          <height>32</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="periodNoSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>210</y>
-          <width>48</width>
-          <height>24</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <widget class="QListWidget" name="dataFilesList">
+            <property name="minimumSize">
+             <size>
+              <width>181</width>
+              <height>101</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="periodNoLabel">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Period no.</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="periodNoSpinBox"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QPushButton" name="addDataFileButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="removeDataFileButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
       <widget class="QGroupBox" name="configurationGroupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>291</width>
@@ -147,147 +155,175 @@
        <property name="title">
         <string>Configuration</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0" colspan="3">
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
          <widget class="QStackedWidget" name="geometryInfoStack">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page">
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0" colspan="2">
-             <widget class="QLabel" name="angleOfRotationLabel">
-              <property name="minimumSize">
-               <size>
-                <width>113</width>
-                <height>21</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Angle of Rotation</string>
-              </property>
-             </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QLabel" name="angleOfRotationLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>113</width>
+                  <height>21</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Angle of Rotation</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
+              </item>
+             </layout>
             </item>
-            <item row="0" column="2">
-             <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="sampleWidthLabel">
-              <property name="minimumSize">
-               <size>
-                <width>104</width>
-                <height>21</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Sample Width</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="sampleWidthSpinBox">
-              <property name="maximumSize">
-               <size>
-                <width>68</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QLabel" name="sampleWidthLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>104</width>
+                  <height>21</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Sample Width</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="sampleWidthSpinBox">
+                <property name="maximumSize">
+                 <size>
+                  <width>68</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
           <widget class="QWidget" name="page_2">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QLabel" name="sampleHeightLabel">
-              <property name="text">
-               <string>Sample Height</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="sampleHeightSpinBox"/>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <widget class="QLabel" name="sampleHeightLabel">
+                <property name="text">
+                 <string>Sample Height</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="sampleHeightSpinBox"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QLabel" name="totalCrossSectionLabel">
-          <property name="minimumSize">
-           <size>
-            <width>191</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Total cross section source</string>
-          </property>
-         </widget>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
+          <item>
+           <widget class="QLabel" name="totalCrossSectionLabel">
+            <property name="minimumSize">
+             <size>
+              <width>191</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Total cross section source</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="totalCrossSectionComboBox">
+            <property name="minimumSize">
+             <size>
+              <width>101</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="1" column="2">
-         <widget class="QComboBox" name="totalCrossSectionComboBox">
-          <property name="minimumSize">
-           <size>
-            <width>101</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>21</height>
-           </size>
-          </property>
-         </widget>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_15">
+          <item>
+           <widget class="QLabel" name="tweakFactorLabel">
+            <property name="minimumSize">
+             <size>
+              <width>94</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Tweak Factor</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
+          </item>
+         </layout>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="tweakFactorLabel">
-          <property name="minimumSize">
-           <size>
-            <width>94</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Tweak Factor</string>
-          </property>
-         </widget>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_16">
+          <item>
+           <widget class="QLabel" name="scatteringFractionLabel">
+            <property name="minimumSize">
+             <size>
+              <width>124</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Scattering Fraction</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
+          </item>
+         </layout>
         </item>
-        <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
-        </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QLabel" name="scatteringFractionLabel">
-          <property name="minimumSize">
-           <size>
-            <width>124</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Scattering Fraction</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox"/>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="attenuationCoefficientLabel">
-          <property name="text">
-           <string>Attenuation Coefficient</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_17">
+          <item>
+           <widget class="QLabel" name="attenuationCoefficientLabel">
+            <property name="text">
+             <string>Attenuation Coefficient</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -296,6 +332,12 @@
    </item>
    <item>
     <widget class="QGroupBox" name="containerCompositionGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -305,216 +347,261 @@
      <property name="title">
       <string>Composition</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="1" column="2">
-       <widget class="QLabel" name="densityLabel">
-        <property name="text">
-         <string>Density</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="insertElementButton">
-        <property name="maximumSize">
-         <size>
-          <width>30</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>+</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="densitySpinBox"/>
-      </item>
-      <item row="0" column="3" colspan="2">
-       <widget class="QComboBox" name="geometryComboBox">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>21</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="geometryLabel">
-        <property name="text">
-         <string>Geometry</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2" colspan="3">
-       <widget class="QStackedWidget" name="geometryInfoStack_">
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <widget class="QWidget" name="page_3">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="2" column="3">
-           <widget class="QDoubleSpinBox" name="downstreamSpinBox">
-            <property name="maximumSize">
-             <size>
-              <width>69</width>
-              <height>26</height>
-             </size>
-            </property>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>31</y>
+        <width>546</width>
+        <height>196</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="CompositionTable" name="containerCompositionTable">
+           <property name="maximumSize">
+            <size>
+             <width>256</width>
+             <height>192</height>
+            </size>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QPushButton" name="insertElementButton">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removeElementButton">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QLabel" name="geometryLabel">
+             <property name="text">
+              <string>Geometry</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="geometryComboBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>21</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLabel" name="densityLabel">
+             <property name="text">
+              <string>Density</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="densitySpinBox"/>
+           </item>
+           <item>
+            <widget class="QComboBox" name="densityUnitsComboBox">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>21</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QStackedWidget" name="geometryInfoStack_">
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="page_3">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <widget class="QLabel" name="thicknessLabel">
+                 <property name="maximumSize">
+                  <size>
+                   <width>66</width>
+                   <height>16</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Thickness:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="upstreamLabel">
+                   <property name="text">
+                    <string>Upstream</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="upstreamSpinBox">
+                   <property name="maximumSize">
+                    <size>
+                     <width>69</width>
+                     <height>26</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="downstreamLabel">
+                   <property name="text">
+                    <string>Downstream</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="downstreamSpinBox">
+                   <property name="maximumSize">
+                    <size>
+                     <width>69</width>
+                     <height>26</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="thicknessLabel">
-            <property name="maximumSize">
-             <size>
-              <width>66</width>
-              <height>16</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Thickness:</string>
-            </property>
+           <widget class="QWidget" name="page_4">
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QLabel" name="radiiLabel">
+                 <property name="text">
+                  <string>Radii:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="innerRadiiLabel">
+                   <property name="text">
+                    <string>Inner</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="innerRadiiSpinBox">
+                   <property name="maximumSize">
+                    <size>
+                     <width>62</width>
+                     <height>22</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="outerRadiiLabel">
+                   <property name="text">
+                    <string>Outer</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="outerRadiiSpinBox">
+                   <property name="maximumSize">
+                    <size>
+                     <width>62</width>
+                     <height>22</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="upstreamLabel">
-            <property name="text">
-             <string>Upstream</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="downstreamLabel">
-            <property name="text">
-             <string>Downstream</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QDoubleSpinBox" name="upstreamSpinBox">
-            <property name="maximumSize">
-             <size>
-              <width>69</width>
-              <height>26</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_4">
-         <widget class="QLabel" name="radiiLabel">
-          <property name="geometry">
-           <rect>
-            <x>40</x>
-            <y>20</y>
-            <width>47</width>
-            <height>13</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Radii:</string>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="innerRadiiSpinBox">
-          <property name="geometry">
-           <rect>
-            <x>120</x>
-            <y>50</y>
-            <width>62</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>62</width>
-            <height>22</height>
-           </size>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="outerRadiiSpinBox">
-          <property name="geometry">
-           <rect>
-            <x>120</x>
-            <y>90</y>
-            <width>62</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>62</width>
-            <height>22</height>
-           </size>
-          </property>
-         </widget>
-         <widget class="QLabel" name="innerRadiiLabel">
-          <property name="geometry">
-           <rect>
-            <x>40</x>
-            <y>50</y>
-            <width>47</width>
-            <height>13</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Inner</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="outerRadiiLabel">
-          <property name="geometry">
-           <rect>
-            <x>40</x>
-            <y>100</y>
-            <width>47</width>
-            <height>13</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Outer</string>
-          </property>
-         </widget>
-        </widget>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QComboBox" name="densityUnitsComboBox">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>21</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="removeElementButton">
-        <property name="maximumSize">
-         <size>
-          <width>30</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="4">
-       <widget class="CompositionTable" name="containerCompositionTable">
-        <property name="maximumSize">
-         <size>
-          <width>256</width>
-          <height>192</height>
-         </size>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
