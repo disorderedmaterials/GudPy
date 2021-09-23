@@ -501,7 +501,7 @@ class GudPyTreeModel(QAbstractItemModel):
                 self.gudrunFile.sampleBackgrounds[targetIndex].samples.remove
             )
         elif isinstance(obj, Container):
-            targetIndex = parent.parent.row()-NUM_GUDPY_CORE_OBJECTS
+            targetIndex = parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
             remove = (
                 self.gudrunFile.sampleBackgrounds[targetIndex]
                 .samples[parent.row()].containers.remove
