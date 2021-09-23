@@ -139,15 +139,15 @@ class GudPyMainWindow(QMainWindow):
             )
 
             self.insertSampleBackground.triggered.connect(
-                self.objectTree.insertSampleBackground_
+                self.objectTree.insertSampleBackground
             )
 
             self.insertSample.triggered.connect(
-                self.objectTree.insertSample_
+                self.objectTree.insertSample
             )
 
             self.insertContainer.triggered.connect(
-                self.objectTree.insertContainer_
+                self.objectTree.insertContainer
             )
 
             self.copy.triggered.connect(self.copy_)
