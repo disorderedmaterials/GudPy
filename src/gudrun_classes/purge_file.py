@@ -255,8 +255,12 @@ class PurgeFile():
             # FileNotFoundError probably means that GudPy is being
             # run as an executable.
             # So prepend sys._MEIPASS to the path to purge_det.
-            purge_det = sys._MEIPASS + os.sep + "purge_det"
-            result = subprocess.run(
-                [purge_det, "purge_det.dat"], capture_output=True, text=True
-            )
+            if hasattr(sys, '_MEIPASS'):
+                purge_det = sys._MEIPASS + os.sep + "purge_det"
+                result = subprocess.run(
+                    [purge_det, "purge_det.dat"],
+                    capture_output=True, text=True
+                )
+            else:
+                result = False
         return result

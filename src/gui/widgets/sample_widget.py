@@ -1,4 +1,5 @@
 from src.gudrun_classes.enums import (
+    CrossSectionSource,
     Geometry,
     NormalisationType,
     OutputUnits,
@@ -25,6 +26,10 @@ class SampleWidget(QWidget):
         Parent widget.
     Methods
     -------
+    loadUI()
+        Loads the UI file for the SampleWidget object.
+    setSample(sample)
+        Gives the focus of the SampleWidget to the sample.
     initComponents()
         Loads UI file, and then populates data from the Sample.
     handlePeriodNoChanged(value)
@@ -107,22 +112,37 @@ class SampleWidget(QWidget):
         Slot for handling removing values from the resonance table.
     """
 
-    def __init__(self, sample, parent=None):
+    def __init__(self, parent=None):
         """
         Constructs all the necessary attributes for the SampleWidget object.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
+        self.parent = parent
+        super(SampleWidget, self).__init__(parent=self.parent)
+        self.loadUI()
+
+    def setSample(self, sample):
+        """
+        Gives the focus of the SampleWidget to the sample.
         Calls the initComponents method, to load the UI file and populate data.
         Parameters
         ----------
         sample : Sample
             Sample object belonging to the GudrunFile.
-        parent : QWidget
-            Parent widget.
         """
         self.sample = sample
-        self.parent = parent
-
-        super(SampleWidget, self).__init__(parent=self.parent)
         self.initComponents()
+
+    def loadUI(self):
+        """
+        Loads the UI file for the SampleWidget object.
+        """
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
+        uic.loadUi(uifile, self)
 
     def handlePeriodNoChanged(self, value):
         """
@@ -607,13 +627,9 @@ class SampleWidget(QWidget):
 
     def initComponents(self):
         """
-        Loads the UI file for the SampleWidget object,
-        and then populates the child widgets with their
+        Populates the child widgets with their
         corresponding data from the attributes of the Sample object.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/sampleWidget.ui")
-        uic.loadUi(uifile, self)
 
         # Setup widgets and slots for the period numbers.
         self.periodNoSpinBox.setValue(self.sample.periodNumber)
@@ -646,6 +662,7 @@ class SampleWidget(QWidget):
         )
 
         # Setup the widgets and slots for the geometry.
+        self.geometryComboBox.clear()
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
@@ -696,6 +713,7 @@ class SampleWidget(QWidget):
 
         # Setup the widgets and slots for the density.
         self.densitySpinBox.setValue(self.sample.density)
+        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -706,19 +724,17 @@ class SampleWidget(QWidget):
         )
 
         # Setup the other sample run controls widgets and slots.
-        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if "TABLES" in self.sample.totalCrossSectionSource:
-            index = 0
-        elif "TRANSMISSION" in self.sample.totalCrossSectionSource:
-            index = 1
-        else:
-            index = 2
-        self.totalCrossSectionComboBox.addItems(crossSectionSources)
-        self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.clear()
+        for c in CrossSectionSource:
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.sample.totalCrossSectionSource.value
+        )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
 
+        self.normaliseToComboBox.clear()
         for n in NormalisationType:
             self.normaliseToComboBox.addItem(n.name, n)
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
@@ -726,6 +742,7 @@ class SampleWidget(QWidget):
             self.handleNormaliseToChanged
         )
 
+        self.outputUnitsComboBox.clear()
         for u in OutputUnits:
             self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)

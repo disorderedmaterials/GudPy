@@ -1,4 +1,6 @@
-from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    CrossSectionSource, Geometry, UnitsOfDensity
+)
 from PyQt5.QtWidgets import QFileDialog, QWidget
 from PyQt5 import uic
 import os
@@ -19,8 +21,12 @@ class ContainerWidget(QWidget):
         Parent widget.
     Methods
     -------
+    loadUI()
+        Loads the UI file for the ContainerWidget object,
     initComponents()
         Loads UI file, and then populates data from the Container.
+    setContainer(container)
+        Gives the focus of the ContainerWidget to the container.
     handlePeriodNoChanged(value)
         Slot for handling change in the period number.
     handleGeometryChanged(index)
@@ -65,21 +71,44 @@ class ContainerWidget(QWidget):
         Slot for removing the selected element from the composition table.
     """
 
-    def __init__(self, container, parent=None):
+    def __init__(self, parent=None):
         """
         Constructs all the necessary attributes for the ContainerWidget object.
-        Calls the initComponents method, to load the UI file and populate data.
+        Parameters
+        ----------
+        parent : QWidget, optional
+            Parent widget.
+        """
+        self.parent = parent
+
+        super(ContainerWidget, self).__init__(parent=self.parent)
+        self.loadUI()
+
+    def loadUI(self):
+        """
+        Loads the UI file for the ContainerWidget object,
+        and then populates the child widgets with their
+        corresponding data from the attributes of the Container object.
+        """
+
+        # Get the current directory that we are residing in.
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        # Join the current directory with the relative path of the UI file.
+        uifile = os.path.join(current_dir, "ui_files/containerWidget.ui")
+
+        # Use pyuic to load to the UI file into the ContainerWidget.
+        uic.loadUi(uifile, self)
+
+    def setContainer(self, container):
+        """
+        Gives the focus of the ContainerWidget to the container.
+        Constructs all the necessary attributes for the ContainerWidget object.
         Parameters
         ----------
         container : Container
             Container object belonging to the GudrunFile.
-        parent : QWidget, optional
-            Parent widget.
         """
         self.container = container
-        self.parent = parent
-
-        super(ContainerWidget, self).__init__(parent=self.parent)
         self.initComponents()
 
     def handlePeriodNoChanged(self, value):
@@ -377,18 +406,9 @@ class ContainerWidget(QWidget):
 
     def initComponents(self):
         """
-        Loads the UI file for the ContainerWidget object,
-        and then populates the child widgets with their
+        Populates the child widgets with their
         corresponding data from the attributes of the Container object.
         """
-
-        # Get the current directory that we are residing in.
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the current directory with the relative path of the UI file.
-        uifile = os.path.join(current_dir, "ui_files/containerWidget.ui")
-
-        # Use pyuic to load to the UI file into the ContainerWidget.
-        uic.loadUi(uifile, self)
 
         # Setup widget and slot for the period number.
         self.periodNoSpinBox.setValue(self.container.periodNumber)
@@ -413,6 +433,7 @@ class ContainerWidget(QWidget):
         )
 
         # Setup widgets and slots for geometry.
+        self.geometryComboBox.clear()
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
@@ -466,6 +487,7 @@ class ContainerWidget(QWidget):
         self.densitySpinBox.setValue(self.container.density)
         self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
+        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -473,15 +495,12 @@ class ContainerWidget(QWidget):
         )
 
         # Setup the other container configurations widgets and slots.
-        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if "TABLES" in self.container.totalCrossSectionSource:
-            index = 0
-        elif "TRANSMISSION" in self.container.totalCrossSectionSource:
-            index = 1
-        else:
-            index = 2
-        self.totalCrossSectionComboBox.addItems(crossSectionSources)
-        self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.clear()
+        for c in CrossSectionSource:
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.container.totalCrossSectionSource.value
+        )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )

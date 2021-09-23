@@ -1,4 +1,6 @@
-from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    CrossSectionSource, Geometry, UnitsOfDensity
+)
 from PyQt5.QtWidgets import (
     QFileDialog,
     QWidget,
@@ -575,6 +577,7 @@ class NormalisationWidget(QWidget):
         )
 
         # Setup widgets and slots for geometry.
+        self.geometryComboBox.clear()
         for g in Geometry:
             self.geometryComboBox.addItem(g.name, g)
         self.geometryComboBox.setCurrentIndex(
@@ -596,6 +599,7 @@ class NormalisationWidget(QWidget):
             self.handleDensityChanged
         )
 
+        self.densityUnitsComboBox.clear()
         for du in UnitsOfDensity:
             self.densityUnitsComboBox.addItem(du.name, du)
         self.densityUnitsComboBox.setCurrentIndex(
@@ -627,15 +631,12 @@ class NormalisationWidget(QWidget):
         )
 
         # Setup the other normalisation configurations widgets and slots.
-        crossSectionSources = ["TABLES", "TRANSMISSION MONITOR", "FILENAME"]
-        if "TABLES" in self.normalisation.totalCrossSectionSource:
-            index = 0
-        elif "TRANSMISSION" in self.normalisation.totalCrossSectionSource:
-            index = 1
-        else:
-            index = 2
-        self.totalCrossSectionComboBox.addItems(crossSectionSources)
-        self.totalCrossSectionComboBox.setCurrentIndex(index)
+        self.totalCrossSectionComboBox.clear()
+        for c in CrossSectionSource:
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.normalisation.totalCrossSectionSource.value
+        )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )

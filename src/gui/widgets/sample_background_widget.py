@@ -17,28 +17,76 @@ class SampleBackgroundWidget(QWidget):
         Parent widget.
     Methods
     -------
+    setSampleBackground(sampleBackground)
+        Gives the focus of the SampleBackgroundWidget to the sample.
+    loadUI()
+        Loads the UI file for the SampleBackgroundWidget object.
     initComponents()
         Loads UI file, and then populates data from the SampleBackground.
     """
 
-    def __init__(self, sampleBackground, parent=None):
+    def __init__(self, parent=None):
         """
         Constructs all the necessary attributes
         for the SampleBackgroundWidget object.
-        Calls the initComponents method,
-        to load the UI file and populate data.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
+        self.parent = parent
+
+        super(SampleBackgroundWidget, self).__init__(parent=self.parent)
+        self.loadUI()
+
+    def setSampleBackground(self, sampleBackground):
+        """
+        Gives the focus of the SampleBackgroundWidget to the sample.
+        Calls the initComponents method, to load the UI file and populate data.
         Parameters
         ----------
         sampleBackground : SampleBackground
             SampleBackground object belonging to the GudrunFile.
-        parent : QWidget
-            Parent widget.
         """
         self.sampleBackground = sampleBackground
-        self.parent = parent
-
-        super(SampleBackgroundWidget, self).__init__(parent=self.parent)
         self.initComponents()
+
+    def loadUI(self):
+        """
+        Loads the UI file for the SampleBackgroundWidget object.
+        """
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        uifile = os.path.join(
+            current_dir, "ui_files/sampleBackgroundWidget.ui"
+        )
+        uic.loadUi(uifile, self)
+
+    def initComponents(self):
+        """
+        Populates the child widgets with their
+        corresponding data from the attributes of the SampleBackground object.
+        """
+        # Setup widgets and slots for the data files.
+        self.updateDataFilesList()
+        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.addDataFileButton.clicked.connect(
+            lambda: self.addFiles(
+                self.dataFilesList,
+                "Add data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+            )
+        )
+        self.removeDataFileButton.clicked.connect(
+            lambda: self.removeFile(
+                self.dataFilesList, self.sampleBackground.dataFiles
+            )
+        )
+
+        # Setup widgets and slots for the period number.
+        self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
+        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
     def handleDataFilesAltered(self, item):
         index = item.row()
@@ -74,37 +122,3 @@ class SampleBackgroundWidget(QWidget):
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
-
-    def initComponents(self):
-        """
-        Loads the UI file for the SampleBackgroundWidget object,
-        and then populates the child widgets with their
-        corresponding data from the attributes of the SampleBackground object.
-        """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(
-            current_dir, "ui_files/sampleBackgroundWidget.ui"
-        )
-        uic.loadUi(uifile, self)
-
-        # Setup widgets and slots for the data files.
-        self.updateDataFilesList()
-        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
-        self.addDataFileButton.clicked.connect(
-            lambda: self.addFiles(
-                self.dataFilesList,
-                "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
-            )
-        )
-        self.removeDataFileButton.clicked.connect(
-            lambda: self.removeFile(
-                self.dataFilesList, self.sampleBackground.dataFiles
-            )
-        )
-
-        # Setup widgets and slots for the period number.
-        self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
-        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
