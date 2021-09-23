@@ -72,6 +72,7 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
         self.setWindowTitle("GudPy")
         self.show()
+
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
             self.objectStack.setVisible(False)
@@ -92,7 +93,10 @@ class GudPyMainWindow(QMainWindow):
             self.viewLiveInputFile.setDisabled(True)
             self.save.setDisabled(True)
             self.saveAs.setDisabled(True)
+
         else:
+
+            self.setWindowTitle(self.gudrunFile.path)
             instrumentWidget = InstrumentWidget(
                 self.gudrunFile.instrument, self
             )
