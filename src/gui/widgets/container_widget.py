@@ -137,7 +137,6 @@ class ContainerWidget(QWidget):
         """
         self.container.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
-        self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -446,7 +445,6 @@ class ContainerWidget(QWidget):
         # Ensure the correct attributes are being
         # shown for the correct geometry.
         self.geometryInfoStack.setCurrentIndex(config.geometry.value)
-        self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
 
         # Setup the widgets and slots for geometry specific attributes.
         # Flatplate
