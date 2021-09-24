@@ -762,6 +762,8 @@ class GudPyTreeView(QTreeView):
         # If the model has been instantiated,
         # allow insertion of sample backgrounds.
         if self.model():
+            if isinstance(self.currentObject(), (Sample, Container)):
+                insertSampleBackground.setText("Append Sample Background")
             insertSampleBackground.setEnabled(True)
         # If the model has been instantiated
         # and the current object type can have siblings
