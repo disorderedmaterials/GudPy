@@ -123,6 +123,8 @@ class ContainerWidget(QWidget):
             The new value of the periodNoSpinBox.
         """
         self.container.periodNo = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleGeometryChanged(self, index):
         """
@@ -137,6 +139,9 @@ class ContainerWidget(QWidget):
         """
         self.container.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -150,6 +155,8 @@ class ContainerWidget(QWidget):
             The new value of the upstreamSpinBox.
         """
         self.container.upstreamThickness = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleDownstreamThicknessChanged(self, value):
         """
@@ -163,6 +170,8 @@ class ContainerWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.container.downstreamThickness = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleInnerRadiiChanged(self, value):
         """
@@ -176,6 +185,8 @@ class ContainerWidget(QWidget):
             The new value of the innerRadiiSpinBox.
         """
         self.container.innerRadius = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleOuterRadiiChanged(self, value):
         """
@@ -189,6 +200,8 @@ class ContainerWidget(QWidget):
             The new value of the outerRadiiSpinBox.
         """
         self.container.outerRadius = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleDensityChanged(self, value):
         """
@@ -202,6 +215,8 @@ class ContainerWidget(QWidget):
             The new value of the densitySpinBox.
         """
         self.container.density = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleTotalCrossSectionChanged(self, index):
         """
@@ -217,6 +232,8 @@ class ContainerWidget(QWidget):
         self.container.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleTweakFactorChanged(self, value):
         """
@@ -230,6 +247,8 @@ class ContainerWidget(QWidget):
             The new value of the tweakFactorSpinBox.
         """
         self.container.tweakFactor = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleAngleOfRotationChanged(self, value):
         """
@@ -243,6 +262,8 @@ class ContainerWidget(QWidget):
             The new value of the angleOfRotationSpinBox.
         """
         self.container.angleOfRotation = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleSampleWidthChanged(self, value):
         """
@@ -256,6 +277,8 @@ class ContainerWidget(QWidget):
             The new value of the sampleWidthSpinBox.
         """
         self.container.sampleWidth = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleSampleHeightChanged(self, value):
         """
@@ -269,6 +292,8 @@ class ContainerWidget(QWidget):
             The new value of the sampleHeightSpinBox.
         """
         self.container.sampleHeight = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleScatteringFractionChanged(self, value):
         """
@@ -283,6 +308,8 @@ class ContainerWidget(QWidget):
             The new value of the scatteringFractionSpinBox.
         """
         self.container.scatteringFraction = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleAttenuationCoefficientChanged(self, value):
         """
@@ -297,6 +324,8 @@ class ContainerWidget(QWidget):
             The new value of the attenuationCoefficientSpinBox.
         """
         self.container.attenuationCoefficient = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleDataFilesAltered(self, item):
         """
@@ -316,6 +345,8 @@ class ContainerWidget(QWidget):
         else:
             self.container.dataFiles.dataFiles[index] = value
         self.updateDataFilesList()
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleDataFileInserted(self, item):
         """
@@ -330,6 +361,8 @@ class ContainerWidget(QWidget):
         """
         value = item.text()
         self.container.dataFiles.dataFiles.append(value)
+        if not self.semaphore:
+            self.parent.setModified()
 
     def updateDataFilesList(self):
         """
@@ -376,6 +409,8 @@ class ContainerWidget(QWidget):
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
             self.updateDataFilesList()
+            if not self.semaphore:
+                self.parent.setModified()
 
     def updateCompositionTable(self):
         """
@@ -392,6 +427,8 @@ class ContainerWidget(QWidget):
         insertElementButton.
         """
         self.containerCompositionTable.insertRow()
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleRemoveElement(self):
         """
@@ -402,13 +439,16 @@ class ContainerWidget(QWidget):
         self.containerCompositionTable.removeRow(
             self.containerCompositionTable.selectionModel().selectedRows()
         )
+        if not self.semaphore:
+            self.parent.setModified()
 
     def initComponents(self):
         """
         Populates the child widgets with their
         corresponding data from the attributes of the Container object.
         """
-
+        # Acquire the lock
+        self.semaphore = True
         # Setup widget and slot for the period number.
         self.periodNoSpinBox.setValue(self.container.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
@@ -525,3 +565,5 @@ class ContainerWidget(QWidget):
         self.updateCompositionTable()
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
+        # Release the lock
+        self.semaphore = False

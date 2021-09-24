@@ -62,6 +62,7 @@ class GudPyMainWindow(QMainWindow):
         self.gudrunFile = None
         self.initComponents()
         self.clipboard = None
+        self.modified = False
 
     def initComponents(self):
         """
@@ -270,3 +271,7 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary and/or purge_det binary."
             )
+
+    def setModified(self):
+        if not self.modified:
+            self.setWindowTitle(self.gudrunFile.path + " *")
