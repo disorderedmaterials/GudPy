@@ -1,7 +1,4 @@
 import sys
-from src.gudrun_classes.container import Container
-from src.gudrun_classes.sample import Sample
-from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
@@ -20,7 +17,6 @@ from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
-from copy import deepcopy
 
 
 class GudPyMainWindow(QMainWindow):
@@ -52,20 +48,8 @@ class GudPyMainWindow(QMainWindow):
         Updates compositions across objects.
     updateComponents()
         Updates geometries and compositions.
-    insertSampleBackground_(sampleBackground)
-        Inserts a SampleBackground into the GudrunFile.
-    insertSample_(sample)
-        Inserts a Sample into the GudrunFile.
-    insertContainer_(container)
-        Inserts a Container into the GudrunFile.
-    copy_()
-        Copies the current object to the clipboard.
-    cut_()
-        Cuts the current object to the clipboard.
     del_()
         Deletes the current object.
-    paste_()
-        Pastes the clipboard back into the GudrunFile.
     exit_()
         Exits GudPy.
     """
@@ -145,21 +129,21 @@ class GudPyMainWindow(QMainWindow):
             )
 
             self.insertSampleBackground.triggered.connect(
-                self.insertSampleBackground_
+                self.objectTree.insertSampleBackground
             )
 
             self.insertSample.triggered.connect(
-                self.insertSample_
+                self.objectTree.insertSample
             )
 
             self.insertContainer.triggered.connect(
-                self.insertContainer_
+                self.objectTree.insertContainer
             )
 
-            self.copy.triggered.connect(self.copy_)
-            self.cut.triggered.connect(self.cut_)
-            self.paste.triggered.connect(self.paste_)
-            self.delete_.triggered.connect(self.del_)
+            self.copy.triggered.connect(self.objectTree.copy)
+            self.cut.triggered.connect(self.objectTree.cut)
+            self.paste.triggered.connect(self.objectTree.paste)
+            self.delete_.triggered.connect(self.objectTree.del_)
 
         self.loadInputFile.triggered.connect(self.loadInputFile_)
         self.objectStack.currentChanged.connect(self.updateComponents)
@@ -231,84 +215,6 @@ class GudPyMainWindow(QMainWindow):
         """
         self.updateGeometries()
         self.updateCompositions()
-
-    def insertSampleBackground_(self, sampleBackground=None):
-        """
-        Inserts a SampleBackground into the GudrunFile.
-        Inserts it into the tree.
-        Parameters
-        ----------
-        sampleBackground : SampleBackground, optional
-            SampleBackground object to insert.
-        """
-        if not sampleBackground:
-            sampleBackground = SampleBackground()
-        self.objectTree.insertRow(sampleBackground)
-
-    def insertSample_(self, sample=None):
-        """
-        Inserts a Sample into the GudrunFile.
-        Inserts it into the tree.
-        Parameters
-        ----------
-        sample : Sample, optional
-            Sample object to insert.
-        """
-        if not sample:
-            sample = Sample()
-            sample.name = "SAMPLE"  # for now, give a default name.
-        self.objectTree.insertRow(sample)
-
-    def insertContainer_(self, container=None):
-        """
-        Inserts a Container into the GudrunFile.
-        Inserts it into the tree.
-        Parameters
-        ----------
-        container : Container, optional
-            Container object to insert.
-        """
-        if not container:
-            container = Container()
-            container.name = "CONTAINER"  # for now, give a default name.
-        self.objectTree.insertRow(container)
-
-    def copy_(self):
-        """
-        Copies the current object to the clipboard.
-        """
-        self.clipboard = None
-        obj = self.objectTree.currentObject()
-        if isinstance(obj, (SampleBackground, Sample, Container)):
-            self.clipboard = deepcopy(obj)
-
-    def del_(self):
-        """
-        Deletes the current object.
-        """
-        self.objectTree.removeRow()
-
-    def cut_(self):
-        """
-        Copies the current object to the clipboard, and removes
-        the object from the tree.
-        """
-        self.copy_()
-        if self.clipboard:
-            self.objectTree.removeRow()
-
-    def paste_(self):
-        """
-        Pastes the contents of the clipboard back into the GudrunFile.
-        """
-        if isinstance(self.clipboard, SampleBackground):
-            self.insertSampleBackground_(
-                sampleBackground=deepcopy(self.clipboard)
-            )
-        elif isinstance(self.clipboard, Sample):
-            self.insertSample_(sample=deepcopy(self.clipboard))
-        elif isinstance(self.clipboard, Container):
-            self.insertContainer_(container=deepcopy(self.clipboard))
 
     def exit_(self):
         """

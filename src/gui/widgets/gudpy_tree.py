@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QTreeView
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QAction, QMenu, QTreeView
 from PyQt5.QtCore import (
     QAbstractItemModel,
     QModelIndex,
@@ -13,6 +14,7 @@ from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
+from copy import deepcopy
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -568,6 +570,30 @@ class GudPyTreeView(QTreeView):
         Inserts an object into the current row in the model.
     removeRow()
         Removes the current index from the model.
+    contextMenuEvent(event)
+        Creates context menu, for right clicking the table.
+    insertSampleBackground_(sampleBackground)
+        Inserts a SampleBackground into the GudrunFile.
+    insertSample_(sample)
+        Inserts a Sample into the GudrunFile.
+    insertContainer_(container)
+        Inserts a Container into the GudrunFile.
+    copy_()
+        Copies the current object to the clipboard.
+    cut_()
+        Cuts the current object to the clipboard.
+    paste_()
+        Pastes the clipboard back into the GudrunFile.
+    duplicate()
+        Duplicates the current Sample.
+    duplicateOnlySample()
+        Duplicates the current Sample without any containers.
+    selectAllSamples()
+        Selects all samples belonging to a SampleBackground.
+    deselectAllSamples()
+        Deselects all samples belonging to a SampleBackground.
+    selectOnlyThisSample()
+        Selects only the current sample, and deselects all others.
     """
 
     def __init__(self, parent):
@@ -578,6 +604,7 @@ class GudPyTreeView(QTreeView):
             Parent widget.
         """
         super(GudPyTreeView, self).__init__(parent)
+        self.clipboard = None
 
     def buildTree(self, gudrunFile, sibling):
         """
@@ -654,3 +681,289 @@ class GudPyTreeView(QTreeView):
         Removes the current index from the model.
         """
         self.model().removeRow(self.currentIndex())
+
+    def contextMenuEvent(self, event):
+        """
+        Creates context menu, so that on right clicking the table,
+        the user is able to perform menu actions.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        # Create the menu
+        self.menu = QMenu(self)
+        # Actions for insertion
+        insertSampleBackground = QAction(
+            "Insert Sample Background", self.menu
+        )
+        insertSampleBackground.triggered.connect(
+            self.insertSampleBackground
+        )
+        insertSampleBackground.setDisabled(True)
+        self.menu.addAction(insertSampleBackground)
+        insertContainer = QAction("Insert Container", self.menu)
+        insertContainer.triggered.connect(
+            self.insertContainer
+        )
+        insertContainer.setDisabled(True)
+        self.menu.addAction(insertContainer)
+        insertSample = QAction("Insert Sample", self.menu)
+        insertSample.triggered.connect(
+            self.insertSample
+        )
+        insertSample.setDisabled(True)
+        self.menu.addAction(insertSample)
+
+        # Selection actions
+        selectAllSamples = QAction("Select All Samples", self.menu)
+        selectAllSamples.triggered.connect(
+            self.selectAllSamples
+        )
+        selectAllSamples.setDisabled(True)
+        self.menu.addAction(selectAllSamples)
+        deselectAllSamples = QAction("Deselect All Samples", self.menu)
+        deselectAllSamples.triggered.connect(
+            self.deselectAllSamples
+        )
+        deselectAllSamples.setDisabled(True)
+        self.menu.addAction(deselectAllSamples)
+        selectOnlyThisSample = QAction("Select Only This Sample", self.menu)
+        selectOnlyThisSample.triggered.connect(
+            self.selectOnlyThisSample
+        )
+        selectOnlyThisSample.setDisabled(True)
+        self.menu.addAction(selectOnlyThisSample)
+
+        # Copy/cut/paste actions
+        copy_ = QAction("Copy", self.menu)
+        copy_.triggered.connect(self.copy)
+        copy_.setDisabled(True)
+        self.menu.addAction(copy_)
+        cut = QAction("Cut", self.menu)
+        cut.triggered.connect(self.cut)
+        cut.setDisabled(True)
+        self.menu.addAction(cut)
+        paste = QAction("Paste", self.menu)
+        paste.setDisabled(True)
+        paste.triggered.connect(self.paste)
+        self.menu.addAction(paste)
+
+        # Duplicate actions
+        duplicate = QAction("Duplicate Sample", self.menu)
+        duplicate.triggered.connect(self.duplicateSample)
+        duplicate.setDisabled(True)
+        self.menu.addAction(duplicate)
+        duplicateOnlySample = QAction("Duplicate Only Sample", self.menu)
+        duplicateOnlySample.triggered.connect(self.duplicateOnlySample)
+        duplicateOnlySample.setDisabled(True)
+        self.menu.addAction(duplicateOnlySample)
+
+        # If the model has been instantiated,
+        # allow insertion of sample backgrounds.
+        if self.model():
+            if isinstance(self.currentObject(), (Sample, Container)):
+                insertSampleBackground.setText("Append Sample Background")
+            insertSampleBackground.setEnabled(True)
+        # If the model has been instantiated
+        # and the current object type can have siblings
+        if self.model() and isinstance(self.currentObject(), (
+            SampleBackground, Sample, Container)
+        ):
+            copy_.setEnabled(True)
+            cut.setEnabled(True)
+
+        # If the clipboard can be pasted under the current object.
+        # Sample backgrounds default to append if this is not the case.
+        if (
+            isinstance(self.clipboard, SampleBackground)
+            or
+            (
+                isinstance(self.clipboard, type(self.currentObject()))
+                and self.clipboard
+            )
+            or
+            (
+                isinstance(self.clipboard, Sample)
+                and isinstance(self.currentObject(), SampleBackground)
+
+            )
+            or
+            (
+                isinstance(self.clipboard, Container)
+                and isinstance(self.currentObject(), Sample)
+            )
+            and self.clipboard
+        ):
+            paste.setEnabled(True)
+
+        # Enable selecting/deselecting all samples
+        if isinstance(self.currentObject(), (
+            SampleBackground, Sample, Container)
+        ):
+            selectAllSamples.setEnabled(True)
+            deselectAllSamples.setEnabled(True)
+
+        # Enable insertion of samples and containers.
+        if isinstance(self.currentObject(), (SampleBackground, Sample)):
+            insertSample.setEnabled(True)
+        if isinstance(self.currentObject(), (Sample, Container)):
+            insertContainer.setEnabled(True)
+        # Enable duplication, and selection.
+        if isinstance(self.currentObject(), Sample):
+            duplicate.setEnabled(True)
+            duplicateOnlySample.setEnabled(True)
+            selectOnlyThisSample.setEnabled(True)
+        # Pop up the context menu.
+        self.menu.popup(QCursor.pos())
+
+    def insertSampleBackground(self, sampleBackground=None):
+        """
+        Inserts a SampleBackground into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sampleBackground : SampleBackground, optional
+            SampleBackground object to insert.
+        """
+        if not sampleBackground:
+            sampleBackground = SampleBackground()
+        self.insertRow(sampleBackground)
+
+    def insertSample(self, sample=None):
+        """
+        Inserts a Sample into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        sample : Sample, optional
+            Sample object to insert.
+        """
+        if not sample:
+            sample = Sample()
+            sample.name = "SAMPLE"  # for now, give a default name.
+        self.insertRow(sample)
+
+    def insertContainer(self, container=None):
+        """
+        Inserts a Container into the GudrunFile.
+        Inserts it into the tree.
+        Parameters
+        ----------
+        container : Container, optional
+            Container object to insert.
+        """
+        if not container:
+            container = Container()
+            container.name = "CONTAINER"  # for now, give a default name.
+        self.insertRow(container)
+
+    def copy(self):
+        """
+        Copies the current object to the clipboard.
+        """
+        self.clipboard = None
+        obj = self.currentObject()
+        if isinstance(obj, (SampleBackground, Sample, Container)):
+            self.clipboard = deepcopy(obj)
+
+    def del_(self):
+        """
+        Deletes the current object.
+        """
+        self.removeRow()
+
+    def cut(self):
+        """
+        Copies the current object to the clipboard, and removes
+        the object from the tree.
+        """
+        self.copy_()
+        if self.clipboard:
+            self.removeRow()
+
+    def paste(self):
+        """
+        Pastes the contents of the clipboard back into the GudrunFile.
+        """
+        if isinstance(self.clipboard, SampleBackground):
+            self.insertSampleBackground(
+                sampleBackground=deepcopy(self.clipboard)
+            )
+        elif isinstance(self.clipboard, Sample):
+            self.insertSample(sample=deepcopy(self.clipboard))
+        elif isinstance(self.clipboard, Container):
+            self.insertContainer(container=deepcopy(self.clipboard))
+
+    def duplicateSample(self):
+        """
+        Duplicates the current Sample.
+        """
+        self.copy()
+        self.paste()
+
+    def duplicateOnlySample(self):
+        """
+        Duplicates the current Sample without any containers.
+        """
+        self.copy()
+        self.clipboard.containers = []
+        self.paste()
+
+    def selectAllSamples(self):
+        """
+        Selects all samples belonging to a SampleBackground.
+        """
+        if isinstance(self.currentObject(), (SampleBackground)):
+            # Select all children.
+            for i in range(len(self.currentObject().samples)):
+                self.currentObject().samples[i].runThisSample = True
+        elif isinstance(self.currentObject(), Sample):
+            # Select all siblings.
+            parent = self.model().findParent(self.currentObject())
+            for i in range(len(parent.samples)):
+                parent.samples[i].runThisSample = True
+        elif isinstance(self.currentObject(), Container):
+            # Select parent and all it's siblings.
+            grandparent = (
+                    self.model().findParent(
+                        self.model().findParent(
+                            self.currentObject())
+                    )
+            )
+            for i in range(len(grandparent.samples)):
+                grandparent.samples[i].runThisSample = True
+
+    def deselectAllSamples(self):
+        """
+        Deselects all samples belonging to a SampleBackground.
+        """
+        if isinstance(self.currentObject(), (SampleBackground)):
+            # Deselect all children.
+            for i in range(len(self.currentObject().samples)):
+                self.currentObject().samples[i].runThisSample = False
+        elif isinstance(self.currentObject(), Sample):
+            # Deselect all siblings.
+            parent = self.model().findParent(self.currentObject())
+            for i in range(len(parent.samples)):
+                parent.samples[i].runThisSample = False
+        elif isinstance(self.currentObject(), Container):
+            # Deselect parent and all it's siblings.
+            grandparent = (
+                    self.model().findParent(
+                        self.model().findParent(
+                            self.currentObject())
+                    )
+            )
+            for i in range(len(grandparent.samples)):
+                grandparent.samples[i].runThisSample = False
+
+    def selectOnlyThisSample(self):
+        """
+        Selects only the current sample, and deselects all others.
+        """
+        self.deselectAllSamples()
+        if isinstance(self.currentObject(), Sample):
+            self.currentObject().runThisSample = True
+        if isinstance(self.currentObject(), Container):
+            self.model().findParent(self.currentObject()).runThisSample = True
