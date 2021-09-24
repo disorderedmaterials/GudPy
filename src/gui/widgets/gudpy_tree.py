@@ -680,18 +680,17 @@ class GudPyTreeView(QTreeView):
             The event that triggers the context menu.
         """
         self.menu = QMenu(self)
-        editMenu = self.menu.addMenu("Edit")
         if self.model():
             insertSampleBackground = QAction(
-                "Insert Sample Background", editMenu
+                "Insert Sample Background", self.menu
             )
             insertSampleBackground.triggered.connect(
                 self.insertSampleBackground
             )
-            editMenu.addAction(insertSampleBackground)
-        copy_ = QAction("Copy", editMenu)
+            self.menu.addAction(insertSampleBackground)
+        copy_ = QAction("Copy", self.menu)
         copy_.triggered.connect(self.copy)
-        cut = QAction("Cut", editMenu)
+        cut = QAction("Cut", )
         cut.triggered.connect(self.cut)
         self.menu.addAction(copy_)
         self.menu.addAction(cut)
@@ -711,21 +710,21 @@ class GudPyTreeView(QTreeView):
                 and isinstance(self.currentObject(), Sample)
             )
         ):
-            paste = QAction("Paste", editMenu)
+            paste = QAction("Paste", self.menu)
             paste.triggered.connect(self.paste)
             self.menu.addAction(paste)
         if isinstance(self.currentObject(), (SampleBackground, Sample)):
-            insertSample = QAction("Insert Sample", editMenu)
+            insertSample = QAction("Insert Sample", self.menu)
             insertSample.triggered.connect(
                 self.insertSample
             )
-            editMenu.addAction(insertSample)
+            self.menu.addAction(insertSample)
         if isinstance(self.currentObject(), (Sample, Container)):
-            insertContainer = QAction("Insert Container", editMenu)
+            insertContainer = QAction("Insert Container", self.menu)
             insertContainer.triggered.connect(
                 self.insertContainer
             )
-            editMenu.addAction(insertContainer)
+            self.menu.addAction(insertContainer)
         self.menu.popup(QCursor.pos())
 
     def insertSampleBackground(self, sampleBackground=None):
