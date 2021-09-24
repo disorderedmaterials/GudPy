@@ -72,7 +72,27 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
         self.setWindowTitle("GudPy")
         self.show()
-        if self.gudrunFile:
+        if not self.gudrunFile:
+            # Hide the QStackedWidget and GudPyTreeView
+            self.objectStack.setVisible(False)
+            self.objectTree.setVisible(False)
+            # Disabled the edit actions.
+            self.insertSampleBackground.setDisabled(True)
+            self.insertSample.setDisabled(True)
+            self.insertContainer.setDisabled(True)
+            self.copy.setDisabled(True)
+            self.cut.setDisabled(True)
+            self.paste.setDisabled(True)
+            self.delete_.setDisabled(True)
+            # Disable the run actions.
+            self.runPurge.setDisabled(True)
+            self.runGudrun.setDisabled(True)
+            self.iterateGudrun.setDisabled(True)
+            # Disable some file actions.
+            self.viewLiveInputFile.setDisabled(True)
+            self.save.setDisabled(True)
+            self.saveAs.setDisabled(True)
+        else:
             instrumentWidget = InstrumentWidget(
                 self.gudrunFile.instrument, self
             )
