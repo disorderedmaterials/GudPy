@@ -1,7 +1,4 @@
 import sys
-from src.gudrun_classes.container import Container
-from src.gudrun_classes.sample import Sample
-from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
@@ -20,7 +17,6 @@ from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
-from copy import deepcopy
 
 
 class GudPyMainWindow(QMainWindow):

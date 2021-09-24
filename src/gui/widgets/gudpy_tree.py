@@ -16,6 +16,7 @@ from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy
 
+
 class GudPyTreeModel(QAbstractItemModel):
     """
     Class to represent a GudPyTreeModel. To be used with a GudyTree object.
@@ -680,25 +681,35 @@ class GudPyTreeView(QTreeView):
         """
         self.menu = QMenu(self)
         editMenu = self.menu.addMenu("Edit")
-        insertSampleBackground = QAction("Insert Sample Background", editMenu)
-        insertSampleBackground.triggered.connect(
-            self.insertSampleBackground
-        )
-        editMenu.addAction(insertSampleBackground)
-        copy_= QAction("Copy", editMenu)
+        if self.model():
+            insertSampleBackground = QAction(
+                "Insert Sample Background", editMenu
+            )
+            insertSampleBackground.triggered.connect(
+                self.insertSampleBackground
+            )
+            editMenu.addAction(insertSampleBackground)
+        copy_ = QAction("Copy", editMenu)
         copy_.triggered.connect(self.copy)
         cut = QAction("Cut", editMenu)
         cut.triggered.connect(self.cut)
         self.menu.addAction(copy_)
         self.menu.addAction(cut)
         if (
-            type(self.clipboard) == SampleBackground
+            isinstance(self.clipboard, SampleBackground)
             or
-            type(self.clipboard) == type(self.currentObject())
+            isinstance(self.clipboard, type(self.currentObject()))
             or
-            (type(self.clipboard) == Sample and type(self.currentObject()) == SampleBackground)
+            (
+                isinstance(self.clipboard, Sample)
+                and isinstance(self.currentObject(), SampleBackground)
+
+            )
             or
-            (type(self.clipboard) == Container and type(self.currentObject()) == Sample)
+            (
+                isinstance(self.clipboard, Container)
+                and isinstance(self.currentObject(), Sample)
+            )
         ):
             paste = QAction("Paste", editMenu)
             paste.triggered.connect(self.paste)
@@ -709,7 +720,7 @@ class GudPyTreeView(QTreeView):
                 self.insertSample
             )
             editMenu.addAction(insertSample)
-        elif isinstance(self.currentObject(), (Sample, Container)):
+        if isinstance(self.currentObject(), (Sample, Container)):
             insertContainer = QAction("Insert Container", editMenu)
             insertContainer.triggered.connect(
                 self.insertContainer
