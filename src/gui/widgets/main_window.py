@@ -98,38 +98,35 @@ class GudPyMainWindow(QMainWindow):
         else:
 
             self.setWindowTitle(self.gudrunFile.path)
-            instrumentWidget = InstrumentWidget(
-                self.gudrunFile.instrument, self
-            )
-            beamWidget = BeamWidget(self.gudrunFile.beam, self)
-            normalisationWidget = NormalisationWidget(
-                self.gudrunFile.normalisation, self
-            )
-            self.objectStack.addWidget(instrumentWidget)
-            self.objectStack.addWidget(beamWidget)
-            self.objectStack.addWidget(normalisationWidget)
+            self.instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
+            self.beamWidget = BeamWidget(self.gudrunFile.beam, self)
+            self.normalisationWidget = NormalisationWidget(self.gudrunFile.normalisation, self)
 
-            sampleBackgroundWidget = SampleBackgroundWidget(self)
-            sampleWidget = SampleWidget(self)
-            containerWidget = ContainerWidget(self)
+            self.objectStack.addWidget(self.instrumentWidget)
+            self.objectStack.addWidget(self.beamWidget)
+            self.objectStack.addWidget(self.normalisationWidget)
 
-            self.objectStack.addWidget(sampleBackgroundWidget)
-            self.objectStack.addWidget(sampleWidget)
-            self.objectStack.addWidget(containerWidget)
+            self.sampleBackgroundWidget = SampleBackgroundWidget(self)
+            self.sampleWidget = SampleWidget(self)
+            self.containerWidget = ContainerWidget(self)
+
+            self.objectStack.addWidget(self.sampleBackgroundWidget)
+            self.objectStack.addWidget(self.sampleWidget)
+            self.objectStack.addWidget(self.containerWidget)
 
             if len(self.gudrunFile.sampleBackgrounds):
-                sampleBackgroundWidget.setSampleBackground(
+                self.sampleBackgroundWidget.setSampleBackground(
                     self.gudrunFile.sampleBackgrounds[0]
                 )
                 if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    sampleWidget.setSample(
+                    self.sampleWidget.setSample(
                         self.gudrunFile.sampleBackgrounds[0].samples[0]
                     )
                     if len(
                         self.gudrunFile.sampleBackgrounds[0]
                         .samples[0].containers
                     ):
-                        containerWidget.setContainer(
+                        self.containerWidget.setContainer(
                             self.gudrunFile.sampleBackgrounds[0]
                             .samples[0].containers[0]
                         )
@@ -210,16 +207,18 @@ class GudPyMainWindow(QMainWindow):
         Iteratively updates geometries of objects,
         where the Geometry is SameAsBeam.
         """
-        for i in range(self.objectStack.count()):
-            target = self.objectStack.widget(i)
-            if isinstance(target, NormalisationWidget):
-                if target.normalisation.geometry == Geometry.SameAsBeam:
-                    target.geometryInfoStack.setCurrentIndex(
-                        config.geometry.value
-                    )
-            elif isinstance(target, (SampleWidget, ContainerWidget)):
-                target.geometryComboBox.setCurrentIndex(config.geometry.value)
-
+        if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
+            self.gudrunFile.normalisation.geometry = config.geometry
+            self.normalisationWidget.semaphore = True
+            self.normalisationWidget.geometryComboBox.setCurrentIndex(config.geometry.value)
+            self.normalisationWidget.semaphore = False
+        for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
+            for j, sample in enumerate(sampleBackground.samples):
+                self.gudrunFile.sampleBackgrounds[i].samples[j].geometry = config.geometry
+                for k in range(len(sample.containers)):
+                    self.gudrunFile.sampleBackgrounds[i].samples[j].containers[k].geometry = config.geometry
+        self.sampleWidget.initComponents()
+        self.containerWidget.initComponents()
     def updateCompositions(self):
         """
         Iteratively shares compositions between objects,
@@ -273,5 +272,9 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def setModified(self):
+        from inspect import currentframe, getouterframes
+        caller = getouterframes(currentframe(), 2)[1][3]
+        print(caller)
         if not self.modified:
             self.setWindowTitle(self.gudrunFile.path + " *")
+            self.modified = True

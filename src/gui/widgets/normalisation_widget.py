@@ -150,6 +150,8 @@ class NormalisationWidget(QWidget):
         index : int
             The new current index of the geometryComboBox.
         """
+        if not self.semaphore:
+            self.parent.setModified()
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
         if self.normalisation.geometry == Geometry.SameAsBeam:
             self.parent.updateGeometries()
@@ -158,8 +160,7 @@ class NormalisationWidget(QWidget):
             self.geometryInfoStack.setCurrentIndex(
                 self.normalisation.geometry.value
             )
-        if not self.semaphore:
-            self.parent.setModified()
+
 
     def handleDensityUnitsChanged(self, index):
         """

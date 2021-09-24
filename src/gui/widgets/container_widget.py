@@ -140,8 +140,6 @@ class ContainerWidget(QWidget):
         self.container.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.container.geometry.value)
         self.geometryInfoStack_.setCurrentIndex(self.container.geometry.value)
-        if not self.semaphore:
-            self.parent.setModified()
 
     def handleUpstreamThicknessChanged(self, value):
         """

@@ -191,8 +191,6 @@ class SampleWidget(QWidget):
         self.sample.geometry = self.geometryComboBox.itemData(index)
         self.geometryInfoStack.setCurrentIndex(self.sample.geometry.value)
         self.geometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
-        if not self.semaphore:
-            self.parent.setModified()
 
     def handleUpstreamThicknessChanged(self, value):
         """
