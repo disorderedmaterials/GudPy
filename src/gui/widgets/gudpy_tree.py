@@ -713,12 +713,24 @@ class GudPyTreeView(QTreeView):
             paste = QAction("Paste", self.menu)
             paste.triggered.connect(self.paste)
             self.menu.addAction(paste)
-        if isinstance(self.currentObject(), (SampleBackground, Sample)):
+        if isinstance(self.currentObject(), (
+            SampleBackground, Sample, Container)
+        ):
             insertSample = QAction("Insert Sample", self.menu)
             insertSample.triggered.connect(
                 self.insertSample
             )
             self.menu.addAction(insertSample)
+            selectAllSamples = QAction("Select All Samples", self.menu)
+            selectAllSamples.triggered.connect(
+                self.selectAllSamples
+            )
+            self.menu.addAction(selectAllSamples)
+            deselectAllSamples = QAction("Deselect All Samples", self.menu)
+            deselectAllSamples.triggered.connect(
+                self.deselectAllSamples
+            )
+            self.menu.addAction(deselectAllSamples)
         if isinstance(self.currentObject(), (Sample, Container)):
             insertContainer = QAction("Insert Container", self.menu)
             insertContainer.triggered.connect(
@@ -804,3 +816,39 @@ class GudPyTreeView(QTreeView):
             self.insertSample(sample=deepcopy(self.clipboard))
         elif isinstance(self.clipboard, Container):
             self.insertContainer(container=deepcopy(self.clipboard))
+
+    def selectAllSamples(self):
+        if isinstance(self.currentObject(), (SampleBackground)):
+            for i in range(len(self.currentObject().samples)):
+                self.currentObject().samples[i].runThisSample = True
+        elif isinstance(self.currentObject(), Sample):
+            parent = self.model().findParent(self.currentObject())
+            for i in range(len(parent.samples)):
+                parent.samples[i].runThisSample = True
+        elif isinstance(self.currentObject(), Container):
+            grandparent = (
+                    self.model().findParent(
+                        self.model().findParent(
+                            self.currentObject())
+                    )
+            )
+            for i in range(len(grandparent.samples)):
+                grandparent.samples[i].runThisSample = True
+
+    def deselectAllSamples(self):
+        if isinstance(self.currentObject(), (SampleBackground)):
+            for i in range(len(self.currentObject().samples)):
+                self.currentObject().samples[i].runThisSample = False
+        elif isinstance(self.currentObject(), Sample):
+            parent = self.model().findParent(self.currentObject())
+            for i in range(len(parent.samples)):
+                parent.samples[i].runThisSample = False
+        elif isinstance(self.currentObject(), Container):
+            grandparent = (
+                    self.model().findParent(
+                        self.model().findParent(
+                            self.currentObject())
+                    )
+            )
+            for i in range(len(grandparent.samples)):
+                grandparent.samples[i].runThisSample = False
