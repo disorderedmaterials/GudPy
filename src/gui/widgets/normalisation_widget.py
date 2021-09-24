@@ -161,7 +161,6 @@ class NormalisationWidget(QWidget):
                 self.normalisation.geometry.value
             )
 
-
     def handleDensityUnitsChanged(self, index):
         """
         Slot for handling change in density units.

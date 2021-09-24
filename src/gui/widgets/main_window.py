@@ -98,9 +98,15 @@ class GudPyMainWindow(QMainWindow):
         else:
 
             self.setWindowTitle(self.gudrunFile.path)
-            self.instrumentWidget = InstrumentWidget(self.gudrunFile.instrument, self)
-            self.beamWidget = BeamWidget(self.gudrunFile.beam, self)
-            self.normalisationWidget = NormalisationWidget(self.gudrunFile.normalisation, self)
+            self.instrumentWidget = InstrumentWidget(
+                self.gudrunFile.instrument, self
+            )
+            self.beamWidget = BeamWidget(
+                self.gudrunFile.beam, self
+            )
+            self.normalisationWidget = NormalisationWidget(
+                self.gudrunFile.normalisation, self
+            )
 
             self.objectStack.addWidget(self.instrumentWidget)
             self.objectStack.addWidget(self.beamWidget)
@@ -210,15 +216,23 @@ class GudPyMainWindow(QMainWindow):
         if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
             self.gudrunFile.normalisation.geometry = config.geometry
             self.normalisationWidget.semaphore = True
-            self.normalisationWidget.geometryComboBox.setCurrentIndex(config.geometry.value)
+            self.normalisationWidget.geometryComboBox.setCurrentIndex(
+                config.geometry.value
+            )
             self.normalisationWidget.semaphore = False
-        for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
+        for i, sampleBackground in enumerate(
+            self.gudrunFile.sampleBackgrounds
+        ):
             for j, sample in enumerate(sampleBackground.samples):
-                self.gudrunFile.sampleBackgrounds[i].samples[j].geometry = config.geometry
+                self.gudrunFile.sampleBackgrounds[i].samples[j].geometry = (
+                    config.geometry
+                )
                 for k in range(len(sample.containers)):
-                    self.gudrunFile.sampleBackgrounds[i].samples[j].containers[k].geometry = config.geometry
+                    sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    sample.containers[k].geometry = config.geometry
         self.sampleWidget.initComponents()
         self.containerWidget.initComponents()
+
     def updateCompositions(self):
         """
         Iteratively shares compositions between objects,
