@@ -77,16 +77,8 @@ class InstrumentWidget(QWidget):
         Slot for handling change to the wavelength step size.
     handleNoSmoothsOnMonitorChanged(value)
         Slot for handling change to the number of smooths on the monitor.
-    handleQScaleStateChanged()
-        Slot for handling switching to/from the Q-Scale for final DCS.
-    handleDSpacingScaleStateChanged()
-        Slot for handling switching to/from the D-Spacing scale for final DCS.
-    handleWavelengthScaleStateChanged()
-        Slot for handling switching to/from the wavelength scale for final DCS.
-    handleEnergyScaleStateChanged()
-        Slot for handling switching to/from the energy scale for final DCS.
-    handleTOFScaleStateChanged()
-        Slot for handling switching to/from the TOF scale for final DCS.
+    handleScaleStateChanged()
+        Slot for handling change in the X-Scale for final DCS.
     handleGroupsAcceptanceFactorChanged(value)
         Slot for handling change to the groups acceptance factor.
     handleMergePowerChanged(value)
@@ -489,90 +481,19 @@ class InstrumentWidget(QWidget):
         """
         self.instrument.NoSmoothsOnMonitor = value
 
-    def handleQScaleStateChanged(self):
+    def handleScaleStateChanged(self):
         """
-        Slot for handling switching to/from the Q-Scale for final DCS.
+        Slot for handling change in the X-Scale for final DCS.
         Called when the stateChanged signal is emitted,
-        from the _QRadioButton.
+        from any of the scale radio buttons.
         Updates the interface, to reflect the change in scale selection.
-        Parameters
-        ----------
-        state : int
-            The new state of the _QRadioButton (1: True, 0: False)
         """
-        button, min_, max_, step = self.scales[Scales.Q]
-        state = button.isChecked()
-        min_.setEnabled(state)
-        max_.setEnabled(state)
-        step.setEnabled(state)
-
-    def handleDSpacingScaleStateChanged(self):
-        """
-        Slot for handling switching to/from the D-Spacing scale for final DCS.
-        Called when the stateChanged signal is emitted,
-        from the DSpacingRadioButton.
-        Updates the interface, to reflect the change in scale selection.
-        Parameters
-        ----------
-        state : int
-            The new state of the DSpacingRadioButton (1: True, 0: False)
-        """
-        button, min_, max_, step = self.scales[Scales.D_SPACING]
-        state = button.isChecked()
-        min_.setEnabled(state)
-        max_.setEnabled(state)
-        step.setEnabled(state)
-
-    def handleWavelengthScaleStateChanged(self):
-        """
-        Slot for handling switching to/from the wavelength scale for final DCS.
-        Called when the stateChanged signal is emitted,
-        from the wavelengthRadioButton.
-        Updates the interface, to reflect the change in scale selection.
-        Parameters
-        ----------
-        state : int
-            The new state of the wavelengthRadioButton (1: True, 0: False)
-        """
-        button, min_, max_, step = self.scales[Scales.WAVELENGTH]
-        state = button.isChecked()
-        min_.setEnabled(state)
-        max_.setEnabled(state)
-        step.setEnabled(state)
-
-    def handleEnergyScaleStateChanged(self):
-        """
-        Slot for handling switching to/from the energy scale for final DCS.
-        Called when the stateChanged signal is emitted,
-        from the energyRadioButton.
-        Updates the interface, to reflect the change in scale selection.
-        Parameters
-        ----------
-        state : int
-            The new state of the energyRadioButton (1: True, 0: False)
-        """
-        button, min_, max_, step = self.scales[Scales.ENERGY]
-        state = button.isChecked()
-        min_.setEnabled(state)
-        max_.setEnabled(state)
-        step.setEnabled(state)
-
-    def handleTOFScaleStateChanged(self):
-        """
-        Slot for handling switching to/from the TOF scale for final DCS.
-        Called when the stateChanged signal is emitted,
-        from the TOFRadioButton.
-        Updates the interface, to reflect the change in scale selection.
-        Parameters
-        ----------
-        state : int
-            The new state of the TOFRadioButton (1: True, 0: False)
-        """
-        button, min_, max_, step = self.scales[Scales.TOF]
-        state = button.isChecked()
-        min_.setEnabled(state)
-        max_.setEnabled(state)
-        step.setEnabled(state)
+        for scale, widgets in self.scales.items():
+            state = widgets[0].isChecked()
+            if state:
+                self.instrument.scaleSelection = scale
+            for widget in widgets[1:]:
+                widget.setEnabled(state)
 
     def handleGroupsAcceptanceFactorChanged(self, value):
         """
@@ -897,17 +818,17 @@ class InstrumentWidget(QWidget):
         }
 
         # Setup the widgets and slots for the scales.
-        self._QRadioButton.toggled.connect(self.handleQScaleStateChanged)
+        self._QRadioButton.toggled.connect(self.handleScaleStateChanged)
         self.DSpacingRadioButton.toggled.connect(
-            self.handleDSpacingScaleStateChanged
+            self.handleScaleStateChanged
         )
         self.wavelengthRadioButton.toggled.connect(
-            self.handleWavelengthScaleStateChanged
+            self.handleScaleStateChanged
         )
         self.energyRadioButton.toggled.connect(
-            self.handleEnergyScaleStateChanged
+            self.handleScaleStateChanged
         )
-        self.TOFRadioButton.toggled.connect(self.handleTOFScaleStateChanged)
+        self.TOFRadioButton.toggled.connect(self.handleScaleStateChanged)
 
         selection, min_, max_, step = (
             self.scales[self.instrument.scaleSelection]
