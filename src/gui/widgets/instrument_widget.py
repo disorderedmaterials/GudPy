@@ -492,8 +492,20 @@ class InstrumentWidget(QWidget):
             state = widgets[0].isChecked()
             if state:
                 self.instrument.scaleSelection = scale
+                self.instrument.XMin = widgets[1].value()
+                self.instrument.XMax = widgets[2].value()
+                self.instrument.XStep = widgets[3].value()
             for widget in widgets[1:]:
                 widget.setEnabled(state)
+
+    def handleXMinChanged(self, value):
+        self.instrument.XMin = value
+
+    def handleXMaxChanged(self, value):
+        self.instrument.XMax = value
+
+    def handleXStepChanged(self, value):
+        self.instrument.XStep = value
 
     def handleGroupsAcceptanceFactorChanged(self, value):
         """
@@ -818,18 +830,6 @@ class InstrumentWidget(QWidget):
         }
 
         # Setup the widgets and slots for the scales.
-        self._QRadioButton.toggled.connect(self.handleScaleStateChanged)
-        self.DSpacingRadioButton.toggled.connect(
-            self.handleScaleStateChanged
-        )
-        self.wavelengthRadioButton.toggled.connect(
-            self.handleScaleStateChanged
-        )
-        self.energyRadioButton.toggled.connect(
-            self.handleScaleStateChanged
-        )
-        self.TOFRadioButton.toggled.connect(self.handleScaleStateChanged)
-
         selection, min_, max_, step = (
             self.scales[self.instrument.scaleSelection]
         )
@@ -837,6 +837,14 @@ class InstrumentWidget(QWidget):
         min_.setValue(self.instrument.XMin)
         max_.setValue(self.instrument.XMax)
         step.setValue(self.instrument.XStep)
+
+        for scaleRadioButton, minSpinBox, maxSpinBox, stepSpinBox in (
+            self.scales.values()
+        ):
+            scaleRadioButton.toggled.connect(self.handleScaleStateChanged)
+            minSpinBox.valueChanged.connect(self.handleXMinChanged)
+            maxSpinBox.valueChanged.connect(self.handleXMaxChanged)
+            stepSpinBox.valueChanged.connect(self.handleXStepChanged)
 
         # Setup the widget and slot for enabling/disabling
         # logarithmic binning.
