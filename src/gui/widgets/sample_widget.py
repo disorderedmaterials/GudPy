@@ -892,7 +892,7 @@ class SampleWidget(QWidget):
         self.geometryInfoStack.setCurrentIndex(config.geometry.value)
         self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
 
-        # Setup the widgets and slots for geometry specific attributes.
+        # Populate geometry specific attributes.
         # Flatplate
         self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
         self.downstreamSpinBox.setValue(self.sample.downstreamThickness)
