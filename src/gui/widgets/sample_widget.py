@@ -30,6 +30,8 @@ class SampleWidget(QWidget):
         Loads the UI file for the SampleWidget object.
     setSample(sample)
         Gives the focus of the SampleWidget to the sample.
+    connectSlots()
+        Connect the slots to the signals.
     initComponents()
         Loads UI file, and then populates data from the Sample.
     handlePeriodNoChanged(value)
