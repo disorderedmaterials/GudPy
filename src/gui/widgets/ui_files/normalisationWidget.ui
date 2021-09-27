@@ -325,7 +325,7 @@
              <number>19</number>
             </attribute>
             <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>67</number>
+             <number>100</number>
             </attribute>
             <attribute name="horizontalHeaderHighlightSections">
              <bool>true</bool>
@@ -555,6 +555,12 @@
              <widget class="QGroupBox" name="groupBox">
               <property name="title">
                <string>Thickness</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_15">
                <property name="leftMargin">
