@@ -624,7 +624,6 @@ class SampleWidget(QWidget):
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
-            self.updateDataFilesList()
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
