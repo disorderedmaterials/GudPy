@@ -621,7 +621,7 @@ class GudPyTreeView(QTreeView):
         self.gudrunFile = gudrunFile
         self.sibling = sibling
         self.makeModel()
-        self.setCurrentIndex(self.model().index(0,0))
+        self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
         self.clicked.connect(self.click)
 
