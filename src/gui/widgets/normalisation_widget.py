@@ -306,17 +306,31 @@ class NormalisationWidget(QWidget):
         """
         Slot for handling change to the differential cross section file name.
         Called when a textChanged signal is emitted,
-        from the handleDifferentialCrossSectionFileChanged.
+        from the differentialCrossSectionFileLineEdit.
         Alters the normalisation's differential
         cross section file name as such.
         Parameters
         ----------
         value : str
-            The new value of the handleDifferentialCrossSectionFileChanged.
+            The new value of the differentialCrossSectionFileLineEdit.
         """
         self.normalisation.normalisationDifferentialCrossSectionFile = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleBrowseDifferentialCrossSectionFile(self):
+        """
+        Slot for handling browsing for a differential cross section file.
+        Called when a cliced signal is emitted,
+        from the browseDifferentialCrossSectionButton.
+        Alters the normalisation's differential
+        cross section file name as such.
+        """
+        filename = QFileDialog.getOpenFileName(
+            self, "Normalisation differential cross section file", ""
+        )
+        if filename[0]:
+            self.differentialCrossSectionFileLineEdit.setText(filename[0])
 
     def handleNormalisationDegreeSmoothingChanged(self, value):
         """
@@ -709,6 +723,10 @@ class NormalisationWidget(QWidget):
         self.differentialCrossSectionFileLineEdit.textChanged.connect(
             self.handleDifferentialCrossSectionFileChanged
         )
+        self.browseDifferentialCrossSectionButton.clicked.connect(
+            self.handleBrowseDifferentialCrossSectionFile
+        )
+
         self.smoothingDegreeSpinBox.setValue(
             self.normalisation.normalisationDegreeSmoothing
         )
