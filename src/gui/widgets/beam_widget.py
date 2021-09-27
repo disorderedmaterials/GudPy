@@ -95,6 +95,8 @@ class BeamWidget(QWidget):
         """
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
         config.geometry = self.beam.sampleGeometry
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleAbsorptionStepSizeChanged(self, value):
         """
@@ -108,6 +110,8 @@ class BeamWidget(QWidget):
             The new value of the absorptionStepSizeSpinBox.
         """
         self.beam.stepSizeAbsorption = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleMSStepSizeChanged(self, value):
         """
@@ -121,6 +125,8 @@ class BeamWidget(QWidget):
             The new value of the absorptionStepSizeSpinBox.
         """
         self.beam.stepSizeMS = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleNoSlicesChanged(self, value):
         """
@@ -134,6 +140,8 @@ class BeamWidget(QWidget):
             The new value of the noSlicesSpinBox.
         """
         self.beam.noSlices = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleStepSizeForCorrectionsChanged(self, value):
         """
@@ -147,6 +155,8 @@ class BeamWidget(QWidget):
             The new value of the stepForCorrectionsSpinBox.
         """
         self.beam.angularStepForCorrections = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleLeftIncidentBeamEdgeChanged(self, value):
         """
@@ -160,6 +170,8 @@ class BeamWidget(QWidget):
             The new value of the leftIncidentBeamEdgeSpinBox.
         """
         self.beam.incidentBeamLeftEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleRightIncidentBeamEdgeChanged(self, value):
         """
@@ -173,6 +185,8 @@ class BeamWidget(QWidget):
             The new value of the rightIncidentBeamEdgeSpinBox.
         """
         self.beam.incidentBeamRightEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleTopIncidentBeamEdgeChanged(self, value):
         """
@@ -186,6 +200,8 @@ class BeamWidget(QWidget):
             The new value of the topIncidentBeamEdgeSpinBox.
         """
         self.beam.incidentBeamTopEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleBottomIncidentBeamEdgeChanged(self, value):
         """
@@ -199,6 +215,8 @@ class BeamWidget(QWidget):
             The new value of the bottomIncidentBeamEdgeSpinBox.
         """
         self.beam.incidentBeamBottomEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleLeftScatteredBeamEdgeChanged(self, value):
         """
@@ -212,6 +230,8 @@ class BeamWidget(QWidget):
             The new value of the leftScatteredBeamEdgeSpinBox.
         """
         self.beam.scatteredBeamLeftEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleRightScatteredBeamEdgeChanged(self, value):
         """
@@ -225,6 +245,8 @@ class BeamWidget(QWidget):
             The new value of the rightScatteredBeamEdgeSpinBox.
         """
         self.beam.scatteredBeamRightEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleTopScatteredBeamEdgeChanged(self, value):
         """
@@ -238,6 +260,8 @@ class BeamWidget(QWidget):
             The new value of the topScatteredBeamEdgeSpinBox.
         """
         self.beam.scatteredBeamTopEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleBottomScatteredBeamEdgeChanged(self, value):
         """
@@ -251,6 +275,8 @@ class BeamWidget(QWidget):
             The new value of the bottomScatteredBeamEdgeSpinBox.
         """
         self.beam.scatteredBeamBottomEdge = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleIncidentBeamSpectrumParamsFileChanged(self, value):
         """
@@ -266,6 +292,8 @@ class BeamWidget(QWidget):
             The new value of the incidentBeamSpectrumParametersLineEdit.
         """
         self.beam.filenameIncidentBeamSpectrumParams = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleOverallBackgroundFactorChanged(self, value):
         """
@@ -279,6 +307,8 @@ class BeamWidget(QWidget):
             The new value of the overallBackgroundFactorSpinBox.
         """
         self.beam.overallBackgroundFactor = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleSampleDependantBackgroundFactorChanged(self, value):
         """
@@ -292,6 +322,8 @@ class BeamWidget(QWidget):
             The new value of the sampleDependantBackgroundFactorSpinBox.
         """
         self.beam.sampleDependantBackgroundFactor = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleShieldingAbsorptionCoeffChanged(self, value):
         """
@@ -306,6 +338,8 @@ class BeamWidget(QWidget):
             The new value of the shieldingSpinBox.
         """
         self.beam.shieldingAttenuationCoefficient = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def updateBeamProfileValues(self):
         """
@@ -320,6 +354,8 @@ class BeamWidget(QWidget):
         from the addBeamValueButton.
         """
         self.beamProfileValuesTable.insertRow()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleRemoveBeamProfileValue(self):
         """
@@ -330,6 +366,8 @@ class BeamWidget(QWidget):
         self.beamProfileValuesTable.removeRow(
             self.beamProfileValuesTable.selectionModel().selectedRows()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def initComponents(self):
         """
@@ -337,7 +375,8 @@ class BeamWidget(QWidget):
         and then populates the child widgets with their
         corresponding data from the attributes of the Beam object.
         """
-
+        # Acquire the lock
+        self.widgetsRefreshing = True
         # Get the current directory that we are residing in.
         current_dir = os.path.dirname(os.path.realpath(__file__))
         # Join the current directory with the relative path of the UI file.
@@ -472,3 +511,5 @@ class BeamWidget(QWidget):
         self.removeBeamValueButton.clicked.connect(
             self.handleRemoveBeamProfileValue
         )
+        # Release the lock
+        self.widgetsRefreshing = False

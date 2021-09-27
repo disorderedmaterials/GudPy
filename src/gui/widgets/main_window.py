@@ -62,6 +62,7 @@ class GudPyMainWindow(QMainWindow):
         self.gudrunFile = None
         self.initComponents()
         self.clipboard = None
+        self.modified = False
 
     def initComponents(self):
         """
@@ -72,6 +73,7 @@ class GudPyMainWindow(QMainWindow):
         uic.loadUi(uifile, self)
         self.setWindowTitle("GudPy")
         self.show()
+
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
             self.objectStack.setVisible(False)
@@ -92,39 +94,45 @@ class GudPyMainWindow(QMainWindow):
             self.viewLiveInputFile.setDisabled(True)
             self.save.setDisabled(True)
             self.saveAs.setDisabled(True)
+
         else:
-            instrumentWidget = InstrumentWidget(
+
+            self.setWindowTitle(self.gudrunFile.path)
+            self.instrumentWidget = InstrumentWidget(
                 self.gudrunFile.instrument, self
             )
-            beamWidget = BeamWidget(self.gudrunFile.beam, self)
-            normalisationWidget = NormalisationWidget(
+            self.beamWidget = BeamWidget(
+                self.gudrunFile.beam, self
+            )
+            self.normalisationWidget = NormalisationWidget(
                 self.gudrunFile.normalisation, self
             )
-            self.objectStack.addWidget(instrumentWidget)
-            self.objectStack.addWidget(beamWidget)
-            self.objectStack.addWidget(normalisationWidget)
 
-            sampleBackgroundWidget = SampleBackgroundWidget(self)
-            sampleWidget = SampleWidget(self)
-            containerWidget = ContainerWidget(self)
+            self.objectStack.addWidget(self.instrumentWidget)
+            self.objectStack.addWidget(self.beamWidget)
+            self.objectStack.addWidget(self.normalisationWidget)
 
-            self.objectStack.addWidget(sampleBackgroundWidget)
-            self.objectStack.addWidget(sampleWidget)
-            self.objectStack.addWidget(containerWidget)
+            self.sampleBackgroundWidget = SampleBackgroundWidget(self)
+            self.sampleWidget = SampleWidget(self)
+            self.containerWidget = ContainerWidget(self)
+
+            self.objectStack.addWidget(self.sampleBackgroundWidget)
+            self.objectStack.addWidget(self.sampleWidget)
+            self.objectStack.addWidget(self.containerWidget)
 
             if len(self.gudrunFile.sampleBackgrounds):
-                sampleBackgroundWidget.setSampleBackground(
+                self.sampleBackgroundWidget.setSampleBackground(
                     self.gudrunFile.sampleBackgrounds[0]
                 )
                 if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    sampleWidget.setSample(
+                    self.sampleWidget.setSample(
                         self.gudrunFile.sampleBackgrounds[0].samples[0]
                     )
                     if len(
                         self.gudrunFile.sampleBackgrounds[0]
                         .samples[0].containers
                     ):
-                        containerWidget.setContainer(
+                        self.containerWidget.setContainer(
                             self.gudrunFile.sampleBackgrounds[0]
                             .samples[0].containers[0]
                         )
@@ -138,11 +146,9 @@ class GudPyMainWindow(QMainWindow):
                 self.runGudrun_
             )
 
-            self.save.triggered.connect(
-                lambda: self.gudrunFile.write_out(overwrite=True)
-            )
+            self.save.triggered.connect(self.saveInputFile)
 
-            self.saveAs.triggered.connect(self.saveInputFile)
+            self.saveAs.triggered.connect(self.saveInputFileAs)
 
             self.viewLiveInputFile.triggered.connect(
                 lambda: ViewInput(self.gudrunFile, parent=self)
@@ -187,12 +193,20 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file.
         """
+        self.gudrunFile.write_out(overwrite=True)
+        self.setUnModified()
+
+    def saveInputFileAs(self):
+        """
+        Saves the current state of the input file as...
+        """
         filename = QFileDialog.getSaveFileName(
             self, "Save input file as..", "."
         )[0]
         if filename:
             self.gudrunFile.outpath = filename
             self.gudrunFile.write_out()
+            self.setUnModified()
 
     def updateFromFile(self):
         """
@@ -205,15 +219,25 @@ class GudPyMainWindow(QMainWindow):
         Iteratively updates geometries of objects,
         where the Geometry is SameAsBeam.
         """
-        for i in range(self.objectStack.count()):
-            target = self.objectStack.widget(i)
-            if isinstance(target, NormalisationWidget):
-                if target.normalisation.geometry == Geometry.SameAsBeam:
-                    target.geometryInfoStack.setCurrentIndex(
-                        config.geometry.value
-                    )
-            elif isinstance(target, (SampleWidget, ContainerWidget)):
-                target.geometryComboBox.setCurrentIndex(config.geometry.value)
+        if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
+            self.gudrunFile.normalisation.geometry = config.geometry
+            self.normalisationWidget.widgetsRefreshing = True
+            self.normalisationWidget.geometryComboBox.setCurrentIndex(
+                config.geometry.value
+            )
+            self.normalisationWidget.widgetsRefreshing = False
+        for i, sampleBackground in enumerate(
+            self.gudrunFile.sampleBackgrounds
+        ):
+            for j, sample in enumerate(sampleBackground.samples):
+                self.gudrunFile.sampleBackgrounds[i].samples[j].geometry = (
+                    config.geometry
+                )
+                for k in range(len(sample.containers)):
+                    sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    sample.containers[k].geometry = config.geometry
+        self.sampleWidget.initComponents()
+        self.containerWidget.initComponents()
 
     def updateCompositions(self):
         """
@@ -266,3 +290,13 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary and/or purge_det binary."
             )
+
+    def setModified(self):
+        if not self.modified:
+            self.setWindowTitle(self.gudrunFile.path + " *")
+            self.modified = True
+
+    def setUnModified(self):
+        if self.modified:
+            self.setWindowTitle(self.gudrunFile.path)
+            self.modified = False
