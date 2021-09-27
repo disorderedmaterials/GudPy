@@ -1015,4 +1015,4 @@ class InstrumentWidget(QWidget):
             self.handleRemoveGroupingParameter
         )
         # Release the lock
-        self.semaphore = True
+        self.semaphore = False
