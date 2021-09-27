@@ -385,11 +385,13 @@ class ContainerWidget(QWidget):
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
-        for path in paths:
-            if path:
-                target.addItem(path)
+        files = QFileDialog.getOpenFileNames(self, title, ".", regex)[0]
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
                 self.handleDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeFile(self, target, dataFiles):
         """
