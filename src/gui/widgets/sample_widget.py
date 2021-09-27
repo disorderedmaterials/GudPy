@@ -30,8 +30,8 @@ class SampleWidget(QWidget):
         Loads the UI file for the SampleWidget object.
     setSample(sample)
         Gives the focus of the SampleWidget to the sample.
-    connectSlots()
-        Connect the slots to the signals.
+    setupUI()
+        Setup slots, signals and widgets.
     initComponents()
         Loads UI file, and then populates data from the Sample.
     handlePeriodNoChanged(value)
@@ -127,7 +127,7 @@ class SampleWidget(QWidget):
         self.parent = parent
         super(SampleWidget, self).__init__(parent=self.parent)
         self.loadUI()
-        self.connectSlots()
+        self.setupUI()
     def setSample(self, sample):
         """
         Gives the focus of the SampleWidget to the sample.
@@ -712,9 +712,9 @@ class SampleWidget(QWidget):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def connectSlots(self):
+    def setupUI(self):
         """
-        Connect the slots to the signals.
+        Setup slots, signals and widgets.
         """
 
         # Setup slot for period number.
