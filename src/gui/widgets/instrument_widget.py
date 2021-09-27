@@ -549,7 +549,6 @@ class InstrumentWidget(QWidget):
             for widget in widgets[1:]:
                 widget.setEnabled(state)
 
-
     def handleXMinChanged(self, value):
         self.instrument.XMin = value
         if not self.semaphore:
