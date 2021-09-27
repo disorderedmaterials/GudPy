@@ -305,8 +305,8 @@ class BeamWidget(QWidget):
         Alters the corresponding line edit as such.
         as such.
         """
-        filename = QFileDialog.getOpenFileName(
-            self, "Incident beam spectrum parameters", "")[0]
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Incident beam spectrum parameters", "")
         if filename:
             self.incidentBeamSpectrumParametersLineEdit.setText(filename)
 

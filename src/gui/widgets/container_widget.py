@@ -385,7 +385,7 @@ class ContainerWidget(QWidget):
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        files = QFileDialog.getOpenFileNames(self, title, ".", regex)[0]
+        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
         for file in files:
             if file:
                 target.addItem(file.split("/")[-1])

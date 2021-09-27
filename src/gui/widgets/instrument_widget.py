@@ -655,11 +655,10 @@ class InstrumentWidget(QWidget):
         -------
         str[]
         """
-        filename = (
-            QFileDialog.getOpenFileName(self, title, "")[0]
-            if not dir
-            else QFileDialog.getExistingDirectory(self, title, "")
-        )
+        if dir:
+            filename = QFileDialog.getExistingDirectory(self, title, "")
+        else:
+            filename, _ = QFileDialog.getOpenFileName(self, title, "")
         return filename
 
     def updateGroupingParameterPanel(self):
