@@ -798,6 +798,11 @@ class SampleWidget(QWidget):
         self.normaliseToComboBox.currentIndexChanged.connect(
             self.handleNormaliseToChanged
         )
+
+        # Fill the output units combo box.
+        for u in OutputUnits:
+            self.outputUnitsComboBox.addItem(u.name, u)
+
         self.outputUnitsComboBox.currentIndexChanged.connect(
             self.handleOutputUnitsChanged
         )
@@ -913,10 +918,6 @@ class SampleWidget(QWidget):
 
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
 
-
-        for u in OutputUnits:
-            if self.outputUnitsComboBox.findText(u.name) == -1:
-                self.outputUnitsComboBox.addItem(u.name, u)
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
 
 
@@ -930,9 +931,7 @@ class SampleWidget(QWidget):
         self.maxSpinBox.setValue(self.sample.maxRadFT)
 
         self.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
-
         self.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
-
         self.stepSizeSpinBox.setValue(self.sample.stepSize)
 
         # Populate advanced attributes.
