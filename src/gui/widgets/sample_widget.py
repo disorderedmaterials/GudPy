@@ -158,7 +158,7 @@ class SampleWidget(QWidget):
             The new value of the periodNoSpinBox.
         """
         self.sample.periodNo = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleForceCorrectionsSwitched(self, state):
@@ -174,7 +174,7 @@ class SampleWidget(QWidget):
             The new state of the forceCorrectionsCheckBox (1: True, 0: False)
         """
         self.sample.forceCalculationOfCorrections = state
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleGeometryChanged(self, index):
@@ -204,7 +204,7 @@ class SampleWidget(QWidget):
             The new value of the upstreamSpinBox.
         """
         self.sample.upstreamThickness = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDownstreamThicknessChanged(self, value):
@@ -219,7 +219,7 @@ class SampleWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.sample.downstreamThickness = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInnerRadiiChanged(self, value):
@@ -234,7 +234,7 @@ class SampleWidget(QWidget):
             The new value of the innerRadiiSpinBox.
         """
         self.sample.innerRadius = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleOuterRadiiChanged(self, value):
@@ -249,7 +249,7 @@ class SampleWidget(QWidget):
             The new value of the outerRadiiSpinBox.
         """
         self.sample.outerRadius = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDensityChanged(self, value):
@@ -264,7 +264,7 @@ class SampleWidget(QWidget):
             The new current index of the densitySpinBox.
         """
         self.sample.density = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDensityUnitsChanged(self, index):
@@ -279,7 +279,7 @@ class SampleWidget(QWidget):
             The new current index of the densityUnitsComboBox.
         """
         self.sample.densityUnits = self.densityUnitsComboBox.itemData(index)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleCrossSectionSourceChanged(self, index):
@@ -296,7 +296,7 @@ class SampleWidget(QWidget):
         self.sample.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleTweakFactorChanged(self, value):
@@ -311,7 +311,7 @@ class SampleWidget(QWidget):
             The new current value of the tweakFactorSpinBox.
         """
         self.sample.tweakFactor = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleTopHatWidthChanged(self, value):
@@ -326,7 +326,7 @@ class SampleWidget(QWidget):
             The new current value of the topHatWidthSpinBox.
         """
         self.sample.topHatW = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMinChanged(self, value):
@@ -341,7 +341,7 @@ class SampleWidget(QWidget):
             The new current value of the minSpinBox.
         """
         self.sample.minRadFT = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMaxChanged(self, value):
@@ -356,7 +356,7 @@ class SampleWidget(QWidget):
             The new current value of the maxSpinBox.
         """
         self.sample.maxRadFT = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleBroadeningFunctionChanged(self, value):
@@ -371,7 +371,7 @@ class SampleWidget(QWidget):
             The new current value of the broadeningFunctionSpinBox.
         """
         self.sample.grBroadening = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleBroadeningPowerChanged(self, value):
@@ -386,7 +386,7 @@ class SampleWidget(QWidget):
             The new current value of the broadeningPowerSpinBox.
         """
         self.sample.powerForBroadening = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleStepSizeChanged(self, value):
@@ -401,7 +401,7 @@ class SampleWidget(QWidget):
             The new current value of the stepSizeSpinBox.
         """
         self.sample.stepSize = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSelfScatteringFileChanged(self, value):
@@ -416,7 +416,7 @@ class SampleWidget(QWidget):
             The new current text of the scatteringFileLineEdit.
         """
         self.sample.fileSelfScattering = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleNormaliseToChanged(self, index):
@@ -431,7 +431,7 @@ class SampleWidget(QWidget):
             The new current index of the normaliseToComboBox.
         """
         self.sample.normaliseTo = self.normaliseToComboBox.itemData(index)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleOutputUnitsChanged(self, index):
@@ -446,7 +446,7 @@ class SampleWidget(QWidget):
             The new current index of the outputUnitsComboBox.
         """
         self.sample.outputUnits = self.outputUnitsComboBox.itemData(index)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleAngleOfRotationChanged(self, value):
@@ -461,7 +461,7 @@ class SampleWidget(QWidget):
             The new current value of the angleOfRotationSpinBox.
         """
         self.sample.angleOfRotation = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSampleWidthChanged(self, value):
@@ -476,7 +476,7 @@ class SampleWidget(QWidget):
             The new current value of the sampleWidthSpinBox.
         """
         self.sample.sampleWidth = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSampleHeightChanged(self, value):
@@ -491,7 +491,7 @@ class SampleWidget(QWidget):
             The new current value of the sampleHeightSpinBox.
         """
         self.sample.sampleHeight = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleCorrectionFactorChanged(self, value):
@@ -506,7 +506,7 @@ class SampleWidget(QWidget):
             The new current value of the correctionFactorSpinBox.
         """
         self.sample.normalisationCorrectionFactor = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleScatteringFractionChanged(self, value):
@@ -521,7 +521,7 @@ class SampleWidget(QWidget):
             The new current value of the scatteringFractionSpinBox.
         """
         self.sample.scatteringFraction = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleAttenuationCoefficientChanged(self, value):
@@ -536,7 +536,7 @@ class SampleWidget(QWidget):
             The new current value of the attenuationCoefficientSpinBox.
         """
         self.sample.attenuationCoefficient = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFilesAltered(self, item):
@@ -557,7 +557,7 @@ class SampleWidget(QWidget):
         else:
             self.sample.dataFiles.dataFiles[index] = value
         self.updateDataFilesList()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFileInserted(self, item):
@@ -573,7 +573,7 @@ class SampleWidget(QWidget):
         """
         value = item.text()
         self.sample.dataFiles.dataFiles.append(value)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def updateDataFilesList(self):
@@ -604,7 +604,7 @@ class SampleWidget(QWidget):
             if path:
                 target.addItem(path)
                 self.handleDataFileInserted(target.item(target.count() - 1))
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def removeFile(self, target, dataFiles):
@@ -623,7 +623,7 @@ class SampleWidget(QWidget):
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
             self.updateDataFilesList()
-            if not self.semaphore:
+            if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def updateCompositionTable(self):
@@ -639,7 +639,7 @@ class SampleWidget(QWidget):
         insertElementButton.
         """
         self.sampleCompositionTable.insertRow()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleRemoveElement(self):
@@ -651,7 +651,7 @@ class SampleWidget(QWidget):
         self.sampleCompositionTable.removeRow(
             self.sampleCompositionTable.selectionModel().selectedRows()
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def updateExponentialTable(self):
@@ -673,7 +673,7 @@ class SampleWidget(QWidget):
         insertExponentialButton.
         """
         self.exponentialValuesTable.insertRow()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleRemoveExponentialValue(self):
@@ -685,7 +685,7 @@ class SampleWidget(QWidget):
         self.exponentialValuesTable.removeRow(
             self.exponentialValuesTable.selectionModel().selectedRows()
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInsertResonanceValue(self):
@@ -695,7 +695,7 @@ class SampleWidget(QWidget):
         insertResonanceButton.
         """
         self.resonanceValuesTable.insertRow()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleRemoveResonanceValue(self):
@@ -707,7 +707,7 @@ class SampleWidget(QWidget):
         self.resonanceValuesTable.removeRow(
             self.resonanceValuesTable.selectionModel().selectedRows()
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def initComponents(self):
@@ -716,7 +716,7 @@ class SampleWidget(QWidget):
         corresponding data from the attributes of the Sample object.
         """
         # Acquire the lock
-        self.semaphore = True
+        self.widgetsRefreshing = True
         # Setup widgets and slots for the period numbers.
         self.periodNoSpinBox.setValue(self.sample.periodNumber)
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
@@ -913,4 +913,4 @@ class SampleWidget(QWidget):
             self.handleRemoveResonanceValue
         )
         # Release the lock
-        self.semaphore = False
+        self.widgetsRefreshing = False

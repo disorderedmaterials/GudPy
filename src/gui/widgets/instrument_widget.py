@@ -130,7 +130,7 @@ class InstrumentWidget(QWidget):
             New current index of the nameComboBox.
         """
         self.instrument.name = self.nameComboBox.itemData(index)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFileDirectoryChanged(self, text):
@@ -145,7 +145,7 @@ class InstrumentWidget(QWidget):
             The new value of the dataFileDirectoryLineEdit.
         """
         self.instrument.dataFileDir = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFileTypeChanged(self, index):
@@ -166,7 +166,7 @@ class InstrumentWidget(QWidget):
         self.browseNexusDefinitionButton.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDetectorCalibrationFileChanged(self, text):
@@ -181,7 +181,7 @@ class InstrumentWidget(QWidget):
             The new value of the detCalibrationLineEdit.
         """
         self.instrument.detectorCalibrationFileName = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleGroupsFileChanged(self, text):
@@ -196,7 +196,7 @@ class InstrumentWidget(QWidget):
             The new value of the groupsFileLineEdit.
         """
         self.instrument.groupFileName = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDeadtimeFileChanged(self, text):
@@ -211,7 +211,7 @@ class InstrumentWidget(QWidget):
             The new value of the deadtimeFileLineEdit.
         """
         self.instrument.deadtimeConstantsFileName = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleUseLogarithmicBinningSwitched(self, state):
@@ -226,7 +226,7 @@ class InstrumentWidget(QWidget):
             The new state of the logarithmicBinningCheckBox (1: True, 0: False)
         """
         self.instrument.useLogarithmicBinning = state
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMergeWeightsChanged(self, index):
@@ -243,7 +243,7 @@ class InstrumentWidget(QWidget):
         self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(
             index
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleNeutronScatteringParamsFileChanged(self, text):
@@ -260,7 +260,7 @@ class InstrumentWidget(QWidget):
             The new value of the neutronScatteringParamsFileLineEdit.
         """
         self.instrument.neutronScatteringParametersFile = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleNexusDefinitionFileChanged(self, text):
@@ -275,7 +275,7 @@ class InstrumentWidget(QWidget):
             The new value of the nexusDefintionFileLineEdit.
         """
         self.instrument.nxsDefinitionFile = text
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleHardGroupEdgesSwitched(self, state):
@@ -290,7 +290,7 @@ class InstrumentWidget(QWidget):
             The new state of the hardGroupEdgesCheckBox (1: True, 0: False)
         """
         self.instrument.hardGroupEdges = state
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleColumnNoPhiValuesChanged(self, value):
@@ -305,7 +305,7 @@ class InstrumentWidget(QWidget):
             The new value of the phiValuesColumnSpinBox.
         """
         self.instrument.columnNoPhiVals = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMinWavelengthMonNormChanged(self, value):
@@ -325,7 +325,7 @@ class InstrumentWidget(QWidget):
             value,
             self.instrument.wavelengthRangeForMonitorNormalisation[1],
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMaxWavelengthMonNormChanged(self, value):
@@ -345,7 +345,7 @@ class InstrumentWidget(QWidget):
             self.instrument.wavelengthRangeForMonitorNormalisation[1],
             value,
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSpectrumNumbersIBChanged(self, text):
@@ -364,7 +364,7 @@ class InstrumentWidget(QWidget):
         self.instrument.incidentMonitorQuietCountConst = [
             int(x) for x in text.split()
         ]
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSpectrumNumbersTChanged(self, text):
@@ -383,7 +383,7 @@ class InstrumentWidget(QWidget):
         self.instrument.transmissionMonitorQuietCountConst = [
             int(x) for x in text.split()
         ]
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleIncidentMonitorQuietCountConstChanged(self, value):
@@ -399,7 +399,7 @@ class InstrumentWidget(QWidget):
             The new value of the incidentMonitorQuietCountConstSpinBox.
         """
         self.instrument.incidentMonitorQuietCountConst = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleTransmissionMonitorQuietCountConstChanged(self, value):
@@ -415,7 +415,7 @@ class InstrumentWidget(QWidget):
             The new value of the transmissionMonitorQuietCountConstSpinBox.
         """
         self.instrument.incidentMonitorQuietCountConst = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleChannelNoAChanged(self, value):
@@ -433,7 +433,7 @@ class InstrumentWidget(QWidget):
             value,
             self.instrument.channelNosSpikeAnalysis[1],
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleChannelNoBChanged(self, value):
@@ -451,7 +451,7 @@ class InstrumentWidget(QWidget):
             self.instrument.channelNosSpikeAnalysis[0],
             value,
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
@@ -467,7 +467,7 @@ class InstrumentWidget(QWidget):
             The new value of the acceptanceFactorSpinBox.
         """
         self.instrument.spikeAnalysisAcceptanceFactor = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMinWavelengthChanged(self, value):
@@ -482,7 +482,7 @@ class InstrumentWidget(QWidget):
             The new value of the minWavelengthSpinBox.
         """
         self.instrument.wavelengthMin = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMaxWavelengthChanged(self, value):
@@ -497,7 +497,7 @@ class InstrumentWidget(QWidget):
             The new value of the maxWavelengthSpinBox.
         """
         self.instrument.wavelengthMax = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleStepWavelengthChanged(self, value):
@@ -512,7 +512,7 @@ class InstrumentWidget(QWidget):
             The new value of the stepWavelengthSpinBox.
         """
         self.instrument.wavelengthStep = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleNoSmoothsOnMonitorChanged(self, value):
@@ -527,7 +527,7 @@ class InstrumentWidget(QWidget):
             The new value of the noSmoothsOnMonitorSpinBox.
         """
         self.instrument.NoSmoothsOnMonitor = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleScaleStateChanged(self):
@@ -544,22 +544,22 @@ class InstrumentWidget(QWidget):
                 self.instrument.XMin = widgets[1].value()
                 self.instrument.XMax = widgets[2].value()
                 self.instrument.XStep = widgets[3].value()
-                if not self.semaphore:
+                if not self.widgetsRefreshing:
                     self.parent.setModified()
             for widget in widgets[1:]:
                 widget.setEnabled(state)
 
     def handleXMinChanged(self, value):
         self.instrument.XMin = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleXMaxChanged(self, value):
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleXStepChanged(self, value):
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleGroupsAcceptanceFactorChanged(self, value):
@@ -575,7 +575,7 @@ class InstrumentWidget(QWidget):
             The new value of the groupsAcceptanceFactorSpinBox.
         """
         self.instrument.groupsAcceptanceFactor = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMergePowerChanged(self, value):
@@ -591,7 +591,7 @@ class InstrumentWidget(QWidget):
             The new value of the mergePowerSpinBox.
         """
         self.instrument.mergePower = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleIncidentFlightPathChanged(self, value):
@@ -607,7 +607,7 @@ class InstrumentWidget(QWidget):
             The new value of the incidentFlightPathSpinBox.
         """
         self.instrument.incidentFlightPath = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleSpectrumNumberForOutputDiagChanged(self, value):
@@ -623,7 +623,7 @@ class InstrumentWidget(QWidget):
             The new value of the outputDiagSpectrumSpinBox.
         """
         self.instrument.spectrumNumberForOutputDiagnosticFiles = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleBrowse(self, target, title, dir=False):
@@ -677,7 +677,7 @@ class InstrumentWidget(QWidget):
         addGroupingParameterButton.
         """
         self.groupingParameterTable.insertRow()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleRemoveGroupingParameter(self):
@@ -689,7 +689,7 @@ class InstrumentWidget(QWidget):
         self.groupingParameterTable.removeRow(
             self.groupingParameterTable.selectionModel().selectedRows()
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def initComponents(self):
@@ -699,7 +699,7 @@ class InstrumentWidget(QWidget):
         corresponding data from the attributes of the Instrument object.
         """
         # Acquire the lock
-        self.semaphore = True
+        self.widgetsRefreshing = True
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
         uic.loadUi(uifile, self)
@@ -1015,4 +1015,4 @@ class InstrumentWidget(QWidget):
             self.handleRemoveGroupingParameter
         )
         # Release the lock
-        self.semaphore = False
+        self.widgetsRefreshing = False

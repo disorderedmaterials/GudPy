@@ -121,7 +121,7 @@ class NormalisationWidget(QWidget):
             The new value of the periodNoSpinBox.
         """
         self.normalisation.periodNo = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handlePeriodNoBgChanged(self, value):
@@ -136,7 +136,7 @@ class NormalisationWidget(QWidget):
             The new value of the periodNoSpinBox.
         """
         self.normalisation.periodNoBg = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleGeometryChanged(self, index):
@@ -150,7 +150,7 @@ class NormalisationWidget(QWidget):
         index : int
             The new current index of the geometryComboBox.
         """
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
         if self.normalisation.geometry == Geometry.SameAsBeam:
@@ -175,7 +175,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(
             index
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleUpstreamThicknessChanged(self, value):
@@ -190,7 +190,7 @@ class NormalisationWidget(QWidget):
             The new value of the upstreamSpinBox.
         """
         self.normalisation.upstreamThickness = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDownstreamThicknessChanged(self, value):
@@ -205,7 +205,7 @@ class NormalisationWidget(QWidget):
             The new value of the downstreamSpinBox.
         """
         self.normalisation.downstreamThickness = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInnerRadiiChanged(self, value):
@@ -220,7 +220,7 @@ class NormalisationWidget(QWidget):
             The new value of the innerRadiiSpinBox.
         """
         self.normalisation.innerRadius = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleOuterRadiiChanged(self, value):
@@ -235,7 +235,7 @@ class NormalisationWidget(QWidget):
             The new value of the outerRadiiSpinBox.
         """
         self.normalisation.outerRadius = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDensityChanged(self, value):
@@ -250,7 +250,7 @@ class NormalisationWidget(QWidget):
             The new value of the densitySpinBox.
         """
         self.normalisation.density = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleTotalCrossSectionChanged(self, index):
@@ -267,7 +267,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleForceCorrectionsSwitched(self, state):
@@ -283,7 +283,7 @@ class NormalisationWidget(QWidget):
             The new state of the forceCorrectionsCheckBox (1: True, 0: False)
         """
         self.normalisation.forceCalculationsOfCorrections = state
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handlePlaczekCorrectionChanged(self, value):
@@ -299,7 +299,7 @@ class NormalisationWidget(QWidget):
             The new value of the placzekCorrectionSpinBox.
         """
         self.normalisation.tempForNormalisationPC = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDifferentialCrossSectionFileChanged(self, value):
@@ -315,7 +315,7 @@ class NormalisationWidget(QWidget):
             The new value of the handleDifferentialCrossSectionFileChanged.
         """
         self.normalisation.normalisationDifferentialCrossSectionFile = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleNormalisationDegreeSmoothingChanged(self, value):
@@ -330,7 +330,7 @@ class NormalisationWidget(QWidget):
             The new value of the smoothingDegreeSpinBox.
         """
         self.normalisation.normalisationDegreeSmoothing = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleLowerlimitSmoothingChanged(self, value):
@@ -346,7 +346,7 @@ class NormalisationWidget(QWidget):
             The new value of the lowerLimitSmoothingSpinBox.
         """
         self.normalisation.lowerLimitSmoothedNormalisation = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleMinNormalisationSignalChanged(self, value):
@@ -363,7 +363,7 @@ class NormalisationWidget(QWidget):
             The new value of the minNormalisationSignalSpinBox.
         """
         self.normalisation.minNormalisationSignalBR = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFilesAltered(self, item):
@@ -384,7 +384,7 @@ class NormalisationWidget(QWidget):
         else:
             self.normalisation.dataFiles.dataFiles[index] = value
         self.updateDataFilesList()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFileInserted(self, item):
@@ -400,7 +400,7 @@ class NormalisationWidget(QWidget):
         """
         value = item.text()
         self.normalisation.dataFiles.dataFiles.append(value)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def updateDataFilesList(self):
@@ -446,7 +446,7 @@ class NormalisationWidget(QWidget):
         """
         value = item.text()
         self.normalisation.dataFilesBg.dataFiles.append(value)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def updateBgDataFilesList(self):
@@ -515,7 +515,7 @@ class NormalisationWidget(QWidget):
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
-            if not self.semaphore:
+            if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def removeDataFile(self, target, dataFiles):
@@ -533,7 +533,7 @@ class NormalisationWidget(QWidget):
         self.normalisationCompositionTable.makeModel(
             self.normalisation.composition.elements
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInsertElement(self):
@@ -543,7 +543,7 @@ class NormalisationWidget(QWidget):
         insertElementButton.
         """
         self.normalisationCompositionTable.insertRow()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleRemoveElement(self):
@@ -555,7 +555,7 @@ class NormalisationWidget(QWidget):
         self.normalisationCompositionTable.removeRow(
             self.normalisationCompositionTable.selectionModel().selectedRows()
         )
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def initComponents(self):
@@ -565,7 +565,7 @@ class NormalisationWidget(QWidget):
         corresponding data from the attributes of the Normalisation object.
         """
         # Acquire the lock
-        self.semaphore = True
+        self.widgetsRefreshing = True
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/normalisationWidget.ui")
         uic.loadUi(uifile, self)
@@ -733,4 +733,4 @@ class NormalisationWidget(QWidget):
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
         # Release the lock
-        self.semaphore = False
+        self.widgetsRefreshing = False

@@ -221,11 +221,11 @@ class GudPyMainWindow(QMainWindow):
         """
         if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
             self.gudrunFile.normalisation.geometry = config.geometry
-            self.normalisationWidget.semaphore = True
+            self.normalisationWidget.widgetsRefreshing = True
             self.normalisationWidget.geometryComboBox.setCurrentIndex(
                 config.geometry.value
             )
-            self.normalisationWidget.semaphore = False
+            self.normalisationWidget.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
         ):

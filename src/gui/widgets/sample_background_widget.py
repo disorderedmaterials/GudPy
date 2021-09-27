@@ -49,7 +49,7 @@ class SampleBackgroundWidget(QWidget):
         """
         self.sampleBackground = sampleBackground
         # Acquire the lock
-        self.semaphore = True
+        self.widgetsRefreshing = True
         self.initComponents()
 
     def loadUI(self):
@@ -90,7 +90,7 @@ class SampleBackgroundWidget(QWidget):
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
         # Release the lock
-        self.semaphore = False
+        self.widgetsRefreshing = False
 
     def handleDataFilesAltered(self, item):
         index = item.row()
@@ -100,13 +100,13 @@ class SampleBackgroundWidget(QWidget):
         else:
             self.sampleBackground.dataFiles.dataFiles[index] = value
         self.updateDataFilesList()
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleDataFileInserted(self, item):
         value = item.text()
         self.sampleBackground.dataFiles.dataFiles.append(value)
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def updateDataFilesList(self):
@@ -127,10 +127,10 @@ class SampleBackgroundWidget(QWidget):
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
             self.updateDataFilesList()
-            if not self.semaphore:
+            if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
-        if not self.semaphore:
+        if not self.widgetsRefreshing:
             self.parent.setModified()
