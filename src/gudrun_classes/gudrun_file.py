@@ -734,7 +734,10 @@ class GudrunFile:
             sample = Sample()
 
             # Extract the sample name, and then discard whitespace lines.
-            sample.name = str(self.getNextToken()[:-2]).strip().replace("SAMPLE", "").strip()
+            sample.name = (
+                str(self.getNextToken()[:-2]).strip()
+                .replace("SAMPLE", "").strip()
+            )
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -924,7 +927,10 @@ class GudrunFile:
 
             # Extract the name from the lines,
             # and then discard the unnecessary lines.
-            container.name = str(self.getNextToken()[:-2]).strip().replace("CONTAINER", "").strip()
+            container.name = (
+                str(self.getNextToken()[:-2]).strip()
+                .replace("CONTAINER", "").strip()
+            )
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
