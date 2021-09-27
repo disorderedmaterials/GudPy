@@ -640,7 +640,7 @@ class InstrumentWidget(QWidget):
         """
         filename = self.browseFile(title, dir=dir)
         if filename:
-            target.setText(filename[0])
+            target.setText(filename)
 
     def browseFile(self, title, dir=False):
         """
@@ -656,7 +656,7 @@ class InstrumentWidget(QWidget):
         str[]
         """
         filename = (
-            QFileDialog.getOpenFileName(self, title, "")
+            QFileDialog.getOpenFileName(self, title, "")[0]
             if not dir
             else QFileDialog.getExistingDirectory(self, title, "")
         )
