@@ -146,11 +146,9 @@ class GudPyMainWindow(QMainWindow):
                 self.runGudrun_
             )
 
-            self.save.triggered.connect(
-                lambda: self.gudrunFile.write_out(overwrite=True)
-            )
+            self.save.triggered.connect(self.saveInputFile)
 
-            self.saveAs.triggered.connect(self.saveInputFile)
+            self.saveAs.triggered.connect(self.saveInputFileAs)
 
             self.viewLiveInputFile.triggered.connect(
                 lambda: ViewInput(self.gudrunFile, parent=self)
@@ -195,12 +193,20 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file.
         """
+        self.gudrunFile.write_out(overwrite=True)
+        self.setUnModified()
+
+    def saveInputFileAs(self):
+        """
+        Saves the current state of the input file as...
+        """
         filename = QFileDialog.getSaveFileName(
             self, "Save input file as..", "."
         )[0]
         if filename:
             self.gudrunFile.outpath = filename
             self.gudrunFile.write_out()
+            self.setUnModified()
 
     def updateFromFile(self):
         """
@@ -286,9 +292,11 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def setModified(self):
-        from inspect import currentframe, getouterframes
-        caller = getouterframes(currentframe(), 2)[1][3]
-        print(caller)
         if not self.modified:
             self.setWindowTitle(self.gudrunFile.path + " *")
             self.modified = True
+
+    def setUnModified(self):
+        if self.modified:
+            self.setWindowTitle(self.gudrunFile.path)
+            self.modified = False
