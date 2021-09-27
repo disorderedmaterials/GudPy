@@ -128,6 +128,7 @@ class SampleWidget(QWidget):
         super(SampleWidget, self).__init__(parent=self.parent)
         self.loadUI()
         self.setupUI()
+
     def setSample(self, sample):
         """
         Gives the focus of the SampleWidget to the sample.
@@ -787,7 +788,7 @@ class SampleWidget(QWidget):
         # Fill the cross section source combo box.
         for c in CrossSectionSource:
             self.totalCrossSectionComboBox.addItem(c.name, c)
-    
+
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
@@ -920,7 +921,6 @@ class SampleWidget(QWidget):
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
 
         self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
-
 
         # Populate the tweak factor.
         self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)

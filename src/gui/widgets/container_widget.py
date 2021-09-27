@@ -510,7 +510,7 @@ class ContainerWidget(QWidget):
         # Populate cross section source combo box.
         for c in CrossSectionSource:
             self.totalCrossSectionComboBox.addItem(c.name, c)
-    
+
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
@@ -555,7 +555,6 @@ class ContainerWidget(QWidget):
 
         self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
         self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
-
 
         # Cylindrical
         self.innerRadiiSpinBox.setValue(self.container.innerRadius)
