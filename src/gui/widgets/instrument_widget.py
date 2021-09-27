@@ -750,7 +750,11 @@ class InstrumentWidget(QWidget):
         self.groupsFileLineEdit.textChanged.connect(
             self.handleGroupsFileChanged
         )
-
+        self.browseGroupsFileButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.groupsFileLineEdit, "Groups file"
+            )
+        )
         self.deadtimeFileLineEdit.setText(
             self.instrument.deadtimeConstantsFileName
         )
