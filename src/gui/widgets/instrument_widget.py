@@ -544,17 +544,24 @@ class InstrumentWidget(QWidget):
                 self.instrument.XMin = widgets[1].value()
                 self.instrument.XMax = widgets[2].value()
                 self.instrument.XStep = widgets[3].value()
+                if not self.semaphore:
+                    self.parent.setModified()
             for widget in widgets[1:]:
                 widget.setEnabled(state)
 
+
     def handleXMinChanged(self, value):
         self.instrument.XMin = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleXMaxChanged(self, value):
-        self.instrument.XMax = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleXStepChanged(self, value):
-        self.instrument.XStep = value
+        if not self.semaphore:
+            self.parent.setModified()
 
     def handleGroupsAcceptanceFactorChanged(self, value):
         """
