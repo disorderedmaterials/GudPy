@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>733</width>
-    <height>791</height>
+    <height>803</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -406,6 +406,25 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="crossSectionFileWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_19">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="crossSectionFileLineEdit"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="browseCrossSectionFileButton">
+             <property name="text">
+              <string>Browse</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
