@@ -540,7 +540,6 @@ class GudPyTreeModel(QAbstractItemModel):
                 if isinstance(otherObj, Container):
                     if self.findParent(otherObj) in invalidated:
                         invalidated.append(otherObj)
-                        print("appended")
 
         elif isinstance(obj, Container):
             for otherObj in self.persistentIndexes.keys():
