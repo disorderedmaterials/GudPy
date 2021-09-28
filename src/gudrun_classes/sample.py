@@ -263,7 +263,7 @@ class Sample:
         )
 
         return (
-            f'\n{self.name}{TAB}{{\n\n'
+            f'\nSAMPLE {self.name}{TAB}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'

@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QTreeView
 from PyQt5.QtCore import (
     QAbstractItemModel,
@@ -15,6 +15,7 @@ from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy
+import os
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -31,6 +32,10 @@ class GudPyTreeModel(QAbstractItemModel):
     persistentIndexes : dict
         Dict of QPersistentIndexes,
         key is a GudPy object, value is a QPersistentIndex.
+    sampleIcon : QIcon
+        Icon for samples.
+    containerIcon : QIcon
+        Icon for containers.
     Methods
     -------
     index(row, column, parent)
@@ -76,6 +81,17 @@ class GudPyTreeModel(QAbstractItemModel):
         super(GudPyTreeModel, self).__init__(parent)
         self.gudrunFile = gudrunFile
         self.persistentIndexes = {}
+        current_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+        self.sampleIcon = QIcon(
+            os.path.join(
+                current_dir, "resources/sample.png"
+            )
+        )
+        self.containerIcon = QIcon(
+            os.path.join(
+                current_dir, "resources/container.png"
+            )
+        )
 
     def index(self, row, column, parent=QModelIndex()):
         """
@@ -232,6 +248,11 @@ class GudPyTreeModel(QAbstractItemModel):
                 )
             elif isinstance(index.internalPointer(), (Sample, Container)):
                 return QVariant(index.internalPointer().name)
+        elif role == Qt.DecorationRole:
+            if isinstance(index.internalPointer(), Sample):
+                return QVariant(self.sampleIcon)
+            elif isinstance(index.internalPointer(), Container):
+                return QVariant(self.containerIcon)
         elif role == Qt.CheckStateRole and self.isSample(index):
             return self.checkState(index)
         else:

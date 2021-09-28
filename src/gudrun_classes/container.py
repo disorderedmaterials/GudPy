@@ -146,7 +146,7 @@ class Container:
         )
 
         return (
-            f'{self.name}{TAB}{{\n\n'
+            f'CONTAINER {self.name}{TAB}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
