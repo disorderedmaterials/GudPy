@@ -1,6 +1,7 @@
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry, UnitsOfDensity
 )
+from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
     QFileDialog,
     QWidget,
@@ -154,12 +155,24 @@ class NormalisationWidget(QWidget):
             self.parent.setModified()
         self.normalisation.geometry = self.geometryComboBox.itemData(index)
         if self.normalisation.geometry == Geometry.SameAsBeam:
-            self.parent.updateGeometries()
-            self.geometryComboBox.setCurrentIndex(index)
+            self.geometryInfoStack.setCurrentIndex(
+                config.geometry.value
+            )
         else:
             self.geometryInfoStack.setCurrentIndex(
                 self.normalisation.geometry.value
             )
+        # if not self.widgetsRefreshing:
+        #     self.parent.setModified()
+        #     if self.normalisation.geometry == Geometry.SameAsBeam:
+        #         self.parent.updateGeometries()
+        #         self.geometryComboBox.setCurrentIndex(index)
+        #     else:
+        #         self.geometryInfoStack.setCurrentIndex(
+        #             self.normalisation.geometry.value
+        #         )
+        # self.normalisation.geometry = self.geometryComboBox.itemData(index)
+        # self.geometryComboBox.setCurrentIndex(index)
 
     def handleDensityUnitsChanged(self, index):
         """

@@ -96,7 +96,9 @@ class BeamWidget(QWidget):
             The new current index of the sampleGeometryComboBox.
         """
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
+        print(config.geometry)
         config.geometry = self.beam.sampleGeometry
+        print(config.geometry)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

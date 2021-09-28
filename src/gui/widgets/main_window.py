@@ -220,9 +220,8 @@ class GudPyMainWindow(QMainWindow):
         where the Geometry is SameAsBeam.
         """
         if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
-            self.gudrunFile.normalisation.geometry = config.geometry
             self.normalisationWidget.widgetsRefreshing = True
-            self.normalisationWidget.geometryComboBox.setCurrentIndex(
+            self.normalisationWidget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
             self.normalisationWidget.widgetsRefreshing = False
@@ -236,8 +235,6 @@ class GudPyMainWindow(QMainWindow):
                 for k in range(len(sample.containers)):
                     sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
                     sample.containers[k].geometry = config.geometry
-        self.sampleWidget.initComponents()
-        self.containerWidget.initComponents()
 
     def updateCompositions(self):
         """
