@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QFileDialog, QWidget
 from PyQt5 import uic
 import os
 from src.gudrun_classes.enums import Geometry
@@ -50,6 +50,8 @@ class BeamWidget(QWidget):
     handleIncidentBeamSpectrumParamsFileChanged(value)
         Slot for handling change in the file
         for incident beam spectrum parameters.
+    handleBrowseIncidentBeamSpectrumParams()
+        Slot for browsing for an incident beam spectrum parameters file.
     handleOverallBackgroundFactorChanged(value)
         Slot for handling change in the overall background factor.
     handleSampleDependantBackgroundFactorChanged(value)
@@ -295,6 +297,19 @@ class BeamWidget(QWidget):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
+    def handleBrowseIncidentBeamSpectrumParams(self):
+        """
+        Slot for browsing for an incident beam spectrum parameters file.
+        Called when a clicked signal is emitted,
+        from the browseIncidentBeamSpectrumParametersButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Incident beam spectrum parameters", "")
+        if filename:
+            self.incidentBeamSpectrumParametersLineEdit.setText(filename)
+
     def handleOverallBackgroundFactorChanged(self, value):
         """
         Slot for handling change in overall background factor.
@@ -454,6 +469,9 @@ class BeamWidget(QWidget):
         )
         self.incidentBeamSpectrumParametersLineEdit.textChanged.connect(
             self.handleIncidentBeamSpectrumParamsFileChanged
+        )
+        self.browseIncidentBeamSpectrumParametersButton.clicked.connect(
+            self.handleBrowseIncidentBeamSpectrumParams
         )
 
         # Setup widgets and slots, for Scattered beam.

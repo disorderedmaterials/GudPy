@@ -30,6 +30,8 @@ class SampleWidget(QWidget):
         Loads the UI file for the SampleWidget object.
     setSample(sample)
         Gives the focus of the SampleWidget to the sample.
+    setupUI()
+        Setup slots, signals and widgets.
     initComponents()
         Loads UI file, and then populates data from the Sample.
     handlePeriodNoChanged(value)
@@ -125,6 +127,7 @@ class SampleWidget(QWidget):
         self.parent = parent
         super(SampleWidget, self).__init__(parent=self.parent)
         self.loadUI()
+        self.setupUI()
 
     def setSample(self, sample):
         """
@@ -599,10 +602,10 @@ class SampleWidget(QWidget):
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
-        for path in paths:
-            if path:
-                target.addItem(path)
+        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
                 self.handleDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -622,7 +625,6 @@ class SampleWidget(QWidget):
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
-            self.updateDataFilesList()
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
@@ -710,19 +712,15 @@ class SampleWidget(QWidget):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def initComponents(self):
+    def setupUI(self):
         """
-        Populates the child widgets with their
-        corresponding data from the attributes of the Sample object.
+        Setup slots, signals and widgets.
         """
-        # Acquire the lock
-        self.widgetsRefreshing = True
-        # Setup widgets and slots for the period numbers.
-        self.periodNoSpinBox.setValue(self.sample.periodNumber)
+
+        # Setup slot for period number.
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
-        # Setup widgets and slots for the data files
-        self.updateDataFilesList()
+        # Setup slots for data files.
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
@@ -737,166 +735,118 @@ class SampleWidget(QWidget):
             lambda: self.removeFile(self.dataFilesList, self.sample.dataFiles)
         )
 
-        # Setup the widgets and slots for the run controls.
-        self.forceCorrectionsCheckBox.setChecked(
-            Qt.Checked
-            if self.sample.forceCalculationOfCorrections
-            else Qt.Unchecked
-        )
+        # Setup slots for run controls.
         self.forceCorrectionsCheckBox.stateChanged.connect(
             self.handleForceCorrectionsSwitched
         )
 
-        # Setup the widgets and slots for the geometry.
+        # Fill geometry combo box.
         for g in Geometry:
-            if self.geometryComboBox.findText(g.name) == -1:
-                self.geometryComboBox.addItem(g.name, g)
-        self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
+            self.geometryComboBox.addItem(g.name, g)
+        # Setup slots for geometry data.
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
-        self.geometryComboBox.setDisabled(True)
-
-        # Ensure the correct attributes are being shown
-        # for the correct geometry.
-        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
-        self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
-
-        # Setup the widgets and slots for geometry specific attributes.
         # Flatplate
-        self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.downstreamSpinBox.setValue(self.sample.downstreamThickness)
         self.downstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
-
-        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(
             self.handleAngleOfRotationChanged
         )
-        self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
         self.sampleWidthSpinBox.valueChanged.connect(
             self.handleSampleWidthChanged
         )
 
         # Cylindrical
-        self.innerRadiiSpinBox.setValue(self.sample.innerRadius)
         self.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
         )
-        self.outerRadiiSpinBox.setValue(self.sample.outerRadius)
         self.outerRadiiSpinBox.valueChanged.connect(
             self.handleOuterRadiiChanged
         )
-
-        self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
         self.sampleHeightSpinBox.valueChanged.connect(
             self.handleSampleHeightChanged
         )
 
-        # Setup the widgets and slots for the density.
-        self.densitySpinBox.setValue(self.sample.density)
+        # Fill the density units combo box.
+        for du in UnitsOfDensity:
+            self.densityUnitsComboBox.addItem(du.name, du)
+
+        # Setup slots for density data.
         self.densitySpinBox.valueChanged.connect(
             self.handleDensityChanged
-        )
-        for du in UnitsOfDensity:
-            if self.densityUnitsComboBox.findText(du.name) == -1:
-                self.densityUnitsComboBox.addItem(du.name, du)
-        self.densityUnitsComboBox.setCurrentIndex(
-            self.sample.densityUnits.value
         )
         self.densityUnitsComboBox.currentIndexChanged.connect(
             self.handleDensityUnitsChanged
         )
 
-        # Setup the other sample run controls widgets and slots.
+        # Setup slots for other sample run controls.
+        # Fill the cross section source combo box.
         for c in CrossSectionSource:
-            if self.totalCrossSectionComboBox.findText(c.name) == -1:
-                self.totalCrossSectionComboBox.addItem(c.name, c)
-        self.totalCrossSectionComboBox.setCurrentIndex(
-            self.sample.totalCrossSectionSource.value
-        )
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
 
+        # Fill the normalisation type combo box.
         for n in NormalisationType:
-            if self.normaliseToComboBox.findText(n.name) == -1:
-                self.normaliseToComboBox.addItem(n.name, n)
-        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
+            self.normaliseToComboBox.addItem(n.name, n)
+
         self.normaliseToComboBox.currentIndexChanged.connect(
             self.handleNormaliseToChanged
         )
 
+        # Fill the output units combo box.
         for u in OutputUnits:
-            if self.outputUnitsComboBox.findText(u.name) == -1:
-                self.outputUnitsComboBox.addItem(u.name, u)
-        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
+            self.outputUnitsComboBox.addItem(u.name, u)
+
         self.outputUnitsComboBox.currentIndexChanged.connect(
             self.handleOutputUnitsChanged
         )
 
-        # Setup the widget and slot for the tweak factor.
-        self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
+        # Setup slot for tweak factor.
         self.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
 
-        # Setup the widgets and slots for Fourier Transform.
-        self.topHatWidthSpinBox.setValue(self.sample.topHatW)
+        # Setup slots for Fourier Transform parameters.
         self.topHatWidthSpinBox.valueChanged.connect(
             self.handleTopHatWidthChanged
         )
-        self.minSpinBox.setValue(self.sample.minRadFT)
         self.minSpinBox.valueChanged.connect(self.handleMinChanged)
-        self.maxSpinBox.setValue(self.sample.maxRadFT)
         self.maxSpinBox.valueChanged.connect(self.handleMaxChanged)
-
-        self.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
         self.broadeningFunctionSpinBox.valueChanged.connect(
             self.handleBroadeningFunctionChanged
         )
-        self.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
         self.broadeningPowerSpinBox.valueChanged.connect(
             self.handleBroadeningPowerChanged
         )
-
-        self.stepSizeSpinBox.setValue(self.sample.stepSize)
         self.stepSizeSpinBox.valueChanged.connect(self.handleStepSizeChanged)
 
-        # Setup the widgets and slots for the advanced attributes.
-        self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
+        # Setup slots for advanced attributes.
         self.scatteringFileLineEdit.textChanged.connect(
             self.handleSelfScatteringFileChanged
-        )
-
-        self.correctionFactorSpinBox.setValue(
-            self.sample.normalisationCorrectionFactor
         )
         self.correctionFactorSpinBox.valueChanged.connect(
             self.handleCorrectionFactorChanged
         )
-        self.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
         self.scatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
-        )
-        self.attenuationCoefficientSpinBox.setValue(
-            self.sample.attenuationCoefficient
         )
         self.attenuationCoefficientSpinBox.valueChanged.connect(
             self.handleAttenuationCoefficientChanged
         )
 
-        # Setup the widgets and slots for the Composition.
-        self.updateCompositionTable()
+        # Setup slots for composition.
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
 
-        # Setup the widgets and slots for the Exponential values.
-        self.updateExponentialTable()
+        # Setup slots for exponential values.
         self.insertExponentialButton.clicked.connect(
             self.handleInsertExponentialValue
         )
@@ -904,13 +854,108 @@ class SampleWidget(QWidget):
             self.handleRemoveExponentialValue
         )
 
-        # Setup the widgets and slots for the Resonance values.
-        self.updateResonanceTable()
+        # Setup slots for resonance values.
         self.insertResonanceButton.clicked.connect(
             self.handleInsertResonanceValue
         )
         self.removeResonanceButton.clicked.connect(
             self.handleRemoveResonanceValue
         )
+
+    def initComponents(self):
+        """
+        Populates the child widgets with their
+        corresponding data from the attributes of the Sample object.
+        """
+        # Acquire the lock
+        self.widgetsRefreshing = True
+
+        # Populate period number widget.
+        self.periodNoSpinBox.setValue(self.sample.periodNumber)
+
+        # Populate the data files list.
+        self.updateDataFilesList()
+
+        # Populate the run controls.
+        self.forceCorrectionsCheckBox.setChecked(
+            Qt.Checked
+            if self.sample.forceCalculationOfCorrections
+            else Qt.Unchecked
+        )
+
+        # Populate the geometry data.
+        self.geometryComboBox.setCurrentIndex(self.sample.geometry.value)
+        self.geometryComboBox.setDisabled(True)
+
+        # Ensure the correct attributes are being shown
+        # for the correct geometry.
+        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
+        self.geometryInfoStack_.setCurrentIndex(config.geometry.value)
+
+        # Populate geometry specific attributes.
+        # Flatplate
+        self.upstreamSpinBox.setValue(self.sample.upstreamThickness)
+        self.downstreamSpinBox.setValue(self.sample.downstreamThickness)
+
+        self.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
+        self.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
+
+        # Cylindrical
+        self.innerRadiiSpinBox.setValue(self.sample.innerRadius)
+        self.outerRadiiSpinBox.setValue(self.sample.outerRadius)
+
+        self.sampleHeightSpinBox.setValue(self.sample.sampleHeight)
+
+        # Populate the density data.
+        self.densitySpinBox.setValue(self.sample.density)
+        self.densityUnitsComboBox.setCurrentIndex(
+            self.sample.densityUnits.value
+        )
+
+        # Populate the other sample run controls.
+
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.sample.totalCrossSectionSource.value
+        )
+
+        self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
+
+        self.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
+
+        # Populate the tweak factor.
+        self.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
+
+        # Populate Fourier Transform parameters.
+        self.topHatWidthSpinBox.setValue(self.sample.topHatW)
+
+        self.minSpinBox.setValue(self.sample.minRadFT)
+        self.maxSpinBox.setValue(self.sample.maxRadFT)
+
+        self.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
+        self.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
+        self.stepSizeSpinBox.setValue(self.sample.stepSize)
+
+        # Populate advanced attributes.
+        self.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
+
+        self.correctionFactorSpinBox.setValue(
+            self.sample.normalisationCorrectionFactor
+        )
+
+        self.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
+
+        self.attenuationCoefficientSpinBox.setValue(
+            self.sample.attenuationCoefficient
+        )
+
+        # Populate the composition table.
+        self.updateCompositionTable()
+
+        # Populate the table containing exponential values.
+        self.updateExponentialTable()
+
+        # Populate the table containing resonance values.
+        self.updateResonanceTable()
+
         # Release the lock
         self.widgetsRefreshing = False

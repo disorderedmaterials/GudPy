@@ -640,7 +640,7 @@ class InstrumentWidget(QWidget):
         """
         filename = self.browseFile(title, dir=dir)
         if filename:
-            target.setText(filename[0])
+            target.setText(filename)
 
     def browseFile(self, title, dir=False):
         """
@@ -655,11 +655,10 @@ class InstrumentWidget(QWidget):
         -------
         str[]
         """
-        filename = (
-            QFileDialog.getOpenFileName(self, title, "")
-            if not dir
-            else QFileDialog.getExistingDirectory(self, title, "")
-        )
+        if dir:
+            filename = QFileDialog.getExistingDirectory(self, title, "")
+        else:
+            filename, _ = QFileDialog.getOpenFileName(self, title, "")
         return filename
 
     def updateGroupingParameterPanel(self):
@@ -750,7 +749,11 @@ class InstrumentWidget(QWidget):
         self.groupsFileLineEdit.textChanged.connect(
             self.handleGroupsFileChanged
         )
-
+        self.browseGroupsFileButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.groupsFileLineEdit, "Groups file"
+            )
+        )
         self.deadtimeFileLineEdit.setText(
             self.instrument.deadtimeConstantsFileName
         )

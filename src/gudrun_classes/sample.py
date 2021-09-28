@@ -240,7 +240,7 @@ class Sample:
 
         if self.outputUnits == OutputUnits.BARNS_ATOM_SR:
             outputUnits = "b/atom/sr"
-        elif self.outputUnits == OutputUnits.CM_INV_SR:
+        elif self.outputUnits == OutputUnits.INV_CM_SR:
             outputUnits = "cm**-1"
 
         unitsLine = (

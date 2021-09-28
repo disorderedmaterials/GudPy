@@ -83,6 +83,7 @@ class ContainerWidget(QWidget):
 
         super(ContainerWidget, self).__init__(parent=self.parent)
         self.loadUI()
+        self.setupUI()
 
     def loadUI(self):
         """
@@ -384,11 +385,13 @@ class ContainerWidget(QWidget):
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
-        for path in paths:
-            if path:
-                target.addItem(path)
+        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
                 self.handleDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeFile(self, target, dataFiles):
         """
@@ -405,7 +408,6 @@ class ContainerWidget(QWidget):
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
-            self.updateDataFilesList()
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
@@ -439,19 +441,11 @@ class ContainerWidget(QWidget):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def initComponents(self):
-        """
-        Populates the child widgets with their
-        corresponding data from the attributes of the Container object.
-        """
-        # Acquire the lock
-        self.widgetsRefreshing = True
-        # Setup widget and slot for the period number.
-        self.periodNoSpinBox.setValue(self.container.periodNumber)
+    def setupUI(self):
+        # Setup slot for period number.
         self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
-        # Setup widgets and slots for the data files.
-        self.updateDataFilesList()
+        # Setup slots for data files.
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
@@ -468,99 +462,129 @@ class ContainerWidget(QWidget):
             )
         )
 
-        # Setup widgets and slots for geometry.
+        # Populate geometry combo box.
         for g in Geometry:
-            if self.geometryComboBox.findText(g.name) == -1:
-                self.geometryComboBox.addItem(g.name, g)
-        self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
+            self.geometryComboBox.addItem(g.name, g)
+
+        # Setup slots for geometry data.
         self.geometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
-
         self.geometryComboBox.setDisabled(True)
 
-        # Ensure the correct attributes are being
-        # shown for the correct geometry.
-        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
-
-        # Setup the widgets and slots for geometry specific attributes.
         # Flatplate
-        self.upstreamSpinBox.setValue(self.container.upstreamThickness)
         self.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.downstreamSpinBox.setValue(self.container.downstreamThickness)
         self.downstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
 
-        self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
         self.angleOfRotationSpinBox.valueChanged.connect(
             self.handleAngleOfRotationChanged
         )
-        self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
         self.sampleWidthSpinBox.valueChanged.connect(
             self.handleSampleWidthChanged
         )
 
         # Cylindrical
-        self.innerRadiiSpinBox.setValue(self.container.innerRadius)
         self.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
         )
-        self.outerRadiiSpinBox.setValue(self.container.outerRadius)
         self.outerRadiiSpinBox.valueChanged.connect(
             self.handleOuterRadiiChanged
         )
 
-        self.sampleHeightSpinBox.setValue(self.container.sampleHeight)
         self.sampleHeightSpinBox.valueChanged.connect(
             self.handleSampleHeightChanged
         )
 
-        # Setup the widgets and slots for the density.
-        self.densitySpinBox.setValue(self.container.density)
+        # Setup slots for density data.
         self.densitySpinBox.valueChanged.connect(self.handleDensityChanged)
 
+        # Populate density units combo box.
         for du in UnitsOfDensity:
-            if self.densityUnitsComboBox.findText(du.name) == -1:
-                self.densityUnitsComboBox.addItem(du.name, du)
-        self.densityUnitsComboBox.setCurrentIndex(
-            self.container.densityUnits.value
-        )
+            self.densityUnitsComboBox.addItem(du.name, du)
 
-        # Setup the other container configurations widgets and slots.
+        # Setup slots for other container configuration data.
+        # Populate cross section source combo box.
         for c in CrossSectionSource:
-            if self.totalCrossSectionComboBox.findText(c.name) == -1:
-                self.totalCrossSectionComboBox.addItem(c.name, c)
-        self.totalCrossSectionComboBox.setCurrentIndex(
-            self.container.totalCrossSectionSource.value
-        )
+            self.totalCrossSectionComboBox.addItem(c.name, c)
+
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
-
-        self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
         self.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
-
-        self.scatteringFractionSpinBox.setValue(
-            self.container.scatteringFraction
-        )
         self.scatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
-        )
-        self.attenuationCoefficientSpinBox.setValue(
-            self.container.attenuationCoefficient
         )
         self.attenuationCoefficientSpinBox.valueChanged.connect(
             self.handleAttenuationCoefficientChanged
         )
 
-        # Setup the widgets and slots for the composition.
-        self.updateCompositionTable()
+        # Setup slots for composition table.
         self.insertElementButton.clicked.connect(self.handleInsertElement)
         self.removeElementButton.clicked.connect(self.handleRemoveElement)
+
+    def initComponents(self):
+        """
+        Populates the child widgets with their
+        corresponding data from the attributes of the Container object.
+        """
+        # Acquire the lock
+        self.widgetsRefreshing = True
+        # Populate the period number.
+        self.periodNoSpinBox.setValue(self.container.periodNumber)
+
+        # Populate data files.
+        self.updateDataFilesList()
+
+        # Populate geometry data.
+        self.geometryComboBox.setCurrentIndex(self.container.geometry.value)
+
+        # Ensure the correct attributes are being
+        # shown for the correct geometry.
+        self.geometryInfoStack.setCurrentIndex(config.geometry.value)
+
+        # Populate geometry specific attributes.
+        # Flatplate
+        self.upstreamSpinBox.setValue(self.container.upstreamThickness)
+        self.downstreamSpinBox.setValue(self.container.downstreamThickness)
+
+        self.angleOfRotationSpinBox.setValue(self.container.angleOfRotation)
+        self.sampleWidthSpinBox.setValue(self.container.sampleWidth)
+
+        # Cylindrical
+        self.innerRadiiSpinBox.setValue(self.container.innerRadius)
+        self.outerRadiiSpinBox.setValue(self.container.outerRadius)
+
+        self.sampleHeightSpinBox.setValue(self.container.sampleHeight)
+
+        # Populate density data.
+        self.densitySpinBox.setValue(self.container.density)
+        self.densityUnitsComboBox.setCurrentIndex(
+            self.container.densityUnits.value
+        )
+
+        # Populate other container configuration data.
+        self.totalCrossSectionComboBox.setCurrentIndex(
+            self.container.totalCrossSectionSource.value
+        )
+
+        self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
+
+        self.scatteringFractionSpinBox.setValue(
+            self.container.scatteringFraction
+        )
+
+        self.attenuationCoefficientSpinBox.setValue(
+            self.container.attenuationCoefficient
+        )
+
+        # Populate composition table.
+        self.updateCompositionTable()
+
         # Release the lock
         self.widgetsRefreshing = False

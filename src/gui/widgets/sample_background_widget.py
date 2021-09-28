@@ -21,6 +21,8 @@ class SampleBackgroundWidget(QWidget):
         Gives the focus of the SampleBackgroundWidget to the sample.
     loadUI()
         Loads the UI file for the SampleBackgroundWidget object.
+    setupUI()
+        Setup slots, signals and widgets.
     initComponents()
         Loads UI file, and then populates data from the SampleBackground.
     """
@@ -37,6 +39,7 @@ class SampleBackgroundWidget(QWidget):
         self.parent = parent
         super(SampleBackgroundWidget, self).__init__(parent=self.parent)
         self.loadUI()
+        self.setupUI()
 
     def setSampleBackground(self, sampleBackground):
         """
@@ -62,13 +65,15 @@ class SampleBackgroundWidget(QWidget):
         )
         uic.loadUi(uifile, self)
 
-    def initComponents(self):
+    def setupUI(self):
         """
-        Populates the child widgets with their
-        corresponding data from the attributes of the SampleBackground object.
+        Setup slots, signals and widgets.
         """
-        # Setup widgets and slots for the data files.
-        self.updateDataFilesList()
+
+        # Setup slot for period number.
+        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+
+        # Setup slots for data files.
         self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
         self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
         self.addDataFileButton.clicked.connect(
@@ -85,9 +90,19 @@ class SampleBackgroundWidget(QWidget):
             )
         )
 
-        # Setup widgets and slots for the period number.
+    def initComponents(self):
+        """
+        Populates the child widgets with their
+        corresponding data from the attributes of the SampleBackground object.
+        """
+        # Acquire the lock
+        self.widgetsRefreshing = True
+
+        # Populate period number.
         self.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
-        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+
+        # Populate data files list.
+        self.updateDataFilesList()
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -116,17 +131,18 @@ class SampleBackgroundWidget(QWidget):
         )
 
     def addFiles(self, target, title, regex):
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
-        for path in paths:
-            if path:
-                target.addItem(path)
+        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
                 self.handleDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
             remove = target.takeItem(target.currentRow()).text()
             dataFiles.dataFiles.remove(remove)
-            self.updateDataFilesList()
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 

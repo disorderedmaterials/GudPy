@@ -26,10 +26,6 @@ class DataFiles:
         """
         self.dataFiles = dataFiles
         self.name = name
-        self.str = [
-            df + "        " + name + " data files"
-            for df in dataFiles
-            ]
 
     def __str__(self):
         """
@@ -44,6 +40,10 @@ class DataFiles:
         string : str
             String representation of DataFiles.
         """
+        self.str = [
+            df + "        " + self.name + " data files"
+            for df in self.dataFiles
+            ]
         return """\n""".join(self.str)
 
     def __len__(self):
