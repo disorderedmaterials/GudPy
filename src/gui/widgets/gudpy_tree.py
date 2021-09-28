@@ -84,7 +84,7 @@ class GudPyTreeModel(QAbstractItemModel):
         current_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)))
         self.sampleIcon = QIcon(
             os.path.join(
-                current_dir, "resources/sample.jpg"
+                current_dir, "resources/sample.png"
             )
         )
         self.containerIcon = QIcon(
