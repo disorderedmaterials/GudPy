@@ -134,7 +134,7 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerA = {
-            "name": "CONTAINER N9",
+            "name": "N9",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -142,7 +142,7 @@ class TestGudPyIO(TestCase):
                     "NIMROD00016699_Empty_N9.raw",
                     "NIMROD00016704_Empty_N9.raw",
                 ],
-                "CONTAINER N9",
+                "N9",
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
@@ -165,7 +165,7 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerB = {
-            "name": "CONTAINER N10",
+            "name": "N10",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
@@ -173,7 +173,7 @@ class TestGudPyIO(TestCase):
                     "NIMROD00016700_Empty_N10.raw",
                     "NIMROD00016705_Empty_N10.raw",
                 ],
-                "CONTAINER N10",
+                "N10",
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
@@ -196,10 +196,10 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerC = {
-            "name": "CONTAINER N6",
+            "name": "N6",
             "periodNumber": 1,
             "dataFiles": DataFiles(
-                ["NIMROD00014908_Empty_N6.raw"], "CONTAINER N6"
+                ["NIMROD00014908_Empty_N6.raw"], "N6"
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
@@ -222,10 +222,10 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerD = {
-            "name": "CONTAINER N8",
+            "name": "N8",
             "periodNumber": 1,
             "dataFiles": DataFiles(
-                ["NIMROD00016994_Empty_N8.raw"], "CONTAINER N8"
+                ["NIMROD00016994_Empty_N8.raw"], "N8"
             ),
             "composition": Composition(
                 [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
@@ -248,14 +248,14 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleA = {
-            "name": "SAMPLE H2O, Can N9",
+            "name": "H2O, Can N9",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016608_H2O_in_N9.raw",
                     "NIMROD00016610_H2O_in_N9.raw",
                 ],
-                "SAMPLE H2O, Can N9",
+                "H2O, Can N9",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -294,14 +294,14 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleB = {
-            "name": "SAMPLE D2O, Can N10",
+            "name": "D2O, Can N10",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016609_D2O_in_N10.raw",
                     "NIMROD00016611_D2O_in_N10.raw",
                 ],
-                "SAMPLE D2O, Can N10",
+                "D2O, Can N10",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -340,14 +340,14 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleC = {
-            "name": "SAMPLE HDO, Can N6",
+            "name": "HDO, Can N6",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016741_HDO_in_N6.raw",
                     "NIMROD00016743_HDO_in_N6.raw",
                 ],
-                "SAMPLE HDO, Can N6",
+                "HDO, Can N6",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -391,14 +391,14 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleD = {
-            "name": "SAMPLE Null Water, Can N8",
+            "name": "Null Water, Can N8",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016742_NullWater_in_N8.raw",
                     "NIMROD00016744_NullWater_in_N8.raw",
                 ],
-                "SAMPLE Null Water, Can N8",
+                "Null Water, Can N8",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
