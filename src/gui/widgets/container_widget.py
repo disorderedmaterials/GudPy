@@ -43,6 +43,10 @@ class ContainerWidget(QWidget):
         Slot for handling change in the density.
     handleTotalCrossSectionChanged(index)
         Slot for handling change in the total cross section source.
+    handleCrossSectionFileChanged(value)
+        Slot for handling change in total cross section source file name.
+    handleBrowseCrossSectionFile()
+        Slot for browsing for a cross section source file.
     handleTweakFactorChanged(value)
         Slot for handling change in the sample tweak factor.
     handleAngleOfRotationChanged(value)
@@ -218,7 +222,7 @@ class ContainerWidget(QWidget):
 
     def handleTotalCrossSectionChanged(self, index):
         """
-        Slot for handling change in total cross ection source.
+        Slot for handling change in total cross section source.
         Called when a currentIndexChanged signal is emitted,
         from the totalCrossSectionComboBox.
         Alters the container's total cross section source as such.
@@ -230,8 +234,39 @@ class ContainerWidget(QWidget):
         self.container.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
+        self.crossSectionFileWidget.setVisible(
+            self.container.totalCrossSectionSource == CrossSectionSource.FILE
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleCrossSectionFileChanged(self, value):
+        """
+        Slot for handling change in total cross section source file name.
+        Called when a textChanged signal is emitted,
+        from the crossSectionFileLineEdit.
+        Alters the container's total cross section source file name as such.
+        Parameters
+        ----------
+        value : str
+            The new text of the crossSectionFileLineEdit.
+        """
+        self.container.crossSectionFilename = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified() 
+
+    def handleBrowseCrossSectionFile(self):
+        """
+        Slot for browsing for a cross section source file.
+        Called when a clicked signal is emitted,
+        from the browseCrossSectionFileButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Total cross section source", "")
+        if filename:
+            self.crossSectionFileLineEdit.setText(filename)
 
     def handleTweakFactorChanged(self, value):
         """
@@ -514,6 +549,15 @@ class ContainerWidget(QWidget):
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
+
+        self.crossSectionFileLineEdit.textChanged.connect(
+            self.handleCrossSectionFileChanged
+        )
+
+        self.browseCrossSectionFileButton.clicked.connect(
+            self.handleBrowseCrossSectionFile
+        )
+
         self.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
@@ -572,7 +616,12 @@ class ContainerWidget(QWidget):
         self.totalCrossSectionComboBox.setCurrentIndex(
             self.container.totalCrossSectionSource.value
         )
-
+        self.crossSectionFileLineEdit.setText(
+            self.container.crossSectionFilename
+        )
+        self.crossSectionFileWidget.setVisible(
+            self.container.totalCrossSectionSource == CrossSectionSource.FILE
+        )
         self.tweakFactorSpinBox.setValue(self.container.tweakFactor)
 
         self.scatteringFractionSpinBox.setValue(
