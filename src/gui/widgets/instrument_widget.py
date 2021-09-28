@@ -99,6 +99,8 @@ class InstrumentWidget(QWidget):
         Slot for handling adding a row to the grouping parameter panel.
     handleRemoveGroupingParameter()
         Slot for removing a row from the grouping parameter panel.
+    handleGroupingParameterPanelToggled()
+        Slot for handling toggling the grouping parameter panel.
     """
 
     def __init__(self, instrument, parent=None):
@@ -693,6 +695,14 @@ class InstrumentWidget(QWidget):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
+    def handleGroupingParameterPanelToggled(self, on):
+        """
+        Slot for handling toggling the grouping parameter panel.
+        Called when a toggled signal is emitted from the
+        groupingParameterGroupBox.
+        """
+        self.groupingParameterWidget.setVisible(on)
+
     def initComponents(self):
         """
         Loads the UI file for the InstrumentWidget object,
@@ -1026,6 +1036,10 @@ class InstrumentWidget(QWidget):
         )
         self.removeGroupingParameterButton.clicked.connect(
             self.handleRemoveGroupingParameter
+        )
+        self.groupingParameterGroupBox.setChecked(False)
+        self.groupingParameterGroupBox.toggled.connect(
+            self.handleGroupingParameterPanelToggled
         )
         # Release the lock
         self.widgetsRefreshing = False
