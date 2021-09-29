@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QCursor
 
 from src.gudrun_classes.element import Element
-
+from src.gui.widgets.main_window import GudPyMainWindow
 
 class GudPyTableModel(QAbstractTableModel):
     """
@@ -883,15 +883,19 @@ class CompositionTable(QTableView):
         """
         Seeks up the widget heirarchy, and then collects all compositions.
         """
-        grandparent = self.parent.parent().parent
+        ancestor = self.parent
+        while not isinstance(ancestor, GudPyMainWindow):
+            ancestor = ancestor.parent
+            if callable(ancestor):
+                ancestor = ancestor()
         self.compositions.clear()
         self.compositions = [
                 (
                     "Normalisation",
-                    grandparent.gudrunFile.normalisation.composition
+                    ancestor.gudrunFile.normalisation.composition
                 )
             ]
-        for sampleBackground in grandparent.gudrunFile.sampleBackgrounds:
+        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 self.compositions.append((sample.name, sample.composition))
                 for container in sample.containers:
