@@ -1,3 +1,4 @@
+from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
@@ -145,7 +146,9 @@ class GudPyMainWindow(QMainWindow):
             self.runGudrun.triggered.connect(
                 self.runGudrun_
             )
-
+            self.iterateGudrun.triggered.connect(
+                self.iterateGudrun_
+            )
             self.save.triggered.connect(self.saveInputFile)
 
             self.saveAs.triggered.connect(self.saveInputFileAs)
@@ -287,6 +290,10 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary and/or purge_det binary."
             )
+
+    def iterateGudrun_(self):
+        iterationDialog = IterationDialog(self.gudrunFile, self)
+        iterationDialog.show()
 
     def setModified(self):
         if not self.modified:
