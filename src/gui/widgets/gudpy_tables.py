@@ -13,6 +13,7 @@ from PyQt5.QtGui import QCursor
 from src.gudrun_classes.element import Element
 from src.gui.widgets.main_window import GudPyMainWindow
 
+
 class GudPyTableModel(QAbstractTableModel):
     """
     Class to represent a GudPyTableModel. Inherits QAbstractTableModel.
