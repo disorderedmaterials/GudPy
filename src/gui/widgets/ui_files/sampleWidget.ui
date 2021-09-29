@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="parameterTabs">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="configTab">
       <attribute name="title">
@@ -273,7 +273,7 @@
                  <widget class="QPushButton" name="insertElementButton">
                   <property name="maximumSize">
                    <size>
-                    <width>30</width>
+                    <width>16777215</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -286,7 +286,7 @@
                  <widget class="QPushButton" name="removeElementButton">
                   <property name="maximumSize">
                    <size>
-                    <width>30</width>
+                    <width>16777215</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -1038,7 +1038,7 @@
                 <widget class="QPushButton" name="insertExponentialButton">
                  <property name="maximumSize">
                   <size>
-                   <width>30</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -1051,7 +1051,7 @@
                 <widget class="QPushButton" name="removeExponentialButton">
                  <property name="maximumSize">
                   <size>
-                   <width>30</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -1126,7 +1126,7 @@
                 <widget class="QPushButton" name="insertResonanceButton">
                  <property name="maximumSize">
                   <size>
-                   <width>30</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -1139,7 +1139,7 @@
                 <widget class="QPushButton" name="removeResonanceButton">
                  <property name="maximumSize">
                   <size>
-                   <width>30</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
