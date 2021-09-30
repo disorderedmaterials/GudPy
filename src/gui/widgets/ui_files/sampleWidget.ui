@@ -62,7 +62,7 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout">
               <item>
-               <widget class="QPushButton" name="addDataFileButton">
+               <widget class="QToolButton" name="addDataFileButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -70,12 +70,16 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>+</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="removeDataFileButton">
+               <widget class="QToolButton" name="removeDataFileButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -84,6 +88,10 @@
                 </property>
                 <property name="text">
                  <string>-</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
                 </property>
                </widget>
               </item>
@@ -268,7 +276,7 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <widget class="QPushButton" name="insertElementButton">
+                 <widget class="QToolButton" name="insertElementButton">
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
@@ -278,10 +286,14 @@
                   <property name="text">
                    <string>+</string>
                   </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                  </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="removeElementButton">
+                 <widget class="QToolButton" name="removeElementButton">
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
@@ -290,6 +302,10 @@
                   </property>
                   <property name="text">
                    <string>-</string>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
                   </property>
                  </widget>
                 </item>
