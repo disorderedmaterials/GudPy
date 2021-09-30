@@ -253,7 +253,7 @@ class ContainerWidget(QWidget):
         """
         self.container.crossSectionFilename = value
         if not self.widgetsRefreshing:
-            self.parent.setModified() 
+            self.parent.setModified()
 
     def handleBrowseCrossSectionFile(self):
         """

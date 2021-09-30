@@ -285,7 +285,8 @@ class NormalisationWidget(QWidget):
             self.totalCrossSectionComboBox.itemData(index)
         )
         self.crossSectionFileWidget.setVisible(
-            self.normalisation.totalCrossSectionSource == CrossSectionSource.FILE
+            self.normalisation.totalCrossSectionSource ==
+            CrossSectionSource.FILE
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -295,7 +296,8 @@ class NormalisationWidget(QWidget):
         Slot for handling change in total cross section source file name.
         Called when a textChanged signal is emitted,
         from the crossSectionFileLineEdit.
-        Alters the normalisation's total cross section source file name as such.
+        Alters the normalisation's total cross
+        section source file name as such.
         Parameters
         ----------
         value : str
@@ -303,7 +305,7 @@ class NormalisationWidget(QWidget):
         """
         self.normalisation.crossSectionFilename = value
         if not self.widgetsRefreshing:
-            self.parent.setModified() 
+            self.parent.setModified()
 
     def handleBrowseCrossSectionFile(self):
         """
@@ -760,7 +762,8 @@ class NormalisationWidget(QWidget):
             self.handleBrowseCrossSectionFile
         )
         self.crossSectionFileWidget.setVisible(
-            self.normalisation.totalCrossSectionSource == CrossSectionSource.FILE
+            self.normalisation.totalCrossSectionSource ==
+            CrossSectionSource.FILE
         )
 
         self.forceCorrectionsCheckBox.setChecked(
