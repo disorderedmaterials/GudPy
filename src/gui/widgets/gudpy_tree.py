@@ -575,6 +575,8 @@ class GudPyTreeView(QTreeView):
         Model to be used for the tree view.
     sibling : QStackedWidget
         Sibling widget to communicate signals and slots to/from.
+    contextMenuEnabled : bool
+        Is the context tree enabled?
     Methods
     -------
     buildTree(gudrunFile, sibling)
@@ -614,6 +616,10 @@ class GudPyTreeView(QTreeView):
         Deselects all samples belonging to a SampleBackground.
     selectOnlyThisSample()
         Selects only the current sample, and deselects all others.
+    setContextDisabled()
+        Disable the context menu.
+    setContextEnabled()
+        Enable the context menu.
     """
 
     def __init__(self, parent):
@@ -625,6 +631,7 @@ class GudPyTreeView(QTreeView):
         """
         super(GudPyTreeView, self).__init__(parent)
         self.clipboard = None
+        self.contextMenuEnabled = True
 
     def buildTree(self, gudrunFile, sibling):
         """
@@ -780,62 +787,63 @@ class GudPyTreeView(QTreeView):
         duplicateOnlySample.setDisabled(True)
         self.menu.addAction(duplicateOnlySample)
 
-        # If the model has been instantiated,
-        # allow insertion of sample backgrounds.
-        if self.model():
-            if isinstance(self.currentObject(), (Sample, Container)):
-                insertSampleBackground.setText("Append Sample Background")
-            insertSampleBackground.setEnabled(True)
-        # If the model has been instantiated
-        # and the current object type can have siblings
-        if self.model() and isinstance(self.currentObject(), (
-            SampleBackground, Sample, Container)
-        ):
-            copy_.setEnabled(True)
-            cut.setEnabled(True)
+        if self.contextMenuEnabled:
+            # If the model has been instantiated,
+            # allow insertion of sample backgrounds.
+            if self.model():
+                if isinstance(self.currentObject(), (Sample, Container)):
+                    insertSampleBackground.setText("Append Sample Background")
+                insertSampleBackground.setEnabled(True)
+            # If the model has been instantiated
+            # and the current object type can have siblings
+            if self.model() and isinstance(self.currentObject(), (
+                SampleBackground, Sample, Container)
+            ):
+                copy_.setEnabled(True)
+                cut.setEnabled(True)
 
-        # If the clipboard can be pasted under the current object.
-        # Sample backgrounds default to append if this is not the case.
-        if (
-            isinstance(self.clipboard, SampleBackground)
-            or
-            (
-                isinstance(self.clipboard, type(self.currentObject()))
+            # If the clipboard can be pasted under the current object.
+            # Sample backgrounds default to append if this is not the case.
+            if (
+                isinstance(self.clipboard, SampleBackground)
+                or
+                (
+                    isinstance(self.clipboard, type(self.currentObject()))
+                    and self.clipboard
+                )
+                or
+                (
+                    isinstance(self.clipboard, Sample)
+                    and isinstance(self.currentObject(), SampleBackground)
+
+                )
+                or
+                (
+                    isinstance(self.clipboard, Container)
+                    and isinstance(self.currentObject(), Sample)
+                )
                 and self.clipboard
-            )
-            or
-            (
-                isinstance(self.clipboard, Sample)
-                and isinstance(self.currentObject(), SampleBackground)
+            ):
+                paste.setEnabled(True)
 
-            )
-            or
-            (
-                isinstance(self.clipboard, Container)
-                and isinstance(self.currentObject(), Sample)
-            )
-            and self.clipboard
-        ):
-            paste.setEnabled(True)
+            # Enable selecting/deselecting all samples
+            if isinstance(self.currentObject(), (
+                SampleBackground, Sample, Container)
+            ):
+                selectAllSamples.setEnabled(True)
+                deselectAllSamples.setEnabled(True)
 
-        # Enable selecting/deselecting all samples
-        if isinstance(self.currentObject(), (
-            SampleBackground, Sample, Container)
-        ):
-            selectAllSamples.setEnabled(True)
-            deselectAllSamples.setEnabled(True)
-
-        # Enable insertion of samples and containers.
-        if isinstance(self.currentObject(), (SampleBackground, Sample)):
-            insertSample.setEnabled(True)
-        if isinstance(self.currentObject(), (Sample, Container)):
-            insertContainer.setEnabled(True)
-        # Enable duplication, and selection.
-        if isinstance(self.currentObject(), Sample):
-            duplicate.setEnabled(True)
-            duplicateOnlySample.setEnabled(True)
-            selectOnlyThisSample.setEnabled(True)
-        # Pop up the context menu.
+            # Enable insertion of samples and containers.
+            if isinstance(self.currentObject(), (SampleBackground, Sample)):
+                insertSample.setEnabled(True)
+            if isinstance(self.currentObject(), (Sample, Container)):
+                insertContainer.setEnabled(True)
+            # Enable duplication, and selection.
+            if isinstance(self.currentObject(), Sample):
+                duplicate.setEnabled(True)
+                duplicateOnlySample.setEnabled(True)
+                selectOnlyThisSample.setEnabled(True)
+            # Pop up the context menu.
         self.menu.popup(QCursor.pos())
 
     def insertSampleBackground(self, sampleBackground=None):
@@ -988,3 +996,15 @@ class GudPyTreeView(QTreeView):
             self.currentObject().runThisSample = True
         if isinstance(self.currentObject(), Container):
             self.model().findParent(self.currentObject()).runThisSample = True
+
+    def setContextDisabled(self):
+        """
+        Disables the context menu.
+        """
+        self.contextMenuEnabled = False
+
+    def setContextEnabled(self):
+        """
+        Enables the context menu.
+        """
+        self.contextMenuEnabled = True

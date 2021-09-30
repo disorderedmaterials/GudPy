@@ -102,14 +102,18 @@ class IterationDialog(QDialog):
         if self.tweakValues:
             if self.tweak == Tweakables.TWEAK_FACTOR:
                 tweakFactorIterator = TweakFactorIterator(self.gudrunFile)
+                self.parent().lockControls()
                 tweakFactorIterator.iterate(self.numberIterations)
+                self.parent().unlockControls()
             else:
                 pass
         elif self.performInelasticitySubtractions:
             wavelengthSubtractionIterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
+            self.parent().lockControls()
             wavelengthSubtractionIterator.iterate(self.numberIterations)
+            self.parent().unlockControls()
         else:
             pass
 

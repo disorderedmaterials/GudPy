@@ -277,14 +277,18 @@ class GudPyMainWindow(QMainWindow):
         sys.exit(0)
 
     def runPurge_(self):
+        self.lockControls()
         result = PurgeFile(self.gudrunFile).purge()
+        self.unlockControls()
         if not result:
             QMessageBox.critical(
                 self, "GudPy Error", "Couldn't find purge_det binary."
             )
 
     def runGudrun_(self):
+        self.lockControls()
         result = self.gudrunFile.dcs(path="gudpy.txt")
+        self.unlockControls()
         if not result:
             QMessageBox.critical(
                 self, "GudPy Error",
@@ -304,3 +308,59 @@ class GudPyMainWindow(QMainWindow):
         if self.modified:
             self.setWindowTitle(self.gudrunFile.path)
             self.modified = False
+
+    def lockControls(self):
+        # Lock controls
+        self.instrumentWidget.setDisabled(True)
+        self.beamWidget.setDisabled(True)
+        self.normalisationWidget.setDisabled(True)
+        self.sampleWidget.basicWidget.setDisabled(True)
+        self.sampleWidget.advancedWidget.setDisabled(True)
+        self.containerWidget.setDisabled(True)
+        self.sampleBackgroundWidget.setDisabled(True)
+        self.objectTree.setContextDisabled()
+
+        # Lock actions
+        self.insertSampleBackground.setDisabled(True)
+        self.insertSample.setDisabled(True)
+        self.insertContainer.setDisabled(True)
+        self.copy.setDisabled(True)
+        self.cut.setDisabled(True)
+        self.paste.setDisabled(True)
+        self.delete_.setDisabled(True)
+        self.runPurge.setDisabled(True)
+        self.runGudrun.setDisabled(True)
+        self.iterateGudrun.setDisabled(True)
+        self.viewLiveInputFile.setDisabled(True)
+        self.save.setDisabled(True)
+        self.saveAs.setDisabled(True)
+        self.loadInputFile.setDisabled(True)
+        self.loadConfiguration.setDisabled(True)
+
+    def unlockControls(self):
+        # Unlock controls
+        self.instrumentWidget.setEnabled(True)
+        self.beamWidget.setEnabled(True)
+        self.normalisationWidget.setEnabled(True)
+        self.sampleWidget.basicWidget.setEnabled(True)
+        self.sampleWidget.advancedWidget.setEnabled(True)
+        self.containerWidget.setEnabled(True)
+        self.sampleBackgroundWidget.setEnabled(True)
+        self.objectTree.setContextEnabled()
+
+        # Unlock actions
+        self.insertSampleBackground.setEnabled(True)
+        self.insertSample.setEnabled(True)
+        self.insertContainer.setEnabled(True)
+        self.copy.setEnabled(True)
+        self.cut.setEnabled(True)
+        self.paste.setEnabled(True)
+        self.delete_.setEnabled(True)
+        self.runPurge.setEnabled(True)
+        self.runGudrun.setEnabled(True)
+        self.iterateGudrun.setEnabled(True)
+        self.viewLiveInputFile.setEnabled(True)
+        self.save.setEnabled(True)
+        self.saveAs.setEnabled(True)
+        self.loadInputFile.setEnabled(True)
+        self.loadConfiguration.setEnabled(True)
