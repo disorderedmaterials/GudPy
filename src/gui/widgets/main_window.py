@@ -281,6 +281,14 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runGudrun_(self):
+        if not self.gudrunFile.purged:
+            choice = QMessageBox.warning(
+                self, "GudPy Warning",
+                "It looks like you may not have purged detectors. Continue?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if choice == QMessageBox.No:
+                return
         result = self.gudrunFile.dcs(path="gudpy.txt")
         if not result:
             QMessageBox.critical(
