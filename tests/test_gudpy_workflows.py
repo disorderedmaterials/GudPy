@@ -119,6 +119,7 @@ class TestGudPyWorkflows(TestCase):
 
     def testGudPyIterateByTweakFactor(self):
 
+        self.g.purge()
         tweakFactorIterator = TweakFactorIterator(self.g)
         tweakFactorIterator.iterate(5)
 
@@ -153,7 +154,7 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateBySubtractingWavelength(self):
 
         for i in range(1, 4):
-
+            self.g.purge()
             wavelengthSubtractionIterator = (
                 WavelengthSubtractionIterator(self.g)
             )

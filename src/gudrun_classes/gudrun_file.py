@@ -55,6 +55,8 @@ class GudrunFile:
         Normalisation object extracted from the input file.
     sampleBackgrounds : SampleBackground[]
         List of SampleBackgrounds extracted from the input file.
+    purged : bool
+        Have the detectors been purged?
     stream : str[]
         List of strings, where each item represents a line
         in the input stream.
@@ -141,7 +143,7 @@ class GudrunFile:
         self.beam = None
         self.normalisation = None
         self.sampleBackgrounds = []
-
+        self.purged = False
         # Parse the GudrunFile.
         self.stream = None
         self.parse()
@@ -1257,7 +1259,7 @@ class GudrunFile:
 
     def dcs(self, path='', headless=True):
         """
-        Purge detectors and then call gudrun_dcs on the path supplied.
+        Call gudrun_dcs on the path supplied.
         If the path is its default value,
         then use the path attribute as the path.
 
@@ -1276,8 +1278,6 @@ class GudrunFile:
         if not path:
             path = self.path
         if headless:
-            if not self.purge():
-                return False
             try:
                 gudrun_dcs = resolve("bin", "gudrun_dcs")
                 result = subprocess.run(
@@ -1289,8 +1289,6 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
-                else:
-                    result = False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1304,8 +1302,8 @@ class GudrunFile:
 
     def process(self, headless=True):
         """
-        Write out the current state of the file, then
-        purge detectors and then call gudrun_dcs on the file that
+        Write out the current state of the file,
+        and then call gudrun_dcs on the file that
         was written out.
 
         Parameters

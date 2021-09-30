@@ -300,11 +300,19 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
-        else:
-            self.proc = QProcess()
-            self.proc.readyReadStandardOutput.connect(self.progressDCS)
-            self.proc.finished.connect(self.procFinished)
-            self.proc.start(*dcs)
+            return
+        elif not self.gudrunFile.purged:
+            choice = QMessageBox.warning(
+                self, "GudPy Warning",
+                "It looks like you may not have purged detectors. Continue?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if choice == QMessageBox.No:
+                return
+        self.proc = QProcess()
+        self.proc.readyReadStandardOutput.connect(self.progressDCS)
+        self.proc.finished.connect(self.procFinished)
+        self.proc.start(*dcs)
 
 
     def iterateGudrun_(self):
