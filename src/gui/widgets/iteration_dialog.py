@@ -51,7 +51,7 @@ class IterationDialog(QDialog):
         self.tweakValues = True
         self.tweak = Tweakables.TWEAK_FACTOR
         self.performInelasticitySubtractions = False
-        self.numberIterations = 0
+        self.numberIterations = 1
 
     def handleTweakValuesChanged(self, state):
         """

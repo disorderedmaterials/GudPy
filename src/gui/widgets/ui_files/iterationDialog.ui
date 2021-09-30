@@ -131,7 +131,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="noIterationsSpinBox"/>
+      <widget class="QSpinBox" name="noIterationsSpinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
