@@ -308,6 +308,7 @@ class GudPyMainWindow(QMainWindow):
                 QMessageBox.Yes | QMessageBox.No
             )
             if choice == QMessageBox.No:
+                self.unlockControls()
                 return
         self.proc = QProcess()
         self.proc.readyReadStandardOutput.connect(self.progressDCS)
