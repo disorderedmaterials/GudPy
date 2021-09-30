@@ -117,7 +117,7 @@ class GudrunFile:
         Assign objects from the file to the attributes of the class.
     write_out(overwrite=False)
         Writes out the string representation of the GudrunFile to a file.
-    dcs(path=''):
+    dcs(path='', purge=True):
         Call gudrun_dcs on the path supplied. If the path is its
         default value, then use the path attribute as the path.
     process():
@@ -1503,6 +1503,8 @@ class GudrunFile:
             Overwrite the initial file? (default is False).
         path : str, optional
             Path to parse from (default is empty, which indicates self.path).
+        purge : bool, optional
+            Should detectors be purged?
         Returns
         -------
         subprocess.CompletedProcess
@@ -1558,7 +1560,8 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
+        purge : bool, optional  
+            Should detectors be purged?
         Returns
         -------
         subprocess.CompletedProcess

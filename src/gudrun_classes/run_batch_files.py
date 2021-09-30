@@ -1,39 +1,8 @@
+from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.data_files import DataFiles
 from copy import deepcopy
 import multiprocessing
-# class RunBatchFiles():
-
-#     dcs = GudrunFile.dcs
-#     purge = GudrunFile.purge
-#     write_out = GudrunFile.write_out
-#     process = GudrunFile.process
-
-#     def __init__(self, gudrunFile, batchSize, threads=1):
-#         self.gudrunFile = deepcopy(gudrunFile)
-#         self.batchSize = batchSize
-#         self.threads = []
-#         self.batches = {}
-
-#     def partition(self):
-#         gudrunFile = deepcopy(self.gudrunFile)
-#         gudrunFile.sampleBackgrounds = []
-#         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-#             gudrunFile.sampleBackgrounds.append(deepcopy(sampleBackground))
-#             gudrunFile.sampleBackgrounds[-1].samples = []
-#             for sample in sampleBackground.samples:
-#                 newSample = deepcopy(sample)
-#                 for j in range(0, len(sample.dataFiles), self.batchSize):
-#                     newSample.dataFiles = DataFiles(sample.dataFiles.dataFiles[j:j+self.batchSize], sample.name)
-#                     print(newSample.dataFiles)
-#                     print(f"creating batch between {j} and {j+self.batchSize}")
-#                     gudrunFile.sampleBackgrounds[-1].samples.append(newSample)
-#         gudrunFile.path = gudrunFile.outpath = "gudrun_dcs.dat"
-#         gudrunFile.write_out()
-
-# batcher = RunBatchFiles(GudrunFile("tests/TestData/NIMROD-water/water.txt"), 4)
-# batcher.partition()
-
 
 class RunBatchFiles():
 
@@ -41,30 +10,36 @@ class RunBatchFiles():
 
         self.gudrunFile = gudrunFile
         self.batchSize = batchSize
-        self.stacks = {}
-        self.stack = []
+        self.batches = {}
+        self.tasks = []
         self.maxProcs = multiprocessing.cpu_count()
-        # self.maxTasks = self.maxProcs // self.batchSize
         self.run()
 
     def run(self):
-        self.buildStack()
+        # Purge detectors.
+        (PurgeFile(self.gudrunFile).purge())
+        self.batchSamples()
         self.prepareSampleBackgrounds()
         self.process()
     
+    @staticmethod
+    def result(result):
+        print("Received a result!")
+        # print(result)
 
     def process(self):
         minimalGudrunFile = deepcopy(self.gudrunFile)
         minimalGudrunFile.sampleBackgrounds = []
         pool = multiprocessing.Pool(self.maxProcs)
-        for task in self.stack:
-            pool.apply_async(task, args=())
+        for task in self.tasks:
+            print("Running!!!")
+            pool.apply_async(task, kwds={"purge": False}, callback=self.result)
         pool.close()
         pool.join()
 
-    def buildStack(self):
+    def batchSamples(self):
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            self.stacks[sampleBackground] = []
+            self.batches[sampleBackground] = []
             for sample in sampleBackground.samples:
                 for i in range(0, len(sample.dataFiles), self.batchSize):
                     batchedSample = deepcopy(sample)
@@ -72,16 +47,33 @@ class RunBatchFiles():
                         batchedSample.dataFiles = DataFiles(batchedSample.dataFiles.dataFiles[i:], sample.name)
                     else:
                         batchedSample.dataFiles = DataFiles(batchedSample.dataFiles.dataFiles[i:i+self.batchSize], sample.name)
-                    self.stacks[sampleBackground].append(batchedSample)
-        print("stack built: " + str(self.stacks))
+                        print("created batch: ")
+                        print(str(batchedSample.dataFiles))
+                        print("*************")
+                    self.batches[sampleBackground].append(batchedSample)
+
     def prepareSampleBackgrounds(self):
-        for sampleBackground, samples in self.stacks.items():
-            sampleBackground.samples = samples
-            batchedGudrunFile = deepcopy(self.gudrunFile)
-            batchedGudrunFile.sampleBackgrounds = [sampleBackground]
-            self.stack.append(batchedGudrunFile.dcs)
-        print("SBs prepared: " + str(self.stack))
+        numSamplesInBatch = sum([len(samples) for samples in self.batches.values()])
+        if numSamplesInBatch > self.maxProcs:
+            numSamplesInBatch //= self.maxProcs
+        else:
+            numSamplesInBatch = max([len(samples) for samples in self.batches.values()])
+        for j, sampleBackground in enumerate(self.batches.keys()):
+            batchedSampleBackground = deepcopy(sampleBackground)
+            for i in range(0, len(self.batches[sampleBackground]), numSamplesInBatch):
+                batchedGudrunFile = deepcopy(self.gudrunFile)
+                if len(self.batches[sampleBackground]) > numSamplesInBatch:
+                    batchedSampleBackground.samples = self.batches[sampleBackground][i:i+numSamplesInBatch]
+                    print(str(batchedSampleBackground.samples))
+                else:
+                    batchedSampleBackground.samples = self.batches[sampleBackground][i:]
+                batchedGudrunFile.sampleBackgrounds = [sampleBackground]
+                batchedGudrunFile.outpath = f"gudrun_dcs-{j}-{i}.dat"
+                print(batchedGudrunFile.outpath)
+                # print("*"*50)
+                # print(batchedGudrunFile)
+                # print("*"*50)
+                self.tasks.append(batchedGudrunFile.process)
 
-
-g = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-RunBatchFiles(g, 1)
+g = GudrunFile("tests/TestData/gudpy_good_water.txt")
+RunBatchFiles(g, 1) 
