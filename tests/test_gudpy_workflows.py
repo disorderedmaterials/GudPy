@@ -1,6 +1,5 @@
 import os
 from shutil import copyfile
-from src.gudrun_classes.purge_file import PurgeFile
 from unittest import TestCase
 import re
 import math
@@ -119,7 +118,7 @@ class TestGudPyWorkflows(TestCase):
             self.assertTrue((close/total) >= 0.95)
 
     def testGudPyIterateByTweakFactor(self):
-        
+
         self.g.purge()
         tweakFactorIterator = TweakFactorIterator(self.g)
         tweakFactorIterator.iterate(5)

@@ -1294,7 +1294,7 @@ class GudrunFile:
 
     def process(self):
         """
-        Write out the current state of the file, 
+        Write out the current state of the file,
         and then call gudrun_dcs on the file that
         was written out.
 
@@ -1328,9 +1328,3 @@ class GudrunFile:
         if purge.purge():
             self.purged = True
         return purge.purge()
-
-
-if __name__ == "__main__":
-    g = GudrunFile(
-        path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
-        )
