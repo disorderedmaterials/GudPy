@@ -1,3 +1,6 @@
+from genericpath import samefile
+from src.gudrun_classes.sample_background import SampleBackground
+from PyQt5.QtCore import QProcess
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
@@ -18,7 +21,7 @@ from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
-
+import math
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -287,13 +290,18 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun_(self):
         self.lockControls()
-        result = self.gudrunFile.dcs(path="gudpy.txt")
-        self.unlockControls()
-        if not result:
+        dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+        if not dcs:
             QMessageBox.critical(
                 self, "GudPy Error",
-                "Couldn't find gudrun_dcs binary and/or purge_det binary."
+                "Couldn't find gudrun_dcs binary."
             )
+        else:
+            self.proc = QProcess()
+            self.proc.readyReadStandardOutput.connect(self.progressDCS)
+            self.proc.finished.connect(self.procFinished)
+            self.proc.start(*dcs)
+
 
     def iterateGudrun_(self):
         iterationDialog = IterationDialog(self.gudrunFile, self)
@@ -364,3 +372,19 @@ class GudPyMainWindow(QMainWindow):
         self.saveAs.setEnabled(True)
         self.loadInputFile.setEnabled(True)
         self.loadConfiguration.setEnabled(True)
+
+    def progressDCS(self):
+        data = self.proc.readAllStandardOutput()
+        stdout = bytes(data).decode("utf8")
+        print(stdout)
+        markers =  config.NUM_GUDPY_CORE_OBJECTS + len(self.gudrunFile.sampleBackgrounds) + sum([sum([len(sampleBackground.samples), *[len(sample.containers) for sample in sampleBackground.samples]]) for sampleBackground in self.gudrunFile.sampleBackgrounds])
+        stepSize = math.ceil(100/markers)
+        print(stepSize)
+        progress = stepSize * sum([stdout.count("Got to: INSTRUMENT"), stdout.count("Got to: BEAM"), stdout.count("Got to: NORMALISATION"), stdout.count("Got to: SAMPLE BACKGROUND"), stdout.count("Got to: SAMPLE"), stdout.count("Got to: CONTAINER")])
+        progress+= self.progressBar.value()
+        self.progressBar.setValue(progress if progress <= 100 else 100)
+        print(self.progressBar.value())
+    
+    def procFinished(self):
+        self.proc = None
+        self.unlockControls()

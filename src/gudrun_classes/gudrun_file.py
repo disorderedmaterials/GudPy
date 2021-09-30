@@ -1255,7 +1255,7 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
-    def dcs(self, path=''):
+    def dcs(self, path='', headless=True):
         """
         Purge detectors and then call gudrun_dcs on the path supplied.
         If the path is its default value,
@@ -1275,22 +1275,29 @@ class GudrunFile:
         """
         if not path:
             path = self.path
-        if not self.purge():
-            return False
-        try:
-            gudrun_dcs = resolve("bin", "gudrun_dcs")
-            result = subprocess.run(
-                [gudrun_dcs, path], capture_output=True, text=True
-            )
-        except FileNotFoundError:
-            if hasattr(sys, '_MEIPASS'):
-                gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
+        if headless:
+            if not self.purge():
+                return False
+            try:
+                gudrun_dcs = resolve("bin", "gudrun_dcs")
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
+            except FileNotFoundError:
+                if hasattr(sys, '_MEIPASS'):
+                    gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
+                    result = subprocess.run(
+                        [gudrun_dcs, path], capture_output=True, text=True
+                    )
+                else:
+                    result = False
+            return result
+        else:
+            gudrun_dcs = resolve("bin", "gudrun_dcs")
+            if not os.path.exists(gudrun_dcs):
+                return False
             else:
-                result = False
-        return result
+                return [gudrun_dcs, [path]]
 
     def process(self):
         """
