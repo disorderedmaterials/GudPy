@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
-    <height>1071</height>
+    <width>767</width>
+    <height>1126</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -536,59 +536,46 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_13">
         <item>
-         <widget class="QLabel" name="xScaleLabel">
+         <widget class="QCheckBox" name="logarithmicBinningCheckBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>144</width>
-            <height>25</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>144</width>
-            <height>16777215</height>
-           </size>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>X-scale for final DCS: </string>
+           <string>Logarithmic binning?</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="minXScaleLabel">
+         <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>31</width>
-            <height>25</height>
+            <width>0</width>
+            <height>0</height>
            </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>Min</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="maxXScaleLabel">
-          <property name="minimumSize">
-           <size>
-            <width>31</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>31</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Max</string>
+           <string>Hard group edges?</string>
           </property>
          </widget>
         </item>
@@ -605,165 +592,13 @@
           </property>
          </spacer>
         </item>
-        <item>
-         <widget class="QCheckBox" name="logarithmicBinningCheckBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Logarithmic binning?</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="stepXScaleLabel">
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>61</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Step size</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="hardGroupEdgesCheckBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>23</height>
-           </size>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Hard group edges?</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_18">
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="_QRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>81</width>
-              <height>23</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Q [1/A]</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">scaleSelectionButtonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="minQSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="maxQSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QDoubleSpinBox" name="stepQSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="DSpacingRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>111</width>
-              <height>23</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>d-spacing [A]</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">scaleSelectionButtonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
             <property name="enabled">
              <bool>false</bool>
@@ -782,7 +617,207 @@
             </property>
            </widget>
           </item>
+          <item row="5" column="2">
+           <widget class="QDoubleSpinBox" name="maxTOFSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QRadioButton" name="wavelengthRadioButton">
+            <property name="minimumSize">
+             <size>
+              <width>125</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>wavelength [A]</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">scaleSelectionButtonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QDoubleSpinBox" name="stepQSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QDoubleSpinBox" name="minEnergySpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QDoubleSpinBox" name="minTOFSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QRadioButton" name="TOFRadioButton">
+            <property name="minimumSize">
+             <size>
+              <width>121</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>TOF [mus]</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">scaleSelectionButtonGroup</string>
+            </attribute>
+           </widget>
+          </item>
           <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="maxQSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QDoubleSpinBox" name="maxEnergySpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="_QRadioButton">
+            <property name="minimumSize">
+             <size>
+              <width>81</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Q [1/A]</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">scaleSelectionButtonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="2">
            <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
             <property name="enabled">
              <bool>false</bool>
@@ -801,61 +836,39 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
-           <widget class="QRadioButton" name="wavelengthRadioButton">
+           <widget class="QRadioButton" name="DSpacingRadioButton">
             <property name="minimumSize">
              <size>
-              <width>125</width>
+              <width>111</width>
               <height>23</height>
              </size>
             </property>
             <property name="text">
-             <string>wavelength [A]</string>
+             <string>d-spacing [A]</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">scaleSelectionButtonGroup</string>
             </attribute>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
+          <item row="4" column="0">
+           <widget class="QRadioButton" name="energyRadioButton">
             <property name="minimumSize">
              <size>
-              <width>62</width>
-              <height>22</height>
+              <width>121</width>
+              <height>23</height>
              </size>
             </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
+            <property name="text">
+             <string>energy [meV]</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">scaleSelectionButtonGroup</string>
+            </attribute>
            </widget>
           </item>
-          <item row="2" column="2">
+          <item row="3" column="2">
            <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
             <property name="enabled">
              <bool>false</bool>
@@ -875,7 +888,7 @@
            </widget>
           </item>
           <item row="2" column="3">
-           <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
+           <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -893,134 +906,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QRadioButton" name="energyRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>121</width>
-              <height>23</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>energy [meV]</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">scaleSelectionButtonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="minEnergySpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="maxEnergySpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QRadioButton" name="TOFRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>121</width>
-              <height>23</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>TOF [mus]</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">scaleSelectionButtonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="minTOFSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QDoubleSpinBox" name="maxTOFSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>62</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="3">
+          <item row="5" column="3">
            <widget class="QDoubleSpinBox" name="stepTOFSpinBox">
             <property name="enabled">
              <bool>false</bool>
@@ -1036,6 +922,120 @@
               <width>62</width>
               <height>22</height>
              </size>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="minQSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>62</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="stepXScaleLabel">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>61</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Step size</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="maxXScaleLabel">
+            <property name="minimumSize">
+             <size>
+              <width>31</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>31</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Max</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="minXScaleLabel">
+            <property name="minimumSize">
+             <size>
+              <width>31</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Min</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="xScaleLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>144</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>144</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>X-scale for final DCS: </string>
             </property>
            </widget>
           </item>
