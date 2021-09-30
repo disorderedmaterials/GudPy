@@ -1293,13 +1293,16 @@ class GudrunFile:
                     result = False
             return result
         else:
-            gudrun_dcs = resolve("bin", "gudrun_dcs")
+            if hasattr(sys, '_MEIPASS'):
+                gudrun_dcs = os.path.join(sys._MEIPASS, "gudrun_dcs")
+            else:
+                gudrun_dcs = resolve("bin", "gudrun_dcs")
             if not os.path.exists(gudrun_dcs):
                 return False
             else:
                 return [gudrun_dcs, [path]]
 
-    def process(self):
+    def process(self, headless=True):
         """
         Write out the current state of the file, then
         purge detectors and then call gudrun_dcs on the file that
@@ -1315,9 +1318,9 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         self.write_out()
-        return self.dcs(path=self.outpath)
+        return self.dcs(path=self.outpath, headless=headless)
 
-    def purge(self):
+    def purge(self, headless=True):
         """
         Create a PurgeFile from the GudrunFile,
         and then call Purge.purge() to purge the detectors.
@@ -1332,7 +1335,7 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         purge = PurgeFile(self)
-        return purge.purge()
+        return purge.purge(headless=headless)
 
 
 if __name__ == "__main__":

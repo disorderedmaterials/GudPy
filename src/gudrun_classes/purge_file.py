@@ -229,7 +229,7 @@ class PurgeFile():
             f'{self.containerDataFiles}'
         )
 
-    def purge(self):
+    def purge(self, headless=True):
         """
         Write out the current state of the PurgeFile, then
         purge detectors by calling purge_det on that file.
@@ -244,23 +244,33 @@ class PurgeFile():
             Can access stdout/stderr from this.
         """
         self.write_out()
-        try:
-            purge_det = resolve("bin", "purge_det")
-            result = subprocess.run(
-                [purge_det, "purge_det.dat"],
-                capture_output=True,
-                text=True
-            )
-        except FileNotFoundError:
-            # FileNotFoundError probably means that GudPy is being
-            # run as an executable.
-            # So prepend sys._MEIPASS to the path to purge_det.
-            if hasattr(sys, '_MEIPASS'):
-                purge_det = sys._MEIPASS + os.sep + "purge_det"
+        if headless:
+            try:
+                purge_det = resolve("bin", "purge_det")
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
-                    capture_output=True, text=True
+                    capture_output=True,
+                    text=True
                 )
+            except FileNotFoundError:
+                # FileNotFoundError probably means that GudPy is being
+                # run as an executable.
+                # So prepend sys._MEIPASS to the path to purge_det.
+                if hasattr(sys, '_MEIPASS'):
+                    purge_det = sys._MEIPASS + os.sep + "purge_det"
+                    result = subprocess.run(
+                        [purge_det, "purge_det.dat"],
+                        capture_output=True, text=True
+                    )
+                else:
+                    result = False
+            return result
+        else:
+            if hasattr(sys, '_MEIPASS'):
+                purge_det = os.path.join(sys._MEIPASS, "purge_det")
             else:
-                result = False
-        return result
+                purge_det = resolve("bin", "purge_det")
+            if not os.path.exists(purge_det):
+                return False
+            else:
+                return [purge_det, []]

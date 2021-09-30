@@ -281,12 +281,16 @@ class GudPyMainWindow(QMainWindow):
 
     def runPurge_(self):
         self.lockControls()
-        result = PurgeFile(self.gudrunFile).purge()
-        self.unlockControls()
-        if not result:
+        purge = PurgeFile(self.gudrunFile).purge(headless=False)
+        if not purge:
             QMessageBox.critical(
                 self, "GudPy Error", "Couldn't find purge_det binary."
             )
+        else:
+            self.proc = QProcess()
+            self.proc.readyReadStandardOutput.connect(self.progressPurge)
+            self.proc.finished.connect(self.procFinished)
+            self.proc.start(*purge)
 
     def runGudrun_(self):
         self.lockControls()
@@ -384,7 +388,12 @@ class GudPyMainWindow(QMainWindow):
         progress+= self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
         print(self.progressBar.value())
-    
+
+    def progressPurge(self):
+        data = self.proc.readAllStandardOutput()
+        stdout = bytes(data).decode("utf8")
+        print(stdout)
+
     def procFinished(self):
         self.proc = None
         self.unlockControls()
