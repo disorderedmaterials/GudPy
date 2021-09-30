@@ -867,6 +867,7 @@ class SampleWidget(QWidget):
         Populates the child widgets with their
         corresponding data from the attributes of the Sample object.
         """
+        self.parameterTabs.setTabText(0, self.sample.name)
         # Acquire the lock
         self.widgetsRefreshing = True
 
