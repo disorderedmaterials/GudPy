@@ -393,7 +393,7 @@ class GudPyMainWindow(QMainWindow):
         markers =  config.NUM_GUDPY_CORE_OBJECTS + len(self.gudrunFile.sampleBackgrounds) + sum([sum([len(sampleBackground.samples), *[len(sample.containers) for sample in sampleBackground.samples]]) for sampleBackground in self.gudrunFile.sampleBackgrounds])
         stepSize = math.ceil(100/markers)
         print(stepSize)
-        progress = stepSize * sum([stdout.count("Got to: INSTRUMENT"), stdout.count("Got to: BEAM"), stdout.count("Got to: NORMALISATION"), stdout.count("Got to: SAMPLE BACKGROUND"), stdout.count("Got to: SAMPLE"), stdout.count("Got to: CONTAINER")])
+        progress = stepSize * sum([stdout.count("Got to: INSTRUMENT"), stdout.count("Got to: BEAM"), stdout.count("Got to: NORMALISATION"), stdout.count("Got to: SAMPLE BACKGROUND"), stdout.count("Finished merging data for sample"), stdout.count("Got to: CONTAINER")])
         progress+= self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
         print(self.progressBar.value())
