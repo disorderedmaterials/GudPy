@@ -45,6 +45,10 @@ class NormalisationWidget(QWidget):
         Slot for handling change in the density.
     handleTotalCrossSectionChanged(index)
         Slot for handling change in the total cross section source.
+    handleCrossSectionFileChanged(value)
+        Slot for handling change in total cross section source file name.
+    handleBrowseCrossSectionFile()
+        Slot for browsing for a cross section source file.
     handleForceCorrectionsSwitched(state)
         Slot for handling switching forcing correction calculations on/off.
     handlePlaczekCorrectionChanged(value)
@@ -280,8 +284,41 @@ class NormalisationWidget(QWidget):
         self.normalisation.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
+        self.crossSectionFileWidget.setVisible(
+            self.normalisation.totalCrossSectionSource ==
+            CrossSectionSource.FILE
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleCrossSectionFileChanged(self, value):
+        """
+        Slot for handling change in total cross section source file name.
+        Called when a textChanged signal is emitted,
+        from the crossSectionFileLineEdit.
+        Alters the normalisation's total cross
+        section source file name as such.
+        Parameters
+        ----------
+        value : str
+            The new text of the crossSectionFileLineEdit.
+        """
+        self.normalisation.crossSectionFilename = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBrowseCrossSectionFile(self):
+        """
+        Slot for browsing for a cross section source file.
+        Called when a clicked signal is emitted,
+        from the browseCrossSectionFileButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Total cross section source", "")
+        if filename:
+            self.crossSectionFileLineEdit.setText(filename)
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -714,6 +751,19 @@ class NormalisationWidget(QWidget):
         )
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
+        )
+        self.crossSectionFileLineEdit.setText(
+            self.normalisation.crossSectionFilename
+        )
+        self.crossSectionFileLineEdit.textChanged.connect(
+            self.handleCrossSectionFileChanged
+        )
+        self.browseCrossSectionFileButton.clicked.connect(
+            self.handleBrowseCrossSectionFile
+        )
+        self.crossSectionFileWidget.setVisible(
+            self.normalisation.totalCrossSectionSource ==
+            CrossSectionSource.FILE
         )
 
         self.forceCorrectionsCheckBox.setChecked(
