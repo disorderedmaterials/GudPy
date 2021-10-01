@@ -54,6 +54,10 @@ class SampleWidget(QWidget):
         Slot for handling change to the density units.
     handleTotalCrossSectionChanged(index)
         Slot for handling change in the total cross section source.
+    handleCrossSectionFileChanged(value)
+        Slot for handling change in total cross section source file name.
+    handleBrowseCrossSectionFile()
+        Slot for browsing for a cross section source file.
     handleTweakFactorChanged(value)
         Slot for handling change in the sample tweak factor.
     handleTopHatWidthChanged(value)
@@ -300,8 +304,39 @@ class SampleWidget(QWidget):
         self.sample.totalCrossSectionSource = (
             self.totalCrossSectionComboBox.itemData(index)
         )
+        self.crossSectionFileWidget.setVisible(
+            self.sample.totalCrossSectionSource == CrossSectionSource.FILE
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleCrossSectionFileChanged(self, value):
+        """
+        Slot for handling change in total cross section source file name.
+        Called when a textChanged signal is emitted,
+        from the crossSectionFileLineEdit.
+        Alters the sample's total cross section source file name as such.
+        Parameters
+        ----------
+        value : str
+            The new text of the crossSectionFileLineEdit.
+        """
+        self.sample.crossSectionFilename = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBrowseCrossSectionFile(self):
+        """
+        Slot for browsing for a cross section source file.
+        Called when a clicked signal is emitted,
+        from the browseCrossSectionFileButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Total cross section source", "")
+        if filename:
+            self.crossSectionFileLineEdit.setText(filename)
 
     def handleTweakFactorChanged(self, value):
         """
@@ -796,6 +831,12 @@ class SampleWidget(QWidget):
         self.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
+        self.crossSectionFileLineEdit.textChanged.connect(
+            self.handleCrossSectionFileChanged
+        )
+        self.browseCrossSectionFileButton.clicked.connect(
+            self.handleBrowseCrossSectionFile
+        )
 
         # Fill the normalisation type combo box.
         for n in NormalisationType:
@@ -921,6 +962,12 @@ class SampleWidget(QWidget):
 
         self.totalCrossSectionComboBox.setCurrentIndex(
             self.sample.totalCrossSectionSource.value
+        )
+        self.crossSectionFileLineEdit.setText(
+            self.sample.crossSectionFilename
+        )
+        self.crossSectionFileWidget.setVisible(
+            self.sample.totalCrossSectionSource == CrossSectionSource.FILE
         )
 
         self.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
