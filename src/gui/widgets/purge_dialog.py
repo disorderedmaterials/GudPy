@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QDialog
 from PyQt5 import uic
 import os
-from src.gudrun_classes.purge_file import PurgeFile
 
 
 class PurgeDialog(QDialog):
@@ -32,14 +31,22 @@ class PurgeDialog(QDialog):
         self.initComponents()
         self.setModal(True)
 
-    def purge(self):    
+    def purge(self):
         """
         Purge with the specified configuration.
         Called when an accepted signal is emmited from the buttonBox.
         """
-        self.purge_det = self.gudrunFile.purge(headless=False, standardDeviation=(self.stdDeviationsAcceptanceOffset, self.stdsAroundMeanDeviation), ignoreBad=self.ignoreBad, excludeSampleAndCan=self.excludeSampleAndCan)
+        self.purge_det = self.gudrunFile.purge(
+            headless=False,
+            standardDeviation=(
+                self.stdDeviationsAcceptanceOffset,
+                self.stdsAroundMeanDeviation
+            ),
+            ignoreBad=self.ignoreBad,
+            excludeSampleAndCan=self.excludeSampleAndCan
+        )
         self.close()
-    
+
     def cancel(self):
         self.cancelled = True
         self.close()

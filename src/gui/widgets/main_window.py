@@ -1,13 +1,10 @@
-from genericpath import samefile
-from src.gudrun_classes.sample_background import SampleBackground
 from PyQt5.QtCore import QProcess
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
-from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
+from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
-    QDialog,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -30,6 +27,7 @@ from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
 import math
+
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -89,9 +87,14 @@ class GudPyMainWindow(QMainWindow):
         self.statusBarLayout = QHBoxLayout(self.statusBarWidget)
         self.currentTaskLabel = QLabel(self.statusBarWidget)
         self.currentTaskLabel.setText("No task running.")
+        self.currentTaskLabel.setSizePolicy(
+            QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        )
         self.progressBar = QProgressBar(self.statusBarWidget)
-        self.progressBar.setSizePolicy(QSizePolicy(QSizePolicy.Expanding,
-                                                 QSizePolicy.Preferred))
+        self.progressBar.setSizePolicy(
+            QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        )
+        self.progressBar.setTextVisible(False)
         self.statusBarLayout.addWidget(self.currentTaskLabel)
         self.statusBarLayout.addWidget(self.progressBar)
         self.statusBarWidget.setLayout(self.statusBarLayout)
@@ -418,8 +421,9 @@ class GudPyMainWindow(QMainWindow):
     def progressDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
-        markers =  (
+
+        # Number of GudPy objects.
+        markers = (
             config.NUM_GUDPY_CORE_OBJECTS
             + len(self.gudrunFile.sampleBackgrounds)
             + sum(
@@ -427,7 +431,8 @@ class GudPyMainWindow(QMainWindow):
                     sum(
                         [
                             len(sampleBackground.samples), *[
-                                len(sample.containers) for sample in sampleBackground.samples
+                                len(sample.containers)
+                                for sample in sampleBackground.samples
                             ]
                         ]
                     ) for sampleBackground in self.gudrunFile.sampleBackgrounds
@@ -450,10 +455,13 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
+        pass
+        stdout
 
     def processStarted(self):
-        self.currentTaskLabel.setText(self.proc.program().split(os.path.sep)[-1])
+        self.currentTaskLabel.setText(
+            self.proc.program().split(os.path.sep)[-1]
+        )
 
     def procFinished(self):
         self.proc = None

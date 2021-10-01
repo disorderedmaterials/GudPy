@@ -69,7 +69,12 @@ class PurgeFile():
         Writes out the file, and then calls purge_det on that file.
     """
     def __init__(
-            self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True, excludeSampleAndCan=True):
+            self,
+            gudrunFile,
+            standardDeviation=(10, 10),
+            ignoreBad=True,
+            excludeSampleAndCan=True
+    ):
         """
         Constructs all the necessary attributes for the PurgeFile object.
 
@@ -211,7 +216,7 @@ class PurgeFile():
             else
             f'{self.normalisationDataFiles}'
             f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'  
+            f'{self.sampleBackgroundDataFiles}'
         )
         return (
             f'{HEADER}'
