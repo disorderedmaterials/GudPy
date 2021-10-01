@@ -453,7 +453,7 @@ class GudPyMainWindow(QMainWindow):
         ) + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
-    def progressPurge(self):      
+    def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
