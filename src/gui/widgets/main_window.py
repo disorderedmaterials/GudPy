@@ -9,8 +9,14 @@ from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
     QDialog,
     QFileDialog,
+    QHBoxLayout,
+    QLabel,
     QMainWindow,
     QMessageBox,
+    QProgressBar,
+    QSizePolicy,
+    QStatusBar,
+    QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
 from src.gui.widgets.view_input import ViewInput
@@ -77,6 +83,20 @@ class GudPyMainWindow(QMainWindow):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         uic.loadUi(uifile, self)
+
+        self.statusBar_ = QStatusBar(self)
+        self.statusBarWidget = QWidget(self.statusBar_)
+        self.statusBarLayout = QHBoxLayout(self.statusBarWidget)
+        self.currentTaskLabel = QLabel(self.statusBarWidget)
+        self.currentTaskLabel.setText("No task running.")
+        self.progressBar = QProgressBar(self.statusBarWidget)
+        self.progressBar.setSizePolicy(QSizePolicy(QSizePolicy.Expanding,
+                                                 QSizePolicy.Preferred))
+        self.statusBarLayout.addWidget(self.currentTaskLabel)
+        self.statusBarLayout.addWidget(self.progressBar)
+        self.statusBarWidget.setLayout(self.statusBarLayout)
+        self.statusBar_.addWidget(self.statusBarWidget)
+        self.setStatusBar(self.statusBar_)
         self.setWindowTitle("GudPy")
         self.show()
 
@@ -321,7 +341,6 @@ class GudPyMainWindow(QMainWindow):
         self.proc.readyReadStandardOutput.connect(self.progressDCS)
         self.proc.finished.connect(self.procFinished)
         self.proc.start(*dcs)
-
 
     def iterateGudrun_(self):
         iterationDialog = IterationDialog(self.gudrunFile, self)
