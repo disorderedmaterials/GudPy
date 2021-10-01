@@ -14,6 +14,8 @@ class PurgeFile():
     ----------
     gudrunFile : GudrunFile
         Parent GudrunFile that we are creating the PurgeFile from.
+    excludeSampleAndCan : bool
+        Exclude sample and container data files?
     instrumentName : str
         Name of the instrument.
     inputFileDir : str
@@ -66,7 +68,7 @@ class PurgeFile():
         Writes out the file, and then calls purge_det on that file.
     """
     def __init__(
-            self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
+            self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True, excludeSampleAndCan=True):
         """
         Constructs all the necessary attributes for the PurgeFile object.
 
@@ -81,9 +83,11 @@ class PurgeFile():
         ignoreBad : bool
             Ignore any existing bad spectrum files (spec.bad, spec.dat)?
             Default is True.
+        excludeSampleAndCan : bool
+            Exclude sample and container data files?
         """
         self.gudrunFile = gudrunFile
-
+        self.excludeSampleAndCan = excludeSampleAndCan
         # Extract relevant attributes from the GudrunFile object.
         self.instrumentName = gudrunFile.instrument.name
         self.inputFileDir = gudrunFile.instrument.GudrunInputFileDir
@@ -196,6 +200,18 @@ class PurgeFile():
         """
         HEADER = "'  '  '          '  '/'\n\n"
         TAB = "          "
+        dataFileLines = (
+            f'{self.normalisationDataFiles}'
+            f'{self.normalisationBackgroundDataFiles}'
+            f'{self.sampleBackgroundDataFiles}'
+            f'{self.sampleDataFiles}'
+            f'{self.containerDataFiles}'
+            if not self.excludeSampleAndCan
+            else
+            f'{self.normalisationDataFiles}'
+            f'{self.normalisationBackgroundDataFiles}'
+            f'{self.sampleBackgroundDataFiles}'  
+        )
         return (
             f'{HEADER}'
             f'{self.instrumentName}{TAB}'
@@ -222,11 +238,7 @@ class PurgeFile():
             f'{numifyBool(self.ignoreBad)}{TAB}'
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
-            f'{self.sampleDataFiles}'
-            f'{self.containerDataFiles}'
+            f'{dataFileLines}'
         )
 
     def purge(self, headless=True):
