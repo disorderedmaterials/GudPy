@@ -453,8 +453,10 @@ class GudPyMainWindow(QMainWindow):
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
     def progressPurge(self):
+        pass
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        print(stdout)
 
     def procStarted(self):
         self.currentTaskLabel.setText(

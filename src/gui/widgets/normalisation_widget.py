@@ -541,7 +541,7 @@ class NormalisationWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
-    
+
     def removeDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
         self.updateDataFilesList()
