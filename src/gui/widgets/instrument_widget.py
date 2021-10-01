@@ -189,6 +189,7 @@ class InstrumentWidget(QWidget):
         self.instrument.detectorCalibrationFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleGroupsFileChanged(self, text):
         """
@@ -204,6 +205,7 @@ class InstrumentWidget(QWidget):
         self.instrument.groupFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDeadtimeFileChanged(self, text):
         """
@@ -382,11 +384,12 @@ class InstrumentWidget(QWidget):
         text : str
             The new value of the spectrumNumbersIBLineEdit.
         """
-        self.instrument.incidentMonitorQuietCountConst = [
+        self.instrument.spectrumNumbersForIncidentBeamMonitor = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleSpectrumNumbersTChanged(self, text):
         """
@@ -401,7 +404,7 @@ class InstrumentWidget(QWidget):
         text : str
             The new value of the spectrumNumbersTLineEdit.
         """
-        self.instrument.transmissionMonitorQuietCountConst = [
+        self.instrument.spectrumNumbersForTransmissionMonitor = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
@@ -435,7 +438,7 @@ class InstrumentWidget(QWidget):
         value : float
             The new value of the transmissionMonitorQuietCountConstSpinBox.
         """
-        self.instrument.incidentMonitorQuietCountConst = value
+        self.instrument.transmissionMonitorQuietCountConst = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -456,6 +459,7 @@ class InstrumentWidget(QWidget):
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleChannelNoBChanged(self, value):
         """
@@ -474,6 +478,7 @@ class InstrumentWidget(QWidget):
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
         """
@@ -490,6 +495,7 @@ class InstrumentWidget(QWidget):
         self.instrument.spikeAnalysisAcceptanceFactor = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleMinWavelengthChanged(self, value):
         """

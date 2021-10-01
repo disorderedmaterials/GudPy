@@ -124,6 +124,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handlePeriodNoBgChanged(self, value):
         """
@@ -139,6 +140,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.periodNoBg = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleGeometryChanged(self, index):
         """
@@ -162,17 +164,6 @@ class NormalisationWidget(QWidget):
             self.geometryInfoStack.setCurrentIndex(
                 self.normalisation.geometry.value
             )
-        # if not self.widgetsRefreshing:
-        #     self.parent.setModified()
-        #     if self.normalisation.geometry == Geometry.SameAsBeam:
-        #         self.parent.updateGeometries()
-        #         self.geometryComboBox.setCurrentIndex(index)
-        #     else:
-        #         self.geometryInfoStack.setCurrentIndex(
-        #             self.normalisation.geometry.value
-        #         )
-        # self.normalisation.geometry = self.geometryComboBox.itemData(index)
-        # self.geometryComboBox.setCurrentIndex(index)
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -413,6 +404,7 @@ class NormalisationWidget(QWidget):
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -429,6 +421,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateDataFilesList(self):
         """
@@ -458,6 +451,9 @@ class NormalisationWidget(QWidget):
         else:
             self.normalisation.dataFilesBg.dataFiles[index] = value
         self.updateBgDataFilesList()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleBgDataFileInserted(self, item):
         """
@@ -475,6 +471,7 @@ class NormalisationWidget(QWidget):
         self.normalisation.dataFilesBg.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateBgDataFilesList(self):
         self.backgroundDataFilesList.clear()
@@ -544,7 +541,7 @@ class NormalisationWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
-
+    
     def removeDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
         self.updateDataFilesList()

@@ -126,6 +126,7 @@ class ContainerWidget(QWidget):
         self.container.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleGeometryChanged(self, index):
         """
@@ -345,6 +346,7 @@ class ContainerWidget(QWidget):
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -361,6 +363,7 @@ class ContainerWidget(QWidget):
         self.container.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateDataFilesList(self):
         """
@@ -410,6 +413,7 @@ class ContainerWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
+                self.parent.gudrunFile.purged = False
 
     def updateCompositionTable(self):
         """

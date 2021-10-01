@@ -304,6 +304,13 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
+    def makeProc(self, cmd, slot):
+        self.proc = QProcess()
+        self.proc.readyReadStandardOutput.connect(slot)
+        self.proc.started.connect(self.procStarted)
+        self.proc.finished.connect(self.procFinished)
+        self.proc.start(*cmd)
+
     def runPurge_(self):
         self.lockControls()
         purgeDialog = PurgeDialog(self.gudrunFile, self)
@@ -317,10 +324,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.unlockControls()
         else:
-            self.proc = QProcess()
-            self.proc.readyReadStandardOutput.connect(self.progressPurge)
-            self.proc.finished.connect(self.procFinished)
-            self.proc.start(*purge)
+            self.makeProc(purge, self.progressPurge)
 
     def runGudrun_(self):
         self.lockControls()
@@ -330,7 +334,6 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
-            return
         elif not self.gudrunFile.purged:
             choice = QMessageBox.warning(
                 self, "GudPy Warning",
@@ -339,14 +342,12 @@ class GudPyMainWindow(QMainWindow):
             )
             if choice == QMessageBox.No:
                 self.unlockControls()
-                return
-        self.proc = QProcess()
-        self.proc.readyReadStandardOutput.connect(self.progressDCS)
-        self.proc.started.connect(self.processStarted)
-        self.proc.finished.connect(self.procFinished)
-        self.gudrunFile.outpath = "gudpy.txt"
-        self.gudrunFile.write_out()
-        self.proc.start(*dcs)
+            else:
+                self.gudrunFile.write_out()
+                self.makeProc(dcs, self.progressDCS)
+        else:
+            self.gudrunFile.write_out()
+            self.makeProc(dcs, self.progressDCS)
 
     def iterateGudrun_(self):
         iterationDialog = IterationDialog(self.gudrunFile, self)
@@ -408,7 +409,6 @@ class GudPyMainWindow(QMainWindow):
         self.copy.setEnabled(True)
         self.cut.setEnabled(True)
         self.paste.setEnabled(True)
-        self.delete_.setEnabled(True)
         self.runPurge.setEnabled(True)
         self.runGudrun.setEnabled(True)
         self.iterateGudrun.setEnabled(True)
@@ -421,7 +421,7 @@ class GudPyMainWindow(QMainWindow):
     def progressDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-
+        print(stdout)
         # Number of GudPy objects.
         markers = (
             config.NUM_GUDPY_CORE_OBJECTS
@@ -455,10 +455,8 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        pass
-        stdout
 
-    def processStarted(self):
+    def procStarted(self):
         self.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )

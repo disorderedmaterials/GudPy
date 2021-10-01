@@ -117,6 +117,7 @@ class SampleBackgroundWidget(QWidget):
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         value = item.text()
@@ -138,6 +139,7 @@ class SampleBackgroundWidget(QWidget):
                 self.handleDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def removeFile(self, target, dataFiles):
         if target.currentIndex().isValid():
@@ -145,8 +147,10 @@ class SampleBackgroundWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
+                self.parent.gudrunFile.purged = False
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False

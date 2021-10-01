@@ -163,6 +163,7 @@ class SampleWidget(QWidget):
         self.sample.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -562,6 +563,7 @@ class SampleWidget(QWidget):
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -578,6 +580,7 @@ class SampleWidget(QWidget):
         self.sample.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateDataFilesList(self):
         """
@@ -627,6 +630,7 @@ class SampleWidget(QWidget):
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
+                self.parent.gudrunFile.purged = False
 
     def updateCompositionTable(self):
         """

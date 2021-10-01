@@ -134,10 +134,7 @@ class GudrunFile:
         self.path = path
 
         # Construct the outpath.
-        fname = os.path.basename(self.path)
-        ref_fname = "gudpy_{}".format(fname)
-        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
-        self.outpath = "{}/{}".format(dir, ref_fname)
+        self.outpath = "gudpy.txt"
 
         self.instrument = None
         self.beam = None
