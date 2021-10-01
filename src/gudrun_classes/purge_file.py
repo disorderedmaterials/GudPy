@@ -215,7 +215,7 @@ class PurgeFile():
         )
         return (
             f'{HEADER}'
-            f'{Instruments(self.name.value).name}{TAB}'
+            f'{Instruments(self.instrumentName.value).name}{TAB}'
             f'Instrument name\n'
             f'{self.inputFileDir}{TAB}'
             f'Gudrun input file directory:\n'
