@@ -929,6 +929,9 @@ class InstrumentWidget(QWidget):
         min_.setValue(self.instrument.XMin)
         max_.setValue(self.instrument.XMax)
         step.setValue(self.instrument.XStep)
+        min_.setEnabled(True)
+        max_.setEnabled(True)
+        step.setEnabled(True)
 
         for scaleRadioButton, minSpinBox, maxSpinBox, stepSpinBox in (
             self.scales.values()
