@@ -1,5 +1,6 @@
 import os
 import sys
+from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
 
@@ -214,7 +215,7 @@ class PurgeFile():
         )
         return (
             f'{HEADER}'
-            f'{self.instrumentName}{TAB}'
+            f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
             f'{self.inputFileDir}{TAB}'
             f'Gudrun input file directory:\n'
