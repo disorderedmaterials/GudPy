@@ -1333,7 +1333,10 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         purge = PurgeFile(self, *args, **kwargs)
-        return purge.purge(headless=headless)
+        result = purge.purge(headless=headless)
+        if result:
+            self.purged = True
+        return result
 
 
 if __name__ == "__main__":
