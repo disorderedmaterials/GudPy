@@ -1,3 +1,4 @@
+from src.scripts.utils import nthint
 from PyQt5.QtCore import QProcess
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
@@ -452,12 +453,15 @@ class GudPyMainWindow(QMainWindow):
         ) + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
-    def progressPurge(self):
-        pass
+    def progressPurge(self):            
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
-
+        if "Total run time" in stdout:
+            QMessageBox.warning(
+                self, "GudPy Warning",
+                f"{nthint(stdout, 0)} detectors made it through the purge."
+            )
     def procStarted(self):
         self.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
