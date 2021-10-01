@@ -53,6 +53,9 @@ class PurgeDialog(QDialog):
     def ignoreBadChanged(self, state):
         self.ignoreBad = state
 
+    def excludeSampleAndCanChanged(self, state):
+        self.excludeSampleAndCan = state
+
     def initComponents(self):
         """
         Loads the UI file for the IterationDialog object.
@@ -74,4 +77,7 @@ class PurgeDialog(QDialog):
         )
         self.ignoreBadCheckBox.toggled.connect(
             self.ignoreBadChanged
+        )
+        self.excludeSampleAndCanCheckBox.toggled.connect(
+            self.excludeSampleAndCanChanged
         )
