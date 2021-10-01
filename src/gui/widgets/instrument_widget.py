@@ -37,6 +37,8 @@ class InstrumentWidget(QWidget):
         Slot for handling change to the deadtime constants file name.
     handleUseLogarithmicBinningSwitched(state)
         Slot for handling switching logarithmic binning on/off.
+    handleLogarithmicStepSizeChanged(value)
+        Slot for handling change in the logarithmic step size.
     handleMergeWeightsChanged(index)
         Slot for handling change to what to merge weights by.
     handleNeutronScatteringParamsFileChanged(text)
@@ -230,6 +232,21 @@ class InstrumentWidget(QWidget):
             The new state of the logarithmicBinningCheckBox (1: True, 0: False)
         """
         self.instrument.useLogarithmicBinning = state
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleLogarithmicStepSizeChanged(self, value):
+        """
+        Slot for handling change in the logarithmic step size.
+        Called when the valueChanged signal is emitted,
+        from the logarithmicStepSizeSpinBox.
+        Updates the instruments logarithmic step size as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the logarithmicStepSizeSpinBox.
+        """
+        self.instrument.logarithmicStepSize = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -942,12 +959,19 @@ class InstrumentWidget(QWidget):
             stepSpinBox.valueChanged.connect(self.handleXStepChanged)
 
         # Setup the widget and slot for enabling/disabling
-        # logarithmic binning.
+        # logarithmic binning and step size.
         self.logarithmicBinningCheckBox.setChecked(
             self.instrument.useLogarithmicBinning
         )
         self.logarithmicBinningCheckBox.stateChanged.connect(
             self.handleUseLogarithmicBinningSwitched
+        )
+
+        self.logarithmicStepSizeSpinBox.setValue(
+            self.instrument.logarithmicStepSize
+        )
+        self.logarithmicStepSizeSpinBox.valueChanged.connect(
+            self.handleLogarithmicStepSizeChanged
         )
 
         # Setup the widget and slot for the groups acceptance factor.

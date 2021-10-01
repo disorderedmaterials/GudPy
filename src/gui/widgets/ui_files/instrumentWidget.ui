@@ -580,6 +580,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Logarithmic step size</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="logarithmicStepSizeSpinBox"/>
+        </item>
+        <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
