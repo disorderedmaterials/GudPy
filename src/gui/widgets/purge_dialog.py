@@ -44,6 +44,15 @@ class PurgeDialog(QDialog):
         self.cancelled = True
         self.close()
 
+    def handleStdDeviationsAcceptanceOffsetChanged(self, value):
+        self.stdDeviationsAcceptanceOffset = value
+
+    def handleStdsAroundMeanDeviationChanged(self, value):
+        self.stdsAroundMeanDeviation = value
+
+    def ignoreBadChanged(self, state):
+        self.ignoreBad = state
+
     def initComponents(self):
         """
         Loads the UI file for the IterationDialog object.
@@ -56,4 +65,13 @@ class PurgeDialog(QDialog):
         )
         self.buttonBox.rejected.connect(
             self.cancel
+        )
+        self.stdDeviationsSpinBox.valueChanged.connect(
+            self.handleStdDeviationsAcceptanceOffsetChanged
+        )
+        self.rangeAroundMeanSpinBox.valueChanged.connect(
+            self.handleStdsAroundMeanDeviationChanged
+        )
+        self.ignoreBadCheckBox.toggled.connect(
+            self.ignoreBadChanged
         )
