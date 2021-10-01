@@ -453,7 +453,7 @@ class GudPyMainWindow(QMainWindow):
         ) + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
-    def progressPurge(self):            
+    def progressPurge(self):      
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
@@ -462,6 +462,7 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
+
     def procStarted(self):
         self.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
