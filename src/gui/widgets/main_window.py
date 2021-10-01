@@ -7,10 +7,12 @@ from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
 from PyQt5.QtWidgets import (
+    QDialog,
     QFileDialog,
     QMainWindow,
     QMessageBox,
 )
+from src.gui.widgets.purge_dialog import PurgeDialog
 from src.gui.widgets.view_input import ViewInput
 from src.gui.widgets.sample_widget import SampleWidget
 from src.gui.widgets.instrument_widget import InstrumentWidget
@@ -281,11 +283,16 @@ class GudPyMainWindow(QMainWindow):
 
     def runPurge_(self):
         self.lockControls()
-        purge = PurgeFile(self.gudrunFile).purge(headless=False)
-        if not purge:
+        purgeDialog = PurgeDialog(self.gudrunFile, self)
+        purgeDialog.exec()
+        purge = purgeDialog.purge_det
+        if purgeDialog.cancelled:
+            self.unlockControls()
+        elif not purge:
             QMessageBox.critical(
                 self, "GudPy Error", "Couldn't find purge_det binary."
             )
+            self.unlockControls()
         else:
             self.proc = QProcess()
             self.proc.readyReadStandardOutput.connect(self.progressPurge)

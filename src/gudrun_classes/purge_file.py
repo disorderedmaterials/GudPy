@@ -284,5 +284,4 @@ class PurgeFile():
                 purge_det = resolve("bin", "purge_det")
             if not os.path.exists(purge_det):
                 return False
-            else:
-                return [purge_det, []]
+            return [purge_det, []]

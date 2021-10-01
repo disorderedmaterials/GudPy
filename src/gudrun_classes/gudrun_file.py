@@ -1318,7 +1318,7 @@ class GudrunFile:
         self.write_out()
         return self.dcs(path=self.outpath, headless=headless)
 
-    def purge(self, headless=True):
+    def purge(self, headless=True, *args, **kwargs):
         """
         Create a PurgeFile from the GudrunFile,
         and then call Purge.purge() to purge the detectors.
@@ -1332,7 +1332,7 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
-        purge = PurgeFile(self)
+        purge = PurgeFile(self, *args, **kwargs)
         return purge.purge(headless=headless)
 
 
