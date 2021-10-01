@@ -339,7 +339,10 @@ class GudPyMainWindow(QMainWindow):
                 return
         self.proc = QProcess()
         self.proc.readyReadStandardOutput.connect(self.progressDCS)
+        self.proc.started.connect(self.processStarted)
         self.proc.finished.connect(self.procFinished)
+        self.gudrunFile.outpath = "gudpy.txt"
+        self.gudrunFile.write_out()
         self.proc.start(*dcs)
 
     def iterateGudrun_(self):
@@ -416,19 +419,43 @@ class GudPyMainWindow(QMainWindow):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
-        markers =  config.NUM_GUDPY_CORE_OBJECTS + len(self.gudrunFile.sampleBackgrounds) + sum([sum([len(sampleBackground.samples), *[len(sample.containers) for sample in sampleBackground.samples]]) for sampleBackground in self.gudrunFile.sampleBackgrounds])
+        markers =  (
+            config.NUM_GUDPY_CORE_OBJECTS
+            + len(self.gudrunFile.sampleBackgrounds)
+            + sum(
+                [
+                    sum(
+                        [
+                            len(sampleBackground.samples), *[
+                                len(sample.containers) for sample in sampleBackground.samples
+                            ]
+                        ]
+                    ) for sampleBackground in self.gudrunFile.sampleBackgrounds
+                ]
+            )
+        )
         stepSize = math.ceil(100/markers)
-        print(stepSize)
-        progress = stepSize * sum([stdout.count("Got to: INSTRUMENT"), stdout.count("Got to: BEAM"), stdout.count("Got to: NORMALISATION"), stdout.count("Got to: SAMPLE BACKGROUND"), stdout.count("Finished merging data for sample"), stdout.count("Got to: CONTAINER")])
-        progress+= self.progressBar.value()
+        progress = stepSize * sum(
+            [
+                stdout.count("Got to: INSTRUMENT"),
+                stdout.count("Got to: BEAM"),
+                stdout.count("Got to: NORMALISATION"),
+                stdout.count("Got to: SAMPLE BACKGROUND"),
+                stdout.count("Finished merging data for sample"),
+                stdout.count("Got to: CONTAINER")
+            ]
+        ) + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
-        print(self.progressBar.value())
 
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
 
+    def processStarted(self):
+        self.currentTaskLabel.setText(self.proc.program().split(os.path.sep)[-1])
+
     def procFinished(self):
         self.proc = None
         self.unlockControls()
+        self.currentTaskLabel.setText("No task running.")
