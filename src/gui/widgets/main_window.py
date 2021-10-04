@@ -1,4 +1,4 @@
-from src.scripts.utils import nthint
+from src.scripts.utils import nthint, numifyBool
 from PyQt5.QtCore import QProcess
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
@@ -28,6 +28,7 @@ from src.gudrun_classes.enums import Geometry
 import os
 from PyQt5 import uic
 import math
+from queue import Queue
 
 
 class GudPyMainWindow(QMainWindow):
@@ -103,6 +104,7 @@ class GudPyMainWindow(QMainWindow):
         self.setStatusBar(self.statusBar_)
         self.setWindowTitle("GudPy")
         self.show()
+
 
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
@@ -351,8 +353,38 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(dcs, self.progressDCS)
 
     def iterateGudrun_(self):
+        self.lockControls()
         iterationDialog = IterationDialog(self.gudrunFile, self)
-        iterationDialog.show()
+        iterationDialog.exec()
+        iterate = iterationDialog.iterateCommand
+        if iterationDialog.cancelled:
+            self.unlockControls()
+        elif not iterate:
+            QMessageBox.critical(
+                self, "GudPy Error",
+                "Couldn't find gudrun_dcs binary."
+            )
+            self.unlockControls()
+        else:
+            self.iterableProc(iterate, iterationDialog.numberIterations)
+
+    def iterableProc(self, cmdGenerator, numIterations):
+        self.numberIterations = numIterations
+        for i, cmd in enumerate(cmdGenerator):
+            self.queueIterableProc(cmd, i)
+        self.nextIterableProc()
+
+    def queueIterableProc(self, cmd, iteration):
+        self.queue = Queue()
+        self.queue.put((cmd, iteration))
+
+    def nextIterableProc(self):
+        proc, i = self.queue.get()
+        self.proc = QProcess()
+        self.proc.readyReadStandardOutput.connect(lambda : print(bytes(self.proc.readAllStandardOutput()).decode('utf8')))
+        self.proc.started.connect(lambda: self.markIteration(i+1, self.numberIterations))
+        self.proc.finished.connect(lambda: self.progressIteration(i+1, self.numberIterations))        
+        self.proc.start(*proc)
 
     def setModified(self):
         if not self.modified:
@@ -419,7 +451,7 @@ class GudPyMainWindow(QMainWindow):
         self.loadInputFile.setEnabled(True)
         self.loadConfiguration.setEnabled(True)
 
-    def progressDCS(self):
+    def progressIncrement(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
@@ -450,7 +482,11 @@ class GudPyMainWindow(QMainWindow):
                 stdout.count("Finished merging data for sample"),
                 stdout.count("Got to: CONTAINER")
             ]
-        ) + self.progressBar.value()
+        )
+        return progress
+
+    def progressDCS(self):
+        progress = self.progressIncrement() + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
     def progressPurge(self):
@@ -462,6 +498,17 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
+
+    def markIteration(self, iteration, numIterations):
+        self.currentTaskLabel.setText(f"gudrun_dcs {iteration}/{numIterations}")
+
+    def progressIteration(self, iteration, numIterations):
+        progress = math.ceil(self.progressIncrement() / numIterations) + self.progressBar.value()
+        self.progressBar.setValue(progress if progress <= 100 else 100)
+        if iteration == numIterations:
+            self.procFinished()
+        else:
+            self.nextIterableProc()
 
     def procStarted(self):
         self.currentTaskLabel.setText(

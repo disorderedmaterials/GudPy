@@ -53,6 +53,7 @@ class IterationDialog(QDialog):
         self.performInelasticitySubtractions = False
         self.numberIterations = 1
         self.iterateCommand = None
+        self.cancelled = False
 
     def handleTweakValuesChanged(self, state):
         """
@@ -103,9 +104,8 @@ class IterationDialog(QDialog):
         if self.tweakValues:
             if self.tweak == Tweakables.TWEAK_FACTOR:
                 tweakFactorIterator = TweakFactorIterator(self.gudrunFile)
-                self.parent().lockControls()
-                tweakFactorIterator.iterate(self.numberIterations)
-                self.parent().unlockControls()
+                self.iterateCommand = tweakFactorIterator.iterate(self.numberIterations, headless=False)
+                self.close()
             else:
                 pass
         elif self.performInelasticitySubtractions:
@@ -117,6 +117,10 @@ class IterationDialog(QDialog):
             self.parent().unlockControls()
         else:
             pass
+
+    def cancel(self):
+        self.cancelled = True
+        self.close()
 
     def initComponents(self):
         """
@@ -138,5 +142,5 @@ class IterationDialog(QDialog):
             self.iterate
         )
         self.buttonBox.rejected.connect(
-            self.close
+            self.cancel
         )
