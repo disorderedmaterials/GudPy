@@ -234,9 +234,8 @@ class GudrunFile:
         None
         """
         try:
-            # Initialise instrument attribute to a new instance of Intrument.
+            # Initialise instrument attribute to a new instance of Instrument.
             self.instrument = Instrument()
-
             self.consumeWhitespace()
 
             # For string attributes,
@@ -1144,7 +1143,6 @@ class GudrunFile:
                  Cannot parse from an invalid path"
             )
         parsing = ""
-
         KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
         # Read the input stream into our attribute.
