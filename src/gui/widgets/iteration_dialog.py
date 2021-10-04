@@ -112,9 +112,8 @@ class IterationDialog(QDialog):
             wavelengthSubtractionIterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
-            self.parent().lockControls()
-            wavelengthSubtractionIterator.iterate(self.numberIterations)
-            self.parent().unlockControls()
+            self.iterateCommand = wavelengthSubtractionIterator.iterate(self.numberIterations, headless=False)
+            self.close()
         else:
             pass
 
