@@ -287,7 +287,7 @@ class Instrument:
             f'Subtract wavelength-binned data?\n'
             f'bin/{TAB}'
             f'Folder where Gudrun started\n'
-            f'{self.startupFileFolder}{TAB}'
+            f'bin/{TAB}'
             f'Folder containing the startup file\n'
             f'{self.logarithmicStepSize}{TAB}'
             f'Logarithmic step size\n'

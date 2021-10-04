@@ -8,7 +8,7 @@ class GudPyFileSystem():
 
     def __init__(self, gudrunFile):
         dataFileType = gudrunFile.instrument.dataFileType
-        dataFileDir = gudrunFile.instrument.dataFileDir        
+        dataFileDir = gudrunFile.instrument.dataFileDir
         self.dirs = [
             gudrunFile.instrument.GudrunInputFileDir,
             gudrunFile.instrument.dataFileDir,
@@ -16,10 +16,10 @@ class GudPyFileSystem():
             gudrunFile.instrument.startupFileFolder,
         ]
         self.files = [
-            gudrunFile.instrument.groupFileName,
-            gudrunFile.instrument.deadtimeConstantsFileName,
-            gudrunFile.instrument.neutronScatteringParametersFile,
-            gudrunFile.beam.filenameIncidentBeamSpectrumParams,
+            os.path.join("bin", gudrunFile.instrument.groupFileName),
+            os.path.join("bin", gudrunFile.instrument.deadtimeConstantsFileName),
+            os.path.join("bin", gudrunFile.instrument.neutronScatteringParametersFile),
+            os.path.join("bin", gudrunFile.beam.filenameIncidentBeamSpectrumParams),
             *[os.path.join(dataFileDir, df) for df in gudrunFile.normalisation.dataFiles.dataFiles],
             *[os.path.join(dataFileDir, df) for df in gudrunFile.normalisation.dataFilesBg.dataFiles],
         ]
