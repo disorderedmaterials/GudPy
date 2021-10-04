@@ -1,6 +1,6 @@
 from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
-
+import os
 
 class Instrument:
     """
@@ -155,6 +155,7 @@ class Instrument:
         self.nxsDefinitionFile = ""
         self.numberIterations = 0
         self.tweakTweakFactors = False
+        self.GudPyInputDir = ""
 
     def __str__(self):
         """
@@ -233,7 +234,7 @@ class Instrument:
         return (
             f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
-            f'{self.GudrunInputFileDir}{TAB}'
+            f'{os.path.sep}{TAB}'
             f'Gudrun input file directory:\n'
             f'{self.dataFileDir}{TAB}'
             f'Data file directory\n'
@@ -284,7 +285,7 @@ class Instrument:
             f'{scaleSelectionLine}'
             f'{numifyBool(self.subWavelengthBinnedData)}{TAB}'
             f'Subtract wavelength-binned data?\n'
-            f'{self.GudrunStartFolder}{TAB}'
+            f'bin/{TAB}'
             f'Folder where Gudrun started\n'
             f'{self.startupFileFolder}{TAB}'
             f'Folder containing the startup file\n'
