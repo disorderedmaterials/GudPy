@@ -156,7 +156,6 @@ class Instrument:
         self.nxsDefinitionFile = ""
         self.numberIterations = 0
         self.tweakTweakFactors = False
-        self.GudPyInputDir = ""
 
     def __str__(self):
         """
