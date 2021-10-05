@@ -27,12 +27,28 @@ class RunBatchFiles():
     Methods
     -------
     run()
+        Runs the batch processing routine.
     process()
+        Performs the batch processing routine.
     batchSamples()
+        Creates batches.
     prepareTasks()
+        Prepares tasks for execution.
     """
     def __init__(self, gudrunFile, batchSize, threaded=True):
+        """
+        Constructs all the necessary attributes for the RunBatchFiles object.
+        Then runs the batch processing routine.
 
+        Parameters
+        ----------
+        gudrunFile : GudrunFile
+            GudrunFile object to perform batch processing on.
+        batchSize : int
+            Batch size to use.
+        threaded : bool, optional
+            Should threading be used?
+        """
         self.gudrunFile = gudrunFile
         self.batchSize = batchSize
         self.batches = {}
@@ -136,6 +152,3 @@ class RunBatchFiles():
                 batchedGudrunFile.outpath = f"gudrun_dcs-{j}-{i}.dat"
                 # Append the task
                 self.tasks.append(batchedGudrunFile.process)
-
-g = GudrunFile("tests/TestData/gudpy_good_water.txt")
-RunBatchFiles(g, 1) 
