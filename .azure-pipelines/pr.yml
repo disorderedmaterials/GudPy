@@ -15,21 +15,21 @@ variables:
     {
       linuxPy38:
       {
-        pythonVersion: "3.8",
+        pythonVersion: "3.9",
         imageName: "ubuntu-latest",
         arch: "x64",
         osName: "linux"
       },
       macOSPy38: 
       {
-        pythonVersion: "3.8",
+        pythonVersion: "3.9",
         imageName: "macOS-latest",
         arch: "x64",
         osName: "osx"
       },
       windowsPy38:
       {
-        pythonVersion: "3.8",
+        pythonVersion: "3.9",
         imageName: "windows-latest",
         arch: "x86",
         osName: "windows"      
