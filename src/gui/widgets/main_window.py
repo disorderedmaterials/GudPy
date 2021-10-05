@@ -520,6 +520,12 @@ class GudPyMainWindow(QMainWindow):
                 self, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
+        elif "Error" in stdout or "error" in stdout:
+            QMessageBox.critical(
+                self, "GudPy Error",
+                f"An error occurred. See the following traceback"
+                f" from purge_det\n{stdout}"
+            )
 
     def markIteration(self, iterType, iteration, numIterations):
         self.currentTaskLabel.setText(
