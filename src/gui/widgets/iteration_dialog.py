@@ -54,6 +54,7 @@ class IterationDialog(QDialog):
         self.numberIterations = 1
         self.iterateCommand = None
         self.cancelled = False
+        self.text = ""
 
     def handleTweakValuesChanged(self, state):
         """
@@ -104,7 +105,13 @@ class IterationDialog(QDialog):
         if self.tweakValues:
             if self.tweak == Tweakables.TWEAK_FACTOR:
                 tweakFactorIterator = TweakFactorIterator(self.gudrunFile)
-                self.iterateCommand = tweakFactorIterator.iterate(self.numberIterations, headless=False)
+                self.iterateCommand = (
+                    tweakFactorIterator.iterate(
+                        self.numberIterations,
+                        headless=False
+                    )
+                )
+                self.text = "Tweak by tweak factor"
                 self.close()
             else:
                 pass
@@ -112,7 +119,13 @@ class IterationDialog(QDialog):
             wavelengthSubtractionIterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
-            self.iterateCommand = wavelengthSubtractionIterator.iterate(self.numberIterations, headless=False)
+            self.iterateCommand = (
+                wavelengthSubtractionIterator.iterate(
+                    self.numberIterations,
+                    headless=False
+                )
+            )
+            self.text = "Inelasticity subtractions"
             self.close()
         else:
             pass

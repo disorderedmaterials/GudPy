@@ -1,4 +1,4 @@
-from src.scripts.utils import nthint, numifyBool
+from src.scripts.utils import nthint
 from PyQt5.QtCore import QProcess
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
@@ -104,7 +104,6 @@ class GudPyMainWindow(QMainWindow):
         self.setStatusBar(self.statusBar_)
         self.setWindowTitle("GudPy")
         self.show()
-
 
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
@@ -366,10 +365,15 @@ class GudPyMainWindow(QMainWindow):
             )
             self.unlockControls()
         else:
-            self.iterableProc(iterate, iterationDialog.numberIterations)
+            self.iterableProc(
+                iterate,
+                iterationDialog.numberIterations,
+                iterationDialog.text
+            )
 
-    def iterableProc(self, cmdGenerator, numIterations):
+    def iterableProc(self, cmdGenerator, numIterations, text):
         self.numberIterations = numIterations
+        self.text = text
         for i, cmd in enumerate(cmdGenerator):
             self.queueIterableProc(cmd, i)
         self.nextIterableProc()
@@ -381,9 +385,12 @@ class GudPyMainWindow(QMainWindow):
     def nextIterableProc(self):
         proc, i = self.queue.get()
         self.proc = QProcess()
-        self.proc.readyReadStandardOutput.connect(lambda : print(bytes(self.proc.readAllStandardOutput()).decode('utf8')))
-        self.proc.started.connect(lambda: self.markIteration(i+1, self.numberIterations))
-        self.proc.finished.connect(lambda: self.progressIteration(i+1, self.numberIterations))        
+        self.proc.started.connect(
+            lambda: self.markIteration(self.text, i+1, self.numberIterations)
+        )
+        self.proc.finished.connect(
+            lambda: self.progressIteration(i+1, self.numberIterations)
+        )
         self.proc.start(*proc)
 
     def setModified(self):
@@ -499,11 +506,15 @@ class GudPyMainWindow(QMainWindow):
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
 
-    def markIteration(self, iteration, numIterations):
-        self.currentTaskLabel.setText(f"gudrun_dcs {iteration}/{numIterations}")
+    def markIteration(self, iterType, iteration, numIterations):
+        self.currentTaskLabel.setText(
+            f"gudrun_dcs {iterType} {iteration}/{numIterations}"
+        )
 
     def progressIteration(self, iteration, numIterations):
-        progress = math.ceil(self.progressIncrement() / numIterations) + self.progressBar.value()
+        progress = (
+            math.ceil(self.progressIncrement() / numIterations)
+        ) + self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
         if iteration == numIterations:
             self.procFinished()
