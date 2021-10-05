@@ -307,7 +307,8 @@ class GudPyMainWindow(QMainWindow):
             unresolved = "\n".join(r[1] for r in result if not r[0])
             QMessageBox.critical(
                 self, "GudPy Error",
-                f"Couldn't resolve some files! Check that all paths are correct and try again."
+                f"Couldn't resolve some files!"
+                f" Check that all paths are correct and try again."
                 f"{unresolved}"
             )
 
