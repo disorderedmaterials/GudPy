@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QAction, QMainWindow, QTextEdit
+from PyQt6.QtWidgets import QWidgetAction, QMainWindow, QTextEdit
 
 
 class ViewInput(QMainWindow):
@@ -24,7 +24,7 @@ class ViewInput(QMainWindow):
 
         menuBar = self.menuBar()
         menuBar.setNativeMenuBar(False)
-        saveAction = QAction("Save and Close", menuBar)
+        saveAction = QWidgetAction("Save and Close", menuBar)
         menuBar.addAction(saveAction)
         saveAction.triggered.connect(self.save)
 

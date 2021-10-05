@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QCursor, QIcon
-from PyQt5.QtWidgets import QAction, QMenu, QTreeView
-from PyQt5.QtCore import (
+from PyQt6.QtGui import QCursor, QIcon
+from PyQt6.QtWidgets import QWidgetAction, QMenu, QTreeView
+from PyQt6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QPersistentModelIndex,
@@ -231,7 +231,10 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         if not index.isValid():
             return QVariant()
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if (
+            role == Qt.ItemDataRole.DisplayRole
+            or role == Qt.ItemDataRole.EditRole
+        ):
             if isinstance(
                 index.internalPointer(),
                 (Instrument, Beam, Normalisation, SampleBackground)
@@ -248,12 +251,12 @@ class GudPyTreeModel(QAbstractItemModel):
                 )
             elif isinstance(index.internalPointer(), (Sample, Container)):
                 return QVariant(index.internalPointer().name)
-        elif role == Qt.DecorationRole:
+        elif role == Qt.ItemDataRole.DecorationRole:
             if isinstance(index.internalPointer(), Sample):
                 return QVariant(self.sampleIcon)
             elif isinstance(index.internalPointer(), Container):
                 return QVariant(self.containerIcon)
-        elif role == Qt.CheckStateRole and self.isSample(index):
+        elif role == Qt.ItemDataRole.CheckStateRole and self.isSample(index):
             return self.checkState(index)
         else:
             return QVariant()
@@ -277,8 +280,8 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         if not index.isValid():
             return False
-        elif role == Qt.CheckStateRole and self.isSample(index):
-            if value == Qt.Checked:
+        elif role == Qt.ItemDataRole.CheckStateRole and self.isSample(index):
+            if value == Qt.CheckState.Checked:
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
@@ -298,7 +301,10 @@ class GudPyTreeModel(QAbstractItemModel):
         QCheckState
             Check state.
         """
-        return Qt.Checked if self.isIncluded(index) else Qt.Unchecked
+        return (
+            Qt.CheckState.Checked if self.isIncluded(index)
+            else Qt.CheckState.Unchecked
+        )
 
     def rowCount(self, parent=QModelIndex()):
         """
@@ -378,7 +384,7 @@ class GudPyTreeModel(QAbstractItemModel):
         flags = super(GudPyTreeModel, self).flags(index)
         # If is is a sample, make append checkable flag.
         if self.isSample(index):
-            flags |= Qt.ItemIsUserCheckable
+            flags |= Qt.ItemFlag.ItemIsUserCheckable
         return flags
 
     def isSample(self, index):
@@ -715,7 +721,7 @@ class GudPyTreeView(QTreeView):
         # Create the menu
         self.menu = QMenu(self)
         # Actions for insertion
-        insertSampleBackground = QAction(
+        insertSampleBackground = QWidgetAction(
             "Insert Sample Background", self.menu
         )
         insertSampleBackground.triggered.connect(
@@ -723,13 +729,13 @@ class GudPyTreeView(QTreeView):
         )
         insertSampleBackground.setDisabled(True)
         self.menu.addAction(insertSampleBackground)
-        insertContainer = QAction("Insert Container", self.menu)
+        insertContainer = QWidgetAction("Insert Container", self.menu)
         insertContainer.triggered.connect(
             self.insertContainer
         )
         insertContainer.setDisabled(True)
         self.menu.addAction(insertContainer)
-        insertSample = QAction("Insert Sample", self.menu)
+        insertSample = QWidgetAction("Insert Sample", self.menu)
         insertSample.triggered.connect(
             self.insertSample
         )
@@ -737,19 +743,21 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(insertSample)
 
         # Selection actions
-        selectAllSamples = QAction("Select All Samples", self.menu)
+        selectAllSamples = QWidgetAction("Select All Samples", self.menu)
         selectAllSamples.triggered.connect(
             self.selectAllSamples
         )
         selectAllSamples.setDisabled(True)
         self.menu.addAction(selectAllSamples)
-        deselectAllSamples = QAction("Deselect All Samples", self.menu)
+        deselectAllSamples = QWidgetAction("Deselect All Samples", self.menu)
         deselectAllSamples.triggered.connect(
             self.deselectAllSamples
         )
         deselectAllSamples.setDisabled(True)
         self.menu.addAction(deselectAllSamples)
-        selectOnlyThisSample = QAction("Select Only This Sample", self.menu)
+        selectOnlyThisSample = QWidgetAction(
+            "Select Only This Sample", self.menu
+        )
         selectOnlyThisSample.triggered.connect(
             self.selectOnlyThisSample
         )
@@ -757,25 +765,25 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(selectOnlyThisSample)
 
         # Copy/cut/paste actions
-        copy_ = QAction("Copy", self.menu)
+        copy_ = QWidgetAction("Copy", self.menu)
         copy_.triggered.connect(self.copy)
         copy_.setDisabled(True)
         self.menu.addAction(copy_)
-        cut = QAction("Cut", self.menu)
+        cut = QWidgetAction("Cut", self.menu)
         cut.triggered.connect(self.cut)
         cut.setDisabled(True)
         self.menu.addAction(cut)
-        paste = QAction("Paste", self.menu)
+        paste = QWidgetAction("Paste", self.menu)
         paste.setDisabled(True)
         paste.triggered.connect(self.paste)
         self.menu.addAction(paste)
 
         # Duplicate actions
-        duplicate = QAction("Duplicate Sample", self.menu)
+        duplicate = QWidgetAction("Duplicate Sample", self.menu)
         duplicate.triggered.connect(self.duplicateSample)
         duplicate.setDisabled(True)
         self.menu.addAction(duplicate)
-        duplicateOnlySample = QAction("Duplicate Only Sample", self.menu)
+        duplicateOnlySample = QWidgetAction("Duplicate Only Sample", self.menu)
         duplicateOnlySample.triggered.connect(self.duplicateOnlySample)
         duplicateOnlySample.setDisabled(True)
         self.menu.addAction(duplicateOnlySample)

@@ -3,7 +3,7 @@ import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QMessageBox,
@@ -17,7 +17,7 @@ from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
-from PyQt5 import uic
+from PyQt6 import uic
 
 
 class GudPyMainWindow(QMainWindow):

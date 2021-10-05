@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 import sys
 
 from src.gui.widgets.main_window import GudPyMainWindow
@@ -10,7 +10,7 @@ class GudPy(QApplication):
         super(GudPy, self).__init__(args)
         self.initComponents()
         self.gudrunFile = None
-        sys.exit(self.exec_())
+        sys.exit(self.exec())
 
     def initComponents(self):
 

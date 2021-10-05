@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QFileDialog, QWidget
-from PyQt5 import uic
+from PyQt6.QtWidgets import QFileDialog, QWidget
+from PyQt6 import uic
 import os
 
 

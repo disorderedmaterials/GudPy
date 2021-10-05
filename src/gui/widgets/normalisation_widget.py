@@ -2,12 +2,11 @@ from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry, UnitsOfDensity
 )
 from src.gudrun_classes import config
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QFileDialog,
     QWidget,
 )
-from PyQt5 import uic
-from PyQt5.QtCore import Qt
+from PyQt6 import uic
 import os
 
 
@@ -767,9 +766,7 @@ class NormalisationWidget(QWidget):
         )
 
         self.forceCorrectionsCheckBox.setChecked(
-            Qt.Checked
-            if self.normalisation.forceCalculationOfCorrections
-            else Qt.Unchecked
+            self.normalisation.forceCalculationOfCorrections
         )
         self.forceCorrectionsCheckBox.stateChanged.connect(
             self.handleForceCorrectionsSwitched

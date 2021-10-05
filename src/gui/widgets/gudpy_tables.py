@@ -1,14 +1,14 @@
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
+from PyQt6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
     QSpinBox,
     QTableView,
     QMenu,
-    QAction
+    QWidgetAction
 )
-from PyQt5.QtGui import QCursor
+from PyQt6.QtGui import QCursor
 
 from src.gudrun_classes.element import Element
 from src.gui.widgets.main_window import GudPyMainWindow
@@ -124,7 +124,13 @@ class GudPyTableModel(QAbstractTableModel):
         """
         row = index.row()
         col = index.column()
-        if role == role & (Qt.DisplayRole | Qt.EditRole):
+        if (
+            role == (
+                role & (
+                    (Qt.ItemDataRole.DisplayRole | Qt.ItemDataRole.EditRole)
+                )
+            )
+        ):
             return self._data[row][col]
 
     def headerData(self, section, orientation, role):
@@ -145,7 +151,10 @@ class GudPyTableModel(QAbstractTableModel):
         """
         return (
             self.headers[section]
-            if (orientation == Qt.Horizontal and role == Qt.DisplayRole)
+            if (
+                orientation == Qt.Orientation.Horizontal
+                and role == Qt.ItemDataRole.DisplayRole
+            )
             else QVariant()
         )
 
@@ -187,7 +196,11 @@ class GudPyTableModel(QAbstractTableModel):
         int
             Flags
         """
-        return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
+        return (
+            Qt.ItemFlag.ItemIsEnabled |
+            Qt.ItemFlag.ItemIsEditable |
+            Qt.ItemFlag.ItemIsSelectable
+        )
 
 
 class GudPyDelegate(QItemDelegate):
@@ -516,7 +529,13 @@ class BeamProfileModel(GudPyTableModel):
             Data at given index.
         """
         row = index.row()
-        if role == role & (Qt.DisplayRole | Qt.EditRole):
+        if (
+            role == (
+                role & (
+                    (Qt.ItemDataRole.DisplayRole | Qt.ItemDataRole.EditRole)
+                )
+            )
+        ):
             return self._data[row]
 
     def insertRow(self):
@@ -717,7 +736,14 @@ class CompositionModel(GudPyTableModel):
         """
         row = index.row()
         col = index.column()
-        if role == role & (Qt.DisplayRole | Qt.EditRole):
+        if (
+            role == (
+                role & (
+                    Qt.ItemDataRole.DisplayRole
+                    | Qt.ItemDataRole.EditRole
+                )
+            )
+        ):
             return self._data[row].__dict__[self.attrs[col]]
 
 
@@ -927,7 +953,7 @@ class CompositionTable(QTableView):
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
-            action = QAction(f"{composition[0]}", copyMenu)
+            action = QWidgetAction(f"{composition[0]}", copyMenu)
             action.triggered.connect(
                 lambda _, comp=composition[1]: self.copyFrom(comp)
             )

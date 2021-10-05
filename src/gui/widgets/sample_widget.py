@@ -5,9 +5,8 @@ from src.gudrun_classes.enums import (
     OutputUnits,
     UnitsOfDensity,
 )
-from PyQt5.QtWidgets import QFileDialog, QWidget
-from PyQt5 import uic
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QFileDialog, QWidget
+from PyQt6 import uic
 import os
 from src.gudrun_classes import config
 
@@ -920,9 +919,7 @@ class SampleWidget(QWidget):
 
         # Populate the run controls.
         self.forceCorrectionsCheckBox.setChecked(
-            Qt.Checked
-            if self.sample.forceCalculationOfCorrections
-            else Qt.Unchecked
+            self.sample.forceCalculationOfCorrections
         )
 
         # Populate the geometry data.

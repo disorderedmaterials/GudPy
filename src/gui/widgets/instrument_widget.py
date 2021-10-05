@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import QWidget, QFileDialog
-from PyQt5.QtCore import QRegExp
-from PyQt5 import uic
+from PyQt6.QtGui import QRegularExpressionValidator
+from PyQt6.QtWidgets import QWidget, QFileDialog
+from PyQt6.QtCore import QRegularExpression
+from PyQt6 import uic
 from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
 from src.scripts.utils import spacify
 import os
@@ -802,8 +802,10 @@ class InstrumentWidget(QWidget):
         # Setup the widgets and slots for the spectrum numbers
         # and quiet count const for the incident beam monitor.
         # Regular expression to accept space delimited integers.
-        spectrumNumbersRegex = QRegExp(r"^\d+(?:\s+\d+)*$")
-        spectrumNumbersValidator = QRegExpValidator(spectrumNumbersRegex)
+        spectrumNumbersRegex = QRegularExpression(r"^\d+(?:\s+\d+)*$")
+        spectrumNumbersValidator = QRegularExpressionValidator(
+            spectrumNumbersRegex
+        )
 
         self.spectrumNumbersIBLineEdit.setText(
             spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)

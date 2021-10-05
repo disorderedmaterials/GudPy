@@ -202,10 +202,7 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <property name="fieldGrowthPolicy">
-           <enum>QFormLayout::ExpandingFieldsGrow</enum>
-          </property>
-          <property name="rowWrapPolicy">
-           <enum>QFormLayout::DontWrapRows</enum>
+           <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
           </property>
           <property name="labelAlignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -564,7 +561,7 @@
             <item>
              <layout class="QFormLayout" name="formLayout_3">
               <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+               <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
               </property>
               <property name="labelAlignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -659,7 +656,7 @@
             <item>
              <layout class="QFormLayout" name="formLayout_4">
               <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+               <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
               </property>
               <property name="labelAlignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
