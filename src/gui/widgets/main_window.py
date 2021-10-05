@@ -462,6 +462,14 @@ class GudPyMainWindow(QMainWindow):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         print(stdout)
+        ERROR_KWDS = [
+            "does not exist",
+            "error",
+            "Error"
+        ]
+        if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
+            self.error = stdout
+            return -1
         # Number of GudPy objects.
         markers = (
             config.NUM_GUDPY_CORE_OBJECTS
@@ -493,7 +501,14 @@ class GudPyMainWindow(QMainWindow):
         return progress
 
     def progressDCS(self):
-        progress = self.progressIncrement() + self.progressBar.value()
+        progress = self.progressIncrement()
+        if progress == -1:
+            QMessageBox.critical(
+                self, "GudPy Error",
+                f"An error occurred. See the following traceback"
+                f" from gudrun_dcs\n{self.error}"
+            )
+        progress+= self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
     def progressPurge(self):
@@ -530,3 +545,4 @@ class GudPyMainWindow(QMainWindow):
         self.proc = None
         self.unlockControls()
         self.currentTaskLabel.setText("No task running.")
+        self.progressBar.setValue(0)
