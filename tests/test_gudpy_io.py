@@ -625,7 +625,7 @@ class TestGudPyIO(TestCase):
         self.g.write_out()
         outlines = open(self.g.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(self.g))
-        print(outlines)
+
         def valueInLines(value, lines):
             if isinstance(value, str):
                 self.assertTrue(value in lines)
