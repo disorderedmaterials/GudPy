@@ -4,6 +4,8 @@ from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
 
+SUFFIX = ".exe" if os.name == "nt" else ""
+
 
 class PurgeFile():
     """
@@ -264,7 +266,7 @@ class PurgeFile():
         self.write_out()
         if headless:
             try:
-                purge_det = resolve("bin", "purge_det")
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
                     capture_output=True,
@@ -275,7 +277,7 @@ class PurgeFile():
                 # run as an executable.
                 # So prepend sys._MEIPASS to the path to purge_det.
                 if hasattr(sys, '_MEIPASS'):
-                    purge_det = sys._MEIPASS + os.sep + "purge_det"
+                    purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
                     result = subprocess.run(
                         [purge_det, "purge_det.dat"],
                         capture_output=True, text=True
@@ -285,9 +287,9 @@ class PurgeFile():
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
-                purge_det = os.path.join(sys._MEIPASS, "purge_det")
+                purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
             else:
-                purge_det = resolve("bin", "purge_det")
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
             if not os.path.exists(purge_det):
                 return False
             return [purge_det, []]

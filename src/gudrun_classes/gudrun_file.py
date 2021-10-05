@@ -32,6 +32,7 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 
+SUFFIX = ".exe" if os.name == "nt" else ""
 
 class GudrunFile:
     """
@@ -1276,22 +1277,22 @@ class GudrunFile:
             path = self.path
         if headless:
             try:
-                gudrun_dcs = resolve("bin", "gudrun_dcs")
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
             except FileNotFoundError:
                 if hasattr(sys, '_MEIPASS'):
-                    gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
+                    gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
-                gudrun_dcs = os.path.join(sys._MEIPASS, "gudrun_dcs")
+                gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
             else:
-                gudrun_dcs = resolve("bin", "gudrun_dcs")
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
             if not os.path.exists(gudrun_dcs):
                 return False
             else:
