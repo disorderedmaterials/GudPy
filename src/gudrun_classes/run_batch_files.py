@@ -1,8 +1,8 @@
 from src.gudrun_classes.purge_file import PurgeFile
-from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.data_files import DataFiles
 from copy import deepcopy
 import multiprocessing
+
 
 class RunBatchFiles():
     """
@@ -109,11 +109,22 @@ class RunBatchFiles():
                     batchedSample = deepcopy(sample)
                     if i+self.batchSize > len(sample.dataFiles):
                         # If a full batch is not available,
-                        # use all the remaining data files.
-                        batchedSample.dataFiles = DataFiles(batchedSample.dataFiles.dataFiles[i:], sample.name)
+                        # use all the remaining data files.
+                        batchedSample.dataFiles = (
+                            DataFiles(
+                                batchedSample.dataFiles.dataFiles[i:],
+                                sample.name
+                            )
+                        )
                     else:
                         # Create a batch.
-                        batchedSample.dataFiles = DataFiles(batchedSample.dataFiles.dataFiles[i:i+self.batchSize], sample.name)
+                        batchedSample.dataFiles = (
+                            DataFiles(
+                                batchedSample.dataFiles.dataFiles[
+                                    i:i+self.batchSize
+                                ], sample.name
+                            )
+                        )
                     # Add the batch to the sample background in the dict.
                     self.batches[sampleBackground].append(batchedSample)
 
@@ -123,29 +134,40 @@ class RunBatchFiles():
         """
         # Calculate number of samples per batch of samples.
         # Count the existing batches.
-        numSamplesInBatch = sum([len(samples) for samples in self.batches.values()])
+        numSamplesInBatch = (
+            sum([len(samples) for samples in self.batches.values()])
+        )
         # If we have too many batches for the number of processes available,
         # then floor divide by the number of processes.
         # otherwise, the number of samples per batch is set
-        # to the size of the largest batch of samples.
+        # to the size of the largest batch of samples.
         if numSamplesInBatch > self.maxProcs:
             numSamplesInBatch //= self.maxProcs
         else:
-            numSamplesInBatch = max([len(samples) for samples in self.batches.values()])
+            numSamplesInBatch = (
+                max([len(samples) for samples in self.batches.values()])
+            )
         # Enumerate through sample backgrounds in the dict.
         for j, sampleBackground in enumerate(self.batches.keys()):
             batchedSampleBackground = deepcopy(sampleBackground)
             # Iterate through batches associated with the sample background
             # incrementing by the number of samples per bathc.
-            for i in range(0, len(self.batches[sampleBackground]), numSamplesInBatch):
+            for i in range(
+                0, len(self.batches[sampleBackground]),
+                numSamplesInBatch
+            ):
                 batchedGudrunFile = deepcopy(self.gudrunFile)
                 if len(self.batches[sampleBackground]) > numSamplesInBatch:
                     # Create a batch of batches.
-                    batchedSampleBackground.samples = self.batches[sampleBackground][i:i+numSamplesInBatch]
+                    batchedSampleBackground.samples = (
+                        self.batches[sampleBackground][i:i+numSamplesInBatch]
+                    )
                 else:
                     # If there aren't enough batches left,
                     # then use all the remaining.
-                    batchedSampleBackground.samples = self.batches[sampleBackground][i:]
+                    batchedSampleBackground.samples = (
+                        self.batches[sampleBackground][i:]
+                    )
                 # Construct the batched GudrunFile.
                 batchedGudrunFile.sampleBackgrounds = [sampleBackground]
                 # Set the outpath, to avoid race conditions / locks.

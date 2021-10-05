@@ -1560,7 +1560,7 @@ class GudrunFile:
 
         Parameters
         ----------
-        purge : bool, optional  
+        purge : bool, optional
             Should detectors be purged?
         Returns
         -------
