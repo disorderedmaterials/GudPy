@@ -277,7 +277,9 @@ class PurgeFile():
                 # run as an executable.
                 # So prepend sys._MEIPASS to the path to purge_det.
                 if hasattr(sys, '_MEIPASS'):
-                    purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
+                    purge_det = os.path.join(
+                        sys._MEIPASS, f"purge_det{SUFFIX}"
+                    )
                     result = subprocess.run(
                         [purge_det, "purge_det.dat"],
                         capture_output=True, text=True

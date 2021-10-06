@@ -34,6 +34,7 @@ from src.gudrun_classes import config
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
+
 class GudrunFile:
     """
     Class to represent a GudFile (files with .gud extension).
@@ -1283,7 +1284,9 @@ class GudrunFile:
                 )
             except FileNotFoundError:
                 if hasattr(sys, '_MEIPASS'):
-                    gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
+                    gudrun_dcs = os.path.join(
+                        sys._MEIPASS, f"gudrun_dcs{SUFFIX}"
+                    )
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )

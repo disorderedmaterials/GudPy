@@ -508,7 +508,7 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
-        progress+= self.progressBar.value()
+        progress += self.progressBar.value()
         self.progressBar.setValue(progress if progress <= 100 else 100)
 
     def progressPurge(self):
