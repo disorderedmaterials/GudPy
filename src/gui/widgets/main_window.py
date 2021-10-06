@@ -1,24 +1,23 @@
-from src.gui.widgets.iteration_dialog import IterationDialog
+# from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QMessageBox,
 )
-from src.gui.widgets.view_input import ViewInput
-from src.gui.widgets.sample_widget import SampleWidget
-from src.gui.widgets.instrument_widget import InstrumentWidget
-from src.gui.widgets.beam_widget import BeamWidget
-from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
-from src.gui.widgets.container_widget import ContainerWidget
-from src.gui.widgets.normalisation_widget import NormalisationWidget
+# from src.gui.widgets.view_input import ViewInput
+# from src.gui.widgets.sample_widget import SampleWidget
+# from src.gui.widgets.instrument_widget import InstrumentWidget
+# from src.gui.widgets.beam_widget import BeamWidget
+# from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
+# from src.gui.widgets.container_widget import ContainerWidget
+# from src.gui.widgets.normalisation_widget import NormalisationWidget
 from src.gudrun_classes.enums import Geometry
 import os
-from PyQt5 import uic
-
+from PySide6.QtUiTools import QUiLoader
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -46,10 +45,7 @@ class GudPyMainWindow(QMainWindow):
     updateGeometries()
         Updates geometries across objects.
     updateCompositions()
-        Updates compositions across objects.
-    updateComponents()
-        Updates geometries and compositions.
-    del_()
+        Updates compositions across objects.sudo apt install libopengl0 -y
         Deletes the current object.
     exit_()
         Exits GudPy.
@@ -71,112 +67,112 @@ class GudPyMainWindow(QMainWindow):
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
-        uic.loadUi(uifile, self)
-        self.setWindowTitle("GudPy")
-        self.show()
-
+        loader = QUiLoader()
+        self.mainWidget = loader.load(uifile)
+        self.mainWidget.setWindowTitle("GudPy")
+        self.mainWidget.show()
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
-            self.objectStack.setVisible(False)
-            self.objectTree.setVisible(False)
+            self.mainWidget.objectStack.setVisible(False)
+            self.mainWidget.objectTree.setVisible(False)
             # Disabled the edit actions.
-            self.insertSampleBackground.setDisabled(True)
-            self.insertSample.setDisabled(True)
-            self.insertContainer.setDisabled(True)
-            self.copy.setDisabled(True)
-            self.cut.setDisabled(True)
-            self.paste.setDisabled(True)
-            self.delete_.setDisabled(True)
+            self.mainWidget.insertSampleBackground.setDisabled(True)
+            self.mainWidget.insertSample.setDisabled(True)
+            self.mainWidget.insertContainer.setDisabled(True)
+            self.mainWidget.copy.setDisabled(True)
+            self.mainWidget.cut.setDisabled(True)
+            self.mainWidget.paste.setDisabled(True)
+            self.mainWidget.delete_.setDisabled(True)
             # Disable the run actions.
-            self.runPurge.setDisabled(True)
-            self.runGudrun.setDisabled(True)
-            self.iterateGudrun.setDisabled(True)
+            self.mainWidget.runPurge.setDisabled(True)
+            self.mainWidget.runGudrun.setDisabled(True)
+            self.mainWidget.iterateGudrun.setDisabled(True)
             # Disable some file actions.
-            self.viewLiveInputFile.setDisabled(True)
-            self.save.setDisabled(True)
-            self.saveAs.setDisabled(True)
+            self.mainWidget.viewLiveInputFile.setDisabled(True)
+            self.mainWidget.save.setDisabled(True)
+            self.mainWidget.saveAs.setDisabled(True)
 
-        else:
+        # else:
 
-            self.setWindowTitle(self.gudrunFile.path)
-            self.instrumentWidget = InstrumentWidget(
-                self.gudrunFile.instrument, self
-            )
-            self.beamWidget = BeamWidget(
-                self.gudrunFile.beam, self
-            )
-            self.normalisationWidget = NormalisationWidget(
-                self.gudrunFile.normalisation, self
-            )
+        #     self.setWindowTitle(self.gudrunFile.path)
+        #     self.instrumentWidget = InstrumentWidget(
+        #         self.gudrunFile.instrument, self
+        #     )
+        #     self.beamWidget = BeamWidget(
+        #         self.gudrunFile.beam, self
+        #     )
+        #     self.normalisationWidget = NormalisationWidget(
+        #         self.gudrunFile.normalisation, self
+        #     )
 
-            self.objectStack.addWidget(self.instrumentWidget)
-            self.objectStack.addWidget(self.beamWidget)
-            self.objectStack.addWidget(self.normalisationWidget)
+        #     self.objectStack.addWidget(self.instrumentWidget)
+        #     self.objectStack.addWidget(self.beamWidget)
+        #     self.objectStack.addWidget(self.normalisationWidget)
 
-            self.sampleBackgroundWidget = SampleBackgroundWidget(self)
-            self.sampleWidget = SampleWidget(self)
-            self.containerWidget = ContainerWidget(self)
+        #     self.sampleBackgroundWidget = SampleBackgroundWidget(self)
+        #     self.sampleWidget = SampleWidget(self)
+        #     self.containerWidget = ContainerWidget(self)
 
-            self.objectStack.addWidget(self.sampleBackgroundWidget)
-            self.objectStack.addWidget(self.sampleWidget)
-            self.objectStack.addWidget(self.containerWidget)
+        #     self.objectStack.addWidget(self.sampleBackgroundWidget)
+        #     self.objectStack.addWidget(self.sampleWidget)
+        #     self.objectStack.addWidget(self.containerWidget)
 
-            if len(self.gudrunFile.sampleBackgrounds):
-                self.sampleBackgroundWidget.setSampleBackground(
-                    self.gudrunFile.sampleBackgrounds[0]
-                )
-                if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    self.sampleWidget.setSample(
-                        self.gudrunFile.sampleBackgrounds[0].samples[0]
-                    )
-                    if len(
-                        self.gudrunFile.sampleBackgrounds[0]
-                        .samples[0].containers
-                    ):
-                        self.containerWidget.setContainer(
-                            self.gudrunFile.sampleBackgrounds[0]
-                            .samples[0].containers[0]
-                        )
+        #     if len(self.gudrunFile.sampleBackgrounds):
+        #         self.sampleBackgroundWidget.setSampleBackground(
+        #             self.gudrunFile.sampleBackgrounds[0]
+        #         )
+        #         if len(self.gudrunFile.sampleBackgrounds[0].samples):
+        #             self.sampleWidget.setSample(
+        #                 self.gudrunFile.sampleBackgrounds[0].samples[0]
+        #             )
+        #             if len(
+        #                 self.gudrunFile.sampleBackgrounds[0]
+        #                 .samples[0].containers
+        #             ):
+        #                 self.containerWidget.setContainer(
+        #                     self.gudrunFile.sampleBackgrounds[0]
+        #                     .samples[0].containers[0]
+        #                 )
 
-            self.objectTree.buildTree(self.gudrunFile, self.objectStack)
+        #     self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
-            self.runPurge.triggered.connect(
-                self.runPurge_
-            )
-            self.runGudrun.triggered.connect(
-                self.runGudrun_
-            )
-            self.iterateGudrun.triggered.connect(
-                self.iterateGudrun_
-            )
-            self.save.triggered.connect(self.saveInputFile)
+        #     self.runPurge.triggered.connect(
+        #         self.runPurge_
+        #     )
+        #     self.runGudrun.triggered.connect(
+        #         self.runGudrun_
+        #     )
+        #     self.iterateGudrun.triggered.connect(
+        #         self.iterateGudrun_
+        #     )
+        #     self.save.triggered.connect(self.saveInputFile)
 
-            self.saveAs.triggered.connect(self.saveInputFileAs)
+        #     self.saveAs.triggered.connect(self.saveInputFileAs)
 
-            self.viewLiveInputFile.triggered.connect(
-                lambda: ViewInput(self.gudrunFile, parent=self)
-            )
+        #     self.viewLiveInputFile.triggered.connect(
+        #         lambda: ViewInput(self.gudrunFile, parent=self)
+        #     )
 
-            self.insertSampleBackground.triggered.connect(
-                self.objectTree.insertSampleBackground
-            )
+        #     self.insertSampleBackground.triggered.connect(
+        #         self.objectTree.insertSampleBackground
+        #     )
 
-            self.insertSample.triggered.connect(
-                self.objectTree.insertSample
-            )
+        #     self.insertSample.triggered.connect(
+        #         self.objectTree.insertSample
+        #     )
 
-            self.insertContainer.triggered.connect(
-                self.objectTree.insertContainer
-            )
+        #     self.insertContainer.triggered.connect(
+        #         self.objectTree.insertContainer
+        #     )
 
-            self.copy.triggered.connect(self.objectTree.copy)
-            self.cut.triggered.connect(self.objectTree.cut)
-            self.paste.triggered.connect(self.objectTree.paste)
-            self.delete_.triggered.connect(self.objectTree.del_)
+        #     self.copy.triggered.connect(self.objectTree.copy)
+        #     self.cut.triggered.connect(self.objectTree.cut)
+        #     self.paste.triggered.connect(self.objectTree.paste)
+        #     self.delete_.triggered.connect(self.objectTree.del_)
 
-        self.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.objectStack.currentChanged.connect(self.updateComponents)
-        self.exit.triggered.connect(self.exit_)
+        self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
+        self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
+        self.mainWidget.exit.triggered.connect(self.exit_)
 
     def loadInputFile_(self):
         """

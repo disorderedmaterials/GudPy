@@ -1,14 +1,14 @@
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
+from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
     QSpinBox,
     QTableView,
     QMenu,
-    QAction
+    QWidgetAction
 )
-from PyQt5.QtGui import QCursor
+from PySide6.QtGui import QCursor
 
 from src.gudrun_classes.element import Element
 from src.gui.widgets.main_window import GudPyMainWindow
@@ -927,7 +927,7 @@ class CompositionTable(QTableView):
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
-            action = QAction(f"{composition[0]}", copyMenu)
+            action = QWidgetAction(f"{composition[0]}", copyMenu)
             action.triggered.connect(
                 lambda _, comp=composition[1]: self.copyFrom(comp)
             )

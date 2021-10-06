@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QCursor, QIcon
-from PyQt5.QtWidgets import QAction, QMenu, QTreeView
-from PyQt5.QtCore import (
+from PySide6.QtGui import QCursor, QIcon
+from PySide6.QtWidgets import QWidgetAction, QMenu, QTreeView
+from PySide6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QPersistentModelIndex,
@@ -715,7 +715,7 @@ class GudPyTreeView(QTreeView):
         # Create the menu
         self.menu = QMenu(self)
         # Actions for insertion
-        insertSampleBackground = QAction(
+        insertSampleBackground = QWidgetAction(
             "Insert Sample Background", self.menu
         )
         insertSampleBackground.triggered.connect(
@@ -723,13 +723,13 @@ class GudPyTreeView(QTreeView):
         )
         insertSampleBackground.setDisabled(True)
         self.menu.addAction(insertSampleBackground)
-        insertContainer = QAction("Insert Container", self.menu)
+        insertContainer = QWidgetAction("Insert Container", self.menu)
         insertContainer.triggered.connect(
             self.insertContainer
         )
         insertContainer.setDisabled(True)
         self.menu.addAction(insertContainer)
-        insertSample = QAction("Insert Sample", self.menu)
+        insertSample = QWidgetAction("Insert Sample", self.menu)
         insertSample.triggered.connect(
             self.insertSample
         )
@@ -737,19 +737,19 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(insertSample)
 
         # Selection actions
-        selectAllSamples = QAction("Select All Samples", self.menu)
+        selectAllSamples = QWidgetAction("Select All Samples", self.menu)
         selectAllSamples.triggered.connect(
             self.selectAllSamples
         )
         selectAllSamples.setDisabled(True)
         self.menu.addAction(selectAllSamples)
-        deselectAllSamples = QAction("Deselect All Samples", self.menu)
+        deselectAllSamples = QWidgetAction("Deselect All Samples", self.menu)
         deselectAllSamples.triggered.connect(
             self.deselectAllSamples
         )
         deselectAllSamples.setDisabled(True)
         self.menu.addAction(deselectAllSamples)
-        selectOnlyThisSample = QAction("Select Only This Sample", self.menu)
+        selectOnlyThisSample = QWidgetAction("Select Only This Sample", self.menu)
         selectOnlyThisSample.triggered.connect(
             self.selectOnlyThisSample
         )
@@ -757,25 +757,25 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(selectOnlyThisSample)
 
         # Copy/cut/paste actions
-        copy_ = QAction("Copy", self.menu)
+        copy_ = QWidgetAction("Copy", self.menu)
         copy_.triggered.connect(self.copy)
         copy_.setDisabled(True)
         self.menu.addAction(copy_)
-        cut = QAction("Cut", self.menu)
+        cut = QWidgetAction("Cut", self.menu)
         cut.triggered.connect(self.cut)
         cut.setDisabled(True)
         self.menu.addAction(cut)
-        paste = QAction("Paste", self.menu)
+        paste = QWidgetAction("Paste", self.menu)
         paste.setDisabled(True)
         paste.triggered.connect(self.paste)
         self.menu.addAction(paste)
 
         # Duplicate actions
-        duplicate = QAction("Duplicate Sample", self.menu)
+        duplicate = QWidgetAction("Duplicate Sample", self.menu)
         duplicate.triggered.connect(self.duplicateSample)
         duplicate.setDisabled(True)
         self.menu.addAction(duplicate)
-        duplicateOnlySample = QAction("Duplicate Only Sample", self.menu)
+        duplicateOnlySample = QWidgetAction("Duplicate Only Sample", self.menu)
         duplicateOnlySample.triggered.connect(self.duplicateOnlySample)
         duplicateOnlySample.setDisabled(True)
         self.menu.addAction(duplicateOnlySample)

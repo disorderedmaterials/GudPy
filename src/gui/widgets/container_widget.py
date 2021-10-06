@@ -1,8 +1,8 @@
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry, UnitsOfDensity
 )
-from PyQt5.QtWidgets import QFileDialog, QWidget
-from PyQt5 import uic
+from PySide6.QtWidgets import QFileDialog, QWidget
+from PySide6 import uic
 import os
 from src.gudrun_classes import config
 
