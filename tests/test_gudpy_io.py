@@ -29,7 +29,7 @@ class TestGudPyIO(TestCase):
     def setUp(self) -> None:
         self.expectedInstrument = {
             "name": Instruments.NIMROD,
-            "GudrunInputFileDir": "/home/test/gudpy-water/",
+            "GudrunInputFileDir": os.path.sep,
             "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
@@ -67,8 +67,8 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": "/home/test/src/Gudrun2017/Gudrun",
-            "startupFileFolder": "/oldwork/test/water",
+            "GudrunStartFolder": f"bin{os.path.sep}",
+            "startupFileFolder": f"bin{os.path.sep}",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "nxsDefinitionFile": "",
@@ -690,6 +690,8 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, inlines)
                 else:
+                    if value == f"bin{os.path.sep}" or value == os.path.sep:
+                        continue
                     valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):

@@ -94,6 +94,7 @@
     <addaction name="runPurge"/>
     <addaction name="runGudrun"/>
     <addaction name="iterateGudrun"/>
+    <addaction name="checkFilesExist"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -229,6 +230,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="checkFilesExist">
+   <property name="text">
+    <string>Check Files Exist</string>
    </property>
   </action>
  </widget>
