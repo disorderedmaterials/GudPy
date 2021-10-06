@@ -73,8 +73,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.show()
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
-            self.mainWidget.objectStack.setVisible(False)
-            self.mainWidget.objectTree.setVisible(False)
+            self.mainWidget.tabWidget.setVisible(False)
             # Disabled the edit actions.
             self.mainWidget.insertSampleBackground.setDisabled(True)
             self.mainWidget.insertSample.setDisabled(True)
@@ -92,30 +91,8 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.save.setDisabled(True)
             self.mainWidget.saveAs.setDisabled(True)
 
-        # else:
-
-        #     self.setWindowTitle(self.gudrunFile.path)
-        #     self.instrumentWidget = InstrumentWidget(
-        #         self.gudrunFile.instrument, self
-        #     )
-        #     self.beamWidget = BeamWidget(
-        #         self.gudrunFile.beam, self
-        #     )
-        #     self.normalisationWidget = NormalisationWidget(
-        #         self.gudrunFile.normalisation, self
-        #     )
-
-        #     self.objectStack.addWidget(self.instrumentWidget)
-        #     self.objectStack.addWidget(self.beamWidget)
-        #     self.objectStack.addWidget(self.normalisationWidget)
-
-        #     self.sampleBackgroundWidget = SampleBackgroundWidget(self)
-        #     self.sampleWidget = SampleWidget(self)
-        #     self.containerWidget = ContainerWidget(self)
-
-        #     self.objectStack.addWidget(self.sampleBackgroundWidget)
-        #     self.objectStack.addWidget(self.sampleWidget)
-        #     self.objectStack.addWidget(self.containerWidget)
+        else:
+            pass
 
         #     if len(self.gudrunFile.sampleBackgrounds):
         #         self.sampleBackgroundWidget.setSampleBackground(
