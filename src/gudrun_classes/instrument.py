@@ -117,6 +117,7 @@ class Instrument:
         None
         """
         self.name = Instruments.NIMROD
+        # Use the path separator of the OS to allow absolute file names.
         self.GudrunInputFileDir = os.path.sep
         self.dataFileDir = ""
         self.dataFileType = ""
