@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
 )
-# from src.gui.widgets.view_input import ViewInput
+from src.gui.widgets.view_input import ViewInput
 # from src.gui.widgets.sample_widget import SampleWidget
 # from src.gui.widgets.instrument_widget import InstrumentWidget
 # from src.gui.widgets.beam_widget import BeamWidget
@@ -56,7 +56,7 @@ class GudPyMainWindow(QMainWindow):
     updateGeometries()
         Updates geometries across objects.
     updateCompositions()
-        Updates compositions across objects.sudo apt install libopengl0 -y
+        Updates compositions across objects
         Deletes the current object.
     exit_()
         Exits GudPy.
@@ -117,6 +117,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.saveAs.setDisabled(True)
 
         else:
+            self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
             self.mainWidget.setVisible(True)
             self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
             self.beamSlots.setBeam(self.gudrunFile.beam)
@@ -131,39 +132,39 @@ class GudPyMainWindow(QMainWindow):
                         self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
             self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
 
-        #     self.runPurge.triggered.connect(
-        #         self.runPurge_
-        #     )
-        #     self.runGudrun.triggered.connect(
-        #         self.runGudrun_
-        #     )
-        #     self.iterateGudrun.triggered.connect(
-        #         self.iterateGudrun_
-        #     )
-        #     self.save.triggered.connect(self.saveInputFile)
+            self.mainWidget.runPurge.triggered.connect(
+                self.runPurge_
+            )
+            self.mainWidget.runGudrun.triggered.connect(
+                self.runGudrun_
+            )
+            self.mainWidget.iterateGudrun.triggered.connect(
+                self.iterateGudrun_
+            )
+            self.mainWidget.save.triggered.connect(self.saveInputFile)
 
-        #     self.saveAs.triggered.connect(self.saveInputFileAs)
+            self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
-        #     self.viewLiveInputFile.triggered.connect(
-        #         lambda: ViewInput(self.gudrunFile, parent=self)
-        #     )
+            self.mainWidget.viewLiveInputFile.triggered.connect(
+                lambda: ViewInput(self.gudrunFile, parent=self)
+            )
 
-        #     self.insertSampleBackground.triggered.connect(
-        #         self.objectTree.insertSampleBackground
-        #     )
+            self.mainWidget.insertSampleBackground.triggered.connect(
+                self.mainWidget.objectTree.insertSampleBackground
+            )
 
-        #     self.insertSample.triggered.connect(
-        #         self.objectTree.insertSample
-        #     )
+            self.mainWidget.insertSample.triggered.connect(
+                self.mainWidget.objectTree.insertSample
+            )
 
-        #     self.insertContainer.triggered.connect(
-        #         self.objectTree.insertContainer
-        #     )
+            self.mainWidget.insertContainer.triggered.connect(
+                self.mainWidget.objectTree.insertContainer
+            )
 
-        #     self.copy.triggered.connect(self.objectTree.copy)
-        #     self.cut.triggered.connect(self.objectTree.cut)
-        #     self.paste.triggered.connect(self.objectTree.paste)
-        #     self.delete_.triggered.connect(self.objectTree.del_)
+            self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
+            self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
+            self.mainWidget.paste.triggered.connect(self.mainWidget.objectTree.paste)
+            self.mainWidget.delete_.triggered.connect(self.mainWidget.objectTree.del_)
 
         self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
         # self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
