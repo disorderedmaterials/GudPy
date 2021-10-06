@@ -7,12 +7,11 @@ from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 
 class InstrumentSlots():
 
-    def __init__(self, widget, instrument=None):
+    def __init__(self, widget):
         self.widget = widget
+        print(self.widget)
         self.widgetsRefreshing = False
         self.setupInstrumentSlots()
-        if instrument:
-            self.setInstrument(instrument)
 
     def setInstrument(self, instrument):
         self.instrument = instrument
@@ -186,7 +185,7 @@ class InstrumentSlots():
             )
         )
 
-        self.widget.widget.groupsFileLineEdit.textChanged.connect(
+        self.widget.groupsFileLineEdit.textChanged.connect(
             self.handleGroupsFileChanged
         )
         self.widget.browseGroupsFileButton.clicked.connect(
@@ -221,10 +220,6 @@ class InstrumentSlots():
         # Regular expression to accept space delimited integers.
         spectrumNumbersRegex = QRegularExpression(r"^\d+(?:\s+\d+)*$")
         spectrumNumbersValidator = QRegularExpressionValidator(spectrumNumbersRegex)
-
-        self.widget.spectrumNumbersIBLineEdit.setText(
-            spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
-        )
 
         self.widget.spectrumNumbersIBLineEdit.textChanged.connect(
             self.handleSpectrumNumbersIBChanged
@@ -267,11 +262,10 @@ class InstrumentSlots():
         self.widget.noSmoothsOnMonitorSpinBox.valueChanged.connect(
             self.handleNoSmoothsOnMonitorChanged
         )
-
         # Dictionary, mapping enum members to tuples of widgets.
         self.scales = {
             Scales.Q: (
-                self.widget._QRadioButton,
+                self.widget.radioButtonQ_,
                 self.widget.minQSpinBox,
                 self.widget.maxQSpinBox,
                 self.widget.stepQSpinBox,
@@ -371,6 +365,35 @@ class InstrumentSlots():
             self.handleGroupingParameterPanelToggled
         )
 
+    def handleInstrumentNameChanged(self, index):
+        """
+        Slot for handling change to the instrument name.
+        Called when a valueChanged signal is emitted,
+        from the nameComboBox.
+        Alters the instrument's name as such.
+        Parameters
+        ----------
+        index : int
+            New current index of the nameComboBox.
+        """
+        self.instrument.name = self.nameComboBox.itemData(index)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleDataFileDirectoryChanged(self, text):
+        """
+        Slot for handling change to the instrument name.
+        Called when a textChanged signal is emitted,
+        from the dataFileDirectoryLineEdit.
+        Alters the instrument's data file directory as such.
+        Parameters
+        ----------
+        value : str
+            The new value of the dataFileDirectoryLineEdit.
+        """
+        self.instrument.dataFileDir = text
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
     def handleDataFileTypeChanged(self, index):
         """
         Slot for handling change to the data file type.

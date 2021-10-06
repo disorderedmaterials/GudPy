@@ -88,13 +88,12 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget = loader.load(uifile)
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
-
-        self.instrumentSlots = InstrumentSlots(self.mainWidget.instrumentPage)
-        self.beamSlots = BeamSlots(self.mainWidget.beamPage)
-        self.normalisationSlots = NormalisationSlots(self.mainWidget.normalisationPage)
-        self.sampleBackgroundSlots = SampleBackgroundSlots(self.mainWidget.sampleBackgroundPage)
-        self.sampleSlots = SampleSlots(self.mainWidget.samplePage)
-        self.containerSlots = ContainerSlots(self.mainWidget.containerPage)
+        self.instrumentSlots = InstrumentSlots(self.mainWidget)
+        self.beamSlots = BeamSlots(self.mainWidget)
+        self.normalisationSlots = NormalisationSlots(self.mainWidget)
+        self.sampleBackgroundSlots = SampleBackgroundSlots(self.mainWidget)
+        self.sampleSlots = SampleSlots(self.mainWidget)
+        self.containerSlots = ContainerSlots(self.mainWidget)
 
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
