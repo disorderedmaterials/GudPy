@@ -15,6 +15,11 @@ from PySide6.QtWidgets import (
 # from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
 # from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.gudpy_tree import GudPyTreeView
+from src.gui.widgets.gudpy_tables import GroupingParameterTable
+from src.gui.widgets.gudpy_tables import BeamProfileTable
+from src.gui.widgets.gudpy_tables import ResonanceTable
+from src.gui.widgets.gudpy_tables import CompositionTable
+from src.gui.widgets.gudpy_tables import ExponentialTable
 from src.gudrun_classes.enums import Geometry
 import os
 from PySide6.QtUiTools import QUiLoader
@@ -75,6 +80,11 @@ class GudPyMainWindow(QMainWindow):
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         loader = QUiLoader()
         loader.registerCustomWidget(GudPyTreeView)
+        loader.registerCustomWidget(GroupingParameterTable)
+        loader.registerCustomWidget(BeamProfileTable)
+        loader.registerCustomWidget(CompositionTable)
+        loader.registerCustomWidget(ExponentialTable)
+        loader.registerCustomWidget(ResonanceTable)
         self.mainWidget = loader.load(uifile)
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()

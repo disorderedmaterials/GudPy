@@ -1,8 +1,9 @@
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
+    QMainWindow,
     QSpinBox,
     QTableView,
     QMenu,
@@ -11,8 +12,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QCursor
 
 from src.gudrun_classes.element import Element
-from src.gui.widgets.main_window import GudPyMainWindow
-
 
 class GudPyTableModel(QAbstractTableModel):
     """
@@ -885,7 +884,7 @@ class CompositionTable(QTableView):
         Seeks up the widget heirarchy, and then collects all compositions.
         """
         ancestor = self.parent
-        while not isinstance(ancestor, GudPyMainWindow):
+        while not isinstance(ancestor, QMainWindow):
             ancestor = ancestor.parent
             if callable(ancestor):
                 ancestor = ancestor()
