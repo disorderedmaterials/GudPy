@@ -14,13 +14,12 @@ from PySide6.QtWidgets import (
 # from src.gui.widgets.beam_widget import BeamWidget
 # from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
 # from src.gui.widgets.container_widget import ContainerWidget
-# from src.gui.widgets.normalisation_widget import NormalisationWidget
+from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gudrun_classes.enums import Geometry
 import os
 from PySide6.QtUiTools import QUiLoader
 from src.gui.widgets.beam_slots import BeamSlots
 from src.gui.widgets.container_slots import ContainerSlots
-
 from src.gui.widgets.instrument_slots import InstrumentSlots
 from src.gui.widgets.normalisation_slots import NormalisationSlots
 from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
@@ -75,6 +74,7 @@ class GudPyMainWindow(QMainWindow):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
         loader = QUiLoader()
+        loader.registerCustomWidget(GudPyTreeView)
         self.mainWidget = loader.load(uifile)
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
@@ -119,7 +119,7 @@ class GudPyMainWindow(QMainWindow):
 
                     if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):                                                         
                         self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
-        #     self.objectTree.buildTree(self.gudrunFile, self.objectStack)
+            self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
 
         #     self.runPurge.triggered.connect(
         #         self.runPurge_
@@ -156,7 +156,7 @@ class GudPyMainWindow(QMainWindow):
         #     self.delete_.triggered.connect(self.objectTree.del_)
 
         self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
+        # self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
         self.mainWidget.exit.triggered.connect(self.exit_)
 
     def loadInputFile_(self):

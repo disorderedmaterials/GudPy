@@ -146,7 +146,7 @@ class GudPyTableModel(QAbstractTableModel):
         return (
             self.headers[section]
             if (orientation == Qt.Horizontal and role == Qt.DisplayRole)
-            else QVariant()
+            else None
         )
 
     def insertRow(self, data):
