@@ -361,8 +361,7 @@ class GudrunFile:
             self.instrument.subWavelengthBinnedData = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
-            self.instrument.GudrunStartFolder = firstword(self.getNextToken())
-            self.instrument.startupFileFolder = firstword(self.getNextToken())
+            self.consumeTokens(2)
             self.instrument.logarithmicStepSize = (
                 nthfloat(self.getNextToken(), 0)
             )

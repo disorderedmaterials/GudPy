@@ -67,8 +67,8 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": "/home/test/src/Gudrun2017/Gudrun",
-            "startupFileFolder": "/oldwork/test/water",
+            "GudrunStartFolder": "bin/",
+            "startupFileFolder": "bin/",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "nxsDefinitionFile": "",
@@ -690,6 +690,8 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, inlines)
                 else:
+                    if value == "bin/" or value == "/":
+                        continue
                     valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):

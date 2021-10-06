@@ -117,7 +117,7 @@ class Instrument:
         None
         """
         self.name = Instruments.NIMROD
-        self.GudrunInputFileDir = ""
+        self.GudrunInputFileDir = os.path.sep
         self.dataFileDir = ""
         self.dataFileType = ""
         self.detectorCalibrationFileName = ""
@@ -149,8 +149,8 @@ class Instrument:
         self.neutronScatteringParametersFile = ""
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
-        self.GudrunStartFolder = ""
-        self.startupFileFolder = ""
+        self.GudrunStartFolder = "bin/"
+        self.startupFileFolder = "bin/"
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
@@ -234,7 +234,7 @@ class Instrument:
         return (
             f'{Instruments(self.name.value).name}{TAB}'
             f'Instrument name\n'
-            f'{os.path.sep}{TAB}'
+            f'{self.GudrunInputFileDir}{TAB}'
             f'Gudrun input file directory:\n'
             f'{self.dataFileDir}{TAB}'
             f'Data file directory\n'
@@ -285,9 +285,9 @@ class Instrument:
             f'{scaleSelectionLine}'
             f'{numifyBool(self.subWavelengthBinnedData)}{TAB}'
             f'Subtract wavelength-binned data?\n'
-            f'bin/{TAB}'
+            f'{self.GudrunStartFolder}{TAB}'
             f'Folder where Gudrun started\n'
-            f'bin/{TAB}'
+            f'{self.startupFileFolder}{TAB}'
             f'Folder containing the startup file\n'
             f'{self.logarithmicStepSize}{TAB}'
             f'Logarithmic step size\n'
