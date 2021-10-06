@@ -149,8 +149,8 @@ class Instrument:
         self.neutronScatteringParametersFile = ""
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
-        self.GudrunStartFolder = "bin/"
-        self.startupFileFolder = "bin/"
+        self.GudrunStartFolder = f"bin{os.path.sep}"
+        self.startupFileFolder = f"bin{os.path.sep}"
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""

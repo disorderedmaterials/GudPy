@@ -690,7 +690,7 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, inlines)
                 else:
-                    if value == "bin/" or value == "/":
+                    if value == f"bin{os.path.sep}" or value == os.path.sep:
                         continue
                     valueInLines(value, inlines)
 
