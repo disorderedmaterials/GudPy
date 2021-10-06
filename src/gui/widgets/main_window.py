@@ -18,6 +18,13 @@ from PySide6.QtWidgets import (
 from src.gudrun_classes.enums import Geometry
 import os
 from PySide6.QtUiTools import QUiLoader
+from src.gui.widgets.beam_slots import BeamSlots
+from src.gui.widgets.container_slots import ContainerSlots
+
+from src.gui.widgets.instrument_slots import InstrumentSlots
+from src.gui.widgets.normalisation_slots import NormalisationSlots
+from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
+from src.gui.widgets.sample_slots import SampleSlots
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -71,6 +78,14 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget = loader.load(uifile)
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
+
+        self.instrumentSlots = InstrumentSlots(self.mainWidget.instrumentPage)
+        self.beamSlots = BeamSlots(self.mainWidget.beamPage)
+        self.normalisationSlots = NormalisationSlots(self.mainWidget.normalisationPage)
+        self.sampleBackgroundSlots = SampleBackgroundSlots(self.mainWidget.sampleBackgroundPage)
+        self.sampleSlots = SampleSlots(self.mainWidget.samplePage)
+        self.containerSlots = ContainerSlots(self.mainWidget.containerPage)
+
         if not self.gudrunFile:
             # Hide the QStackedWidget and GudPyTreeView
             self.mainWidget.tabWidget.setVisible(False)
@@ -92,25 +107,18 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.saveAs.setDisabled(True)
 
         else:
-            pass
+            self.mainWidget.setVisible(True)
+            self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
+            self.beamSlots.setBeam(self.gudrunFile.beam)
+            self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+            if len(self.gudrunFile.sampleBackgrounds):
+                self.sampleBackgroundSlots.setSampleBackground(self.gudrunFile.sampleBackgrounds[0])
 
-        #     if len(self.gudrunFile.sampleBackgrounds):
-        #         self.sampleBackgroundWidget.setSampleBackground(
-        #             self.gudrunFile.sampleBackgrounds[0]
-        #         )
-        #         if len(self.gudrunFile.sampleBackgrounds[0].samples):
-        #             self.sampleWidget.setSample(
-        #                 self.gudrunFile.sampleBackgrounds[0].samples[0]
-        #             )
-        #             if len(
-        #                 self.gudrunFile.sampleBackgrounds[0]
-        #                 .samples[0].containers
-        #             ):
-        #                 self.containerWidget.setContainer(
-        #                     self.gudrunFile.sampleBackgrounds[0]
-        #                     .samples[0].containers[0]
-        #                 )
+                if len(self.gudrunFile.sampleBackgrounds[0].samples):
+                    self.sampleSlots.setSample(self.gudrunFile.sampleBackgrounds[0].samples[0])
 
+                    if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):                                                         
+                        self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
         #     self.objectTree.buildTree(self.gudrunFile, self.objectStack)
 
         #     self.runPurge.triggered.connect(
