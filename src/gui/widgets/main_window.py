@@ -1,4 +1,4 @@
-from src.gudrun_classes.fs import GudPyFileSystem
+from src.gudrun_classes.fs import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
@@ -98,7 +98,6 @@ class GudPyMainWindow(QMainWindow):
             self.saveAs.setDisabled(True)
 
         else:
-            GudPyFileSystem(self.gudrunFile)
             self.setWindowTitle(self.gudrunFile.path)
             self.instrumentWidget = InstrumentWidget(
                 self.gudrunFile.instrument, self
@@ -302,7 +301,7 @@ class GudPyMainWindow(QMainWindow):
         iterationDialog.show()
 
     def checkFilesExist_(self):
-        result = GudPyFileSystem(self.gudrunFile).checkFilesExist()
+        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result):
             unresolved = "\n".join(r[1] for r in result if not r[0])
             QMessageBox.critical(

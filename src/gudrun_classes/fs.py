@@ -2,9 +2,9 @@ import os
 from src.gudrun_classes.enums import CrossSectionSource
 
 
-class GudPyFileSystem():
+class GudPyFileLibrary():
     """
-    Class to represent a GudPyFileSystem
+    Class to represent a GudPyFileLibrary,
     (all files related to the input file).
     ...
 
