@@ -1,4 +1,4 @@
-from src.gudrun_classes.fs import GudPyFileLibrary
+from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
