@@ -94,79 +94,77 @@ class GudPyMainWindow(QMainWindow):
         self.sampleBackgroundSlots = SampleBackgroundSlots(self.mainWidget, self)
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
+        self.mainWidget.runPurge.triggered.connect(
+            self.runPurge_
+        )
+        self.mainWidget.runGudrun.triggered.connect(
+            self.runGudrun_
+        )
+        self.mainWidget.iterateGudrun.triggered.connect(
+            self.iterateGudrun_
+        )
+        self.mainWidget.save.triggered.connect(self.saveInputFile)
 
-        if not self.gudrunFile:
-            # Hide the QStackedWidget and GudPyTreeView
-            self.mainWidget.tabWidget.setVisible(False)
-            # Disabled the edit actions.
-            self.mainWidget.insertSampleBackground.setDisabled(True)
-            self.mainWidget.insertSample.setDisabled(True)
-            self.mainWidget.insertContainer.setDisabled(True)
-            self.mainWidget.copy.setDisabled(True)
-            self.mainWidget.cut.setDisabled(True)
-            self.mainWidget.paste.setDisabled(True)
-            self.mainWidget.delete_.setDisabled(True)
-            # Disable the run actions.
-            self.mainWidget.runPurge.setDisabled(True)
-            self.mainWidget.runGudrun.setDisabled(True)
-            self.mainWidget.iterateGudrun.setDisabled(True)
-            # Disable some file actions.
-            self.mainWidget.viewLiveInputFile.setDisabled(True)
-            self.mainWidget.save.setDisabled(True)
-            self.mainWidget.saveAs.setDisabled(True)
+        self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
-        else:
-            self.mainWidget.setVisible(True)
-            self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
-            self.beamSlots.setBeam(self.gudrunFile.beam)
-            self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
-            if len(self.gudrunFile.sampleBackgrounds):
-                self.sampleBackgroundSlots.setSampleBackground(self.gudrunFile.sampleBackgrounds[0])
+        self.mainWidget.viewLiveInputFile.triggered.connect(
+            lambda: ViewInput(self.gudrunFile, parent=self)
+        )
 
-                if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    self.sampleSlots.setSample(self.gudrunFile.sampleBackgrounds[0].samples[0])
+        self.mainWidget.insertSampleBackground.triggered.connect(
+            self.mainWidget.objectTree.insertSampleBackground
+        )
 
-                    if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):                                                         
-                        self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
-            self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
+        self.mainWidget.insertSample.triggered.connect(
+            self.mainWidget.objectTree.insertSample
+        )
 
-            self.mainWidget.runPurge.triggered.connect(
-                self.runPurge_
-            )
-            self.mainWidget.runGudrun.triggered.connect(
-                self.runGudrun_
-            )
-            self.mainWidget.iterateGudrun.triggered.connect(
-                self.iterateGudrun_
-            )
-            self.mainWidget.save.triggered.connect(self.saveInputFile)
+        self.mainWidget.insertContainer.triggered.connect(
+            self.mainWidget.objectTree.insertContainer
+        )
 
-            self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
-
-            self.mainWidget.viewLiveInputFile.triggered.connect(
-                lambda: ViewInput(self.gudrunFile, parent=self)
-            )
-
-            self.mainWidget.insertSampleBackground.triggered.connect(
-                self.mainWidget.objectTree.insertSampleBackground
-            )
-
-            self.mainWidget.insertSample.triggered.connect(
-                self.mainWidget.objectTree.insertSample
-            )
-
-            self.mainWidget.insertContainer.triggered.connect(
-                self.mainWidget.objectTree.insertContainer
-            )
-
-            self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
-            self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
-            self.mainWidget.paste.triggered.connect(self.mainWidget.objectTree.paste)
-            self.mainWidget.delete_.triggered.connect(self.mainWidget.objectTree.del_)
+        self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
+        self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
+        self.mainWidget.paste.triggered.connect(self.mainWidget.objectTree.paste)
+        self.mainWidget.delete_.triggered.connect(self.mainWidget.objectTree.del_)
 
         self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
-        # self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
+        self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
+
         self.mainWidget.exit.triggered.connect(self.exit_)
+        # Hide the QStackedWidget and GudPyTreeView
+        # Disabled the edit actions.
+        self.mainWidget.insertSampleBackground.setDisabled(True)
+        self.mainWidget.insertSample.setDisabled(True)
+        self.mainWidget.insertContainer.setDisabled(True)
+        self.mainWidget.copy.setDisabled(True)
+        self.mainWidget.cut.setDisabled(True)
+        self.mainWidget.paste.setDisabled(True)
+        self.mainWidget.delete_.setDisabled(True)
+        # Disable the run actions.
+        self.mainWidget.runPurge.setDisabled(True)
+        self.mainWidget.runGudrun.setDisabled(True)
+        self.mainWidget.iterateGudrun.setDisabled(True)
+        # Disable some file actions.
+        self.mainWidget.viewLiveInputFile.setDisabled(True)
+        self.mainWidget.save.setDisabled(True)
+        self.mainWidget.saveAs.setDisabled(True)
+
+        self.mainWidget.tabWidget.setVisible(False)
+    def updateWidgets(self):
+        self.mainWidget.tabWidget.setVisible(True)
+        self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
+        self.beamSlots.setBeam(self.gudrunFile.beam)
+        self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+        if len(self.gudrunFile.sampleBackgrounds):
+            self.sampleBackgroundSlots.setSampleBackground(self.gudrunFile.sampleBackgrounds[0])
+
+            if len(self.gudrunFile.sampleBackgrounds[0].samples):
+                self.sampleSlots.setSample(self.gudrunFile.sampleBackgrounds[0].samples[0])
+
+                if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):                                                         
+                    self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
+        self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
 
     def loadInputFile_(self):
         """
@@ -178,9 +176,9 @@ class GudPyMainWindow(QMainWindow):
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
+                self.updateWidgets()
             except ParserException as e:
                 QMessageBox.critical(self, "GudPy Error", str(e))
-            self.initComponents()
 
     def saveInputFile(self):
         """
