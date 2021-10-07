@@ -666,7 +666,9 @@ class GudPyTreeView(QTreeView):
             Instrument: (0, None),
             Beam: (1, None),
             Normalisation: (2, None),
-            SampleBackground: (3, self.parent.sampleBackgroundSlots.setSampleBackground),
+            SampleBackground: (
+                3, self.parent.sampleBackgroundSlots.setSampleBackground
+            ),
             Sample: (4, self.parent.sampleSlots.setSample),
             Container: (5, self.parent.containerSlots.setContainer)
         }

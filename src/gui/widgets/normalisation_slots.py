@@ -1,6 +1,9 @@
-from src.gudrun_classes.enums import Geometry, CrossSectionSource, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    Geometry, CrossSectionSource, UnitsOfDensity
+)
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
+
 
 class NormalisationSlots():
 
@@ -38,8 +41,12 @@ class NormalisationSlots():
             self.normalisation.densityUnits.value
         )
 
-        self.widget.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
-        self.widget.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
+        self.widget.upstreamSpinBox.setValue(
+            self.normalisation.upstreamThickness
+        )
+        self.widget.downstreamSpinBox.setValue(
+            self.normalisation.downstreamThickness
+        )
 
         self.widget.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
         self.widget.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
@@ -78,10 +85,13 @@ class NormalisationSlots():
         # Release the lock
         self.widgetsRefreshing = False
 
-
     def setupNormalisationSlots(self):
-        self.widget.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.widget.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.widget.dataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.dataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
 
         self.widget.addDataFileButton.clicked.connect(
             lambda: self.addDataFiles(
@@ -116,11 +126,14 @@ class NormalisationSlots():
 
         self.widget.removeBackgroundDataFileButton.clicked.connect(
             lambda: self.removeBgDataFile(
-                self.widget.backgroundDataFilesList, self.normalisation.dataFilesBg
+                self.widget.backgroundDataFilesList,
+                self.normalisation.dataFilesBg
             )
         )
 
-        self.widget.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+        self.widget.periodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoChanged
+        )
         self.widget.backgroundPeriodNoSpinBox.valueChanged.connect(
             self.handlePeriodNoBgChanged
         )
@@ -195,8 +208,12 @@ class NormalisationSlots():
         )
 
         # Setup the widgets and slots for the composition.
-        self.widget.insertElementButton.clicked.connect(self.handleInsertElement)
-        self.widget.removeElementButton.clicked.connect(self.handleRemoveElement)
+        self.widget.insertElementButton.clicked.connect(
+            self.handleInsertElement
+        )
+        self.widget.removeElementButton.clicked.connect(
+            self.handleRemoveElement
+        )
 
     def handlePeriodNoChanged(self, value):
         """
@@ -241,7 +258,9 @@ class NormalisationSlots():
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-        self.normalisation.geometry = self.widget.normalisationGeometryComboBox.itemData(index)
+        self.normalisation.geometry = (
+            self.widget.normalisationGeometryComboBox.itemData(index)
+        )
         if self.normalisation.geometry == Geometry.SameAsBeam:
             self.widget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
@@ -262,8 +281,8 @@ class NormalisationSlots():
         index : int
             The new current index of the densityUnitsComboBox.
         """
-        self.normalisation.densityUnits = self.widget.densityUnitsComboBox.itemData(
-            index
+        self.normalisation.densityUnits = (
+            self.widget.densityUnitsComboBox.itemData(index)
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -449,11 +468,13 @@ class NormalisationSlots():
         Alters the normalisation's differential
         cross section file name as such.
         """
-        filename = QFileDialog.getOpenFileName(
+        filename, _ = QFileDialog.getOpenFileName(
             self.widget, "Normalisation differential cross section file", ""
         )
         if filename[0]:
-            self.widget.differentialCrossSectionFileLineEdit.setText(filename[0])
+            self.widget.differentialCrossSectionFileLineEdit.setText(
+                filename
+            )
 
     def handleNormalisationDegreeSmoothingChanged(self, value):
         """
@@ -690,7 +711,8 @@ class NormalisationSlots():
         from the removeDataFileButton.
         """
         self.widget.normalisationCompositionTable.removeRow(
-            self.widget.normalisationCompositionTable.selectionModel().selectedRows()
+            self.widget.normalisationCompositionTable
+            .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

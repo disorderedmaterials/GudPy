@@ -1,4 +1,4 @@
-# from src.gui.widgets.iteration_dialog import IterationDialog
+from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
 from src.gudrun_classes.exception import ParserException
@@ -9,11 +9,6 @@ from PySide6.QtWidgets import (
     QMessageBox,
 )
 from src.gui.widgets.view_input import ViewInput
-# from src.gui.widgets.sample_widget import SampleWidget
-# from src.gui.widgets.instrument_widget import InstrumentWidget
-# from src.gui.widgets.beam_widget import BeamWidget
-# from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
-# from src.gui.widgets.container_widget import ContainerWidget
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.gudpy_tables import GroupingParameterTable
 from src.gui.widgets.gudpy_tables import BeamProfileTable
@@ -29,6 +24,7 @@ from src.gui.widgets.instrument_slots import InstrumentSlots
 from src.gui.widgets.normalisation_slots import NormalisationSlots
 from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
+
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -91,7 +87,9 @@ class GudPyMainWindow(QMainWindow):
         self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
         self.beamSlots = BeamSlots(self.mainWidget, self)
         self.normalisationSlots = NormalisationSlots(self.mainWidget, self)
-        self.sampleBackgroundSlots = SampleBackgroundSlots(self.mainWidget, self)
+        self.sampleBackgroundSlots = SampleBackgroundSlots(
+            self.mainWidget, self
+        )
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
         self.mainWidget.runPurge.triggered.connect(
@@ -123,13 +121,25 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.objectTree.insertContainer
         )
 
-        self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
-        self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
-        self.mainWidget.paste.triggered.connect(self.mainWidget.objectTree.paste)
-        self.mainWidget.delete_.triggered.connect(self.mainWidget.objectTree.del_)
+        self.mainWidget.copy.triggered.connect(
+            self.mainWidget.objectTree.copy
+        )
+        self.mainWidget.cut.triggered.connect(
+            self.mainWidget.objectTree.cut
+        )
+        self.mainWidget.paste.triggered.connect(
+            self.mainWidget.objectTree.paste
+        )
+        self.mainWidget.delete_.triggered.connect(
+            self.mainWidget.objectTree.del_
+        )
 
-        self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.mainWidget.objectStack.currentChanged.connect(self.updateComponents)
+        self.mainWidget.loadInputFile.triggered.connect(
+            self.loadInputFile_
+        )
+        self.mainWidget.objectStack.currentChanged.connect(
+            self.updateComponents
+        )
 
         self.mainWidget.exit.triggered.connect(self.exit_)
         # Hide the QStackedWidget and GudPyTreeView
@@ -152,20 +162,31 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.tabWidget.setVisible(False)
 
     def updateWidgets(self):
-        self.mainWidget.gudrunFile = self.gudrunFile    
+        self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
 
         if len(self.gudrunFile.sampleBackgrounds):
-            self.sampleBackgroundSlots.setSampleBackground(self.gudrunFile.sampleBackgrounds[0])
+            self.sampleBackgroundSlots.setSampleBackground(
+                self.gudrunFile.sampleBackgrounds[0]
+            )
 
             if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                self.sampleSlots.setSample(self.gudrunFile.sampleBackgrounds[0].samples[0])
+                self.sampleSlots.setSample(
+                    self.gudrunFile.sampleBackgrounds[0].
+                    samples[0]
+                )
 
-                if len(self.gudrunFile.sampleBackgrounds[0].samples[0].containers):                                                         
-                    self.containerSlots.setContainer(self.gudrunFile.sampleBackgrounds[0].samples[0].containers[0])
+                if len(
+                    self.gudrunFile.sampleBackgrounds[0].
+                    samples[0].containers
+                ):
+                    self.containerSlots.setContainer(
+                        self.gudrunFile.sampleBackgrounds[0]
+                        .samples[0].containers[0]
+                    )
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
 
     def loadInputFile_(self):
@@ -213,11 +234,11 @@ class GudPyMainWindow(QMainWindow):
         where the Geometry is SameAsBeam.
         """
         if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
-            self.normalisationWidget.widgetsRefreshing = True
-            self.normalisationWidget.geometryInfoStack.setCurrentIndex(
+            self.normalisationSlots.widgetsRefreshing = True
+            self.mainWidget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
-            self.normalisationWidget.widgetsRefreshing = False
+            self.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
         ):
@@ -234,20 +255,14 @@ class GudPyMainWindow(QMainWindow):
         Iteratively shares compositions between objects,
         for copying and pasting compositions between eachother.
         """
-        for i in range(self.objectStack.count()):
-            target = self.objectStack.widget(i)
-            if isinstance(target, NormalisationWidget):
-                target.normalisationCompositionTable.farmCompositions()
-            elif isinstance(target, SampleWidget):
-                target.sampleCompositionTable.farmCompositions()
-            elif isinstance(target, ContainerWidget):
-                target.containerCompositionTable.farmCompositions()
+        self.mainWidget.normalisationCompositionTable.farmCompositions()
+        self.mainWidget.sampleCompositionTable.farmCompositions()
+        self.mainWidget.containerCompositionTable.farmCompositions()
 
     def updateComponents(self):
         """
         Updates geometries and compositions.
         """
-        return
         self.updateGeometries()
         self.updateCompositions()
 

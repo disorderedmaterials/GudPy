@@ -1,6 +1,10 @@
-from src.gudrun_classes.enums import CrossSectionSource, Geometry, NormalisationType, OutputUnits, UnitsOfDensity
+from src.gudrun_classes.enums import (
+    CrossSectionSource, Geometry,
+    NormalisationType, OutputUnits, UnitsOfDensity
+)
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
+
 
 class SampleSlots():
 
@@ -27,21 +31,35 @@ class SampleSlots():
         )
 
         # Populate the geometry data.
-        self.widget.sampleGeometryComboBox.setCurrentIndex(self.sample.geometry.value)
+        self.widget.sampleGeometryComboBox.setCurrentIndex(
+            self.sample.geometry.value
+        )
         self.widget.sampleGeometryComboBox.setDisabled(True)
 
         # Ensure the correct attributes are being shown
         # for the correct geometry.
-        self.widget.sampleGeometryInfoStack.setCurrentIndex(config.geometry.value)
-        self.widget.sampleGeometryInfoStack_.setCurrentIndex(config.geometry.value)
+        self.widget.sampleGeometryInfoStack.setCurrentIndex(
+            config.geometry.value
+        )
+        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
+            config.geometry.value
+        )
 
         # Populate geometry specific attributes.
         # Flatplate
-        self.widget.sampleUpstreamSpinBox.setValue(self.sample.upstreamThickness)
-        self.widget.sampleDownstreamSpinBox.setValue(self.sample.downstreamThickness)
+        self.widget.sampleUpstreamSpinBox.setValue(
+            self.sample.upstreamThickness
+        )
+        self.widget.sampleDownstreamSpinBox.setValue(
+            self.sample.downstreamThickness
+        )
 
-        self.widget.angleOfRotationSpinBox.setValue(self.sample.angleOfRotation)
-        self.widget.sampleWidthSpinBox.setValue(self.sample.sampleWidth)
+        self.widget.angleOfRotationSpinBox.setValue(
+            self.sample.angleOfRotation
+        )
+        self.widget.sampleWidthSpinBox.setValue(
+            self.sample.sampleWidth
+        )
 
         # Cylindrical
         self.widget.sampleInnerRadiiSpinBox.setValue(self.sample.innerRadius)
@@ -63,13 +81,17 @@ class SampleSlots():
         self.widget.sampleCrossSectionFileLineEdit.setText(
             self.sample.crossSectionFilename
         )
-        self.widget.crossSectionFileWidget.setVisible(
+        self.widget.sampleCrossSectionFileWidget.setVisible(
             self.sample.totalCrossSectionSource == CrossSectionSource.FILE
         )
 
-        self.widget.normaliseToComboBox.setCurrentIndex(self.sample.normaliseTo.value)
+        self.widget.normaliseToComboBox.setCurrentIndex(
+            self.sample.normaliseTo.value
+        )
 
-        self.widget.outputUnitsComboBox.setCurrentIndex(self.sample.outputUnits.value)
+        self.widget.outputUnitsComboBox.setCurrentIndex(
+            self.sample.outputUnits.value
+        )
 
         # Populate the tweak factor.
         self.widget.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
@@ -80,18 +102,26 @@ class SampleSlots():
         self.widget.minSpinBox.setValue(self.sample.minRadFT)
         self.widget.maxSpinBox.setValue(self.sample.maxRadFT)
 
-        self.widget.broadeningFunctionSpinBox.setValue(self.sample.grBroadening)
-        self.widget.broadeningPowerSpinBox.setValue(self.sample.powerForBroadening)
+        self.widget.broadeningFunctionSpinBox.setValue(
+            self.sample.grBroadening
+        )
+        self.widget.broadeningPowerSpinBox.setValue(
+            self.sample.powerForBroadening
+        )
         self.widget.stepSizeSpinBox.setValue(self.sample.stepSize)
 
         # Populate advanced attributes.
-        self.widget.scatteringFileLineEdit.setText(self.sample.fileSelfScattering)
+        self.widget.scatteringFileLineEdit.setText(
+            self.sample.fileSelfScattering
+        )
 
         self.widget.correctionFactorSpinBox.setValue(
             self.sample.normalisationCorrectionFactor
         )
 
-        self.widget.sampleScatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
+        self.widget.sampleScatteringFractionSpinBox.setValue(
+            self.sample.scatteringFraction
+        )
 
         self.widget.sampleAttenuationCoefficientSpinBox.setValue(
             self.sample.attenuationCoefficient
@@ -111,11 +141,17 @@ class SampleSlots():
 
     def setupSampleSlots(self):
         # Setup slot for period number.
-        self.widget.samplePeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+        self.widget.samplePeriodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoChanged
+        )
 
         # Setup slots for data files.
-        self.widget.sampleDataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.widget.sampleDataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.widget.sampleDataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.sampleDataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
         self.widget.addDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.sampleDataFilesList,
@@ -125,7 +161,9 @@ class SampleSlots():
             )
         )
         self.widget.removeDataFileButton.clicked.connect(
-            lambda: self.removeFile(self.widget.sampleDataFilesList, self.sample.dataFiles)
+            lambda: self.removeFile(
+                self.widget.sampleDataFilesList, self.sample.dataFiles
+            )
         )
 
         # Setup slots for run controls.
@@ -161,7 +199,7 @@ class SampleSlots():
         self.widget.sampleOuterRadiiSpinBox.valueChanged.connect(
             self.handleOuterRadiiChanged
         )
-        self.swidget.ampleHeightSpinBox.valueChanged.connect(
+        self.widget.sampleHeightSpinBox.valueChanged.connect(
             self.handleSampleHeightChanged
         )
 
@@ -173,8 +211,8 @@ class SampleSlots():
         self.widget.sampleDensitySpinBox.valueChanged.connect(
             self.handleDensityChanged
         )
-        self.sampleDensityUnitsComboBox.currentIndexChanged.connect(
-            self.widget.handleDensityUnitsChanged
+        self.widget.sampleDensityUnitsComboBox.currentIndexChanged.connect(
+            self.handleDensityUnitsChanged
         )
 
         # Setup slots for other sample run controls.
@@ -182,22 +220,22 @@ class SampleSlots():
         for c in CrossSectionSource:
             self.widget.totalCrossSectionComboBox.addItem(c.name, c)
 
-        self.totalCrossSectionComboBox.currentIndexChanged.connect(
-            self.widget.handleCrossSectionSourceChanged
+        self.widget.totalCrossSectionComboBox.currentIndexChanged.connect(
+            self.handleCrossSectionSourceChanged
         )
-        self.sampleCrossSectionFileLineEdit.textChanged.connect(
-            self.widget.handleCrossSectionFileChanged
+        self.widget.sampleCrossSectionFileLineEdit.textChanged.connect(
+            self.handleCrossSectionFileChanged
         )
-        self.browseSampleCrossSectionFileButto.clicked.connect(
-            self.widget.handleBrowseCrossSectionFile
+        self.widget.browseSampleCrossSectionFileButto.clicked.connect(
+            self.handleBrowseCrossSectionFile
         )
 
         # Fill the normalisation type combo box.
         for n in NormalisationType:
             self.widget.normaliseToComboBox.addItem(n.name, n)
 
-        self.normaliseToComboBox.currentIndexChanged.connect(
-            self.widget.handleNormaliseToChanged
+        self.widget.normaliseToComboBox.currentIndexChanged.connect(
+            self.handleNormaliseToChanged
         )
 
         # Fill the output units combo box.
@@ -225,7 +263,9 @@ class SampleSlots():
         self.widget.broadeningPowerSpinBox.valueChanged.connect(
             self.handleBroadeningPowerChanged
         )
-        self.widget.stepSizeSpinBox.valueChanged.connect(self.handleStepSizeChanged)
+        self.widget.stepSizeSpinBox.valueChanged.connect(
+            self.handleStepSizeChanged
+        )
 
         # Setup slots for advanced attributes.
         self.widget.scatteringFileLineEdit.textChanged.connect(
@@ -242,8 +282,12 @@ class SampleSlots():
         )
 
         # Setup slots for composition.
-        self.widget.insertSampleElementButton.clicked.connect(self.handleInsertElement)
-        self.widget.removeSampleElementButton.clicked.connect(self.handleRemoveElement)
+        self.widget.insertSampleElementButton.clicked.connect(
+            self.handleInsertElement
+        )
+        self.widget.removeSampleElementButton.clicked.connect(
+            self.handleRemoveElement
+        )
 
         # Setup slots for exponential values.
         self.widget.insertExponentialButton.clicked.connect(
@@ -286,7 +330,8 @@ class SampleSlots():
         Parameters
         ----------
         state : int
-            The new state of the sampleForceCorrectionsCheckBox (1: True, 0: False)
+            The new state of the sampleForceCorrectionsCheckBox
+            (1: True, 0: False)
         """
         self.sample.forceCalculationOfCorrections = state
         if not self.widgetsRefreshing:
@@ -303,9 +348,15 @@ class SampleSlots():
         index : int
             The new current index of the sampleGeometryComboBox.
         """
-        self.sample.geometry = self.widget.sampleGeometryComboBox.itemData(index)
-        self.widget.samplesampleGeometryInfoStack.setCurrentIndex(self.sample.geometry.value)
-        self.widget.samplesampleGeometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
+        self.sample.geometry = (
+            self.widget.sampleGeometryComboBox.itemData(index)
+        )
+        self.widget.sampleGeometryInfoStack.setCurrentIndex(
+            self.sample.geometry.value
+        )
+        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
+            self.sample.geometry.value
+        )
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -393,7 +444,9 @@ class SampleSlots():
         index : int
             The new current index of the sampleDensityUnitsComboBox.
         """
-        self.sample.densityUnits = self.widget.sampleDensityUnitsComboBox.itemData(index)
+        self.sample.densityUnits = (
+            self.widget.sampleDensityUnitsComboBox.itemData(index)
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -409,9 +462,9 @@ class SampleSlots():
             The new current index of the totalCrossSectionComboBox.
         """
         self.sample.totalCrossSectionSource = (
-            self.totalCrossSectionComboBox.widget.itemData(index)
+            self.widget.totalCrossSectionComboBox.itemData(index)
         )
-        self.crossSectionFileWidget.setVisible(
+        self.widget.sampleCrossSectionFileWidget.setVisible(
             self.sample.totalCrossSectionSource == CrossSectionSource.FILE
         )
         if not self.widgetsRefreshing:
@@ -576,7 +629,9 @@ class SampleSlots():
         index : int
             The new current index of the normaliseToComboBox.
         """
-        self.sample.normaliseTo = self.widget.normaliseToComboBox.itemData(index)
+        self.sample.normaliseTo = (
+            self.widget.normaliseToComboBox.itemData(index)
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -591,7 +646,9 @@ class SampleSlots():
         index : int
             The new current index of the outputUnitsComboBox.
         """
-        self.sample.outputUnits = self.widget.outputUnitsComboBox.itemData(index)
+        self.sample.outputUnits = (
+            self.widget.outputUnitsComboBox.itemData(index)
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -775,7 +832,9 @@ class SampleSlots():
         """
         Fills the composition table.
         """
-        self.widget.sampleCompositionTable.makeModel(self.sample.composition.elements)
+        self.widget.sampleCompositionTable.makeModel(
+            self.sample.composition.elements
+        )
 
     def handleInsertElement(self):
         """
@@ -803,7 +862,9 @@ class SampleSlots():
         """
         Fills the exponential table.
         """
-        self.widget.exponentialValuesTable.makeModel(self.sample.exponentialValues)
+        self.widget.exponentialValuesTable.makeModel(
+            self.sample.exponentialValues
+        )
 
     def updateResonanceTable(self):
         """

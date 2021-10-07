@@ -9,8 +9,9 @@ from PySide6.QtWidgets import (
     QMenu,
 )
 from PySide6.QtGui import QCursor, QAction
-
 from src.gudrun_classes.element import Element
+
+
 class GudPyTableModel(QAbstractTableModel):
     """
     Class to represent a GudPyTableModel. Inherits QAbstractTableModel.

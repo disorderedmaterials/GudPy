@@ -2,6 +2,7 @@ from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
 
+
 class BeamSlots():
 
     def __init__(self, widget, parent):
@@ -17,7 +18,9 @@ class BeamSlots():
             self.beam.sampleGeometry.value
         )
 
-        self.widget.absorptionStepSizeSpinBox.setValue(self.beam.stepSizeAbsorption)
+        self.widget.absorptionStepSizeSpinBox.setValue(
+            self.beam.stepSizeAbsorption
+        )
 
         self.widget.msCalculationStepSizeSpinBox.setValue(self.beam.stepSizeMS)
 
@@ -26,7 +29,6 @@ class BeamSlots():
         self.widget.stepForCorrectionsSpinBox.setValue(
             self.beam.angularStepForCorrections
         )
-
 
         self.widget.leftIncidentBeamEdgeSpinBox.setValue(
             self.beam.incidentBeamLeftEdge
@@ -78,7 +80,7 @@ class BeamSlots():
 
     def setupBeamSlots(self):
 
-       # Populate the Geometry combo box
+        # Populate the Geometry combo box
         # with the names of the members of the Geometry enum.
         for g in Geometry:
             if not g == Geometry.SameAsBeam:
@@ -100,7 +102,9 @@ class BeamSlots():
             self.handleMSStepSizeChanged
         )
 
-        self.widget.noSlicesSpinBox.valueChanged.connect(self.handleNoSlicesChanged)
+        self.widget.noSlicesSpinBox.valueChanged.connect(
+            self.handleNoSlicesChanged
+        )
 
         # Setup widgets and slots, for Step size for angular corrections.
 
@@ -149,13 +153,13 @@ class BeamSlots():
             self.handleBottomScatteredBeamEdgeChanged
         )
 
-
         self.widget.overallBackgroundFactorSpinBox.valueChanged.connect(
             self.handleOverallBackgroundFactorChanged
         )
 
-
-        self.widget.sampleDependantBackgroundFactorSpinBox.valueChanged.connect(
+        (
+            self.widget.sampleDependantBackgroundFactorSpinBox
+        ).valueChanged.connect(
             self.handleSampleDependantBackgroundFactorChanged
         )
 
@@ -163,7 +167,9 @@ class BeamSlots():
             self.handleShieldingAbsorptionCoeffChanged
         )
 
-        self.widget.addBeamValueButton.clicked.connect(self.handleAddBeamProfileValue)
+        self.widget.addBeamValueButton.clicked.connect(
+            self.handleAddBeamProfileValue
+        )
         self.widget.removeBeamValueButton.clicked.connect(
             self.handleRemoveBeamProfileValue
         )
@@ -180,7 +186,9 @@ class BeamSlots():
         index : int
             The new current index of the beamGeometryComboBox.
         """
-        self.beam.sampleGeometry = self.widget.beamGeometryComboBox.itemData(index)
+        self.beam.sampleGeometry = (
+            self.widget.beamGeometryComboBox.itemData(index)
+        )
         config.geometry = self.beam.sampleGeometry
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -393,7 +401,9 @@ class BeamSlots():
         filename, _ = QFileDialog.getOpenFileName(
             self.widget, "Incident beam spectrum parameters", "")
         if filename:
-            self.widget.incidentBeamSpectrumParametersLineEdit.setText(filename)
+            (
+                self.widget.incidentBeamSpectrumParametersLineEdit
+            ).setText(filename)
 
     def handleOverallBackgroundFactorChanged(self, value):
         """
@@ -445,7 +455,9 @@ class BeamSlots():
         """
         Fills the beam profile table.
         """
-        self.widget.beamProfileValuesTable.makeModel(self.beam.beamProfileValues)
+        self.widget.beamProfileValuesTable.makeModel(
+            self.beam.beamProfileValues
+        )
 
     def handleAddBeamProfileValue(self):
         """

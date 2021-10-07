@@ -1,10 +1,9 @@
-
-
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 from PySide6.QtWidgets import QFileDialog
+
 
 class InstrumentSlots():
 
@@ -20,7 +19,9 @@ class InstrumentSlots():
 
         self.widget.nameComboBox.setCurrentIndex(self.instrument.name.value)
         # Setup the widgets and slots for configuration files.
-        self.widget.dataFileDirectoryLineEdit.setText(self.instrument.dataFileDir)
+        self.widget.dataFileDirectoryLineEdit.setText(
+            self.instrument.dataFileDir
+        )
 
         dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
         self.widget.dataFileTypeCombo.setCurrentIndex(
@@ -37,7 +38,9 @@ class InstrumentSlots():
             self.instrument.deadtimeConstantsFileName
         )
 
-        self.widget.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
+        self.widget.phiValuesColumnSpinBox.setValue(
+            self.instrument.columnNoPhiVals
+        )
 
         # Setup the widgets and slots for the wavelength range and step size
         # for monitor normalisation.
@@ -82,9 +85,15 @@ class InstrumentSlots():
         )
 
         # Setup the widgets and slots for the wavelength range and step size.
-        self.widget.minWavelengthSpinBox.setValue(self.instrument.wavelengthMin)
-        self.widget.maxWavelengthSpinBox.setValue(self.instrument.wavelengthMax)
-        self.widget.stepWavelengthSpinBox.setValue(self.instrument.wavelengthStep)
+        self.widget.minWavelengthSpinBox.setValue(
+            self.instrument.wavelengthMin
+        )
+        self.widget.maxWavelengthSpinBox.setValue(
+            self.instrument.wavelengthMax
+        )
+        self.widget.stepWavelengthSpinBox.setValue(
+            self.instrument.wavelengthStep
+        )
 
         # Setup the widget and slot for the number of smoothings on monitor.
         self.widget.noSmoothsOnMonitorSpinBox.setValue(
@@ -144,7 +153,9 @@ class InstrumentSlots():
         )
 
         # Setup the widget and slot for enabling/disablign hard group edges.
-        self.widget.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
+        self.widget.hardGroupEdgesCheckBox.setChecked(
+            self.instrument.hardGroupEdges
+        )
 
         self.updateGroupingParameterPanel()
 
@@ -165,7 +176,8 @@ class InstrumentSlots():
 
         self.widget.browseDataFileDirectoryButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.widget.dataFileDirectoryLineEdit, "Data file directory", dir=True
+                self.widget.dataFileDirectoryLineEdit,
+                "Data file directory", dir=True
             )
         )
 
@@ -219,16 +231,26 @@ class InstrumentSlots():
         # Setup the widgets and slots for the spectrum numbers
         # and quiet count const for the incident beam monitor.
         # Regular expression to accept space delimited integers.
-        spectrumNumbersRegex = QRegularExpression(r"^\d+(?:\s+\d+)*$")
-        spectrumNumbersValidator = QRegularExpressionValidator(spectrumNumbersRegex)
+        spectrumNumbersRegex = QRegularExpression(
+            r"^\d+(?:\s+\d+)*$"
+        )
+        spectrumNumbersValidator = QRegularExpressionValidator(
+            spectrumNumbersRegex
+        )
 
-        self.widget.spectrumNumbersIBLineEdit.textChanged.connect(
+        (
+            self.widget.spectrumNumbersIBLineEdit
+        ).textChanged.connect(
             self.handleSpectrumNumbersIBChanged
         )
 
-        self.widget.spectrumNumbersIBLineEdit.setValidator(spectrumNumbersValidator)
+        (
+            self.widget.spectrumNumbersIBLineEdit
+        ).setValidator(spectrumNumbersValidator)
 
-        self.widget.incidentMonitorQuietCountConstSpinBox.valueChanged.connect(
+        (
+            self.widget.incidentMonitorQuietCountConstSpinBox
+        ).valueChanged.connect(
             self.handleIncidentMonitorQuietCountConstChanged
         )
 
@@ -236,8 +258,12 @@ class InstrumentSlots():
             self.handleSpectrumNumbersTChanged
         )
 
-        self.widget.spectrumNumbersTLineEdit.setValidator(spectrumNumbersValidator)
-        self.widget.transmissionMonitorQuietCountConstSpinBox.valueChanged.connect(
+        (
+            self.widget.spectrumNumbersTLineEdit
+        ).setValidator(spectrumNumbersValidator)
+        (
+            self.widget.transmissionMonitorQuietCountConstSpinBox
+        ).valueChanged.connect(
             self.handleTransmissionMonitorQuietCountConstChanged
         )
         self.widget.channelNoASpinBox.valueChanged.connect(
@@ -342,7 +368,6 @@ class InstrumentSlots():
             self.handleNexusDefinitionFileChanged
         )
 
-
         self.widget.browseNexusDefinitionButton.clicked.connect(
             lambda: self.handleBrowse(
                 self.widget.nexusDefintionFileLineEdit, "NeXus defnition file"
@@ -395,6 +420,7 @@ class InstrumentSlots():
         self.instrument.dataFileDir = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
     def handleDataFileTypeChanged(self, index):
         """
         Slot for handling change to the data file type.
@@ -487,8 +513,8 @@ class InstrumentSlots():
         index : int
             New current index of the mergeWeightsComboBox.
         """
-        self.instrument.mergeWeights = self.widget.mergeWeightsComboBox.itemData(
-            index
+        self.instrument.mergeWeights = (
+            self.widget.mergeWeightsComboBox.itemData(index)
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -608,7 +634,7 @@ class InstrumentSlots():
         text : str
             The new value of the spectrumNumbersIBLineEdit.
         """
-        self.instrument.spectrumNumbersForIncidentBeamMonitor  = [
+        self.instrument.spectrumNumbersForIncidentBeamMonitor = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
@@ -627,7 +653,7 @@ class InstrumentSlots():
         text : str
             The new value of the spectrumNumbersTLineEdit.
         """
-        self.instrument.spectrumNumbersForTransmissionMonitor  = [
+        self.instrument.spectrumNumbersForTransmissionMonitor = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
@@ -661,7 +687,7 @@ class InstrumentSlots():
         value : float
             The new value of the transmissionMonitorQuietCountConstSpinBox.
         """
-        self.instrument.transmissionMonitorQuietCountConst  = value
+        self.instrument.transmissionMonitorQuietCountConst = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

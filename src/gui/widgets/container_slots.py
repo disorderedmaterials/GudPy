@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import QFileDialog
 from src.gudrun_classes import config
-from src.gudrun_classes.enums import CrossSectionSource, UnitsOfDensity, Geometry
+from src.gudrun_classes.enums import (
+    CrossSectionSource, UnitsOfDensity, Geometry
+)
+
 
 class ContainerSlots():
 
@@ -14,31 +17,51 @@ class ContainerSlots():
         # Acquire the lock
         self.widgetsRefreshing = True
         # Populate the period number.
-        self.widget.containerPeriodNoSpinBox.setValue(self.container.periodNumber)
+        self.widget.containerPeriodNoSpinBox.setValue(
+            self.container.periodNumber
+        )
 
         # Populate data files.
         self.updateDataFilesList()
 
         # Populate geometry data.
-        self.widget.containerGeometryComboBox.setCurrentIndex(self.container.geometry.value)
+        self.widget.containerGeometryComboBox.setCurrentIndex(
+            self.container.geometry.value
+        )
 
         # Ensure the correct attributes are being
         # shown for the correct geometry.
-        self.widget.containerGeometryInfoStack.setCurrentIndex(config.geometry.value)
+        self.widget.containerGeometryInfoStack.setCurrentIndex(
+            config.geometry.value
+        )
 
         # Populate geometry specific attributes.
         # Flatplate
-        self.widget.containerUpstreamSpinBox.setValue(self.container.upstreamThickness)
-        self.widget.containerDownStreamSPinBox.setValue(self.container.downstreamThickness)
+        self.widget.containerUpstreamSpinBox.setValue(
+            self.container.upstreamThickness
+        )
+        self.widget.containerDownStreamSPinBox.setValue(
+            self.container.downstreamThickness
+        )
 
-        self.widget.containerAngleOfRotationSpinBox.setValue(self.container.angleOfRotation)
-        self.widget.containerSampleWidthSpinBox.setValue(self.container.sampleWidth)
+        self.widget.containerAngleOfRotationSpinBox.setValue(
+            self.container.angleOfRotation
+        )
+        self.widget.containerSampleWidthSpinBox.setValue(
+            self.container.sampleWidth
+        )
 
         # Cylindrical
-        self.widget.containerInnerRadiiSpinBox.setValue(self.container.innerRadius)
-        self.widget.containerOuterRadiiSpinBox.setValue(self.container.outerRadius)
+        self.widget.containerInnerRadiiSpinBox.setValue(
+            self.container.innerRadius
+        )
+        self.widget.containerOuterRadiiSpinBox.setValue(
+            self.container.outerRadius
+        )
 
-        self.widget.containerSampleHeightSpinBox.setValue(self.container.sampleHeight)
+        self.widget.containerSampleHeightSpinBox.setValue(
+            self.container.sampleHeight
+        )
 
         # Populate density data.
         self.widget.containerDensitySpinBox.setValue(self.container.density)
@@ -53,10 +76,12 @@ class ContainerSlots():
         self.widget.containerCrossSectionFileLineEdit.setText(
             self.container.crossSectionFilename
         )
-        self.widget.crossSectionFileWidget.setVisible(
+        self.widget.containerCrossSectionFileWidget.setVisible(
             self.container.totalCrossSectionSource == CrossSectionSource.FILE
         )
-        self.widget.containerTweakFactorSpinBox.setValue(self.container.tweakFactor)
+        self.widget.containerTweakFactorSpinBox.setValue(
+            self.container.tweakFactor
+        )
 
         self.widget.containerScatteringFractionSpinBox.setValue(
             self.container.scatteringFraction
@@ -74,11 +99,17 @@ class ContainerSlots():
 
     def setupContainerSlots(self):
         # Setup slot for period number.
-        self.widget.containerPeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+        self.widget.containerPeriodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoChanged
+        )
 
         # Setup slots for data files.
-        self.widget.containerDataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.widget.containerDataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.widget.containerDataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.containerDataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
         self.widget.addContainerDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.containerDataFilesList,
@@ -131,7 +162,9 @@ class ContainerSlots():
         )
 
         # Setup slots for density data.
-        self.widget.containerDensitySpinBox.valueChanged.connect(self.handleDensityChanged)
+        (
+            self.widget.containerDensitySpinBox
+        ).valueChanged.connect(self.handleDensityChanged)
 
         # Populate density units combo box.
         for du in UnitsOfDensity:
@@ -142,7 +175,9 @@ class ContainerSlots():
         for c in CrossSectionSource:
             self.widget.containerTotalCrossSectionComboBox.addItem(c.name, c)
 
-        self.widget.containerTotalCrossSectionComboBox.currentIndexChanged.connect(
+        (
+            self.widget.containerTotalCrossSectionComboBox
+        ).currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
 
@@ -160,13 +195,19 @@ class ContainerSlots():
         self.widget.containerScatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
         )
-        self.widget.containerAttenuationCoefficientSpinBox.valueChanged.connect(
+        (
+            self.widget.containerAttenuationCoefficientSpinBox
+        ).valueChanged.connect(
             self.handleAttenuationCoefficientChanged
         )
 
         # Setup slots for composition table.
-        self.widget.insertContainerElementButton.clicked.connect(self.handleInsertElement)
-        self.widget.removeContainerElementButton.clicked.connect(self.handleRemoveElement)
+        self.widget.insertContainerElementButton.clicked.connect(
+            self.handleInsertElement
+        )
+        self.widget.removeContainerElementButton.clicked.connect(
+            self.handleRemoveElement
+        )
 
     def handlePeriodNoChanged(self, value):
         """
@@ -194,8 +235,12 @@ class ContainerSlots():
         index : int
             The new current index of the containerGeometryComboBox.
         """
-        self.container.geometry = self.widget.containerGeometryComboBox.itemData(index)
-        self.widget.containerGeometryInfoStack.setCurrentIndex(self.container.geometry.value)
+        self.container.geometry = (
+            self.widget.containerGeometryComboBox.itemData(index)
+        )
+        self.widget.containerGeometryInfoStack.setCurrentIndex(
+            self.container.geometry.value
+        )
 
     def handleUpstreamThicknessChanged(self, value):
         """
@@ -286,7 +331,7 @@ class ContainerSlots():
         self.container.totalCrossSectionSource = (
             self.widget.containerTotalCrossSectionComboBox.itemData(index)
         )
-        self.widget.crossSectionFileWidget.setVisible(
+        self.widget.containerCrossSectionFileWidget.setVisible(
             self.container.totalCrossSectionSource == CrossSectionSource.FILE
         )
         if not self.widgetsRefreshing:
@@ -523,7 +568,8 @@ class ContainerSlots():
         from the removeContainerElementButton.
         """
         self.widget.containerCompositionTable.removeRow(
-            self.widget.containerCompositionTable.selectionModel().selectedRows()
+            self.widget.containerCompositionTable
+            .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

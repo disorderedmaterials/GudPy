@@ -14,7 +14,9 @@ class SampleBackgroundSlots():
         self.widgetsRefreshing = True
 
         # Populate period number.
-        self.widget.sampleBackgroundPeriodNoSpinBox.setValue(self.sampleBackground.periodNumber)
+        self.widget.sampleBackgroundPeriodNoSpinBox.setValue(
+            self.sampleBackground.periodNumber
+        )
 
         # Populate data files list.
         self.updateDataFilesList()
@@ -24,11 +26,17 @@ class SampleBackgroundSlots():
 
     def setupSampleBackgroundSlots(self):
         # Setup slot for period number.
-        self.widget.sampleBackgroundPeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+        self.widget.sampleBackgroundPeriodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoChanged
+        )
 
         # Setup slots for data files.
-        self.widget.sampleBackgroundDataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.widget.sampleBackgroundDataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.widget.sampleBackgroundDataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.sampleBackgroundDataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
         self.widget.addSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.sampleBackgroundDataFilesList,
@@ -39,7 +47,8 @@ class SampleBackgroundSlots():
         )
         self.widget.removeSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.widget.sampleBackgroundDataFilesList, self.sampleBackground.dataFiles
+                self.widget.sampleBackgroundDataFilesList,
+                self.sampleBackground.dataFiles
             )
         )
 

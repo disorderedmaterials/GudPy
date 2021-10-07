@@ -5693,7 +5693,7 @@
                     </layout>
                    </item>
                    <item>
-                    <widget class="QWidget" name="crossSectionFileWidget_3" native="true">
+                    <widget class="QWidget" name="containerCrossSectionFileWidget" native="true">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
