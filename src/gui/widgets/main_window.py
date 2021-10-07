@@ -149,13 +149,15 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.viewLiveInputFile.setDisabled(True)
         self.mainWidget.save.setDisabled(True)
         self.mainWidget.saveAs.setDisabled(True)
-
         self.mainWidget.tabWidget.setVisible(False)
+
     def updateWidgets(self):
+        self.mainWidget.gudrunFile = self.gudrunFile    
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+
         if len(self.gudrunFile.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(self.gudrunFile.sampleBackgrounds[0])
 
@@ -245,6 +247,7 @@ class GudPyMainWindow(QMainWindow):
         """
         Updates geometries and compositions.
         """
+        return
         self.updateGeometries()
         self.updateCompositions()
 
