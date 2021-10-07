@@ -1,3 +1,4 @@
+from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile, PurgeFile
@@ -300,6 +301,17 @@ class GudPyMainWindow(QMainWindow):
     def iterateGudrun_(self):
         iterationDialog = IterationDialog(self.gudrunFile, self)
         iterationDialog.show()
+
+    def checkFilesExist_(self):
+        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        if not all(r[0] for r in result):
+            unresolved = "\n".join(r[1] for r in result if not r[0])
+            QMessageBox.critical(
+                self, "GudPy Error",
+                f"Couldn't resolve some files!"
+                f" Check that all paths are correct and try again."
+                f"{unresolved}"
+            )
 
     def setModified(self):
         if not self.modified:
