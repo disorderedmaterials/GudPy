@@ -7,8 +7,9 @@ from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 
 class InstrumentSlots():
 
-    def __init__(self, widget):
+    def __init__(self, widget, parent):
         self.widget = widget
+        self.parent = parent
         print(self.widget)
         self.widgetsRefreshing = False
         self.setupInstrumentSlots()
@@ -145,7 +146,7 @@ class InstrumentSlots():
         # Setup the widget and slot for enabling/disablign hard group edges.
         self.widget.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
 
-        self.widget.updateGroupingParameterPanel()
+        self.updateGroupingParameterPanel()
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -376,7 +377,7 @@ class InstrumentSlots():
         index : int
             New current index of the nameComboBox.
         """
-        self.instrument.name = self.nameComboBox.itemData(index)
+        self.instrument.name = self.widget.nameComboBox.itemData(index)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -486,7 +487,7 @@ class InstrumentSlots():
         index : int
             New current index of the mergeWeightsComboBox.
         """
-        self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(
+        self.instrument.mergeWeights = self.widget.mergeWeightsComboBox.itemData(
             index
         )
         if not self.widgetsRefreshing:
@@ -607,7 +608,7 @@ class InstrumentSlots():
         text : str
             The new value of the spectrumNumbersIBLineEdit.
         """
-        self.instrument.incidentMonitorQuietCountConst = [
+        self.instrument.spectrumNumbersForIncidentBeamMonitor  = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
@@ -626,7 +627,7 @@ class InstrumentSlots():
         text : str
             The new value of the spectrumNumbersTLineEdit.
         """
-        self.instrument.transmissionMonitorQuietCountConst = [
+        self.instrument.spectrumNumbersForTransmissionMonitor  = [
             int(x) for x in text.split()
         ]
         if not self.widgetsRefreshing:
@@ -660,7 +661,7 @@ class InstrumentSlots():
         value : float
             The new value of the transmissionMonitorQuietCountConstSpinBox.
         """
-        self.instrument.incidentMonitorQuietCountConst = value
+        self.instrument.transmissionMonitorQuietCountConst  = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -911,7 +912,7 @@ class InstrumentSlots():
         """
         Fills the GroupingParameterPanel table.
         """
-        self.groupingParameterTable.makeModel(
+        self.widget.groupingParameterTable.makeModel(
             self.instrument.groupingParameterPanel
         )
 
@@ -931,7 +932,7 @@ class InstrumentSlots():
         Called when a clicked signal is emitted,
         from the removeGroupingParameterButton.
         """
-        self.groupingParameterTable.removeRow(
+        self.widget.groupingParameterTable.removeRow(
             self.groupingParameterTable.selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
@@ -943,4 +944,4 @@ class InstrumentSlots():
         Called when a toggled signal is emitted from the
         groupingParameterGroupBox.
         """
-        self.groupingParameterWidget.setVisible(on)
+        self.widget.groupingParameterWidget.setVisible(on)

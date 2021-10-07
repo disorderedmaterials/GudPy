@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QFileDialog, QWidget
-from PySide6 import uic
 import os
 from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes import config
@@ -98,7 +97,7 @@ class BeamWidget(QWidget):
         self.beam.sampleGeometry = self.sampleGeometryComboBox.itemData(index)
         config.geometry = self.beam.sampleGeometry
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleAbsorptionStepSizeChanged(self, value):
         """
@@ -113,7 +112,7 @@ class BeamWidget(QWidget):
         """
         self.beam.stepSizeAbsorption = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleMSStepSizeChanged(self, value):
         """
@@ -128,7 +127,7 @@ class BeamWidget(QWidget):
         """
         self.beam.stepSizeMS = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleNoSlicesChanged(self, value):
         """
@@ -143,7 +142,7 @@ class BeamWidget(QWidget):
         """
         self.beam.noSlices = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleStepSizeForCorrectionsChanged(self, value):
         """
@@ -158,7 +157,7 @@ class BeamWidget(QWidget):
         """
         self.beam.angularStepForCorrections = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleLeftIncidentBeamEdgeChanged(self, value):
         """
@@ -173,7 +172,7 @@ class BeamWidget(QWidget):
         """
         self.beam.incidentBeamLeftEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleRightIncidentBeamEdgeChanged(self, value):
         """
@@ -188,7 +187,7 @@ class BeamWidget(QWidget):
         """
         self.beam.incidentBeamRightEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleTopIncidentBeamEdgeChanged(self, value):
         """
@@ -203,7 +202,7 @@ class BeamWidget(QWidget):
         """
         self.beam.incidentBeamTopEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleBottomIncidentBeamEdgeChanged(self, value):
         """
@@ -218,7 +217,7 @@ class BeamWidget(QWidget):
         """
         self.beam.incidentBeamBottomEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleLeftScatteredBeamEdgeChanged(self, value):
         """
@@ -233,7 +232,7 @@ class BeamWidget(QWidget):
         """
         self.beam.scatteredBeamLeftEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleRightScatteredBeamEdgeChanged(self, value):
         """
@@ -248,7 +247,7 @@ class BeamWidget(QWidget):
         """
         self.beam.scatteredBeamRightEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleTopScatteredBeamEdgeChanged(self, value):
         """
@@ -263,7 +262,7 @@ class BeamWidget(QWidget):
         """
         self.beam.scatteredBeamTopEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleBottomScatteredBeamEdgeChanged(self, value):
         """
@@ -278,7 +277,7 @@ class BeamWidget(QWidget):
         """
         self.beam.scatteredBeamBottomEdge = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleIncidentBeamSpectrumParamsFileChanged(self, value):
         """
@@ -295,7 +294,7 @@ class BeamWidget(QWidget):
         """
         self.beam.filenameIncidentBeamSpectrumParams = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleBrowseIncidentBeamSpectrumParams(self):
         """
@@ -323,7 +322,7 @@ class BeamWidget(QWidget):
         """
         self.beam.overallBackgroundFactor = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleSampleDependantBackgroundFactorChanged(self, value):
         """
@@ -338,7 +337,7 @@ class BeamWidget(QWidget):
         """
         self.beam.sampleDependantBackgroundFactor = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleShieldingAbsorptionCoeffChanged(self, value):
         """
@@ -354,7 +353,7 @@ class BeamWidget(QWidget):
         """
         self.beam.shieldingAttenuationCoefficient = value
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def updateBeamProfileValues(self):
         """
@@ -370,7 +369,7 @@ class BeamWidget(QWidget):
         """
         self.beamProfileValuesTable.insertRow()
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def handleRemoveBeamProfileValue(self):
         """
@@ -382,7 +381,7 @@ class BeamWidget(QWidget):
             self.beamProfileValuesTable.selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
-            self.parent.setModified()
+            self.setModified()
 
     def initComponents(self):
         """
