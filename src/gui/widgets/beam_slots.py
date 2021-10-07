@@ -391,7 +391,7 @@ class BeamSlots():
         as such.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Incident beam spectrum parameters", "")
+            self.widget, "Incident beam spectrum parameters", "")
         if filename:
             self.widget.incidentBeamSpectrumParametersLineEdit.setText(filename)
 

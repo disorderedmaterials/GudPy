@@ -67,7 +67,7 @@ class SampleBackgroundSlots():
         )
 
     def addFiles(self, target, title, regex):
-        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        files, _ = QFileDialog.getOpenFileNames(self.widget, title, ".", regex)
         for file in files:
             if file:
                 target.addItem(file.split("/")[-1])

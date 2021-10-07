@@ -441,7 +441,7 @@ class SampleSlots():
         as such.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Total cross section source", "")
+            self.widget, "Total cross section source", "")
         if filename:
             self.widget.sampleCrossSectionFileLineEdit.setText(filename)
 
@@ -745,7 +745,7 @@ class SampleSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        files, _ = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        files, _ = QFileDialog.getOpenFileNames(self.widget, title, ".", regex)
         for file in files:
             if file:
                 target.addItem(file.split("/")[-1])

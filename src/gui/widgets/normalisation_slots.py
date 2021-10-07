@@ -389,7 +389,7 @@ class NormalisationSlots():
         as such.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Total cross section source", "")
+            self.widget, "Total cross section source", "")
         if filename:
             self.widget.crossSectionFileLineEdit.setText(filename)
 
@@ -450,7 +450,7 @@ class NormalisationSlots():
         cross section file name as such.
         """
         filename = QFileDialog.getOpenFileName(
-            self, "Normalisation differential cross section file", ""
+            self.widget, "Normalisation differential cross section file", ""
         )
         if filename[0]:
             self.widget.differentialCrossSectionFileLineEdit.setText(filename[0])
@@ -604,7 +604,7 @@ class NormalisationSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        paths = QFileDialog.getOpenFileNames(self.widget, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
