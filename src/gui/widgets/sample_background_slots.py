@@ -13,7 +13,7 @@ class SampleBackgroundSlots():
         self.widgetsRefreshing = True
 
         # Populate period number.
-        self.widget.periodNoSpinBox.setValue(self.sampleBackground.periodNumber)
+        self.widget.sampleBackgroundPeriodNoSpinBox.setValue(self.sampleBackground.periodNumber)
 
         # Populate data files list.
         self.updateDataFilesList()
@@ -23,22 +23,22 @@ class SampleBackgroundSlots():
 
     def setupSampleBackgroundSlots(self):
         # Setup slot for period number.
-        self.widget.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
+        self.widget.sampleBackgroundPeriodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
 
         # Setup slots for data files.
-        self.widget.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.widget.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
-        self.widget.addDataFileButton.clicked.connect(
+        self.widget.sampleBackgroundDataFilesList.itemChanged.connect(self.handleDataFilesAltered)
+        self.widget.sampleBackgroundDataFilesList.itemEntered.connect(self.handleDataFileInserted)
+        self.widget.addSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.addFiles(
-                self.widget.dataFilesList,
+                self.widget.sampleBackgroundDataFilesList,
                 "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
                 f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
-        self.widget.removeDataFileButton.clicked.connect(
+        self.widget.removeSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.widget.dataFilesList, self.sampleBackground.dataFiles
+                self.widget.sampleBackgroundDataFilesList, self.sampleBackground.dataFiles
             )
         )
 
@@ -60,8 +60,8 @@ class SampleBackgroundSlots():
             self.parent.setModified()
 
     def updateDataFilesList(self):
-        self.widget.dataFilesList.clear()
-        self.widget.dataFilesList.addItems(
+        self.widget.sampleBackgroundDataFilesList.clear()
+        self.widget.sampleBackgroundDataFilesList.addItems(
             [df for df in self.sampleBackground.dataFiles.dataFiles]
         )
 

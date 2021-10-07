@@ -3013,14 +3013,14 @@
                        <attribute name="horizontalHeaderVisible">
                         <bool>false</bool>
                        </attribute>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>19</number>
+                       </attribute>
                        <attribute name="horizontalHeaderDefaultSectionSize">
                         <number>100</number>
                        </attribute>
                        <attribute name="horizontalHeaderHighlightSections">
                         <bool>true</bool>
-                       </attribute>
-                       <attribute name="horizontalHeaderMinimumSectionSize">
-                        <number>19</number>
                        </attribute>
                        <attribute name="verticalHeaderHighlightSections">
                         <bool>false</bool>
@@ -3710,7 +3710,7 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_49">
                    <item>
-                    <widget class="QListWidget" name="dataFilesList_2">
+                    <widget class="QListWidget" name="sampleBackgroundDataFilesList">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -3722,7 +3722,7 @@
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_23">
                      <item>
-                      <widget class="QToolButton" name="addDataFileButton_2">
+                      <widget class="QToolButton" name="addSampleBackgroundDataFileButton">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -3739,7 +3739,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QToolButton" name="removeDataFileButton_2">
+                      <widget class="QToolButton" name="removeSampleBackgroundDataFileButton">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -3769,7 +3769,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="periodNoSpinBox_2">
+                    <widget class="QSpinBox" name="sampleBackgroundPeriodNoSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3857,12 +3857,12 @@
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_53">
                        <item>
-                        <widget class="QListWidget" name="dataFilesList_3"/>
+                        <widget class="QListWidget" name="sampleDataFilesList"/>
                        </item>
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_25">
                          <item>
-                          <widget class="QToolButton" name="addDataFileButton_3">
+                          <widget class="QToolButton" name="addSampleDataFileButton">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -3879,7 +3879,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QToolButton" name="removeDataFileButton_3">
+                          <widget class="QToolButton" name="removeSampleDataFileButton">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -3954,7 +3954,7 @@
                         </widget>
                        </item>
                        <item row="1" column="0">
-                        <widget class="QCheckBox" name="forceCorrectionsCheckBox_2">
+                        <widget class="QCheckBox" name="sampleForceCorrectionsCheckBox">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                            <horstretch>0</horstretch>
@@ -4076,7 +4076,7 @@
                          <item>
                           <layout class="QVBoxLayout" name="verticalLayout_27">
                            <item>
-                            <widget class="QToolButton" name="insertElementButton_2">
+                            <widget class="QToolButton" name="insertSampleElementButton">
                              <property name="maximumSize">
                               <size>
                                <width>16777215</width>
@@ -4093,7 +4093,7 @@
                             </widget>
                            </item>
                            <item>
-                            <widget class="QToolButton" name="removeElementButton_2">
+                            <widget class="QToolButton" name="removeSampleElementButton">
                              <property name="maximumSize">
                               <size>
                                <width>16777215</width>
@@ -4156,7 +4156,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QComboBox" name="totalCrossSectionComboBox_2">
+                          <widget class="QComboBox" name="sampleTotalCrossSectionComboBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -4174,7 +4174,7 @@
                         </layout>
                        </item>
                        <item>
-                        <widget class="QWidget" name="crossSectionFileWidget_2" native="true">
+                        <widget class="QWidget" name="sampleCrossSectionFileWidget" native="true">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                            <horstretch>0</horstretch>
@@ -4192,10 +4192,10 @@
                            <number>0</number>
                           </property>
                           <item>
-                           <widget class="QLineEdit" name="crossSectionFileLineEdit_2"/>
+                           <widget class="QLineEdit" name="sampleCrossSectionFileLineEdit"/>
                           </item>
                           <item>
-                           <widget class="QPushButton" name="browseCrossSectionFileButton_2">
+                           <widget class="QPushButton" name="browseSampleCrossSectionFileButto">
                             <property name="text">
                              <string>Browse</string>
                             </property>
@@ -4220,7 +4220,7 @@
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_28">
                        <item>
-                        <widget class="QComboBox" name="geometryComboBox_2">
+                        <widget class="QComboBox" name="SampleGeometryComboBox">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                            <horstretch>0</horstretch>
@@ -4236,7 +4236,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QStackedWidget" name="geometryInfoStack_">
+                        <widget class="QStackedWidget" name="sampleGeometryInfoStack_">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                            <horstretch>0</horstretch>
@@ -4244,7 +4244,7 @@
                           </sizepolicy>
                          </property>
                          <property name="currentIndex">
-                          <number>1</number>
+                          <number>0</number>
                          </property>
                          <widget class="QWidget" name="page_5">
                           <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4283,7 +4283,7 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QDoubleSpinBox" name="upstreamSpinBox_2">
+                               <widget class="QDoubleSpinBox" name="sampleUpstreamSpinBox">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                   <horstretch>0</horstretch>
@@ -4306,7 +4306,7 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QDoubleSpinBox" name="downstreamSpinBox_2">
+                               <widget class="QDoubleSpinBox" name="sampleDownstreamSpinBox">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                   <horstretch>0</horstretch>
@@ -4357,7 +4357,7 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QDoubleSpinBox" name="innerRadiiSpinBox_2">
+                               <widget class="QDoubleSpinBox" name="sampleInnerRadiiSpinBox">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                   <horstretch>0</horstretch>
@@ -4380,7 +4380,7 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QDoubleSpinBox" name="outerRadiiSpinBox_2">
+                               <widget class="QDoubleSpinBox" name="sampleOuterRadiiSpinBox">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                   <horstretch>0</horstretch>
@@ -4410,7 +4410,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QStackedWidget" name="geometryInfoStack_2">
+                        <widget class="QStackedWidget" name="sampleGeometryInfoStack">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -4424,7 +4424,7 @@
                           </size>
                          </property>
                          <property name="currentIndex">
-                          <number>1</number>
+                          <number>0</number>
                          </property>
                          <widget class="QWidget" name="FLATPLATE">
                           <layout class="QHBoxLayout" name="horizontalLayout_61">
@@ -4604,7 +4604,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QDoubleSpinBox" name="densitySpinBox_2">
+                          <widget class="QDoubleSpinBox" name="sampleDensitySpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -4614,7 +4614,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QComboBox" name="densityUnitsComboBox_2">
+                          <widget class="QComboBox" name="sampleDensityUnitsComboBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -4804,7 +4804,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSpinBox" name="periodNoSpinBox_3">
+                     <widget class="QSpinBox" name="samplePeriodNoSpinBox">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -5027,10 +5027,10 @@
                           <property name="selectionBehavior">
                            <enum>QAbstractItemView::SelectRows</enum>
                           </property>
-                          <attribute name="horizontalHeaderDefaultSectionSize">
+                          <attribute name="horizontalHeaderMinimumSectionSize">
                            <number>120</number>
                           </attribute>
-                          <attribute name="horizontalHeaderMinimumSectionSize">
+                          <attribute name="horizontalHeaderDefaultSectionSize">
                            <number>120</number>
                           </attribute>
                           <attribute name="verticalHeaderCascadingSectionResizes">
@@ -5122,10 +5122,10 @@
                           <property name="selectionBehavior">
                            <enum>QAbstractItemView::SelectRows</enum>
                           </property>
-                          <attribute name="horizontalHeaderDefaultSectionSize">
+                          <attribute name="horizontalHeaderMinimumSectionSize">
                            <number>128</number>
                           </attribute>
-                          <attribute name="horizontalHeaderMinimumSectionSize">
+                          <attribute name="horizontalHeaderDefaultSectionSize">
                            <number>128</number>
                           </attribute>
                           <attribute name="horizontalHeaderStretchLastSection">
@@ -5989,7 +5989,7 @@
      <x>0</x>
      <y>0</y>
      <width>1183</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
