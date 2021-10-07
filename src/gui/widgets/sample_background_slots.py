@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QFileDialog
 
 
 class SampleBackgroundSlots():

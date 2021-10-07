@@ -1,5 +1,6 @@
 from src.gudrun_classes.enums import CrossSectionSource, Geometry, NormalisationType, OutputUnits, UnitsOfDensity
 from src.gudrun_classes import config
+from PySide6.QtWidgets import QFileDialog
 
 class SampleSlots():
 
@@ -25,8 +26,8 @@ class SampleSlots():
         )
 
         # Populate the geometry data.
-        self.widget.SampleGeometryComboBox.setCurrentIndex(self.sample.geometry.value)
-        self.widget.SampleGeometryComboBox.setDisabled(True)
+        self.widget.sampleGeometryComboBox.setCurrentIndex(self.sample.geometry.value)
+        self.widget.sampleGeometryComboBox.setDisabled(True)
 
         # Ensure the correct attributes are being shown
         # for the correct geometry.
@@ -89,9 +90,9 @@ class SampleSlots():
             self.sample.normalisationCorrectionFactor
         )
 
-        self.widget.scatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
+        self.widget.sampleScatteringFractionSpinBox.setValue(self.sample.scatteringFraction)
 
-        self.widget.attenuationCoefficientSpinBox.setValue(
+        self.widget.sampleAttenuationCoefficientSpinBox.setValue(
             self.sample.attenuationCoefficient
         )
 
@@ -133,9 +134,9 @@ class SampleSlots():
 
         # Fill geometry combo box.
         for g in Geometry:
-            self.widget.SampleGeometryComboBox.addItem(g.name, g)
+            self.widget.sampleGeometryComboBox.addItem(g.name, g)
         # Setup slots for geometry data.
-        self.widget.SampleGeometryComboBox.currentIndexChanged.connect(
+        self.widget.sampleGeometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
         # Flatplate
@@ -232,10 +233,10 @@ class SampleSlots():
         self.widget.correctionFactorSpinBox.valueChanged.connect(
             self.handleCorrectionFactorChanged
         )
-        self.widget.scatteringFractionSpinBox.valueChanged.connect(
+        self.widget.sampleScatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
         )
-        self.widget.attenuationCoefficientSpinBox.valueChanged.connect(
+        self.widget.sampleAttenuationCoefficientSpinBox.valueChanged.connect(
             self.handleAttenuationCoefficientChanged
         )
 
@@ -294,14 +295,14 @@ class SampleSlots():
         """
         Slot for handling change in sample geometry.
         Called when a currentIndexChanged signal is emitted,
-        from the SampleGeometryComboBox.
+        from the sampleGeometryComboBox.
         Alters the sample geometry as such.
         Parameters
         ----------
         index : int
-            The new current index of the SampleGeometryComboBox.
+            The new current index of the sampleGeometryComboBox.
         """
-        self.sample.geometry = self.widget.SampleGeometryComboBox.itemData(index)
+        self.sample.geometry = self.widget.sampleGeometryComboBox.itemData(index)
         self.widget.samplesampleGeometryInfoStack.setCurrentIndex(self.sample.geometry.value)
         self.widget.samplesampleGeometryInfoStack_.setCurrentIndex(self.sample.geometry.value)
 
@@ -441,7 +442,7 @@ class SampleSlots():
         filename, _ = QFileDialog.getOpenFileName(
             self, "Total cross section source", "")
         if filename:
-            self.sampleCrossSectionFileLineEdit.setText(filename)
+            self.widget.sampleCrossSectionFileLineEdit.setText(filename)
 
     def handleTweakFactorChanged(self, value):
         """
@@ -657,12 +658,12 @@ class SampleSlots():
         """
         Slot for handling change in the environment scattering fraction.
         Called when a valueChanged signal is emitted,
-        from the scatteringFractionSpinBox.
+        from the sampleScatteringFractionSpinBox.
         Alters the sample's scattering fraction as such.
         Parameters
         ----------
         value : float
-            The new current value of the scatteringFractionSpinBox.
+            The new current value of the sampleScatteringFractionSpinBox.
         """
         self.sample.scatteringFraction = value
         if not self.widgetsRefreshing:
@@ -672,12 +673,12 @@ class SampleSlots():
         """
         Slot for handling change in the environment attenuation coefficient.
         Called when a valueChanged signal is emitted,
-        from the attenuationCoefficientSpinBox.
+        from the sampleAttenuationCoefficientSpinBox.
         Alters the sample's attenuation coefficient as such.
         Parameters
         ----------
         value : float
-            The new current value of the attenuationCoefficientSpinBox.
+            The new current value of the sampleAttenuationCoefficientSpinBox.
         """
         self.sample.attenuationCoefficient = value
         if not self.widgetsRefreshing:

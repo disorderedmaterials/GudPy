@@ -1,5 +1,6 @@
 from src.gudrun_classes.enums import Geometry, CrossSectionSource, UnitsOfDensity
 from src.gudrun_classes import config
+from PySide6.QtWidgets import QFileDialog
 
 class NormalisationSlots():
 
@@ -22,7 +23,7 @@ class NormalisationSlots():
             self.normalisation.periodNumberBg
         )
 
-        self.widget.geometryComboBox.setCurrentIndex(
+        self.widget.normalisationGeometryComboBox.setCurrentIndex(
             self.normalisation.geometry.value
         )
 
@@ -125,8 +126,8 @@ class NormalisationSlots():
         )
 
         for g in Geometry:
-            self.widget.geometryComboBox.addItem(g.name, g)
-        self.widget.geometryComboBox.currentIndexChanged.connect(
+            self.widget.normalisationGeometryComboBox.addItem(g.name, g)
+        self.widget.normalisationGeometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
 
@@ -231,16 +232,16 @@ class NormalisationSlots():
         """
         Slot for handling change in sample geometry.
         Called when a currentIndexChanged signal is emitted,
-        from the geometryComboBox.
+        from the normalisationGeometryComboBox.
         Alters the normalisation geometry as such.
         Parameters
         ----------
         index : int
-            The new current index of the geometryComboBox.
+            The new current index of the normalisationGeometryComboBox.
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-        self.normalisation.geometry = self.widget.geometryComboBox.itemData(index)
+        self.normalisation.geometry = self.widget.normalisationGeometryComboBox.itemData(index)
         if self.normalisation.geometry == Geometry.SameAsBeam:
             self.widget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
@@ -390,7 +391,7 @@ class NormalisationSlots():
         filename, _ = QFileDialog.getOpenFileName(
             self, "Total cross section source", "")
         if filename:
-            self.crossSectionFileLineEdit.setText(filename)
+            self.widget.crossSectionFileLineEdit.setText(filename)
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -452,7 +453,7 @@ class NormalisationSlots():
             self, "Normalisation differential cross section file", ""
         )
         if filename[0]:
-            self.differentialCrossSectionFileLineEdit.setText(filename[0])
+            self.widget.differentialCrossSectionFileLineEdit.setText(filename[0])
 
     def handleNormalisationDegreeSmoothingChanged(self, value):
         """

@@ -4,13 +4,13 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
+from PySide6.QtWidgets import QFileDialog
 
 class InstrumentSlots():
 
     def __init__(self, widget, parent):
         self.widget = widget
         self.parent = parent
-        print(self.widget)
         self.widgetsRefreshing = False
         self.setupInstrumentSlots()
 

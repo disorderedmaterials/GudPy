@@ -1,5 +1,6 @@
 from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes import config
+from PySide6.QtWidgets import QFileDialog
 
 class BeamSlots():
 
@@ -12,7 +13,7 @@ class BeamSlots():
     def setBeam(self, beam):
         self.beam = beam
 
-        self.widget.sampleGeometryComboBox.setCurrentIndex(
+        self.widget.beamGeometryComboBox.setCurrentIndex(
             self.beam.sampleGeometry.value
         )
 
@@ -81,11 +82,11 @@ class BeamSlots():
         # with the names of the members of the Geometry enum.
         for g in Geometry:
             if not g == Geometry.SameAsBeam:
-                self.widget.sampleGeometryComboBox.addItem(g.name, g)
+                self.widget.beamGeometryComboBox.addItem(g.name, g)
 
         # Set up the widget and slot, for Geometry.
 
-        self.widget.sampleGeometryComboBox.currentIndexChanged.connect(
+        self.widget.beamGeometryComboBox.currentIndexChanged.connect(
             self.handleGeometryChanged
         )
 
@@ -171,15 +172,15 @@ class BeamSlots():
         """
         Slot for handling change in sample geometry.
         Called when a currentIndexChanged signal is emitted,
-        from the sampleGeometryComboBox.
+        from the beamGeometryComboBox.
         Alters the beam geometry as such, and updates the global
         geometry too.
         Parameters
         ----------
         index : int
-            The new current index of the sampleGeometryComboBox.
+            The new current index of the beamGeometryComboBox.
         """
-        self.beam.sampleGeometry = self.widget.sampleGeometryComboBox.itemData(index)
+        self.beam.sampleGeometry = self.widget.beamGeometryComboBox.itemData(index)
         config.geometry = self.beam.sampleGeometry
         if not self.widgetsRefreshing:
             self.parent.setModified()

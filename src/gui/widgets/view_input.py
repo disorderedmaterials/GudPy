@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QWidgetAction, QMainWindow, QTextEdit
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QTextEdit
 
 
 class ViewInput(QMainWindow):
@@ -24,7 +25,7 @@ class ViewInput(QMainWindow):
 
         menuBar = self.menuBar()
         menuBar.setNativeMenuBar(False)
-        saveAction = QWidgetAction("Save and Close", menuBar)
+        saveAction = QAction("Save and Close", menuBar)
         menuBar.addAction(saveAction)
         saveAction.triggered.connect(self.save)
 

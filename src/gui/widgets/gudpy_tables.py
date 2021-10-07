@@ -7,9 +7,8 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QTableView,
     QMenu,
-    QWidgetAction
 )
-from PySide6.QtGui import QCursor
+from PySide6.QtGui import QCursor, QAction
 
 from src.gudrun_classes.element import Element
 class GudPyTableModel(QAbstractTableModel):
@@ -925,7 +924,7 @@ class CompositionTable(QTableView):
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
-            action = QWidgetAction(f"{composition[0]}", copyMenu)
+            action = QAction(f"{composition[0]}", copyMenu)
             action.triggered.connect(
                 lambda _, comp=composition[1]: self.copyFrom(comp)
             )

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1183</width>
+    <width>1133</width>
     <height>1025</height>
    </rect>
   </property>
@@ -1983,7 +1983,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QComboBox" name="sampleGeometryComboBox">
+                    <widget class="QComboBox" name="beamGeometryComboBox">
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
@@ -3138,7 +3138,7 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_34">
                      <item>
-                      <widget class="QComboBox" name="geometryComboBox">
+                      <widget class="QComboBox" name="normalisationGeometryComboBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -3829,7 +3829,7 @@
               <item>
                <widget class="QTabWidget" name="parameterTabs">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="sampleTab">
                  <attribute name="title">
@@ -4220,7 +4220,7 @@
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_28">
                        <item>
-                        <widget class="QComboBox" name="SampleGeometryComboBox">
+                        <widget class="QComboBox" name="sampleGeometryComboBox">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                            <horstretch>0</horstretch>
@@ -4918,7 +4918,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox">
+                     <widget class="QDoubleSpinBox" name="sampleScatteringFractionSpinBox">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -4964,7 +4964,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox">
+                     <widget class="QDoubleSpinBox" name="sampleAttenuationCoefficientSpinBox">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -5256,7 +5256,7 @@
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_44">
                        <item>
-                        <widget class="QListWidget" name="dataFilesList_4">
+                        <widget class="QListWidget" name="containerDataFilesList">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -5293,7 +5293,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QSpinBox" name="periodNoSpinBox_4"/>
+                          <widget class="QSpinBox" name="containerPeriodNoSpinBox"/>
                          </item>
                          <item>
                           <spacer name="horizontalSpacer_36">
@@ -5315,7 +5315,7 @@
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_45">
                        <item>
-                        <widget class="QToolButton" name="addDataFileButton_4">
+                        <widget class="QToolButton" name="addContainerDataFileButton">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -5332,7 +5332,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QToolButton" name="removeDataFileButton_4">
+                        <widget class="QToolButton" name="removeContainerDataFileButton">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -5420,7 +5420,7 @@
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QDoubleSpinBox" name="scatteringFractionSpinBox_2">
+                      <widget class="QDoubleSpinBox" name="containerScatteringFractionSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5443,7 +5443,7 @@
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QDoubleSpinBox" name="attenuationCoefficientSpinBox_2">
+                      <widget class="QDoubleSpinBox" name="containerAttenuationCoefficientSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5503,7 +5503,7 @@
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_39">
                        <item>
-                        <widget class="QToolButton" name="insertElementButton_3">
+                        <widget class="QToolButton" name="insertContainerElementButton">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -5526,7 +5526,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QToolButton" name="removeElementButton_3">
+                        <widget class="QToolButton" name="removeContainerElementButton">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                            <horstretch>0</horstretch>
@@ -5581,7 +5581,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="densitySpinBox_3">
+                      <widget class="QDoubleSpinBox" name="containerDensitySpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5591,7 +5591,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QComboBox" name="densityUnitsComboBox_3">
+                      <widget class="QComboBox" name="containerDensityUnitsComboBox">
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
@@ -5625,7 +5625,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="tweakFactorSpinBox_2">
+                      <widget class="QDoubleSpinBox" name="containerTweakFactorSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5665,7 +5665,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QComboBox" name="totalCrossSectionComboBox_3">
+                      <widget class="QComboBox" name="containerTotalCrossSectionComboBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5695,10 +5695,10 @@
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="QLineEdit" name="crossSectionFileLineEdit_3"/>
+                       <widget class="QLineEdit" name="containerCrossSectionFileLineEdit"/>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="browseCrossSectionFileButton_3">
+                       <widget class="QPushButton" name="browseContainerCrossSectionFileButton">
                         <property name="text">
                          <string>Browse</string>
                         </property>
@@ -5729,7 +5729,7 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_40">
                    <item>
-                    <widget class="QComboBox" name="geometryComboBox_4">
+                    <widget class="QComboBox" name="containerGeometryComboBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -5745,7 +5745,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QStackedWidget" name="geometryInfoStack_3">
+                    <widget class="QStackedWidget" name="containerGeometryInfoStack">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -5786,7 +5786,7 @@
                           </widget>
                          </item>
                          <item row="1" column="1">
-                          <widget class="QDoubleSpinBox" name="upstreamSpinBox_3">
+                          <widget class="QDoubleSpinBox" name="containerUpstreamSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5803,7 +5803,7 @@
                           </widget>
                          </item>
                          <item row="2" column="1">
-                          <widget class="QDoubleSpinBox" name="downstreamSpinBox_3">
+                          <widget class="QDoubleSpinBox" name="containerDownStreamSPinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5820,7 +5820,7 @@
                           </widget>
                          </item>
                          <item row="3" column="1">
-                          <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox_2">
+                          <widget class="QDoubleSpinBox" name="containerAngleOfRotationSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5837,7 +5837,7 @@
                           </widget>
                          </item>
                          <item row="4" column="1">
-                          <widget class="QDoubleSpinBox" name="sampleWidthSpinBox_2">
+                          <widget class="QDoubleSpinBox" name="containerSampleWidthSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5887,7 +5887,7 @@
                           </widget>
                          </item>
                          <item row="1" column="1">
-                          <widget class="QDoubleSpinBox" name="innerRadiiSpinBox_3">
+                          <widget class="QDoubleSpinBox" name="containerInnerRadiiSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5910,7 +5910,7 @@
                           </widget>
                          </item>
                          <item row="2" column="1">
-                          <widget class="QDoubleSpinBox" name="outerRadiiSpinBox_3">
+                          <widget class="QDoubleSpinBox" name="containerOuterRadiiSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5933,7 +5933,7 @@
                           </widget>
                          </item>
                          <item row="3" column="1">
-                          <widget class="QDoubleSpinBox" name="sampleHeightSpinBox_2">
+                          <widget class="QDoubleSpinBox" name="containerSampleHeightSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5988,7 +5988,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1183</width>
+     <width>1133</width>
      <height>22</height>
     </rect>
    </property>
