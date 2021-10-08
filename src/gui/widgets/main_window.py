@@ -34,6 +34,7 @@ from src.gui.widgets.instrument_slots import InstrumentSlots
 from src.gui.widgets.normalisation_slots import NormalisationSlots
 from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
+import math
 
 
 class GudPyMainWindow(QMainWindow):
@@ -96,20 +97,30 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
-        self.mainWidget.statusBarLayout = QHBoxLayout(self.mainWidget.statusBarWidget)
-        self.mainWidget.currentTaskLabel = QLabel(self.mainWidget.statusBarWidget)
+        self.mainWidget.statusBarLayout = QHBoxLayout(
+            self.mainWidget.statusBarWidget
+        )
+        self.mainWidget.currentTaskLabel = QLabel(
+            self.mainWidget.statusBarWidget
+        )
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
-        self.mainWidget.progressBar = QProgressBar(self.mainWidget.statusBarWidget)
+        self.mainWidget.progressBar = QProgressBar(
+            self.mainWidget.statusBarWidget
+        )
         self.mainWidget.progressBar.setSizePolicy(
             QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         )
         self.mainWidget.progressBar.setTextVisible(False)
-        self.mainWidget.statusBarLayout.addWidget(self.mainWidget.currentTaskLabel)
+        self.mainWidget.statusBarLayout.addWidget(
+            self.mainWidget.currentTaskLabel
+        )
         self.mainWidget.statusBarLayout.addWidget(self.mainWidget.progressBar)
-        self.mainWidget.statusBarWidget.setLayout(self.mainWidget.statusBarLayout)
+        self.mainWidget.statusBarWidget.setLayout(
+            self.mainWidget.statusBarLayout
+        )
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
@@ -372,33 +383,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.unlockControls()
         else:
-            self.iterableProc(
-                iterate,
-                iterationDialog.numberIterations,
-                iterationDialog.text
-            )
-
-    def iterableProc(self, cmdGenerator, numIterations, text):
-        self.numberIterations = numIterations
-        self.text = text
-        for i, cmd in enumerate(cmdGenerator):
-            self.queueIterableProc(cmd, i)
-        self.nextIterableProc()
-
-    def queueIterableProc(self, cmd, iteration):
-        self.queue = Queue()
-        self.queue.put((cmd, iteration))
-
-    def nextIterableProc(self):
-        proc, i = self.queue.get()
-        self.proc = QProcess()
-        self.proc.started.connect(
-            lambda: self.markIteration(self.text, i+1, self.numberIterations)
-        )
-        self.proc.finished.connect(
-            lambda: self.progressIteration(i+1, self.numberIterations)
-        )
-        self.proc.start(*proc)
+            pass
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
@@ -544,21 +529,6 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
-
-    def markIteration(self, iterType, iteration, numIterations):
-        self.currentTaskLabel.setText(
-            f"gudrun_dcs {iterType} {iteration}/{numIterations}"
-        )
-
-    def progressIteration(self, iteration, numIterations):
-        progress = (
-            math.ceil(self.progressIncrement() / numIterations)
-        ) + self.progressBar.value()
-        self.progressBar.setValue(progress if progress <= 100 else 100)
-        if iteration == numIterations:
-            self.procFinished()
-        else:
-            self.nextIterableProc()
 
     def procStarted(self):
         self.currentTaskLabel.setText(
