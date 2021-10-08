@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 import sys
 
 from src.gui.widgets.main_window import GudPyMainWindow

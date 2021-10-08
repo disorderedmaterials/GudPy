@@ -237,15 +237,14 @@ class GudrunFile:
         None
         """
         try:
-            # Initialise instrument attribute to a new instance of Intrument.
+            # Initialise instrument attribute to a new instance of Instrument.
             self.instrument = Instrument()
-
             self.consumeWhitespace()
 
             # For string attributes,
             # we simply extract the firstword in the line.
             self.instrument.name = Instruments[firstword(self.getNextToken())]
-            self.instrument.GudrunInputFileDir = firstword(self.getNextToken())
+            self.consumeTokens(1)
             self.instrument.dataFileDir = firstword(self.getNextToken())
             self.instrument.dataFileType = firstword(self.getNextToken())
             self.instrument.detectorCalibrationFileName = (
@@ -365,8 +364,7 @@ class GudrunFile:
             self.instrument.subWavelengthBinnedData = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
-            self.instrument.GudrunStartFolder = firstword(self.getNextToken())
-            self.instrument.startupFileFolder = firstword(self.getNextToken())
+            self.consumeTokens(2)
             self.instrument.logarithmicStepSize = (
                 nthfloat(self.getNextToken(), 0)
             )
@@ -1147,7 +1145,6 @@ class GudrunFile:
                  Cannot parse from an invalid path"
             )
         parsing = ""
-
         KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
         # Read the input stream into our attribute.

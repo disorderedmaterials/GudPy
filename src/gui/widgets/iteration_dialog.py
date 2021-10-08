@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDialog
-from PyQt5 import uic
+from PySide6.QtWidgets import QDialog
+from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
@@ -140,17 +140,18 @@ class IterationDialog(QDialog):
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/iterationDialog.ui")
-        uic.loadUi(uifile, self)
-        self.tweakButton.toggled.connect(
+        loader = QUiLoader()
+        self.widget = loader.load(uifile)
+        self.widget.tweakButton.toggled.connect(
             self.handleTweakValuesChanged
         )
-        self.inelasticitySubtractionsButton.toggled.connect(
+        self.widget.inelasticitySubtractionsButton.toggled.connect(
             self.handlePerformInelasticitySubtractionsChanged
         )
-        self.noIterationsSpinBox.valueChanged.connect(
+        self.widget.noIterationsSpinBox.valueChanged.connect(
             self.handleNumberIterationsChanged
         )
-        self.buttonBox.accepted.connect(
+        self.widget.buttonBox.accepted.connect(
             self.iterate
         )
         self.buttonBox.rejected.connect(

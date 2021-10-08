@@ -1,128 +1,395 @@
-from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import QWidget, QFileDialog
-from PyQt5.QtCore import QRegExp
-from PyQt5 import uic
-from src.gudrun_classes.enums import Instruments, MergeWeights, Scales
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
-import os
+from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
+from PySide6.QtWidgets import QFileDialog
 
 
-class InstrumentWidget(QWidget):
-    """
-    Class to represent a InstrumentWidget. Inherits QWidget.
+class InstrumentSlots():
 
-    ...
-
-    Attributes
-    ----------
-    instrument : Instrument
-        Instrument object belonging to the GudrunFile.
-    parent : QWidget
-        Parent widget.
-    Methods
-    -------
-    initComponents()
-        Loads UI file, and then populates data from the Instrument.
-    handleInstrumentNameChanged(index)
-       Slot for handling change to the instrument name.
-    handleDataFileDirectoryChanged(text)
-        Slot for handling change to the data file directory.
-    handleDataFileTypeChanged(index)
-        Slot for handling hange to the data file type.
-    handleDetectorCalibrationFileChanged(text)
-        Slot for handling change to the detector calibration file name.
-    handleGroupsFileChanged(text)
-        Slot for handling change to the groups file name.
-    handleDeadtimeFileChanged(text)
-        Slot for handling change to the deadtime constants file name.
-    handleUseLogarithmicBinningSwitched(state)
-        Slot for handling switching logarithmic binning on/off.
-    handleLogarithmicStepSizeChanged(value)
-        Slot for handling change in the logarithmic step size.
-    handleMergeWeightsChanged(index)
-        Slot for handling change to what to merge weights by.
-    handleNeutronScatteringParamsFileChanged(text)
-        Slot for handling change to the neutron
-        scattering parameters file name.
-    handleNexusDefinitionFileChanged(text)
-        Slot for handling change to the NeXus definition file name.
-    handleHardGroupEdgesSwitched(state)
-        Slot for handling switching hard group edges on/off.
-    handleColumnNoPhiValuesChanged(value)
-        Slot for handling change to the column numbers for phi values.
-    handleMinWavelengthMonNormChanged(value)
-        Slot for handling change to the minimum wavelength for
-        monitor normalisation.
-    handleMaxWavelengthMonNormChanged(value)
-        Slot for handling change to the maximum wavelength for
-        monitor normalisation.
-    handleSpectrumNumbersIBChanged(text)
-        Slot for handling change to the spectrum numbers
-        for the incident beam monitor.
-    handleSpectrumNumbersTChanged(text)
-        Slot for handling change to the spectrum numbers
-        for the transmission monitor
-    handleIncidentMonitorQuietCountConstChanged(value)
-        Slot for handling change to the incident monitor quiet count constant.
-    handleTransmissionMonitorQuietCountConstChanged(value)
-        Slot for handling change to the
-        transmission monitor quiet count constant.
-    handleChannelNoAChanged(value)
-        Slot for handling change to the lower channel number.
-    handleChannelNoBChanged(value)
-        Slot for handling change to the upper channel number.
-    handleSpikeAnalysisAcceptanceFactorChanged(value)
-        Slot for handling change to the spike analysis acceptance factor.
-    handleMinWavelengthChanged(value)
-        Slot for handling change to the minimum wavelength.
-    handleMaxWavelengthChanged(value)
-        Slot for handling change to the maximum wavelength.
-    handleStepWavelengthChanged(value)
-        Slot for handling change to the wavelength step size.
-    handleNoSmoothsOnMonitorChanged(value)
-        Slot for handling change to the number of smooths on the monitor.
-    handleScaleStateChanged()
-        Slot for handling change in the X-Scale for final DCS.
-    handleGroupsAcceptanceFactorChanged(value)
-        Slot for handling change to the groups acceptance factor.
-    handleMergePowerChanged(value)
-        Slot for handling change to the merge power.
-    handleIncidentFlightPathChanged(value)
-        Slot for handling change to the incident flight path.
-    handleSpectrumNumberForOutputDiagChanged(value)
-        Slot for handling change to the spectrum number for output diagnostics.
-    handleBrowse(target, title, dir=False)
-        Slot for handling browsing files.
-    browseFile( title, dir=False)
-        Helper method for browsing files.
-    updateGroupingParameterPanel()
-        Fill the grouping parameter panel.
-    handleAddGroupingParameter()
-        Slot for handling adding a row to the grouping parameter panel.
-    handleRemoveGroupingParameter()
-        Slot for removing a row from the grouping parameter panel.
-    handleGroupingParameterPanelToggled()
-        Slot for handling toggling the grouping parameter panel.
-    """
-
-    def __init__(self, instrument, parent=None):
-        """
-        Constructs all the necessary attributes
-        for the InstrumentWidget object.
-        Calls the initComponents method,
-        to load the UI file and populate data.
-        Parameters
-        ----------
-        instrument : Instrument
-            Instrument object belonging to the GudrunFile.
-        parent : QWidget, optional
-            Parent widget.
-        """
-        self.instrument = instrument
+    def __init__(self, widget, parent):
+        self.widget = widget
         self.parent = parent
+        self.widgetsRefreshing = False
+        self.setupInstrumentSlots()
 
-        super(InstrumentWidget, self).__init__(parent=self.parent)
-        self.initComponents()
+    def setInstrument(self, instrument):
+        self.instrument = instrument
+        self.widgetsRefreshing = True
+
+        self.widget.nameComboBox.setCurrentIndex(self.instrument.name.value)
+        # Setup the widgets and slots for configuration files.
+        self.widget.dataFileDirectoryLineEdit.setText(
+            self.instrument.dataFileDir
+        )
+
+        dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
+        self.widget.dataFileTypeCombo.setCurrentIndex(
+            dataFileTypes.index(self.instrument.dataFileType)
+        )
+
+        self.widget.detCalibrationLineEdit.setText(
+            self.instrument.detectorCalibrationFileName
+        )
+
+        self.widget.groupsFileLineEdit.setText(self.instrument.groupFileName)
+
+        self.widget.deadtimeFileLineEdit.setText(
+            self.instrument.deadtimeConstantsFileName
+        )
+
+        self.widget.phiValuesColumnSpinBox.setValue(
+            self.instrument.columnNoPhiVals
+        )
+
+        # Setup the widgets and slots for the wavelength range and step size
+        # for monitor normalisation.
+        self.widget.minWavelengthMonNormSpinBox.setValue(
+            self.instrument.wavelengthRangeForMonitorNormalisation[0]
+        )
+        self.widget.maxWavelengthMonNormSpinBox.setValue(
+            self.instrument.wavelengthRangeForMonitorNormalisation[1]
+        )
+
+        self.widget.spectrumNumbersIBLineEdit.setText(
+            spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
+        )
+
+        self.widget.incidentMonitorQuietCountConstSpinBox.setValue(
+            self.instrument.incidentMonitorQuietCountConst
+        )
+
+        # Setup the widgets and slots for the spectrum numbers
+        # and quiet count const for the transmission beam monitor.
+        self.widget.spectrumNumbersTLineEdit.setText(
+            spacify(self.instrument.spectrumNumbersForTransmissionMonitor)
+        )
+
+        self.widget.transmissionMonitorQuietCountConstSpinBox.setValue(
+            self.instrument.transmissionMonitorQuietCountConst
+        )
+
+        # Setup the widgets and slots for the channel numbers
+        # to be used for spike analysis.
+        self.widget.channelNoASpinBox.setValue(
+            self.instrument.channelNosSpikeAnalysis[0]
+        )
+        self.widget.channelNoBSpinBox.setValue(
+            self.instrument.channelNosSpikeAnalysis[1]
+        )
+
+        # Setup the widget and slot for the
+        # acceptance factor for spike analysis.
+        self.widget.acceptanceFactorSpinBox.setValue(
+            self.instrument.spikeAnalysisAcceptanceFactor
+        )
+
+        # Setup the widgets and slots for the wavelength range and step size.
+        self.widget.minWavelengthSpinBox.setValue(
+            self.instrument.wavelengthMin
+        )
+        self.widget.maxWavelengthSpinBox.setValue(
+            self.instrument.wavelengthMax
+        )
+        self.widget.stepWavelengthSpinBox.setValue(
+            self.instrument.wavelengthStep
+        )
+
+        # Setup the widget and slot for the number of smoothings on monitor.
+        self.widget.noSmoothsOnMonitorSpinBox.setValue(
+            self.instrument.NoSmoothsOnMonitor
+        )
+
+        # Setup the widgets and slots for the scales.
+        selection, min_, max_, step = (
+            self.scales[self.instrument.scaleSelection]
+        )
+        selection.setChecked(True)
+        min_.setValue(self.instrument.XMin)
+        max_.setValue(self.instrument.XMax)
+        step.setValue(self.instrument.XStep)
+
+        # Setup the widget and slot for enabling/disabling
+        # logarithmic binning.
+        self.widget.logarithmicBinningCheckBox.setChecked(
+            self.instrument.useLogarithmicBinning
+        )
+
+        # Setup the widget and slot for the groups acceptance factor.
+        self.widget.groupsAcceptanceFactorSpinBox.setValue(
+            self.instrument.groupsAcceptanceFactor
+        )
+
+        # Setup the widgets and slots for merging.
+        self.widget.mergePowerSpinBox.setValue(self.instrument.mergePower)
+
+        self.widget.mergeWeightsComboBox.setCurrentIndex(
+            self.instrument.mergeWeights.value
+        )
+
+        # Setup the widget and slot for the incident flight path.
+        self.widget.incidentFlightPathSpinBox.setValue(
+            self.instrument.incidentFlightPath
+        )
+        # Setup the widget and slot for the spectrum number
+        # for output diagnostics.
+        self.widget.outputDiagSpectrumSpinBox.setValue(
+            self.instrument.spectrumNumberForOutputDiagnosticFiles
+        )
+
+        self.widget.neutronScatteringParamsFileLineEdit.setText(
+            self.instrument.neutronScatteringParametersFile
+        )
+
+        self.widget.nexusDefintionFileLineEdit.setText(
+            self.instrument.nxsDefinitionFile
+        )
+
+        self.widget.nexusDefintionFileLineEdit.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
+        self.widget.browseNexusDefinitionButton.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
+
+        # Setup the widget and slot for enabling/disablign hard group edges.
+        self.widget.hardGroupEdgesCheckBox.setChecked(
+            self.instrument.hardGroupEdges
+        )
+
+        self.updateGroupingParameterPanel()
+
+        # Release the lock
+        self.widgetsRefreshing = False
+
+    def setupInstrumentSlots(self):
+        # Setup the widget and slot for the instrument name.
+        for i in Instruments:
+            self.widget.nameComboBox.addItem(i.name, i)
+        self.widget.nameComboBox.currentIndexChanged.connect(
+            self.handleInstrumentNameChanged
+        )
+
+        self.widget.dataFileDirectoryLineEdit.textChanged.connect(
+            self.handleDataFileDirectoryChanged
+        )
+
+        self.widget.browseDataFileDirectoryButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.dataFileDirectoryLineEdit,
+                "Data file directory", dir=True
+            )
+        )
+
+        dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
+        self.widget.dataFileTypeCombo.addItems(dataFileTypes)
+
+        self.widget.dataFileTypeCombo.currentIndexChanged.connect(
+            self.handleDataFileTypeChanged
+        )
+
+        self.widget.detCalibrationLineEdit.textChanged.connect(
+            self.handleDetectorCalibrationFileChanged
+        )
+
+        self.widget.browseDetCalibrationButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.detCalibrationLineEdit, "Detector calibration file"
+            )
+        )
+
+        self.widget.groupsFileLineEdit.textChanged.connect(
+            self.handleGroupsFileChanged
+        )
+        self.widget.browseGroupsFileButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.groupsFileLineEdit, "Groups file"
+            )
+        )
+
+        self.widget.deadtimeFileLineEdit.textChanged.connect(
+            self.handleDeadtimeFileChanged
+        )
+
+        self.widget.browseDeadtimeFileButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.deadtimeFileLineEdit, "Deadtime constants file"
+            )
+        )
+
+        self.widget.phiValuesColumnSpinBox.valueChanged.connect(
+            self.handleColumnNoPhiValuesChanged
+        )
+
+        self.widget.minWavelengthMonNormSpinBox.valueChanged.connect(
+            self.handleMinWavelengthMonNormChanged
+        )
+        self.widget.maxWavelengthMonNormSpinBox.valueChanged.connect(
+            self.handleMaxWavelengthMonNormChanged
+        )
+
+        # Setup the widgets and slots for the spectrum numbers
+        # and quiet count const for the incident beam monitor.
+        # Regular expression to accept space delimited integers.
+        spectrumNumbersRegex = QRegularExpression(
+            r"^\d+(?:\s+\d+)*$"
+        )
+        spectrumNumbersValidator = QRegularExpressionValidator(
+            spectrumNumbersRegex
+        )
+
+        (
+            self.widget.spectrumNumbersIBLineEdit
+        ).textChanged.connect(
+            self.handleSpectrumNumbersIBChanged
+        )
+
+        (
+            self.widget.spectrumNumbersIBLineEdit
+        ).setValidator(spectrumNumbersValidator)
+
+        (
+            self.widget.incidentMonitorQuietCountConstSpinBox
+        ).valueChanged.connect(
+            self.handleIncidentMonitorQuietCountConstChanged
+        )
+
+        self.widget.spectrumNumbersTLineEdit.textChanged.connect(
+            self.handleSpectrumNumbersTChanged
+        )
+
+        (
+            self.widget.spectrumNumbersTLineEdit
+        ).setValidator(spectrumNumbersValidator)
+        (
+            self.widget.transmissionMonitorQuietCountConstSpinBox
+        ).valueChanged.connect(
+            self.handleTransmissionMonitorQuietCountConstChanged
+        )
+        self.widget.channelNoASpinBox.valueChanged.connect(
+            self.handleChannelNoAChanged
+        )
+        self.widget.channelNoBSpinBox.valueChanged.connect(
+            self.handleChannelNoBChanged
+        )
+
+        self.widget.acceptanceFactorSpinBox.valueChanged.connect(
+            self.handleSpikeAnalysisAcceptanceFactorChanged
+        )
+
+        self.widget.minWavelengthSpinBox.valueChanged.connect(
+            self.handleMinWavelengthChanged
+        )
+        self.widget.maxWavelengthSpinBox.valueChanged.connect(
+            self.handleMaxWavelengthChanged
+        )
+        self.widget.stepWavelengthSpinBox.valueChanged.connect(
+            self.handleStepWavelengthChanged
+        )
+        self.widget.noSmoothsOnMonitorSpinBox.valueChanged.connect(
+            self.handleNoSmoothsOnMonitorChanged
+        )
+        # Dictionary, mapping enum members to tuples of widgets.
+        self.scales = {
+            Scales.Q: (
+                self.widget.radioButtonQ_,
+                self.widget.minQSpinBox,
+                self.widget.maxQSpinBox,
+                self.widget.stepQSpinBox,
+            ),
+            Scales.D_SPACING: (
+                self.widget.DSpacingRadioButton,
+                self.widget.minDSpacingSpinBox,
+                self.widget.maxDSpacingSpinBox,
+                self.widget.stepDSpacingSpinBox,
+            ),
+            Scales.WAVELENGTH: (
+                self.widget.wavelengthRadioButton,
+                self.widget.minWavelength_SpinBox,
+                self.widget.maxWavelength_SpinBox,
+                self.widget.stepWavelength_SpinBox,
+            ),
+            Scales.ENERGY: (
+                self.widget.energyRadioButton,
+                self.widget.minEnergySpinBox,
+                self.widget.maxEnergySpinBox,
+                self.widget.stepEnergySpinBox,
+            ),
+            Scales.TOF: (
+                self.widget.TOFRadioButton,
+                self.widget.minTOFSpinBox,
+                self.widget.maxTOFSpinBox,
+                self.widget.stepTOFSpinBox,
+            ),
+        }
+
+        for scaleRadioButton, minSpinBox, maxSpinBox, stepSpinBox in (
+            self.scales.values()
+        ):
+            scaleRadioButton.toggled.connect(self.handleScaleStateChanged)
+            minSpinBox.valueChanged.connect(self.handleXMinChanged)
+            maxSpinBox.valueChanged.connect(self.handleXMaxChanged)
+            stepSpinBox.valueChanged.connect(self.handleXStepChanged)
+
+        self.widget.logarithmicBinningCheckBox.stateChanged.connect(
+            self.handleUseLogarithmicBinningSwitched
+        )
+
+        self.widget.groupsAcceptanceFactorSpinBox.valueChanged.connect(
+            self.handleGroupsAcceptanceFactorChanged
+        )
+
+        self.widget.mergePowerSpinBox.valueChanged.connect(
+            self.handleMergePowerChanged
+        )
+
+        for m in MergeWeights:
+            self.widget.mergeWeightsComboBox.addItem(m.name, m)
+        self.widget.mergeWeightsComboBox.currentIndexChanged.connect(
+            self.handleMergeWeightsChanged
+        )
+
+        self.widget.incidentFlightPathSpinBox.valueChanged.connect(
+            self.handleIncidentFlightPathChanged
+        )
+
+        self.widget.neutronScatteringParamsFileLineEdit.textChanged.connect(
+            self.handleNeutronScatteringParamsFileChanged
+        )
+
+        self.widget.browseNeutronScatteringParamsButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.neutronScatteringParamsFileLineEdit,
+                "Neutron scattering parameters file",
+            )
+        )
+
+        self.widget.nexusDefintionFileLineEdit.textChanged.connect(
+            self.handleNexusDefinitionFileChanged
+        )
+
+        self.widget.browseNexusDefinitionButton.clicked.connect(
+            lambda: self.handleBrowse(
+                self.widget.nexusDefintionFileLineEdit, "NeXus defnition file"
+            )
+        )
+        self.widget.hardGroupEdgesCheckBox.stateChanged.connect(
+            self.handleHardGroupEdgesSwitched
+        )
+
+        # Setup the widgets and slots for the grouping parameter panel.
+
+        self.widget.groupingParameterWidget.setVisible(False)
+        self.widget.addGroupingParameterButton.clicked.connect(
+            self.handleAddGroupingParameter
+        )
+        self.widget.removeGroupingParameterButton.clicked.connect(
+            self.handleRemoveGroupingParameter
+        )
+        self.widget.groupingParameterGroupBox.setChecked(False)
+        self.widget.groupingParameterGroupBox.toggled.connect(
+            self.handleGroupingParameterPanelToggled
+        )
 
     def handleInstrumentNameChanged(self, index):
         """
@@ -135,7 +402,7 @@ class InstrumentWidget(QWidget):
         index : int
             New current index of the nameComboBox.
         """
-        self.instrument.name = self.nameComboBox.itemData(index)
+        self.instrument.name = self.widget.nameComboBox.itemData(index)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -263,8 +530,8 @@ class InstrumentWidget(QWidget):
         index : int
             New current index of the mergeWeightsComboBox.
         """
-        self.instrument.mergeWeights = self.mergeWeightsComboBox.itemData(
-            index
+        self.instrument.mergeWeights = (
+            self.widget.mergeWeightsComboBox.itemData(index)
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -683,16 +950,16 @@ class InstrumentWidget(QWidget):
         str[]
         """
         if dir:
-            filename = QFileDialog.getExistingDirectory(self, title, "")
+            filename = QFileDialog.getExistingDirectory(self.widget, title, "")
         else:
-            filename, _ = QFileDialog.getOpenFileName(self, title, "")
+            filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
         return filename
 
     def updateGroupingParameterPanel(self):
         """
         Fills the GroupingParameterPanel table.
         """
-        self.groupingParameterTable.makeModel(
+        self.widget.groupingParameterTable.makeModel(
             self.instrument.groupingParameterPanel
         )
 
@@ -712,7 +979,7 @@ class InstrumentWidget(QWidget):
         Called when a clicked signal is emitted,
         from the removeGroupingParameterButton.
         """
-        self.groupingParameterTable.removeRow(
+        self.widget.groupingParameterTable.removeRow(
             self.groupingParameterTable.selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
@@ -724,355 +991,4 @@ class InstrumentWidget(QWidget):
         Called when a toggled signal is emitted from the
         groupingParameterGroupBox.
         """
-        self.groupingParameterWidget.setVisible(on)
-
-    def initComponents(self):
-        """
-        Loads the UI file for the InstrumentWidget object,
-        and then populates the child widgets with their
-        corresponding data from the attributes of the Instrument object.
-        """
-        # Acquire the lock
-        self.widgetsRefreshing = True
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/instrumentWidget.ui")
-        uic.loadUi(uifile, self)
-
-        # Setup the widget and slot for the instrument name.
-        for i in Instruments:
-            self.nameComboBox.addItem(i.name, i)
-        self.nameComboBox.setCurrentIndex(self.instrument.name.value)
-        self.nameComboBox.currentIndexChanged.connect(
-            self.handleInstrumentNameChanged
-        )
-
-        # Setup the widgets and slots for configuration files.
-        self.dataFileDirectoryLineEdit.setText(self.instrument.dataFileDir)
-        self.dataFileDirectoryLineEdit.textChanged.connect(
-            self.handleDataFileDirectoryChanged
-        )
-
-        self.browseDataFileDirectoryButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.dataFileDirectoryLineEdit, "Data file directory", dir=True
-            )
-        )
-
-        dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
-        self.dataFileTypeCombo.addItems(dataFileTypes)
-        self.dataFileTypeCombo.setCurrentIndex(
-            dataFileTypes.index(self.instrument.dataFileType)
-        )
-        self.dataFileTypeCombo.currentIndexChanged.connect(
-            self.handleDataFileTypeChanged
-        )
-
-        self.detCalibrationLineEdit.setText(
-            self.instrument.detectorCalibrationFileName
-        )
-        self.detCalibrationLineEdit.textChanged.connect(
-            self.handleDetectorCalibrationFileChanged
-        )
-
-        self.browseDetCalibrationButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.detCalibrationLineEdit, "Detector calibration file"
-            )
-        )
-
-        self.groupsFileLineEdit.setText(self.instrument.groupFileName)
-        self.groupsFileLineEdit.textChanged.connect(
-            self.handleGroupsFileChanged
-        )
-        self.browseGroupsFileButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.groupsFileLineEdit, "Groups file"
-            )
-        )
-        self.deadtimeFileLineEdit.setText(
-            self.instrument.deadtimeConstantsFileName
-        )
-        self.deadtimeFileLineEdit.textChanged.connect(
-            self.handleDeadtimeFileChanged
-        )
-
-        self.browseDeadtimeFileButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.deadtimeFileLineEdit, "Deadtime constants file"
-            )
-        )
-
-        self.phiValuesColumnSpinBox.setValue(self.instrument.columnNoPhiVals)
-        self.phiValuesColumnSpinBox.valueChanged.connect(
-            self.handleColumnNoPhiValuesChanged
-        )
-
-        # Setup the widgets and slots for the wavelength range and step size
-        # for monitor normalisation.
-        self.minWavelengthMonNormSpinBox.setValue(
-            self.instrument.wavelengthRangeForMonitorNormalisation[0]
-        )
-        self.maxWavelengthMonNormSpinBox.setValue(
-            self.instrument.wavelengthRangeForMonitorNormalisation[1]
-        )
-        self.minWavelengthMonNormSpinBox.valueChanged.connect(
-            self.handleMinWavelengthMonNormChanged
-        )
-        self.maxWavelengthMonNormSpinBox.valueChanged.connect(
-            self.handleMaxWavelengthMonNormChanged
-        )
-
-        # Setup the widgets and slots for the spectrum numbers
-        # and quiet count const for the incident beam monitor.
-        # Regular expression to accept space delimited integers.
-        spectrumNumbersRegex = QRegExp(r"^\d+(?:\s+\d+)*$")
-        spectrumNumbersValidator = QRegExpValidator(spectrumNumbersRegex)
-
-        self.spectrumNumbersIBLineEdit.setText(
-            spacify(self.instrument.spectrumNumbersForIncidentBeamMonitor)
-        )
-
-        self.spectrumNumbersIBLineEdit.textChanged.connect(
-            self.handleSpectrumNumbersIBChanged
-        )
-
-        self.spectrumNumbersIBLineEdit.setValidator(spectrumNumbersValidator)
-
-        self.incidentMonitorQuietCountConstSpinBox.setValue(
-            self.instrument.incidentMonitorQuietCountConst
-        )
-        self.incidentMonitorQuietCountConstSpinBox.valueChanged.connect(
-            self.handleIncidentMonitorQuietCountConstChanged
-        )
-
-        # Setup the widgets and slots for the spectrum numbers
-        # and quiet count const for the transmission beam monitor.
-        self.spectrumNumbersTLineEdit.setText(
-            spacify(self.instrument.spectrumNumbersForTransmissionMonitor)
-        )
-
-        self.spectrumNumbersTLineEdit.textChanged.connect(
-            self.handleSpectrumNumbersTChanged
-        )
-
-        self.spectrumNumbersTLineEdit.setValidator(spectrumNumbersValidator)
-
-        self.transmissionMonitorQuietCountConstSpinBox.setValue(
-            self.instrument.transmissionMonitorQuietCountConst
-        )
-        self.transmissionMonitorQuietCountConstSpinBox.valueChanged.connect(
-            self.handleTransmissionMonitorQuietCountConstChanged
-        )
-
-        # Setup the widgets and slots for the channel numbers
-        # to be used for spike analysis.
-        self.channelNoASpinBox.setValue(
-            self.instrument.channelNosSpikeAnalysis[0]
-        )
-        self.channelNoASpinBox.valueChanged.connect(
-            self.handleChannelNoAChanged
-        )
-        self.channelNoBSpinBox.setValue(
-            self.instrument.channelNosSpikeAnalysis[1]
-        )
-        self.channelNoBSpinBox.valueChanged.connect(
-            self.handleChannelNoBChanged
-        )
-
-        # Setup the widget and slot for the
-        # acceptance factor for spike analysis.
-        self.acceptanceFactorSpinBox.setValue(
-            self.instrument.spikeAnalysisAcceptanceFactor
-        )
-        self.acceptanceFactorSpinBox.valueChanged.connect(
-            self.handleSpikeAnalysisAcceptanceFactorChanged
-        )
-
-        # Setup the widgets and slots for the wavelength range and step size.
-        self.minWavelengthSpinBox.setValue(self.instrument.wavelengthMin)
-        self.minWavelengthSpinBox.valueChanged.connect(
-            self.handleMinWavelengthChanged
-        )
-        self.maxWavelengthSpinBox.setValue(self.instrument.wavelengthMax)
-        self.maxWavelengthSpinBox.valueChanged.connect(
-            self.handleMaxWavelengthChanged
-        )
-        self.stepWavelengthSpinBox.setValue(self.instrument.wavelengthStep)
-        self.stepWavelengthSpinBox.valueChanged.connect(
-            self.handleStepWavelengthChanged
-        )
-
-        # Setup the widget and slot for the number of smoothings on monitor.
-        self.noSmoothsOnMonitorSpinBox.setValue(
-            self.instrument.NoSmoothsOnMonitor
-        )
-        self.noSmoothsOnMonitorSpinBox.valueChanged.connect(
-            self.handleNoSmoothsOnMonitorChanged
-        )
-
-        # Dictionary, mapping enum members to tuples of widgets.
-        self.scales = {
-            Scales.Q: (
-                self._QRadioButton,
-                self.minQSpinBox,
-                self.maxQSpinBox,
-                self.stepQSpinBox,
-            ),
-            Scales.D_SPACING: (
-                self.DSpacingRadioButton,
-                self.minDSpacingSpinBox,
-                self.maxDSpacingSpinBox,
-                self.stepDSpacingSpinBox,
-            ),
-            Scales.WAVELENGTH: (
-                self.wavelengthRadioButton,
-                self.minWavelength_SpinBox,
-                self.maxWavelength_SpinBox,
-                self.stepWavelength_SpinBox,
-            ),
-            Scales.ENERGY: (
-                self.energyRadioButton,
-                self.minEnergySpinBox,
-                self.maxEnergySpinBox,
-                self.stepEnergySpinBox,
-            ),
-            Scales.TOF: (
-                self.TOFRadioButton,
-                self.minTOFSpinBox,
-                self.maxTOFSpinBox,
-                self.stepTOFSpinBox,
-            ),
-        }
-
-        # Setup the widgets and slots for the scales.
-        selection, min_, max_, step = (
-            self.scales[self.instrument.scaleSelection]
-        )
-        selection.setChecked(True)
-        min_.setValue(self.instrument.XMin)
-        max_.setValue(self.instrument.XMax)
-        step.setValue(self.instrument.XStep)
-        min_.setEnabled(True)
-        max_.setEnabled(True)
-        step.setEnabled(True)
-
-        for scaleRadioButton, minSpinBox, maxSpinBox, stepSpinBox in (
-            self.scales.values()
-        ):
-            scaleRadioButton.toggled.connect(self.handleScaleStateChanged)
-            minSpinBox.valueChanged.connect(self.handleXMinChanged)
-            maxSpinBox.valueChanged.connect(self.handleXMaxChanged)
-            stepSpinBox.valueChanged.connect(self.handleXStepChanged)
-
-        # Setup the widget and slot for enabling/disabling
-        # logarithmic binning and step size.
-        self.logarithmicBinningCheckBox.setChecked(
-            self.instrument.useLogarithmicBinning
-        )
-        self.logarithmicBinningCheckBox.stateChanged.connect(
-            self.handleUseLogarithmicBinningSwitched
-        )
-
-        self.logarithmicStepSizeSpinBox.setValue(
-            self.instrument.logarithmicStepSize
-        )
-        self.logarithmicStepSizeSpinBox.valueChanged.connect(
-            self.handleLogarithmicStepSizeChanged
-        )
-
-        # Setup the widget and slot for the groups acceptance factor.
-        self.groupsAcceptanceFactorSpinBox.setValue(
-            self.instrument.groupsAcceptanceFactor
-        )
-        self.groupsAcceptanceFactorSpinBox.valueChanged.connect(
-            self.handleGroupsAcceptanceFactorChanged
-        )
-
-        # Setup the widgets and slots for merging.
-        self.mergePowerSpinBox.setValue(self.instrument.mergePower)
-        self.mergePowerSpinBox.valueChanged.connect(
-            self.handleMergePowerChanged
-        )
-
-        for m in MergeWeights:
-            self.mergeWeightsComboBox.addItem(m.name, m)
-        self.mergeWeightsComboBox.setCurrentIndex(
-            self.instrument.mergeWeights.value
-        )
-        self.mergeWeightsComboBox.currentIndexChanged.connect(
-            self.handleMergeWeightsChanged
-        )
-
-        # Setup the widget and slot for the incident flight path.
-        self.incidentFlightPathSpinBox.setValue(
-            self.instrument.incidentFlightPath
-        )
-        self.incidentFlightPathSpinBox.valueChanged.connect(
-            self.handleIncidentFlightPathChanged
-        )
-
-        # Setup the widget and slot for the spectrum number
-        # for output diagnostics.
-        self.outputDiagSpectrumSpinBox.setValue(
-            self.instrument.spectrumNumberForOutputDiagnosticFiles
-        )
-
-        # Setup the widgets and slots for the neutron
-        # scattering parameters file and NeXus definition file.
-        self.neutronScatteringParamsFileLineEdit.setText(
-            self.instrument.neutronScatteringParametersFile
-        )
-        self.neutronScatteringParamsFileLineEdit.textChanged.connect(
-            self.handleNeutronScatteringParamsFileChanged
-        )
-
-        self.browseNeutronScatteringParamsButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.neutronScatteringParamsFileLineEdit,
-                "Neutron scattering parameters file",
-            )
-        )
-
-        self.nexusDefintionFileLineEdit.setText(
-            self.instrument.nxsDefinitionFile
-        )
-
-        self.nexusDefintionFileLineEdit.textChanged.connect(
-            self.handleNexusDefinitionFileChanged
-        )
-
-        self.nexusDefintionFileLineEdit.setEnabled(
-            self.instrument.dataFileType in ["nxs", "NXS"]
-        )
-        self.browseNexusDefinitionButton.setEnabled(
-            self.instrument.dataFileType in ["nxs", "NXS"]
-        )
-
-        self.browseNexusDefinitionButton.clicked.connect(
-            lambda: self.handleBrowse(
-                self.nexusDefintionFileLineEdit, "NeXus defnition file"
-            )
-        )
-
-        # Setup the widget and slot for enabling/disablign hard group edges.
-        self.hardGroupEdgesCheckBox.setChecked(self.instrument.hardGroupEdges)
-        self.hardGroupEdgesCheckBox.stateChanged.connect(
-            self.handleHardGroupEdgesSwitched
-        )
-
-        # Setup the widgets and slots for the grouping parameter panel.
-
-        self.groupingParameterWidget.setVisible(False)
-        self.updateGroupingParameterPanel()
-        self.addGroupingParameterButton.clicked.connect(
-            self.handleAddGroupingParameter
-        )
-        self.removeGroupingParameterButton.clicked.connect(
-            self.handleRemoveGroupingParameter
-        )
-        self.groupingParameterGroupBox.setChecked(False)
-        self.groupingParameterGroupBox.toggled.connect(
-            self.handleGroupingParameterPanelToggled
-        )
-        # Release the lock
-        self.widgetsRefreshing = False
+        self.widget.groupingParameterWidget.setVisible(on)

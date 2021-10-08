@@ -1,11 +1,12 @@
 from src.scripts.utils import nthint
-from PyQt5.QtCore import QProcess
+from PySide6.QtCore import QProcess
+from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
 from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -18,17 +19,21 @@ from PyQt5.QtWidgets import (
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
 from src.gui.widgets.view_input import ViewInput
-from src.gui.widgets.sample_widget import SampleWidget
-from src.gui.widgets.instrument_widget import InstrumentWidget
-from src.gui.widgets.beam_widget import BeamWidget
-from src.gui.widgets.sample_background_widget import SampleBackgroundWidget
-from src.gui.widgets.container_widget import ContainerWidget
-from src.gui.widgets.normalisation_widget import NormalisationWidget
+from src.gui.widgets.gudpy_tree import GudPyTreeView
+from src.gui.widgets.gudpy_tables import GroupingParameterTable
+from src.gui.widgets.gudpy_tables import BeamProfileTable
+from src.gui.widgets.gudpy_tables import ResonanceTable
+from src.gui.widgets.gudpy_tables import CompositionTable
+from src.gui.widgets.gudpy_tables import ExponentialTable
 from src.gudrun_classes.enums import Geometry
 import os
-from PyQt5 import uic
-import math
-from queue import Queue
+from PySide6.QtUiTools import QUiLoader
+from src.gui.widgets.beam_slots import BeamSlots
+from src.gui.widgets.container_slots import ContainerSlots
+from src.gui.widgets.instrument_slots import InstrumentSlots
+from src.gui.widgets.normalisation_slots import NormalisationSlots
+from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
+from src.gui.widgets.sample_slots import SampleSlots
 
 
 class GudPyMainWindow(QMainWindow):
@@ -57,10 +62,7 @@ class GudPyMainWindow(QMainWindow):
     updateGeometries()
         Updates geometries across objects.
     updateCompositions()
-        Updates compositions across objects.
-    updateComponents()
-        Updates geometries and compositions.
-    del_()
+        Updates compositions across objects
         Deletes the current object.
     exit_()
         Exits GudPy.
@@ -82,131 +84,141 @@ class GudPyMainWindow(QMainWindow):
         """
         current_dir = os.path.dirname(os.path.realpath(__file__))
         uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
-        uic.loadUi(uifile, self)
 
-        self.statusBar_ = QStatusBar(self)
-        self.statusBarWidget = QWidget(self.statusBar_)
-        self.statusBarLayout = QHBoxLayout(self.statusBarWidget)
-        self.currentTaskLabel = QLabel(self.statusBarWidget)
-        self.currentTaskLabel.setText("No task running.")
-        self.currentTaskLabel.setSizePolicy(
+        loader = QUiLoader()
+        loader.registerCustomWidget(GudPyTreeView)
+        loader.registerCustomWidget(GroupingParameterTable)
+        loader.registerCustomWidget(BeamProfileTable)
+        loader.registerCustomWidget(CompositionTable)
+        loader.registerCustomWidget(ExponentialTable)
+        loader.registerCustomWidget(ResonanceTable)
+        self.mainWidget = loader.load(uifile)
+
+        self.mainWidget.statusBar_ = QStatusBar(self)
+        self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
+        self.mainWidget.statusBarLayout = QHBoxLayout(self.mainWidget.statusBarWidget)
+        self.mainWidget.currentTaskLabel = QLabel(self.mainWidget.statusBarWidget)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
-        self.progressBar = QProgressBar(self.statusBarWidget)
-        self.progressBar.setSizePolicy(
+        self.mainWidget.progressBar = QProgressBar(self.mainWidget.statusBarWidget)
+        self.mainWidget.progressBar.setSizePolicy(
             QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         )
-        self.progressBar.setTextVisible(False)
-        self.statusBarLayout.addWidget(self.currentTaskLabel)
-        self.statusBarLayout.addWidget(self.progressBar)
-        self.statusBarWidget.setLayout(self.statusBarLayout)
-        self.statusBar_.addWidget(self.statusBarWidget)
-        self.setStatusBar(self.statusBar_)
-        self.setWindowTitle("GudPy")
-        self.show()
+        self.mainWidget.progressBar.setTextVisible(False)
+        self.mainWidget.statusBarLayout.addWidget(self.mainWidget.currentTaskLabel)
+        self.mainWidget.statusBarLayout.addWidget(self.mainWidget.progressBar)
+        self.mainWidget.statusBarWidget.setLayout(self.mainWidget.statusBarLayout)
+        self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
+        self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        if not self.gudrunFile:
-            # Hide the QStackedWidget and GudPyTreeView
-            self.objectStack.setVisible(False)
-            self.objectTree.setVisible(False)
-            # Disabled the edit actions.
-            self.insertSampleBackground.setDisabled(True)
-            self.insertSample.setDisabled(True)
-            self.insertContainer.setDisabled(True)
-            self.copy.setDisabled(True)
-            self.cut.setDisabled(True)
-            self.paste.setDisabled(True)
-            self.delete_.setDisabled(True)
-            # Disable the run actions.
-            self.runPurge.setDisabled(True)
-            self.runGudrun.setDisabled(True)
-            self.iterateGudrun.setDisabled(True)
-            # Disable some file actions.
-            self.viewLiveInputFile.setDisabled(True)
-            self.save.setDisabled(True)
-            self.saveAs.setDisabled(True)
+        self.mainWidget.setWindowTitle("GudPy")
+        self.mainWidget.show()
+        self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
+        self.beamSlots = BeamSlots(self.mainWidget, self)
+        self.normalisationSlots = NormalisationSlots(self.mainWidget, self)
+        self.sampleBackgroundSlots = SampleBackgroundSlots(
+            self.mainWidget, self
+        )
+        self.sampleSlots = SampleSlots(self.mainWidget, self)
+        self.containerSlots = ContainerSlots(self.mainWidget, self)
+        self.mainWidget.runPurge.triggered.connect(
+            self.runPurge_
+        )
+        self.mainWidget.runGudrun.triggered.connect(
+            self.runGudrun_
+        )
+        self.mainWidget.iterateGudrun.triggered.connect(
+            self.iterateGudrun_
+        )
+        self.mainWidget.save.triggered.connect(self.saveInputFile)
 
-        else:
+        self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
-            self.setWindowTitle(self.gudrunFile.path)
-            self.instrumentWidget = InstrumentWidget(
-                self.gudrunFile.instrument, self
+        self.mainWidget.viewLiveInputFile.triggered.connect(
+            lambda: ViewInput(self.gudrunFile, parent=self)
+        )
+
+        self.mainWidget.insertSampleBackground.triggered.connect(
+            self.mainWidget.objectTree.insertSampleBackground
+        )
+
+        self.mainWidget.insertSample.triggered.connect(
+            self.mainWidget.objectTree.insertSample
+        )
+
+        self.mainWidget.insertContainer.triggered.connect(
+            self.mainWidget.objectTree.insertContainer
+        )
+
+        self.mainWidget.copy.triggered.connect(
+            self.mainWidget.objectTree.copy
+        )
+        self.mainWidget.cut.triggered.connect(
+            self.mainWidget.objectTree.cut
+        )
+        self.mainWidget.paste.triggered.connect(
+            self.mainWidget.objectTree.paste
+        )
+        self.mainWidget.delete_.triggered.connect(
+            self.mainWidget.objectTree.del_
+        )
+
+        self.mainWidget.loadInputFile.triggered.connect(
+            self.loadInputFile_
+        )
+        self.mainWidget.objectStack.currentChanged.connect(
+            self.updateComponents
+        )
+
+        self.mainWidget.exit.triggered.connect(self.exit_)
+        # Hide the QStackedWidget and GudPyTreeView
+        # Disabled the edit actions.
+        self.mainWidget.insertSampleBackground.setDisabled(True)
+        self.mainWidget.insertSample.setDisabled(True)
+        self.mainWidget.insertContainer.setDisabled(True)
+        self.mainWidget.copy.setDisabled(True)
+        self.mainWidget.cut.setDisabled(True)
+        self.mainWidget.paste.setDisabled(True)
+        self.mainWidget.delete_.setDisabled(True)
+        # Disable the run actions.
+        self.mainWidget.runPurge.setDisabled(True)
+        self.mainWidget.runGudrun.setDisabled(True)
+        self.mainWidget.iterateGudrun.setDisabled(True)
+        # Disable some file actions.
+        self.mainWidget.viewLiveInputFile.setDisabled(True)
+        self.mainWidget.save.setDisabled(True)
+        self.mainWidget.saveAs.setDisabled(True)
+        self.mainWidget.tabWidget.setVisible(False)
+
+    def updateWidgets(self):
+        self.mainWidget.gudrunFile = self.gudrunFile
+        self.mainWidget.tabWidget.setVisible(True)
+        self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
+        self.beamSlots.setBeam(self.gudrunFile.beam)
+        self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+
+        if len(self.gudrunFile.sampleBackgrounds):
+            self.sampleBackgroundSlots.setSampleBackground(
+                self.gudrunFile.sampleBackgrounds[0]
             )
-            self.beamWidget = BeamWidget(
-                self.gudrunFile.beam, self
-            )
-            self.normalisationWidget = NormalisationWidget(
-                self.gudrunFile.normalisation, self
-            )
 
-            self.objectStack.addWidget(self.instrumentWidget)
-            self.objectStack.addWidget(self.beamWidget)
-            self.objectStack.addWidget(self.normalisationWidget)
-
-            self.sampleBackgroundWidget = SampleBackgroundWidget(self)
-            self.sampleWidget = SampleWidget(self)
-            self.containerWidget = ContainerWidget(self)
-
-            self.objectStack.addWidget(self.sampleBackgroundWidget)
-            self.objectStack.addWidget(self.sampleWidget)
-            self.objectStack.addWidget(self.containerWidget)
-
-            if len(self.gudrunFile.sampleBackgrounds):
-                self.sampleBackgroundWidget.setSampleBackground(
-                    self.gudrunFile.sampleBackgrounds[0]
+            if len(self.gudrunFile.sampleBackgrounds[0].samples):
+                self.sampleSlots.setSample(
+                    self.gudrunFile.sampleBackgrounds[0].
+                    samples[0]
                 )
-                if len(self.gudrunFile.sampleBackgrounds[0].samples):
-                    self.sampleWidget.setSample(
-                        self.gudrunFile.sampleBackgrounds[0].samples[0]
-                    )
-                    if len(
+
+                if len(
+                    self.gudrunFile.sampleBackgrounds[0].
+                    samples[0].containers
+                ):
+                    self.containerSlots.setContainer(
                         self.gudrunFile.sampleBackgrounds[0]
-                        .samples[0].containers
-                    ):
-                        self.containerWidget.setContainer(
-                            self.gudrunFile.sampleBackgrounds[0]
-                            .samples[0].containers[0]
-                        )
-
-            self.objectTree.buildTree(self.gudrunFile, self.objectStack)
-
-            self.runPurge.triggered.connect(
-                self.runPurge_
-            )
-            self.runGudrun.triggered.connect(
-                self.runGudrun_
-            )
-            self.iterateGudrun.triggered.connect(
-                self.iterateGudrun_
-            )
-            self.save.triggered.connect(self.saveInputFile)
-
-            self.saveAs.triggered.connect(self.saveInputFileAs)
-
-            self.viewLiveInputFile.triggered.connect(
-                lambda: ViewInput(self.gudrunFile, parent=self)
-            )
-
-            self.insertSampleBackground.triggered.connect(
-                self.objectTree.insertSampleBackground
-            )
-
-            self.insertSample.triggered.connect(
-                self.objectTree.insertSample
-            )
-
-            self.insertContainer.triggered.connect(
-                self.objectTree.insertContainer
-            )
-
-            self.copy.triggered.connect(self.objectTree.copy)
-            self.cut.triggered.connect(self.objectTree.cut)
-            self.paste.triggered.connect(self.objectTree.paste)
-            self.delete_.triggered.connect(self.objectTree.del_)
-
-        self.loadInputFile.triggered.connect(self.loadInputFile_)
-        self.objectStack.currentChanged.connect(self.updateComponents)
-        self.exit.triggered.connect(self.exit_)
+                        .samples[0].containers[0]
+                    )
+        self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
 
     def loadInputFile_(self):
         """
@@ -218,9 +230,9 @@ class GudPyMainWindow(QMainWindow):
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
+                self.updateWidgets()
             except ParserException as e:
                 QMessageBox.critical(self, "GudPy Error", str(e))
-            self.initComponents()
 
     def saveInputFile(self):
         """
@@ -253,11 +265,11 @@ class GudPyMainWindow(QMainWindow):
         where the Geometry is SameAsBeam.
         """
         if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
-            self.normalisationWidget.widgetsRefreshing = True
-            self.normalisationWidget.geometryInfoStack.setCurrentIndex(
+            self.normalisationSlots.widgetsRefreshing = True
+            self.mainWidget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
-            self.normalisationWidget.widgetsRefreshing = False
+            self.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
         ):
@@ -274,14 +286,9 @@ class GudPyMainWindow(QMainWindow):
         Iteratively shares compositions between objects,
         for copying and pasting compositions between eachother.
         """
-        for i in range(self.objectStack.count()):
-            target = self.objectStack.widget(i)
-            if isinstance(target, NormalisationWidget):
-                target.normalisationCompositionTable.farmCompositions()
-            elif isinstance(target, SampleWidget):
-                target.sampleCompositionTable.farmCompositions()
-            elif isinstance(target, ContainerWidget):
-                target.containerCompositionTable.farmCompositions()
+        self.mainWidget.normalisationCompositionTable.farmCompositions()
+        self.mainWidget.sampleCompositionTable.farmCompositions()
+        self.mainWidget.containerCompositionTable.farmCompositions()
 
     def updateComponents(self):
         """
@@ -392,6 +399,17 @@ class GudPyMainWindow(QMainWindow):
             lambda: self.progressIteration(i+1, self.numberIterations)
         )
         self.proc.start(*proc)
+
+    def checkFilesExist_(self):
+        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        if not all(r[0] for r in result):
+            unresolved = "\n".join(r[1] for r in result if not r[0])
+            QMessageBox.critical(
+                self, "GudPy Error",
+                f"Couldn't resolve some files!"
+                f" Check that all paths are correct and try again."
+                f"{unresolved}"
+            )
 
     def setModified(self):
         if not self.modified:
