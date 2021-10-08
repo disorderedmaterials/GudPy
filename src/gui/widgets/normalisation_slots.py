@@ -686,11 +686,9 @@ class NormalisationSlots():
 
     def removeDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
-        self.updateDataFilesList()
 
     def removeBgDataFile(self, target, dataFiles):
         self.removeFile(target, dataFiles)
-        self.updateBgDataFilesList()
 
     def updateCompositionTable(self):
         """
