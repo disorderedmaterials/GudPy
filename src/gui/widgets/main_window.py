@@ -184,23 +184,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.exit.triggered.connect(self.exit_)
-        # Hide the QStackedWidget and GudPyTreeView
-        # Disabled the edit actions.
-        self.mainWidget.insertSampleBackground.setDisabled(True)
-        self.mainWidget.insertSample.setDisabled(True)
-        self.mainWidget.insertContainer.setDisabled(True)
-        self.mainWidget.copy.setDisabled(True)
-        self.mainWidget.cut.setDisabled(True)
-        self.mainWidget.paste.setDisabled(True)
-        self.mainWidget.delete_.setDisabled(True)
-        # Disable the run actions.
-        self.mainWidget.runPurge.setDisabled(True)
-        self.mainWidget.runGudrun.setDisabled(True)
-        self.mainWidget.iterateGudrun.setDisabled(True)
-        # Disable some file actions.
-        self.mainWidget.viewLiveInputFile.setDisabled(True)
-        self.mainWidget.save.setDisabled(True)
-        self.mainWidget.saveAs.setDisabled(True)
+
+        self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
 
     def updateWidgets(self):
@@ -230,6 +215,7 @@ class GudPyMainWindow(QMainWindow):
                         .samples[0].containers[0]
                     )
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
+        self.setActionsEnabled(True)
 
     def loadInputFile_(self):
         """
@@ -332,22 +318,22 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start(*cmd)
 
     def runPurge_(self):
-        self.lockControls()
+        self.setControlsEnabled(True)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         purgeDialog.exec()
         purge = purgeDialog.purge_det
         if purgeDialog.cancelled:
-            self.unlockControls()
+            self.setControlsEnabled(True)
         elif not purge:
             QMessageBox.critical(
                 self, "GudPy Error", "Couldn't find purge_det binary."
             )
-            self.unlockControls()
+            self.setControlsEnabled(True)
         else:
             self.makeProc(purge, self.progressPurge)
 
     def runGudrun_(self):
-        self.lockControls()
+        self.setControlsEnabled(False)
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         if not dcs:
             QMessageBox.critical(
@@ -361,7 +347,7 @@ class GudPyMainWindow(QMainWindow):
                 QMessageBox.Yes | QMessageBox.No
             )
             if choice == QMessageBox.No:
-                self.unlockControls()
+                self.setControlsEnabled(True)
             else:
                 self.gudrunFile.write_out()
                 self.makeProc(dcs, self.progressDCS)
@@ -370,18 +356,18 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(dcs, self.progressDCS)
 
     def iterateGudrun_(self):
-        self.lockControls()
+        self.setControlsEnabled(False)
         iterationDialog = IterationDialog(self.gudrunFile, self)
         iterationDialog.exec()
         iterate = iterationDialog.iterateCommand
         if iterationDialog.cancelled:
-            self.unlockControls()
+            self.setControlsEnabled(True)
         elif not iterate:
             QMessageBox.critical(
                 self, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
-            self.unlockControls()
+            self.setControlsEnabled(True)
         else:
             pass
 
@@ -406,60 +392,49 @@ class GudPyMainWindow(QMainWindow):
             self.setWindowTitle(self.gudrunFile.path)
             self.modified = False
 
-    def lockControls(self):
-        # Lock controls
-        self.instrumentWidget.setDisabled(True)
-        self.beamWidget.setDisabled(True)
-        self.normalisationWidget.setDisabled(True)
-        self.sampleWidget.basicWidget.setDisabled(True)
-        self.sampleWidget.advancedWidget.setDisabled(True)
-        self.containerWidget.setDisabled(True)
-        self.sampleBackgroundWidget.setDisabled(True)
+    def setControlsEnabled(self, state):
+        self.instrumentWidget.setEnabled(state)
+        self.beamWidget.setEnabled(state)
+        self.normalisationWidget.setEnabled(state)
+        self.sampleWidget.basicWidget.setEnabled(state)
+        self.sampleWidget.advancedWidget.setEnabled(state)
+        self.containerWidget.setEnabled(state)
+        self.sampleBackgroundWidget.setEnabled(state)
         self.objectTree.setContextDisabled()
 
-        # Lock actions
-        self.insertSampleBackground.setDisabled(True)
-        self.insertSample.setDisabled(True)
-        self.insertContainer.setDisabled(True)
-        self.copy.setDisabled(True)
-        self.cut.setDisabled(True)
-        self.paste.setDisabled(True)
-        self.delete_.setDisabled(True)
-        self.runPurge.setDisabled(True)
-        self.runGudrun.setDisabled(True)
-        self.iterateGudrun.setDisabled(True)
-        self.viewLiveInputFile.setDisabled(True)
-        self.save.setDisabled(True)
-        self.saveAs.setDisabled(True)
-        self.loadInputFile.setDisabled(True)
-        self.loadConfiguration.setDisabled(True)
+        self.insertSampleBackground.setEnabled(state)
+        self.insertSample.setEnabled(state)
+        self.insertContainer.setEnabled(state)
+        self.copy.setEnabled(state)
+        self.cut.setEnabled(state)
+        self.paste.setEnabled(state)
+        self.delete_.setEnabled(state)
+        self.runPurge.setEnabled(state)
+        self.runGudrun.setEnabled(state)
+        self.iterateGudrun.setEnabled(state)
+        self.viewLiveInputFile.setEnabled(state)
+        self.save.setEnabled(state)
+        self.saveAs.setEnabled(state)
+        self.loadInputFile.setEnabled(state)
+        self.loadConfiguration.setEnabled(state)
 
-    def unlockControls(self):
-        # Unlock controls
-        self.instrumentWidget.setEnabled(True)
-        self.beamWidget.setEnabled(True)
-        self.normalisationWidget.setEnabled(True)
-        self.sampleWidget.basicWidget.setEnabled(True)
-        self.sampleWidget.advancedWidget.setEnabled(True)
-        self.containerWidget.setEnabled(True)
-        self.sampleBackgroundWidget.setEnabled(True)
-        self.objectTree.setContextEnabled()
+    def setActionsEnabled(self, state):
 
-        # Unlock actions
-        self.insertSampleBackground.setEnabled(True)
-        self.insertSample.setEnabled(True)
-        self.insertContainer.setEnabled(True)
-        self.copy.setEnabled(True)
-        self.cut.setEnabled(True)
-        self.paste.setEnabled(True)
-        self.runPurge.setEnabled(True)
-        self.runGudrun.setEnabled(True)
-        self.iterateGudrun.setEnabled(True)
-        self.viewLiveInputFile.setEnabled(True)
-        self.save.setEnabled(True)
-        self.saveAs.setEnabled(True)
-        self.loadInputFile.setEnabled(True)
-        self.loadConfiguration.setEnabled(True)
+        self.mainWidget.insertSampleBackground.setEnabled(state)
+        self.mainWidget.insertSample.setEnabled(state)
+        self.mainWidget.insertContainer.setEnabled(state)
+        self.mainWidget.copy.setEnabled(state)
+        self.mainWidget.cut.setEnabled(state)
+        self.mainWidget.paste.setEnabled(state)
+        self.mainWidget.delete_.setEnabled(state)
+
+        self.mainWidget.runPurge.setEnabled(state)
+        self.mainWidget.runGudrun.setEnabled(state)
+        self.mainWidget.iterateGudrun.setEnabled(state)
+
+        self.mainWidget.viewLiveInputFile.setEnabled(state)
+        self.mainWidget.save.setEnabled(state)
+        self.mainWidget.saveAs.setEnabled(state)
 
     def progressIncrement(self):
         data = self.proc.readAllStandardOutput()
@@ -537,6 +512,6 @@ class GudPyMainWindow(QMainWindow):
 
     def procFinished(self):
         self.proc = None
-        self.unlockControls()
+        self.setControlsEnabled(True)
         self.currentTaskLabel.setText("No task running.")
         self.progressBar.setValue(0)
