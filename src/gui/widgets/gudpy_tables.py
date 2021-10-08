@@ -1,17 +1,15 @@
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
+from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
+    QMainWindow,
     QSpinBox,
     QTableView,
     QMenu,
-    QAction
 )
-from PyQt5.QtGui import QCursor
-
+from PySide6.QtGui import QCursor, QAction
 from src.gudrun_classes.element import Element
-from src.gui.widgets.main_window import GudPyMainWindow
 
 
 class GudPyTableModel(QAbstractTableModel):
@@ -146,7 +144,7 @@ class GudPyTableModel(QAbstractTableModel):
         return (
             self.headers[section]
             if (orientation == Qt.Horizontal and role == Qt.DisplayRole)
-            else QVariant()
+            else None
         )
 
     def insertRow(self, data):
@@ -885,7 +883,7 @@ class CompositionTable(QTableView):
         Seeks up the widget heirarchy, and then collects all compositions.
         """
         ancestor = self.parent
-        while not isinstance(ancestor, GudPyMainWindow):
+        while not isinstance(ancestor, QMainWindow):
             ancestor = ancestor.parent
             if callable(ancestor):
                 ancestor = ancestor()

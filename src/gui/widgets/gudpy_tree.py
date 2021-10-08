@@ -1,10 +1,9 @@
-from PyQt5.QtGui import QCursor, QIcon
-from PyQt5.QtWidgets import QAction, QMenu, QTreeView
-from PyQt5.QtCore import (
+from PySide6.QtGui import QCursor, QIcon, QAction
+from PySide6.QtWidgets import QMenu, QTreeView
+from PySide6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QPersistentModelIndex,
-    QVariant,
     Qt
 )
 from src.gudrun_classes.instrument import Instrument
@@ -230,7 +229,7 @@ class GudPyTreeModel(QAbstractItemModel):
             Data at index.
         """
         if not index.isValid():
-            return QVariant()
+            return None
         if role == Qt.DisplayRole or role == Qt.EditRole:
             if isinstance(
                 index.internalPointer(),
@@ -240,23 +239,23 @@ class GudPyTreeModel(QAbstractItemModel):
                     0: "Instrument", 1: "Beam",
                     2: "Normalisation", 3: "Sample Background"
                 }
-                return QVariant(
+                return (
                     dic[
                         index.row() if index.row() <= NUM_GUDPY_CORE_OBJECTS
                         else NUM_GUDPY_CORE_OBJECTS
                     ]
                 )
             elif isinstance(index.internalPointer(), (Sample, Container)):
-                return QVariant(index.internalPointer().name)
+                return index.internalPointer().name
         elif role == Qt.DecorationRole:
             if isinstance(index.internalPointer(), Sample):
-                return QVariant(self.sampleIcon)
+                return self.sampleIcon
             elif isinstance(index.internalPointer(), Container):
-                return QVariant(self.containerIcon)
+                return self.containerIcon
         elif role == Qt.CheckStateRole and self.isSample(index):
             return self.checkState(index)
         else:
-            return QVariant()
+            return None
 
     def setData(self, index, value, role):
         """
@@ -626,7 +625,7 @@ class GudPyTreeView(QTreeView):
         super(GudPyTreeView, self).__init__(parent)
         self.clipboard = None
 
-    def buildTree(self, gudrunFile, sibling):
+    def buildTree(self, gudrunFile, parent):
         """
         Constructs all the necessary attributes for the GudPyTreeView object.
         Calls the makeModel method,
@@ -639,7 +638,7 @@ class GudPyTreeView(QTreeView):
             Sibling widget to communicate signals and slots to/from.
         """
         self.gudrunFile = gudrunFile
-        self.sibling = sibling
+        self.parent = parent
         self.makeModel()
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
@@ -667,12 +666,14 @@ class GudPyTreeView(QTreeView):
             Instrument: (0, None),
             Beam: (1, None),
             Normalisation: (2, None),
-            SampleBackground: (3, self.sibling.widget(3).setSampleBackground),
-            Sample: (4, self.sibling.widget(4).setSample),
-            Container: (5, self.sibling.widget(5).setContainer)
+            SampleBackground: (
+                3, self.parent.sampleBackgroundSlots.setSampleBackground
+            ),
+            Sample: (4, self.parent.sampleSlots.setSample),
+            Container: (5, self.parent.containerSlots.setContainer)
         }
         index, setter = indexMap[type(modelIndex.internalPointer())]
-        self.sibling.setCurrentIndex(index)
+        self.parent.mainWidget.objectStack.setCurrentIndex(index)
         if setter:
             setter(modelIndex.internalPointer())
 

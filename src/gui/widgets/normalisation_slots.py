@@ -1,118 +1,219 @@
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Geometry, UnitsOfDensity
+    Geometry, CrossSectionSource, UnitsOfDensity
 )
 from src.gudrun_classes import config
-from PyQt5.QtWidgets import (
-    QFileDialog,
-    QWidget,
-)
-from PyQt5 import uic
-from PyQt5.QtCore import Qt
-import os
+from PySide6.QtWidgets import QFileDialog
 
 
-class NormalisationWidget(QWidget):
-    """
-    Class to represent a NormalisationWidget. Inherits QWidget.
+class NormalisationSlots():
 
-    ...
-
-    Attributes
-    ----------
-    normalisation : Normalisation
-        Normalisation object belonging to the GudrunFile.
-    parent : QWidget
-        Parent widget.
-    Methods
-    -------
-    initComponents()
-        Loads UI file, and then populates data from the Normalisation.
-    handlePeriodNoChanged(value)
-        Slot for handling change in the period number.
-    handleGeometryChanged(index)
-        Slot for handling change in the geometry.
-    handleDensityUnitsChanged(index)
-        Slot for handling change to the density units.
-    handleUpstreamThicknessChanged(value)
-        Slot for handling change in the upstream thickness.
-    handleDownstreamThicknessChanged(value)
-        Slot for handling change in the downstream thickness.
-    handleInnerRadiiChanged(value)
-        Slot for handling change in the inner radii.
-    handleOuterRadiiChanged(value)
-        Slot for handling change to the outer radii.
-    handleDensityChanged(value)
-        Slot for handling change in the density.
-    handleTotalCrossSectionChanged(index)
-        Slot for handling change in the total cross section source.
-    handleCrossSectionFileChanged(value)
-        Slot for handling change in total cross section source file name.
-    handleBrowseCrossSectionFile()
-        Slot for browsing for a cross section source file.
-    handleForceCorrectionsSwitched(state)
-        Slot for handling switching forcing correction calculations on/off.
-    handlePlaczekCorrectionChanged(value)
-        Slot for handling change in the temperature for Placzek corrections.
-    handleDifferentialCrossSectionFileChanged(value)
-        Slot for handling change in the differential cross section file name.
-    handleNormalisationDegreeSmoothingChanged(value)
-        Slot for handling change in the degree for smoothing of normalisation.
-    handleLowerlimitSmoothingChanged(value)
-        Slot for handling change in the minimum accepted
-        value for smoothed Vanadium.
-    handleMinNormalisationSignalChanged(value)
-        Slot for handling change in the vanadium signal to background
-        acceptance ratio.
-    handleDataFilesAltered(item)
-        Slot for handling changes to the data files list.
-    handleDataFileInserted(item)
-        Slot for handling insertion to the data files list.
-    updateDataFilesList()
-        Fills the data files list.
-    handleBgDataFilesAltered(item)
-        Slot for handling changes to the background data files list.
-    handleBgDataFileInserted(item)
-        Slot for handling insertion to the background data files list.
-    updateBgDataFilesList()
-        Fills the background data files list.
-    addFiles(target, title, regex)
-        Slot for adding files to a target list.
-    addDataFiles(target, title, regex)
-        Slot for adding files to the data files list.
-    addBgDataFiles(target, title, regex)
-        Slot for adding files to the background data files list.
-    removeFile(target, dataFiles)
-        Slot for removing data files from a target list.
-    removeDataFile(target, dataFiles)
-        Slot for removing data files from the list.
-    removeBgDataFile(target, dataFiles)
-        Slot for removing background data from the list.
-    updateCompositionTable()
-        Fills the composition table.
-    handleInsertElement()
-        Slot for handling insertion to the composition table.
-    handleRemoveElement()
-        Slot for removing the selected element from the composition table.
-    """
-
-    def __init__(self, normalisation, parent=None):
-        """
-        Constructs all the necessary attributes
-        for the NormalisationWidget object.
-        Calls the initComponents method,
-        to load the UI file and populate data.
-        Parameters
-        ----------
-        normalisation : Normalisation
-            Normalisation object belonging to the GudrunFile.
-        parent : QWidget
-            Parent widget.
-        """
-        self.normalisation = normalisation
+    def __init__(self, widget, parent):
+        self.widget = widget
         self.parent = parent
+        self.setupNormalisationSlots()
 
-        super(NormalisationWidget, self).__init__(parent=self.parent)
-        self.initComponents()
+    def setNormalisation(self, normalisation):
+        self.normalisation = normalisation
+
+        self.widgetsRefreshing = True
+
+        self.updateDataFilesList()
+
+        self.updateBgDataFilesList()
+
+        self.widget.periodNoSpinBox.setValue(self.normalisation.periodNumber)
+        self.widget.backgroundPeriodNoSpinBox.setValue(
+            self.normalisation.periodNumberBg
+        )
+
+        self.widget.normalisationGeometryComboBox.setCurrentIndex(
+            self.normalisation.geometry.value
+        )
+
+        self.widget.geometryInfoStack.setCurrentIndex(
+            self.normalisation.geometry.value
+        )
+
+        # Setup the widgets and slots for the density.
+        self.widget.densitySpinBox.setValue(self.normalisation.density)
+
+        self.widget.densityUnitsComboBox.setCurrentIndex(
+            self.normalisation.densityUnits.value
+        )
+
+        self.widget.upstreamSpinBox.setValue(
+            self.normalisation.upstreamThickness
+        )
+        self.widget.downstreamSpinBox.setValue(
+            self.normalisation.downstreamThickness
+        )
+
+        self.widget.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
+        self.widget.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
+
+        self.widget.totalCrossSectionComboBox.setCurrentIndex(
+            self.normalisation.totalCrossSectionSource.value
+        )
+        self.widget.crossSectionFileLineEdit.setText(
+            self.normalisation.crossSectionFilename
+        )
+        self.widget.crossSectionFileWidget.setVisible(
+            self.normalisation.totalCrossSectionSource ==
+            CrossSectionSource.FILE
+        )
+
+        self.widget.forceCorrectionsCheckBox.setChecked(
+            self.normalisation.forceCalculationOfCorrections
+        )
+        self.widget.placzekCorrectionSpinBox.setValue(
+            self.normalisation.tempForNormalisationPC
+        )
+        self.widget.differentialCrossSectionFileLineEdit.setText(
+            self.normalisation.normalisationDifferentialCrossSectionFile
+        )
+
+        self.widget.smoothingDegreeSpinBox.setValue(
+            self.normalisation.normalisationDegreeSmoothing
+        )
+        self.widget.lowerLimitSmoothingSpinBox.setValue(
+            self.normalisation.lowerLimitSmoothedNormalisation
+        )
+        self.widget.minNormalisationSignalSpinBox.setValue(
+            self.normalisation.minNormalisationSignalBR
+        )
+        self.updateCompositionTable()
+        # Release the lock
+        self.widgetsRefreshing = False
+
+    def setupNormalisationSlots(self):
+        self.widget.dataFilesList.itemChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.dataFilesList.itemEntered.connect(
+            self.handleDataFileInserted
+        )
+
+        self.widget.addDataFileButton.clicked.connect(
+            lambda: self.addDataFiles(
+                self.widget.dataFilesList,
+                "Add data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+            )
+        )
+
+        self.widget.removeDataFileButton.clicked.connect(
+            lambda: self.removeDataFile(
+                self.widget.dataFilesList, self.normalisation.dataFiles
+            )
+        )
+
+        self.widget.backgroundDataFilesList.itemChanged.connect(
+            self.handleBgDataFilesAltered
+        )
+        self.widget.backgroundDataFilesList.itemEntered.connect(
+            self.handleBgDataFileInserted
+        )
+
+        self.widget.addBackgroundDataFileButton.clicked.connect(
+            lambda: self.addBgDataFiles(
+                self.widget.backgroundDataFilesList,
+                "Add background data files",
+                f"{self.parent.gudrunFile.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+            )
+        )
+
+        self.widget.removeBackgroundDataFileButton.clicked.connect(
+            lambda: self.removeBgDataFile(
+                self.widget.backgroundDataFilesList,
+                self.normalisation.dataFilesBg
+            )
+        )
+
+        self.widget.periodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoChanged
+        )
+        self.widget.backgroundPeriodNoSpinBox.valueChanged.connect(
+            self.handlePeriodNoBgChanged
+        )
+
+        for g in Geometry:
+            self.widget.normalisationGeometryComboBox.addItem(g.name, g)
+        self.widget.normalisationGeometryComboBox.currentIndexChanged.connect(
+            self.handleGeometryChanged
+        )
+
+        self.widget.densitySpinBox.valueChanged.connect(
+            self.handleDensityChanged
+        )
+
+        for du in UnitsOfDensity:
+            self.widget.densityUnitsComboBox.addItem(du.name, du)
+        self.widget.densityUnitsComboBox.currentIndexChanged.connect(
+            self.handleDensityUnitsChanged
+        )
+
+        # Setup the widgets and slots for geometry specific attributes.
+        # Flatplate
+        self.widget.upstreamSpinBox.valueChanged.connect(
+            self.handleUpstreamThicknessChanged
+        )
+        self.widget.upstreamSpinBox.valueChanged.connect(
+            self.handleDownstreamThicknessChanged
+        )
+
+        # Cylindrical
+        self.widget.innerRadiiSpinBox.valueChanged.connect(
+            self.handleInnerRadiiChanged
+        )
+        self.widget.outerRadiiSpinBox.valueChanged.connect(
+            self.handleOuterRadiiChanged
+        )
+
+        # Setup the other normalisation configurations widgets and slots.
+        for c in CrossSectionSource:
+            self.widget.totalCrossSectionComboBox.addItem(c.name, c)
+        self.widget.totalCrossSectionComboBox.currentIndexChanged.connect(
+            self.handleTotalCrossSectionChanged
+        )
+        self.widget.browseCrossSectionFileButton.clicked.connect(
+            self.handleBrowseCrossSectionFile
+        )
+
+        self.widget.forceCorrectionsCheckBox.stateChanged.connect(
+            self.handleForceCorrectionsSwitched
+        )
+        self.widget.placzekCorrectionSpinBox.valueChanged.connect(
+            self.handlePlaczekCorrectionChanged
+        )
+
+        self.widget.differentialCrossSectionFileLineEdit.textChanged.connect(
+            self.handleDifferentialCrossSectionFileChanged
+        )
+        self.widget.browseDifferentialCrossSectionButton.clicked.connect(
+            self.handleBrowseDifferentialCrossSectionFile
+        )
+
+        self.widget.smoothingDegreeSpinBox.valueChanged.connect(
+            self.handleNormalisationDegreeSmoothingChanged
+        )
+
+        self.widget.lowerLimitSmoothingSpinBox.valueChanged.connect(
+            self.handleLowerlimitSmoothingChanged
+        )
+
+        self.widget.minNormalisationSignalSpinBox.valueChanged.connect(
+            self.handleMinNormalisationSignalChanged
+        )
+
+        # Setup the widgets and slots for the composition.
+        self.widget.insertElementButton.clicked.connect(
+            self.handleInsertElement
+        )
+        self.widget.removeElementButton.clicked.connect(
+            self.handleRemoveElement
+        )
 
     def handlePeriodNoChanged(self, value):
         """
@@ -148,35 +249,26 @@ class NormalisationWidget(QWidget):
         """
         Slot for handling change in sample geometry.
         Called when a currentIndexChanged signal is emitted,
-        from the geometryComboBox.
+        from the normalisationGeometryComboBox.
         Alters the normalisation geometry as such.
         Parameters
         ----------
         index : int
-            The new current index of the geometryComboBox.
+            The new current index of the normalisationGeometryComboBox.
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-        self.normalisation.geometry = self.geometryComboBox.itemData(index)
+        self.normalisation.geometry = (
+            self.widget.normalisationGeometryComboBox.itemData(index)
+        )
         if self.normalisation.geometry == Geometry.SameAsBeam:
-            self.geometryInfoStack.setCurrentIndex(
+            self.widget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
         else:
-            self.geometryInfoStack.setCurrentIndex(
+            self.widget.geometryInfoStack.setCurrentIndex(
                 self.normalisation.geometry.value
             )
-        # if not self.widgetsRefreshing:
-        #     self.parent.setModified()
-        #     if self.normalisation.geometry == Geometry.SameAsBeam:
-        #         self.parent.updateGeometries()
-        #         self.geometryComboBox.setCurrentIndex(index)
-        #     else:
-        #         self.geometryInfoStack.setCurrentIndex(
-        #             self.normalisation.geometry.value
-        #         )
-        # self.normalisation.geometry = self.geometryComboBox.itemData(index)
-        # self.geometryComboBox.setCurrentIndex(index)
 
     def handleDensityUnitsChanged(self, index):
         """
@@ -189,8 +281,8 @@ class NormalisationWidget(QWidget):
         index : int
             The new current index of the densityUnitsComboBox.
         """
-        self.normalisation.densityUnits = self.densityUnitsComboBox.itemData(
-            index
+        self.normalisation.densityUnits = (
+            self.widget.densityUnitsComboBox.itemData(index)
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -282,9 +374,9 @@ class NormalisationWidget(QWidget):
             The new current index of the totalCrossSectionComboBox.
         """
         self.normalisation.totalCrossSectionSource = (
-            self.totalCrossSectionComboBox.itemData(index)
+            self.widget.totalCrossSectionComboBox.itemData(index)
         )
-        self.crossSectionFileWidget.setVisible(
+        self.widget.crossSectionFileWidget.setVisible(
             self.normalisation.totalCrossSectionSource ==
             CrossSectionSource.FILE
         )
@@ -316,9 +408,9 @@ class NormalisationWidget(QWidget):
         as such.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Total cross section source", "")
+            self.widget, "Total cross section source", "")
         if filename:
-            self.crossSectionFileLineEdit.setText(filename)
+            self.widget.crossSectionFileLineEdit.setText(filename)
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -376,11 +468,13 @@ class NormalisationWidget(QWidget):
         Alters the normalisation's differential
         cross section file name as such.
         """
-        filename = QFileDialog.getOpenFileName(
-            self, "Normalisation differential cross section file", ""
+        filename, _ = QFileDialog.getOpenFileName(
+            self.widget, "Normalisation differential cross section file", ""
         )
         if filename[0]:
-            self.differentialCrossSectionFileLineEdit.setText(filename[0])
+            self.widget.differentialCrossSectionFileLineEdit.setText(
+                filename
+            )
 
     def handleNormalisationDegreeSmoothingChanged(self, value):
         """
@@ -471,8 +565,8 @@ class NormalisationWidget(QWidget):
         """
         Fills the data files list.
         """
-        self.dataFilesList.clear()
-        self.dataFilesList.addItems(
+        self.widget.dataFilesList.clear()
+        self.widget.dataFilesList.addItems(
             [df for df in self.normalisation.dataFiles.dataFiles]
         )
 
@@ -514,8 +608,8 @@ class NormalisationWidget(QWidget):
             self.parent.setModified()
 
     def updateBgDataFilesList(self):
-        self.backgroundDataFilesList.clear()
-        self.backgroundDataFilesList.addItems(
+        self.widget.backgroundDataFilesList.clear()
+        self.widget.backgroundDataFilesList.addItems(
             [df for df in self.normalisation.dataFilesBg.dataFiles]
         )
 
@@ -531,7 +625,7 @@ class NormalisationWidget(QWidget):
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self, title, ".", regex)
+        paths = QFileDialog.getOpenFileNames(self.widget, title, ".", regex)
         for path in paths:
             if path:
                 target.addItem(path)
@@ -594,7 +688,7 @@ class NormalisationWidget(QWidget):
         """
         Fills the composition list.
         """
-        self.normalisationCompositionTable.makeModel(
+        self.widget.normalisationCompositionTable.makeModel(
             self.normalisation.composition.elements
         )
         if not self.widgetsRefreshing:
@@ -606,7 +700,7 @@ class NormalisationWidget(QWidget):
         Called when a clicked signal is emitted, from the
         insertElementButton.
         """
-        self.normalisationCompositionTable.insertRow()
+        self.widget.normalisationCompositionTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -616,202 +710,9 @@ class NormalisationWidget(QWidget):
         Called when a clicked signal is emitted,
         from the removeDataFileButton.
         """
-        self.normalisationCompositionTable.removeRow(
-            self.normalisationCompositionTable.selectionModel().selectedRows()
+        self.widget.normalisationCompositionTable.removeRow(
+            self.widget.normalisationCompositionTable
+            .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
-
-    def initComponents(self):
-        """
-        Loads the UI file for the NormalisationWidget object,
-        and then populates the child widgets with their
-        corresponding data from the attributes of the Normalisation object.
-        """
-        # Acquire the lock
-        self.widgetsRefreshing = True
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/normalisationWidget.ui")
-        uic.loadUi(uifile, self)
-
-        # Setup widgets and slots for the data files
-        # and background data files.
-        self.updateDataFilesList()
-        self.dataFilesList.itemChanged.connect(self.handleDataFilesAltered)
-        self.dataFilesList.itemEntered.connect(self.handleDataFileInserted)
-
-        self.addDataFileButton.clicked.connect(
-            lambda: self.addDataFiles(
-                self.dataFilesList,
-                "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
-            )
-        )
-
-        self.removeDataFileButton.clicked.connect(
-            lambda: self.removeDataFile(
-                self.dataFilesList, self.normalisation.dataFiles
-            )
-        )
-
-        self.updateBgDataFilesList()
-        self.backgroundDataFilesList.itemChanged.connect(
-            self.handleBgDataFilesAltered
-        )
-        self.backgroundDataFilesList.itemEntered.connect(
-            self.handleBgDataFileInserted
-        )
-
-        self.addBackgroundDataFileButton.clicked.connect(
-            lambda: self.addBgDataFiles(
-                self.backgroundDataFilesList,
-                "Add background data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
-            )
-        )
-
-        self.removeBackgroundDataFileButton.clicked.connect(
-            lambda: self.removeBgDataFile(
-                self.backgroundDataFilesList, self.normalisation.dataFilesBg
-            )
-        )
-
-        # Setup widgets and slots for the period numbers.
-        self.periodNoSpinBox.setValue(self.normalisation.periodNumber)
-        self.periodNoSpinBox.valueChanged.connect(self.handlePeriodNoChanged)
-        self.backgroundPeriodNoSpinBox.setValue(
-            self.normalisation.periodNumberBg
-        )
-        self.backgroundPeriodNoSpinBox.valueChanged.connect(
-            self.handlePeriodNoBgChanged
-        )
-
-        # Setup widgets and slots for geometry.
-        for g in Geometry:
-            if self.geometryComboBox.findText(g.name) == -1:
-                self.geometryComboBox.addItem(g.name, g)
-        self.geometryComboBox.setCurrentIndex(
-            self.normalisation.geometry.value
-        )
-        self.geometryComboBox.currentIndexChanged.connect(
-            self.handleGeometryChanged
-        )
-
-        # Ensure the correct attributes are being
-        # shown for the correct geometry.
-        self.geometryInfoStack.setCurrentIndex(
-            self.normalisation.geometry.value
-        )
-
-        # Setup the widgets and slots for the density.
-        self.densitySpinBox.setValue(self.normalisation.density)
-        self.densitySpinBox.valueChanged.connect(
-            self.handleDensityChanged
-        )
-
-        for du in UnitsOfDensity:
-            if self.densityUnitsComboBox.findText(du.name) == -1:
-                self.densityUnitsComboBox.addItem(du.name, du)
-        self.densityUnitsComboBox.setCurrentIndex(
-            self.normalisation.densityUnits.value
-        )
-        self.densityUnitsComboBox.currentIndexChanged.connect(
-            self.handleDensityUnitsChanged
-        )
-
-        # Setup the widgets and slots for geometry specific attributes.
-        # Flatplate
-        self.upstreamSpinBox.setValue(self.normalisation.upstreamThickness)
-        self.upstreamSpinBox.valueChanged.connect(
-            self.handleUpstreamThicknessChanged
-        )
-        self.downstreamSpinBox.setValue(self.normalisation.downstreamThickness)
-        self.upstreamSpinBox.valueChanged.connect(
-            self.handleDownstreamThicknessChanged
-        )
-
-        # Cylindrical
-        self.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
-        self.innerRadiiSpinBox.valueChanged.connect(
-            self.handleInnerRadiiChanged
-        )
-        self.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
-        self.outerRadiiSpinBox.valueChanged.connect(
-            self.handleOuterRadiiChanged
-        )
-
-        # Setup the other normalisation configurations widgets and slots.
-        for c in CrossSectionSource:
-            if self.totalCrossSectionComboBox.findText(c.name) == -1:
-                self.totalCrossSectionComboBox.addItem(c.name, c)
-        self.totalCrossSectionComboBox.setCurrentIndex(
-            self.normalisation.totalCrossSectionSource.value
-        )
-        self.totalCrossSectionComboBox.currentIndexChanged.connect(
-            self.handleTotalCrossSectionChanged
-        )
-        self.crossSectionFileLineEdit.setText(
-            self.normalisation.crossSectionFilename
-        )
-        self.crossSectionFileLineEdit.textChanged.connect(
-            self.handleCrossSectionFileChanged
-        )
-        self.browseCrossSectionFileButton.clicked.connect(
-            self.handleBrowseCrossSectionFile
-        )
-        self.crossSectionFileWidget.setVisible(
-            self.normalisation.totalCrossSectionSource ==
-            CrossSectionSource.FILE
-        )
-
-        self.forceCorrectionsCheckBox.setChecked(
-            Qt.Checked
-            if self.normalisation.forceCalculationOfCorrections
-            else Qt.Unchecked
-        )
-        self.forceCorrectionsCheckBox.stateChanged.connect(
-            self.handleForceCorrectionsSwitched
-        )
-        self.placzekCorrectionSpinBox.setValue(
-            self.normalisation.tempForNormalisationPC
-        )
-        self.placzekCorrectionSpinBox.valueChanged.connect(
-            self.handlePlaczekCorrectionChanged
-        )
-        self.differentialCrossSectionFileLineEdit.setText(
-            self.normalisation.normalisationDifferentialCrossSectionFile
-        )
-        self.differentialCrossSectionFileLineEdit.textChanged.connect(
-            self.handleDifferentialCrossSectionFileChanged
-        )
-        self.browseDifferentialCrossSectionButton.clicked.connect(
-            self.handleBrowseDifferentialCrossSectionFile
-        )
-
-        self.smoothingDegreeSpinBox.setValue(
-            self.normalisation.normalisationDegreeSmoothing
-        )
-        self.smoothingDegreeSpinBox.valueChanged.connect(
-            self.handleNormalisationDegreeSmoothingChanged
-        )
-        self.lowerLimitSmoothingSpinBox.setValue(
-            self.normalisation.lowerLimitSmoothedNormalisation
-        )
-        self.lowerLimitSmoothingSpinBox.valueChanged.connect(
-            self.handleLowerlimitSmoothingChanged
-        )
-        self.minNormalisationSignalSpinBox.setValue(
-            self.normalisation.minNormalisationSignalBR
-        )
-        self.minNormalisationSignalSpinBox.valueChanged.connect(
-            self.handleMinNormalisationSignalChanged
-        )
-
-        # Setup the widgets and slots for the composition.
-        self.updateCompositionTable()
-        self.insertElementButton.clicked.connect(self.handleInsertElement)
-        self.removeElementButton.clicked.connect(self.handleRemoveElement)
-        # Release the lock
-        self.widgetsRefreshing = False
