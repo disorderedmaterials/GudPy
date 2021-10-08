@@ -8,7 +8,7 @@ from src.gudrun_classes.wavelength_subtraction_iterator import (
 )
 
 
-class Tweakables(Enum):
+class Iterables(Enum):
     TWEAK_FACTOR = 0
 
 
@@ -25,7 +25,7 @@ class IterationDialog(QDialog):
         GudrunFile object currently associated with the application.
     tweakValues: bool
         Should iteration by tweaking be performed?
-    tweak : Tweakables
+    tweak : Iterables
         Attribute to tweak by.
     performInelasticitySubtractions : bool
         Should iteration by inelasticity subtractions be performed?
@@ -49,7 +49,7 @@ class IterationDialog(QDialog):
         self.gudrunFile = gudrunFile
         self.initComponents()
         self.tweakValues = True
-        self.tweak = Tweakables.TWEAK_FACTOR
+        self.tweak = Iterables.TWEAK_FACTOR
         self.performInelasticitySubtractions = False
         self.numberIterations = 1
         self.iterateCommand = None
@@ -103,7 +103,7 @@ class IterationDialog(QDialog):
         Called when an accepted signal is emmited from the buttonBox.
         """
         if self.tweakValues:
-            if self.tweak == Tweakables.TWEAK_FACTOR:
+            if self.tweak == Iterables.TWEAK_FACTOR:
                 tweakFactorIterator = TweakFactorIterator(self.gudrunFile)
                 self.iterateCommand = (
                     tweakFactorIterator.iterate(
