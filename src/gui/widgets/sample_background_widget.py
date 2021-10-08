@@ -51,8 +51,6 @@ class SampleBackgroundWidget(QWidget):
             SampleBackground object belonging to the GudrunFile.
         """
         self.sampleBackground = sampleBackground
-        # Acquire the lock
-        self.widgetsRefreshing = True
         self.initComponents()
 
     def loadUI(self):
