@@ -1,8 +1,11 @@
 import os
 import sys
+
+from PyQt5.QtCore import QProcess
 from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
+
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -294,4 +297,7 @@ class PurgeFile():
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
             if not os.path.exists(purge_det):
                 return False
-            return [purge_det, []]
+            proc = QProcess()
+            proc.setProgram(purge_det)
+            proc.setArguments([])
+            return proc

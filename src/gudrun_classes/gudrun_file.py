@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QProcess
 from src.gudrun_classes.exception import ParserException
 import sys
 import os
@@ -31,6 +32,7 @@ from src.gudrun_classes.enums import (
     Geometry
 )
 from src.gudrun_classes import config
+
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -1299,7 +1301,10 @@ class GudrunFile:
             if not os.path.exists(gudrun_dcs):
                 return False
             else:
-                return [gudrun_dcs, [path]]
+                proc = QProcess()
+                proc.setProgram(gudrun_dcs)
+                proc.setArguments([path])
+                return proc
 
     def process(self, headless=True):
         """
