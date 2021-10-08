@@ -241,7 +241,7 @@ class WavelengthSubtractionIterator():
         self.resetTopHatWidths()
         self.setSelfScatteringFiles(Scales.Q)
 
-    def iterate(self, n, headless=True):
+    def iterate(self, n):
         """
         Perform n iterations on both
         the wavelength scale and Q scale.
@@ -250,14 +250,6 @@ class WavelengthSubtractionIterator():
         for i in range(n):
 
             self.wavelengthIteration(i)
-            if headless:
-                # Write out updated file and call gudrun_dcs.
-                self.gudrunFile.process()
-            else:
-                yield self.gudrunFile.process()
+            self.gudrunFile.process()
             self.QIteration(i)
-            if headless:
-                # Write out updated file and call gudrun_dcs.
-                self.gudrunFile.process()
-            else:
-                yield self.gudrunFile.process()
+            self.gudrunFile.process()

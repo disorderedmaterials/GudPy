@@ -33,7 +33,7 @@ class TweakFactorIterator():
         """
         self.gudrunFile = gudrunFile
 
-    def iterate(self, n, headless=True):
+    def iterate(self, n):
         """
         This method is the core of the TweakFactorIterator.
         It performs n iterations of tweaking by the tweak factor.
@@ -47,18 +47,13 @@ class TweakFactorIterator():
         ----------
         n : int
             Number of iterations to perform.
-        headless : bool
-            Should headless mode be used?
         """
         # Perform n iterations of tweaking by tweak factor.
         for i in range(n):
 
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
-            if headless:
-                self.gudrunFile.process()
-            else:
-                yield self.gudrunFile.process(headless=False)
+            self.gudrunFile.process()
             # Iterate through all samples,
             # updating their tweak factor from the output of gudrun_dcs.
             iterator = enumerate(self.gudrunFile.sampleBackgrounds)
