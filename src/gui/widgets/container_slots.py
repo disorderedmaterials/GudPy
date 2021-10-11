@@ -223,7 +223,8 @@ class ContainerSlots():
         self.container.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
+                self.parent.gudrunFile.purged = False
 
     def handleGeometryChanged(self, index):
         """

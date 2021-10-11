@@ -148,6 +148,7 @@ class GudrunFile:
         # Parse the GudrunFile.
         self.stream = None
         self.parse()
+        self.purgeFile = PurgeFile(self)
 
     def getNextToken(self):
         """
@@ -1321,10 +1322,9 @@ class GudrunFile:
         self.write_out()
         return self.dcs(path=self.outpath, headless=headless)
 
-    def purge(self, headless=True, *args, **kwargs):
+    def purge(self, *args, **kwargs):
         """
-        Create a PurgeFile from the GudrunFile,
-        and then call Purge.purge() to purge the detectors.
+        Call Purge.purge() to purge the detectors.
 
         Parameters
         ----------
@@ -1335,8 +1335,7 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
-        purge = PurgeFile(self, *args, **kwargs)
-        result = purge.purge(headless=headless)
+        result = self.purgeFile.purge(*args, **kwargs)
         if result:
             self.purged = True
         return result

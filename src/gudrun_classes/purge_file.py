@@ -75,10 +75,7 @@ class PurgeFile():
     """
     def __init__(
             self,
-            gudrunFile,
-            standardDeviation=(10, 10),
-            ignoreBad=True,
-            excludeSampleAndCan=True
+            gudrunFile
     ):
         """
         Constructs all the necessary attributes for the PurgeFile object.
@@ -87,35 +84,58 @@ class PurgeFile():
         ----------
         gudrunFile : GudrunFile
             Parent GudrunFile that we are creating the PurgeFile from.
-        standardDeviation: tuple(int, int), optional
-            Number of std deviations allowed above and below
-            the mean ratio and the range of std's allowed around the mean
-            standard deviation. Default is (10, 10)
-        ignoreBad : bool
-            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
-            Default is True.
-        excludeSampleAndCan : bool
-            Exclude sample and container data files?
         """
         self.gudrunFile = gudrunFile
-        self.excludeSampleAndCan = excludeSampleAndCan
+
+    def write_out(self):
+        """
+        Writes out the string representation of the PurgeFile to
+        purge_det.dat.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
+        # Write out the string representation of the PurgeFile
+        # To purge_det.dat.
+        f = open("purge_det.dat", "w", encoding="utf-8")
+        f.write(str(self))
+        f.close()
+
+    def __str__(self):
+        """
+        Returns the string representation of the PurgeFile object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of PurgeFile.
+        """
+        HEADER = "'  '  '          '  '/'\n\n"
+        TAB = "          "
+
         # Extract relevant attributes from the GudrunFile object.
-        self.instrumentName = gudrunFile.instrument.name
-        self.inputFileDir = gudrunFile.instrument.GudrunInputFileDir
-        self.dataFileDir = gudrunFile.instrument.dataFileDir
-        self.detCalibFile = gudrunFile.instrument.detectorCalibrationFileName
-        self.groupsFile = gudrunFile.instrument.groupFileName
+        self.instrumentName = self.gudrunFile.instrument.name
+        self.inputFileDir = self.gudrunFile.instrument.GudrunInputFileDir
+        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
+        self.detCalibFile = self.gudrunFile.instrument.detectorCalibrationFileName
+        self.groupsFile = self.gudrunFile.instrument.groupFileName
         self.spectrumNumbers = (
-            gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
+            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
         )
         self.channelNumbers = (
-            gudrunFile.instrument.channelNosSpikeAnalysis
+            self.gudrunFile.instrument.channelNosSpikeAnalysis
         )
         self.acceptanceFactor = (
-            gudrunFile.instrument.spikeAnalysisAcceptanceFactor
+            self.gudrunFile.instrument.spikeAnalysisAcceptanceFactor
         )
-        self.standardDeviation = standardDeviation
-        self.ignoreBad = ignoreBad
         self.normalisationPeriodNo = (
             self.gudrunFile.normalisation.periodNumber
         )
@@ -178,39 +198,6 @@ class PurgeFile():
                             dataFile + "  " + str(periodNumber) + TAB + "\n"
                         )
 
-    def write_out(self):
-        """
-        Writes out the string representation of the PurgeFile to
-        purge_det.dat.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
-        """
-        # Write out the string representation of the PurgeFile
-        # To purge_det.dat.
-        f = open("purge_det.dat", "w", encoding="utf-8")
-        f.write(str(self))
-        f.close()
-
-    def __str__(self):
-        """
-        Returns the string representation of the PurgeFile object.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        string : str
-            String representation of PurgeFile.
-        """
-        HEADER = "'  '  '          '  '/'\n\n"
-        TAB = "          "
         dataFileLines = (
             f'{self.normalisationDataFiles}'
             f'{self.normalisationBackgroundDataFiles}'
@@ -252,20 +239,38 @@ class PurgeFile():
             f'{dataFileLines}'
         )
 
-    def purge(self, headless=True):
+    def purge(self,
+            standardDeviation=(10, 10),
+            ignoreBad=True,
+            excludeSampleAndCan=True,
+            headless=True
+    ):
         """
         Write out the current state of the PurgeFile, then
         purge detectors by calling purge_det on that file.
 
         Parameters
         ----------
-        None
+        standardDeviation: tuple(int, int), optional
+            Number of std deviations allowed above and below
+            the mean ratio and the range of std's allowed around the mean
+            standard deviation. Default is (10, 10)
+        ignoreBad : bool, optional
+            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
+            Default is True.
+        excludeSampleAndCan : bool, optional
+            Exclude sample and container data files?
+        headless : bool
+            Should headless mode be used?
         Returns
         -------
         subprocess.CompletedProcess
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
+        self.standardDeviation = standardDeviation
+        self.ignoreBad = ignoreBad
+        self.excludeSampleAndCan = excludeSampleAndCan
         self.write_out()
         if headless:
             try:
