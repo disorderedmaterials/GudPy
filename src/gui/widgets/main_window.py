@@ -311,11 +311,11 @@ class GudPyMainWindow(QMainWindow):
         sys.exit(0)
 
     def makeProc(self, cmd, slot):
-        self.proc = QProcess()
+        self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(self.procStarted)
         self.proc.finished.connect(self.procFinished)
-        self.proc.start(cmd)
+        self.proc.start()
 
     def runPurge_(self):
         self.setControlsEnabled(True)
