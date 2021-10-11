@@ -13,23 +13,23 @@ variables:
   gudrunTag: 2021.1
   targets: >
     {
-      linuxPy39:
+      linuxPy37:
       {
-        pythonVersion: "3.9",
+        pythonVersion: "3.7",
         imageName: "ubuntu-latest",
         arch: "x64",
         osName: "linux"
       },
-      macOSPy39: 
+      macOSPy37: 
       {
-        pythonVersion: "3.9",
+        pythonVersion: "3.7",
         imageName: "macOS-latest",
         arch: "x64",
         osName: "osx"
       },
-      windowsPy39:
+      windowsPy37:
       {
-        pythonVersion: "3.9",
+        pythonVersion: "3.7",
         imageName: "windows-latest",
         arch: "x86",
         osName: "windows"      
