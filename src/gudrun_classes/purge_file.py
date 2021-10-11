@@ -125,7 +125,10 @@ class PurgeFile():
         self.instrumentName = self.gudrunFile.instrument.name
         self.inputFileDir = self.gudrunFile.instrument.GudrunInputFileDir
         self.dataFileDir = self.gudrunFile.instrument.dataFileDir
-        self.detCalibFile = self.gudrunFile.instrument.detectorCalibrationFileName
+        self.detCalibFile = (
+            self.gudrunFile.instrument.
+            detectorCalibrationFileName
+        )
         self.groupsFile = self.gudrunFile.instrument.groupFileName
         self.spectrumNumbers = (
             self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
@@ -239,11 +242,12 @@ class PurgeFile():
             f'{dataFileLines}'
         )
 
-    def purge(self,
-            standardDeviation=(10, 10),
-            ignoreBad=True,
-            excludeSampleAndCan=True,
-            headless=True
+    def purge(
+        self,
+        standardDeviation=(10, 10),
+        ignoreBad=True,
+        excludeSampleAndCan=True,
+        headless=True
     ):
         """
         Write out the current state of the PurgeFile, then
