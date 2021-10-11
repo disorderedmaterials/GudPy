@@ -31,7 +31,7 @@ variables:
       {
         pythonVersion: "3.7",
         imageName: "windows-latest",
-        arch: "x86",
+        arch: "x64",
         osName: "windows"      
       }
     }
