@@ -394,12 +394,12 @@ class GudPyMainWindow(QMainWindow):
 
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
-        self.beamWidget.setEnabled(state)
-        self.mainWidget.normalisationWidget.setEnabled(state)
-        self.mainWidget.sampleWidget.basicWidget.setEnabled(state)
-        self.mainWidget.sampleWidget.advancedWidget.setEnabled(state)
-        self.mainWidget.containerWidget.setEnabled(state)
-        self.mainWidget.sampleBackgroundWidget.setEnabled(state)
+        self.mainWidget.beamPage.setEnabled(state)
+        self.mainWidget.normalisationPage.setEnabled(state)
+        self.mainWidget.sampleTab.setEnabled(state)
+        self.mainWidget.advancedTab.setEnabled(state)
+        self.mainWidget.containerPage.setEnabled(state)
+        self.mainWidget.sampleBackgroundPage.setEnabled(state)
         self.mainWidget.objectTree.setContextDisabled()
 
         self.mainWidget.insertSampleBackground.setEnabled(state)
