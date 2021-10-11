@@ -34,7 +34,7 @@ steps:
       unzip startupFiles.zip
       mv StartupFiles bin
   - bash: |
-      python -m pip install nose2
+      pip install nose2
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
     displayName: 'Run tests'
 
