@@ -86,6 +86,9 @@ class PurgeFile():
             Parent GudrunFile that we are creating the PurgeFile from.
         """
         self.gudrunFile = gudrunFile
+        self.excludeSampleAndCan = True
+        self.standardDeviation = (10, 10)
+        self.ignoreBad = True
 
     def write_out(self):
         """
