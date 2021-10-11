@@ -35,6 +35,8 @@ steps:
       mv StartupFiles bin
   - bash: |
       pip install nose2
+      rm *.pyc
+      rm *.xml
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
     displayName: 'Run tests'
 
