@@ -28,7 +28,7 @@ class GudPyChartAppTest(QMainWindow):
 
             self._chart_view = QChartView(self.chart)
             self._chart_view.setRenderHint(QPainter.Antialiasing)
-
+            self._chart_view.setRubberBand(QChartView.HorizontalRubberBand)
             self.setCentralWidget(self._chart_view)
 
 
