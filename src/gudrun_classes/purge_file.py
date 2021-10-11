@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PyQt5.QtCore import QProcess
+from PySide6.QtCore import QProcess
 from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess

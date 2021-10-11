@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QProcess
+from PySide6.QtCore import QProcess
 from src.gudrun_classes.exception import ParserException
 import sys
 import os
