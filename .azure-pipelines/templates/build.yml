@@ -1,6 +1,6 @@
 parameters:
 - name: 'version'
-  default: '3.6'
+  default: '3.9'
   type: string
 - name: 'arch'
   default: 'x64'
@@ -22,7 +22,7 @@ steps:
       architecture: ${{ parameters.arch }}
 
   - script: |
-      python -m pip install --upgrade pip
+      pip install --upgrade pip
       pip install -r requirements.txt
     displayName: "Install dependencies"
   
@@ -46,7 +46,6 @@ steps:
       npm install -g create-dmg
     condition: eq('${{ parameters.osName }}', 'osx')  
     displayName: 'Increase timeouts for OSX'
-
   - bash: |
       pyinstaller gudpy.spec
     displayName: 'Create executables.'
@@ -56,10 +55,8 @@ steps:
       [ $? -eq 2 ]  || exit 0
     condition: eq('${{ parameters.osName }}', 'osx')
     displayName: 'Create DMG for OSX.'
-
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
     condition: eq('${{ parameters.osName }}', 'windows')
     displayName: 'Zip windows non-bundled version.'
-

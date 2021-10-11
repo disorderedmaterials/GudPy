@@ -456,6 +456,7 @@ class InstrumentSlots():
         self.instrument.detectorCalibrationFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleGroupsFileChanged(self, text):
         """
@@ -471,6 +472,7 @@ class InstrumentSlots():
         self.instrument.groupFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDeadtimeFileChanged(self, text):
         """
@@ -499,6 +501,21 @@ class InstrumentSlots():
             The new state of the logarithmicBinningCheckBox (1: True, 0: False)
         """
         self.instrument.useLogarithmicBinning = state
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleLogarithmicStepSizeChanged(self, value):
+        """
+        Slot for handling change in the logarithmic step size.
+        Called when the valueChanged signal is emitted,
+        from the logarithmicStepSizeSpinBox.
+        Updates the instruments logarithmic step size as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the logarithmicStepSizeSpinBox.
+        """
+        self.instrument.logarithmicStepSize = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -639,6 +656,7 @@ class InstrumentSlots():
         ]
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleSpectrumNumbersTChanged(self, text):
         """
@@ -708,6 +726,7 @@ class InstrumentSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleChannelNoBChanged(self, value):
         """
@@ -726,6 +745,7 @@ class InstrumentSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
         """
@@ -742,6 +762,7 @@ class InstrumentSlots():
         self.instrument.spikeAnalysisAcceptanceFactor = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleMinWavelengthChanged(self, value):
         """

@@ -319,6 +319,8 @@ class SampleSlots():
         self.sample.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
+                self.parent.gudrunFile.purged = False
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -762,6 +764,7 @@ class SampleSlots():
         self.updatesampleDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -778,6 +781,7 @@ class SampleSlots():
         self.sample.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updatesampleDataFilesList(self):
         """
@@ -827,6 +831,7 @@ class SampleSlots():
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
+                self.parent.gudrunFile.purged = False
 
     def updateCompositionTable(self):
         """

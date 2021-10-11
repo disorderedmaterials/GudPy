@@ -1,23 +1,19 @@
-  
-  
 steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: "3.8"
+      versionSpec: "3.9"
       architecture: "x64"
-    displayName: "Use Python 3.8"
+    displayName: "Use Python 3.9"
 
   - script: |
-      python -m pip install --upgrade pip
+      pip install --upgrade pip
       pip install -r requirements.txt
     displayName: 'Install dependencies'
-
   - script: |
       pip install flake8
       python -m flake8 . 
     condition: succeededOrFailed()
     displayName: "Static code analysis for PEP8 conformance using flake8"    
-
   - script: python -m flake8 . > flake8.err.log
     displayName: "Capture flake8 error log"
     condition: failed()

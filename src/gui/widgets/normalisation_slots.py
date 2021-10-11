@@ -229,6 +229,7 @@ class NormalisationSlots():
         self.normalisation.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handlePeriodNoBgChanged(self, value):
         """
@@ -244,6 +245,7 @@ class NormalisationSlots():
         self.normalisation.periodNoBg = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleGeometryChanged(self, index):
         """
@@ -544,6 +546,7 @@ class NormalisationSlots():
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -560,6 +563,7 @@ class NormalisationSlots():
         self.normalisation.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateDataFilesList(self):
         """
@@ -589,6 +593,9 @@ class NormalisationSlots():
         else:
             self.normalisation.dataFilesBg.dataFiles[index] = value
         self.updateBgDataFilesList()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleBgDataFileInserted(self, item):
         """
@@ -606,6 +613,7 @@ class NormalisationSlots():
         self.normalisation.dataFilesBg.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateBgDataFilesList(self):
         self.widget.backgroundDataFilesList.clear()

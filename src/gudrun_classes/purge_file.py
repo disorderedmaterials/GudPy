@@ -1,7 +1,13 @@
 import os
 import sys
+
+from PySide6.QtCore import QProcess
+from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
+
+
+SUFFIX = ".exe" if os.name == "nt" else ""
 
 
 class PurgeFile():
@@ -14,6 +20,8 @@ class PurgeFile():
     ----------
     gudrunFile : GudrunFile
         Parent GudrunFile that we are creating the PurgeFile from.
+    excludeSampleAndCan : bool
+        Exclude sample and container data files?
     instrumentName : str
         Name of the instrument.
     inputFileDir : str
@@ -66,7 +74,9 @@ class PurgeFile():
         Writes out the file, and then calls purge_det on that file.
     """
     def __init__(
-            self, gudrunFile, standardDeviation=(10, 10), ignoreBad=True):
+            self,
+            gudrunFile
+    ):
         """
         Constructs all the necessary attributes for the PurgeFile object.
 
@@ -74,33 +84,64 @@ class PurgeFile():
         ----------
         gudrunFile : GudrunFile
             Parent GudrunFile that we are creating the PurgeFile from.
-        standardDeviation: tuple(int, int), optional
-            Number of std deviations allowed above and below
-            the mean ratio and the range of std's allowed around the mean
-            standard deviation. Default is (10, 10)
-        ignoreBad : bool
-            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
-            Default is True.
         """
         self.gudrunFile = gudrunFile
+        self.excludeSampleAndCan = True
+        self.standardDeviation = (10, 10)
+        self.ignoreBad = True
+
+    def write_out(self):
+        """
+        Writes out the string representation of the PurgeFile to
+        purge_det.dat.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
+        # Write out the string representation of the PurgeFile
+        # To purge_det.dat.
+        f = open("purge_det.dat", "w", encoding="utf-8")
+        f.write(str(self))
+        f.close()
+
+    def __str__(self):
+        """
+        Returns the string representation of the PurgeFile object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of PurgeFile.
+        """
+        HEADER = "'  '  '          '  '/'\n\n"
+        TAB = "          "
 
         # Extract relevant attributes from the GudrunFile object.
-        self.instrumentName = gudrunFile.instrument.name
-        self.inputFileDir = gudrunFile.instrument.GudrunInputFileDir
-        self.dataFileDir = gudrunFile.instrument.dataFileDir
-        self.detCalibFile = gudrunFile.instrument.detectorCalibrationFileName
-        self.groupsFile = gudrunFile.instrument.groupFileName
+        self.instrumentName = self.gudrunFile.instrument.name
+        self.inputFileDir = self.gudrunFile.instrument.GudrunInputFileDir
+        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
+        self.detCalibFile = (
+            self.gudrunFile.instrument.
+            detectorCalibrationFileName
+        )
+        self.groupsFile = self.gudrunFile.instrument.groupFileName
         self.spectrumNumbers = (
-            gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
+            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
         )
         self.channelNumbers = (
-            gudrunFile.instrument.channelNosSpikeAnalysis
+            self.gudrunFile.instrument.channelNosSpikeAnalysis
         )
         self.acceptanceFactor = (
-            gudrunFile.instrument.spikeAnalysisAcceptanceFactor
+            self.gudrunFile.instrument.spikeAnalysisAcceptanceFactor
         )
-        self.standardDeviation = standardDeviation
-        self.ignoreBad = ignoreBad
         self.normalisationPeriodNo = (
             self.gudrunFile.normalisation.periodNumber
         )
@@ -163,42 +204,21 @@ class PurgeFile():
                             dataFile + "  " + str(periodNumber) + TAB + "\n"
                         )
 
-    def write_out(self):
-        """
-        Writes out the string representation of the PurgeFile to
-        purge_det.dat.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
-        """
-        # Write out the string representation of the PurgeFile
-        # To purge_det.dat.
-        f = open("purge_det.dat", "w", encoding="utf-8")
-        f.write(str(self))
-        f.close()
-
-    def __str__(self):
-        """
-        Returns the string representation of the PurgeFile object.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        string : str
-            String representation of PurgeFile.
-        """
-        HEADER = "'  '  '          '  '/'\n\n"
-        TAB = "          "
+        dataFileLines = (
+            f'{self.normalisationDataFiles}'
+            f'{self.normalisationBackgroundDataFiles}'
+            f'{self.sampleBackgroundDataFiles}'
+            f'{self.sampleDataFiles}'
+            f'{self.containerDataFiles}'
+            if not self.excludeSampleAndCan
+            else
+            f'{self.normalisationDataFiles}'
+            f'{self.normalisationBackgroundDataFiles}'
+            f'{self.sampleBackgroundDataFiles}'
+        )
         return (
             f'{HEADER}'
-            f'{self.instrumentName}{TAB}'
+            f'{Instruments(self.instrumentName.value).name}{TAB}'
             f'Instrument name\n'
             f'{self.inputFileDir}{TAB}'
             f'Gudrun input file directory:\n'
@@ -222,45 +242,74 @@ class PurgeFile():
             f'{numifyBool(self.ignoreBad)}{TAB}'
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
-            f'{self.sampleDataFiles}'
-            f'{self.containerDataFiles}'
+            f'{dataFileLines}'
         )
 
-    def purge(self):
+    def purge(
+        self,
+        standardDeviation=(10, 10),
+        ignoreBad=True,
+        excludeSampleAndCan=True,
+        headless=True
+    ):
         """
         Write out the current state of the PurgeFile, then
         purge detectors by calling purge_det on that file.
 
         Parameters
         ----------
-        None
+        standardDeviation: tuple(int, int), optional
+            Number of std deviations allowed above and below
+            the mean ratio and the range of std's allowed around the mean
+            standard deviation. Default is (10, 10)
+        ignoreBad : bool, optional
+            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
+            Default is True.
+        excludeSampleAndCan : bool, optional
+            Exclude sample and container data files?
+        headless : bool
+            Should headless mode be used?
         Returns
         -------
         subprocess.CompletedProcess
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
+        self.standardDeviation = standardDeviation
+        self.ignoreBad = ignoreBad
+        self.excludeSampleAndCan = excludeSampleAndCan
         self.write_out()
-        try:
-            purge_det = resolve("bin", "purge_det")
-            result = subprocess.run(
-                [purge_det, "purge_det.dat"],
-                capture_output=True,
-                text=True
-            )
-        except FileNotFoundError:
-            # FileNotFoundError probably means that GudPy is being
-            # run as an executable.
-            # So prepend sys._MEIPASS to the path to purge_det.
-            if hasattr(sys, '_MEIPASS'):
-                purge_det = sys._MEIPASS + os.sep + "purge_det"
+        if headless:
+            try:
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
-                    capture_output=True, text=True
+                    capture_output=True,
+                    text=True
                 )
+            except FileNotFoundError:
+                # FileNotFoundError probably means that GudPy is being
+                # run as an executable.
+                # So prepend sys._MEIPASS to the path to purge_det.
+                if hasattr(sys, '_MEIPASS'):
+                    purge_det = os.path.join(
+                        sys._MEIPASS, f"purge_det{SUFFIX}"
+                    )
+                    result = subprocess.run(
+                        [purge_det, "purge_det.dat"],
+                        capture_output=True, text=True
+                    )
+                else:
+                    result = False
+            return result
+        else:
+            if hasattr(sys, '_MEIPASS'):
+                purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
             else:
-                result = False
-        return result
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
+            if not os.path.exists(purge_det):
+                return False
+            proc = QProcess()
+            proc.setProgram(purge_det)
+            proc.setArguments([])
+            return proc

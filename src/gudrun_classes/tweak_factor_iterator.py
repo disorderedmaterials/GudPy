@@ -54,7 +54,6 @@ class TweakFactorIterator():
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
             self.gudrunFile.process()
-
             # Iterate through all samples,
             # updating their tweak factor from the output of gudrun_dcs.
             iterator = enumerate(self.gudrunFile.sampleBackgrounds)

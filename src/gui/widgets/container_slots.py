@@ -223,6 +223,8 @@ class ContainerSlots():
         self.container.periodNo = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
+                self.parent.gudrunFile.purged = False
 
     def handleGeometryChanged(self, index):
         """
@@ -477,6 +479,7 @@ class ContainerSlots():
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def handleDataFileInserted(self, item):
         """
@@ -493,6 +496,7 @@ class ContainerSlots():
         self.container.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+            self.parent.gudrunFile.purged = False
 
     def updateDataFilesList(self):
         """
@@ -542,6 +546,7 @@ class ContainerSlots():
             dataFiles.dataFiles.remove(remove)
             if not self.widgetsRefreshing:
                 self.parent.setModified()
+                self.parent.gudrunFile.purged = False
 
     def updateCompositionTable(self):
         """

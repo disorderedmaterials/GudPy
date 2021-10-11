@@ -1,3 +1,4 @@
+from PySide6.QtCore import QProcess
 from src.gudrun_classes.exception import ParserException
 import sys
 import os
@@ -33,6 +34,9 @@ from src.gudrun_classes.enums import (
 from src.gudrun_classes import config
 
 
+SUFFIX = ".exe" if os.name == "nt" else ""
+
+
 class GudrunFile:
     """
     Class to represent a GudFile (files with .gud extension).
@@ -55,6 +59,8 @@ class GudrunFile:
         Normalisation object extracted from the input file.
     sampleBackgrounds : SampleBackground[]
         List of SampleBackgrounds extracted from the input file.
+    purged : bool
+        Have the detectors been purged?
     stream : str[]
         List of strings, where each item represents a line
         in the input stream.
@@ -132,19 +138,17 @@ class GudrunFile:
         self.path = path
 
         # Construct the outpath.
-        fname = os.path.basename(self.path)
-        ref_fname = "gudpy_{}".format(fname)
-        dir = os.path.dirname(os.path.dirname(os.path.abspath(self.path)))
-        self.outpath = "{}/{}".format(dir, ref_fname)
+        self.outpath = "gudpy.txt"
 
         self.instrument = None
         self.beam = None
         self.normalisation = None
         self.sampleBackgrounds = []
-
+        self.purged = False
         # Parse the GudrunFile.
         self.stream = None
         self.parse()
+        self.purgeFile = PurgeFile(self)
 
     def getNextToken(self):
         """
@@ -1252,9 +1256,9 @@ class GudrunFile:
         f.write(str(self))
         f.close()
 
-    def dcs(self, path=''):
+    def dcs(self, path='', headless=True):
         """
-        Purge detectors and then call gudrun_dcs on the path supplied.
+        Call gudrun_dcs on the path supplied.
         If the path is its default value,
         then use the path attribute as the path.
 
@@ -1272,27 +1276,38 @@ class GudrunFile:
         """
         if not path:
             path = self.path
-        if not self.purge():
-            return False
-        try:
-            gudrun_dcs = resolve("bin", "gudrun_dcs")
-            result = subprocess.run(
-                [gudrun_dcs, path], capture_output=True, text=True
-            )
-        except FileNotFoundError:
-            if hasattr(sys, '_MEIPASS'):
-                gudrun_dcs = sys._MEIPASS + os.sep + "gudrun_dcs"
+        if headless:
+            try:
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
+            except FileNotFoundError:
+                if hasattr(sys, '_MEIPASS'):
+                    gudrun_dcs = os.path.join(
+                        sys._MEIPASS, f"gudrun_dcs{SUFFIX}"
+                    )
+                    result = subprocess.run(
+                        [gudrun_dcs, path], capture_output=True, text=True
+                    )
+            return result
+        else:
+            if hasattr(sys, '_MEIPASS'):
+                gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
             else:
-                result = False
-        return result
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+            if not os.path.exists(gudrun_dcs):
+                return False
+            else:
+                proc = QProcess()
+                proc.setProgram(gudrun_dcs)
+                proc.setArguments([path])
+                return proc
 
-    def process(self):
+    def process(self, headless=True):
         """
-        Write out the current state of the file, then
-        purge detectors and then call gudrun_dcs on the file that
+        Write out the current state of the file,
+        and then call gudrun_dcs on the file that
         was written out.
 
         Parameters
@@ -1305,12 +1320,11 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         self.write_out()
-        return self.dcs(path=self.outpath)
+        return self.dcs(path=self.outpath, headless=headless)
 
-    def purge(self):
+    def purge(self, *args, **kwargs):
         """
-        Create a PurgeFile from the GudrunFile,
-        and then call Purge.purge() to purge the detectors.
+        Call Purge.purge() to purge the detectors.
 
         Parameters
         ----------
@@ -1321,8 +1335,10 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
-        purge = PurgeFile(self)
-        return purge.purge()
+        result = self.purgeFile.purge(*args, **kwargs)
+        if result:
+            self.purged = True
+        return result
 
 
 if __name__ == "__main__":

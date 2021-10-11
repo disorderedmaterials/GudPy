@@ -60,6 +60,7 @@ class TestPurgeFile(TestCase):
                 ),
             "standardDeviation": (10, 10),
             "ignoreBad": True,
+            "excludeSampleAndCan": True,
             "normalisationPeriodNo": (
                 self.g.normalisation.periodNumber
                 ),
