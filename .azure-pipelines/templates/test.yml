@@ -1,6 +1,6 @@
 parameters:
 - name: 'version'
-  default: '3.6'
+  default: '3.9'
   type: string
 - name: 'arch'
   default: 'x64'
@@ -22,10 +22,9 @@ steps:
       architecture: ${{ parameters.arch }}
 
   - script: |
-      python -m pip install --upgrade pip
-      python -m pip install -r requirements.txt
+      pip install --upgrade pip
+      pip install -r requirements.txt
     displayName: "Install dependencies"
-
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
       unzip binaries.zip
@@ -35,11 +34,8 @@ steps:
       mv StartupFiles bin
   - bash: |
       pip install nose2
-      rm *.pyc
-      rm *.xml
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
     displayName: 'Run tests'
-
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
