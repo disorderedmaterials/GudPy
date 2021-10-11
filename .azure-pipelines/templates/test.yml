@@ -22,8 +22,8 @@ steps:
       architecture: ${{ parameters.arch }}
 
   - script: |
-      python3 -m pip install --upgrade pip
-      python3 -m pip install -r requirements.txt
+      pip install --upgrade pip
+      pip install -r requirements.txt
     displayName: "Install dependencies"
 
   - bash: |
@@ -34,7 +34,7 @@ steps:
       unzip startupFiles.zip
       mv StartupFiles bin
   - bash: |
-      python3 -m pip install nose2
+      pip install nose2
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
     displayName: 'Run tests'
 
