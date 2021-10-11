@@ -22,8 +22,8 @@ steps:
       architecture: ${{ parameters.arch }}
 
   - script: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
+      python3 -m pip install --upgrade pip
+      python3 -m pip install -r requirements.txt
     displayName: "Install dependencies"
   
   - bash: |
@@ -35,10 +35,10 @@ steps:
       mv StartupFiles bin
       
   - script: |
-      pip install pyinstaller
+      python3 -m pip install pyinstaller
       
   - bash: |
-      PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
+      PYINSTALLER_PATH=$(python3 -m pip show pyinstaller | grep Location)
       PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
       PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
       sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
