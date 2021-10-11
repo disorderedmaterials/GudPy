@@ -1,6 +1,4 @@
-from PyQt5.QtWidgets import QDialog
-from PyQt5 import uic
-import os
+from PySide6.QtWidgets import QDialog
 
 
 class PurgeDialog(QDialog):
@@ -67,9 +65,9 @@ class PurgeDialog(QDialog):
         """
         Loads the UI file for the IterationDialog object.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/purgeDialog.ui")
-        uic.loadUi(uifile, self)
+        # current_dir = os.path.dirname(os.path.realpath(__file__))
+        # uifile = os.path.join(current_dir, "ui_files/purgeDialog.ui")
+        # uic.loadUi(uifile, self)
         self.buttonBox.accepted.connect(
             self.purge
         )
