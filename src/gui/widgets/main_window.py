@@ -39,6 +39,7 @@ from src.gui.widgets.normalisation_slots import NormalisationSlots
 from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
 import math
+from src.gui.widgets.resources import resources_rc  # noqa
 
 
 class GudPyMainWindow(QMainWindow):
@@ -108,6 +109,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.setWorkingDirectory(os.path.join(current_dir, "ui_files/"))
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)

@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -2656,8 +2656,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -2673,8 +2673,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -6230,6 +6230,8 @@
    <header>src.gui.widgets.gudpy_tables</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
