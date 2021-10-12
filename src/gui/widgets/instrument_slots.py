@@ -465,8 +465,6 @@ class InstrumentSlots():
         value : str
             The new value of the dataFileDirectoryLineEdit.
         """
-        if not text[-1] == "/":
-            text += "/"
         self.instrument.dataFileDir = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -1109,7 +1107,7 @@ class InstrumentSlots():
         str[]
         """
         if dir:
-            filename = QFileDialog.getExistingDirectory(self.widget, title, "")
+            filename = QFileDialog.getExistingDirectory(self.widget, title, "") + "/"
         else:
             filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
         return filename
