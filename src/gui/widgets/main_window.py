@@ -1,3 +1,5 @@
+from PySide6.QtCharts import QChartView
+from src.gui.widgets.gudpy_charts import GudPyChart
 from src.scripts.utils import nthint
 from PySide6.QtCore import QProcess
 from src.gudrun_classes.file_library import GudPyFileLibrary
@@ -123,6 +125,10 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
+
+        self.mainWidget.samplePlotGroupBox.setVisible(False)
+        self.mainWidget.sampleChartView = QChartView()
+        self.mainWidget.samplePlotLayout.addWidget(self.mainWidget.sampleChartView)
 
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
@@ -287,12 +293,19 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
 
+    def updatePlots(self):
+        if self.mainWidget.objectStack.currentIndex == 4:
+            self.mainWidget.sampleChart = GudPyChart(sample=self.mainWidget.objectTree.currentObject(), dataFileType=self.gudrunFile.instrument.dataFileType)
+            self.mainWidget.sampleChartView.setChart(self.mainWidget.sampleChart)
+            self.mainWidget.samplePlotGroupBox.setVisible(self.mainWidget.sampleChart.plottable)
+
     def updateComponents(self):
         """
         Updates geometries and compositions.
         """
         self.updateGeometries()
         self.updateCompositions()
+        self.updatePlots()
 
     def exit_(self):
         """

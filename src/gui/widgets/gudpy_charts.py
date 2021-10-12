@@ -3,7 +3,56 @@ from PySide6.QtCharts import QChart, QChartView, QLineSeries
 from PySide6.QtCore import QPointF
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QApplication, QMainWindow
+from enum import Enum
+import os
 
+class PlotModes(Enum):
+    STRUCTURE_FACTOR = 0
+
+class GudPyChart(QChart):
+
+    def __init__(self, sample=None, samples=[], plotMode=PlotModes.STRUCTURE_FACTOR, dataFileType="raw"):
+        super(GudPyChart, self).__init__()
+        self.plottable = False
+        if sample:
+            self.plotSample(sample, plotMode, dataFileType)
+        elif samples:
+            self.plotSamples(samples, plotMode, dataFileType)
+
+
+    def plotSample(self, sample, plotMode, dataFileType):
+        if plotMode == PlotModes.STRUCTURE_FACTOR:
+            self.setTitle("Structure Factor")
+
+
+            mintFile = sample.dataFiles.dataFiles[0].replace(dataFileType, "mint01")
+            mdcsFile = sample.dataFiles.dataFiles[0].replace(dataFileType, "mdcs01")
+
+            if not os.path.exists(mintFile) and not os.path.exists(mdcsFile):
+                return
+
+            mintSeries = QLineSeries()
+            mdcsSeries = QLineSeries()
+
+            mintData = open(mintFile, "r", encoding="utf-8").readlines()[14:]
+            for item in mintData:
+                x, y, err, *_ = item.split()
+                mintSeries.append(float(x), float(y))
+            self.addSeries(mintSeries)
+
+            mdcsData = open(mdcsFile, "r", encoding="utf-8").readlines()[14:]
+            for item in mdcsData:
+                x, y, err, *_ = item.split()
+                mdcsSeries.append(float(x), float(y))
+            self.addSeries(mdcsSeries)
+            
+            self.plottable = True
+
+        self.createDefaultAxes()
+
+    def plotSamples(self, samples, plotMode):
+        pass
+    
 
 class GudPyChartAppTest(QMainWindow):
     def __init__(self):
@@ -30,7 +79,6 @@ class GudPyChartAppTest(QMainWindow):
             self._chart_view.setRenderHint(QPainter.Antialiasing)
             self._chart_view.setRubberBand(QChartView.HorizontalRubberBand)
             self.setCentralWidget(self._chart_view)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
