@@ -740,6 +740,9 @@
                          <height>22</height>
                         </size>
                        </property>
+                       <property name="minimum">
+                        <double>-99.989999999999995</double>
+                       </property>
                       </widget>
                      </item>
                      <item row="4" column="1">
@@ -5228,36 +5231,9 @@
                  <property name="title">
                   <string>Plots</string>
                  </property>
-                 <layout class="QVBoxLayout" name="samplePlotLayout">
-                  <item>
-                   <spacer name="verticalSpacer_20">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>676</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
+                 <layout class="QVBoxLayout" name="samplePlotLayout"/>
                 </widget>
                </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_16">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>174</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
              </layout>
             </widget>
