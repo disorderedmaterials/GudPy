@@ -75,7 +75,7 @@ class SampleSlots():
 
         # Populate the other sample run controls.
 
-        self.widget.totalCrossSectionComboBox.setCurrentIndex(
+        self.widget.sampleTotalCrossSectionComboBox.setCurrentIndex(
             self.sample.totalCrossSectionSource.value
         )
         self.widget.sampleCrossSectionFileLineEdit.setText(
@@ -218,9 +218,9 @@ class SampleSlots():
         # Setup slots for other sample run controls.
         # Fill the cross section source combo box.
         for c in CrossSectionSource:
-            self.widget.totalCrossSectionComboBox.addItem(c.name, c)
+            self.widget.sampleTotalCrossSectionComboBox.addItem(c.name, c)
 
-        self.widget.totalCrossSectionComboBox.currentIndexChanged.connect(
+        self.widget.sampleTotalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleCrossSectionSourceChanged
         )
         self.widget.sampleCrossSectionFileLineEdit.textChanged.connect(
@@ -456,15 +456,15 @@ class SampleSlots():
         """
         Slot for handling change in total cross section source.
         Called when a currentIndexChanged signal is emitted,
-        from the totalCrossSectionComboBox.
+        from the sampleTotalCrossSectionComboBox.
         Alters the sample's total cross section source as such.
         Parameters
         ----------
         index : int
-            The new current index of the totalCrossSectionComboBox.
+            The new current index of the sampleTotalCrossSectionComboBox.
         """
         self.sample.totalCrossSectionSource = (
-            self.widget.totalCrossSectionComboBox.itemData(index)
+            self.widget.sampleTotalCrossSectionComboBox.itemData(index)
         )
         self.widget.sampleCrossSectionFileWidget.setVisible(
             self.sample.totalCrossSectionSource == CrossSectionSource.FILE

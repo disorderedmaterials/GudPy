@@ -294,9 +294,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.containerCompositionTable.farmCompositions()
 
     def updatePlots(self):
-        if self.mainWidget.objectStack.currentIndex == 4:
-            self.mainWidget.sampleChart = GudPyChart(sample=self.mainWidget.objectTree.currentObject(), dataFileType=self.gudrunFile.instrument.dataFileType)
+        print(self.mainWidget.objectStack.currentIndex())
+        if self.mainWidget.objectStack.currentIndex() == 4:
+            self.mainWidget.sampleChart = GudPyChart(self.gudrunFile.instrument.dataFileType, self.gudrunFile.instrument.dataFileDir ,sample=self.mainWidget.objectTree.currentObject())
             self.mainWidget.sampleChartView.setChart(self.mainWidget.sampleChart)
+            print(self.mainWidget.sampleChart.plottable)
             self.mainWidget.samplePlotGroupBox.setVisible(self.mainWidget.sampleChart.plottable)
 
     def updateComponents(self):
@@ -499,8 +501,8 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
-        progress += self.progressBar.value()
-        self.progressBar.setValue(progress if progress <= 100 else 100)
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(progress if progress <= 100 else 100)
 
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
@@ -519,12 +521,13 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def procStarted(self):
-        self.currentTaskLabel.setText(
+        self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
 
     def procFinished(self):
+        print(bytes(self.proc.readAllStandardError()).decode("utf8"))
         self.proc = None
         self.setControlsEnabled(True)
-        self.currentTaskLabel.setText("No task running.")
-        self.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.progressBar.setValue(0)
