@@ -93,7 +93,7 @@ class GudPyChart(QChart):
                         for data in f.readlines():
 
                             # Ignore commented lines.
-                            if f[0] == "#":
+                            if data[0] == "#":
                                 continue
 
                             # Extract x,y, err.
@@ -113,7 +113,7 @@ class GudPyChart(QChart):
                     for data in f.readlines():
 
                         # Ignore commented lines.
-                        if f[0] == "#":
+                        if data[0] == "#":
                             continue
 
                         # Extract x,y, err.
