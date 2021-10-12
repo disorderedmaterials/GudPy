@@ -681,6 +681,7 @@ class GudPyTreeView(QTreeView):
         }
         index, setter = indexMap[type(modelIndex.internalPointer())]
         self.parent.mainWidget.objectStack.setCurrentIndex(index)
+        self.parent.updateComponents()
         if setter:
             setter(modelIndex.internalPointer())
 

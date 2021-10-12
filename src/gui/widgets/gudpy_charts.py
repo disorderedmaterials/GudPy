@@ -11,7 +11,7 @@ class PlotModes(Enum):
 
 class GudPyChart(QChart):
 
-    def __init__(self, sample=None, samples=[], plotMode=PlotModes.STRUCTURE_FACTOR, dataFileType="raw"):
+    def __init__(self, dataFileType, dataFileDir, sample=None, samples=[], plotMode=PlotModes.STRUCTURE_FACTOR):
         super(GudPyChart, self).__init__()
         self.plottable = False
         if sample:
@@ -25,32 +25,31 @@ class GudPyChart(QChart):
             self.setTitle("Structure Factor")
 
 
-            mintFile = sample.dataFiles.dataFiles[0].replace(dataFileType, "mint01")
-            mdcsFile = sample.dataFiles.dataFiles[0].replace(dataFileType, "mdcs01")
-
-            if not os.path.exists(mintFile) and not os.path.exists(mdcsFile):
-                return
-
+            mintFile = os.path.join(os.getcwd(), sample.dataFiles.dataFiles[0].replace(dataFileType, "mint01"))
+            mdcsFile = os.path.join(os.getcwd(), sample.dataFiles.dataFiles[0].replace(dataFileType, "mdcs01"))
+         
             mintSeries = QLineSeries()
             mdcsSeries = QLineSeries()
 
-            mintData = open(mintFile, "r", encoding="utf-8").readlines()[14:]
-            for item in mintData:
-                x, y, err, *_ = item.split()
-                mintSeries.append(float(x), float(y))
-            self.addSeries(mintSeries)
+            if sample.topHatW:
+                if os.path.exists(mintFile):
+                    mintData = open(mintFile, "r", encoding="utf-8").readlines()[14:]
+                    for item in mintData:
+                        x, y, err, *_ = item.split()
+                        mintSeries.append(float(x), float(y))
+                    self.addSeries(mintSeries)
 
-            mdcsData = open(mdcsFile, "r", encoding="utf-8").readlines()[14:]
-            for item in mdcsData:
-                x, y, err, *_ = item.split()
-                mdcsSeries.append(float(x), float(y))
-            self.addSeries(mdcsSeries)
-            
-            self.plottable = True
+            if os.path.exists(mdcsFile):
+                mdcsData = open(mdcsFile, "r", encoding="utf-8").readlines()[14:]
+                for item in mdcsData:
+                    x, y, err, *_ = item.split()
+                    mdcsSeries.append(float(x), float(y))
+                self.addSeries(mdcsSeries)
+                self.plottable = True
 
         self.createDefaultAxes()
 
-    def plotSamples(self, samples, plotMode):
+    def plotSamples(self, samples, plotMode, dataFileType, dataFileDir):
         pass
     
 
