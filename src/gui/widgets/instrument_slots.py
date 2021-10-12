@@ -1107,7 +1107,9 @@ class InstrumentSlots():
         str[]
         """
         if dir:
-            filename = QFileDialog.getExistingDirectory(self.widget, title, "") + "/"
+            filename = (
+                QFileDialog.getExistingDirectory(self.widget, title, "") + "/"
+            )
         else:
             filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
         return filename
