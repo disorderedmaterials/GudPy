@@ -2,7 +2,6 @@ from PySide6.QtCharts import QChartView
 from PySide6.QtGui import QPainter
 from src.gui.widgets.gudpy_charts import GudPyChart
 from src.scripts.utils import nthint
-from PySide6.QtCore import QProcess
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
@@ -129,11 +128,15 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.samplePlotGroupBox.setVisible(False)
         self.mainWidget.sampleChartView = QChartView()
-        self.mainWidget.samplePlotLayout.addWidget(self.mainWidget.sampleChartView)
+        self.mainWidget.samplePlotLayout.addWidget(
+            self.mainWidget.sampleChartView
+        )
 
         self.mainWidget.samplePlotGroupBox.setVisible(False)
         self.mainWidget.allSampleChartView = QChartView()
-        self.mainWidget.samplePlotLayout.addWidget(self.mainWidget.allSampleChartView)
+        self.mainWidget.samplePlotLayout.addWidget(
+            self.mainWidget.allSampleChartView
+        )
 
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
@@ -232,6 +235,7 @@ class GudPyMainWindow(QMainWindow):
                     )
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
         self.setActionsEnabled(True)
+        self.updatePlots()
 
     def loadInputFile_(self):
         """
@@ -309,17 +313,36 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile.instrument.dataFileType,
                 sample=self.mainWidget.objectTree.currentObject()
             )
-            self.mainWidget.sampleChartView.setChart(self.mainWidget.sampleChart)
-            self.mainWidget.sampleChartView.setRenderHint(QPainter.Antialiasing)
-            self.mainWidget.sampleChartView.setRubberBand(QChartView.HorizontalRubberBand)
+            self.mainWidget.sampleChartView.setChart(
+                self.mainWidget.sampleChart
+            )
+            self.mainWidget.sampleChartView.setRenderHint(
+                QPainter.Antialiasing
+            )
+            self.mainWidget.sampleChartView.setRubberBand(
+                QChartView.HorizontalRubberBand
+            )
             self.mainWidget.allSamplesChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
-                samples=self.mainWidget.objectTree.model().findParent(self.mainWidget.objectTree.currentObject()).samples
+                samples=(
+                    self.mainWidget.objectTree.model().
+                    findParent(self.mainWidget.objectTree.currentObject()).
+                    samples
+                )
             )
-            self.mainWidget.allSampleChartView.setChart(self.mainWidget.allSamplesChart)
-            self.mainWidget.allSampleChartView.setRenderHint(QPainter.Antialiasing)
-            self.mainWidget.allSampleChartView.setRubberBand(QChartView.HorizontalRubberBand)
-            self.mainWidget.samplePlotGroupBox.setVisible(self.mainWidget.sampleChart.plottable | self.mainWidget.allSamplesChart.plottable)
+            self.mainWidget.allSampleChartView.setChart(
+                self.mainWidget.allSamplesChart
+            )
+            self.mainWidget.allSampleChartView.setRenderHint(
+                QPainter.Antialiasing
+            )
+            self.mainWidget.allSampleChartView.setRubberBand(
+                QChartView.HorizontalRubberBand
+            )
+            self.mainWidget.samplePlotGroupBox.setVisible(
+                self.mainWidget.sampleChart.plottable |
+                self.mainWidget.allSamplesChart.plottable
+            )
 
     def updateComponents(self):
         """
@@ -361,7 +384,8 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
         elif not purge:
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error", "Couldn't find purge_det binary."
+                self.mainWidget,
+                "GudPy Error", "Couldn't find purge_det binary."
             )
             self.setControlsEnabled(True)
         else:
@@ -524,7 +548,9 @@ class GudPyMainWindow(QMainWindow):
             )
             return
         progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(progress if progress <= 100 else 100)
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
 
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()

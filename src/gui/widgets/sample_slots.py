@@ -220,7 +220,10 @@ class SampleSlots():
         for c in CrossSectionSource:
             self.widget.sampleTotalCrossSectionComboBox.addItem(c.name, c)
 
-        self.widget.sampleTotalCrossSectionComboBox.currentIndexChanged.connect(
+        (
+            self.widget.sampleTotalCrossSectionComboBox.
+            currentIndexChanged
+        ).connect(
             self.handleCrossSectionSourceChanged
         )
         self.widget.sampleCrossSectionFileLineEdit.textChanged.connect(

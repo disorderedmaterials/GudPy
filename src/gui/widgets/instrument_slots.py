@@ -1,4 +1,4 @@
-from PySide6.QtCore import QRegularExpression, Slot
+from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
@@ -329,25 +329,55 @@ class InstrumentSlots():
         self.widget.maxQSpinBox.valueChanged.connect(self.handleQMaxChanged)
         self.widget.stepQSpinBox.valueChanged.connect(self.handleQStepChanged)
 
-        self.widget.DSpacingRadioButton.toggled.connect(self.handleDSpacingToggled)
-        self.widget.minDSpacingSpinBox.valueChanged.connect(self.handleDSpacingMinChanged)
-        self.widget.maxDSpacingSpinBox.valueChanged.connect(self.handleDSpacingMaxChanged)
-        self.widget.stepDSpacingSpinBox.valueChanged.connect(self.handleDSpacingStepChanged)
+        self.widget.DSpacingRadioButton.toggled.connect(
+            self.handleDSpacingToggled
+        )
+        self.widget.minDSpacingSpinBox.valueChanged.connect(
+            self.handleDSpacingMinChanged
+        )
+        self.widget.maxDSpacingSpinBox.valueChanged.connect(
+            self.handleDSpacingMaxChanged
+        )
+        self.widget.stepDSpacingSpinBox.valueChanged.connect(
+            self.handleDSpacingStepChanged
+        )
 
-        self.widget.wavelengthRadioButton.toggled.connect(self.handleWavelengthToggled)
-        self.widget.minWavelength_SpinBox.valueChanged.connect(self.handleWavelengthMinChanged)
-        self.widget.maxWavelength_SpinBox.valueChanged.connect(self.handleWavelengthMaxChanged)
-        self.widget.stepWavelength_SpinBox.valueChanged.connect(self.handleWavelengthStepChanged)
+        self.widget.wavelengthRadioButton.toggled.connect(
+            self.handleWavelengthToggled
+        )
+        self.widget.minWavelength_SpinBox.valueChanged.connect(
+            self.handleWavelengthMinChanged
+        )
+        self.widget.maxWavelength_SpinBox.valueChanged.connect(
+            self.handleWavelengthMaxChanged
+        )
+        self.widget.stepWavelength_SpinBox.valueChanged.connect(
+            self.handleWavelengthStepChanged
+        )
 
-        self.widget.energyRadioButton.toggled.connect(self.handleEnergyToggled)
-        self.widget.minEnergySpinBox.valueChanged.connect(self.handleEnergyMinChanged)
-        self.widget.maxEnergySpinBox.valueChanged.connect(self.handleEnergyMaxChanged)
-        self.widget.stepEnergySpinBox.valueChanged.connect(self.handleEnergyStepChanged)
+        self.widget.energyRadioButton.toggled.connect(
+            self.handleEnergyToggled
+        )
+        self.widget.minEnergySpinBox.valueChanged.connect(
+            self.handleEnergyMinChanged
+        )
+        self.widget.maxEnergySpinBox.valueChanged.connect(
+            self.handleEnergyMaxChanged
+        )
+        self.widget.stepEnergySpinBox.valueChanged.connect(
+            self.handleEnergyStepChanged
+        )
 
         self.widget.TOFRadioButton.toggled.connect(self.handleTOFToggled)
-        self.widget.minTOFSpinBox.valueChanged.connect(self.handleTOFMinChanged)
-        self.widget.maxTOFSpinBox.valueChanged.connect(self.handleTOFMaxChanged)
-        self.widget.stepTOFSpinBox.valueChanged.connect(self.handleTOFStepChanged)
+        self.widget.minTOFSpinBox.valueChanged.connect(
+            self.handleTOFMinChanged
+        )
+        self.widget.maxTOFSpinBox.valueChanged.connect(
+            self.handleTOFMaxChanged
+        )
+        self.widget.stepTOFSpinBox.valueChanged.connect(
+            self.handleTOFStepChanged
+        )
 
         self.widget.logarithmicBinningCheckBox.stateChanged.connect(
             self.handleUseLogarithmicBinningSwitched
@@ -436,7 +466,7 @@ class InstrumentSlots():
             The new value of the dataFileDirectoryLineEdit.
         """
         if not text[-1] == "/":
-            text+="/"
+            text += "/"
         self.instrument.dataFileDir = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -844,95 +874,107 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def handleScaleStateChanged(self):
-        """
-        Slot for handling change in the X-Scale for final DCS.
-        Called when the stateChanged signal is emitted,
-        from any of the scale radio buttons.
-        Updates the interface, to reflect the change in scale selection.
-        """
-        for scale, widgets in self.scales.items():
-            state = widgets[0].isChecked()
-            if state:
-                self.instrument.scaleSelection = scale
-                self.instrument.XMin = widgets[1].value()
-                self.instrument.XMax = widgets[2].value()
-                self.instrument.XStep = widgets[3].value()
-                if not self.widgetsRefreshing:
-                    self.parent.setModified()
-            for widget in widgets[1:]:
-                widget.setEnabled(state)
-
     def handleQToggled(self, state):
-        [widget.setEnabled(state) for widget in self.scales[Scales.Q][1:]]
+        [
+            widget.setEnabled(state) for widget in self.scales[Scales.Q][1:]
+        ]
         if state:
             if not self.widgetsRefreshing:
                 self.instrument.scale = Scales.Q
-                values = [widget.value() for widget in self.scales[Scales.Q][1:]]
-                print(values)
-                self.instrument.Xmin, self.instrument.XMax, self.instrument.XStep = values
+                values = [
+                    widget.value() for widget in self.scales[Scales.Q][1:]
+                ]
+                (
+                    self.instrument.Xmin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ) = values
                 self.parent.setModified()
 
     def handleQMinChanged(self, value):
         self.handleXMinChanged(value)
-    
+
     def handleQMaxChanged(self, value):
         self.handleXMaxChanged(value)
-    
+
     def handleQStepChanged(self, value):
         self.handleXStepChanged(value)
 
     def handleDSpacingToggled(self, state):
-        [widget.setEnabled(state) for widget in self.scales[Scales.D_SPACING][1:]]
+        [
+            widget.setEnabled(state)
+            for widget in self.scales[Scales.D_SPACING][1:]
+        ]
         if state:
-            values = [widget.value() for widget in self.scales[Scales.D_SPACING][1:]]
-            self.instrument.Xmin, self.instrument.XMax, self.instrument.XStep = values
+            values = [
+                widget.value() for widget in self.scales[Scales.D_SPACING][1:]
+            ]
+            (
+                self.instrument.Xmin,
+                self.instrument.XMax,
+                self.instrument.XStep
+            ) = values
             self.instrument.scale = Scales.D_SPACING
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def handleDSpacingMinChanged(self, value):
         self.handleXMinChanged(value)
-    
+
     def handleDSpacingMaxChanged(self, value):
         self.handleXMaxChanged(value)
-    
+
     def handleDSpacingStepChanged(self, value):
         self.handleXStepChanged(value)
 
     def handleWavelengthToggled(self, state):
-        [widget.setEnabled(state) for widget in self.scales[Scales.WAVELENGTH][1:]]
+        [
+            widget.setEnabled(state)
+            for widget in self.scales[Scales.WAVELENGTH][1:]
+        ]
         if state:
-            values = [widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]]
-            self.instrument.Xmin, self.instrument.XMax, self.instrument.XStep = values
+            values = [
+                widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]
+            ]
+            (
+                self.instrument.Xmin,
+                self.instrument.XMax,
+                self.instrument.XStep
+            ) = values
             self.instrument.scale = Scales.WAVELENGTH
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def handleWavelengthMinChanged(self, value):
         self.handleXMinChanged(value)
-    
+
     def handleWavelengthMaxChanged(self, value):
         self.handleXMaxChanged(value)
-    
+
     def handleWavelengthStepChanged(self, value):
         self.handleXStepChanged(value)
 
     def handleEnergyToggled(self, state):
         [widget.setEnabled(state) for widget in self.scales[Scales.ENERGY][1:]]
         if state:
-            values = [widget.value() for widget in self.scales[Scales.ENERGY][1:]]
-            self.instrument.Xmin, self.instrument.XMax, self.instrument.XStep = values
+            values = [
+                widget.value() for widget in self.scales[Scales.ENERGY][1:]
+            ]
+            (
+                self.instrument.Xmin,
+                self.instrument.XMax,
+                self.instrument.XStep
+            ) = values
             self.instrument.scale = Scales.ENERGY
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def handleEnergyMinChanged(self, value):
         self.handleXMinChanged(value)
-    
+
     def handleEnergyMaxChanged(self, value):
         self.handleXMaxChanged(value)
-    
+
     def handleEnergyStepChanged(self, value):
         self.handleXStepChanged(value)
 
@@ -940,17 +982,21 @@ class InstrumentSlots():
         [widget.setEnabled(state) for widget in self.scales[Scales.TOF][1:]]
         if state:
             values = [widget.value() for widget in self.scales[Scales.TOF][1:]]
-            self.instrument.Xmin, self.instrument.XMax, self.instrument.XStep = values
+            (
+                self.instrument.Xmin,
+                self.instrument.XMax,
+                self.instrument.XStep
+            ) = values
             self.instrument.scale = Scales.TOF
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
     def handleTOFMinChanged(self, value):
         self.handleXMinChanged(value)
-    
+
     def handleTOFMaxChanged(self, value):
         self.handleXMaxChanged(value)
-    
+
     def handleTOFStepChanged(self, value):
         self.handleXStepChanged(value)
 
