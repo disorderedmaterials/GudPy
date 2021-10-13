@@ -70,7 +70,7 @@ class IterationDialog(QDialog):
             The new state of the tweakButton (1: True, 0: False).
         """
         self.tweakValues = state
-        self.tweakWidget.setVisible(state)
+        self.widget.tweakWidget.setVisible(state)
 
     def handlePerformInelasticitySubtractionsChanged(self, state):
         """
@@ -115,17 +115,15 @@ class IterationDialog(QDialog):
             else:
                 pass
         elif self.performInelasticitySubtractions:
-            wavelengthSubtractionIterator = WavelengthSubtractionIterator(
+            self.iterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
-            self.iterateCommand = (
-                wavelengthSubtractionIterator.iterate(
-                    self.numberIterations,
-                    headless=False
-                )
-            )
+            self.queue = Queue()
+            for i in range(self.numberIterations):
+                self.queue.put(self.gudrunFile.dcs(path="gudpy.txt", headless=False))
+                self.queue.put(self.gudrunFile.dcs(path="gudpy.txt", headless=False))
             self.text = "Inelasticity subtractions"
-            self.close()
+            self.widget.close()
         else:
             pass
 

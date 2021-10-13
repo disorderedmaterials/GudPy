@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
+=======
+from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.wavelength_subtraction_iterator import WavelengthSubtractionIterator
+>>>>>>> feat: wavelength subtraction iterations through the GUI.
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -493,16 +498,22 @@ class GudPyMainWindow(QMainWindow):
             self.iterator = iterationDialog.iterator
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
+            self.text = iterationDialog.text
             self.nextIterableProc()
 
     def nextIteration(self):
-        self.iterator.performIteration()
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.iterator.performIteration()
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            if (self.currentIteration + 1) % 2 == 0:
+                self.iterator.QIteration(self.currentIteration)
+            else:
+                self.iterator.wavelengthIteration(self.currentIteration)
         self.nextIterableProc()
         self.currentIteration+=1
 
     def nextIterableProc(self):
         self.proc = self.queue.get()
-        print(self.proc)
         self.proc.started.connect(self.iterationStarted)
         if not self.queue.empty():
             self.proc.finished.connect(self.nextIteration)
@@ -513,7 +524,10 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def iterationStarted(self):
-        self.mainWidget.currentTaskLabel.setText(f"gudrun_dcs {self.currentIteration+1}/{self.numberIterations}")
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.mainWidget.currentTaskLabel.setText(f"{self.text} {self.currentIteration+1}/{self.numberIterations}")
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            self.mainWidget.currentTaskLabel.setText(f"{self.text} {(self.currentIteration+1)//2}/{self.numberIterations}")
 
     def progressIteration(self):
         pass
@@ -667,7 +681,4 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-<<<<<<< HEAD
         self.updatePlots()
-=======
->>>>>>> feat: iterate by tweak factor.

@@ -33,7 +33,7 @@ class TweakFactorIterator():
         """
         self.gudrunFile = gudrunFile
 
-    def performIteration(self):
+    def performIteration(self, _n):
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
         iterator = enumerate(self.gudrunFile.sampleBackgrounds)
