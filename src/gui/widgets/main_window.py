@@ -1,4 +1,5 @@
 from PySide6.QtCharts import QChartView
+from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from src.gui.widgets.gudpy_charts import GudPyChart
 from src.scripts.utils import nthint
@@ -85,8 +86,19 @@ class GudPyMainWindow(QMainWindow):
         """
         Loads the UI file for the GudPyMainWindow.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
+        if hasattr(sys, '_MEIPASS'):
+            uifile = QFile(
+                os.path.join(
+                    sys._MEIPASS, "ui_files", "mainWindow.ui"
+                )
+            )
+        else:
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            uifile = QFile(
+                os.path.join(
+                    current_dir, "ui_files", "mainWindow.ui"
+                )
+            )
 
         loader = QUiLoader()
         loader.registerCustomWidget(GudPyTreeView)
