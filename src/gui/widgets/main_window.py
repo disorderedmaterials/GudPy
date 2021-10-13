@@ -1,12 +1,12 @@
-<<<<<<< HEAD
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
-=======
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
-from src.gudrun_classes.wavelength_subtraction_iterator import WavelengthSubtractionIterator
->>>>>>> feat: wavelength subtraction iterations through the GUI.
+from src.gudrun_classes.wavelength_subtraction_iterator import (
+    WavelengthSubtractionIterator
+)
+
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -510,7 +510,7 @@ class GudPyMainWindow(QMainWindow):
             else:
                 self.iterator.wavelengthIteration(self.currentIteration)
         self.nextIterableProc()
-        self.currentIteration+=1
+        self.currentIteration += 1
 
     def nextIterableProc(self):
         self.proc = self.queue.get()
@@ -525,16 +525,25 @@ class GudPyMainWindow(QMainWindow):
 
     def iterationStarted(self):
         if isinstance(self.iterator, TweakFactorIterator):
-            self.mainWidget.currentTaskLabel.setText(f"{self.text} {self.currentIteration+1}/{self.numberIterations}")
+            self.mainWidget.currentTaskLabel.setText(
+                f"{self.text}"
+                f" {self.currentIteration+1}/{self.numberIterations}"
+            )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            self.mainWidget.currentTaskLabel.setText(f"{self.text} {(self.currentIteration+1)//2}/{self.numberIterations}")
+            self.mainWidget.currentTaskLabel.setText(
+                f"{self.text}"
+                f" {(self.currentIteration+1)//2}/{self.numberIterations}"
+            )
 
     def progressIteration(self):
         if isinstance(self.iterator, TweakFactorIterator):
-            self.mainWidget.progressBar.setValue(100/self.numberIterations * self.currentIteration+1)
+            self.mainWidget.progressBar.setValue(
+                100/self.numberIterations * self.currentIteration+1
+            )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            self.mainWidget.progressBar.setValue(100/self.numberIterations * ((self.currentIteration+1)//2))
-
+            self.mainWidget.progressBar.setValue(
+                100/self.numberIterations * ((self.currentIteration+1)//2)
+            )
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
