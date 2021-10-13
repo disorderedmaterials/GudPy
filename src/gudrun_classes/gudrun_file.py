@@ -245,6 +245,7 @@ class GudrunFile:
             # For string attributes,
             # we simply extract the firstword in the line.
             self.instrument.name = Instruments[firstword(self.getNextToken())]
+            self.instrument.GudrunInputFileDir = os.path.abspath(self.path)
             self.consumeTokens(1)
             self.instrument.dataFileDir = firstword(self.getNextToken())
             self.instrument.dataFileType = firstword(self.getNextToken())

@@ -1,7 +1,7 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
-from src.gui.widgets.gudpy_charts import GudPyChart
+from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QSizePolicy,
     QStatusBar,
+    QVBoxLayout,
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
@@ -138,15 +139,63 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.sampleChartView = QChartView()
-        self.mainWidget.samplePlotLayout.addWidget(
-            self.mainWidget.sampleChartView
+        self.mainWidget.sampleStructureFactorChartView = QChartView()
+
+        self.mainWidget.sampleStructureFactorChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.sampleStructureFactorChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
         )
 
-        self.mainWidget.allSampleChartView = QChartView()
         self.mainWidget.samplePlotLayout.addWidget(
-            self.mainWidget.allSampleChartView
+            self.mainWidget.sampleStructureFactorChartView
         )
+
+
+        self.mainWidget.sampleRDFChartView = QChartView()
+
+        self.mainWidget.sampleRDFChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.sampleRDFChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.samplePlotLayout.addWidget(
+            self.mainWidget.sampleRDFChartView
+        )
+
+
+        self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
+
+        self.mainWidget.allSampleStructureFactorChartView = QChartView()
+
+        self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.allSampleStructureFactorChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.plotsLayout.addWidget(
+            self.mainWidget.allSampleStructureFactorChartView
+        )
+
+        self.mainWidget.allSampleRDFChartView = QChartView()
+
+        self.mainWidget.allSampleRDFChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.allSampleRDFChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.plotsLayout.addWidget(
+            self.mainWidget.allSampleRDFChartView
+        )
+
+        self.mainWidget.plotTab.setLayout(self.mainWidget.plotsLayout)
 
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
@@ -321,35 +370,40 @@ class GudPyMainWindow(QMainWindow):
         if self.mainWidget.objectStack.currentIndex() == 4:
             self.mainWidget.sampleChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
                 sample=self.mainWidget.objectTree.currentObject()
             )
-            self.mainWidget.sampleChartView.setChart(
+            self.mainWidget.sampleStructureFactorChartView.setChart(
                 self.mainWidget.sampleChart
             )
-            self.mainWidget.sampleChartView.setRenderHint(
-                QPainter.Antialiasing
+            self.mainWidget.sampleRDFChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                sample=self.mainWidget.objectTree.currentObject(),
+                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS 
             )
-            self.mainWidget.sampleChartView.setRubberBand(
-                QChartView.HorizontalRubberBand
+            self.mainWidget.sampleRDFChartView.setChart(
+                self.mainWidget.sampleRDFChart
             )
+        else:
             self.mainWidget.allSamplesChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
-                samples=(
-                    self.mainWidget.objectTree.model().
-                    findParent(self.mainWidget.objectTree.currentObject()).
-                    samples
-                )
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                samples= [sample for sampleBackground in self.gudrunFile.sampleBackgrounds for sample in sampleBackground.samples]
             )
-            self.mainWidget.allSampleChartView.setChart(
+            self.mainWidget.allSampleStructureFactorChartView.setChart(
                 self.mainWidget.allSamplesChart
             )
-            self.mainWidget.allSampleChartView.setRenderHint(
-                QPainter.Antialiasing
-            )
-            self.mainWidget.allSampleChartView.setRubberBand(
-                QChartView.HorizontalRubberBand
-            )
 
+            self.mainWidget.allSamplesRDFChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                samples= [sample for sampleBackground in self.gudrunFile.sampleBackgrounds for sample in sampleBackground.samples],
+                plotMode = PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            )
+            self.mainWidget.allSampleRDFChartView.setChart(
+                self.mainWidget.allSamplesRDFChart
+            )
     def updateComponents(self):
         """
         Updates geometries and compositions.

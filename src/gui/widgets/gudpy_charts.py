@@ -5,6 +5,7 @@ import os
 
 class PlotModes(Enum):
     STRUCTURE_FACTOR = 0
+    RADIAL_DISTRIBUTION_FUNCTIONS = 1
 
 
 class GudPyChart(QChart):
@@ -21,7 +22,7 @@ class GudPyChart(QChart):
         Plots a list of samples.
     """
     def __init__(
-            self, dataFileType, sample=None,
+            self, dataFileType, inputDir, sample=None,
             samples=[], plotMode=PlotModes.STRUCTURE_FACTOR
     ):
         """
@@ -32,6 +33,8 @@ class GudPyChart(QChart):
         ----------
         dataFileType : str
             Data file type used throughout the input file.
+        inputDir : str
+            Input directory used.
         sample : Sample, optional
             Sample to create plot from.
         samples : Sample[], optional
@@ -43,11 +46,11 @@ class GudPyChart(QChart):
 
         # Call plotting function.
         if sample:
-            self.plotSample(sample, plotMode, dataFileType)
+            self.plotSample(sample, plotMode, dataFileType, inputDir)
         elif samples:
-            self.plotSamples(samples, plotMode, dataFileType)
+            self.plotSamples(samples, plotMode, dataFileType, inputDir)
 
-    def plotSample(self, sample, plotMode, dataFileType):
+    def plotSample(self, sample, plotMode, dataFileType, inputDir):
         """
         Plots a single sample, with a given plotting mode.
         Parameters
@@ -99,8 +102,8 @@ class GudPyChart(QChart):
 
                             # Append the data to the series.
                             mintSeries.append(float(x), float(y))
-                    # Add the series to the chart.
-                    self.addSeries(mintSeries)
+            # Add the series to the chart.
+            self.addSeries(mintSeries)
 
             # Check the file exists.
             if os.path.exists(mdcsFile):
@@ -120,9 +123,64 @@ class GudPyChart(QChart):
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
 
+        elif plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+            # Set the title.
+            self.setTitle("Radial Distribution Functions")
+
+            # Get the mint01 and mdcs01 filenames.
+            mdorFile = (
+                sample.dataFiles.dataFiles[0].replace(dataFileType, "mdor")
+            )
+            mgorFile = (
+                sample.dataFiles.dataFiles[0].replace(dataFileType, "mgor")
+            )
+
+            # Instantiate the series'.
+            mdorSeries = QLineSeries()
+            # Set the name of the series.
+            mdorSeries.setName(f"{sample.name} mdor")
+
+            mgorSeries = QLineSeries()
+            # Set the name of the series.
+            mgorSeries.setName(f"{sample.name} mgor")
+
+            if os.path.exists(mdorFile):
+                # Open it.
+                with open(mdorFile, "r", encoding="utf-8") as f:
+                    for data in f.readlines():
+
+                        # Ignore commented lines.
+                        if data[0] == "#":
+                            continue
+
+                        # Extract x,y, err.
+                        x, y, _err, *__ = data.split()
+
+                        # Append the data to the series.
+                        mdorSeries.append(float(x), float(y))
+            # Add the series to the chart.
+            self.addSeries(mdorSeries)
+
+            if os.path.exists(mgorFile):
+                # Open it.
+                with open(mgorFile, "r", encoding="utf-8") as f:
+                    for data in f.readlines():
+
+                        # Ignore commented lines.
+                        if data[0] == "#":
+                            continue
+
+                        # Extract x,y, err.
+                        x, y, _err, *__ = data.split()
+
+                        # Append the data to the series.
+                        mgorSeries.append(float(x), float(y))
+            # Add the series to the chart.
+            self.addSeries(mgorSeries)
+
         self.createDefaultAxes()
 
-    def plotSamples(self, samples, plotMode, dataFileType):
+    def plotSamples(self, samples, plotMode, dataFileType, inputDir):
         """
         Plots a list of samples, with a given plotting mode.
         Parameters
@@ -142,4 +200,9 @@ class GudPyChart(QChart):
 
             # Iterate through samples adding them to the plot.
             for sample in samples:
-                self.plotSample(sample, plotMode, dataFileType)
+                self.plotSample(sample, plotMode, dataFileType, inputDir)
+        elif plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+            # Set the title.
+            self.setTitle("Radial Distribution Functions")
+            for sample in samples:
+                self.plotSample(sample, plotMode, dataFileType, inputDir)
