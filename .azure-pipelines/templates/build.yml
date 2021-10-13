@@ -38,6 +38,7 @@ steps:
       pip install pyinstaller
       
   - bash: |
+      pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
       PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
       PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
       PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
