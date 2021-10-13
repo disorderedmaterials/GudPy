@@ -13,10 +13,6 @@ class GudPyChart(QChart):
 
     ...
 
-    Attributes
-    ----------
-    plottable : bool
-        Is the chart plottable?
     Methods
     -------
     plotSample(sample, plotMode, dataFileType):
@@ -44,7 +40,6 @@ class GudPyChart(QChart):
             Mode to use for plotting.
         """
         super(GudPyChart, self).__init__()
-        self.plottable = False
 
         # Call plotting function.
         if sample:
@@ -81,8 +76,11 @@ class GudPyChart(QChart):
 
             # Instantiate the series'.
             mintSeries = QLineSeries()
+            # Set the name of the series.
+            mintSeries.setName(f"{sample.name} mint01")
             mdcsSeries = QLineSeries()
-
+            # Set the name of the series.
+            mdcsSeries.setName(f"{sample.name} mdcs01")
             # mint01 files are only present if a positive top hat
             # width is used.
             if sample.topHatW:
@@ -101,8 +99,6 @@ class GudPyChart(QChart):
 
                             # Append the data to the series.
                             mintSeries.append(float(x), float(y))
-                    # Set the name of the series.
-                    mintSeries.setName(f"{sample.name} mint01")
                     # Add the series to the chart.
                     self.addSeries(mintSeries)
 
@@ -121,11 +117,8 @@ class GudPyChart(QChart):
 
                         # Append the data to the series.
                         mdcsSeries.append(float(x), float(y))
-                # Set the name of the series.
-                mdcsSeries.setName(f"{sample.name} mdcs01")
-                # Add the series to the chart.
-                self.addSeries(mdcsSeries)
-                self.plottable = True
+            # Add the series to the chart.
+            self.addSeries(mdcsSeries)
 
         self.createDefaultAxes()
 

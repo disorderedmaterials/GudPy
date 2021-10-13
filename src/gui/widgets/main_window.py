@@ -138,13 +138,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.samplePlotGroupBox.setVisible(False)
         self.mainWidget.sampleChartView = QChartView()
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.sampleChartView
         )
 
-        self.mainWidget.samplePlotGroupBox.setVisible(False)
         self.mainWidget.allSampleChartView = QChartView()
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.allSampleChartView
@@ -350,10 +348,6 @@ class GudPyMainWindow(QMainWindow):
             )
             self.mainWidget.allSampleChartView.setRubberBand(
                 QChartView.HorizontalRubberBand
-            )
-            self.mainWidget.samplePlotGroupBox.setVisible(
-                self.mainWidget.sampleChart.plottable |
-                self.mainWidget.allSamplesChart.plottable
             )
 
     def updateComponents(self):
