@@ -503,7 +503,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIteration(self):
         if isinstance(self.iterator, TweakFactorIterator):
-            self.iterator.performIteration()
+            self.iterator.performIteration(self.currentIteration)
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
@@ -530,7 +530,10 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.currentTaskLabel.setText(f"{self.text} {(self.currentIteration+1)//2}/{self.numberIterations}")
 
     def progressIteration(self):
-        pass
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.mainWidget.progressBar.setValue(100/self.numberIterations * self.currentIteration+1)
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            self.mainWidget.progressBar.setValue(100/self.numberIterations * ((self.currentIteration+1)//2))
 
 
     def checkFilesExist_(self):
