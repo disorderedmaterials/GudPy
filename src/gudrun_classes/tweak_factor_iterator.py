@@ -76,4 +76,4 @@ class TweakFactorIterator():
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
             self.gudrunFile.process()
-            self.performIteration()
+            self.performIteration(i)
