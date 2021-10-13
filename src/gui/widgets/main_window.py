@@ -108,6 +108,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(IterationDialog)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
@@ -483,19 +484,40 @@ class GudPyMainWindow(QMainWindow):
 
     def iterateGudrun_(self):
         self.setControlsEnabled(False)
-        iterationDialog = IterationDialog(self.gudrunFile, self)
-        iterationDialog.exec()
-        iterate = iterationDialog.iterateCommand
-        if iterationDialog.cancelled:
-            self.setControlsEnabled(True)
-        elif not iterate:
-            QMessageBox.critical(
-                self, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
-            )
+        iterationDialog = IterationDialog(self.gudrunFile, self.mainWidget)
+        iterationDialog.widget.exec()
+        if iterationDialog.cancelled or not iterationDialog.iterator:
             self.setControlsEnabled(True)
         else:
-            pass
+            self.queue = iterationDialog.queue
+            self.iterator = iterationDialog.iterator
+            self.numberIterations = iterationDialog.numberIterations
+            self.currentIteration = 0
+            self.nextIterableProc()
+
+    def nextIteration(self):
+        self.iterator.performIteration()
+        self.nextIterableProc()
+        self.currentIteration+=1
+
+    def nextIterableProc(self):
+        self.proc = self.queue.get()
+        print(self.proc)
+        self.proc.started.connect(self.iterationStarted)
+        if not self.queue.empty():
+            self.proc.finished.connect(self.nextIteration)
+        else:
+            self.proc.finished.connect(self.procFinished)
+        self.proc.readyReadStandardOutput.connect(self.progressIteration)
+        self.proc.started.connect(self.iterationStarted)
+        self.proc.start()
+
+    def iterationStarted(self):
+        self.mainWidget.currentTaskLabel.setText(f"gudrun_dcs {self.currentIteration+1}/{self.numberIterations}")
+
+    def progressIteration(self):
+        pass
+
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
@@ -645,4 +667,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+<<<<<<< HEAD
         self.updatePlots()
+=======
+>>>>>>> feat: iterate by tweak factor.
