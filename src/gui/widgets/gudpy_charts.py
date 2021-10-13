@@ -76,6 +76,10 @@ class GudPyChart(QChart):
             mdcsFile = (
                 sample.dataFiles.dataFiles[0].replace(dataFileType, "mdcs01")
             )
+            if not os.path.exists(mintFile):
+                mintFile = os.path.join(inputDir, mintFile)
+            if not os.path.exists(mdcsFile):
+                mdcsFile = os.path.join(inputDir, mdcsFile)
 
             # Instantiate the series'.
             mintSeries = QLineSeries()
@@ -134,6 +138,10 @@ class GudPyChart(QChart):
             mgorFile = (
                 sample.dataFiles.dataFiles[0].replace(dataFileType, "mgor")
             )
+            if not os.path.exists(mdorFile):
+                mintFile = os.path.join(inputDir, mdorFile)
+            if not os.path.exists(mgorFile):
+                mdcsFile = os.path.join(inputDir, mgorFile)
 
             # Instantiate the series'.
             mdorSeries = QLineSeries()
