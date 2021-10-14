@@ -94,6 +94,7 @@ class GudPyMainWindow(QMainWindow):
                     sys._MEIPASS, "ui_files", "mainWindow.ui"
                 )
             )
+            current_dir = os.path.sep
         else:
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
