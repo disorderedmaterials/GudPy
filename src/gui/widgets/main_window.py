@@ -108,6 +108,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(PurgeDialog)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
@@ -445,7 +446,7 @@ class GudPyMainWindow(QMainWindow):
     def runPurge_(self):
         self.setControlsEnabled(True)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
-        purgeDialog.exec()
+        purgeDialog.widget.exec()
         purge = purgeDialog.purge_det
         if purgeDialog.cancelled:
             self.setControlsEnabled(True)
