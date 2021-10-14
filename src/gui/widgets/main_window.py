@@ -1,3 +1,7 @@
+from PySide6.QtCharts import QChartView
+from PySide6.QtCore import QFile
+from PySide6.QtGui import QPainter
+from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -14,6 +18,7 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QSizePolicy,
     QStatusBar,
+    QVBoxLayout,
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
@@ -82,8 +87,19 @@ class GudPyMainWindow(QMainWindow):
         """
         Loads the UI file for the GudPyMainWindow.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/mainWindow.ui")
+        if hasattr(sys, '_MEIPASS'):
+            uifile = QFile(
+                os.path.join(
+                    sys._MEIPASS, "ui_files", "mainWindow.ui"
+                )
+            )
+        else:
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            uifile = QFile(
+                os.path.join(
+                    current_dir, "ui_files", "mainWindow.ui"
+                )
+            )
 
         loader = QUiLoader()
         loader.registerCustomWidget(GudPyTreeView)
@@ -123,6 +139,62 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
+        self.mainWidget.sampleStructureFactorChartView = QChartView()
+
+        self.mainWidget.sampleStructureFactorChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.sampleStructureFactorChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.samplePlotLayout.addWidget(
+            self.mainWidget.sampleStructureFactorChartView
+        )
+
+        self.mainWidget.sampleRDFChartView = QChartView()
+
+        self.mainWidget.sampleRDFChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.sampleRDFChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.samplePlotLayout.addWidget(
+            self.mainWidget.sampleRDFChartView
+        )
+
+        self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
+
+        self.mainWidget.allSampleStructureFactorChartView = QChartView()
+
+        self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.allSampleStructureFactorChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.plotsLayout.addWidget(
+            self.mainWidget.allSampleStructureFactorChartView
+        )
+
+        self.mainWidget.allSampleRDFChartView = QChartView()
+
+        self.mainWidget.allSampleRDFChartView.setRenderHint(
+            QPainter.Antialiasing
+        )
+        self.mainWidget.allSampleRDFChartView.setRubberBand(
+            QChartView.HorizontalRubberBand
+        )
+
+        self.mainWidget.plotsLayout.addWidget(
+            self.mainWidget.allSampleRDFChartView
+        )
+
+        self.mainWidget.plotTab.setLayout(self.mainWidget.plotsLayout)
+
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
         self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
@@ -142,6 +214,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.iterateGudrun.triggered.connect(
             self.iterateGudrun_
         )
+
+        self.mainWidget.checkFilesExist.triggered.connect(
+            self.checkFilesExist_
+        )
+
         self.mainWidget.save.triggered.connect(self.saveInputFile)
 
         self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
@@ -215,6 +292,7 @@ class GudPyMainWindow(QMainWindow):
                     )
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
         self.setActionsEnabled(True)
+        self.updatePlots()
 
     def loadInputFile_(self):
         """
@@ -228,7 +306,7 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile = GudrunFile(filename)
                 self.updateWidgets()
             except ParserException as e:
-                QMessageBox.critical(self, "GudPy Error", str(e))
+                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
     def saveInputFile(self):
         """
@@ -286,12 +364,60 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
 
+    def updatePlots(self):
+        if self.mainWidget.objectStack.currentIndex() == 4:
+            self.mainWidget.sampleChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                sample=self.mainWidget.objectTree.currentObject()
+            )
+            self.mainWidget.sampleStructureFactorChartView.setChart(
+                self.mainWidget.sampleChart
+            )
+            self.mainWidget.sampleRDFChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                sample=self.mainWidget.objectTree.currentObject(),
+                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            )
+            self.mainWidget.sampleRDFChartView.setChart(
+                self.mainWidget.sampleRDFChart
+            )
+        else:
+            self.mainWidget.allSamplesChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                samples=[
+                    sample
+                    for sampleBackground in self.gudrunFile.sampleBackgrounds
+                    for sample in sampleBackground.samples
+                ]
+            )
+            self.mainWidget.allSampleStructureFactorChartView.setChart(
+                self.mainWidget.allSamplesChart
+            )
+
+            self.mainWidget.allSamplesRDFChart = GudPyChart(
+                self.gudrunFile.instrument.dataFileType,
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                samples=[
+                    sample
+                    for sampleBackground in self.gudrunFile.sampleBackgrounds
+                    for sample in sampleBackground.samples
+                ],
+                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            )
+            self.mainWidget.allSampleRDFChartView.setChart(
+                self.mainWidget.allSamplesRDFChart
+            )
+
     def updateComponents(self):
         """
         Updates geometries and compositions.
         """
         self.updateGeometries()
         self.updateCompositions()
+        self.updatePlots()
 
     def exit_(self):
         """
@@ -300,7 +426,7 @@ class GudPyMainWindow(QMainWindow):
         messageBox = QMessageBox
         result = (
             messageBox.question(
-                self, '',
+                self.mainWidget, '',
                 "Do you want to save?", messageBox.No | messageBox.Yes
             )
         )
@@ -325,7 +451,8 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
         elif not purge:
             QMessageBox.critical(
-                self, "GudPy Error", "Couldn't find purge_det binary."
+                self.mainWidget,
+                "GudPy Error", "Couldn't find purge_det binary."
             )
             self.setControlsEnabled(True)
         else:
@@ -336,12 +463,12 @@ class GudPyMainWindow(QMainWindow):
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         if not dcs:
             QMessageBox.critical(
-                self, "GudPy Error",
+                self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
         elif not self.gudrunFile.purged:
             choice = QMessageBox.warning(
-                self, "GudPy Warning",
+                self.mainWidget, "GudPy Warning",
                 "It looks like you may not have purged detectors. Continue?",
                 QMessageBox.Yes | QMessageBox.No
             )
@@ -372,10 +499,11 @@ class GudPyMainWindow(QMainWindow):
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        print(result)
         if not all(r[0] for r in result):
             unresolved = "\n".join(r[1] for r in result if not r[0])
             QMessageBox.critical(
-                self, "GudPy Error",
+                self.mainWidget, "GudPy Error",
                 f"Couldn't resolve some files!"
                 f" Check that all paths are correct and try again."
                 f"{unresolved}"
@@ -481,12 +609,15 @@ class GudPyMainWindow(QMainWindow):
         progress = self.progressIncrement()
         if progress == -1:
             QMessageBox.critical(
-                self, "GudPy Error",
+                self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
-        progress += self.progressBar.value()
-        self.progressBar.setValue(progress if progress <= 100 else 100)
+            return
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
 
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
@@ -494,23 +625,24 @@ class GudPyMainWindow(QMainWindow):
         print(stdout)
         if "Total run time" in stdout:
             QMessageBox.warning(
-                self, "GudPy Warning",
+                self.mainWidget, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
         elif "Error" in stdout or "error" in stdout:
             QMessageBox.critical(
-                self, "GudPy Error",
+                self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
 
     def procStarted(self):
-        self.currentTaskLabel.setText(
+        self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
 
     def procFinished(self):
         self.proc = None
         self.setControlsEnabled(True)
-        self.currentTaskLabel.setText("No task running.")
-        self.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.progressBar.setValue(0)
+        self.updatePlots()

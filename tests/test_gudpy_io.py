@@ -27,9 +27,20 @@ from src.gudrun_classes.enums import (
 class TestGudPyIO(TestCase):
 
     def setUp(self) -> None:
+        path = "TestData/NIMROD-water/water.txt"
+
+        if os.name == "nt":
+            from pathlib import Path
+            dirpath = Path().resolve() / "tests/" / Path(path)
+        else:
+            dirpath = (
+                "/".join(os.path.realpath(__file__).split("/")[:-1])
+                + "/"
+                + path
+            )
         self.expectedInstrument = {
             "name": Instruments.NIMROD,
-            "GudrunInputFileDir": os.path.sep,
+            "GudrunInputFileDir": os.path.dirname(os.path.abspath(dirpath)),
             "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
@@ -67,8 +78,8 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": f"bin{os.path.sep}",
-            "startupFileFolder": f"bin{os.path.sep}",
+            "GudrunStartFolder": "bin",
+            "startupFileFolder": os.path.join("bin", "StartupFiles"),
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "nxsDefinitionFile": "",
@@ -479,17 +490,6 @@ class TestGudPyIO(TestCase):
             0
         ].__dict__ = self.expectedContainerA
 
-        path = "TestData/NIMROD-water/water.txt"
-
-        if os.name == "nt":
-            from pathlib import Path
-            dirpath = Path().resolve() / "tests/" / Path(path)
-        else:
-            dirpath = (
-                "/".join(os.path.realpath(__file__).split("/")[:-1])
-                + "/"
-                + path
-            )
         self.g = GudrunFile(dirpath)
 
         self.dicts = [
@@ -690,13 +690,19 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, inlines)
                 else:
-                    if value == f"bin{os.path.sep}" or value == os.path.sep:
+                    if (
+                        value == "bin"
+                        or value == os.path.sep
+                        or value == os.path.join("bin", "StartupFiles")
+                        or value == self.g.instrument.GudrunInputFileDir
+                    ):
                         continue
                     valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
+        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         g1.write_out()
 
         self.assertEqual(
@@ -713,6 +719,7 @@ class TestGudPyIO(TestCase):
     def testReloadGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
+        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(str(g1), str(self.g))
 
     def testLoadEmptyGudrunFile(self):

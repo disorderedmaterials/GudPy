@@ -1,6 +1,7 @@
 from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 import os
+import sys
 
 
 class Instrument:
@@ -117,8 +118,7 @@ class Instrument:
         None
         """
         self.name = Instruments.NIMROD
-        # Use the path separator of the OS to allow absolute file names.
-        self.GudrunInputFileDir = os.path.sep
+        self.GudrunInputFileDir = ""
         self.dataFileDir = ""
         self.dataFileType = ""
         self.detectorCalibrationFileName = ""
@@ -150,8 +150,11 @@ class Instrument:
         self.neutronScatteringParametersFile = ""
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
-        self.GudrunStartFolder = f"bin{os.path.sep}"
-        self.startupFileFolder = f"bin{os.path.sep}"
+        self.GudrunStartFolder = "bin"
+        self.startupFileFolder = (
+            os.path.join("bin", "StartupFiles")
+            if not hasattr(sys, '_MEIPASS') else "StartupFiles"
+        )
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
