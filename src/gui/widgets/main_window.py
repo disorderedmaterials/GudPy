@@ -536,14 +536,22 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def progressIteration(self):
+        progress = self.progressIncrement()
+        if progress == -1:
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                f"An error occurred. See the following traceback"
+                f" from gudrun_dcs\n{self.error}"
+            )
+            return
         if isinstance(self.iterator, TweakFactorIterator):
-            self.mainWidget.progressBar.setValue(
-                100/self.numberIterations * self.currentIteration+1
-            )
+            progress /= self.numberIterations
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            self.mainWidget.progressBar.setValue(
-                100/self.numberIterations * ((self.currentIteration+1)//2)
-            )
+            progress /= self.numberIterations
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
