@@ -110,7 +110,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
-        loader.setWorkingDirectory(os.path.join(current_dir, "ui_files/"))
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
