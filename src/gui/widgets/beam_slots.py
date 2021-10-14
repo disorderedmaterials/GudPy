@@ -476,7 +476,7 @@ class BeamSlots():
         from the addBeamValueButton.
         """
         self.widget.beamProfileValuesTable.removeRow(
-            self.beamProfileValuesTable.selectionModel().selectedRows()
+            self.widget.beamProfileValuesTable.selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

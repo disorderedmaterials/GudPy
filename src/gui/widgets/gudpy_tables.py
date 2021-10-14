@@ -470,9 +470,9 @@ class BeamProfileModel(GudPyTableModel):
         Returns
         -------
         int
-            Number of columns in the model - this is always 5.
+            Number of columns in the model - this is always 1.
         """
-        return 5
+        return 1
 
     def headerData(self, section, orientation, role):
         """
