@@ -1,7 +1,6 @@
 from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 import os
-import sys
 
 
 class Instrument:
@@ -151,10 +150,7 @@ class Instrument:
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
         self.GudrunStartFolder = "bin"
-        self.startupFileFolder = (
-            os.path.join("bin", "StartupFiles")
-            if not hasattr(sys, '_MEIPASS') else "StartupFiles"
-        )
+        self.startupFileFolder = os.path.join("bin", "StartupFiles")
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
