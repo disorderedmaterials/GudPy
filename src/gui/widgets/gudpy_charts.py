@@ -133,16 +133,16 @@ class GudPyChart(QChart):
 
             # Get the mint01 and mdcs01 filenames.
             mdorFile = (
-                sample.dataFiles.dataFiles[0].replace(dataFileType, "mdor")
+                sample.dataFiles.dataFiles[0].replace(dataFileType, "mdor01")
             )
             mgorFile = (
-                sample.dataFiles.dataFiles[0].replace(dataFileType, "mgor")
+                sample.dataFiles.dataFiles[0].replace(dataFileType, "mgor01")
             )
             if not os.path.exists(mdorFile):
-                mintFile = os.path.join(inputDir, mdorFile)
+                mdorFile = os.path.join(inputDir, mdorFile)
             if not os.path.exists(mgorFile):
-                mdcsFile = os.path.join(inputDir, mgorFile)
-
+                mgorFile = os.path.join(inputDir, mgorFile)
+            print(mdorFile, mgorFile)
             # Instantiate the series'.
             mdorSeries = QLineSeries()
             # Set the name of the series.
