@@ -466,6 +466,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun_(self):
         self.setControlsEnabled(False)
+        self.gudrunFile.write_out()
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         if not dcs:
             QMessageBox.critical(
@@ -504,11 +505,13 @@ class GudPyMainWindow(QMainWindow):
     def nextIteration(self):
         if isinstance(self.iterator, TweakFactorIterator):
             self.iterator.performIteration(self.currentIteration)
+            self.gudrunFile.write_out()
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
             else:
                 self.iterator.wavelengthIteration(self.currentIteration)
+            self.gudrunFile.write_out()
         self.nextIterableProc()
         self.currentIteration += 1
 
