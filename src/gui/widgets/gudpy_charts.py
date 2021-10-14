@@ -1,4 +1,6 @@
-from PySide6.QtCharts import QChart, QLineSeries
+from PySide6.QtCharts import QChart, QChartView, QLineSeries
+from PySide6.QtCore import QRect, QRectF, Qt
+from PySide6.QtGui import QMouseEvent
 from enum import Enum
 import os
 
@@ -212,3 +214,26 @@ class GudPyChart(QChart):
             self.setTitle("Radial Distribution Functions")
             for sample in samples:
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
+
+class GudPyChartView(QChartView):
+
+    def __init__(self, parent):
+        super(GudPyChartView, self).__init__(parent=parent)
+        self.chart = None
+        self.pose = None
+
+    def mouseMoveEvent(self, event):
+        self.pose = event.pos()
+        return super().mouseMoveEvent(event)
+
+    def wheelEvent(self, event):
+        delta = event.angleDelta()
+        print(delta.x(), delta.y())
+        if delta.y() < 0:
+            self.chart.zoomIn(QRectF(self.pose.x(), self.pose.y()))
+        else:
+            self.chart.zoomOut()
+
+    def setChart(self, chart):
+        self.chart = chart
+        return super().setChart(chart)
