@@ -96,6 +96,8 @@ stages:
             os: '$(imageName)'
             osName: $(osName)
             gudrunTag: $(gudrunTag)
-
-
-    
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathToPublish: "dist/"
+            ArtifactName: '$(osName)-artifacts'
+          displayName: 'Publish $(osName) Artifacts'
