@@ -38,7 +38,6 @@ class TestGudPyIO(TestCase):
                 + "/"
                 + path
             )
-
         self.expectedInstrument = {
             "name": Instruments.NIMROD,
             "GudrunInputFileDir": os.path.dirname(os.path.abspath(dirpath)),
@@ -695,6 +694,7 @@ class TestGudPyIO(TestCase):
                         value == "bin"
                         or value == os.path.sep
                         or value == os.path.join("bin", "StartupFiles")
+                        or value == self.g.instrument.GudrunInputFileDir
                     ):
                         continue
                     valueInLines(value, inlines)
@@ -702,6 +702,7 @@ class TestGudPyIO(TestCase):
     def testRewriteGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
+        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         g1.write_out()
 
         self.assertEqual(
@@ -718,6 +719,7 @@ class TestGudPyIO(TestCase):
     def testReloadGudrunFile(self):
         self.g.write_out()
         g1 = GudrunFile(self.g.outpath)
+        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(str(g1), str(self.g))
 
     def testLoadEmptyGudrunFile(self):
