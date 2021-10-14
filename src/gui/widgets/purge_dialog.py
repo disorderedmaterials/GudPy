@@ -1,3 +1,7 @@
+import os
+import sys
+from PySide6.QtCore import QFile
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QDialog
 
 
@@ -43,11 +47,11 @@ class PurgeDialog(QDialog):
             ignoreBad=self.ignoreBad,
             excludeSampleAndCan=self.excludeSampleAndCan
         )
-        self.close()
+        self.widget.close()
 
     def cancel(self):
         self.cancelled = True
-        self.close()
+        self.widget.close()
 
     def handleStdDeviationsAcceptanceOffsetChanged(self, value):
         self.stdDeviationsAcceptanceOffset = value
@@ -65,24 +69,36 @@ class PurgeDialog(QDialog):
         """
         Loads the UI file for the IterationDialog object.
         """
-        # current_dir = os.path.dirname(os.path.realpath(__file__))
-        # uifile = os.path.join(current_dir, "ui_files/purgeDialog.ui")
-        # uic.loadUi(uifile, self)
-        self.buttonBox.accepted.connect(
+        if hasattr(sys, '_MEIPASS'):
+            uifile = QFile(
+                os.path.join(
+                    sys._MEIPASS, "ui_files", "purgeDialog.ui"
+                )
+            )
+        else:
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            uifile = QFile(
+                os.path.join(
+                    current_dir, "ui_files", "purgeDialog.ui"
+                )
+            )
+        loader = QUiLoader()
+        self.widget = loader.load(uifile)
+        self.widget.buttonBox.accepted.connect(
             self.purge
         )
-        self.buttonBox.rejected.connect(
+        self.widget.buttonBox.rejected.connect(
             self.cancel
         )
-        self.stdDeviationsSpinBox.valueChanged.connect(
+        self.widget.stdDeviationsSpinBox.valueChanged.connect(
             self.handleStdDeviationsAcceptanceOffsetChanged
         )
-        self.rangeAroundMeanSpinBox.valueChanged.connect(
+        self.widget.rangeAroundMeanSpinBox.valueChanged.connect(
             self.handleStdsAroundMeanDeviationChanged
         )
-        self.ignoreBadCheckBox.toggled.connect(
+        self.widget.ignoreBadCheckBox.toggled.connect(
             self.ignoreBadChanged
         )
-        self.excludeSampleAndCanCheckBox.toggled.connect(
+        self.widget.excludeSampleAndCanCheckBox.toggled.connect(
             self.excludeSampleAndCanChanged
         )
