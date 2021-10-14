@@ -155,7 +155,6 @@ class Instrument:
             os.path.join("bin", "StartupFiles")
             if not hasattr(sys, '_MEIPASS') else "StartupFiles"
         )
-        print(self.startupFileFolder)
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
