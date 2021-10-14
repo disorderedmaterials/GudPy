@@ -1,3 +1,5 @@
+import sys
+from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import os
@@ -141,8 +143,19 @@ class IterationDialog(QDialog):
         """
         Loads the UI file for the IterationDialog object.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/iterationDialog.ui")
+        if hasattr(sys, '_MEIPASS'):
+            uifile = QFile(
+                os.path.join(
+                    sys._MEIPASS, "ui_files", "iterationDialog.ui"
+                )
+            )
+        else:
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            uifile = QFile(
+                os.path.join(
+                    current_dir, "ui_files", "iterationDialog.ui"
+                )
+            )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
         self.widget.tweakButton.toggled.connect(
