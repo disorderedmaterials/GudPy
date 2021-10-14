@@ -88,24 +88,22 @@ class GudPyChart(QChart):
             mdcsSeries = QLineSeries()
             # Set the name of the series.
             mdcsSeries.setName(f"{sample.name} mdcs01")
-            # mint01 files are only present if a positive top hat
-            # width is used.
-            if sample.topHatW:
-                # Check the file exists.
-                if os.path.exists(mintFile):
-                    # Open it.
-                    with open(mintFile, "r", encoding="utf-8") as f:
-                        for data in f.readlines():
 
-                            # Ignore commented lines.
-                            if data[0] == "#":
-                                continue
+            # Check the file exists.
+            if os.path.exists(mintFile):
+                # Open it.
+                with open(mintFile, "r", encoding="utf-8") as f:
+                    for data in f.readlines():
 
-                            # Extract x,y, err.
-                            x, y, _err, *__ = data.split()
+                        # Ignore commented lines.
+                        if data[0] == "#":
+                            continue
 
-                            # Append the data to the series.
-                            mintSeries.append(float(x), float(y))
+                        # Extract x,y, err.
+                        x, y, _err, *__ = data.split()
+
+                        # Append the data to the series.
+                        mintSeries.append(float(x), float(y))
             # Add the series to the chart.
             self.addSeries(mintSeries)
 
