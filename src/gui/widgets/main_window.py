@@ -152,7 +152,6 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleStructureFactorChartView
         )
 
-
         self.mainWidget.sampleRDFChartView = QChartView()
 
         self.mainWidget.sampleRDFChartView.setRenderHint(
@@ -165,7 +164,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.sampleRDFChartView
         )
-
 
         self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
 
@@ -380,7 +378,7 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile.instrument.dataFileType,
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 sample=self.mainWidget.objectTree.currentObject(),
-                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS 
+                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
             )
             self.mainWidget.sampleRDFChartView.setChart(
                 self.mainWidget.sampleRDFChart
@@ -389,7 +387,11 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.allSamplesChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                samples= [sample for sampleBackground in self.gudrunFile.sampleBackgrounds for sample in sampleBackground.samples]
+                samples=[
+                    sample
+                    for sampleBackground in self.gudrunFile.sampleBackgrounds
+                    for sample in sampleBackground.samples
+                ]
             )
             self.mainWidget.allSampleStructureFactorChartView.setChart(
                 self.mainWidget.allSamplesChart
@@ -398,12 +400,17 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.allSamplesRDFChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                samples= [sample for sampleBackground in self.gudrunFile.sampleBackgrounds for sample in sampleBackground.samples],
-                plotMode = PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                samples=[
+                    sample
+                    for sampleBackground in self.gudrunFile.sampleBackgrounds
+                    for sample in sampleBackground.samples
+                ],
+                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
             )
             self.mainWidget.allSampleRDFChartView.setChart(
                 self.mainWidget.allSamplesRDFChart
             )
+
     def updateComponents(self):
         """
         Updates geometries and compositions.

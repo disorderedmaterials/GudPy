@@ -3,6 +3,7 @@ from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
 import os
 import sys
 
+
 class Instrument:
     """
     Class to represent an Instrument.
@@ -149,8 +150,11 @@ class Instrument:
         self.neutronScatteringParametersFile = ""
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
-        self.GudrunStartFolder = f"bin"
-        self.startupFileFolder = os.path.join("bin", "StartupFiles") if not hasattr(sys, '_MEIPASS') else f"StartupFiles"
+        self.GudrunStartFolder = "bin"
+        self.startupFileFolder = (
+            os.path.join("bin", "StartupFiles")
+            if not hasattr(sys, '_MEIPASS') else "StartupFiles"
+        )
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""

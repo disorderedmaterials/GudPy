@@ -67,7 +67,7 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": f"bin",
+            "GudrunStartFolder": "bin",
             "startupFileFolder": os.path.join("bin", "StartupFiles"),
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
@@ -690,7 +690,11 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, inlines)
                 else:
-                    if value == "bin" or value == os.path.sep or value == os.path.join("bin", "StartupFiles"):
+                    if (
+                        value == "bin"
+                        or value == os.path.sep
+                        or value == os.path.join("bin", "StartupFiles")
+                    ):
                         continue
                     valueInLines(value, inlines)
 
