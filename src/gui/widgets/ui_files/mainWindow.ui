@@ -1230,8 +1230,8 @@
                                 <string/>
                                </property>
                                <property name="icon">
-                                <iconset>
-                                 <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                                <iconset resource="../resources/resources.qrc">
+                                 <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                                </property>
                               </widget>
                              </item>
@@ -1247,8 +1247,8 @@
                                 <string/>
                                </property>
                                <property name="icon">
-                                <iconset>
-                                 <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                                <iconset resource="../resources/resources.qrc">
+                                 <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                                </property>
                               </widget>
                              </item>
@@ -2820,8 +2820,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -2831,8 +2831,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -2951,8 +2951,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -2968,8 +2968,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -3066,8 +3066,8 @@
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -3083,8 +3083,8 @@
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -3758,8 +3758,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -3775,8 +3775,8 @@
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset>
-                         <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -3902,8 +3902,8 @@
                              <string/>
                             </property>
                             <property name="icon">
-                             <iconset>
-                              <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                             <iconset resource="../resources/resources.qrc">
+                              <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                             </property>
                            </widget>
                           </item>
@@ -3919,8 +3919,8 @@
                              <string>-</string>
                             </property>
                             <property name="icon">
-                             <iconset>
-                              <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                             <iconset resource="../resources/resources.qrc">
+                              <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                             </property>
                            </widget>
                           </item>
@@ -4116,8 +4116,8 @@
                                <string>+</string>
                               </property>
                               <property name="icon">
-                               <iconset>
-                                <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                               <iconset resource="../resources/resources.qrc">
+                                <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                               </property>
                              </widget>
                             </item>
@@ -4133,8 +4133,8 @@
                                <string>-</string>
                               </property>
                               <property name="icon">
-                               <iconset>
-                                <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                               <iconset resource="../resources/resources.qrc">
+                                <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                               </property>
                              </widget>
                             </item>
@@ -5081,8 +5081,8 @@
                               <string/>
                              </property>
                              <property name="icon">
-                              <iconset>
-                               <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                              <iconset resource="../resources/resources.qrc">
+                               <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                              </property>
                             </widget>
                            </item>
@@ -5098,8 +5098,8 @@
                               <string/>
                              </property>
                              <property name="icon">
-                              <iconset>
-                               <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                              <iconset resource="../resources/resources.qrc">
+                               <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                              </property>
                             </widget>
                            </item>
@@ -5190,8 +5190,8 @@
                               <string/>
                              </property>
                              <property name="icon">
-                              <iconset>
-                               <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                              <iconset resource="../resources/resources.qrc">
+                               <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                              </property>
                             </widget>
                            </item>
@@ -5207,8 +5207,8 @@
                               <string>-</string>
                              </property>
                              <property name="icon">
-                              <iconset>
-                               <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                              <iconset resource="../resources/resources.qrc">
+                               <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                              </property>
                             </widget>
                            </item>
@@ -5365,8 +5365,8 @@
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -5382,8 +5382,8 @@
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -5559,8 +5559,8 @@
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/plus.png</normaloff>../resources/plus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -5582,8 +5582,8 @@
                           <string>-</string>
                          </property>
                          <property name="icon">
-                          <iconset>
-                           <normaloff>../resources/minus.png</normaloff>../resources/minus.png</iconset>
+                          <iconset resource="../resources/resources.qrc">
+                           <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
                          </property>
                         </widget>
                        </item>
