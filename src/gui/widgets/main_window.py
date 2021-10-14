@@ -1,5 +1,4 @@
 from src.scripts.utils import nthint
-from PySide6.QtCore import QProcess
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
 import sys
