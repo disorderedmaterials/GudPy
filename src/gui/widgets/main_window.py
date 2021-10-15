@@ -1,7 +1,6 @@
-from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
-from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
+from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes, GudPyChartView
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -111,6 +110,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(PurgeDialog)
+        loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
@@ -142,26 +142,22 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.sampleStructureFactorChartView = QChartView()
+        self.mainWidget.sampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.sampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.sampleStructureFactorChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.sampleStructureFactorChartView
         )
 
-        self.mainWidget.sampleRDFChartView = QChartView()
+        self.mainWidget.sampleRDFChartView = GudPyChartView(self.mainWidget)
 
         self.mainWidget.sampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.sampleRDFChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.samplePlotLayout.addWidget(
@@ -170,26 +166,22 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
 
-        self.mainWidget.allSampleStructureFactorChartView = QChartView()
+        self.mainWidget.allSampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.allSampleStructureFactorChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.plotsLayout.addWidget(
             self.mainWidget.allSampleStructureFactorChartView
         )
 
-        self.mainWidget.allSampleRDFChartView = QChartView()
+        self.mainWidget.allSampleRDFChartView = GudPyChartView(self.mainWidget)
 
         self.mainWidget.allSampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.allSampleRDFChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.plotsLayout.addWidget(
