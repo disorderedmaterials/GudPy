@@ -703,6 +703,9 @@ class GudPyMainWindow(QMainWindow):
 
     def procFinished(self):
         self.proc = None
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.sampleSlots.setSample(self.sampleSlots.sample)
+        self.iterator = None
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
