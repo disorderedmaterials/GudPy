@@ -140,7 +140,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.sampleStructureFactorChartView = GudPyChartView(self.mainWidget)
+        self.mainWidget.sampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.sampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
@@ -162,7 +164,9 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
 
-        self.mainWidget.allSampleStructureFactorChartView = GudPyChartView(self.mainWidget)
+        self.mainWidget.allSampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
