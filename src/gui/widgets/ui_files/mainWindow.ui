@@ -311,7 +311,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="minWavelengthMonNormSpinBox">
+                    <widget class="ExponentialSpinBox" name="minWavelengthMonNormSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -333,7 +333,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="maxWavelengthMonNormSpinBox">
+                    <widget class="ExponentialSpinBox" name="maxWavelengthMonNormSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -410,7 +410,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="incidentMonitorQuietCountConstSpinBox">
+                    <widget class="ExponentialSpinBox" name="incidentMonitorQuietCountConstSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -445,7 +445,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
+                    <widget class="ExponentialSpinBox" name="transmissionMonitorQuietCountConstSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1089,7 +1089,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QDoubleSpinBox" name="groupsAcceptanceFactorSpinBox">
+                        <widget class="ExponentialSpinBox" name="groupsAcceptanceFactorSpinBox">
                          <property name="minimumSize">
                           <size>
                            <width>62</width>
@@ -1601,7 +1601,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="acceptanceFactorSpinBox">
+                    <widget class="ExponentialSpinBox" name="acceptanceFactorSpinBox">
                      <property name="minimumSize">
                       <size>
                        <width>62</width>
@@ -1669,7 +1669,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="minWavelengthSpinBox">
+                    <widget class="ExponentialSpinBox" name="minWavelengthSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1691,7 +1691,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="maxWavelengthSpinBox">
+                    <widget class="ExponentialSpinBox" name="maxWavelengthSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1713,7 +1713,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="stepWavelengthSpinBox">
+                    <widget class="ExponentialSpinBox" name="stepWavelengthSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1752,7 +1752,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="incidentFlightPathSpinBox">
+                    <widget class="ExponentialSpinBox" name="incidentFlightPathSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2019,7 +2019,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="absorptionStepSizeSpinBox">
+                    <widget class="ExponentialSpinBox" name="absorptionStepSizeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2054,7 +2054,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="msCalculationStepSizeSpinBox">
+                    <widget class="ExponentialSpinBox" name="msCalculationStepSizeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2199,7 +2199,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="leftIncidentBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2215,7 +2215,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="rightIncidentBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2231,7 +2231,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="topIncidentBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2247,7 +2247,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="bottomIncidentBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2293,7 +2293,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="leftScatteredBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2309,7 +2309,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="rightScatteredBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2325,7 +2325,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="topScatteredBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2341,7 +2341,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox">
+                    <widget class="ExponentialSpinBox" name="bottomScatteredBeamEdgeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2458,7 +2458,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="overallBackgroundFactorSpinBox">
+                    <widget class="ExponentialSpinBox" name="overallBackgroundFactorSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2493,7 +2493,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="sampleDependantBackgroundFactorSpinBox">
+                    <widget class="ExponentialSpinBox" name="sampleDependantBackgroundFactorSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -2545,7 +2545,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="shieldingSpinBox">
+                    <widget class="ExponentialSpinBox" name="shieldingSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3215,7 +3215,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="densitySpinBox">
+                      <widget class="ExponentialSpinBox" name="densitySpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -3336,7 +3336,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="upstreamSpinBox">
+                           <widget class="ExponentialSpinBox" name="upstreamSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -3377,7 +3377,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="downstreamSpinBox">
+                           <widget class="ExponentialSpinBox" name="downstreamSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -3440,7 +3440,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="innerRadiiSpinBox">
+                           <widget class="ExponentialSpinBox" name="innerRadiiSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -3463,7 +3463,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="outerRadiiSpinBox">
+                           <widget class="ExponentialSpinBox" name="outerRadiiSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -3529,7 +3529,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="placzekCorrectionSpinBox">
+                    <widget class="ExponentialSpinBox" name="placzekCorrectionSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3622,7 +3622,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="smoothingDegreeSpinBox">
+                    <widget class="ExponentialSpinBox" name="smoothingDegreeSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3639,7 +3639,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="lowerLimitSmoothingSpinBox">
+                    <widget class="ExponentialSpinBox" name="lowerLimitSmoothingSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3673,7 +3673,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="minNormalisationSignalSpinBox">
+                    <widget class="ExponentialSpinBox" name="minNormalisationSignalSpinBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -4165,7 +4165,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="tweakFactorSpinBox"/>
+                           <widget class="ExponentialSpinBox" name="tweakFactorSpinBox"/>
                           </item>
                          </layout>
                         </item>
@@ -4312,7 +4312,7 @@
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="sampleUpstreamSpinBox">
+                                <widget class="ExponentialSpinBox" name="sampleUpstreamSpinBox">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                    <horstretch>0</horstretch>
@@ -4335,7 +4335,7 @@
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="sampleDownstreamSpinBox">
+                                <widget class="ExponentialSpinBox" name="sampleDownstreamSpinBox">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                    <horstretch>0</horstretch>
@@ -4386,7 +4386,7 @@
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="sampleInnerRadiiSpinBox">
+                                <widget class="ExponentialSpinBox" name="sampleInnerRadiiSpinBox">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                    <horstretch>0</horstretch>
@@ -4409,7 +4409,7 @@
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="sampleOuterRadiiSpinBox">
+                                <widget class="ExponentialSpinBox" name="sampleOuterRadiiSpinBox">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                    <horstretch>0</horstretch>
@@ -4486,7 +4486,7 @@
                              </widget>
                             </item>
                             <item>
-                             <widget class="QDoubleSpinBox" name="angleOfRotationSpinBox">
+                             <widget class="ExponentialSpinBox" name="angleOfRotationSpinBox">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                 <horstretch>0</horstretch>
@@ -4521,7 +4521,7 @@
                              </widget>
                             </item>
                             <item>
-                             <widget class="QDoubleSpinBox" name="sampleWidthSpinBox">
+                             <widget class="ExponentialSpinBox" name="sampleWidthSpinBox">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                 <horstretch>0</horstretch>
@@ -4576,7 +4576,7 @@
                              </widget>
                             </item>
                             <item>
-                             <widget class="QDoubleSpinBox" name="sampleHeightSpinBox">
+                             <widget class="ExponentialSpinBox" name="sampleHeightSpinBox">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                 <horstretch>0</horstretch>
@@ -4633,7 +4633,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDoubleSpinBox" name="sampleDensitySpinBox">
+                           <widget class="ExponentialSpinBox" name="sampleDensitySpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -4700,7 +4700,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="topHatWidthSpinBox">
+                         <widget class="ExponentialSpinBox" name="topHatWidthSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4717,7 +4717,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="broadeningFunctionSpinBox">
+                         <widget class="ExponentialSpinBox" name="broadeningFunctionSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4734,7 +4734,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="broadeningPowerSpinBox">
+                         <widget class="ExponentialSpinBox" name="broadeningPowerSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4768,7 +4768,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="minSpinBox">
+                         <widget class="ExponentialSpinBox" name="minSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4785,7 +4785,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="maxSpinBox">
+                         <widget class="ExponentialSpinBox" name="maxSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4802,7 +4802,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="stepSizeSpinBox">
+                         <widget class="ExponentialSpinBox" name="stepSizeSpinBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4907,7 +4907,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="correctionFactorSpinBox">
+                      <widget class="ExponentialSpinBox" name="correctionFactorSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -4947,7 +4947,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="sampleScatteringFractionSpinBox">
+                      <widget class="ExponentialSpinBox" name="sampleScatteringFractionSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -4993,7 +4993,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="sampleAttenuationCoefficientSpinBox">
+                      <widget class="ExponentialSpinBox" name="sampleAttenuationCoefficientSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5459,7 +5459,7 @@
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QDoubleSpinBox" name="containerScatteringFractionSpinBox">
+                      <widget class="ExponentialSpinBox" name="containerScatteringFractionSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5482,7 +5482,7 @@
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QDoubleSpinBox" name="containerAttenuationCoefficientSpinBox">
+                      <widget class="ExponentialSpinBox" name="containerAttenuationCoefficientSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5620,7 +5620,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="containerDensitySpinBox">
+                      <widget class="ExponentialSpinBox" name="containerDensitySpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5664,7 +5664,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QDoubleSpinBox" name="containerTweakFactorSpinBox">
+                      <widget class="ExponentialSpinBox" name="containerTweakFactorSpinBox">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -5825,7 +5825,7 @@
                           </widget>
                          </item>
                          <item row="1" column="1">
-                          <widget class="QDoubleSpinBox" name="containerUpstreamSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerUpstreamSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5842,7 +5842,7 @@
                           </widget>
                          </item>
                          <item row="2" column="1">
-                          <widget class="QDoubleSpinBox" name="containerDownStreamSPinBox">
+                          <widget class="ExponentialSpinBox" name="containerDownStreamSPinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5859,7 +5859,7 @@
                           </widget>
                          </item>
                          <item row="3" column="1">
-                          <widget class="QDoubleSpinBox" name="containerAngleOfRotationSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerAngleOfRotationSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5876,7 +5876,7 @@
                           </widget>
                          </item>
                          <item row="4" column="1">
-                          <widget class="QDoubleSpinBox" name="containerSampleWidthSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerSampleWidthSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5926,7 +5926,7 @@
                           </widget>
                          </item>
                          <item row="1" column="1">
-                          <widget class="QDoubleSpinBox" name="containerInnerRadiiSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerInnerRadiiSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5949,7 +5949,7 @@
                           </widget>
                          </item>
                          <item row="2" column="1">
-                          <widget class="QDoubleSpinBox" name="containerOuterRadiiSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerOuterRadiiSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -5972,7 +5972,7 @@
                           </widget>
                          </item>
                          <item row="3" column="1">
-                          <widget class="QDoubleSpinBox" name="containerSampleHeightSpinBox">
+                          <widget class="ExponentialSpinBox" name="containerSampleHeightSpinBox">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -6228,6 +6228,11 @@
    <class>ResonanceTable</class>
    <extends>QTableView</extends>
    <header>src.gui.widgets.gudpy_tables</header>
+  </customwidget>
+  <customwidget>
+   <class>ExponentialSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>src.gui.widgets.exponential_spinbox</header>
   </customwidget>
  </customwidgets>
  <resources>

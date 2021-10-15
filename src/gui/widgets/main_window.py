@@ -1,6 +1,7 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
+from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
@@ -111,6 +112,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(PurgeDialog)
+        loader.registerCustomWidget(ExponentialSpinBox)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
