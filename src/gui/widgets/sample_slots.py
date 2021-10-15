@@ -152,7 +152,7 @@ class SampleSlots():
         self.widget.sampleDataFilesList.itemEntered.connect(
             self.handleDataFileInserted
         )
-        self.widget.addDataFileButton.clicked.connect(
+        self.widget.addSampleDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.sampleDataFilesList,
                 "Add data files",
@@ -160,7 +160,7 @@ class SampleSlots():
                 f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
-        self.widget.removeDataFileButton.clicked.connect(
+        self.widget.removeSampleDataFileButton.clicked.connect(
             lambda: self.removeFile(
                 self.widget.sampleDataFilesList, self.sample.dataFiles
             )
@@ -799,7 +799,7 @@ class SampleSlots():
         """
         Slot for adding files to the data files list.
         Called when a clicked signal is emitted,
-        from the addDataFileButton.
+        from the addSampleDataFileButton.
         Parameters
         ----------
         target : QListWidget
@@ -821,7 +821,7 @@ class SampleSlots():
         """
         Slot for removing files from the data files list.
         Called when a clicked signal is emitted,
-        from the removeDataFileButton.
+        from the removeSampleDataFileButton.
         Parameters
         ----------
         target : QListWidget

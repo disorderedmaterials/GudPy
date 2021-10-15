@@ -14,8 +14,6 @@ from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy
-import os
-import sys
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -81,29 +79,8 @@ class GudPyTreeModel(QAbstractItemModel):
         super(GudPyTreeModel, self).__init__(parent)
         self.gudrunFile = gudrunFile
         self.persistentIndexes = {}
-        if hasattr(sys, '_MEIPASS'):
-            self.sampleIcon = QIcon(
-                os.path.join(
-                    sys._MEIPASS, "resources", "sample.png"
-                )
-            )
-            self.containerIcon = QIcon(
-                os.path.join(
-                    sys._MEIPASS, "resources", "container.png"
-                )
-            )
-        else:
-            current_dir = os.path.dirname(os.path.realpath(__file__))
-            self.containerIcon = QIcon(
-                os.path.join(
-                    current_dir, "ui_files", "resources", "container.png"
-                )
-            )
-            self.sampleIcon = QIcon(
-                os.path.join(
-                    current_dir, "ui_files", "resources", "sample.png"
-                )
-            )
+        self.sampleIcon = QIcon(":/icons/sample")
+        self.containerIcon = QIcon(":/icons/container")
 
     def index(self, row, column, parent=QModelIndex()):
         """

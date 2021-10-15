@@ -39,6 +39,7 @@ from src.gui.widgets.normalisation_slots import NormalisationSlots
 from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
 import math
+from src.gui.widgets.resources import resources_rc  # noqa
 
 
 class GudPyMainWindow(QMainWindow):
@@ -93,6 +94,7 @@ class GudPyMainWindow(QMainWindow):
                     sys._MEIPASS, "ui_files", "mainWindow.ui"
                 )
             )
+            current_dir = os.path.sep
         else:
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
