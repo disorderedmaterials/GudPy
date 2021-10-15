@@ -501,6 +501,7 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
             self.text = iterationDialog.text
+            self.gudrunFile.write_out()
             self.nextIterableProc()
 
     def nextIteration(self):
