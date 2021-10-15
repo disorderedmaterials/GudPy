@@ -654,7 +654,8 @@ class GudPyTreeView(QTreeView):
         """
         Slot method for current index being changed in the tree view.
         """
-        self.click(current)
+        if current.internalPointer():
+            self.click(current)
         return super().currentChanged(current, previous)
 
     def click(self, modelIndex):

@@ -555,7 +555,6 @@ class GudPyMainWindow(QMainWindow):
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
-        print(result)
         if not all(r[0] for r in result):
             unresolved = "\n".join(r[1] for r in result if not r[0])
             QMessageBox.critical(
