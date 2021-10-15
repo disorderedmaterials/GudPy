@@ -1,8 +1,10 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries
-from PySide6.QtCore import QRect, QRectF, Qt
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtCore import QPoint, QPointF, QRect, QRectF, Qt
+from PySide6.QtGui import QAction, QCursor, QMouseEvent
 from enum import Enum
 import os
+
+from PySide6.QtWidgets import QMenu
 
 
 class PlotModes(Enum):
@@ -216,24 +218,64 @@ class GudPyChart(QChart):
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
 
 class GudPyChartView(QChartView):
+    """
+    Class to represent a GudPyChartView. Inherits QChartView.
 
+    ...
+    Attributes
+    ----------
+    chart : GudPyChart
+        Chart to be shown in the view.
+    Methods
+    -------
+    wheelEvent(event):
+        Event handler for using the scroll wheel.
+    setChart(chart):
+        Sets the chart.
+    """
     def __init__(self, parent):
         super(GudPyChartView, self).__init__(parent=parent)
         self.chart = None
-        self.pose = None
-
-    def mouseMoveEvent(self, event):
-        self.pose = event.pos()
-        return super().mouseMoveEvent(event)
+        self.setRubberBand(QChartView.RectangleRubberBand)
 
     def wheelEvent(self, event):
-        delta = event.angleDelta()
-        print(delta.x(), delta.y())
-        if delta.y() < 0:
-            self.chart.zoomIn(QRectF(self.pose.x(), self.pose.y()))
-        else:
-            self.chart.zoomOut()
+
+        # Decide on the zoom factor.
+        # If y > 0, zoom in, if y < 0 zoom out.
+        zoomFactor = 2.0 if event.angleDelta().y() > 0 else 0.5
+
+        # Create QRect area to zoom in on.
+        chartArea = self.chart.plotArea()
+        left = chartArea.left()
+        top = chartArea.top()
+        width = chartArea.width() / zoomFactor
+        height = chartArea.height() / zoomFactor
+        zoomArea = QRectF(left, top, width, height)
+
+        # Move the rectangle to the mouse position.
+        mousePos = self.mapFromGlobal(QCursor.pos())
+        zoomArea.moveCenter(mousePos)
+
+        # Zoom in on the area.
+        self.chart.zoomIn(zoomArea)
+
+        # Scroll to match the zoom.
+        delta = self.chart.plotArea().center() - mousePos
+        self.chart.scroll(delta.x(), -delta.y())
 
     def setChart(self, chart):
         self.chart = chart
         return super().setChart(chart)
+    
+    def contextMenuEvent(self, event):
+        self.menu = QMenu(self)
+        resetAction = QAction("Reset zoom", self.menu)
+        resetAction.triggered.connect(self.chart.zoomReset)
+        self.menu.addAction(resetAction)
+        self.menu.popup(QCursor.pos())
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            event.ignore()
+        else:
+            return super().mouseReleaseEvent(event)

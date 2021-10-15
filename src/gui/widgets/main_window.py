@@ -145,9 +145,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
         )
-        self.mainWidget.sampleStructureFactorChartView.setRubberBand(
-            GudPyChartView.HorizontalRubberBand
-        )
 
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.sampleStructureFactorChartView
@@ -157,9 +154,6 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.sampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.sampleRDFChartView.setRubberBand(
-            GudPyChartView.HorizontalRubberBand
         )
 
         self.mainWidget.samplePlotLayout.addWidget(
@@ -173,9 +167,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
         )
-        self.mainWidget.allSampleStructureFactorChartView.setRubberBand(
-            GudPyChartView.HorizontalRubberBand
-        )
 
         self.mainWidget.plotsLayout.addWidget(
             self.mainWidget.allSampleStructureFactorChartView
@@ -185,9 +176,6 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.allSampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.allSampleRDFChartView.setRubberBand(
-            GudPyChartView.HorizontalRubberBand
         )
 
         self.mainWidget.plotsLayout.addWidget(
