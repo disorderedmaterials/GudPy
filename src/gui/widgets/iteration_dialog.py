@@ -1,3 +1,5 @@
+import sys
+from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import os
@@ -6,6 +8,8 @@ from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+
+from queue import Queue
 
 
 class Iterables(Enum):
@@ -52,7 +56,7 @@ class IterationDialog(QDialog):
         self.tweak = Iterables.TWEAK_FACTOR
         self.performInelasticitySubtractions = False
         self.numberIterations = 1
-        self.iterateCommand = None
+        self.iterator = None
         self.cancelled = False
         self.text = ""
 
@@ -68,7 +72,7 @@ class IterationDialog(QDialog):
             The new state of the tweakButton (1: True, 0: False).
         """
         self.tweakValues = state
-        self.tweakWidget.setVisible(state)
+        self.widget.tweakWidget.setVisible(state)
 
     def handlePerformInelasticitySubtractionsChanged(self, state):
         """
@@ -104,42 +108,54 @@ class IterationDialog(QDialog):
         """
         if self.tweakValues:
             if self.tweak == Iterables.TWEAK_FACTOR:
-                tweakFactorIterator = TweakFactorIterator(self.gudrunFile)
-                self.iterateCommand = (
-                    tweakFactorIterator.iterate(
-                        self.numberIterations,
-                        headless=False
+                self.iterator = TweakFactorIterator(self.gudrunFile)
+                self.queue = Queue()
+                for i in range(self.numberIterations):
+                    self.queue.put(
+                        self.gudrunFile.dcs(path="gudpy.txt", headless=False)
                     )
-                )
                 self.text = "Tweak by tweak factor"
-                self.close()
+                self.widget.close()
             else:
                 pass
         elif self.performInelasticitySubtractions:
-            wavelengthSubtractionIterator = WavelengthSubtractionIterator(
+            self.iterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
-            self.iterateCommand = (
-                wavelengthSubtractionIterator.iterate(
-                    self.numberIterations,
-                    headless=False
+            self.queue = Queue()
+            for i in range(self.numberIterations):
+                self.queue.put(self.gudrunFile.dcs(
+                    path="gudpy.txt", headless=False)
                 )
-            )
+                self.queue.put(
+                    self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+                )
             self.text = "Inelasticity subtractions"
-            self.close()
+            self.widget.close()
         else:
             pass
 
     def cancel(self):
         self.cancelled = True
-        self.close()
+        self.widget.close()
 
     def initComponents(self):
         """
         Loads the UI file for the IterationDialog object.
         """
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        uifile = os.path.join(current_dir, "ui_files/iterationDialog.ui")
+        if hasattr(sys, '_MEIPASS'):
+            uifile = QFile(
+                os.path.join(
+                    sys._MEIPASS, "ui_files", "iterationDialog.ui"
+                )
+            )
+        else:
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            uifile = QFile(
+                os.path.join(
+                    current_dir, "ui_files", "iterationDialog.ui"
+                )
+            )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
         self.widget.tweakButton.toggled.connect(
@@ -154,6 +170,6 @@ class IterationDialog(QDialog):
         self.widget.buttonBox.accepted.connect(
             self.iterate
         )
-        self.buttonBox.rejected.connect(
+        self.widget.buttonBox.rejected.connect(
             self.cancel
         )
