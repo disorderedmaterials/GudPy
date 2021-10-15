@@ -14,8 +14,6 @@ from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy
-import os
-import sys
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -81,29 +79,8 @@ class GudPyTreeModel(QAbstractItemModel):
         super(GudPyTreeModel, self).__init__(parent)
         self.gudrunFile = gudrunFile
         self.persistentIndexes = {}
-        if hasattr(sys, '_MEIPASS'):
-            self.sampleIcon = QIcon(
-                os.path.join(
-                    sys._MEIPASS, "resources", "sample.png"
-                )
-            )
-            self.containerIcon = QIcon(
-                os.path.join(
-                    sys._MEIPASS, "resources", "container.png"
-                )
-            )
-        else:
-            current_dir = os.path.dirname(os.path.realpath(__file__))
-            self.containerIcon = QIcon(
-                os.path.join(
-                    current_dir, "ui_files", "resources", "container.png"
-                )
-            )
-            self.sampleIcon = QIcon(
-                os.path.join(
-                    current_dir, "ui_files", "resources", "sample.png"
-                )
-            )
+        self.sampleIcon = QIcon(":/icons/sample")
+        self.containerIcon = QIcon(":/icons/container")
 
     def index(self, row, column, parent=QModelIndex()):
         """
@@ -596,6 +573,8 @@ class GudPyTreeView(QTreeView):
         the modelIndexes with pages of the sibling QStackedWidget.
     makeModel()
         Creates the model for the tree view from the GudrunFile.
+    currentChanged(current, previous)
+        Slot method for current index being changed in the tree view.
     click(modelIndex)
         Slot method for clicked signal on GudPyTreeView.
     currentObject()
@@ -662,7 +641,6 @@ class GudPyTreeView(QTreeView):
         self.makeModel()
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
-        self.clicked.connect(self.click)
 
     def makeModel(self):
         """
@@ -672,9 +650,15 @@ class GudPyTreeView(QTreeView):
         self.model_ = GudPyTreeModel(self, self.gudrunFile)
         self.setModel(self.model_)
 
+    def currentChanged(self, current, previous):
+        """
+        Slot method for current index being changed in the tree view.
+        """
+        self.click(current)
+        return super().currentChanged(current, previous)
+
     def click(self, modelIndex):
         """
-        Slot method for clicked signal of GudPyTreeView.
         Sets the current index of the sibling QStackedWidget
         to the absolute index of the modelIndex.
         Parameters
