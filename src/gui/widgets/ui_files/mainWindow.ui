@@ -635,7 +635,7 @@
                    <item>
                     <layout class="QGridLayout" name="gridLayout_2">
                      <item row="2" column="1">
-                      <widget class="QDoubleSpinBox" name="minDSpacingSpinBox">
+                      <widget class="ExponentialSpinBox" name="minDSpacingSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -654,7 +654,7 @@
                       </widget>
                      </item>
                      <item row="5" column="2">
-                      <widget class="QDoubleSpinBox" name="maxTOFSpinBox">
+                      <widget class="ExponentialSpinBox" name="maxTOFSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -673,7 +673,7 @@
                       </widget>
                      </item>
                      <item row="3" column="3">
-                      <widget class="QDoubleSpinBox" name="stepWavelength_SpinBox">
+                      <widget class="ExponentialSpinBox" name="stepWavelength_SpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -692,7 +692,7 @@
                       </widget>
                      </item>
                      <item row="4" column="3">
-                      <widget class="QDoubleSpinBox" name="stepEnergySpinBox">
+                      <widget class="ExponentialSpinBox" name="stepEnergySpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -724,7 +724,7 @@
                       </widget>
                      </item>
                      <item row="1" column="3">
-                      <widget class="QDoubleSpinBox" name="stepQSpinBox">
+                      <widget class="ExponentialSpinBox" name="stepQSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -746,7 +746,7 @@
                       </widget>
                      </item>
                      <item row="4" column="1">
-                      <widget class="QDoubleSpinBox" name="minEnergySpinBox">
+                      <widget class="ExponentialSpinBox" name="minEnergySpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -765,7 +765,7 @@
                       </widget>
                      </item>
                      <item row="5" column="1">
-                      <widget class="QDoubleSpinBox" name="minTOFSpinBox">
+                      <widget class="ExponentialSpinBox" name="minTOFSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -797,7 +797,7 @@
                       </widget>
                      </item>
                      <item row="1" column="2">
-                      <widget class="QDoubleSpinBox" name="maxQSpinBox">
+                      <widget class="ExponentialSpinBox" name="maxQSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -816,7 +816,7 @@
                       </widget>
                      </item>
                      <item row="4" column="2">
-                      <widget class="QDoubleSpinBox" name="maxEnergySpinBox">
+                      <widget class="ExponentialSpinBox" name="maxEnergySpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -848,7 +848,7 @@
                       </widget>
                      </item>
                      <item row="2" column="2">
-                      <widget class="QDoubleSpinBox" name="maxDSpacingSpinBox">
+                      <widget class="ExponentialSpinBox" name="maxDSpacingSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -893,7 +893,7 @@
                       </widget>
                      </item>
                      <item row="3" column="2">
-                      <widget class="QDoubleSpinBox" name="maxWavelength_SpinBox">
+                      <widget class="ExponentialSpinBox" name="maxWavelength_SpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -912,7 +912,7 @@
                       </widget>
                      </item>
                      <item row="2" column="3">
-                      <widget class="QDoubleSpinBox" name="stepDSpacingSpinBox">
+                      <widget class="ExponentialSpinBox" name="stepDSpacingSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -931,7 +931,7 @@
                       </widget>
                      </item>
                      <item row="5" column="3">
-                      <widget class="QDoubleSpinBox" name="stepTOFSpinBox">
+                      <widget class="ExponentialSpinBox" name="stepTOFSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -950,7 +950,7 @@
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QDoubleSpinBox" name="minWavelength_SpinBox">
+                      <widget class="ExponentialSpinBox" name="minWavelength_SpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -969,7 +969,7 @@
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QDoubleSpinBox" name="minQSpinBox">
+                      <widget class="ExponentialSpinBox" name="minQSpinBox">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
