@@ -207,9 +207,9 @@ class GudFile:
         else:
             percentage = float(re.findall(floatRegex, output)[0])
             if percentage < 100:
-                self.output = f"-{100-percentage}%"
+                self.output = f"-{100.-percentage}%"
             elif percentage > 100:
-                self.output = f"+{percentage-100}%"
+                self.output = f"+{percentage-100.}%"
             else:
                 self.output = "0%"
         # Collect the suggested tweak factor from the end of the final line.
