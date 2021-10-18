@@ -40,7 +40,7 @@ class ExponentialValidator(QValidator):
             String to be checked.
         """
         match = self.regex.search(string)
-        return match.group(0) == string
+        return match.group(0) == string if match else ""
 
     def validate(self, string, position):
         """
