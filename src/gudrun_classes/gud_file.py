@@ -2,7 +2,7 @@ import os
 from os.path import isfile
 from src.gudrun_classes.exception import ParserException
 import re
-
+from decimal import Decimal
 percentageRegex = r'\d*[.]?\d*%'
 floatRegex = r'\d*[.]?\d'
 
@@ -207,9 +207,9 @@ class GudFile:
         else:
             percentage = float(re.findall(floatRegex, output)[0])
             if percentage < 100:
-                self.output = f"-{100.-percentage}%"
+                self.output = f"-{float(Decimal(100-percentage))}%"
             elif percentage > 100:
-                self.output = f"+{percentage-100.}%"
+                self.output = f"+{float(Decimal(percentage-100))}%"
             else:
                 self.output = "0%"
         # Collect the suggested tweak factor from the end of the final line.
