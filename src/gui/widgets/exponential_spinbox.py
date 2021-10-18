@@ -57,6 +57,8 @@ class ExponentialValidator(QValidator):
             return QValidator.State.Acceptable
         if not string:
             return QValidator.State.Intermediate
+        if string[position-1] == "e" and len(string) == 1:
+            return QValidator.State.Invalid
         if string[position-1] in self.symbols:
             if string[position-1] in string[:position-1]:
                 return QValidator.State.Invalid
