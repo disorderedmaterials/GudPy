@@ -1,6 +1,10 @@
 import os
 from os.path import isfile
 from src.gudrun_classes.exception import ParserException
+import re
+
+percentageRegex = r'\d*[.]?\d*%'
+floatRegex = r'\d*[.]?\d'
 
 
 class GudFile:
@@ -109,6 +113,7 @@ class GudFile:
         self.result = ""
         self.suggestedTweakFactor = 0.0
         self.contents = ""
+        self.output = ""
 
         # Handle edge cases - invalid extensions and paths.
         if self.path.split(".")[-1] != "gud":
@@ -192,6 +197,19 @@ class GudFile:
         else:
             self.result = line
 
+        output = self.err if self.err else self.result
+        if "BELOW" in output:
+            self.output = f"-{re.findall(percentageRegex, self.err)[0]}"
+        elif "ABOVE" in output:
+            self.output = f"+{re.findall(percentageRegex, self.err)[0]}"
+        else:
+            percentage = float(re.findall(floatRegex, output)[0])
+            if percentage < 100:
+                self.output = f"-{100-percentage}%"
+            elif percentage > 100:
+                self.output = f"+{percentage-100}%"
+            else:
+                self.output = "0%"
         # Collect the suggested tweak factor from the end of the final line.
         self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
 

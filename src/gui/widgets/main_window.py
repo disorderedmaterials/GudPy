@@ -5,6 +5,7 @@ from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from src.gudrun_classes.gud_file import GudFile
 from src.gui.widgets.gudpy_charts import (
   GudPyChart, PlotModes, GudPyChartView
 )
@@ -61,6 +62,8 @@ class GudPyMainWindow(QMainWindow):
         GudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
+    iterator : TweakFactorIterator | WavelengthSubtractionIterator
+        Iterator to use in iterations.
     Methods
     -------
     initComponents()
@@ -89,6 +92,7 @@ class GudPyMainWindow(QMainWindow):
         self.initComponents()
         self.clipboard = None
         self.modified = False
+        self.iterator = None
 
     def initComponents(self):
         """
@@ -296,7 +300,7 @@ class GudPyMainWindow(QMainWindow):
                     )
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
         self.setActionsEnabled(True)
-        self.updatePlots()
+        self.updateResults()
 
     def loadInputFile_(self):
         """
@@ -368,12 +372,13 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
 
-    def updatePlots(self):
+    def updateResults(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
+            sample = self.mainWidget.objectTree.currentObject()
             self.mainWidget.sampleChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=self.mainWidget.objectTree.currentObject()
+                sample=sample
             )
             self.mainWidget.sampleStructureFactorChartView.setChart(
                 self.mainWidget.sampleChart
@@ -381,39 +386,61 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleRDFChart = GudPyChart(
                 self.gudrunFile.instrument.dataFileType,
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=self.mainWidget.objectTree.currentObject(),
+                sample=sample,
                 plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
             )
             self.mainWidget.sampleRDFChartView.setChart(
                 self.mainWidget.sampleRDFChart
             )
-        else:
-            self.mainWidget.allSamplesChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                samples=[
-                    sample
-                    for sampleBackground in self.gudrunFile.sampleBackgrounds
-                    for sample in sampleBackground.samples
-                ]
+            path = sample.dataFiles.dataFiles[0].replace(
+                self.gudrunFile.instrument.dataFileType, "gud"
             )
-            self.mainWidget.allSampleStructureFactorChartView.setChart(
-                self.mainWidget.allSamplesChart
-            )
+            if not os.path.exists(path):
+                path = os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir, path
+                )
+            if os.path.exists(path):
+                gf = GudFile(path)
+                dcsLevel = gf.averageLevelMergedDCS
+                self.mainWidget.dcsLabel.setText(
+                    f"Average level of merged DCS: {dcsLevel}"
+                )
+                self.mainWidget.resultLabel.setText(gf.output)
+                if gf.err:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: red"
+                    )
+                else:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: green"
+                    )
 
-            self.mainWidget.allSamplesRDFChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                samples=[
-                    sample
-                    for sampleBackground in self.gudrunFile.sampleBackgrounds
-                    for sample in sampleBackground.samples
-                ],
-                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
-            )
-            self.mainWidget.allSampleRDFChartView.setChart(
-                self.mainWidget.allSamplesRDFChart
-            )
+        self.mainWidget.allSamplesChart = GudPyChart(
+            self.gudrunFile.instrument.dataFileType,
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            samples=[
+                sample
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sample in sampleBackground.samples
+            ]
+        )
+        self.mainWidget.allSampleStructureFactorChartView.setChart(
+            self.mainWidget.allSamplesChart
+        )
+
+        self.mainWidget.allSamplesRDFChart = GudPyChart(
+            self.gudrunFile.instrument.dataFileType,
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            samples=[
+                sample
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sample in sampleBackground.samples
+            ],
+            plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+        self.mainWidget.allSampleRDFChartView.setChart(
+            self.mainWidget.allSamplesRDFChart
+        )
 
     def updateComponents(self):
         """
@@ -421,7 +448,7 @@ class GudPyMainWindow(QMainWindow):
         """
         self.updateGeometries()
         self.updateCompositions()
-        self.updatePlots()
+        self.updateResults()
 
     def exit_(self):
         """
@@ -705,4 +732,4 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.updatePlots()
+        self.updateResults()
