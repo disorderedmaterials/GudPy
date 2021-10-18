@@ -1108,11 +1108,11 @@ class InstrumentSlots():
         """
         if dir:
             filename = (
-                QFileDialog.getExistingDirectory(self.widget, title, "") + "/"
+                QFileDialog.getExistingDirectory(self.widget, title, "")
             )
         else:
             filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
-        return filename
+        return filename + "/" if filename else ""
 
     def updateGroupingParameterPanel(self):
         """
