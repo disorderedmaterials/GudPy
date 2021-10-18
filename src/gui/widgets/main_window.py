@@ -403,7 +403,7 @@ class GudPyMainWindow(QMainWindow):
                 gf = GudFile(path)
                 dcsLevel = gf.averageLevelMergedDCS
                 self.mainWidget.dcsLabel.setText(
-                    f"Average level of merged DCS: {dcsLevel}"
+                    f"DCS Level: {dcsLevel}"
                 )
                 self.mainWidget.resultLabel.setText(gf.output)
                 if gf.err:
