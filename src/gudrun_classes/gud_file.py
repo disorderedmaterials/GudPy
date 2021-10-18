@@ -67,6 +67,8 @@ class GudFile:
         iterations.
     contents : str
         Contents of the .gud file.
+    output : str
+        Output for use in the GUI.
     Methods
     -------
     parse():
