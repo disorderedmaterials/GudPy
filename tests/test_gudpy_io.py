@@ -79,7 +79,7 @@ class TestGudPyIO(TestCase):
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
             "GudrunStartFolder": "bin",
-            "startupFileFolder": "StartupFiles"
+            "startupFileFolder": "StartupFiles",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "nxsDefinitionFile": "",
