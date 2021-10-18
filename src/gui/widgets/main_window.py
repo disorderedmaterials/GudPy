@@ -1,8 +1,13 @@
-from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
-from src.gui.widgets.gudpy_charts import GudPyChart, PlotModes
+from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.wavelength_subtraction_iterator import (
+    WavelengthSubtractionIterator
+)
+from src.gui.widgets.gudpy_charts import (
+  GudPyChart, PlotModes, GudPyChartView
+)
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -111,8 +116,10 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
+        loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
@@ -144,26 +151,22 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.sampleStructureFactorChartView = QChartView()
+        self.mainWidget.sampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.sampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.sampleStructureFactorChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.samplePlotLayout.addWidget(
             self.mainWidget.sampleStructureFactorChartView
         )
 
-        self.mainWidget.sampleRDFChartView = QChartView()
+        self.mainWidget.sampleRDFChartView = GudPyChartView(self.mainWidget)
 
         self.mainWidget.sampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.sampleRDFChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.samplePlotLayout.addWidget(
@@ -172,26 +175,22 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
 
-        self.mainWidget.allSampleStructureFactorChartView = QChartView()
+        self.mainWidget.allSampleStructureFactorChartView = GudPyChartView(
+            self.mainWidget
+        )
 
         self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.allSampleStructureFactorChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.plotsLayout.addWidget(
             self.mainWidget.allSampleStructureFactorChartView
         )
 
-        self.mainWidget.allSampleRDFChartView = QChartView()
+        self.mainWidget.allSampleRDFChartView = GudPyChartView(self.mainWidget)
 
         self.mainWidget.allSampleRDFChartView.setRenderHint(
             QPainter.Antialiasing
-        )
-        self.mainWidget.allSampleRDFChartView.setRubberBand(
-            QChartView.HorizontalRubberBand
         )
 
         self.mainWidget.plotsLayout.addWidget(
@@ -465,6 +464,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun_(self):
         self.setControlsEnabled(False)
+        self.gudrunFile.write_out()
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         if not dcs:
             QMessageBox.critical(
@@ -488,23 +488,75 @@ class GudPyMainWindow(QMainWindow):
 
     def iterateGudrun_(self):
         self.setControlsEnabled(False)
-        iterationDialog = IterationDialog(self.gudrunFile, self)
-        iterationDialog.exec()
-        iterate = iterationDialog.iterateCommand
-        if iterationDialog.cancelled:
-            self.setControlsEnabled(True)
-        elif not iterate:
-            QMessageBox.critical(
-                self, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
-            )
+        iterationDialog = IterationDialog(self.gudrunFile, self.mainWidget)
+        iterationDialog.widget.exec()
+        if iterationDialog.cancelled or not iterationDialog.iterator:
             self.setControlsEnabled(True)
         else:
-            pass
+            self.queue = iterationDialog.queue
+            self.iterator = iterationDialog.iterator
+            self.numberIterations = iterationDialog.numberIterations
+            self.currentIteration = 0
+            self.text = iterationDialog.text
+            self.gudrunFile.write_out()
+            self.nextIterableProc()
+
+    def nextIteration(self):
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.iterator.performIteration(self.currentIteration)
+            self.gudrunFile.write_out()
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            if (self.currentIteration + 1) % 2 == 0:
+                self.iterator.QIteration(self.currentIteration)
+            else:
+                self.iterator.wavelengthIteration(self.currentIteration)
+            self.gudrunFile.write_out()
+        self.nextIterableProc()
+        self.currentIteration += 1
+
+    def nextIterableProc(self):
+        self.proc = self.queue.get()
+        self.proc.started.connect(self.iterationStarted)
+        if not self.queue.empty():
+            self.proc.finished.connect(self.nextIteration)
+        else:
+            self.proc.finished.connect(self.procFinished)
+        self.proc.readyReadStandardOutput.connect(self.progressIteration)
+        self.proc.started.connect(self.iterationStarted)
+        self.proc.start()
+
+    def iterationStarted(self):
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.mainWidget.currentTaskLabel.setText(
+                f"{self.text}"
+                f" {self.currentIteration+1}/{self.numberIterations}"
+            )
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            self.mainWidget.currentTaskLabel.setText(
+                f"{self.text}"
+                f" {(self.currentIteration+1)//2}/{self.numberIterations}"
+            )
+
+    def progressIteration(self):
+        progress = self.progressIncrement()
+        if progress == -1:
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                f"An error occurred. See the following traceback"
+                f" from gudrun_dcs\n{self.error}"
+            )
+            return
+        if isinstance(self.iterator, TweakFactorIterator):
+            progress /= self.numberIterations
+        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            progress /= self.numberIterations
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
-        print(result)
         if not all(r[0] for r in result):
             unresolved = "\n".join(r[1] for r in result if not r[0])
             QMessageBox.critical(
@@ -647,6 +699,9 @@ class GudPyMainWindow(QMainWindow):
 
     def procFinished(self):
         self.proc = None
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.sampleSlots.setSample(self.sampleSlots.sample)
+        self.iterator = None
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)

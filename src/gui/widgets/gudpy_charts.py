@@ -1,6 +1,10 @@
-from PySide6.QtCharts import QChart, QLineSeries
+from PySide6.QtCharts import QChart, QChartView, QLineSeries
+from PySide6.QtCore import QRectF, Qt
+from PySide6.QtGui import QAction, QCursor
 from enum import Enum
 import os
+
+from PySide6.QtWidgets import QMenu
 
 
 class PlotModes(Enum):
@@ -212,3 +216,111 @@ class GudPyChart(QChart):
             self.setTitle("Radial Distribution Functions")
             for sample in samples:
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
+
+
+class GudPyChartView(QChartView):
+    """
+    Class to represent a GudPyChartView. Inherits QChartView.
+
+    ...
+    Attributes
+    ----------
+    chart : GudPyChart
+        Chart to be shown in the view.
+    Methods
+    -------
+    wheelEvent(event):
+        Event handler for using the scroll wheel.
+    setChart(chart):
+        Sets the chart.
+    """
+    def __init__(self, parent):
+        """
+        Constructs all the necessary attributes for the GudPyChartView object.
+        Calls super()._init__ which calls the dunder init method
+        from QChartView.
+        Parameters
+        ----------
+        parent : QWidget, optional
+            Parent widget.
+        """
+        super(GudPyChartView, self).__init__(parent=parent)
+        self.chart = None
+
+        # Enable rectangualar rubber banding.
+        self.setRubberBand(QChartView.RectangleRubberBand)
+
+    def wheelEvent(self, event):
+        """
+        Event handler called when the scroll wheel is used.
+        This event is overridden for zooming in/out.
+        Parameters
+        ----------
+        event : QWheelEvent
+            Event that triggered the function call.
+        """
+        # Decide on the zoom factor.
+        # If y > 0, zoom in, if y < 0 zoom out.
+        zoomFactor = 2.0 if event.angleDelta().y() > 0 else 0.5
+
+        # Create QRect area to zoom in on.
+        chartArea = self.chart.plotArea()
+        left = chartArea.left()
+        top = chartArea.top()
+        width = chartArea.width() / zoomFactor
+        height = chartArea.height() / zoomFactor
+        zoomArea = QRectF(left, top, width, height)
+
+        # Move the rectangle to the mouse position.
+        mousePos = self.mapFromGlobal(QCursor.pos())
+        zoomArea.moveCenter(mousePos)
+
+        # Zoom in on the area.
+        self.chart.zoomIn(zoomArea)
+
+        # Scroll to match the zoom.
+        delta = self.chart.plotArea().center() - mousePos
+        self.chart.scroll(delta.x(), -delta.y())
+
+    def setChart(self, chart):
+        """
+        Sets the chart in the chartview.
+        Parameters
+        ----------
+        chart : GudPyChart
+            Chart to be set.
+        """
+        self.chart = chart
+        return super().setChart(chart)
+
+    def contextMenuEvent(self, event):
+        """
+        Creates context menu, so that on right clicking the chartview,
+        the user is able to perform actions.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        self.menu = QMenu(self)
+        resetAction = QAction("Reset zoom", self.menu)
+        resetAction.triggered.connect(self.chart.zoomReset)
+        self.menu.addAction(resetAction)
+        self.menu.popup(QCursor.pos())
+
+    def mouseReleaseEvent(self, event):
+        """
+        Event handler called when a mouse button is released.
+        This event is overridden to stop hard zooming out on right click.
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
+        """
+
+        # If the button that triggered the event is the right button,
+        # then ignore the event.
+        if event.button() == Qt.MouseButton.RightButton:
+            event.ignore()
+        else:
+            return super().mouseReleaseEvent(event)

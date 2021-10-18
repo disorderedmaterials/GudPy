@@ -33,6 +33,28 @@ class TweakFactorIterator():
         """
         self.gudrunFile = gudrunFile
 
+    def performIteration(self, _n):
+        # Iterate through all samples,
+        # updating their tweak factor from the output of gudrun_dcs.
+        iterator = enumerate(self.gudrunFile.sampleBackgrounds)
+        for j, sampleBackground in iterator:
+            for k, sample in enumerate(sampleBackground.samples):
+                if sample.runThisSample:
+                    gud = sample.dataFiles.dataFiles[0].replace(
+                                self.gudrunFile.instrument.dataFileType,
+                                "gud"
+                            )
+                    gudFile = GudFile(gud)
+                    tweakFactor = float(
+                        gudFile.suggestedTweakFactor.strip()
+                        )
+                    sampleBackground_ = (
+                        self.gudrunFile.sampleBackgrounds[j]
+                    )
+                    sampleBackground_.samples[k].sampleTweakFactor = (
+                                                tweakFactor
+                    )
+
     def iterate(self, n):
         """
         This method is the core of the TweakFactorIterator.
@@ -54,23 +76,4 @@ class TweakFactorIterator():
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
             self.gudrunFile.process()
-            # Iterate through all samples,
-            # updating their tweak factor from the output of gudrun_dcs.
-            iterator = enumerate(self.gudrunFile.sampleBackgrounds)
-            for j, sampleBackground in iterator:
-                for k, sample in enumerate(sampleBackground.samples):
-                    if sample.runThisSample:
-                        gud = sample.dataFiles.dataFiles[0].replace(
-                                    self.gudrunFile.instrument.dataFileType,
-                                    "gud"
-                                )
-                        gudFile = GudFile(gud)
-                        tweakFactor = float(
-                            gudFile.suggestedTweakFactor.strip()
-                            )
-                        sampleBackground_ = (
-                            self.gudrunFile.sampleBackgrounds[j]
-                        )
-                        sampleBackground_.samples[k].sampleTweakFactor = (
-                                                    tweakFactor
-                        )
+            self.performIteration(i)
