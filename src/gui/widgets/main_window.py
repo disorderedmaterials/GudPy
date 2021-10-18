@@ -1,5 +1,6 @@
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
+from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
@@ -117,6 +118,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
+        loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
 
