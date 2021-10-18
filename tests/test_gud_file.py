@@ -62,6 +62,7 @@ class TestParseGudFile(TestCase):
 
 """,
             "suggestedTweakFactor": "1.16850",
+            "output": "-14.4%"
         }
 
         self.expectedGudFileB = {
@@ -110,6 +111,7 @@ class TestParseGudFile(TestCase):
             "gradient": "-0.0235%",
             "result": " This DCS level is  100.1% of expected level",
             "suggestedTweakFactor": "0.99941",
+            "output": "+0.1%"
         }
 
         self.expectedGudFileC = {
@@ -158,6 +160,7 @@ class TestParseGudFile(TestCase):
             "gradient": "-0.3551%",
             "result": " This DCS level is   98.5% of expected level",
             "suggestedTweakFactor": "1.01568",
+            "output": "-1.5%"
         }
 
         self.expectedGudFileD = {
@@ -211,6 +214,7 @@ class TestParseGudFile(TestCase):
 
 """,
             "suggestedTweakFactor": "1.14976",
+            "output": "-13.0%"
         }
 
         self.keepsakes = os.listdir()
