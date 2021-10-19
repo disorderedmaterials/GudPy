@@ -17,6 +17,7 @@ from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
 from PySide6.QtWidgets import (
+    QDialogButtonBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -475,10 +476,11 @@ class GudPyMainWindow(QMainWindow):
     def runPurge_(self):
         self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
-        purgeDialog.widget.exec()
+        result = purgeDialog.widget.exec_()
         purge = purgeDialog.purge_det
-        if purgeDialog.cancelled:
+        if purgeDialog.cancelled or result == QDialogButtonBox.No:
             self.setControlsEnabled(True)
+            self.queue = Queue()
         elif not purge:
             QMessageBox.critical(
                 self.mainWidget,
@@ -515,13 +517,13 @@ class GudPyMainWindow(QMainWindow):
             messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
 
             messageBox.addButton(QMessageBox.Yes)
-            messageBox.exec_()
+            result = messageBox.exec()
 
             if messageBox.clickedButton() == openPurgeDialog:
                 self.purgeBeforeRunning(default=False)
             elif messageBox.clickedButton() == purgeDefault:
                 self.purgeBeforeRunning()
-            elif messageBox.clickedButton() == messageBox.Yes:
+            elif result == messageBox.Yes:
                 self.gudrunFile.write_out()
                 self.makeProc(dcs, self.progressDCS)
             else:
@@ -728,6 +730,8 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
+            self.procFinished()
+            self.queue = Queue()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -743,13 +747,15 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
-        elif "Error" in stdout or "error" in stdout:
+        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
             self.gudrunFile.purged = False
+            self.procFinished()
+            self.queue = Queue()
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
