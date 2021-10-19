@@ -1,10 +1,10 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries
 from PySide6.QtCore import QRectF, Qt
-from PySide6.QtGui import QAction, QCursor
+from PySide6.QtGui import QAction, QCursor, QPainter
 from enum import Enum
 import os
 
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QSizePolicy
 
 
 class PlotModes(Enum):
@@ -70,9 +70,6 @@ class GudPyChart(QChart):
         # If the plotting mode is Structure Factor.
         if plotMode == PlotModes.STRUCTURE_FACTOR:
 
-            # Set the title.
-            self.setTitle("Structure Factor")
-
             # Get the mint01 and mdcs01 filenames.
             mintFile = (
                 sample.dataFiles.dataFiles[0].replace(dataFileType, "mint01")
@@ -130,8 +127,6 @@ class GudPyChart(QChart):
             self.addSeries(mdcsSeries)
 
         elif plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
-            # Set the title.
-            self.setTitle("Radial Distribution Functions")
 
             # Get the mint01 and mdcs01 filenames.
             mdorFile = (
@@ -144,7 +139,7 @@ class GudPyChart(QChart):
                 mdorFile = os.path.join(inputDir, mdorFile)
             if not os.path.exists(mgorFile):
                 mgorFile = os.path.join(inputDir, mgorFile)
-            print(mdorFile, mgorFile)
+
             # Instantiate the series'.
             mdorSeries = QLineSeries()
             # Set the name of the series.
@@ -205,15 +200,11 @@ class GudPyChart(QChart):
         # If the plotting mode is Structure Factor.
         if plotMode == PlotModes.STRUCTURE_FACTOR:
 
-            # Set the title.
-            self.setTitle("Structure Factor")
-
             # Iterate through samples adding them to the plot.
             for sample in samples:
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
         elif plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
-            # Set the title.
-            self.setTitle("Radial Distribution Functions")
+
             for sample in samples:
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
 
@@ -247,8 +238,16 @@ class GudPyChartView(QChartView):
         super(GudPyChartView, self).__init__(parent=parent)
         self.chart = None
 
+        # Set size policy.
+        self.setSizePolicy(
+            QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        )
+
         # Enable rectangualar rubber banding.
         self.setRubberBand(QChartView.RectangleRubberBand)
+
+        # Enable Antialiasing.
+        self.setRenderHint(QPainter.Antialiasing)
 
     def wheelEvent(self, event):
         """

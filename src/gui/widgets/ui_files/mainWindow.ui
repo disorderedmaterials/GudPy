@@ -5286,7 +5286,7 @@
                           <enum>QFrame::Raised</enum>
                          </property>
                          <property name="text">
-                          <string>DCS</string>
+                          <string>DCS Level</string>
                          </property>
                         </widget>
                        </item>
@@ -5305,7 +5305,7 @@
                           <enum>QFrame::Raised</enum>
                          </property>
                          <property name="text">
-                          <string>Result/Error</string>
+                          <string>Error</string>
                          </property>
                         </widget>
                        </item>
@@ -5315,17 +5315,34 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="verticalSpacer_16">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
+                   <widget class="QFrame" name="frame_2">
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
                     </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
                     </property>
-                   </spacer>
+                    <layout class="QVBoxLayout" name="topPlotLayout">
+                     <item>
+                      <widget class="QComboBox" name="topPlotComboBox"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_3">
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="bottomPlotLayout">
+                     <item>
+                      <widget class="QComboBox" name="bottomPlotComboBox"/>
+                     </item>
+                    </layout>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -6091,6 +6108,86 @@
        <attribute name="title">
         <string>Plots</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_49">
+        <item>
+         <widget class="QFrame" name="frame_8">
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="topAllPlotLayout">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_85">
+             <item>
+              <widget class="QComboBox" name="topAllPlotComboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_38">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_9">
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="bottomAllPlotLayout">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_86">
+             <item>
+              <widget class="QComboBox" name="bottomAllPlotComboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_39">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

@@ -1,6 +1,5 @@
 from queue import Queue
 from PySide6.QtCore import QFile
-from PySide6.QtGui import QPainter
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -27,7 +26,6 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSizePolicy,
     QStatusBar,
-    QVBoxLayout,
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
@@ -158,53 +156,51 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.sampleStructureFactorChartView = GudPyChartView(
+        self.mainWidget.sampleTopPlot = GudPyChartView(
             self.mainWidget
         )
 
-        self.mainWidget.sampleStructureFactorChartView.setRenderHint(
-            QPainter.Antialiasing
+        self.mainWidget.topPlotLayout.addWidget(
+            self.mainWidget.sampleTopPlot
         )
 
-        self.mainWidget.samplePlotLayout.addWidget(
-            self.mainWidget.sampleStructureFactorChartView
+        self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
+
+        self.mainWidget.bottomPlotLayout.addWidget(
+            self.mainWidget.sampleBottomPlot
         )
 
-        self.mainWidget.sampleRDFChartView = GudPyChartView(self.mainWidget)
-
-        self.mainWidget.sampleRDFChartView.setRenderHint(
-            QPainter.Antialiasing
-        )
-
-        self.mainWidget.samplePlotLayout.addWidget(
-            self.mainWidget.sampleRDFChartView
-        )
-
-        self.mainWidget.plotsLayout = QVBoxLayout(self.mainWidget.plotTab)
-
-        self.mainWidget.allSampleStructureFactorChartView = GudPyChartView(
+        self.mainWidget.allSampleTopPlot = GudPyChartView(
             self.mainWidget
         )
 
-        self.mainWidget.allSampleStructureFactorChartView.setRenderHint(
-            QPainter.Antialiasing
+        self.mainWidget.topAllPlotLayout.addWidget(
+            self.mainWidget.allSampleTopPlot
         )
 
-        self.mainWidget.plotsLayout.addWidget(
-            self.mainWidget.allSampleStructureFactorChartView
+        self.mainWidget.allSampleBottomPlot = GudPyChartView(self.mainWidget)
+
+        self.mainWidget.bottomAllPlotLayout.addWidget(
+            self.mainWidget.allSampleBottomPlot
         )
 
-        self.mainWidget.allSampleRDFChartView = GudPyChartView(self.mainWidget)
-
-        self.mainWidget.allSampleRDFChartView.setRenderHint(
-            QPainter.Antialiasing
+        self.mainWidget.topAllPlotComboBox.addItem(
+            "Structure Factor",
+            PlotModes.STRUCTURE_FACTOR
+        )
+        self.mainWidget.bottomAllPlotComboBox.addItem(
+            "Radial Distribution Functions",
+            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
         )
 
-        self.mainWidget.plotsLayout.addWidget(
-            self.mainWidget.allSampleRDFChartView
+        self.mainWidget.topPlotComboBox.addItem(
+            "Structure Factor",
+            PlotModes.STRUCTURE_FACTOR
         )
-
-        self.mainWidget.plotTab.setLayout(self.mainWidget.plotsLayout)
+        self.mainWidget.bottomPlotComboBox.addItem(
+            "Radial Distribution Functions",
+            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
 
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
@@ -383,7 +379,7 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 sample=sample
             )
-            self.mainWidget.sampleStructureFactorChartView.setChart(
+            self.mainWidget.sampleTopPlot.setChart(
                 self.mainWidget.sampleChart
             )
             self.mainWidget.sampleRDFChart = GudPyChart(
@@ -392,7 +388,7 @@ class GudPyMainWindow(QMainWindow):
                 sample=sample,
                 plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
             )
-            self.mainWidget.sampleRDFChartView.setChart(
+            self.mainWidget.sampleBottomPlot.setChart(
                 self.mainWidget.sampleRDFChart
             )
             path = sample.dataFiles.dataFiles[0].replace(
@@ -427,7 +423,7 @@ class GudPyMainWindow(QMainWindow):
                 for sample in sampleBackground.samples
             ]
         )
-        self.mainWidget.allSampleStructureFactorChartView.setChart(
+        self.mainWidget.allSampleTopPlot.setChart(
             self.mainWidget.allSamplesChart
         )
 
@@ -441,7 +437,7 @@ class GudPyMainWindow(QMainWindow):
             ],
             plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
         )
-        self.mainWidget.allSampleRDFChartView.setChart(
+        self.mainWidget.allSampleBottomPlot.setChart(
             self.mainWidget.allSamplesRDFChart
         )
 
