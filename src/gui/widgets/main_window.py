@@ -480,6 +480,7 @@ class GudPyMainWindow(QMainWindow):
         purge = purgeDialog.purge_det
         if purgeDialog.cancelled or result == QDialogButtonBox.No:
             self.setControlsEnabled(True)
+            self.queue = Queue()
         elif not purge:
             QMessageBox.critical(
                 self.mainWidget,
