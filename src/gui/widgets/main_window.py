@@ -1,3 +1,4 @@
+from queue import Queue
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
@@ -23,6 +24,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QProgressBar,
+    QPushButton,
     QSizePolicy,
     QStatusBar,
     QVBoxLayout,
@@ -93,6 +95,7 @@ class GudPyMainWindow(QMainWindow):
         self.clipboard = None
         self.modified = False
         self.iterator = None
+        self.queue = Queue()
 
     def initComponents(self):
         """
@@ -474,7 +477,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def runPurge_(self):
-        self.setControlsEnabled(True)
+        self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         purgeDialog.widget.exec()
         purge = purgeDialog.purge_det
@@ -499,19 +502,51 @@ class GudPyMainWindow(QMainWindow):
                 "Couldn't find gudrun_dcs binary."
             )
         elif not self.gudrunFile.purged:
-            choice = QMessageBox.warning(
-                self.mainWidget, "GudPy Warning",
-                "It looks like you may not have purged detectors. Continue?",
-                QMessageBox.Yes | QMessageBox.No
+            messageBox = QMessageBox(self.mainWidget)
+            messageBox.setWindowTitle("GudPy Warning")
+            messageBox.setText(
+                "It looks like you may not have purged detectors. Continue?"
             )
-            if choice == QMessageBox.No:
-                self.setControlsEnabled(True)
-            else:
+            messageBox.addButton(QMessageBox.No)
+            openPurgeDialog = QPushButton(
+                "Open purge dialog", messageBox
+            )
+            purgeDefault = QPushButton(
+                "Purge with default parameters", messageBox
+            )
+
+            messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
+            messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
+
+            messageBox.addButton(QMessageBox.Yes)
+            messageBox.exec_()
+
+            if messageBox.clickedButton() == openPurgeDialog:
+                self.purgeBeforeRunning(default=False)
+            elif messageBox.clickedButton() == purgeDefault:
+                self.purgeBeforeRunning()
+            elif messageBox.clickedButton() == messageBox.Yes:
                 self.gudrunFile.write_out()
                 self.makeProc(dcs, self.progressDCS)
+            else:
+                messageBox.close()
+                self.setControlsEnabled(True)
         else:
             self.gudrunFile.write_out()
             self.makeProc(dcs, self.progressDCS)
+
+    def purgeBeforeRunning(self, default=True):
+        self.setControlsEnabled(False)
+        if default:
+            purge_det = self.gudrunFile.purge(
+                headless=False
+            )
+            self.makeProc(purge_det, self.progressPurge)
+        else:
+            self.runPurge_()
+        self.gudrunFile.write_out()
+        dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+        self.queue.put((dcs, self.progressDCS))
 
     def iterateGudrun_(self):
         self.setControlsEnabled(False)
@@ -718,6 +753,7 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
+            self.gudrunFile.purged = False
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
@@ -729,7 +765,10 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
-        self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         self.updateResults()
+        if not self.queue.empty():
+            self.makeProc(*self.queue.get())
+        else:
+            self.setControlsEnabled(True)
