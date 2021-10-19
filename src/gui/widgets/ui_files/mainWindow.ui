@@ -810,7 +810,7 @@
                  <item>
                   <widget class="QGroupBox" name="groupBox_2">
                    <property name="title">
-                    <string>GroupBox</string>
+                    <string>General</string>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_5">
                     <property name="leftMargin">
@@ -1517,7 +1517,7 @@
                             </size>
                            </property>
                            <property name="text">
-                            <string>wavelength [A]</string>
+                            <string>Wavelength [A]</string>
                            </property>
                           </widget>
                          </item>
@@ -1630,7 +1630,7 @@
                             </size>
                            </property>
                            <property name="text">
-                            <string>energy [meV]</string>
+                            <string>Energy [meV]</string>
                            </property>
                           </widget>
                          </item>
@@ -1748,7 +1748,7 @@
                             <enum>Qt::LeftToRight</enum>
                            </property>
                            <property name="text">
-                            <string>Logarithmic binning?</string>
+                            <string>Logarithmic Binning?</string>
                            </property>
                           </widget>
                          </item>
@@ -1822,7 +1822,7 @@
                             <enum>Qt::LeftToRight</enum>
                            </property>
                            <property name="text">
-                            <string>Hard group edges?</string>
+                            <string>Hard Group Edges?</string>
                            </property>
                           </widget>
                          </item>
@@ -2011,7 +2011,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Channels for spike analysis</string>
+                      <string>Channels for Spike Analysis</string>
                      </property>
                     </widget>
                    </item>
@@ -2062,7 +2062,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Acceptance factor</string>
+                      <string>Acceptance Factor</string>
                      </property>
                     </widget>
                    </item>
@@ -2117,7 +2117,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Spectrum number for output diagnostic files</string>
+                      <string>Spectrum Number to Output Diagnostic Files</string>
                      </property>
                     </widget>
                    </item>
