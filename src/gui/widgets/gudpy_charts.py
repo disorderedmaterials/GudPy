@@ -1,6 +1,6 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries
 from PySide6.QtCore import QRectF, Qt
-from PySide6.QtGui import QAction, QCursor
+from PySide6.QtGui import QAction, QCursor, QPainter
 from enum import Enum
 import os
 
@@ -254,6 +254,9 @@ class GudPyChartView(QChartView):
 
         # Enable rectangualar rubber banding.
         self.setRubberBand(QChartView.RectangleRubberBand)
+
+        # Enable Antialiasing.
+        self.setRenderHint(QPainter.Antialiasing)
 
     def wheelEvent(self, event):
         """
