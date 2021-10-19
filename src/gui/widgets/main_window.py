@@ -622,7 +622,9 @@ class GudPyMainWindow(QMainWindow):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result):
             unresolved = [r[1] for r in result if not r[0]]
-            missingFilesDialog = MissingFilesDialog(unresolved, self.mainWidget)
+            missingFilesDialog = MissingFilesDialog(
+                unresolved, self.mainWidget
+            )
             missingFilesDialog.widget.exec_()
 
     def setModified(self):
