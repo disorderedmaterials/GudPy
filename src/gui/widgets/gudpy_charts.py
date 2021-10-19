@@ -4,7 +4,7 @@ from PySide6.QtGui import QAction, QCursor
 from enum import Enum
 import os
 
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QSizePolicy
 
 
 class PlotModes(Enum):
@@ -144,7 +144,7 @@ class GudPyChart(QChart):
                 mdorFile = os.path.join(inputDir, mdorFile)
             if not os.path.exists(mgorFile):
                 mgorFile = os.path.join(inputDir, mgorFile)
-            print(mdorFile, mgorFile)
+
             # Instantiate the series'.
             mdorSeries = QLineSeries()
             # Set the name of the series.
@@ -246,6 +246,9 @@ class GudPyChartView(QChartView):
         """
         super(GudPyChartView, self).__init__(parent=parent)
         self.chart = None
+
+        # Set size policy.
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
 
         # Enable rectangualar rubber banding.
         self.setRubberBand(QChartView.RectangleRubberBand)
