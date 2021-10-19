@@ -1,5 +1,4 @@
 import os
-import sys
 from src.gudrun_classes.enums import CrossSectionSource
 
 
