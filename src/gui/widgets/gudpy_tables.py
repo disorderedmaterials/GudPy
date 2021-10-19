@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QCursor, QAction
 from src.gudrun_classes.element import Element
+from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
 
 class GudPyTableModel(QAbstractTableModel):
@@ -757,10 +758,7 @@ class CompositionDelegate(GudPyDelegate):
         elif col == 1:
             editor = QSpinBox(parent)
         else:
-            editor = QDoubleSpinBox(parent)
-            editor.setMinimum(0)
-            editor.setMaximum(1)
-            editor.setSingleStep(0.01)
+            editor = ExponentialSpinBox(parent)
         return editor
 
     def setEditorData(self, editor, index):
