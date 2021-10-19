@@ -507,7 +507,7 @@ class GudPyMainWindow(QMainWindow):
             messageBox.setText(
                 "It looks like you may not have purged detectors. Continue?"
             )
-            messageBox.addButton(QMessageBox.Yes)
+            messageBox.addButton(QMessageBox.No)
             openPurgeDialog = QPushButton(
                 "Open purge dialog", messageBox
             )
@@ -515,17 +515,22 @@ class GudPyMainWindow(QMainWindow):
                 "Purge with default parameters", messageBox
             )
 
-            messageBox.addButton(openPurgeDialog, QMessageBox.ActionRole)
-            messageBox.addButton(purgeDefault, QMessageBox.ActionRole)
+            messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
+            messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
+
+            messageBox.addButton(QMessageBox.Yes)
             messageBox.exec_()
 
             if messageBox.clickedButton() == openPurgeDialog:
                 self.purgeBeforeRunning(default=False)
             elif messageBox.clickedButton() == purgeDefault:
                 self.purgeBeforeRunning()
-            else:
+            elif messageBox.clickedButton() == messageBox.Yes:
                 self.gudrunFile.write_out()
                 self.makeProc(dcs, self.progressDCS)
+            else:
+                messageBox.close()
+                self.setControlsEnabled(True)
         else:
             self.gudrunFile.write_out()
             self.makeProc(dcs, self.progressDCS)
