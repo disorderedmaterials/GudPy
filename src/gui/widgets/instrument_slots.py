@@ -115,6 +115,10 @@ class InstrumentSlots():
             self.instrument.useLogarithmicBinning
         )
 
+        self.widget.logarithmicStepSizeSpin.setValue(
+            self.instrument.logarithmicStepSize
+        )
+
         # Setup the widget and slot for the groups acceptance factor.
         self.widget.groupsAcceptanceFactorSpinBox.setValue(
             self.instrument.groupsAcceptanceFactor
@@ -383,6 +387,10 @@ class InstrumentSlots():
             self.handleUseLogarithmicBinningSwitched
         )
 
+        self.widget.logarithmicStepSizeSpin.valueChanged.connect(
+            self.handleLogarithmicStepSizeChanged
+        )
+
         self.widget.groupsAcceptanceFactorSpinBox.valueChanged.connect(
             self.handleGroupsAcceptanceFactorChanged
         )
@@ -427,16 +435,11 @@ class InstrumentSlots():
 
         # Setup the widgets and slots for the grouping parameter panel.
 
-        self.widget.groupingParameterWidget.setVisible(False)
         self.widget.addGroupingParameterButton.clicked.connect(
             self.handleAddGroupingParameter
         )
         self.widget.removeGroupingParameterButton.clicked.connect(
             self.handleRemoveGroupingParameter
-        )
-        self.widget.groupingParameterGroupBox.setChecked(False)
-        self.widget.groupingParameterGroupBox.toggled.connect(
-            self.handleGroupingParameterPanelToggled
         )
 
     def handleInstrumentNameChanged(self, index):
@@ -1128,7 +1131,7 @@ class InstrumentSlots():
         Called when a clicked signal is emitted, from the
         addGroupingParameterButton.
         """
-        self.groupingParameterTable.insertRow()
+        self.widget.groupingParameterTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -1139,15 +1142,7 @@ class InstrumentSlots():
         from the removeGroupingParameterButton.
         """
         self.widget.groupingParameterTable.removeRow(
-            self.groupingParameterTable.selectionModel().selectedRows()
+            self.widget.groupingParameterTable.selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
-
-    def handleGroupingParameterPanelToggled(self, on):
-        """
-        Slot for handling toggling the grouping parameter panel.
-        Called when a toggled signal is emitted from the
-        groupingParameterGroupBox.
-        """
-        self.widget.groupingParameterWidget.setVisible(on)
