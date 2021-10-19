@@ -25,7 +25,6 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QSizePolicy,
     QStatusBar,
-    QVBoxLayout,
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
@@ -387,7 +386,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.normalisationCompositionTable.farmCompositions()
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
-
 
     def updateResults(self):
         if self.mainWidget.objectStack.currentIndex() == 4:

@@ -248,7 +248,9 @@ class GudPyChartView(QChartView):
         self.chart = None
 
         # Set size policy.
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
+        self.setSizePolicy(
+            QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        )
 
         # Enable rectangualar rubber banding.
         self.setRubberBand(QChartView.RectangleRubberBand)
