@@ -731,6 +731,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             self.procFinished()
+            self.queue = Queue()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -746,13 +747,15 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
-        elif "Error" in stdout or "error" in stdout:
+        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
             self.gudrunFile.purged = False
+            self.procFinished()
+            self.queue = Queue()
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
