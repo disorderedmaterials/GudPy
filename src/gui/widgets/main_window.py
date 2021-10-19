@@ -10,6 +10,7 @@ from src.gudrun_classes.gud_file import GudFile
 from src.gui.widgets.gudpy_charts import (
   GudPyChart, PlotModes, GudPyChartView
 )
+from src.gui.widgets.missing_files_dialog import MissingFilesDialog
 from src.scripts.utils import nthint
 from src.gudrun_classes.file_library import GudPyFileLibrary
 from src.gui.widgets.iteration_dialog import IterationDialog
@@ -620,13 +621,9 @@ class GudPyMainWindow(QMainWindow):
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result):
-            unresolved = "\n".join(r[1] for r in result if not r[0])
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                f"Couldn't resolve some files!"
-                f" Check that all paths are correct and try again."
-                f"{unresolved}"
-            )
+            unresolved = [r[1] for r in result if not r[0]]
+            missingFilesDialog = MissingFilesDialog(unresolved, self.mainWidget)
+            missingFilesDialog.widget.exec_()
 
     def setModified(self):
         if not self.modified:
