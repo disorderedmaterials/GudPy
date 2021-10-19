@@ -1,4 +1,4 @@
-from PySide6.QtCharts import QChart, QChartView, QLineSeries
+from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis, QValueAxis
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QAction, QCursor, QPainter
 from enum import Enum
@@ -292,6 +292,27 @@ class GudPyChartView(QChartView):
         self.chart = chart
         return super().setChart(chart)
 
+    def toggleLogarithmicAxis(self):
+        series = self.chart().series()
+        for s in series:
+            if all([isinstance(axis, QLogValueAxis) for axis in s.attachedAxes()]):
+                for axis in s.attachedAxes():
+                    s.detachAxis(axis)
+                    self.chart().removeAxis(axis)
+                self.chart().createDefaultAxes()
+            else:
+                for axis in s.attachedAxes():
+                    s.detachAxis(axis)
+                    self.chart().removeAxis(axis)
+                axisX = QLogValueAxis()
+                axisX.setBase(8.0)
+                self.chart().addAxis(axisX, Qt.AlignBottom)
+                s.attachAxis(axisX)
+                axisY = QLogValueAxis()
+                axisY.setBase(8.0)
+                self.chart().addAxis(axisY, Qt.AlignLeft)
+                s.attachAxis(axisY)
+
     def contextMenuEvent(self, event):
         """
         Creates context menu, so that on right clicking the chartview,
@@ -305,6 +326,9 @@ class GudPyChartView(QChartView):
         resetAction = QAction("Reset zoom", self.menu)
         resetAction.triggered.connect(self.chart.zoomReset)
         self.menu.addAction(resetAction)
+        toggleLogarithmicAction = QAction("Toggle logarithmic axes", self.menu)
+        toggleLogarithmicAction.triggered.connect(self.toggleLogarithmicAxis)
+        self.menu.addAction(toggleLogarithmicAction)
         self.menu.popup(QCursor.pos())
 
     def mouseReleaseEvent(self, event):
