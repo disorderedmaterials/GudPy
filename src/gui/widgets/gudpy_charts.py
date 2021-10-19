@@ -1,6 +1,6 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis, QValueAxis
 from PySide6.QtCore import QRectF, Qt
-from PySide6.QtGui import QAction, QCursor, QPainter
+from PySide6.QtGui import QAction, QContextMenuEvent, QCursor, QPainter
 from enum import Enum
 import os
 
@@ -47,6 +47,8 @@ class GudPyChart(QChart):
             Mode to use for plotting.
         """
         super(GudPyChart, self).__init__()
+
+        self.logarithmic = False
 
         # Call plotting function.
         if sample:
@@ -208,6 +210,9 @@ class GudPyChart(QChart):
             for sample in samples:
                 self.plotSample(sample, plotMode, dataFileType, inputDir)
 
+    def switchLogarithmic(self):
+        self.logarithmic = not self.logarithmic
+
 
 class GudPyChartView(QChartView):
     """
@@ -236,7 +241,6 @@ class GudPyChartView(QChartView):
             Parent widget.
         """
         super(GudPyChartView, self).__init__(parent=parent)
-        self.chart = None
 
         # Set size policy.
         self.setSizePolicy(
@@ -263,7 +267,7 @@ class GudPyChartView(QChartView):
         zoomFactor = 2.0 if event.angleDelta().y() > 0 else 0.5
 
         # Create QRect area to zoom in on.
-        chartArea = self.chart.plotArea()
+        chartArea = self.chart().plotArea()
         left = chartArea.left()
         top = chartArea.top()
         width = chartArea.width() / zoomFactor
@@ -275,43 +279,14 @@ class GudPyChartView(QChartView):
         zoomArea.moveCenter(mousePos)
 
         # Zoom in on the area.
-        self.chart.zoomIn(zoomArea)
+        self.chart().zoomIn(zoomArea)
 
         # Scroll to match the zoom.
-        delta = self.chart.plotArea().center() - mousePos
-        self.chart.scroll(delta.x(), -delta.y())
-
-    def setChart(self, chart):
-        """
-        Sets the chart in the chartview.
-        Parameters
-        ----------
-        chart : GudPyChart
-            Chart to be set.
-        """
-        self.chart = chart
-        return super().setChart(chart)
+        delta = self.chart().plotArea().center() - mousePos
+        self.chart().scroll(delta.x(), -delta.y())
 
     def toggleLogarithmicAxis(self):
-        series = self.chart().series()
-        for s in series:
-            if all([isinstance(axis, QLogValueAxis) for axis in s.attachedAxes()]):
-                for axis in s.attachedAxes():
-                    s.detachAxis(axis)
-                    self.chart().removeAxis(axis)
-                self.chart().createDefaultAxes()
-            else:
-                for axis in s.attachedAxes():
-                    s.detachAxis(axis)
-                    self.chart().removeAxis(axis)
-                axisX = QLogValueAxis()
-                axisX.setBase(8.0)
-                self.chart().addAxis(axisX, Qt.AlignBottom)
-                s.attachAxis(axisX)
-                axisY = QLogValueAxis()
-                axisY.setBase(8.0)
-                self.chart().addAxis(axisY, Qt.AlignLeft)
-                s.attachAxis(axisY)
+        self.chart().switchLogarithmic()
 
     def contextMenuEvent(self, event):
         """
@@ -324,26 +299,9 @@ class GudPyChartView(QChartView):
         """
         self.menu = QMenu(self)
         resetAction = QAction("Reset zoom", self.menu)
-        resetAction.triggered.connect(self.chart.zoomReset)
+        resetAction.triggered.connect(self.chart().zoomReset)
         self.menu.addAction(resetAction)
         toggleLogarithmicAction = QAction("Toggle logarithmic axes", self.menu)
         toggleLogarithmicAction.triggered.connect(self.toggleLogarithmicAxis)
         self.menu.addAction(toggleLogarithmicAction)
         self.menu.popup(QCursor.pos())
-
-    def mouseReleaseEvent(self, event):
-        """
-        Event handler called when a mouse button is released.
-        This event is overridden to stop hard zooming out on right click.
-        Parameters
-        ----------
-        event : QMouseEvent
-            Event that triggered the function call.
-        """
-
-        # If the button that triggered the event is the right button,
-        # then ignore the event.
-        if event.button() == Qt.MouseButton.RightButton:
-            event.ignore()
-        else:
-            return super().mouseReleaseEvent(event)

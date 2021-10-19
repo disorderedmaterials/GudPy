@@ -94,6 +94,8 @@ class GudPyMainWindow(QMainWindow):
         self.modified = False
         self.iterator = None
         self.queue = Queue()
+        self.results = {}
+        self.allPlots = []
 
     def initComponents(self):
         """
@@ -371,50 +373,56 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
 
-    def updateResults(self):
+    def focusResult(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
-            sample = self.mainWidget.objectTree.currentObject()
-            self.mainWidget.sampleChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=sample
-            )
+            topPlot, bottomPlot, gudFile = self.results[self.mainWidget.objectTree.currentObject()]
             self.mainWidget.sampleTopPlot.setChart(
-                self.mainWidget.sampleChart
-            )
-            self.mainWidget.sampleRDFChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=sample,
-                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                topPlot
             )
             self.mainWidget.sampleBottomPlot.setChart(
-                self.mainWidget.sampleRDFChart
+                bottomPlot
             )
-            path = sample.dataFiles.dataFiles[0].replace(
-                self.gudrunFile.instrument.dataFileType, "gud"
+            dcsLevel = gudFile.averageLevelMergedDCS
+            self.mainWidget.dcsLabel.setText(
+                f"DCS Level: {dcsLevel}"
             )
-            if not os.path.exists(path):
-                path = os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir, path
+            self.mainWidget.resultLabel.setText(gudFile.output)
+            if gudFile.err:
+                self.mainWidget.resultLabel.setStyleSheet(
+                    "background-color: red"
                 )
-            if os.path.exists(path):
-                gf = GudFile(path)
-                dcsLevel = gf.averageLevelMergedDCS
-                self.mainWidget.dcsLabel.setText(
-                    f"DCS Level: {dcsLevel}"
+            else:
+                self.mainWidget.resultLabel.setStyleSheet(
+                    "background-color: green"
                 )
-                self.mainWidget.resultLabel.setText(gf.output)
-                if gf.err:
-                    self.mainWidget.resultLabel.setStyleSheet(
-                        "background-color: red"
-                    )
-                else:
-                    self.mainWidget.resultLabel.setStyleSheet(
-                        "background-color: green"
-                    )
 
-        self.mainWidget.allSamplesChart = GudPyChart(
+    def updateResults(self):
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                topChart = GudPyChart(
+                    self.gudrunFile.instrument.dataFileType,
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    sample=sample
+                )
+                bottomChart = GudPyChart(
+                    self.gudrunFile.instrument.dataFileType,
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    sample=sample,
+                    plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                )
+
+                path = sample.dataFiles.dataFiles[0].replace(
+                    self.gudrunFile.instrument.dataFileType, "gud"
+                )
+                if not os.path.exists(path):
+                    path = os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir, path
+                    )
+                gf = GudFile(path) if os.path.exists(path) else None
+
+                self.results[sample] = [topChart, bottomChart, gf]
+
+        allTopChart = GudPyChart(
             self.gudrunFile.instrument.dataFileType,
             self.gudrunFile.instrument.GudrunInputFileDir,
             samples=[
@@ -423,11 +431,8 @@ class GudPyMainWindow(QMainWindow):
                 for sample in sampleBackground.samples
             ]
         )
-        self.mainWidget.allSampleTopPlot.setChart(
-            self.mainWidget.allSamplesChart
-        )
 
-        self.mainWidget.allSamplesRDFChart = GudPyChart(
+        allBottomChart = GudPyChart(
             self.gudrunFile.instrument.dataFileType,
             self.gudrunFile.instrument.GudrunInputFileDir,
             samples=[
@@ -437,9 +442,10 @@ class GudPyMainWindow(QMainWindow):
             ],
             plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
         )
-        self.mainWidget.allSampleBottomPlot.setChart(
-            self.mainWidget.allSamplesRDFChart
-        )
+
+        self.allPlots = [allTopChart, allBottomChart]
+        self.mainWidget.allSampleTopPlot.setChart(allTopChart)
+        self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
 
     def updateComponents(self):
         """
@@ -447,7 +453,7 @@ class GudPyMainWindow(QMainWindow):
         """
         self.updateGeometries()
         self.updateCompositions()
-        self.updateResults()
+        self.focusResult()
 
     def exit_(self):
         """
@@ -761,9 +767,10 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
+        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
+            self.updateResults()
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.updateResults()
         if not self.queue.empty():
             self.makeProc(*self.queue.get())
         else:
