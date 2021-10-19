@@ -41,17 +41,19 @@ class GudPyFileLibrary():
             gudrunFile.instrument.startupFileFolder,
         ]
 
+        suffix = gudrunFile.instrument.GudrunStartFolder
+
         # Collect files of static objects.
         self.files = [
-            os.path.join("bin", gudrunFile.instrument.groupFileName),
+            os.path.join(suffix, gudrunFile.instrument.groupFileName),
             os.path.join(
-                "bin", gudrunFile.instrument.deadtimeConstantsFileName
+                suffix, gudrunFile.instrument.deadtimeConstantsFileName
             ),
             os.path.join(
-                "bin", gudrunFile.instrument.neutronScatteringParametersFile
+                suffix, gudrunFile.instrument.neutronScatteringParametersFile
             ),
             os.path.join(
-                "bin", gudrunFile.beam.filenameIncidentBeamSpectrumParams
+                suffix, gudrunFile.beam.filenameIncidentBeamSpectrumParams
             ),
             *[
                 os.path.join(dataFileDir, df)
