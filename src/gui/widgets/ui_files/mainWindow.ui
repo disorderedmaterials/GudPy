@@ -80,6 +80,21 @@
                  <string>Instrument Configuration</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout">
+                 <property name="leftMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
                  <item row="3" column="4">
                   <widget class="QPushButton" name="browseDeadtimeFileButton">
                    <property name="minimumSize">
@@ -166,7 +181,7 @@
                  <item row="10" column="3">
                   <widget class="QLineEdit" name="nexusDefintionFileLineEdit">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -181,6 +196,12 @@
                  </item>
                  <item row="3" column="1" colspan="3">
                   <widget class="QLineEdit" name="deadtimeFileLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -239,6 +260,12 @@
                  </item>
                  <item row="0" column="3">
                   <widget class="QLineEdit" name="configLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -249,6 +276,12 @@
                  </item>
                  <item row="1" column="1" colspan="3">
                   <widget class="QLineEdit" name="detCalibrationLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -259,6 +292,12 @@
                  </item>
                  <item row="2" column="1" colspan="3">
                   <widget class="QLineEdit" name="groupsFileLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -392,7 +431,7 @@
                  <item row="8" column="1" colspan="3">
                   <widget class="QLineEdit" name="dataFileDirectoryLineEdit">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -442,10 +481,16 @@
                  </item>
                  <item row="4" column="1" colspan="3">
                   <widget class="QLineEdit" name="neutronScatteringParamsFileLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="minimumSize">
                     <size>
-                     <width>223</width>
-                     <height>25</height>
+                     <width>0</width>
+                     <height>0</height>
                     </size>
                    </property>
                   </widget>
@@ -493,15 +538,15 @@
                    <item>
                     <widget class="ExponentialSpinBox" name="incidentFlightPathSpinBox">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
                      <property name="minimumSize">
                       <size>
-                       <width>62</width>
-                       <height>22</height>
+                       <width>0</width>
+                       <height>0</height>
                       </size>
                      </property>
                      <property name="maximumSize">
@@ -534,15 +579,15 @@
                    <item>
                     <widget class="QSpinBox" name="phiValuesColumnSpinBox">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
                      <property name="minimumSize">
                       <size>
-                       <width>42</width>
-                       <height>22</height>
+                       <width>0</width>
+                       <height>0</height>
                       </size>
                      </property>
                      <property name="maximumSize">
@@ -647,7 +692,7 @@
                     <item row="0" column="1">
                      <widget class="QLineEdit" name="spectrumNumbersTLineEdit">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -791,7 +836,7 @@
                     <item row="0" column="1">
                      <widget class="QLineEdit" name="spectrumNumbersIBLineEdit">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -1003,7 +1048,7 @@
                    <item>
                     <widget class="ExponentialSpinBox" name="minWavelengthSpinBox">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
@@ -1032,7 +1077,7 @@
                    <item>
                     <widget class="ExponentialSpinBox" name="maxWavelengthSpinBox">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
@@ -1061,7 +1106,7 @@
                    <item>
                     <widget class="ExponentialSpinBox" name="stepWavelengthSpinBox">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
@@ -1080,10 +1125,29 @@
                      </property>
                     </widget>
                    </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
                   </layout>
                  </item>
                  <item>
                   <widget class="QTabWidget" name="ProcessingTabs">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="currentIndex">
                     <number>0</number>
                    </property>
@@ -1988,6 +2052,21 @@
                  <string>Diagnostics</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>4</number>
+                 </property>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_10">
                    <item>
@@ -2162,6 +2241,9 @@
                </widget>
               </item>
               <item>
+               <widget class="QLineEdit" name="lineEdit"/>
+              </item>
+              <item>
                <spacer name="verticalSpacer">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -2169,7 +2251,7 @@
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
-                  <height>40</height>
+                  <height>0</height>
                  </size>
                 </property>
                </spacer>
