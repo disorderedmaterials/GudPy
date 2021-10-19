@@ -1151,8 +1151,13 @@ class GudrunFile:
         parsing = ""
         KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
+        # Decide the encoding
+        import chardet
+        with open(self.path, 'rb') as fp:
+            encoding = chardet.detect(fp.read())['encoding']
+
         # Read the input stream into our attribute.
-        with open(self.path, encoding="utf-8") as fp:
+        with open(self.path, encoding=encoding) as fp:
             self.stream = fp.readlines()
 
         # Here we go! Get the first token and begin parsing.
