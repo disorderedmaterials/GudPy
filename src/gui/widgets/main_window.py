@@ -18,7 +18,6 @@ from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
 from PySide6.QtWidgets import (
-    QDialogButtonBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -505,10 +504,16 @@ class GudPyMainWindow(QMainWindow):
         elif not self.gudrunFile.purged:
             messageBox = QMessageBox(self.mainWidget)
             messageBox.setWindowTitle("GudPy Warning")
-            messageBox.setText("It looks like you may not have purged detectors. Continue?")
+            messageBox.setText(
+                "It looks like you may not have purged detectors. Continue?"
+            )
             messageBox.addButton(QMessageBox.Yes)
-            openPurgeDialog = QPushButton("Open purge dialog", messageBox)
-            purgeDefault = QPushButton("Purge with default parameters", messageBox)
+            openPurgeDialog = QPushButton(
+                "Open purge dialog", messageBox
+            )
+            purgeDefault = QPushButton(
+                "Purge with default parameters", messageBox
+            )
 
             messageBox.addButton(openPurgeDialog, QMessageBox.ActionRole)
             messageBox.addButton(purgeDefault, QMessageBox.ActionRole)
