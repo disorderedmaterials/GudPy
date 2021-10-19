@@ -198,10 +198,12 @@ class ExponentialSpinBox(QDoubleSpinBox):
         """
         groups = [
             group for group in
-            self.search(self.cleanText()).groups()
-            if not group == self.cleanText()
+            self.search(str(float(self.cleanText()))).groups()
         ]
-        mantissa = float(groups[0]) + steps
+        if groups[0] == self.cleanText():
+            mantissa = float(groups[1]) + steps
+        else:
+            mantissa = float(groups[0]) + steps
         string = "{:g}".format(mantissa)
         if groups[-1]:
             string += groups[-1]
