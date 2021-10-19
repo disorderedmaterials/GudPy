@@ -2,6 +2,7 @@ import os
 import sys
 
 from PySide6.QtCore import QProcess
+from src.gudrun_classes import instrument
 from src.gudrun_classes.enums import Instruments
 from src.scripts.utils import resolve, spacify, numifyBool
 import subprocess
@@ -129,10 +130,17 @@ class PurgeFile():
         self.inputFileDir = self.gudrunFile.instrument.GudrunInputFileDir
         self.dataFileDir = self.gudrunFile.instrument.dataFileDir
         self.detCalibFile = (
-            self.gudrunFile.instrument.
-            detectorCalibrationFileName
+            os.path.join(
+                self.gudrunFile.instrument.GudrunStartFolder,
+                self.gudrunFile.instrument.detectorCalibrationFileName
+            )
         )
-        self.groupsFile = self.gudrunFile.instrument.groupFileName
+        self.groupsFile = (
+            os.path.join(
+                self.gudrunFile.instrument.GudrunStartFolder,
+                self.gudrunFile.instrument.groupFileName
+            )
+        )
         self.spectrumNumbers = (
             self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
         )
