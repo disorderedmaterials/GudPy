@@ -515,13 +515,13 @@ class GudPyMainWindow(QMainWindow):
             messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
 
             messageBox.addButton(QMessageBox.Yes)
-            messageBox.exec_()
+            result = messageBox.exec()
 
             if messageBox.clickedButton() == openPurgeDialog:
                 self.purgeBeforeRunning(default=False)
             elif messageBox.clickedButton() == purgeDefault:
                 self.purgeBeforeRunning()
-            elif messageBox.clickedButton() == messageBox.Yes:
+            elif result == messageBox.Yes:
                 self.gudrunFile.write_out()
                 self.makeProc(dcs, self.progressDCS)
             else:
@@ -728,6 +728,7 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
+            self.procFinished()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
