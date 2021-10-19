@@ -17,6 +17,7 @@ from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.exception import ParserException
 from src.gudrun_classes import config
 from PySide6.QtWidgets import (
+    QDialogButtonBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -475,9 +476,9 @@ class GudPyMainWindow(QMainWindow):
     def runPurge_(self):
         self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
-        purgeDialog.widget.exec()
+        result = purgeDialog.widget.exec_()
         purge = purgeDialog.purge_det
-        if purgeDialog.cancelled:
+        if purgeDialog.cancelled or result == QDialogButtonBox.No:
             self.setControlsEnabled(True)
         elif not purge:
             QMessageBox.critical(
