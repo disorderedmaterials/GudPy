@@ -1,6 +1,5 @@
 from queue import Queue
 from PySide6.QtCore import QFile
-from PySide6.QtGui import QPainter
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -166,8 +165,6 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
-
-
 
         self.mainWidget.bottomPlotLayout.addWidget(
             self.mainWidget.sampleBottomPlot
