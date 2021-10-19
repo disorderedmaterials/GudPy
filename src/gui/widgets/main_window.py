@@ -160,44 +160,30 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget
         )
 
-        self.mainWidget.sampleTopPlot.setRenderHint(
-            QPainter.Antialiasing
-        )
-
-        self.mainWidget.topPlotLayout.insertWidget(
-            0, self.mainWidget.sampleTopPlot
+        self.mainWidget.topPlotLayout.addWidget(
+            self.mainWidget.sampleTopPlot
         )
 
         self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
 
-        self.mainWidget.sampleBottomPlot.setRenderHint(
-            QPainter.Antialiasing
-        )
 
-        self.mainWidget.bottomPlotLayout.insertWidget(
-            0, self.mainWidget.sampleBottomPlot
+
+        self.mainWidget.bottomPlotLayout.addWidget(
+            self.mainWidget.sampleBottomPlot
         )
 
         self.mainWidget.allSampleTopPlot = GudPyChartView(
             self.mainWidget
         )
 
-        self.mainWidget.allSampleTopPlot.setRenderHint(
-            QPainter.Antialiasing
-        )
-
-        self.mainWidget.topAllPlotLayout.insertWidget(
-            0, self.mainWidget.allSampleTopPlot
+        self.mainWidget.topAllPlotLayout.addWidget(
+            self.mainWidget.allSampleTopPlot
         )
 
         self.mainWidget.allSampleBottomPlot = GudPyChartView(self.mainWidget)
 
-        self.mainWidget.allSampleBottomPlot.setRenderHint(
-            QPainter.Antialiasing
-        )
-
-        self.mainWidget.bottomAllPlotLayout.insertWidget(
-            0, self.mainWidget.allSampleBottomPlot
+        self.mainWidget.bottomAllPlotLayout.addWidget(
+            self.mainWidget.allSampleBottomPlot
         )
 
         self.mainWidget.topAllPlotComboBox.addItem(
