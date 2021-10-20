@@ -1,10 +1,12 @@
-from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis
+from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis, QValueAxis
 from PySide6.QtCore import QLine, QPoint, QPointF, QRectF, Qt
 from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
 from enum import Enum
 import os
 
 from PySide6.QtWidgets import QMenu, QSizePolicy
+
+from src.gudrun_classes.gud_file import GudFile
 
 
 class PlotModes(Enum):
@@ -78,6 +80,9 @@ class GudPyChart(QChart):
         self.logarithmicXAxis.setBase(10.0)
         self.logarithmicYAxis = QLogValueAxis()
         self.logarithmicYAxis.setBase(10.0)
+        
+        self.dcsAxis = QValueAxis()
+        self.addAxis(self.dcsAxis, Qt.AlignRight)
 
         self.seriesAVisible = True
         self.seriesBVisible = True
@@ -199,6 +204,22 @@ class GudPyChart(QChart):
                     # Append the data to the series.
                     mgorData.append([x, y, err])
             self.data[sample]["mgor01"] = mgorData
+
+        gudPath = sample.dataFiles.dataFiles[0].replace(self.dataFileType, "gud")
+        if not os.path.exists(gudPath):
+            gudPath = os.path.join(self.inputDir, gudPath)
+        
+        if os.path.exists(gudPath):
+            gudFile = GudFile(gudPath)
+            dcsLevel = gudFile.averageLevelMergedDCS
+            dcsSeries = QLineSeries()
+            dcsSeries.append(0., float(dcsLevel))
+            print(float(dcsLevel))
+            
+            self.addSeries(dcsSeries)
+            dcsSeries.attachAxis(self.dcsAxis)
+        
+
 
     def plot(self, plotMode=None):
         """
