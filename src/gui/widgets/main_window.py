@@ -400,17 +400,15 @@ class GudPyMainWindow(QMainWindow):
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 topChart = GudPyChart(
-                    self.gudrunFile.instrument.dataFileType,
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    sample=sample
+                    self.gudrunFile
                 )
+                topChart.addSample(sample)
+                topChart.plot(PlotModes.STRUCTURE_FACTOR)
                 bottomChart = GudPyChart(
-                    self.gudrunFile.instrument.dataFileType,
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    sample=sample,
-                    plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                    self.gudrunFile
                 )
-
+                bottomChart.addSample(sample)
+                bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
                 path = sample.dataFiles.dataFiles[0].replace(
                     self.gudrunFile.instrument.dataFileType, "gud"
                 )
@@ -423,25 +421,29 @@ class GudPyMainWindow(QMainWindow):
                 self.results[sample] = [topChart, bottomChart, gf]
 
         allTopChart = GudPyChart(
-            self.gudrunFile.instrument.dataFileType,
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            samples=[
+            self.gudrunFile
+        )
+        allTopChart.addSamples(
+            [
                 sample
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
             ]
         )
+        allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+
 
         allBottomChart = GudPyChart(
-            self.gudrunFile.instrument.dataFileType,
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            samples=[
+            self.gudrunFile
+        )
+        allBottomChart.addSamples(
+            [
                 sample
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
-            ],
-            plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            ]
         )
+        allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
 
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
