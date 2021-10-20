@@ -421,3 +421,7 @@ class GudPyChartView(QChartView):
         self.toggleLogarithmicAxesShortcut = QShortcut(QKeySequence(Qt.Key_L), self)
         self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
         self.toggleLogarithmicAxesShortcut.activated.connect(self.toggleLogarithmicAxes)
+
+        self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
+        self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
+        self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
