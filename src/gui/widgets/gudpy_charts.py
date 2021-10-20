@@ -37,6 +37,12 @@ class GudPyChart(QChart):
         self.inputDir = gudrunFile.instrument.GudrunInputFileDir
 
         self.data = {}
+        self.logarithmic = False
+        self.logarithmicXAxis = QLogValueAxis()
+        self.logarithmicXAxis.setBase(10.0)
+        self.logarithmicYAxis = QLogValueAxis()
+        self.logarithmicYAxis.setBase(10.0)
+
 
     def addSamples(self, samples):
         for sample in samples:
@@ -73,7 +79,7 @@ class GudPyChart(QChart):
 
                     mintData.append([x, y, err])
             self.data[sample]["mint01"] = mintData
-
+        
         # Check the file exists.
         if os.path.exists(mdcsFile):
             mdcsData = []
@@ -136,22 +142,38 @@ class GudPyChart(QChart):
                     mgorData.append([x, y, err])
             self.data[sample]["mgor01"] = mgorData
 
-    def plot(self, plotMode):
+    def plot(self, plotMode=None):
+        if plotMode:
+            self.plotMode = plotMode
+
+        self.removeAllSeries()
+        for axis in self.axes():
+            self.removeAxis(axis)
 
         for sample in self.data.keys():
-            self.plotSample(sample, plotMode)
+            self.plotSample(sample)
     
-    def plotSample(self, sample, plotMode):
+        if self.logarithmic:
+            self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
+            self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
+            for series in self.series():
+                series.attachAxis(self.axisX())
+                series.attachAxis(self.axisY())
+        else:
+            self.createDefaultAxes()
+
+    def plotSample(self, sample):
+        
+        offset = int(self.logarithmic)*10
 
         # If the plotting mode is Structure Factor.
-        if plotMode == PlotModes.STRUCTURE_FACTOR:
-
+        if self.plotMode == PlotModes.STRUCTURE_FACTOR:
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
             mintSeries.setName(f"{sample.name} mint01")
             # Construct the series
-            mintSeries.append([QPointF(x,y) for x, y, _ in self.data[sample]["mint01"]])
+            mintSeries.append([QPointF(x+offset, y+offset) for x, y, _ in self.data[sample]["mint01"]])
             # Add the series to the chart.
             self.addSeries(mintSeries)
 
@@ -160,31 +182,33 @@ class GudPyChart(QChart):
             # Set the name of the series.
             mdcsSeries.setName(f"{sample.name} mdcs01")
             # Construct the series
-            mdcsSeries.append([QPointF(x,y) for x, y, _ in self.data[sample]["mdcs01"]])
+            mdcsSeries.append([QPointF(x+offset, y+offset) for x, y, _ in self.data[sample]["mdcs01"]])
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
 
-        elif plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+        elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
 
             # Instantiate the series.
             mdorSeries = QLineSeries()
             # Set the name of the series.
-            mdorSeries.setName(f"{sample.name} mdor")
+            mdorSeries.setName(f"{sample.name} mdor01")
             # Construct the series
-            mdorSeries.append([QPointF(x,y) for x, y, _ in self.data[sample]["mdor01"]])
+            mdorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mdor01"]])
             # Add the series to the chart.
             self.addSeries(mdorSeries)
 
             # Instantiate the series.
             mgorSeries = QLineSeries()
             # Set the name of the series.
-            mgorSeries.setName(f"{sample.name} mgor")
+            mgorSeries.setName(f"{sample.name} mgor01")
             # Construct the series
-            mgorSeries.append([QPointF(x,y) for x, y, _ in self.data[sample]["mgor01"]])
+            mgorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mgor01"]])
             # Add the series to the chart.
             self.addSeries(mgorSeries)
 
-        self.createDefaultAxes()
+    def toggleLogarithmicAxes(self):
+        self.logarithmic = not self.logarithmic
+        self.plot()
 
 class GudPyChartView(QChartView):
     """
@@ -257,6 +281,9 @@ class GudPyChartView(QChartView):
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
 
+    def toggleLogarithmicAxes(self):
+        self.chart().toggleLogarithmicAxes()
+
     def contextMenuEvent(self, event):
         """
         Creates context menu, so that on right clicking the chartview,
@@ -271,6 +298,6 @@ class GudPyChartView(QChartView):
         resetAction.triggered.connect(self.chart().zoomReset)
         self.menu.addAction(resetAction)
         toggleLogarithmicAction = QAction("Toggle logarithmic axes", self.menu)
-        toggleLogarithmicAction.triggered.connect(self.toggleLogarithmicAxis)
+        toggleLogarithmicAction.triggered.connect(self.toggleLogarithmicAxes)
         self.menu.addAction(toggleLogarithmicAction)
         self.menu.popup(QCursor.pos())
