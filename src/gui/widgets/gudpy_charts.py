@@ -1,6 +1,6 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QAction, QCursor, QPainter
+from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QShortcut
 from enum import Enum
 import os
 
@@ -302,6 +302,9 @@ class GudPyChartView(QChartView):
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
 
+        # Setup keyboard shortcuts.
+        self.setupShortcuts()
+
     def wheelEvent(self, event):
         """
         Event handler called when the scroll wheel is used.
@@ -413,3 +416,8 @@ class GudPyChartView(QChartView):
                 )
                 self.menu.addAction(showMgor01Action)
         self.menu.popup(QCursor.pos())
+
+    def setupShortcuts(self):
+        self.toggleLogarithmicAxesShortcut = QShortcut(QKeySequence(Qt.Key_L), self)
+        self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
+        self.toggleLogarithmicAxesShortcut.activated.connect(self.toggleLogarithmicAxes)
