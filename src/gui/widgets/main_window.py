@@ -190,18 +190,36 @@ class GudPyMainWindow(QMainWindow):
             "Structure Factor",
             PlotModes.STRUCTURE_FACTOR
         )
+
+        self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
+            self.handleTopAllPlotModeChanged
+        )
+
         self.mainWidget.bottomAllPlotComboBox.addItem(
             "Radial Distribution Functions",
             PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+
+        self.mainWidget.bottomAllPlotComboBox.currentIndexChanged.connect(
+            self.handleBottomAllPlotModeChanged
         )
 
         self.mainWidget.topPlotComboBox.addItem(
             "Structure Factor",
             PlotModes.STRUCTURE_FACTOR
         )
+
+        self.mainWidget.topPlotComboBox.currentIndexChanged.connect(
+            self.handleTopPlotModeChanged
+        )
+
         self.mainWidget.bottomPlotComboBox.addItem(
             "Radial Distribution Functions",
             PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+
+        self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
+            self.handleBottomPlotModeChanged
         )
 
         self.mainWidget.setWindowTitle("GudPy")
@@ -383,6 +401,12 @@ class GudPyMainWindow(QMainWindow):
             )
             self.mainWidget.sampleBottomPlot.setChart(
                 bottomPlot
+            )
+            self.mainWidget.topPlotComboBox.setCurrentIndex(
+                topPlot.plotMode.value
+            )
+            self.mainWidget.bottomPlotComboBox.setCurrentIndex(
+                bottomPlot.plotMode.value
             )
             dcsLevel = gudFile.averageLevelMergedDCS
             self.mainWidget.dcsLabel.setText(
@@ -778,3 +802,30 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(*self.queue.get())
         else:
             self.setControlsEnabled(True)
+
+    def handleTopPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.sampleTopPlot.chart().plot,
+            self.mainWidget.topPlotComboBox.itemData(index)
+        )
+
+    def handleBottomPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.sampleBottomPlot.chart().plot,
+            self.mainWidget.bottomPlotComboBox.itemData(index)
+        )
+
+    def handleTopAllPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.allSampleTopPlot.chart().plot,
+            self.mainWidget.topAllPlotComboBox.itemData(index)
+        )
+
+    def handleBottomAllPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.allSampleBottomPlot.chart().plot,
+            self.mainWidget.bottomAllPlotComboBox.itemData(index)
+        )
+
+    def handlePlotModeChanged(self, plot, plotMode):
+        plot(plotMode)
