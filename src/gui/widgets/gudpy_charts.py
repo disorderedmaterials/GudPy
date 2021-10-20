@@ -18,8 +18,42 @@ class GudPyChart(QChart):
 
     ...
 
+    Attributes
+    ----------
+    dataFileType : str
+        Data file type being used in the input file.
+    inputDir : str
+        Input directory.
+    data : dict
+        Dictionary of data for plotting.
+    logarithmic : bool
+        Are plots logarithmic?
+    logarithmicXAxis : QLogValueAxis
+        X-Axis to use for logarithmic plots.
+    logarithmicYAxis : QLogValueAxis
+        Y-Axis to use for logarithmic plots.
+    seriesAVisible : bool
+        Is the first series visible?
+    seriesBVisible : bool
+        Is the second series visible?
     Methods
     -------
+    addSamples(samples):
+        Adds the given samples to the chart.
+    addSample(sample):
+        Adds the given sample to the chart.
+    plot(plotMode):
+        Plots the data stored with the given plotmode.
+    plotSample(sample):
+        Plots the given sample on the chart.
+    toggleLogarithmicAxes():
+        Toggles logarithmic plotting.
+    toggleVisible(series):
+        Toggles visibility of a given series, or set of series'.
+    isVisible(series):
+        Method for determining if a given series or set of series' is visible.
+    errorData():
+        Method for constructing data for use in error bars.
     """
     def __init__(
             self, gudrunFile
@@ -30,6 +64,8 @@ class GudPyChart(QChart):
         from QChart.
         Parameters
         ----------
+        gudrunFile : GudrunFile
+            GudrunFile object that all data will be constructed from.
         """
         super(GudPyChart, self).__init__()
 
@@ -47,10 +83,26 @@ class GudPyChart(QChart):
         self.seriesBVisible = True
 
     def addSamples(self, samples):
+        """
+        Adds the given samples to the chart.
+        Parameters
+        ----------
+        samples : Sample[]
+            List of samples to add.
+        """
         for sample in samples:
             self.addSample(sample)
 
     def addSample(self, sample):
+        """
+        Adds the given sample to the chart.
+        Parameters
+        ----------
+        sample : Sample
+            Sample to be added.
+        """
+
+        # Add a new dictionary / empty the currently stored dictionary.
         self.data[sample] = {}
 
         # Get the mint01 and mdcs01 filenames.
@@ -60,6 +112,8 @@ class GudPyChart(QChart):
         mdcsFile = (
             sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdcs01")
         )
+
+        # Try and resolve paths.
         if not os.path.exists(mintFile):
             mintFile = os.path.join(self.inputDir, mintFile)
         if not os.path.exists(mdcsFile):
@@ -105,6 +159,8 @@ class GudPyChart(QChart):
         mgorFile = (
             sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mgor01")
         )
+
+        # Try and resolve paths.
         if not os.path.exists(mdorFile):
             mdorFile = os.path.join(self.inputDir, mdorFile)
         if not os.path.exists(mgorFile):
@@ -145,18 +201,32 @@ class GudPyChart(QChart):
             self.data[sample]["mgor01"] = mgorData
 
     def plot(self, plotMode=None):
+        """
+        Plots the data stored with the given plotmode.
+        Parameters
+        ----------
+        plotMode : PlotMode, optional
+            Plot mode to use.
+        """
+        
+        # If a plotMode is defined, then set the class attribute to it.
         if plotMode:
             self.plotMode = plotMode
 
+        # Clear the chart of all series' and axes.
         self.seriesA = {}
         self.seriesB = {}
         self.removeAllSeries()
         for axis in self.axes():
             self.removeAxis(axis)
 
+        # Plot all the samples stored.
         for sample in self.data.keys():
             self.plotSample(sample)
 
+        # If it is a logarithmic plot, we need to define our own
+        # QLogValueAxis, and attatch to our series'.
+        # Otherwise create default ones.
         if self.logarithmic:
             self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
             self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
@@ -166,6 +236,7 @@ class GudPyChart(QChart):
         else:
             self.createDefaultAxes()
 
+        # Ensure that visibility is persistent.
         if not self.seriesAVisible:
             for series in self.seriesA.values():
                 series.setVisible(False)
@@ -174,7 +245,18 @@ class GudPyChart(QChart):
                 series.setVisible(False)
 
     def plotSample(self, sample):
+        """
+        Plots the given sample on the chart.
+        Parameters
+        ----------
+        sample : Sample 
+            Sample to plot.
+        """
 
+        # Decide on the offset.
+        # Non-logarithmic = 0, logarithmic = 10.
+        # Offset ensures that when plotting logarithmically,
+        # that no undefined values are produced.
         offset = int(self.logarithmic)*10
 
         # If the plotting mode is Structure Factor.
@@ -192,6 +274,7 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mintSeries)
+            # Keep the series.
             self.seriesA[sample] = mintSeries
 
             # Instantiate the series.
@@ -207,8 +290,10 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
+            # Keep the series.
             self.seriesB[sample] = mdcsSeries
 
+        # If the plotting mode is RDF.
         elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
 
             # Instantiate the series.
@@ -224,6 +309,7 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mdorSeries)
+            # Keep the series.
             self.seriesA[sample] = mdorSeries
 
             # Instantiate the series.
@@ -239,30 +325,63 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mgorSeries)
+            # Keep the series.
             self.seriesB[sample] = mgorSeries
 
     def toggleLogarithmicAxes(self):
+        """
+        Toggles logarithmic plotting.
+        """
+        # 'Flick' the logarithmic flag.
         self.logarithmic = not self.logarithmic
+        # Replot.
         self.plot()
 
     def toggleVisible(self, series):
+        """
+        Toggles visibility of a given series, or set of series'.
+        Parameters
+        ----------
+        series : dict | QLineSeries
+            Series(') to toggle visibility on.
+        """
+        # If a dict is received
         if isinstance(series, dict):
+            # 'Flick' the corresponding visibility flag.
             if series == self.seriesA:
                 self.seriesAVisible = not self.seriesAVisible
             elif series == self.seriesB:
                 self.seriesBVisible = not self.seriesBVisible
+            # Recurse, toggling visibility of values (series').
             for s in series.values():
                 self.toggleVisible(s)
         else:
+            # 'Flick' internal visibility flag of QLineSeries object.
             series.setVisible(not series.isVisible())
 
     def isVisible(self, series):
+        """
+        Method for determining if a given series or set of series' is visible.
+        Parameters
+        ----------
+        series : dict | QLineSeries
+            Series(') to check visibility of.
+        """
+        # If it's a dict, assume that if any value (series)
+        # is visible, then they all should be.
         if isinstance(series, dict):
             return any([s.isVisible() for s in series.values()])
         else:
             return series.isVisible()
 
     def errorData(self):
+        """
+        Method for constructing data for use in error bars.
+        Returns
+        -------
+        list
+            List of tuples of points (x1, y1, x2, y2)
+        """
         errorData = []
         if self.plotMode == PlotModes.STRUCTURE_FACTOR:
             for sample in self.data.keys():
@@ -291,8 +410,10 @@ class GudPyChartView(QChartView):
     -------
     wheelEvent(event):
         Event handler for using the scroll wheel.
-    setChart(chart):
-        Sets the chart.
+    toggleLogarithmicAxes():
+        Toggles logarithmic axes in the chart.
+    setupShortcuts():
+        Sets up the keyboard shortcuts for the chart.
     """
     def __init__(self, parent):
         """
@@ -351,8 +472,11 @@ class GudPyChartView(QChartView):
         # Scroll to match the zoom.
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
-        self.drawForeground(QPainter(), QRectF())
+
     def toggleLogarithmicAxes(self):
+        """
+        Toggles logarithmic axes in the chart.
+        """
         self.chart().toggleLogarithmicAxes()
 
     def contextMenuEvent(self, event):
@@ -433,10 +557,20 @@ class GudPyChartView(QChartView):
         self.menu.popup(QCursor.pos())
 
     def setupShortcuts(self):
+        """
+        Sets up keyboard shortcuts for the Chart.
+        """
+
+        # TODO: Can we enable these shortcuts when hovering the Chart?
+        # TODO: Instead of having to first click inside to get the context?
+
+        # Keyboard shorcut 'L/l' for toggling logarithmic axes.
         self.toggleLogarithmicAxesShortcut = QShortcut(QKeySequence(Qt.Key_L), self)
         self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
         self.toggleLogarithmicAxesShortcut.activated.connect(self.toggleLogarithmicAxes)
 
+        # Keyboard shortcut 'A/a' for showing the limits of the chart.
+        # i.e. zooming out fully.
         self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
         self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
         self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
