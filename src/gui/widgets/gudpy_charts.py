@@ -209,6 +209,7 @@ class GudPyChart(QChart):
             mdorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mdor01"]])
             # Add the series to the chart.
             self.addSeries(mdorSeries)
+            self.seriesA.append(mdorSeries)
 
             # Instantiate the series.
             mgorSeries = QLineSeries()
@@ -218,6 +219,7 @@ class GudPyChart(QChart):
             mgorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mgor01"]])
             # Add the series to the chart.
             self.addSeries(mgorSeries)
+            self.seriesB.append(mgorSeries)
 
     def toggleLogarithmicAxes(self):
         self.logarithmic = not self.logarithmic
@@ -351,5 +353,20 @@ class GudPyChartView(QChartView):
                         lambda : self.chart().toggleVisible(self.chart().seriesB)
                     )
                     self.menu.addAction(showMdcs01Action)
+            elif self.chart().plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+                    showMdor01Action = QAction("Show mdor01 data", self.menu)
+                    showMdor01Action.setCheckable(True)
+                    showMdor01Action.setChecked(self.chart().isVisible(self.chart().seriesA))
+                    showMdor01Action.triggered.connect(
+                        lambda : self.chart().toggleVisible(self.chart().seriesA)
+                    )
+                    self.menu.addAction(showMdor01Action) 
 
+                    showMgor01Action = QAction("Show mgor01 data", self.menu)
+                    showMgor01Action.setCheckable(True)
+                    showMgor01Action.setChecked(self.chart().isVisible(self.chart().seriesB))
+                    showMgor01Action.triggered.connect(
+                        lambda : self.chart().toggleVisible(self.chart().seriesB)
+                    )
+                    self.menu.addAction(showMgor01Action)
         self.menu.popup(QCursor.pos())
