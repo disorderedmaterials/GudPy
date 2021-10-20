@@ -1,6 +1,6 @@
-from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis, QValueAxis
+from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QAction, QContextMenuEvent, QCursor, QPainter
+from PySide6.QtGui import QAction, QCursor, QPainter
 from enum import Enum
 import os
 
@@ -81,7 +81,7 @@ class GudPyChart(QChart):
 
                     mintData.append([x, y, err])
             self.data[sample]["mint01"] = mintData
-        
+
         # Check the file exists.
         if os.path.exists(mdcsFile):
             mdcsData = []
@@ -156,7 +156,7 @@ class GudPyChart(QChart):
 
         for sample in self.data.keys():
             self.plotSample(sample)
-    
+
         if self.logarithmic:
             self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
             self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
@@ -174,7 +174,7 @@ class GudPyChart(QChart):
                 series.setVisible(False)
 
     def plotSample(self, sample):
-        
+
         offset = int(self.logarithmic)*10
 
         # If the plotting mode is Structure Factor.
@@ -184,7 +184,12 @@ class GudPyChart(QChart):
             # Set the name of the series.
             mintSeries.setName(f"{sample.name} mint01")
             # Construct the series
-            mintSeries.append([QPointF(x+offset, y+offset) for x, y, _ in self.data[sample]["mint01"]])
+            mintSeries.append(
+                [
+                    QPointF(x+offset, y+offset)
+                    for x, y, _ in self.data[sample]["mint01"]
+                ]
+            )
             # Add the series to the chart.
             self.addSeries(mintSeries)
             self.seriesA.append(mintSeries)
@@ -194,7 +199,12 @@ class GudPyChart(QChart):
             # Set the name of the series.
             mdcsSeries.setName(f"{sample.name} mdcs01")
             # Construct the series
-            mdcsSeries.append([QPointF(x+offset, y+offset) for x, y, _ in self.data[sample]["mdcs01"]])
+            mdcsSeries.append(
+                [
+                    QPointF(x+offset, y+offset)
+                    for x, y, _ in self.data[sample]["mdcs01"]
+                ]
+            )
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
             self.seriesB.append(mdcsSeries)
@@ -206,7 +216,12 @@ class GudPyChart(QChart):
             # Set the name of the series.
             mdorSeries.setName(f"{sample.name} mdor01")
             # Construct the series
-            mdorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mdor01"]])
+            mdorSeries.append(
+                [
+                    QPointF(x+offset, y+offset)
+                    for x, y, _ in self.data[sample]["mdor01"]
+                ]
+            )
             # Add the series to the chart.
             self.addSeries(mdorSeries)
             self.seriesA.append(mdorSeries)
@@ -216,14 +231,19 @@ class GudPyChart(QChart):
             # Set the name of the series.
             mgorSeries.setName(f"{sample.name} mgor01")
             # Construct the series
-            mgorSeries.append([QPointF(x+offset ,y+offset) for x, y, _ in self.data[sample]["mgor01"]])
+            mgorSeries.append(
+                [
+                    QPointF(x+offset, y+offset)
+                    for x, y, _ in self.data[sample]["mgor01"]
+                ]
+            )
             # Add the series to the chart.
             self.addSeries(mgorSeries)
             self.seriesB.append(mgorSeries)
 
     def toggleLogarithmicAxes(self):
         self.logarithmic = not self.logarithmic
-        self.plot()    
+        self.plot()
 
     def toggleVisible(self, series):
         if isinstance(series, list):
@@ -331,42 +351,65 @@ class GudPyChartView(QChartView):
             resetAction = QAction("Reset zoom", self.menu)
             resetAction.triggered.connect(self.chart().zoomReset)
             self.menu.addAction(resetAction)
-            toggleLogarithmicAction = QAction("Toggle logarithmic axes", self.menu)
+            toggleLogarithmicAction = QAction(
+                "Toggle logarithmic axes", self.menu
+            )
             toggleLogarithmicAction.setCheckable(True)
             toggleLogarithmicAction.setChecked(self.chart().logarithmic)
-            toggleLogarithmicAction.triggered.connect(self.toggleLogarithmicAxes)
+            toggleLogarithmicAction.triggered.connect(
+                self.toggleLogarithmicAxes
+            )
             self.menu.addAction(toggleLogarithmicAction)
 
             if self.chart().plotMode == PlotModes.STRUCTURE_FACTOR:
-                    showMint01Action = QAction("Show mint01 data", self.menu)
-                    showMint01Action.setCheckable(True)
-                    showMint01Action.setChecked(self.chart().isVisible(self.chart().seriesA))
-                    showMint01Action.triggered.connect(
-                        lambda : self.chart().toggleVisible(self.chart().seriesA)
+                showMint01Action = QAction("Show mint01 data", self.menu)
+                showMint01Action.setCheckable(True)
+                showMint01Action.setChecked(
+                    self.chart().isVisible(self.chart().seriesA)
+                )
+                showMint01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesA
                     )
-                    self.menu.addAction(showMint01Action)
+                )
+                self.menu.addAction(showMint01Action)
 
-                    showMdcs01Action = QAction("Show mdcs01 data", self.menu)
-                    showMdcs01Action.setCheckable(True)
-                    showMdcs01Action.setChecked(self.chart().isVisible(self.chart().seriesB))
-                    showMdcs01Action.triggered.connect(
-                        lambda : self.chart().toggleVisible(self.chart().seriesB)
+                showMdcs01Action = QAction("Show mdcs01 data", self.menu)
+                showMdcs01Action.setCheckable(True)
+                showMdcs01Action.setChecked(
+                    self.chart().isVisible(self.chart().seriesB)
+                )
+                showMdcs01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesB
                     )
-                    self.menu.addAction(showMdcs01Action)
-            elif self.chart().plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
-                    showMdor01Action = QAction("Show mdor01 data", self.menu)
-                    showMdor01Action.setCheckable(True)
-                    showMdor01Action.setChecked(self.chart().isVisible(self.chart().seriesA))
-                    showMdor01Action.triggered.connect(
-                        lambda : self.chart().toggleVisible(self.chart().seriesA)
+                )
+                self.menu.addAction(showMdcs01Action)
+            elif (
+                self.chart().plotMode ==
+                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            ):
+                showMdor01Action = QAction("Show mdor01 data", self.menu)
+                showMdor01Action.setCheckable(True)
+                showMdor01Action.setChecked(
+                    self.chart().isVisible(self.chart().seriesA)
+                )
+                showMdor01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesA
                     )
-                    self.menu.addAction(showMdor01Action) 
+                )
+                self.menu.addAction(showMdor01Action)
 
-                    showMgor01Action = QAction("Show mgor01 data", self.menu)
-                    showMgor01Action.setCheckable(True)
-                    showMgor01Action.setChecked(self.chart().isVisible(self.chart().seriesB))
-                    showMgor01Action.triggered.connect(
-                        lambda : self.chart().toggleVisible(self.chart().seriesB)
+                showMgor01Action = QAction("Show mgor01 data", self.menu)
+                showMgor01Action.setCheckable(True)
+                showMgor01Action.setChecked(
+                    self.chart().isVisible(self.chart().seriesB)
+                )
+                showMgor01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesB
                     )
-                    self.menu.addAction(showMgor01Action)
+                )
+                self.menu.addAction(showMgor01Action)
         self.menu.popup(QCursor.pos())

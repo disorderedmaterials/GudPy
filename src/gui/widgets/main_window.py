@@ -375,7 +375,9 @@ class GudPyMainWindow(QMainWindow):
 
     def focusResult(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
-            topPlot, bottomPlot, gudFile = self.results[self.mainWidget.objectTree.currentObject()]
+            topPlot, bottomPlot, gudFile = (
+                self.results[self.mainWidget.objectTree.currentObject()]
+            )
             self.mainWidget.sampleTopPlot.setChart(
                 topPlot
             )
@@ -431,7 +433,6 @@ class GudPyMainWindow(QMainWindow):
             ]
         )
         allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-
 
         allBottomChart = GudPyChart(
             self.gudrunFile
