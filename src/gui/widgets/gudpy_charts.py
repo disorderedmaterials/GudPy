@@ -1,6 +1,6 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis
-from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QShortcut
+from PySide6.QtCore import QLine, QPoint, QPointF, QRectF, Qt
+from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
 from enum import Enum
 import os
 
@@ -148,8 +148,8 @@ class GudPyChart(QChart):
         if plotMode:
             self.plotMode = plotMode
 
-        self.seriesA = []
-        self.seriesB = []
+        self.seriesA = {}
+        self.seriesB = {}
         self.removeAllSeries()
         for axis in self.axes():
             self.removeAxis(axis)
@@ -167,10 +167,10 @@ class GudPyChart(QChart):
             self.createDefaultAxes()
 
         if not self.seriesAVisible:
-            for series in self.seriesA:
+            for series in self.seriesA.values():
                 series.setVisible(False)
         if not self.seriesBVisible:
-            for series in self.seriesB:
+            for series in self.seriesB.values():
                 series.setVisible(False)
 
     def plotSample(self, sample):
@@ -192,7 +192,7 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mintSeries)
-            self.seriesA.append(mintSeries)
+            self.seriesA[sample] = mintSeries
 
             # Instantiate the series.
             mdcsSeries = QLineSeries()
@@ -207,7 +207,7 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
-            self.seriesB.append(mdcsSeries)
+            self.seriesB[sample] = mdcsSeries
 
         elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
 
@@ -224,7 +224,7 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mdorSeries)
-            self.seriesA.append(mdorSeries)
+            self.seriesA[sample] = mdorSeries
 
             # Instantiate the series.
             mgorSeries = QLineSeries()
@@ -239,29 +239,44 @@ class GudPyChart(QChart):
             )
             # Add the series to the chart.
             self.addSeries(mgorSeries)
-            self.seriesB.append(mgorSeries)
+            self.seriesB[sample] = mgorSeries
 
     def toggleLogarithmicAxes(self):
         self.logarithmic = not self.logarithmic
         self.plot()
 
     def toggleVisible(self, series):
-        if isinstance(series, list):
+        if isinstance(series, dict):
             if series == self.seriesA:
                 self.seriesAVisible = not self.seriesAVisible
             elif series == self.seriesB:
                 self.seriesBVisible = not self.seriesBVisible
-            for s in series:
+            for s in series.values():
                 self.toggleVisible(s)
         else:
             series.setVisible(not series.isVisible())
 
     def isVisible(self, series):
-        if isinstance(series, list):
-            return any([s.isVisible() for s in series])
+        if isinstance(series, dict):
+            return any([s.isVisible() for s in series.values()])
         else:
             return series.isVisible()
 
+    def errorData(self):
+        errorData = []
+        if self.plotMode == PlotModes.STRUCTURE_FACTOR:
+            for sample in self.data.keys():
+                for x, y, err in self.data[sample]["mint01"]:
+                    errorData.append((x, y-err, x, y+err))
+                for x, y, err in self.data[sample]["mdcs01"]:
+                    errorData.append((x, y-err, x, y+err))
+        elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+            for sample in self.data.keys():
+                for x, y, err in self.data[sample]["mdor01"]:
+                    errorData.append((x, y-err, x, y+err))
+                for x, y, err in self.data[sample]["mgor01"]:
+                    errorData.append((x, y-err, x, y+err))
+        return errorData
 
 class GudPyChartView(QChartView):
     """
@@ -336,7 +351,7 @@ class GudPyChartView(QChartView):
         # Scroll to match the zoom.
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
-
+        self.drawForeground(QPainter(), QRectF())
     def toggleLogarithmicAxes(self):
         self.chart().toggleLogarithmicAxes()
 
@@ -425,3 +440,18 @@ class GudPyChartView(QChartView):
         self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
         self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
         self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
+    
+    def drawForeground(self, painter, rect):
+        if self.chart():
+            errorData = self.chart().errorData()
+            if errorData:
+                painter.save()
+                pen = QPen(Qt.black)
+                pen.setWidth(1)
+                painter.setPen(pen)
+
+                for x1, y1, x2, y2 in errorData:
+                    lower = self.chart().mapToPosition(QPointF(x1, y1))
+                    upper = self.chart().mapToPosition(QPointF(x2, y2))
+                    painter.drawLine(lower, upper)
+        painter.restore()
