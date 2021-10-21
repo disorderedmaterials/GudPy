@@ -3,10 +3,9 @@ import sys
 
 from src.gui.widgets.main_window import GudPyMainWindow
 
-
 class GudPy(QApplication):
     def __init__(self, args):
-
+        sys.hookedFrom = self
         super(GudPy, self).__init__(args)
         self.initComponents()
         self.gudrunFile = None
@@ -16,10 +15,15 @@ class GudPy(QApplication):
 
         self.mainWindow = GudPyMainWindow()
 
+    def onException(self, cls, exception, traceback):
+        self.mainWindow.onException(cls, exception, traceback)
 
 def main(argv):
     GudPy(argv)
 
+def excepthook(cls, exception, traceback):
+    sys.hookedFrom.onException(cls, exception, traceback)
 
 if __name__ == "__main__":
     main(sys.argv)
+

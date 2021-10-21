@@ -49,7 +49,7 @@ from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
 import math
 from src.gui.widgets.resources import resources_rc  # noqa
-
+import traceback
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -835,3 +835,6 @@ class GudPyMainWindow(QMainWindow):
 
     def handlePlotModeChanged(self, plot, plotMode):
         plot(plotMode)
+
+    def onException(self, cls, exception, tb):
+        QMessageBox.critical(self.mainWidget, "GudPy Error", f"{''.join(traceback.format_exception(cls, exception, tb))}")
