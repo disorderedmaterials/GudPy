@@ -331,20 +331,22 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesB[sample] = mdcsSeries
 
-            dcsSeries = QLineSeries()
-            dcsSeries.setName(f"{sample.name} dcs level")
-            dcsSeries.append(
-                [
-                    QPointF(x, y)
-                    for x, y in self.data[sample]["dcs"]
-                ]
-            )
-            pen = QPen(dcsSeries.pen())
-            pen.setStyle(Qt.PenStyle.DashLine)
-            pen.setColor(mdcsSeries.color())
-            dcsSeries.setPen(pen)
-            self.addSeries(dcsSeries)
-            self.seriesC[sample] = dcsSeries
+            if not (self.logarithmicY or self.logarithmicA):
+
+                dcsSeries = QLineSeries()
+                dcsSeries.setName(f"{sample.name} dcs level")
+                dcsSeries.append(
+                    [
+                        QPointF(x, y)
+                        for x, y in self.data[sample]["dcs"]
+                    ]
+                )
+                pen = QPen(dcsSeries.pen())
+                pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setColor(mdcsSeries.color())
+                dcsSeries.setPen(pen)
+                self.addSeries(dcsSeries)
+                self.seriesC[sample] = dcsSeries
 
         # If the plotting mode is RDF.
         elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
