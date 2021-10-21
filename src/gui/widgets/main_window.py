@@ -327,9 +327,9 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load an input file.
         """
-        filename = QFileDialog.getOpenFileName(
+        filename, _ = QFileDialog.getOpenFileName(
             self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
-        )[0]
+        )
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
@@ -348,9 +348,9 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file as...
         """
-        filename = QFileDialog.getSaveFileName(
+        filename, _ = QFileDialog.getSaveFileName(
             self, "Save input file as..", "."
-        )[0]
+        )
         if filename:
             self.gudrunFile.outpath = filename
             self.gudrunFile.write_out()
