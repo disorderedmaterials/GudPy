@@ -1,6 +1,10 @@
-from PySide6.QtCharts import QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
-from PySide6.QtCore import QLine, QPoint, QPointF, QRectF, Qt
-from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
+from PySide6.QtCharts import (
+    QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
+)
+from PySide6.QtCore import QPointF, QRectF, Qt
+from PySide6.QtGui import (
+    QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
+)
 from enum import Enum
 import os
 
@@ -80,7 +84,7 @@ class GudPyChart(QChart):
         self.logarithmicXAxis.setBase(10.0)
         self.logarithmicYAxis = QLogValueAxis()
         self.logarithmicYAxis.setBase(10.0)
-        
+
         self.dcsAxis = QValueAxis()
         self.addAxis(self.dcsAxis, Qt.AlignRight)
 
@@ -160,10 +164,12 @@ class GudPyChart(QChart):
                     mdcsData.append([x, y, err])
             self.data[sample]["mdcs01"] = mdcsData
 
-        gudPath = sample.dataFiles.dataFiles[0].replace(self.dataFileType, "gud")
+        gudPath = sample.dataFiles.dataFiles[0].replace(
+            self.dataFileType, "gud"
+        )
         if not os.path.exists(gudPath):
             gudPath = os.path.join(self.inputDir, gudPath)
-        
+
         if os.path.exists(gudPath) and "mdcs01" in self.data[sample].keys():
             dcsData = []
             gudFile = GudFile(gudPath)
@@ -228,7 +234,7 @@ class GudPyChart(QChart):
         plotMode : PlotMode, optional
             Plot mode to use.
         """
-        
+
         # If a plotMode is defined, then set the class attribute to it.
         if plotMode:
             self.plotMode = plotMode
@@ -274,7 +280,7 @@ class GudPyChart(QChart):
         Plots the given sample on the chart.
         Parameters
         ----------
-        sample : Sample 
+        sample : Sample
             Sample to plot.
         """
 
@@ -438,6 +444,7 @@ class GudPyChart(QChart):
                 for x, y, err in self.data[sample]["mgor01"]:
                     errorData.append((x, y-err, x, y+err))
         return errorData
+
 
 class GudPyChartView(QChartView):
     """
@@ -619,9 +626,13 @@ class GudPyChartView(QChartView):
         # TODO: Instead of having to first click inside to get the context?
 
         # Keyboard shorcut 'L/l' for toggling logarithmic axes.
-        self.toggleLogarithmicAxesShortcut = QShortcut(QKeySequence(Qt.Key_L), self)
+        self.toggleLogarithmicAxesShortcut = QShortcut(
+            QKeySequence(Qt.Key_L), self
+        )
         self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
-        self.toggleLogarithmicAxesShortcut.activated.connect(self.toggleLogarithmicAxes)
+        self.toggleLogarithmicAxesShortcut.activated.connect(
+            self.toggleLogarithmicAxes
+        )
 
         # Keyboard shortcut 'A/a' for showing the limits of the chart.
         # i.e. zooming out fully.
