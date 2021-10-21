@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
-from src.gui.widgets.view_input import ViewInput
+from src.gui.widgets.view_input_dialog import ViewInputDialog
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.gudpy_tables import GroupingParameterTable
 from src.gui.widgets.gudpy_tables import BeamProfileTable
@@ -125,6 +125,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
+        loader.registerCustomWidget(ViewInputDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -233,7 +234,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
         self.mainWidget.viewLiveInputFile.triggered.connect(
-            lambda: ViewInput(self.gudrunFile, parent=self)
+            self.viewInput
         )
 
         self.mainWidget.insertSampleBackground.triggered.connect(
@@ -273,7 +274,9 @@ class GudPyMainWindow(QMainWindow):
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
 
-    def updateWidgets(self):
+    def updateWidgets(self, fromFile=False):
+        if fromFile:
+            self.gudrunFile = GudrunFile(self.gudrunFile.path)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -338,9 +341,18 @@ class GudPyMainWindow(QMainWindow):
 
     def updateFromFile(self):
         """
-        Calls initComponents() again, to update the UI.
+        Calls updateFromFile(), to update the UI.
         """
-        self.initComponents()
+        try:
+            self.updateWidgets(fromFile=True)
+        except ParserException as e:
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"An error occured reverting to the previous state.\n{str(e)}"
+            )
+            with open(self.gudrunFile.path, "w", encoding="utf-8") as fp:
+                fp.write(str(self.currentState))
 
     def updateGeometries(self):
         """
@@ -774,3 +786,8 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(*self.queue.get())
         else:
             self.setControlsEnabled(True)
+
+    def viewInput(self):
+        self.currentState = str(self.gudrunFile)
+        viewInputDialog = ViewInputDialog(self.gudrunFile, self)
+        viewInputDialog.widget.exec_()
