@@ -595,18 +595,3 @@ class GudPyChartView(QChartView):
         self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
         self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
         self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
-    
-    def drawForeground(self, painter, rect):
-        if self.chart():
-            errorData = self.chart().errorData()
-            if errorData:
-                painter.save()
-                pen = QPen(Qt.black)
-                pen.setWidth(1)
-                painter.setPen(pen)
-
-                for x1, y1, x2, y2 in errorData:
-                    lower = self.chart().mapToPosition(QPointF(x1, y1))
-                    upper = self.chart().mapToPosition(QPointF(x2, y2))
-                    painter.drawLine(lower, upper)
-        painter.restore()
