@@ -51,6 +51,7 @@ import math
 from src.gui.widgets.resources import resources_rc  # noqa
 import traceback
 
+
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
@@ -837,4 +838,8 @@ class GudPyMainWindow(QMainWindow):
         plot(plotMode)
 
     def onException(self, cls, exception, tb):
-        QMessageBox.critical(self.mainWidget, "GudPy Error", f"{''.join(traceback.format_exception(cls, exception, tb))}")
+        QMessageBox.critical(
+            self.mainWidget,
+            "GudPy Error",
+            f"{''.join(traceback.format_exception(cls, exception, tb))}"
+        )
