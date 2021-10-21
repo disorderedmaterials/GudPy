@@ -826,7 +826,7 @@ class GudPyMainWindow(QMainWindow):
         viewInputDialog = ViewInputDialog(self.gudrunFile, self)
         viewInputDialog.widget.exec_()
 
-        def handleTopPlotModeChanged(self, index):
+    def handleTopPlotModeChanged(self, index):
         self.handlePlotModeChanged(
             self.mainWidget.sampleTopPlot.chart().plot,
             self.mainWidget.topPlotComboBox.itemData(index)
