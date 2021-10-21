@@ -1,7 +1,7 @@
 from PySide6.QtCharts import (
     QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
 )
-from PySide6.QtCore import QPointF, QRectF, QSemaphore, Qt
+from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
 )
@@ -269,7 +269,6 @@ class GudPyChart(QChart):
             self.removeAxis(self.axisY())
             for series in self.series():
                 series.attachAxis(self.logarithmicYAxis)
-
 
         # Ensure that visibility is persistent.
         if not self.seriesAVisible:
@@ -562,13 +561,16 @@ class GudPyChartView(QChartView):
 
             toggleLogarithmicMenu = QMenu(self.menu)
             toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
-            
+
             toggleLogarithmicAllAxesAction = QAction(
                 "Toggle logarithmic all axis", toggleLogarithmicMenu
             )
 
             toggleLogarithmicAllAxesAction.setCheckable(True)
-            toggleLogarithmicAllAxesAction.setChecked(self.chart().logarithmicX & self.chart().logarithmicY)
+            toggleLogarithmicAllAxesAction.setChecked(
+                self.chart().logarithmicX
+                & self.chart().logarithmicY
+            )
             toggleLogarithmicAllAxesAction.triggered.connect(
                 lambda: self.toggleLogarithmicAxes("A")
             )
@@ -678,7 +680,8 @@ class GudPyChartView(QChartView):
             lambda: self.toggleLogarithmicAxes("A")
         )
 
-        # Keyboard shortcut 'Shift + L/l + X/x' for toggling logarithmic X-axis.
+        # Keyboard shortcut 'Shift + L/l + X/x'
+        # for toggling logarithmic X-axis.
         self.toggleLogarithmicXAxisShortcut = QShortcut(
             QKeySequence(Qt.Key_Shift, Qt.Key_L, Qt.Key_X), self
         )
@@ -687,7 +690,8 @@ class GudPyChartView(QChartView):
             lambda: self.toggleLogarithmicAxes("X")
         )
 
-        # Keyboard shortcut 'Shift + L/l + Y/y' for toggling logarithmic Y-axis.
+        # Keyboard shortcut 'Shift + L/l + Y/y'
+        # for toggling logarithmic Y-axis.
         self.toggleLogarithmicYAxisShortcut = QShortcut(
             QKeySequence(Qt.Key_Shift, Qt.Key_L, Qt.Key_Y), self
         )
