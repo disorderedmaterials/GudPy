@@ -1,4 +1,4 @@
-from PySide6.QtCharts import QChart, QChartView, QLineSeries, QLogValueAxis, QValueAxis
+from PySide6.QtCharts import QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
 from PySide6.QtCore import QLine, QPoint, QPointF, QRectF, Qt
 from PySide6.QtGui import QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
 from enum import Enum
@@ -87,6 +87,8 @@ class GudPyChart(QChart):
         self.seriesAVisible = True
         self.seriesBVisible = True
         self.seriesCVisible = True
+
+        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
 
     def addSamples(self, samples):
         """
@@ -326,6 +328,7 @@ class GudPyChart(QChart):
             )
             pen = QPen(dcsSeries.pen())
             pen.setStyle(Qt.PenStyle.DashLine)
+            pen.setColor(mdcsSeries.color())
             dcsSeries.setPen(pen)
             self.addSeries(dcsSeries)
             self.seriesC[sample] = dcsSeries
