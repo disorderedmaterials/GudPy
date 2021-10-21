@@ -96,6 +96,8 @@ class GudPyMainWindow(QMainWindow):
         self.modified = False
         self.iterator = None
         self.queue = Queue()
+        self.results = {}
+        self.allPlots = []
 
     def initComponents(self):
         """
@@ -191,18 +193,36 @@ class GudPyMainWindow(QMainWindow):
             "Structure Factor",
             PlotModes.STRUCTURE_FACTOR
         )
+
+        self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
+            self.handleTopAllPlotModeChanged
+        )
+
         self.mainWidget.bottomAllPlotComboBox.addItem(
             "Radial Distribution Functions",
             PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+
+        self.mainWidget.bottomAllPlotComboBox.currentIndexChanged.connect(
+            self.handleBottomAllPlotModeChanged
         )
 
         self.mainWidget.topPlotComboBox.addItem(
             "Structure Factor",
             PlotModes.STRUCTURE_FACTOR
         )
+
+        self.mainWidget.topPlotComboBox.currentIndexChanged.connect(
+            self.handleTopPlotModeChanged
+        )
+
         self.mainWidget.bottomPlotComboBox.addItem(
             "Radial Distribution Functions",
             PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+
+        self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
+            self.handleBottomPlotModeChanged
         )
 
         self.mainWidget.setWindowTitle("GudPy")
@@ -385,75 +405,88 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
 
-    def updateResults(self):
+    def focusResult(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
-            sample = self.mainWidget.objectTree.currentObject()
-            self.mainWidget.sampleChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=sample
+            topPlot, bottomPlot, gudFile = (
+                self.results[self.mainWidget.objectTree.currentObject()]
             )
             self.mainWidget.sampleTopPlot.setChart(
-                self.mainWidget.sampleChart
-            )
-            self.mainWidget.sampleRDFChart = GudPyChart(
-                self.gudrunFile.instrument.dataFileType,
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                sample=sample,
-                plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                topPlot
             )
             self.mainWidget.sampleBottomPlot.setChart(
-                self.mainWidget.sampleRDFChart
+                bottomPlot
             )
-            path = sample.dataFiles.dataFiles[0].replace(
-                self.gudrunFile.instrument.dataFileType, "gud"
+            self.mainWidget.topPlotComboBox.setCurrentIndex(
+                topPlot.plotMode.value
             )
-            if not os.path.exists(path):
-                path = os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir, path
+            self.mainWidget.bottomPlotComboBox.setCurrentIndex(
+                bottomPlot.plotMode.value
+            )
+            dcsLevel = gudFile.averageLevelMergedDCS
+            self.mainWidget.dcsLabel.setText(
+                f"DCS Level: {dcsLevel}"
+            )
+            self.mainWidget.resultLabel.setText(gudFile.output)
+            if gudFile.err:
+                self.mainWidget.resultLabel.setStyleSheet(
+                    "background-color: red"
                 )
-            if os.path.exists(path):
-                gf = GudFile(path)
-                dcsLevel = gf.averageLevelMergedDCS
-                self.mainWidget.dcsLabel.setText(
-                    f"DCS Level: {dcsLevel}"
+            else:
+                self.mainWidget.resultLabel.setStyleSheet(
+                    "background-color: green"
                 )
-                self.mainWidget.resultLabel.setText(gf.output)
-                if gf.err:
-                    self.mainWidget.resultLabel.setStyleSheet(
-                        "background-color: red"
-                    )
-                else:
-                    self.mainWidget.resultLabel.setStyleSheet(
-                        "background-color: green"
-                    )
 
-        self.mainWidget.allSamplesChart = GudPyChart(
-            self.gudrunFile.instrument.dataFileType,
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            samples=[
+    def updateResults(self):
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                topChart = GudPyChart(
+                    self.gudrunFile
+                )
+                topChart.addSample(sample)
+                topChart.plot(PlotModes.STRUCTURE_FACTOR)
+                bottomChart = GudPyChart(
+                    self.gudrunFile
+                )
+                bottomChart.addSample(sample)
+                bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+                path = sample.dataFiles.dataFiles[0].replace(
+                    self.gudrunFile.instrument.dataFileType, "gud"
+                )
+                if not os.path.exists(path):
+                    path = os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir, path
+                    )
+                gf = GudFile(path) if os.path.exists(path) else None
+
+                self.results[sample] = [topChart, bottomChart, gf]
+
+        allTopChart = GudPyChart(
+            self.gudrunFile
+        )
+        allTopChart.addSamples(
+            [
                 sample
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
             ]
         )
-        self.mainWidget.allSampleTopPlot.setChart(
-            self.mainWidget.allSamplesChart
-        )
+        allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
 
-        self.mainWidget.allSamplesRDFChart = GudPyChart(
-            self.gudrunFile.instrument.dataFileType,
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            samples=[
+        allBottomChart = GudPyChart(
+            self.gudrunFile
+        )
+        allBottomChart.addSamples(
+            [
                 sample
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
-            ],
-            plotMode=PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            ]
         )
-        self.mainWidget.allSampleBottomPlot.setChart(
-            self.mainWidget.allSamplesRDFChart
-        )
+        allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+
+        self.allPlots = [allTopChart, allBottomChart]
+        self.mainWidget.allSampleTopPlot.setChart(allTopChart)
+        self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
 
     def updateComponents(self):
         """
@@ -461,7 +494,7 @@ class GudPyMainWindow(QMainWindow):
         """
         self.updateGeometries()
         self.updateCompositions()
-        self.updateResults()
+        self.focusResult()
 
     def exit_(self):
         """
@@ -779,9 +812,10 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
+        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
+            self.updateResults()
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.updateResults()
         if not self.queue.empty():
             self.makeProc(*self.queue.get())
         else:
@@ -791,3 +825,30 @@ class GudPyMainWindow(QMainWindow):
         self.currentState = str(self.gudrunFile)
         viewInputDialog = ViewInputDialog(self.gudrunFile, self)
         viewInputDialog.widget.exec_()
+
+        def handleTopPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.sampleTopPlot.chart().plot,
+            self.mainWidget.topPlotComboBox.itemData(index)
+        )
+
+    def handleBottomPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.sampleBottomPlot.chart().plot,
+            self.mainWidget.bottomPlotComboBox.itemData(index)
+        )
+
+    def handleTopAllPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.allSampleTopPlot.chart().plot,
+            self.mainWidget.topAllPlotComboBox.itemData(index)
+        )
+
+    def handleBottomAllPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.allSampleBottomPlot.chart().plot,
+            self.mainWidget.bottomAllPlotComboBox.itemData(index)
+        )
+
+    def handlePlotModeChanged(self, plot, plotMode):
+        plot(plotMode)
