@@ -86,6 +86,7 @@ class GudPyChart(QChart):
 
         self.seriesAVisible = True
         self.seriesBVisible = True
+        self.seriesCVisible = True
 
     def addSamples(self, samples):
         """
@@ -157,6 +158,18 @@ class GudPyChart(QChart):
                     mdcsData.append([x, y, err])
             self.data[sample]["mdcs01"] = mdcsData
 
+        gudPath = sample.dataFiles.dataFiles[0].replace(self.dataFileType, "gud")
+        if not os.path.exists(gudPath):
+            gudPath = os.path.join(self.inputDir, gudPath)
+        
+        if os.path.exists(gudPath) and "mdcs01" in self.data[sample].keys():
+            dcsData = []
+            gudFile = GudFile(gudPath)
+            dcsLevel = gudFile.averageLevelMergedDCS
+            for x, _, _ in self.data[sample]["mdcs01"]:
+                dcsData.append((x, float(dcsLevel)))
+            self.data[sample]["dcs"] = dcsData
+
         # Get the mint01 and mdcs01 filenames.
         mdorFile = (
             sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdor01")
@@ -205,22 +218,6 @@ class GudPyChart(QChart):
                     mgorData.append([x, y, err])
             self.data[sample]["mgor01"] = mgorData
 
-        gudPath = sample.dataFiles.dataFiles[0].replace(self.dataFileType, "gud")
-        if not os.path.exists(gudPath):
-            gudPath = os.path.join(self.inputDir, gudPath)
-        
-        if os.path.exists(gudPath):
-            gudFile = GudFile(gudPath)
-            dcsLevel = gudFile.averageLevelMergedDCS
-            dcsSeries = QLineSeries()
-            dcsSeries.append(0., float(dcsLevel))
-            print(float(dcsLevel))
-            
-            self.addSeries(dcsSeries)
-            dcsSeries.attachAxis(self.dcsAxis)
-        
-
-
     def plot(self, plotMode=None):
         """
         Plots the data stored with the given plotmode.
@@ -237,6 +234,8 @@ class GudPyChart(QChart):
         # Clear the chart of all series' and axes.
         self.seriesA = {}
         self.seriesB = {}
+        self.seriesC = {}
+
         self.removeAllSeries()
         for axis in self.axes():
             self.removeAxis(axis)
@@ -263,6 +262,9 @@ class GudPyChart(QChart):
                 series.setVisible(False)
         if not self.seriesBVisible:
             for series in self.seriesB.values():
+                series.setVisible(False)
+        if not self.seriesCVisible:
+            for series in self.seriesC.values():
                 series.setVisible(False)
 
     def plotSample(self, sample):
@@ -313,6 +315,20 @@ class GudPyChart(QChart):
             self.addSeries(mdcsSeries)
             # Keep the series.
             self.seriesB[sample] = mdcsSeries
+
+            dcsSeries = QLineSeries()
+            dcsSeries.setName(f"{sample.name} dcs level")
+            dcsSeries.append(
+                [
+                    QPointF(x, y)
+                    for x, y in self.data[sample]["dcs"]
+                ]
+            )
+            pen = QPen(dcsSeries.pen())
+            pen.setStyle(Qt.PenStyle.DashLine)
+            dcsSeries.setPen(pen)
+            self.addSeries(dcsSeries)
+            self.seriesC[sample] = dcsSeries
 
         # If the plotting mode is RDF.
         elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
@@ -373,6 +389,8 @@ class GudPyChart(QChart):
                 self.seriesAVisible = not self.seriesAVisible
             elif series == self.seriesB:
                 self.seriesBVisible = not self.seriesBVisible
+            elif series == self.seriesC:
+                self.seriesCVisible = not self.seriesCVisible
             # Recurse, toggling visibility of values (series').
             for s in series.values():
                 self.toggleVisible(s)
@@ -548,6 +566,18 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMdcs01Action)
+
+                showDCSLevelAction = QAction("Show dcs level", self.menu)
+                showDCSLevelAction.setCheckable(True)
+                showDCSLevelAction.setChecked(
+                    self.chart().isVisible(self.chart().seriesC)
+                )
+                showDCSLevelAction.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesC
+                    )
+                )
+                self.menu.addAction(showDCSLevelAction)
             elif (
                 self.chart().plotMode ==
                 PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
