@@ -36,7 +36,7 @@ class ViewInputDialog(QDialog):
         """
         Loads the UI file for the ViewInputDialog object.
         """
-        if hasattr(os.sysconf, '_MEIPASS'):
+        if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
                     sys._MEIPASS, "ui_files", "viewInputDialog.ui"
