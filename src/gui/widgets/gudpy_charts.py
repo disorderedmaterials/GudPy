@@ -19,6 +19,12 @@ class PlotModes(Enum):
     RADIAL_DISTRIBUTION_FUNCTIONS = 1
 
 
+class Axes(Enum):
+    X = 0
+    Y = 1
+    A = 3
+
+
 class GudPyChart(QChart):
     """
     Class to represent plots in GudPy. Inherits QChart.
@@ -388,14 +394,14 @@ class GudPyChart(QChart):
         """
         Toggles logarithmic plotting.
         """
-        if axis == "A":
+        if axis == Axes.A:
             self.logarithmicA = not self.logarithmicA
             self.logarithmicX = self.logarithmicA
             self.logarithmicY = self.logarithmicA
-        elif axis == "X":
+        elif axis == Axes.X:
             self.logarithmicX = not self.logarithmicX
             self.logarithmicA = self.logarithmicX and self.logarithmicY
-        elif axis == "Y":
+        elif axis == Axes.Y:
             self.logarithmicY = not self.logarithmicY
             self.logarithmicA = self.logarithmicX and self.logarithmicY
 
@@ -578,7 +584,7 @@ class GudPyChartView(QChartView):
                 & self.chart().logarithmicY
             )
             toggleLogarithmicAllAxesAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes("A")
+                lambda: self.toggleLogarithmicAxes(Axes.A)
             )
             toggleLogarithmicMenu.addAction(toggleLogarithmicAllAxesAction)
 
@@ -588,7 +594,7 @@ class GudPyChartView(QChartView):
             toggleLogarithmicXAxisAction.setCheckable(True)
             toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
             toggleLogarithmicXAxisAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes("X")
+                lambda: self.toggleLogarithmicAxes(Axes.X)
             )
             toggleLogarithmicMenu.addAction(toggleLogarithmicXAxisAction)
 
@@ -598,7 +604,7 @@ class GudPyChartView(QChartView):
             toggleLogarithmicYAxisAction.setCheckable(True)
             toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
             toggleLogarithmicYAxisAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes("Y")
+                lambda: self.toggleLogarithmicAxes(Axes.Y)
             )
             toggleLogarithmicMenu.addAction(toggleLogarithmicYAxisAction)
 
@@ -681,13 +687,13 @@ class GudPyChartView(QChartView):
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # 'Shift+L/l' toggles logarithmic X-axis.
             if modifiers == Qt.ShiftModifier:
-                self.toggleLogarithmicAxes("X")
+                self.toggleLogarithmicAxes(Axes.X)
             # 'Ctrl+Shift+L/l' toggles logarithmic Y-axis.
             elif modifiers == (Qt.ControlModifier | Qt.ShiftModifier):
-                self.toggleLogarithmicAxes("Y")
+                self.toggleLogarithmicAxes(Axes.Y)
             else:
                 # 'L/l' toggles both axes.
-                self.toggleLogarithmicAxes("A")
+                self.toggleLogarithmicAxes(Axes.A)
         # 'A/a' refers to resetting the zoom / showing the limits.
         elif event.key() == Qt.Key_A:
             self.chart().zoomReset()
