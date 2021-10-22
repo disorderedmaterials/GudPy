@@ -3,7 +3,7 @@ from PySide6.QtCharts import (
 )
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
+    QAction, QClipboard, QCursor, QKeySequence, QPainter, QPen, QShortcut
 )
 from enum import Enum
 import os
@@ -490,6 +490,8 @@ class GudPyChartView(QChartView):
         # Setup keyboard shortcuts.
         self.setupShortcuts()
 
+        self.clipboard = QClipboard(self.parent())
+
     def wheelEvent(self, event):
         """
         Event handler called when the scroll wheel is used.
@@ -521,6 +523,9 @@ class GudPyChartView(QChartView):
         # Scroll to match the zoom.
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
+
+        self.zoomArea = zoomArea
+        self.scrolled = (delta.x(), -delta.y())
 
     def toggleLogarithmicAxes(self):
         """
@@ -615,7 +620,16 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMgor01Action)
+        
+        copyAction = QAction("Copy plot", self.menu)
+        copyAction.triggered.connect(self.copyPlot)
+        self.menu.addAction(copyAction)
+
         self.menu.popup(QCursor.pos())
+    
+    def copyPlot(self):
+        pixMap = self.grab()
+        self.clipboard.setPixmap(pixMap) 
 
     def setupShortcuts(self):
         """
