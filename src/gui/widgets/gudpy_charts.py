@@ -8,7 +8,7 @@ from PySide6.QtGui import (
 from enum import Enum
 import os
 
-from PySide6.QtWidgets import QMenu, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 
 from src.gudrun_classes.gud_file import GudFile
 
@@ -629,7 +629,13 @@ class GudPyChartView(QChartView):
     
     def copyPlot(self):
         pixMap = self.grab()
-        self.clipboard.setPixmap(pixMap) 
+        self.clipboard.setPixmap(pixMap)
+
+    def keyPressEvent(self, event):
+
+        modifiers = QApplication.keyboardModifiers()
+        if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
+            self.copyPlot()
 
     def setupShortcuts(self):
         """
