@@ -1,9 +1,10 @@
+from PySide6 import QtWidgets
 from PySide6.QtCharts import (
     QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
 )
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QCursor, QKeySequence, QPainter, QPen, QShortcut
+    QAction, QCursor, QPainter, QPen
 )
 from enum import Enum
 import os
@@ -479,8 +480,6 @@ class GudPyChartView(QChartView):
         Event handler for using the scroll wheel.
     toggleLogarithmicAxes():
         Toggles logarithmic axes in the chart.
-    setupShortcuts():
-        Sets up the keyboard shortcuts for the chart.
     """
     def __init__(self, parent):
         """
@@ -504,9 +503,6 @@ class GudPyChartView(QChartView):
 
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
-
-        # Setup keyboard shortcuts.
-        self.setupShortcuts()
 
     def wheelEvent(self, event):
         """
@@ -665,45 +661,16 @@ class GudPyChartView(QChartView):
                 self.menu.addAction(showMgor01Action)
         self.menu.popup(QCursor.pos())
 
-    def setupShortcuts(self):
-        """
-        Sets up keyboard shortcuts for the Chart.
-        """
+    def keyPressEvent(self, event):
 
-        # TODO: Can we enable these shortcuts when hovering the Chart?
-        # TODO: Instead of having to first click inside to get the context?
-
-        # Keyboard shorcut 'L/l' for toggling logarithmic axes.
-        self.toggleLogarithmicAxesShortcut = QShortcut(
-            QKeySequence(Qt.Key_L), self
-        )
-        self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
-        self.toggleLogarithmicAxesShortcut.activated.connect(
-            lambda: self.toggleLogarithmicAxes("A")
-        )
-
-        # Keyboard shortcut 'Shift + L/l + X/x'
-        # for toggling logarithmic X-axis.
-        self.toggleLogarithmicXAxisShortcut = QShortcut(
-            QKeySequence(Qt.Key_Shift, Qt.Key_L, Qt.Key_X), self
-        )
-        self.toggleLogarithmicXAxisShortcut.setContext(Qt.WidgetShortcut)
-        self.toggleLogarithmicXAxisShortcut.activated.connect(
-            lambda: self.toggleLogarithmicAxes("X")
-        )
-
-        # Keyboard shortcut 'Shift + L/l + Y/y'
-        # for toggling logarithmic Y-axis.
-        self.toggleLogarithmicYAxisShortcut = QShortcut(
-            QKeySequence(Qt.Key_Shift, Qt.Key_L, Qt.Key_Y), self
-        )
-        self.toggleLogarithmicYAxisShortcut.setContext(Qt.WidgetShortcut)
-        self.toggleLogarithmicYAxisShortcut.activated.connect(
-            lambda: self.toggleLogarithmicAxes("Y")
-        )
-
-        # Keyboard shortcut 'A/a' for showing the limits of the chart.
-        # i.e. zooming out fully.
-        self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
-        self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
-        self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
+        if event.key() == Qt.Key_L:
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+            if modifiers == Qt.ShiftModifier:
+                self.toggleLogarithmicAxes("X")
+            elif modifiers == (Qt.ShiftModifier | Qt.ControlModifier):
+                self.toggleLogarithmicAxes("Y")
+            else:
+                self.toggleLogarithmicAxes("A")
+        elif event.key() == Qt.Key_A:
+            self.chart().zoomReset()
+        return super().keyPressEvent(event)
