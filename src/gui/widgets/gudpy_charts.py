@@ -674,3 +674,11 @@ class GudPyChartView(QChartView):
         elif event.key() == Qt.Key_A:
             self.chart().zoomReset()
         return super().keyPressEvent(event)
+
+    def enterEvent(self, event):
+        self.setFocus(Qt.OtherFocusReason)
+        return super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.parent().setFocus(Qt.OtherFocusReason)
+        return super().leaveEvent(event)
