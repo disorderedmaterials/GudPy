@@ -480,6 +480,14 @@ class GudPyChartView(QChartView):
         Event handler for using the scroll wheel.
     toggleLogarithmicAxes():
         Toggles logarithmic axes in the chart.
+    contextMenuEvent(event):
+        Creates context menu.
+    keyPressEvent(event):
+        Handles key presses.
+    enterEvent(event):
+        Handles the mouse entering the chart view.
+    leaveEvent(event):
+        Handles the mouse leaving the chart view.
     """
     def __init__(self, parent):
         """
@@ -662,23 +670,43 @@ class GudPyChartView(QChartView):
         self.menu.popup(QCursor.pos())
 
     def keyPressEvent(self, event):
+        """
+        Handles key presses.
+        Used for implementing hotkeys / shortcuts.
+        """
 
+        # 'L/l' refers to logarithms.
         if event.key() == Qt.Key_L:
+            # Get the modifiers e.g. shift, control etc.
             modifiers = QtWidgets.QApplication.keyboardModifiers()
+            # 'Shift+L/l' toggles logarithmic X-axis.
             if modifiers == Qt.ShiftModifier:
                 self.toggleLogarithmicAxes("X")
-            elif modifiers == (Qt.ShiftModifier | Qt.ControlModifier):
+            # 'Ctrl+Shift+L/l' toggles logarithmic Y-axis.
+            elif modifiers == (Qt.ControlModifier | Qt.ShiftModifier):
                 self.toggleLogarithmicAxes("Y")
             else:
+                # 'L/l' toggles both axes.
                 self.toggleLogarithmicAxes("A")
+        # 'A/a' refers to resetting the zoom / showing the limits.
         elif event.key() == Qt.Key_A:
             self.chart().zoomReset()
         return super().keyPressEvent(event)
 
     def enterEvent(self, event):
+        """
+        Handles the mouse entering the chart view.
+        Gives focus to the chart view.
+        """
+        # Acquire focus.
         self.setFocus(Qt.OtherFocusReason)
         return super().enterEvent(event)
 
     def leaveEvent(self, event):
+        """
+        Handles the mouse leaving the chart view.
+        Gives focus back to the parent.
+        """
+        # Relinquish focus.
         self.parent().setFocus(Qt.OtherFocusReason)
         return super().leaveEvent(event)
