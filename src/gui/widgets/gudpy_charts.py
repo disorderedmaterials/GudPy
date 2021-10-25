@@ -685,8 +685,8 @@ class GudPyChartView(QChartView):
         if event.key() == Qt.Key_L:
             # Get the modifiers e.g. shift, control etc.
             modifiers = QtWidgets.QApplication.keyboardModifiers()
-            # 'Shift+L/l' toggles logarithmic X-axis.
-            if modifiers == Qt.ShiftModifier:
+            # 'Ctrl+L/l' toggles logarithmic X-axis.
+            if modifiers == Qt.ControlModifier:
                 self.toggleLogarithmicAxes(Axes.X)
             # 'Ctrl+Shift+L/l' toggles logarithmic Y-axis.
             elif modifiers == (Qt.ControlModifier | Qt.ShiftModifier):
