@@ -661,7 +661,7 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def progressIteration(self):
-        progress = self.progressIncrement()
+        progress = self.progressIncrementDCS()
         if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
@@ -742,7 +742,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.save.setEnabled(state)
         self.mainWidget.saveAs.setEnabled(state)
 
-    def progressIncrement(self):
+    def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         ERROR_KWDS = [
@@ -784,7 +784,7 @@ class GudPyMainWindow(QMainWindow):
         return progress
 
     def progressDCS(self):
-        progress = self.progressIncrement()
+        progress = self.progressIncrementDCS()
         if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
@@ -799,23 +799,51 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def progressPurge(self):
+    def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+
+        path = os.path.join(
+            self.gudrunFile.instrument.startupFileFolder,
+            self.gudrunFile.instrument.groupFileName
+        )
+        numGroups = 0
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as fp:
+                numGroups = nthint(fp.readlines()[0], 0)
+        
+        stepSize = math.ceil(100/(numGroups*3)) if numGroups else 0
+        progress = stepSize * stdout.count("Grp")
         if "Total run time" in stdout:
+            return nthint(stdout, 0), True
+        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
+            self.error = stdout
+            return -1, False
+        else:
+            return progress, False
+
+    def progressPurge(self):
+        progress, finished = self.progressIncrementPurge()
+        if finished:
+            detectors = progress
             QMessageBox.warning(
                 self.mainWidget, "GudPy Warning",
-                f"{nthint(stdout, 0)} detectors made it through the purge."
+                f"{detectors} detectors made it through the purge."
             )
-        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
-            self.gudrunFile.purged = False
-            self.queue = Queue()
+        elif progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
-                f" from purge_det\n{stdout}"
+                f" from purge_det\n{self.error}"
             )
-
+            self.gudrunFile.purged = False
+            self.procFinished()
+            self.queue = Queue()
+        else:
+            progress += self.mainWidget.progressBar.value()
+            self.mainWidget.progressBar.setValue(
+                progress if progress <= 100 else 100
+            )
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
