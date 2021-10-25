@@ -3,7 +3,7 @@ from unittest import TestCase
 from PySide6.QtCore import QKeyCombination, QModelIndex, Qt
 from src.gudrun_classes.element import Element
 
-from src.gui.widgets.gudpy_tables import BeamProfileModel, CompositionModel, ExponentialModel, GroupingParameterModel, GudPyTableModel
+from src.gui.widgets.gudpy_tables import BeamProfileModel, CompositionModel, ExponentialModel, GroupingParameterModel, GudPyTableModel, ResonanceModel
 
 class TestModels(TestCase):
 
@@ -135,6 +135,29 @@ class TestModels(TestCase):
 
         model.setData(model.index(0, 0, QModelIndex()), 0.5, Qt.EditRole)
         self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.5)
+        model.setData(model.index(0, 1, QModelIndex()), 1.85, Qt.EditRole)
+        self.assertEqual(model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 1.85)
 
     def testResonanceModel(self):
-        pass
+
+        model = ResonanceModel([[0., 1.]], ["Wavelength min", "Wavelength max"], None)
+
+        self.assertEqual(model._data, [[0., 1.]])
+        self.assertEqual(model.headers, ["Wavelength min", "Wavelength max"])
+        self.assertEqual(model.parent(), None)
+        self.assertEqual(model.rowCount(QModelIndex()), 1)
+        self.assertEqual(model.columnCount(QModelIndex()), 2)
+
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.)
+        self.assertEqual(model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 1.)
+        self.assertEqual(model.headerData(0, Qt.Horizontal, Qt.DisplayRole), "Wavelength min")
+        self.assertEqual(model.headerData(1, Qt.Horizontal, Qt.DisplayRole), "Wavelength max")
+
+        model.insertRow()
+        self.assertEqual(model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), 0.)
+        self.assertEqual(model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0.)
+
+        model.setData(model.index(0, 0, QModelIndex()), 0.8, Qt.EditRole)
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.8)
+        model.setData(model.index(0, 1, QModelIndex()), 2.0, Qt.EditRole)
+        self.assertEqual(model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 2.0)
