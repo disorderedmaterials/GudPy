@@ -24,6 +24,7 @@ steps:
   - script: |
       pip install --upgrade pip
       pip install -r requirements.txt
+      apt-get install freeglut3 freeglut3-dev
     displayName: "Install dependencies"
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
