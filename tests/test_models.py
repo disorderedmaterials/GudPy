@@ -3,7 +3,7 @@ from unittest import TestCase
 from PySide6.QtCore import QKeyCombination, QModelIndex, Qt
 from src.gudrun_classes.element import Element
 
-from src.gui.widgets.gudpy_tables import BeamProfileModel, CompositionModel, GroupingParameterModel, GudPyTableModel
+from src.gui.widgets.gudpy_tables import BeamProfileModel, CompositionModel, ExponentialModel, GroupingParameterModel, GudPyTableModel
 
 class TestModels(TestCase):
 
@@ -115,7 +115,26 @@ class TestModels(TestCase):
         self.assertEqual(model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 7.16)
 
     def testExponentialModel(self):
-        pass
+
+        model = ExponentialModel([[0, 1.5]], ["Amplitude", "Decay 1/A"], None)
+
+        self.assertEqual(model._data, [[0, 1.5]])
+        self.assertEqual(model.headers, ["Amplitude", "Decay 1/A"])
+        self.assertEqual(model.parent(), None)
+        self.assertEqual(model.rowCount(QModelIndex()), 1)
+        self.assertEqual(model.columnCount(QModelIndex()), 2)
+
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0)
+        self.assertEqual(model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 1.5)
+        self.assertEqual(model.headerData(0, Qt.Horizontal, Qt.DisplayRole), "Amplitude")
+        self.assertEqual(model.headerData(1, Qt.Horizontal, Qt.DisplayRole), "Decay 1/A")
+
+        model.insertRow()
+        self.assertEqual(model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), 0.)
+        self.assertEqual(model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0.)
+
+        model.setData(model.index(0, 0, QModelIndex()), 0.5, Qt.EditRole)
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.5)
 
     def testResonanceModel(self):
         pass
