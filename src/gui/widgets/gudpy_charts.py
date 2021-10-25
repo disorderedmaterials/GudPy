@@ -620,13 +620,13 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMgor01Action)
-        
+
         copyAction = QAction("Copy plot", self.menu)
         copyAction.triggered.connect(self.copyPlot)
         self.menu.addAction(copyAction)
 
         self.menu.popup(QCursor.pos())
-    
+
     def copyPlot(self):
         pixMap = self.grab()
         self.clipboard.setPixmap(pixMap)
