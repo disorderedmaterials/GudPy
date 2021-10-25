@@ -576,7 +576,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.makeProc(purge_det, self.progressPurge)
         else:
-            self.runPurge_()
+            self.runPurge_()        
         self.gudrunFile.write_out()
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         self.queue.put((dcs, self.progressDCS))
@@ -782,14 +782,14 @@ class GudPyMainWindow(QMainWindow):
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
         elif "Error" in stdout or "error" in stdout or "not found" in stdout:
+            self.gudrunFile.purged = False
+            self.queue = Queue()
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
-            self.gudrunFile.purged = False
-            self.procFinished()
-            self.queue = Queue()
+
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
