@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from PySide6.QtCore import QKeyCombination, QModelIndex, Qt
 
-from src.gui.widgets.gudpy_tables import GroupingParameterModel, GudPyTableModel
+from src.gui.widgets.gudpy_tables import BeamProfileModel, GroupingParameterModel, GudPyTableModel
 
 class TestModels(TestCase):
 
@@ -63,8 +63,25 @@ class TestModels(TestCase):
         self.assertEqual(model.data(model.index(0, 3, QModelIndex()), Qt.EditRole), 1.)
 
     def testBeamProfileModel(self):
-        pass
-    
+        
+        model = BeamProfileModel([0.], [], None)
+
+        self.assertEqual(model._data, [0.])
+        self.assertEqual(model.headers, [])
+        self.assertEqual(model.parent(), None)
+        self.assertEqual(model.rowCount(QModelIndex()), 1)
+        self.assertEqual(model.columnCount(QModelIndex()), 1)
+
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.)
+        self.assertEqual(model.headerData(0, Qt.Horizontal, Qt.DisplayRole), None)
+
+        model.insertRow()
+        self.assertEqual(model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), 0.)
+
+        model.setData(model.index(0, 0, QModelIndex()), 0.5, Qt.EditRole)
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), 0.5)
+
+
     def testCompositionModel(self):
         pass
 
