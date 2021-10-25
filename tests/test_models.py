@@ -1,8 +1,9 @@
 from unittest import TestCase
 
 from PySide6.QtCore import QKeyCombination, QModelIndex, Qt
+from src.gudrun_classes.element import Element
 
-from src.gui.widgets.gudpy_tables import BeamProfileModel, GroupingParameterModel, GudPyTableModel
+from src.gui.widgets.gudpy_tables import BeamProfileModel, CompositionModel, GroupingParameterModel, GudPyTableModel
 
 class TestModels(TestCase):
 
@@ -83,7 +84,35 @@ class TestModels(TestCase):
 
 
     def testCompositionModel(self):
-        pass
+
+        elementA = Element("V", 0, 1.)
+        model = CompositionModel([elementA], ["Element", "Mass No", "Abundance"], None)
+
+        self.assertEqual(model._data, [elementA])
+        self.assertEqual(model.headers, ["Element", "Mass No", "Abundance"])
+        self.assertEqual(model.parent(), None)
+        self.assertEqual(model.rowCount(QModelIndex()), 1)
+        self.assertEqual(model.columnCount(QModelIndex()), 3)
+
+        self.assertEqual(model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), "V")
+        self.assertEqual(model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 0)
+        self.assertEqual(model.data(model.index(0, 2, QModelIndex()), Qt.EditRole), 1.0)
+
+        self.assertEqual(model.headerData(0, Qt.Horizontal, Qt.DisplayRole), "Element")
+        self.assertEqual(model.headerData(1, Qt.Horizontal, Qt.DisplayRole), "Mass No")
+        self.assertEqual(model.headerData(2, Qt.Horizontal, Qt.DisplayRole), "Abundance")
+
+        model.insertRow()
+        self.assertEqual(model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), "")
+        self.assertEqual(model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0)
+        self.assertEqual(model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 0.)
+
+        model.setData(model.index(1, 0, QModelIndex()), "Ti", Qt.EditRole)
+        model.setData(model.index(1, 1, QModelIndex()), 0, Qt.EditRole)
+        model.setData(model.index(1, 2, QModelIndex()), 7.16, Qt.EditRole)
+        self.assertEqual(model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), "Ti")
+        self.assertEqual(model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0)
+        self.assertEqual(model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 7.16)
 
     def testExponentialModel(self):
         pass
