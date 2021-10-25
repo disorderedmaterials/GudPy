@@ -641,6 +641,7 @@ class GudPyTreeView(QTreeView):
         self.makeModel()
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
+        self.expandToDepth(0)
 
     def makeModel(self):
         """
