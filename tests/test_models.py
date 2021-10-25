@@ -32,3 +32,18 @@ class TestModels(TestCase):
 
         model.removeRow(0)
         self.assertEqual(model.rowCount(QModelIndex()), 0)
+    
+    def testGroupingParameterModel(self):
+        pass
+
+    def testBeamProfileModel(self):
+        pass
+    
+    def testCompositionModel(self):
+        pass
+
+    def testExponentialModel(self):
+        pass
+
+    def testResonanceModel(self):
+        pass
