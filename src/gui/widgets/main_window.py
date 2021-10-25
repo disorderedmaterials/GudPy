@@ -576,7 +576,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.makeProc(purge_det, self.progressPurge)
         else:
-            self.runPurge_()        
+            self.runPurge_()
         self.gudrunFile.write_out()
         dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
         self.queue.put((dcs, self.progressDCS))
@@ -789,7 +789,6 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
-
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
