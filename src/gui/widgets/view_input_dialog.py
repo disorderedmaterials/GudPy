@@ -51,9 +51,16 @@ class ViewInputDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
+        self.widget.setWindowTitle(self.gudrunFile.path)
         self.widget.saveAndCloseButton.clicked.connect(self.save)
         self.widget.closeButton.clicked.connect(self.widget.close)
         self.widget.textEdit.setText(str(self.gudrunFile))
+        self.widget.textEdit.textChanged.connect(self.setChanged)
+
+    def setChanged(self):
+        self.widget.saveAndCloseButton.setEnabled(
+            self.widget.textEdit.toPlainText() != str(self.gudrunFile)
+        )
 
     def save(self):
         """
