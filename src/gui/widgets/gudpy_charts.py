@@ -3,7 +3,7 @@ from PySide6.QtCharts import (
 )
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QKeySequence, QPainter, QPen, QShortcut
+    QAction, QClipboard, QCursor, QPainter, QPen
 )
 from enum import Enum
 import os
@@ -16,6 +16,12 @@ from src.gudrun_classes.gud_file import GudFile
 class PlotModes(Enum):
     STRUCTURE_FACTOR = 0
     RADIAL_DISTRIBUTION_FUNCTIONS = 1
+
+
+class Axes(Enum):
+    X = 0
+    Y = 1
+    A = 3
 
 
 class GudPyChart(QChart):
@@ -79,10 +85,12 @@ class GudPyChart(QChart):
         self.inputDir = gudrunFile.instrument.GudrunInputFileDir
 
         self.data = {}
-        self.logarithmic = False
-        self.logarithmicXAxis = QLogValueAxis()
+        self.logarithmicA = False
+        self.logarithmicX = False
+        self.logarithmicY = False
+        self.logarithmicXAxis = QLogValueAxis(self)
         self.logarithmicXAxis.setBase(10.0)
-        self.logarithmicYAxis = QLogValueAxis()
+        self.logarithmicYAxis = QLogValueAxis(self)
         self.logarithmicYAxis.setBase(10.0)
 
         self.dcsAxis = QValueAxis()
@@ -286,14 +294,18 @@ class GudPyChart(QChart):
         # If it is a logarithmic plot, we need to define our own
         # QLogValueAxis, and attatch to our series'.
         # Otherwise create default ones.
-        if self.logarithmic:
+        self.createDefaultAxes()
+        if self.logarithmicX or self.logarithmicA:
+            self.removeAxis(self.axisX())
             self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
-            self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
             for series in self.series():
-                series.attachAxis(self.axisX())
-                series.attachAxis(self.axisY())
-        else:
-            self.createDefaultAxes()
+                series.attachAxis(self.logarithmicXAxis)
+
+        if self.logarithmicY or self.logarithmicA:
+            self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
+            self.removeAxis(self.axisY())
+            for series in self.series():
+                series.attachAxis(self.logarithmicYAxis)
 
         # Ensure that visibility is persistent.
         if not self.seriesAVisible:
@@ -319,7 +331,8 @@ class GudPyChart(QChart):
         # Non-logarithmic = 0, logarithmic = 10.
         # Offset ensures that when plotting logarithmically,
         # that no undefined values are produced.
-        offset = int(self.logarithmic)*10
+        offsetX = int(self.logarithmicX)*10
+        offsetY = int(self.logarithmicY)*10
 
         # If the plotting mode is Structure Factor.
         if self.plotMode == PlotModes.STRUCTURE_FACTOR:
@@ -333,7 +346,7 @@ class GudPyChart(QChart):
             # Construct the series
             mintSeries.append(
                 [
-                    QPointF(x+offset, y+offset)
+                    QPointF(x+offsetX, y+offsetY)
                     for x, y, _ in self.data[sample]["mint01"]
                 ]
             )
@@ -352,7 +365,7 @@ class GudPyChart(QChart):
             # Construct the series
             mdcsSeries.append(
                 [
-                    QPointF(x+offset, y+offset)
+                    QPointF(x+offsetX, y+offsetY)
                     for x, y, _ in self.data[sample]["mdcs01"]
                 ]
             )
@@ -361,23 +374,25 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesB[sample] = mdcsSeries
 
-            dcsSeries = QLineSeries()
-            if len(self.data.keys()) > 1:
-                dcsSeries.setName(f"{sample.name} DCS level")
-            else:
-                dcsSeries.setName("DCS level")
-            dcsSeries.append(
-                [
-                    QPointF(x, y)
-                    for x, y in self.data[sample]["dcs"]
-                ]
-            )
-            pen = QPen(dcsSeries.pen())
-            pen.setStyle(Qt.PenStyle.DashLine)
-            pen.setColor(mdcsSeries.color())
-            dcsSeries.setPen(pen)
-            self.addSeries(dcsSeries)
-            self.seriesC[sample] = dcsSeries
+            if not (self.logarithmicY or self.logarithmicA):
+
+                dcsSeries = QLineSeries()
+                if len(self.data.keys()) > 1:
+                    dcsSeries.setName(f"{sample.name} dcs level")
+                else:
+                    dcsSeries.setName("DCS level")
+                dcsSeries.append(
+                    [
+                        QPointF(x, y)
+                        for x, y in self.data[sample]["dcs"]
+                    ]
+                )
+                pen = QPen(dcsSeries.pen())
+                pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setColor(mdcsSeries.color())
+                dcsSeries.setPen(pen)
+                self.addSeries(dcsSeries)
+                self.seriesC[sample] = dcsSeries
 
         # If the plotting mode is RDF.
         elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
@@ -392,7 +407,7 @@ class GudPyChart(QChart):
             # Construct the series
             mdorSeries.append(
                 [
-                    QPointF(x+offset, y+offset)
+                    QPointF(x+offsetX, y+offsetY)
                     for x, y, _ in self.data[sample]["mdor01"]
                 ]
             )
@@ -411,7 +426,7 @@ class GudPyChart(QChart):
             # Construct the series
             mgorSeries.append(
                 [
-                    QPointF(x+offset, y+offset)
+                    QPointF(x+offsetX, y+offsetY)
                     for x, y, _ in self.data[sample]["mgor01"]
                 ]
             )
@@ -420,12 +435,21 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesB[sample] = mgorSeries
 
-    def toggleLogarithmicAxes(self):
+    def toggleLogarithmicAxis(self, axis):
         """
         Toggles logarithmic plotting.
         """
-        # 'Flick' the logarithmic flag.
-        self.logarithmic = not self.logarithmic
+        if axis == Axes.A:
+            self.logarithmicA = not self.logarithmicA
+            self.logarithmicX = self.logarithmicA
+            self.logarithmicY = self.logarithmicA
+        elif axis == Axes.X:
+            self.logarithmicX = not self.logarithmicX
+            self.logarithmicA = self.logarithmicX and self.logarithmicY
+        elif axis == Axes.Y:
+            self.logarithmicY = not self.logarithmicY
+            self.logarithmicA = self.logarithmicX and self.logarithmicY
+
         # Replot.
         self.plot()
 
@@ -507,8 +531,14 @@ class GudPyChartView(QChartView):
         Event handler for using the scroll wheel.
     toggleLogarithmicAxes():
         Toggles logarithmic axes in the chart.
-    setupShortcuts():
-        Sets up the keyboard shortcuts for the chart.
+    contextMenuEvent(event):
+        Creates context menu.
+    keyPressEvent(event):
+        Handles key presses.
+    enterEvent(event):
+        Handles the mouse entering the chart view.
+    leaveEvent(event):
+        Handles the mouse leaving the chart view.
     """
     def __init__(self, parent):
         """
@@ -532,10 +562,6 @@ class GudPyChartView(QChartView):
 
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
-
-        # Setup keyboard shortcuts.
-        self.setupShortcuts()
-
         self.clipboard = QClipboard(self.parent())
 
     def wheelEvent(self, event):
@@ -573,11 +599,11 @@ class GudPyChartView(QChartView):
         self.zoomArea = zoomArea
         self.scrolled = (delta.x(), -delta.y())
 
-    def toggleLogarithmicAxes(self):
+    def toggleLogarithmicAxes(self, axis):
         """
         Toggles logarithmic axes in the chart.
         """
-        self.chart().toggleLogarithmicAxes()
+        self.chart().toggleLogarithmicAxis(axis)
 
     def contextMenuEvent(self, event):
         """
@@ -593,15 +619,45 @@ class GudPyChartView(QChartView):
             resetAction = QAction("Reset zoom", self.menu)
             resetAction.triggered.connect(self.chart().zoomReset)
             self.menu.addAction(resetAction)
-            toggleLogarithmicAction = QAction(
-                "Toggle logarithmic axes", self.menu
+
+            toggleLogarithmicMenu = QMenu(self.menu)
+            toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
+
+            toggleLogarithmicAllAxesAction = QAction(
+                "Toggle logarithmic all axis", toggleLogarithmicMenu
             )
-            toggleLogarithmicAction.setCheckable(True)
-            toggleLogarithmicAction.setChecked(self.chart().logarithmic)
-            toggleLogarithmicAction.triggered.connect(
-                self.toggleLogarithmicAxes
+
+            toggleLogarithmicAllAxesAction.setCheckable(True)
+            toggleLogarithmicAllAxesAction.setChecked(
+                self.chart().logarithmicX
+                & self.chart().logarithmicY
             )
-            self.menu.addAction(toggleLogarithmicAction)
+            toggleLogarithmicAllAxesAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.A)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicAllAxesAction)
+
+            toggleLogarithmicXAxisAction = QAction(
+                "Toggle logarithmic X-axis", toggleLogarithmicMenu
+            )
+            toggleLogarithmicXAxisAction.setCheckable(True)
+            toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
+            toggleLogarithmicXAxisAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.X)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicXAxisAction)
+
+            toggleLogarithmicYAxisAction = QAction(
+                "Toggle logarithmic Y-axis", toggleLogarithmicMenu
+            )
+            toggleLogarithmicYAxisAction.setCheckable(True)
+            toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
+            toggleLogarithmicYAxisAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.Y)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicYAxisAction)
+
+            self.menu.addMenu(toggleLogarithmicMenu)
 
             if self.chart().plotMode == PlotModes.STRUCTURE_FACTOR:
                 showMint01Action = QAction("Show mint01 data", self.menu)
@@ -677,37 +733,51 @@ class GudPyChartView(QChartView):
         pixMap = self.grab()
         self.clipboard.setPixmap(pixMap)
 
-    def keyPressEvent(self, event):
-
-        modifiers = QApplication.keyboardModifiers()
-        if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
-            self.copyPlot()
-
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
             event.accept()
         else:
             return super(GudPyChartView, self).mouseReleaseEvent(event)
 
-    def setupShortcuts(self):
+    def keyPressEvent(self, event):
         """
-        Sets up keyboard shortcuts for the Chart.
+        Handles key presses.
+        Used for implementing hotkeys / shortcuts.
         """
+        modifiers = QApplication.keyboardModifiers()
+        if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
+            self.copyPlot()
+        # 'L/l' refers to logarithms.
+        elif event.key() == Qt.Key_L:
+            # Get the modifiers e.g. shift, control etc.
+            # 'Ctrl+L/l' toggles logarithmic X-axis.
+            if modifiers == Qt.ControlModifier:
+                self.toggleLogarithmicAxes(Axes.X)
+            # 'Ctrl+Shift+L/l' toggles logarithmic Y-axis.
+            elif modifiers == (Qt.ControlModifier | Qt.ShiftModifier):
+                self.toggleLogarithmicAxes(Axes.Y)
+            else:
+                # 'L/l' toggles both axes.
+                self.toggleLogarithmicAxes(Axes.A)
+        # 'A/a' refers to resetting the zoom / showing the limits.
+        elif event.key() == Qt.Key_A:
+            self.chart().zoomReset()
+        return super().keyPressEvent(event)
 
-        # TODO: Can we enable these shortcuts when hovering the Chart?
-        # TODO: Instead of having to first click inside to get the context?
+    def enterEvent(self, event):
+        """
+        Handles the mouse entering the chart view.
+        Gives focus to the chart view.
+        """
+        # Acquire focus.
+        self.setFocus(Qt.OtherFocusReason)
+        return super().enterEvent(event)
 
-        # Keyboard shorcut 'L/l' for toggling logarithmic axes.
-        self.toggleLogarithmicAxesShortcut = QShortcut(
-            QKeySequence(Qt.Key_L), self
-        )
-        self.toggleLogarithmicAxesShortcut.setContext(Qt.WidgetShortcut)
-        self.toggleLogarithmicAxesShortcut.activated.connect(
-            self.toggleLogarithmicAxes
-        )
-
-        # Keyboard shortcut 'A/a' for showing the limits of the chart.
-        # i.e. zooming out fully.
-        self.showLimitsShortcut = QShortcut(QKeySequence(Qt.Key_A), self)
-        self.showLimitsShortcut.setContext(Qt.WidgetShortcut)
-        self.showLimitsShortcut.activated.connect(self.chart().zoomReset)
+    def leaveEvent(self, event):
+        """
+        Handles the mouse leaving the chart view.
+        Gives focus back to the parent.
+        """
+        # Relinquish focus.
+        self.parent().setFocus(Qt.OtherFocusReason)
+        return super().leaveEvent(event)
