@@ -695,7 +695,10 @@ class GudrunFile:
 
         try:
             sampleBackground = SampleBackground()
-
+            line = self.peekNextToken()
+            if "SAMPLE BACKGROUND" in line and "{" in line:
+                self.consumeTokens(1)
+            self.consumeWhitespace()
             dataFileInfo = self.getNextToken()
             numberOfFiles = nthint(dataFileInfo, 0)
             sampleBackground.periodNumber = nthint(dataFileInfo, 1)
@@ -1098,8 +1101,6 @@ class GudrunFile:
         SampleBackground
             The SampleBackground parsed from the lines.
         """
-        # Ignore the two obsolete lines before Sample Background begins.
-        self.consumeTokens(2)
 
         # Parse sample background.
         sampleBackground = self.makeParse("SAMPLE BACKGROUND")
@@ -1121,6 +1122,7 @@ class GudrunFile:
                 )
             self.consumeWhitespace()
             line = self.peekNextToken()
+        print("".join(self.stream))
         return sampleBackground
 
     def parse(self):
