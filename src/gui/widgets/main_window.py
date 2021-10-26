@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from src.gui.widgets.purge_dialog import PurgeDialog
-from src.gui.widgets.view_input import ViewInput
+from src.gui.widgets.view_input_dialog import ViewInputDialog
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.gudpy_tables import GroupingParameterTable
 from src.gui.widgets.gudpy_tables import BeamProfileTable
@@ -127,6 +127,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
+        loader.registerCustomWidget(ViewInputDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -253,7 +254,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
         self.mainWidget.viewLiveInputFile.triggered.connect(
-            lambda: ViewInput(self.gudrunFile, parent=self)
+            self.viewInput
         )
 
         self.mainWidget.insertSampleBackground.triggered.connect(
@@ -293,7 +294,9 @@ class GudPyMainWindow(QMainWindow):
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
 
-    def updateWidgets(self):
+    def updateWidgets(self, fromFile=False):
+        if fromFile:
+            self.gudrunFile = GudrunFile(self.gudrunFile.path)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -327,9 +330,9 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load an input file.
         """
-        filename = QFileDialog.getOpenFileName(
+        filename, _ = QFileDialog.getOpenFileName(
             self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
-        )[0]
+        )
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
@@ -348,9 +351,9 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file as...
         """
-        filename = QFileDialog.getSaveFileName(
+        filename, _ = QFileDialog.getSaveFileName(
             self, "Save input file as..", "."
-        )[0]
+        )
         if filename:
             self.gudrunFile.outpath = filename
             self.gudrunFile.write_out()
@@ -358,9 +361,18 @@ class GudPyMainWindow(QMainWindow):
 
     def updateFromFile(self):
         """
-        Calls initComponents() again, to update the UI.
+        Calls updateFromFile(), to update the UI.
         """
-        self.initComponents()
+        try:
+            self.updateWidgets(fromFile=True)
+        except ParserException as e:
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"An error occured reverting to the previous state.\n{str(e)}"
+            )
+            with open(self.gudrunFile.path, "w", encoding="utf-8") as fp:
+                fp.write(str(self.currentState))
 
     def updateGeometries(self):
         """
@@ -395,9 +407,16 @@ class GudPyMainWindow(QMainWindow):
 
     def focusResult(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
-            topPlot, bottomPlot, gudFile = (
-                self.results[self.mainWidget.objectTree.currentObject()]
-            )
+            try:
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            except KeyError:
+                self.updateSamples()
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+
             self.mainWidget.sampleTopPlot.setChart(
                 topPlot
             )
@@ -410,23 +429,25 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.bottomPlotComboBox.setCurrentIndex(
                 bottomPlot.plotMode.value
             )
-            dcsLevel = gudFile.averageLevelMergedDCS
-            self.mainWidget.dcsLabel.setText(
-                f"DCS Level: {dcsLevel}"
-            )
-            self.mainWidget.resultLabel.setText(gudFile.output)
-            if gudFile.err:
-                self.mainWidget.resultLabel.setStyleSheet(
-                    "background-color: red"
+            if gudFile:
+                dcsLevel = gudFile.averageLevelMergedDCS
+                self.mainWidget.dcsLabel.setText(
+                    f"DCS Level: {dcsLevel}"
                 )
-            else:
-                self.mainWidget.resultLabel.setStyleSheet(
-                    "background-color: green"
-                )
+                self.mainWidget.resultLabel.setText(gudFile.output)
+                if gudFile.err:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: red"
+                    )
+                else:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: green"
+                    )
 
-    def updateResults(self):
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
+    def updateSamples(self):
+        samples = self.mainWidget.objectTree.getSamples()
+        for sample in samples:
+            if sample not in self.results.keys():
                 topChart = GudPyChart(
                     self.gudrunFile
                 )
@@ -445,36 +466,43 @@ class GudPyMainWindow(QMainWindow):
                         self.gudrunFile.instrument.GudrunInputFileDir, path
                     )
                 gf = GudFile(path) if os.path.exists(path) else None
-
                 self.results[sample] = [topChart, bottomChart, gf]
 
-        allTopChart = GudPyChart(
-            self.gudrunFile
-        )
-        allTopChart.addSamples(
-            [
-                sample
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for sample in sampleBackground.samples
-            ]
-        )
-        allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+    def updateAllSamples(self):
 
-        allBottomChart = GudPyChart(
-            self.gudrunFile
-        )
-        allBottomChart.addSamples(
-            [
-                sample
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for sample in sampleBackground.samples
-            ]
-        )
-        allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-
+        samples = self.mainWidget.objectTree.getSamples()
+        if len(self.allPlots):
+            if self.allPlots[0].data.keys() != samples:
+                allTopChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allTopChart.addSamples(samples)
+                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            if self.allPlots[1].data.keys() != samples:
+                allBottomChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allBottomChart.addSamples(samples)
+                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+        else:
+            allTopChart = GudPyChart(
+                self.gudrunFile
+            )
+            allTopChart.addSamples(samples)
+            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allBottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            allBottomChart.addSamples(samples)
+            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
+
+    def updateResults(self):
+
+        self.updateSamples()
+        self.updateAllSamples()
 
     def updateComponents(self):
         """
@@ -808,6 +836,11 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(*self.queue.get())
         else:
             self.setControlsEnabled(True)
+
+    def viewInput(self):
+        self.currentState = str(self.gudrunFile)
+        viewInputDialog = ViewInputDialog(self.gudrunFile, self)
+        viewInputDialog.widget.exec_()
 
     def handleTopPlotModeChanged(self, index):
         self.handlePlotModeChanged(

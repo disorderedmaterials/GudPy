@@ -4,12 +4,12 @@ from PySide6.QtCharts import (
 )
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QCursor, QPainter, QPen
+    QAction, QClipboard, QCursor, QKeySequence, QPainter, QPen, QShortcut
 )
 from enum import Enum
 import os
 
-from PySide6.QtWidgets import QMenu, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 
 from src.gudrun_classes.gud_file import GudFile
 
@@ -102,6 +102,7 @@ class GudPyChart(QChart):
         self.seriesCVisible = True
 
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
+        self.legend().setAlignment(Qt.AlignRight)
 
     def addSamples(self, samples):
         """
@@ -127,12 +128,20 @@ class GudPyChart(QChart):
         self.data[sample] = {}
 
         # Get the mint01 and mdcs01 filenames.
-        mintFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mint01")
-        )
-        mdcsFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdcs01")
-        )
+        if len(sample.dataFiles.dataFiles):
+            mintFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mint01"
+                )
+            )
+            mdcsFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mdcs01"
+                )
+            )
+        else:
+            mintFile = ""
+            mdcsFile = ""
 
         # Try and resolve paths.
         if not os.path.exists(mintFile):
@@ -140,9 +149,12 @@ class GudPyChart(QChart):
         if not os.path.exists(mdcsFile):
             mdcsFile = os.path.join(self.inputDir, mdcsFile)
 
+        mintData = []
+        mdcsData = []
+
         # Check the file exists.
-        if os.path.exists(mintFile):
-            mintData = []
+        if os.path.exists(mintFile) and mintFile:
+
             # Open it.
             with open(mintFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -155,11 +167,11 @@ class GudPyChart(QChart):
                     x, y, err, *__ = [float(n) for n in data.split()]
 
                     mintData.append([x, y, err])
-            self.data[sample]["mint01"] = mintData
+        self.data[sample]["mint01"] = mintData
 
         # Check the file exists.
-        if os.path.exists(mdcsFile):
-            mdcsData = []
+        if os.path.exists(mdcsFile) and mdcsFile:
+
             # Open it.
             with open(mdcsFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -171,29 +183,45 @@ class GudPyChart(QChart):
                     # Extract x,y, err.
                     x, y, err, *__ = [float(n) for n in data.split()]
                     mdcsData.append([x, y, err])
-            self.data[sample]["mdcs01"] = mdcsData
+        self.data[sample]["mdcs01"] = mdcsData
 
-        gudPath = sample.dataFiles.dataFiles[0].replace(
-            self.dataFileType, "gud"
-        )
+        if len(sample.dataFiles.dataFiles):
+            gudPath = sample.dataFiles.dataFiles[0].replace(
+                self.dataFileType, "gud"
+            )
+        else:
+            gudPath = ""
         if not os.path.exists(gudPath):
             gudPath = os.path.join(self.inputDir, gudPath)
 
-        if os.path.exists(gudPath) and "mdcs01" in self.data[sample].keys():
-            dcsData = []
+        dcsData = []
+
+        if (
+            os.path.exists(gudPath)
+            and "mdcs01" in self.data[sample].keys()
+            and gudPath
+        ):
             gudFile = GudFile(gudPath)
             dcsLevel = gudFile.averageLevelMergedDCS
             for x, _, _ in self.data[sample]["mdcs01"]:
                 dcsData.append((x, float(dcsLevel)))
-            self.data[sample]["dcs"] = dcsData
+        self.data[sample]["dcs"] = dcsData
 
         # Get the mint01 and mdcs01 filenames.
-        mdorFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdor01")
-        )
-        mgorFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mgor01")
-        )
+        if len(sample.dataFiles.dataFiles):
+            mdorFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mdor01"
+                )
+            )
+            mgorFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mgor01"
+                )
+            )
+        else:
+            mdorFile = ""
+            mgorFile = ""
 
         # Try and resolve paths.
         if not os.path.exists(mdorFile):
@@ -201,8 +229,11 @@ class GudPyChart(QChart):
         if not os.path.exists(mgorFile):
             mgorFile = os.path.join(self.inputDir, mgorFile)
 
-        if os.path.exists(mdorFile):
-            mdorData = []
+        mdorData = []
+        mgorData = []
+
+        if os.path.exists(mdorFile) and mdorFile:
+
             # Open it.
             with open(mdorFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -216,10 +247,10 @@ class GudPyChart(QChart):
 
                     # Append the data to the series.
                     mdorData.append([x, y, err])
-            self.data[sample]["mdor01"] = mdorData
+        self.data[sample]["mdor01"] = mdorData
 
-        if os.path.exists(mgorFile):
-            mgorData = []
+        if os.path.exists(mgorFile) and mgorFile:
+
             # Open it.
             with open(mgorFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -233,7 +264,7 @@ class GudPyChart(QChart):
 
                     # Append the data to the series.
                     mgorData.append([x, y, err])
-            self.data[sample]["mgor01"] = mgorData
+        self.data[sample]["mgor01"] = mgorData
 
     def plot(self, plotMode=None):
         """
@@ -309,7 +340,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
-            mintSeries.setName(f"{sample.name} mint01")
+            if len(self.data.keys()) > 1:
+                mintSeries.setName(f"{sample.name} mint01")
+            else:
+                mintSeries.setName("mint01")
             # Construct the series
             mintSeries.append(
                 [
@@ -325,7 +359,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mdcsSeries = QLineSeries()
             # Set the name of the series.
-            mdcsSeries.setName(f"{sample.name} mdcs01")
+            if len(self.data.keys()) > 1:
+                mdcsSeries.setName(f"{sample.name} mdcs01")
+            else:
+                mdcsSeries.setName("mdcs01")
             # Construct the series
             mdcsSeries.append(
                 [
@@ -341,7 +378,10 @@ class GudPyChart(QChart):
             if not (self.logarithmicY or self.logarithmicA):
 
                 dcsSeries = QLineSeries()
-                dcsSeries.setName(f"{sample.name} dcs level")
+                if len(self.data.keys()) > 1:
+                    dcsSeries.setName(f"{sample.name} dcs level")
+                else:
+                    dcsSeries.setName("DCS level")
                 dcsSeries.append(
                     [
                         QPointF(x, y)
@@ -361,7 +401,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mdorSeries = QLineSeries()
             # Set the name of the series.
-            mdorSeries.setName(f"{sample.name} mdor01")
+            if len(self.data.keys()) > 1:
+                mdorSeries.setName(f"{sample.name} D(r)")
+            else:
+                mdorSeries.setName("D(r)")
             # Construct the series
             mdorSeries.append(
                 [
@@ -377,7 +420,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mgorSeries = QLineSeries()
             # Set the name of the series.
-            mgorSeries.setName(f"{sample.name} mgor01")
+            if len(self.data.keys()) > 1:
+                mgorSeries.setName(f"{sample.name} G(r)")
+            else:
+                mgorSeries.setName("G(r)")
             # Construct the series
             mgorSeries.append(
                 [
@@ -517,6 +563,7 @@ class GudPyChartView(QChartView):
 
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
+        self.clipboard = QClipboard(self.parent())
 
     def wheelEvent(self, event):
         """
@@ -549,6 +596,9 @@ class GudPyChartView(QChartView):
         # Scroll to match the zoom.
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
+
+        self.zoomArea = zoomArea
+        self.scrolled = (delta.x(), -delta.y())
 
     def toggleLogarithmicAxes(self, axis):
         """
@@ -673,18 +723,35 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMgor01Action)
+
+        copyAction = QAction("Copy plot", self.menu)
+        copyAction.triggered.connect(self.copyPlot)
+        self.menu.addAction(copyAction)
+
         self.menu.popup(QCursor.pos())
+
+
+    def copyPlot(self):
+        pixMap = self.grab()
+        self.clipboard.setPixmap(pixMap)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            event.accept()
+        else:
+            return super(GudPyChartView, self).mouseReleaseEvent(event)
 
     def keyPressEvent(self, event):
         """
         Handles key presses.
         Used for implementing hotkeys / shortcuts.
         """
-
+        modifiers = QApplication.keyboardModifiers()
+        if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
+            self.copyPlot()     
         # 'L/l' refers to logarithms.
-        if event.key() == Qt.Key_L:
+        elif event.key() == Qt.Key_L:
             # Get the modifiers e.g. shift, control etc.
-            modifiers = QtWidgets.QApplication.keyboardModifiers()
             # 'Ctrl+L/l' toggles logarithmic X-axis.
             if modifiers == Qt.ControlModifier:
                 self.toggleLogarithmicAxes(Axes.X)
