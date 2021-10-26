@@ -395,9 +395,16 @@ class GudPyMainWindow(QMainWindow):
 
     def focusResult(self):
         if self.mainWidget.objectStack.currentIndex() == 4:
-            topPlot, bottomPlot, gudFile = (
-                self.results[self.mainWidget.objectTree.currentObject()]
-            )
+            try:
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            except KeyError:
+                self.updateSamples()
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+
             self.mainWidget.sampleTopPlot.setChart(
                 topPlot
             )
@@ -425,9 +432,10 @@ class GudPyMainWindow(QMainWindow):
                         "background-color: green"
                     )
 
-    def updateResults(self):
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
+    def updateSamples(self):
+        samples = self.mainWidget.objectTree.getSamples()
+        for sample in samples:
+            if sample not in self.results.keys():
                 topChart = GudPyChart(
                     self.gudrunFile
                 )
@@ -446,36 +454,43 @@ class GudPyMainWindow(QMainWindow):
                         self.gudrunFile.instrument.GudrunInputFileDir, path
                     )
                 gf = GudFile(path) if os.path.exists(path) else None
-
                 self.results[sample] = [topChart, bottomChart, gf]
 
-        allTopChart = GudPyChart(
-            self.gudrunFile
-        )
-        allTopChart.addSamples(
-            [
-                sample
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for sample in sampleBackground.samples
-            ]
-        )
-        allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+    def updateAllSamples(self):
 
-        allBottomChart = GudPyChart(
-            self.gudrunFile
-        )
-        allBottomChart.addSamples(
-            [
-                sample
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for sample in sampleBackground.samples
-            ]
-        )
-        allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-
+        samples = self.mainWidget.objectTree.getSamples()
+        if len(self.allPlots):
+            if self.allPlots[0].data.keys() != samples:
+                allTopChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allTopChart.addSamples(samples)
+                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            if self.allPlots[1].data.keys() != samples:
+                allBottomChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allBottomChart.addSamples(samples)
+                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+        else:
+            allTopChart = GudPyChart(
+                self.gudrunFile
+            )
+            allTopChart.addSamples(samples)
+            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allBottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            allBottomChart.addSamples(samples)
+            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
+
+    def updateResults(self):
+
+        self.updateSamples()
+        self.updateAllSamples()
 
     def updateComponents(self):
         """

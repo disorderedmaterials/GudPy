@@ -704,6 +704,7 @@ class GudPyTreeView(QTreeView):
             Object to be inserted.
         """
         self.model().insertRow(obj, self.currentIndex())
+        self.parent.updateAllSamples()
 
     def removeRow(self):
         """
@@ -1009,3 +1010,17 @@ class GudPyTreeView(QTreeView):
         Enables the context menu.
         """
         self.contextMenuEnabled = True
+
+    def getSamples(self):
+        samples = []
+        for i in range(
+            NUM_GUDPY_CORE_OBJECTS,
+            self.model().rowCount(QModelIndex())
+        ):
+            sampleBackground = self.model().index(i, 0, QModelIndex())
+            for j in range(self.model().rowCount(sampleBackground)):
+                sample = self.model().index(
+                    j, 0, sampleBackground
+                ).internalPointer()
+                samples.append(sample)
+        return samples
