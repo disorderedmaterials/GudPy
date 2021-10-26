@@ -93,6 +93,7 @@ class GudPyChart(QChart):
         self.seriesCVisible = True
 
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
+        self.legend().setAlignment(Qt.AlignRight)
 
     def addSamples(self, samples):
         """
@@ -295,7 +296,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
-            mintSeries.setName(f"{sample.name} mint01")
+            if len(self.data.keys()) > 1:
+                mintSeries.setName(f"{sample.name} mint01")
+            else:
+                mintSeries.setName("mint01")
             # Construct the series
             mintSeries.append(
                 [
@@ -311,7 +315,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mdcsSeries = QLineSeries()
             # Set the name of the series.
-            mdcsSeries.setName(f"{sample.name} mdcs01")
+            if len(self.data.keys()) > 1:
+                mdcsSeries.setName(f"{sample.name} mdcs01")
+            else:
+                mdcsSeries.setName("mdcs01")
             # Construct the series
             mdcsSeries.append(
                 [
@@ -325,7 +332,10 @@ class GudPyChart(QChart):
             self.seriesB[sample] = mdcsSeries
 
             dcsSeries = QLineSeries()
-            dcsSeries.setName(f"{sample.name} dcs level")
+            if len(self.data.keys()) > 1:
+                dcsSeries.setName(f"{sample.name} DCS level")
+            else:
+                dcsSeries.setName("DCS level")
             dcsSeries.append(
                 [
                     QPointF(x, y)
@@ -345,7 +355,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mdorSeries = QLineSeries()
             # Set the name of the series.
-            mdorSeries.setName(f"{sample.name} mdor01")
+            if len(self.data.keys()) > 1:
+                mdorSeries.setName(f"{sample.name} D(r)")
+            else:
+                mdorSeries.setName("D(r)")
             # Construct the series
             mdorSeries.append(
                 [
@@ -361,7 +374,10 @@ class GudPyChart(QChart):
             # Instantiate the series.
             mgorSeries = QLineSeries()
             # Set the name of the series.
-            mgorSeries.setName(f"{sample.name} mgor01")
+            if len(self.data.keys()) > 1:
+                mgorSeries.setName(f"{sample.name} G(r)")
+            else:
+                mgorSeries.setName("G(r)")
             # Construct the series
             mgorSeries.append(
                 [
