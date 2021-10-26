@@ -2979,14 +2979,14 @@
                      <attribute name="verticalHeaderVisible">
                       <bool>false</bool>
                      </attribute>
-                     <attribute name="verticalHeaderMinimumSectionSize">
-                      <number>0</number>
-                     </attribute>
                      <attribute name="verticalHeaderDefaultSectionSize">
                       <number>30</number>
                      </attribute>
                      <attribute name="verticalHeaderHighlightSections">
                       <bool>false</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderMinimumSectionSize">
+                      <number>0</number>
                      </attribute>
                     </widget>
                    </item>
@@ -3386,14 +3386,14 @@
                        <attribute name="horizontalHeaderVisible">
                         <bool>false</bool>
                        </attribute>
-                       <attribute name="horizontalHeaderMinimumSectionSize">
-                        <number>19</number>
-                       </attribute>
                        <attribute name="horizontalHeaderDefaultSectionSize">
                         <number>100</number>
                        </attribute>
                        <attribute name="horizontalHeaderHighlightSections">
                         <bool>true</bool>
+                       </attribute>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>19</number>
                        </attribute>
                        <attribute name="verticalHeaderHighlightSections">
                         <bool>false</bool>
@@ -5404,10 +5404,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>120</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>120</number>
                            </attribute>
                            <attribute name="verticalHeaderCascadingSectionResizes">
@@ -5507,10 +5507,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>128</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>128</number>
                            </attribute>
                            <attribute name="horizontalHeaderStretchLastSection">
@@ -6553,7 +6553,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -6637,7 +6637,7 @@
   </action>
   <action name="viewLiveInputFile">
    <property name="text">
-    <string>View live input file</string>
+    <string>Edit live input file</string>
    </property>
   </action>
   <action name="save">
