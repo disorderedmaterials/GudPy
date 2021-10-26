@@ -1122,7 +1122,6 @@ class GudrunFile:
                 )
             self.consumeWhitespace()
             line = self.peekNextToken()
-        print("".join(self.stream))
         return sampleBackground
 
     def parse(self):

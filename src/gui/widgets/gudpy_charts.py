@@ -291,10 +291,24 @@ class GudPyChart(QChart):
         for sample in self.data.keys():
             self.plotSample(sample)
 
+        # Label axes
+        if self.plotMode == PlotModes.STRUCTURE_FACTOR:
+            XLabel = "Q, 1\u212b"
+            YLabel = "DCS, barns/sr/atom"
+        elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+            XLabel = "r, \u212b"
+            YLabel = "G(r)"
+
+        self.createDefaultAxes()
+        self.axisX().setTitleText(XLabel)
+        self.axisY().setTitleText(YLabel)
+        self.logarithmicXAxis.setTitleText(XLabel)
+        self.logarithmicYAxis.setTitleText(YLabel)
+
         # If it is a logarithmic plot, we need to define our own
         # QLogValueAxis, and attatch to our series'.
         # Otherwise create default ones.
-        self.createDefaultAxes()
+
         if self.logarithmicX or self.logarithmicA:
             self.removeAxis(self.axisX())
             self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
