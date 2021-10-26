@@ -1,10 +1,9 @@
-from PySide6 import QtWidgets
 from PySide6.QtCharts import (
     QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
 )
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QKeySequence, QPainter, QPen, QShortcut
+    QAction, QClipboard, QCursor, QPainter, QPen
 )
 from enum import Enum
 import os
@@ -730,7 +729,6 @@ class GudPyChartView(QChartView):
 
         self.menu.popup(QCursor.pos())
 
-
     def copyPlot(self):
         pixMap = self.grab()
         self.clipboard.setPixmap(pixMap)
@@ -748,7 +746,7 @@ class GudPyChartView(QChartView):
         """
         modifiers = QApplication.keyboardModifiers()
         if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
-            self.copyPlot()     
+            self.copyPlot()
         # 'L/l' refers to logarithms.
         elif event.key() == Qt.Key_L:
             # Get the modifiers e.g. shift, control etc.
