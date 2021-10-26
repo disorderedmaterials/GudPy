@@ -119,12 +119,20 @@ class GudPyChart(QChart):
         self.data[sample] = {}
 
         # Get the mint01 and mdcs01 filenames.
-        mintFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mint01")
-        )
-        mdcsFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdcs01")
-        )
+        if len(sample.dataFiles.dataFiles):
+            mintFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mint01"
+                )
+            )
+            mdcsFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mdcs01"
+                )
+            )
+        else:
+            mintFile = ""
+            mdcsFile = ""
 
         # Try and resolve paths.
         if not os.path.exists(mintFile):
@@ -132,9 +140,12 @@ class GudPyChart(QChart):
         if not os.path.exists(mdcsFile):
             mdcsFile = os.path.join(self.inputDir, mdcsFile)
 
+        mintData = []
+        mdcsData = []
+
         # Check the file exists.
-        if os.path.exists(mintFile):
-            mintData = []
+        if os.path.exists(mintFile) and mintFile:
+
             # Open it.
             with open(mintFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -147,11 +158,11 @@ class GudPyChart(QChart):
                     x, y, err, *__ = [float(n) for n in data.split()]
 
                     mintData.append([x, y, err])
-            self.data[sample]["mint01"] = mintData
+        self.data[sample]["mint01"] = mintData
 
         # Check the file exists.
-        if os.path.exists(mdcsFile):
-            mdcsData = []
+        if os.path.exists(mdcsFile) and mdcsFile:
+
             # Open it.
             with open(mdcsFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -163,29 +174,45 @@ class GudPyChart(QChart):
                     # Extract x,y, err.
                     x, y, err, *__ = [float(n) for n in data.split()]
                     mdcsData.append([x, y, err])
-            self.data[sample]["mdcs01"] = mdcsData
+        self.data[sample]["mdcs01"] = mdcsData
 
-        gudPath = sample.dataFiles.dataFiles[0].replace(
-            self.dataFileType, "gud"
-        )
+        if len(sample.dataFiles.dataFiles):
+            gudPath = sample.dataFiles.dataFiles[0].replace(
+                self.dataFileType, "gud"
+            )
+        else:
+            gudPath = ""
         if not os.path.exists(gudPath):
             gudPath = os.path.join(self.inputDir, gudPath)
 
-        if os.path.exists(gudPath) and "mdcs01" in self.data[sample].keys():
-            dcsData = []
+        dcsData = []
+
+        if (
+            os.path.exists(gudPath)
+            and "mdcs01" in self.data[sample].keys()
+            and gudPath
+        ):
             gudFile = GudFile(gudPath)
             dcsLevel = gudFile.averageLevelMergedDCS
             for x, _, _ in self.data[sample]["mdcs01"]:
                 dcsData.append((x, float(dcsLevel)))
-            self.data[sample]["dcs"] = dcsData
+        self.data[sample]["dcs"] = dcsData
 
         # Get the mint01 and mdcs01 filenames.
-        mdorFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mdor01")
-        )
-        mgorFile = (
-            sample.dataFiles.dataFiles[0].replace(self.dataFileType, "mgor01")
-        )
+        if len(sample.dataFiles.dataFiles):
+            mdorFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mdor01"
+                )
+            )
+            mgorFile = (
+                sample.dataFiles.dataFiles[0].replace(
+                    self.dataFileType, "mgor01"
+                )
+            )
+        else:
+            mdorFile = ""
+            mgorFile = ""
 
         # Try and resolve paths.
         if not os.path.exists(mdorFile):
@@ -193,8 +220,11 @@ class GudPyChart(QChart):
         if not os.path.exists(mgorFile):
             mgorFile = os.path.join(self.inputDir, mgorFile)
 
-        if os.path.exists(mdorFile):
-            mdorData = []
+        mdorData = []
+        mgorData = []
+
+        if os.path.exists(mdorFile) and mdorFile:
+
             # Open it.
             with open(mdorFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -208,10 +238,10 @@ class GudPyChart(QChart):
 
                     # Append the data to the series.
                     mdorData.append([x, y, err])
-            self.data[sample]["mdor01"] = mdorData
+        self.data[sample]["mdor01"] = mdorData
 
-        if os.path.exists(mgorFile):
-            mgorData = []
+        if os.path.exists(mgorFile) and mgorFile:
+
             # Open it.
             with open(mgorFile, "r", encoding="utf-8") as f:
                 for data in f.readlines():
@@ -225,7 +255,7 @@ class GudPyChart(QChart):
 
                     # Append the data to the series.
                     mgorData.append([x, y, err])
-            self.data[sample]["mgor01"] = mgorData
+        self.data[sample]["mgor01"] = mgorData
 
     def plot(self, plotMode=None):
         """

@@ -410,19 +410,20 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.bottomPlotComboBox.setCurrentIndex(
                 bottomPlot.plotMode.value
             )
-            dcsLevel = gudFile.averageLevelMergedDCS
-            self.mainWidget.dcsLabel.setText(
-                f"DCS Level: {dcsLevel}"
-            )
-            self.mainWidget.resultLabel.setText(gudFile.output)
-            if gudFile.err:
-                self.mainWidget.resultLabel.setStyleSheet(
-                    "background-color: red"
+            if gudFile:
+                dcsLevel = gudFile.averageLevelMergedDCS
+                self.mainWidget.dcsLabel.setText(
+                    f"DCS Level: {dcsLevel}"
                 )
-            else:
-                self.mainWidget.resultLabel.setStyleSheet(
-                    "background-color: green"
-                )
+                self.mainWidget.resultLabel.setText(gudFile.output)
+                if gudFile.err:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: red"
+                    )
+                else:
+                    self.mainWidget.resultLabel.setStyleSheet(
+                        "background-color: green"
+                    )
 
     def updateResults(self):
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
