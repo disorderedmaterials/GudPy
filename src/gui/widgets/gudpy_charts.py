@@ -637,6 +637,12 @@ class GudPyChartView(QChartView):
         if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
             self.copyPlot()
 
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            event.accept()
+        else:
+            return super(GudPyChartView, self).mouseReleaseEvent(event)
+
     def setupShortcuts(self):
         """
         Sets up keyboard shortcuts for the Chart.
