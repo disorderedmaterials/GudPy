@@ -3188,6 +3188,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="useComponentsCheckBox">
+                <property name="text">
+                 <string>Use component/molecule definitions?</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -3503,96 +3510,167 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_13">
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_31">
-                     <item>
-                      <widget class="CompositionTable" name="normalisationCompositionTable">
-                       <property name="minimumSize">
-                        <size>
-                         <width>191</width>
-                         <height>121</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="horizontalScrollBarPolicy">
-                        <enum>Qt::ScrollBarAlwaysOff</enum>
-                       </property>
-                       <property name="selectionBehavior">
-                        <enum>QAbstractItemView::SelectRows</enum>
-                       </property>
-                       <attribute name="horizontalHeaderVisible">
-                        <bool>false</bool>
-                       </attribute>
-                       <attribute name="horizontalHeaderMinimumSectionSize">
-                        <number>19</number>
-                       </attribute>
-                       <attribute name="horizontalHeaderDefaultSectionSize">
-                        <number>100</number>
-                       </attribute>
-                       <attribute name="horizontalHeaderHighlightSections">
-                        <bool>true</bool>
-                       </attribute>
-                       <attribute name="verticalHeaderHighlightSections">
-                        <bool>false</bool>
-                       </attribute>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <widget class="QTabWidget" name="tabWidget_2">
+                     <property name="currentIndex">
+                      <number>0</number>
+                     </property>
+                     <widget class="QWidget" name="tab">
+                      <attribute name="title">
+                       <string>Exact Composition</string>
+                      </attribute>
+                      <layout class="QHBoxLayout" name="horizontalLayout_13">
                        <item>
-                        <widget class="QToolButton" name="insertElementButton">
+                        <widget class="CompositionTable" name="normalisationCompositionTable">
+                         <property name="minimumSize">
+                          <size>
+                           <width>191</width>
+                           <height>121</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>16777215</width>
                            <height>16777215</height>
                           </size>
                          </property>
-                         <property name="text">
-                          <string/>
+                         <property name="horizontalScrollBarPolicy">
+                          <enum>Qt::ScrollBarAlwaysOff</enum>
                          </property>
-                         <property name="icon">
-                          <iconset resource="../resources/resources.qrc">
-                           <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+                         <property name="selectionBehavior">
+                          <enum>QAbstractItemView::SelectRows</enum>
                          </property>
+                         <attribute name="horizontalHeaderVisible">
+                          <bool>false</bool>
+                         </attribute>
+                         <attribute name="horizontalHeaderMinimumSectionSize">
+                          <number>19</number>
+                         </attribute>
+                         <attribute name="horizontalHeaderDefaultSectionSize">
+                          <number>100</number>
+                         </attribute>
+                         <attribute name="horizontalHeaderHighlightSections">
+                          <bool>true</bool>
+                         </attribute>
+                         <attribute name="verticalHeaderHighlightSections">
+                          <bool>false</bool>
+                         </attribute>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QToolButton" name="removeElementButton">
-                         <property name="maximumSize">
-                          <size>
-                           <width>16777215</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="../resources/resources.qrc">
-                           <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="verticalSpacer_5">
-                         <property name="orientation">
-                          <enum>Qt::Vertical</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>20</width>
-                           <height>40</height>
-                          </size>
-                         </property>
-                        </spacer>
+                        <layout class="QVBoxLayout" name="verticalLayout_14">
+                         <item>
+                          <widget class="QToolButton" name="insertElementButton">
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="../resources/resources.qrc">
+                             <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QToolButton" name="removeElementButton">
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="../resources/resources.qrc">
+                             <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="verticalSpacer_5">
+                           <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>20</width>
+                             <height>40</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
                        </item>
                       </layout>
-                     </item>
-                    </layout>
+                     </widget>
+                     <widget class="QWidget" name="tab_2">
+                      <attribute name="title">
+                       <string>Ratio Composition</string>
+                      </attribute>
+                      <layout class="QHBoxLayout" name="horizontalLayout_15">
+                       <item>
+                        <widget class="QTableView" name="normalisationRatioCompositionTable"/>
+                       </item>
+                       <item>
+                        <layout class="QVBoxLayout" name="verticalLayout_52">
+                         <item>
+                          <widget class="QToolButton" name="insertNormalisationComponentButton">
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="../resources/resources.qrc">
+                             <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QToolButton" name="removeNormalisationComponentButton">
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="../resources/resources.qrc">
+                             <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="verticalSpacer_23">
+                           <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>20</width>
+                             <height>40</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
                    </item>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_32">

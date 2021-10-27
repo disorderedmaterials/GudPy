@@ -1,5 +1,4 @@
-from PySide6.QtCore import QModelIndex, QStringListModel
-
+from src.gudrun_classes import config
 from src.gudrun_classes.components import Component, Components
 from src.gudrun_classes.element import Element
 
@@ -21,14 +20,13 @@ class ComponentSlots():
         self.widget.removeComponentButton.clicked.connect(self.widget.componentList.removeComponent)
         self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
         self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
-    
+        self.widget.useComponentsCheckBox.stateChanged.connect(self.setUseComponentDefinitions)
+
     def loadComponentsList(self):
         component = Component("H2O")
         component.addElement(Element("H", 0, 2.))
         self.components.addComponent(component)
         self.widget.componentList.makeModel(self.components,self.widget.componentCompositionTable )
-
-
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(
@@ -46,3 +44,6 @@ class ComponentSlots():
             self.widget.componentCompositionTable
             .currentIndex()
         )
+    
+    def setUseComponentDefinitions(self, state):
+        config.USE_USER_DEFINED_COMPONENTS = state
