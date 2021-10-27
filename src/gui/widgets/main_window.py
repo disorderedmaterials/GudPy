@@ -717,7 +717,6 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrement(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -775,7 +774,6 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         if "Total run time" in stdout:
             QMessageBox.warning(
                 self.mainWidget, "GudPy Warning",
