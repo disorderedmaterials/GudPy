@@ -703,7 +703,13 @@ class GudPyTreeView(QTreeView):
         obj : SampleBackground | Sample | Container
             Object to be inserted.
         """
-        self.model().insertRow(obj, self.currentIndex())
+        currentIndex = self.currentIndex()
+        self.model().insertRow(obj, currentIndex)
+        newIndex = self.model().index(
+            currentIndex.row()+1, 0,
+            self.model().parent(currentIndex)
+        )
+        self.expandRecursively(newIndex, 0)
         self.parent.updateAllSamples()
 
     def removeRow(self):
