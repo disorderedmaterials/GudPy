@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
+    QListView,
     QMainWindow,
     QSpinBox,
     QTableView,
@@ -1271,3 +1272,16 @@ class ResonanceTable(QTableView):
         """
         for _row in rows:
             self.model().removeRow(_row.row())
+
+class ComponentsList(QListView):
+
+    def __init__(self, parent):
+        super(ComponentsList, self).__init__(parent=parent)
+
+    def pair(self, table, components):
+        self.table = table
+        self.components = components
+
+    def currentChanged(self, current, previous):
+        self.table.makeModel(self.components.components[current.row()].elements)
+        return super().currentChanged(current, previous)

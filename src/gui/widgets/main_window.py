@@ -1,5 +1,6 @@
 from queue import Queue
 from PySide6.QtCore import QFile
+from src.gui.widgets.component_slots import ComponentSlots
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -33,7 +34,7 @@ from PySide6.QtWidgets import (
 from src.gui.widgets.purge_dialog import PurgeDialog
 from src.gui.widgets.view_input_dialog import ViewInputDialog
 from src.gui.widgets.gudpy_tree import GudPyTreeView
-from src.gui.widgets.gudpy_tables import GroupingParameterTable
+from src.gui.widgets.gudpy_tables import ComponentsList, GroupingParameterTable
 from src.gui.widgets.gudpy_tables import BeamProfileTable
 from src.gui.widgets.gudpy_tables import ResonanceTable
 from src.gui.widgets.gudpy_tables import CompositionTable
@@ -126,6 +127,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(ComponentsList)
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
@@ -230,6 +232,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.show()
         self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
         self.beamSlots = BeamSlots(self.mainWidget, self)
+        self.componentSlots = ComponentSlots(self.mainWidget, self)
         self.normalisationSlots = NormalisationSlots(self.mainWidget, self)
         self.sampleBackgroundSlots = SampleBackgroundSlots(
             self.mainWidget, self
@@ -302,6 +305,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
+        self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
 
         if len(self.gudrunFile.sampleBackgrounds):

@@ -11,7 +11,7 @@ from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
-from src.gudrun_classes.component import Components
+from src.gudrun_classes.components import Components
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy

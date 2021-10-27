@@ -3072,7 +3072,11 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
                    <item>
-                    <widget class="QListView" name="componentList"/>
+                    <widget class="ComponentsList" name="componentList">
+                     <property name="selectionBehavior">
+                      <enum>QAbstractItemView::SelectRows</enum>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_49">
@@ -6888,6 +6892,11 @@
    <class>ExponentialSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>src.gui.widgets.exponential_spinbox</header>
+  </customwidget>
+  <customwidget>
+   <class>ComponentsList</class>
+   <extends>QListView</extends>
+   <header>src.gui.widgets.gudpy_tables</header>
   </customwidget>
  </customwidgets>
  <resources>
