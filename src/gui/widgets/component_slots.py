@@ -17,11 +17,10 @@ class ComponentSlots():
         self.loadComponentsList()
 
     def setupComponentSlots(self):
-        pass
-        # self.widget.addComponentButton.clicked.connect(self.widget.componentList.insertRow)
-        # self.widget.removeComponentButton.clicked.connect(self.removeComponent)
-        # self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
-        # self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
+        self.widget.addComponentButton.clicked.connect(self.widget.componentList.insertComponent)
+        self.widget.removeComponentButton.clicked.connect(self.widget.componentList.removeComponent)
+        self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
+        self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
     
     def loadComponentsList(self):
         component = Component("H2O")
@@ -32,22 +31,18 @@ class ComponentSlots():
 
 
     def addSubComponent(self):
-        pass
-        # if not self.widget.componentCompositionTable.model():
-            # self.widget.componentCompositionTable.makeModel()
-        self.widget.componentCompositionTable.insertRow()
-        print([c.name for c in self.components.components.components])
+        self.widget.componentCompositionTable.model().insertRow(
+            Element("", 0, 0.), self.widget.componentList.currentIndex()
+        )
 
     def removeComponent(self):
-        pass
         self.widget.componentList.removeRow(
             self.widget.componentList
             .selectionModel().selectedRows()
         )
 
     def removeSubComponent(self):
-        pass
-        self.widget.componentCompositionTable.removeRow(
+        self.widget.componentCompositionTable.model().removeRow(
             self.widget.componentCompositionTable
-            .selectionModel().selectedRows()
+            .currentIndex()
         )

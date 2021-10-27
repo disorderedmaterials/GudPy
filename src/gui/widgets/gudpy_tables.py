@@ -1515,7 +1515,22 @@ class ComponentsModel(QAbstractItemModel):
         for i, component in enumerate(self.components.components):
             if item in component.elements:
                 return self.components.components[i]
-    
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+        elif role == Qt.EditRole:
+            if not index.parent().isValid():
+                self.components.components[index.row()].name = value
+            else:
+                if index.column() == 0:
+                    self.components.components[index.parent().row()].elements[index.row()].atomicSymbol = value
+                elif index.column() == 1:
+                    self.components.components[index.parent().row()].elements[index.row()].massNo = value  
+                elif index.column() == 2:
+                    self.components.components[index.parent().row()].elements[index.row()].abundance = value
+            return True
+
     def data(self, index, role):
         if not index.isValid():
             return None
@@ -1537,7 +1552,10 @@ class ComponentsModel(QAbstractItemModel):
         if not parent.isValid():
             return len(self.components.components)
         elif parent.isValid():
-            return len(self.components.components[parent.row()].elements)
+            if len(self.components.components):
+                return len(self.components.components[parent.row()].elements)
+            else:
+                return 0
         else:
             return 0
     
@@ -1551,6 +1569,47 @@ class ComponentsModel(QAbstractItemModel):
         flags = super(ComponentsModel, self).flags(index)
         flags |= Qt.ItemIsEditable
         return flags
+
+    def insertRow(self, obj, parent):
+        parentObj = parent.internalPointer()
+        if isinstance(parentObj, Component):
+            setter = self.components.components[parent.row()].addElement
+        else:
+            setter = self.components.addComponent
+        start = end = self.rowCount(parent)
+        self.beginInsertRows(parent, start, end)
+        setter(obj)
+        self.endInsertRows()
+        return self.index(start, 0, parent)
+
+    def removeRow(self, index):
+        parent = index.parent()
+        obj = index.internalPointer()
+
+        if isinstance(obj, Component):
+            remove = self.components.components.remove
+        elif isinstance(obj, Element):
+            remove = self.components.components[parent.row()].elements.remove
+        else:
+            return False
+        
+        invalidated = []
+        if isinstance(obj, Element):
+            for otherObj in self.persistentIndexes.keys():
+                if isinstance(otherObj, Element):
+                    invalidated.append(otherObj)
+        elif isinstance(obj, Component):
+            for otherObj in self.persistentIndexes.keys():
+                if self.findParent(otherObj) == obj:
+                    invalidated.append(otherObj)
+        for index_ in invalidated:
+            del self.persistentIndexes[index_]
+
+        start = end = index.row()
+        self.beginRemoveRows(parent, start, end)
+        self.persistentIndexes.pop(obj)
+        remove(obj)
+        self.endRemoveRows()
 
 class ComponentsList(QListView):
 
@@ -1572,3 +1631,10 @@ class ComponentsList(QListView):
         if self.selectionModel().hasSelection():
             index = item.indexes()[0]
             self.sibling.setRootIndex(index)
+
+    def insertComponent(self):
+        new = self.model().insertRow(Component("Component"), QModelIndex())
+        self.setCurrentIndex(new)
+
+    def removeComponent(self):
+        self.model().removeRow(self.currentIndex())
