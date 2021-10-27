@@ -49,6 +49,7 @@ from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.sample_slots import SampleSlots
 import math
 from src.gui.widgets.resources import resources_rc  # noqa
+import traceback
 
 
 class GudPyMainWindow(QMainWindow):
@@ -744,7 +745,6 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrement(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -802,21 +802,19 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         if "Total run time" in stdout:
             QMessageBox.warning(
                 self.mainWidget, "GudPy Warning",
                 f"{nthint(stdout, 0)} detectors made it through the purge."
             )
         elif "Error" in stdout or "error" in stdout or "not found" in stdout:
+            self.gudrunFile.purged = False
+            self.queue = Queue()
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{stdout}"
             )
-            self.gudrunFile.purged = False
-            self.procFinished()
-            self.queue = Queue()
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
@@ -868,3 +866,10 @@ class GudPyMainWindow(QMainWindow):
 
     def handlePlotModeChanged(self, plot, plotMode):
         plot(plotMode)
+
+    def onException(self, cls, exception, tb):
+        QMessageBox.critical(
+            self.mainWidget,
+            "GudPy Error",
+            f"{''.join(traceback.format_exception(cls, exception, tb))}"
+        )
