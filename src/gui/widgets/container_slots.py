@@ -552,9 +552,10 @@ class ContainerSlots():
         """
         Fills the composition list.
         """
-        self.widget.containerCompositionTable.makeModel(
-            self.container.composition.elements
-        )
+        if not config.USE_USER_DEFINED_COMPONENTS:
+            self.widget.containerCompositionTable.makeModel(
+                self.container.composition.elements
+            )
 
     def handleInsertElement(self):
         """

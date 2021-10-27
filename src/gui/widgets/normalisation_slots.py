@@ -694,9 +694,10 @@ class NormalisationSlots():
         """
         Fills the composition list.
         """
-        self.widget.normalisationCompositionTable.makeModel(
-            self.normalisation.composition.elements
-        )
+        if not config.USE_USER_DEFINED_COMPONENTS:
+            self.widget.normalisationCompositionTable.makeModel(
+                self.normalisation.composition.elements
+            )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

@@ -840,9 +840,10 @@ class SampleSlots():
         """
         Fills the composition table.
         """
-        self.widget.sampleCompositionTable.makeModel(
-            self.sample.composition.elements
-        )
+        if not config.USE_USER_DEFINED_COMPONENTS:
+            self.widget.sampleCompositionTable.makeModel(
+                self.sample.composition.elements
+            )
 
     def handleInsertElement(self):
         """
