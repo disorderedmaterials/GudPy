@@ -1,5 +1,6 @@
-from PySide6.QtCore import QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, QStringListModel, Qt
+from PySide6.QtCore import QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt
 from PySide6.QtWidgets import (
+    QComboBox,
     QDoubleSpinBox,
     QItemDelegate,
     QLineEdit,
@@ -12,9 +13,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QCursor, QAction
 from src.gudrun_classes.components import Component
 from src.gudrun_classes.element import Element
-from src.gui.widgets.component_slots import ComponentSlots
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
-
+import src.gudrun_classes.config
 
 class GudPyTableModel(QAbstractTableModel):
     """
@@ -933,6 +933,155 @@ class CompositionTable(QTableView):
             copyMenu.addAction(action)
         self.menu.popup(QCursor.pos())
 
+class RatioCompositionModel(GudPyTableModel):
+    """
+    Class to represent a RatioCompositionModel. Inherits GudPyTableModel.
+
+    ...
+
+    Methods
+    -------
+    columnCount(parent)
+        Returns the number of columns in the model.
+    setData(index, value, role)
+        Sets data in the model.
+    insertRow(data)
+        Inserts a row of data into the model.
+    data(index, role)
+        Returns data at a specific index.
+    """
+    def __init__(self, data, headers, parent):
+        """
+        Calls super().__init__ on the passed parameters.
+        Sets up attrs dict.
+        Parameters
+        ----------
+        data : list
+            Data for model to use.
+        headers: str[]
+            Column headers for table.
+        parent : QWidget
+            Parent widget.
+        """
+        super(CompositionModel, self).__init__(data, headers, parent)
+        
+    def columnCount(self, parent):
+        """
+        Returns the number of columns in the model.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        Returns
+        -------
+        int
+            Number of columns in the model - this is always 3.
+        """
+        return 2
+
+    def setData(self, index, value, role):
+        """
+        Sets data in the model.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to set data at.
+        value : any
+            Value to set data to.
+        role : int
+            Role.
+        """
+        row = index.row()
+        col = index.column()
+        if role == Qt.EditRole:
+            if  col == 0:
+                self._data[row].component = value
+            elif col == 1:
+                self._data[row].ratio = 
+            self._data[row].__dict__[self.attrs[col]] = value
+
+class RatioCompositionDelegate(GudPyDelegate):
+    """
+    Class to represent a RatioCompositionDelegate. Inherits GudPyDelegate.
+
+    ...
+
+    Methods
+    -------
+    createEditor(parent, option, index)
+        Creates an editor.
+    setEditorData(editor, index)
+        Sets data at a specific index inside the editor.
+    setModelData(editor, model, index)
+        Sets data at a specific index inside the model.
+    """
+
+    def __init__(self, parent, gudrunFile):
+        super(RatioCompositionDelegate, self).__init__(parent=parent)
+        self.gudrunFile = gudrunFile
+
+    def createEditor(self, parent, option, index):
+        """
+        Creates an editor, and returns it.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        option : QStyleOptionViewItem
+            Option.
+        index : QModelIndex
+            Index in to create editor at.
+        Returns
+        -------
+        QLineEdit | QSpinBox | QDoubleSpinBox
+            The created editor.
+        """
+        col = index.column()
+        if col == 0:
+            editor = QComboBox(parent)
+            for component in self.gudrunFile.components:
+                editor.addItem(component.name, component)
+        elif col == 1:
+            editor = ExponentialSpinBox(parent)
+        return editor
+
+    def setEditorData(self, editor, index):
+        """
+        Sets data at a specific index inside the editor.
+        Parameters
+        ----------
+        editor : QWidget
+            The editor widet.
+        index : QModelIndex
+            Index in the model to set data at.
+        """
+        value = index.model().data(index, Qt.EditRole)
+        if value:
+            if index.column() == 0:
+                editor.setCurrentIndex(str(value))
+            else:
+                editor.setValue(value)
+
+    def setModelData(self, editor, model, index):
+        """
+        Sets data at a specific index inside the model.
+        Parameters
+        ----------
+        editor : QWidget
+            The editor widet.
+        model : GudPyTableModel
+            Model to set data inside.
+        index : QModelIndex
+            Index in the model to set data at.
+        """
+        if index.column() == 0:
+            model.setData(index, editor.currentData(), Qt.EditRole)
+        else:
+            try:
+                value = editor.value()
+                model.setData(index, value, Qt.EditRole)
+            except Exception:
+                model.setData(index, 0., Qt.EditRole)
 
 class ExponentialModel(GudPyTableModel):
     """
