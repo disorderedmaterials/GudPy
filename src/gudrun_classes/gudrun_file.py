@@ -1,4 +1,5 @@
 from PySide6.QtCore import QProcess
+from src.gudrun_classes.component import Components
 from src.gudrun_classes.exception import ParserException
 import sys
 import os
@@ -144,6 +145,7 @@ class GudrunFile:
         self.beam = None
         self.normalisation = None
         self.sampleBackgrounds = []
+        self.components = Components()
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None

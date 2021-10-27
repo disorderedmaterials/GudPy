@@ -11,6 +11,7 @@ from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
+from src.gudrun_classes.component import Components
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.config import NUM_GUDPY_CORE_OBJECTS
 from copy import deepcopy
@@ -110,7 +111,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # Invalid parent means we are at the top level.
             rows = {
                 0: self.gudrunFile.instrument, 1: self.gudrunFile.beam,
-                2: self.gudrunFile.normalisation
+                2: self.gudrunFile.components , 3: self.gudrunFile.normalisation
             }
             # Instrument | Beam | Normalisation
             if row in rows.keys():
@@ -164,7 +165,7 @@ class GudPyTreeModel(QAbstractItemModel):
             return QModelIndex()
         if isinstance(
             index.internalPointer(),
-            (Instrument, Beam, Normalisation, SampleBackground)
+            (Instrument, Beam, Components, Normalisation, SampleBackground)
         ):
             return QModelIndex()
         elif isinstance(index.internalPointer(), Sample):
@@ -223,11 +224,11 @@ class GudPyTreeModel(QAbstractItemModel):
         if role == Qt.DisplayRole or role == Qt.EditRole:
             if isinstance(
                 index.internalPointer(),
-                (Instrument, Beam, Normalisation, SampleBackground)
+                (Instrument, Beam, Components, Normalisation, SampleBackground)
             ):
                 dic = {
                     0: "Instrument", 1: "Beam",
-                    2: "Normalisation", 3: "Sample Background"
+                    2: "Components", 3: "Normalisation", 4: "Sample Background"
                 }
                 return (
                     dic[
@@ -671,12 +672,13 @@ class GudPyTreeView(QTreeView):
         indexMap = {
             Instrument: (0, None),
             Beam: (1, None),
-            Normalisation: (2, None),
+            Components: (2, None),
+            Normalisation: (3, None),
             SampleBackground: (
-                3, self.parent.sampleBackgroundSlots.setSampleBackground
+                4, self.parent.sampleBackgroundSlots.setSampleBackground
             ),
-            Sample: (4, self.parent.sampleSlots.setSample),
-            Container: (5, self.parent.containerSlots.setContainer)
+            Sample: (5, self.parent.sampleSlots.setSample),
+            Container: (6, self.parent.containerSlots.setContainer)
         }
         index, setter = indexMap[type(modelIndex.internalPointer())]
         self.parent.mainWidget.objectStack.setCurrentIndex(index)
