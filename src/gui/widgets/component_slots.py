@@ -13,25 +13,41 @@ class ComponentSlots():
 
     def setComponents(self, components):
         self.components = components
-        self.widget.componentList.pair(self.widget.componentCompositionTable, self.components)
+        # self.widget.componentList.pair(self.widget.componentCompositionTable, self.components)
         self.loadComponentsList()
 
     def setupComponentSlots(self):
-        self.widget.addComponentButton.clicked.connect(self.addComponent)
-        self.widget.removeComponentButton.clicked.connect(self.removeComponent)
-        self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
-        self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
+        pass
+        # self.widget.addComponentButton.clicked.connect(self.widget.componentList.insertRow)
+        # self.widget.removeComponentButton.clicked.connect(self.removeComponent)
+        # self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
+        # self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
     
     def loadComponentsList(self):
-        self.componentModel = QStringListModel(
-            [c.name for c in self.components.components]
-        )
-        self.widget.componentList.setModel(self.componentModel)
-        self.widget.componentList.setCurrentIndex(
-            self.widget.componentList.model().index(0, 0, QModelIndex())
+        component = Component("H2O")
+        component.addElement(Element("H", 0, 2.))
+        self.components.addComponent(component)
+        self.widget.componentList.makeModel(self.components,self.widget.componentCompositionTable )
+
+
+
+    def addSubComponent(self):
+        pass
+        # if not self.widget.componentCompositionTable.model():
+            # self.widget.componentCompositionTable.makeModel()
+        self.widget.componentCompositionTable.insertRow()
+        print([c.name for c in self.components.components.components])
+
+    def removeComponent(self):
+        pass
+        self.widget.componentList.removeRow(
+            self.widget.componentList
+            .selectionModel().selectedRows()
         )
 
-    def addComponent(self) : pass
-    def removeComponent(self) : pass
-    def addSubComponent(self) : pass
-    def removeSubComponent(self) : pass
+    def removeSubComponent(self):
+        pass
+        self.widget.componentCompositionTable.removeRow(
+            self.widget.componentCompositionTable
+            .selectionModel().selectedRows()
+        )

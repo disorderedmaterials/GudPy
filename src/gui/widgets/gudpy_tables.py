@@ -1,4 +1,4 @@
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
+from PySide6.QtCore import QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, QStringListModel, Qt
 from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QItemDelegate,
@@ -10,7 +10,9 @@ from PySide6.QtWidgets import (
     QMenu,
 )
 from PySide6.QtGui import QCursor, QAction
+from src.gudrun_classes.components import Component
 from src.gudrun_classes.element import Element
+from src.gui.widgets.component_slots import ComponentSlots
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
 
@@ -1273,15 +1275,300 @@ class ResonanceTable(QTableView):
         for _row in rows:
             self.model().removeRow(_row.row())
 
+# class ComponentsModel(GudPyTableModel):
+
+
+# class ComponentsModel(GudPyTableModel):
+
+#     def __init__(self, components, headers, parent):
+#         super(ComponentsModel, self).__init__(components, headers, parent)
+
+#         self.components = components
+#         self._headers = headers
+#         self.mode = QListView
+#         self.attrs = {0: "atomicSymbol", 1: "massNo", 2: "abundance"}
+
+#     def columnCount(self, parent):
+#         if self.mode == QListView:
+#             return 1
+#         else:
+#             return 3
+    
+#     def setData(self, index, value, role):
+#         row = index.row()
+#         col = index.column()
+#         if role == Qt.EditRole:
+#             if self.mode == QListView:
+#                 self.components[row].name = value
+#             else:
+#                 self.components[row].__dict__[self.attrs[col]] = value
+    
+#     def insertRow(self, data):
+#         self.beginInsertRows(
+#             QModelIndex(), self.rowCount(self), self.rowCount(self)
+#         )
+#         if self.mode == QListView:
+#             self.components.addComponent(Component("Component"))
+#         else:
+#             self.components[self.index]
+#         self.endInsertRows()
+    
+#     def data(self, index, role):
+#         row = index.row()
+#         co = index.col()
+#         if role == role & (Qt.DisplayRole | Qt.EditRole):
+#             if mode == 
+
+# class ComponentsList(QListView):
+
+#     def __init__(self, parent):
+#         super(ComponentsList, self).__init__(parent=parent)
+
+#     def makeModel(self, components):
+#         self.table = table
+#         self.components = components
+
+    # def currentChanged(self, current, previous):
+    #     if len(self.components.components):
+    #         self.table.makeModel(self.components.components[current.row()].elements)
+    #     return super().currentChanged(current, previous)
+
+    # def addComponent(self):
+    #     self.model().insertRow(self.model().rowCount(QModelIndex()), QModelIndex())
+    #     self.setCurrentIndex(self.model().index(self.model().rowCount(QModelIndex())-1, 0, QModelIndex()))
+    #     self.model().setData(self.model().index(self.model().rowCount(QModelIndex())-1, 0, QModelIndex()), "Component")
+
+# class ComponentsModel(GudPyTableModel):
+
+#     def __init__(self, components, parent):
+#         super().__init__(components, parent)
+#         self.components = components
+#         for component in self.components:
+#             self.append
+
+# class ComponentsModel(GudPyTableModel):
+#     """
+#     Class to represent a ComponentsModel. Inherits GudPyTableModel.
+
+#     ...
+
+#     Methods
+#     -------
+#     columnCount(parent)
+#         Returns the number of columns in the model.
+#     headerData(section, orientation, role)
+#         Stub method.
+#     setData(index, value, role)
+#         Sets data in the model.
+#     data(index, role)
+#         Returns data at a given index
+#     insertRow(data)
+#         Inserts a row of data into the model.
+#     """
+#     def __init__(self, data, headers, parent):
+#         """
+#         Calls super().__init__ on the passed parameters.
+#         Parameters
+#         ----------
+#         data : list
+#             Data for model to use.
+#         headers: str[]
+#             Column headers for table.
+#         parent : QWidget
+#             Parent widget.
+#         """
+#         super(ComponentsModel, self).__init__(data, headers, parent)
+#         self.components = data
+
+#     def columnCount(self, parent):
+#         """
+#         Returns the number of columns in the model.
+#         Parameters
+#         ----------
+#         parent : QWidget
+#             Parent widget.
+#         Returns
+#         -------
+#         int
+#             Number of columns in the model - this is always 1.
+#         """
+#         return 1
+    
+#     def rowCount(self, parent):
+#         return len(self.components.components)
+
+#     def headerData(self, section, orientation, role):
+#         """
+#         There are no headers, so this always returns nothing.
+#         Returns
+#         -------
+#         None
+#         """
+#         pass
+
+#     def setData(self, index, value, role):
+#         """
+#         Sets data in the model.
+#         Parameters
+#         ----------
+#         index : QModelIndex
+#             Index to set data at.
+#         value : any
+#             Value to set data to.
+#         role : int
+#             Role.
+#         """
+#         row = index.row()
+#         if role == Qt.EditRole:
+#             self.components.components[row].name = value
+
+#     def data(self, index, role):
+#         """
+#         Returns the data at a given index.
+#         Parameters
+#         ----------
+#         index : QModelIndex
+#             Index to return data from.
+#         role : int
+#             Role
+#         Returns
+#         -------
+#         float
+#             Data at given index.
+#         """
+#         row = index.row()
+#         if role == role & (Qt.DisplayRole | Qt.EditRole):
+#             return self.components.components[row].name
+
+#     def insertRow(self):
+#         """
+#         Inserts a row of data into the model.
+#         """
+#         self.beginInsertRows(
+#             QModelIndex(), self.rowCount(self), self.rowCount(self)
+#         )
+#         self.components.addComponent(Component("Component"))
+#         self.endInsertRows()
+    
+#     def component(self, index):
+#         row = index.row()
+#         return self.components.components[row]
+
+# class ComponentsList(QListView):
+
+#     def __init__(self, parent):
+#         self.sibing = None
+#         super(ComponentsList, self).__init__(parent=parent)
+
+#     def makeModel(self, components):
+#         self.components = components
+#         model = QStringListModel()
+#         model.setStringList(
+#             [c.name for c in self.components.components]
+#         )
+
+#     def setSibling(self, sibling):
+#         self.sibling = sibling
+
+#     def currentChanged(self, current, previous):
+#         if self.sibling:
+#             self.sibling.makeModel(
+#                 self.components.components[self.currentIndex().row()]
+#             )
+#         return super().currentChanged(current, previous)
+
+#     def insertRow(self):
+
+class ComponentsModel(QAbstractItemModel):
+
+    def __init__(self, parent, components):
+        super(ComponentsModel, self).__init__(parent)
+        self.components = components
+        self.persistentIndexes = {}
+    
+    def index(self, row, column, parent=QModelIndex()):
+
+        if not self.hasIndex(row, column, parent):
+            return QModelIndex()
+        elif not parent.isValid():
+            obj =  self.components.components[row]
+            col = 0
+        else:
+            obj = self.components.components[parent.row()].elements[row]
+            col = column
+        index = self.createIndex(row, col, obj)
+        self.persistentIndexes[obj] = QPersistentModelIndex(index)
+        return index
+    
+    def parent(self, index):
+        if not index.isValid():
+            return QModelIndex()
+        elif isinstance(index.internalPointer(), Component):
+            return QModelIndex()
+        elif isinstance(index.internalPointer(), Element):
+            parent = self.findParent(index.internalPointer())
+            return QModelIndex(self.persistentIndexes[parent])
+        else:
+            return QModelIndex()
+
+    def findParent(self, item):
+        for i, component in enumerate(self.components.components):
+            if item in component.elements:
+                return self.components.components[i]
+    
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+        obj = index.internalPointer()
+        if role == Qt.DisplayRole or role == Qt.EditRole:
+            if isinstance(obj, Component):
+                return index.internalPointer().name
+            elif isinstance(obj, Element):
+                if index.column() == 0:
+                    return obj.atomicSymbol
+                elif index.column() == 1:
+                    return obj.massNo
+                elif index.column() == 2:
+                    return obj.abundance
+        else:
+            return None
+    
+    def rowCount(self, parent=QModelIndex()):
+        if not parent.isValid():
+            return len(self.components.components)
+        elif parent.isValid():
+            return len(self.components.components[parent.row()].elements)
+        else:
+            return 0
+    
+    def columnCount(self, parent=QModelIndex()):
+        if not parent.isValid():
+            return 1
+        else:
+            return 3
+    
+    def flags(self, index):
+        flags = super(ComponentsModel, self).flags(index)
+        flags |= Qt.ItemIsEditable
+        return flags
+
 class ComponentsList(QListView):
 
     def __init__(self, parent):
         super(ComponentsList, self).__init__(parent=parent)
+    
+    def makeModel(self, data, sibling):
+        self.sibling = sibling
+        model = ComponentsModel(self.parent(), data)
+        self.setModel(model)
+        self.sibling.setModel(model)
+        self.sibling.setItemDelegate(CompositionDelegate())
+        self.selectionModel().selectionChanged.connect(self.handleSelectionChanged)
+        self.setCurrentIndex(
+            self.model().index(0, 0)
+        )
 
-    def pair(self, table, components):
-        self.table = table
-        self.components = components
-
-    def currentChanged(self, current, previous):
-        self.table.makeModel(self.components.components[current.row()].elements)
-        return super().currentChanged(current, previous)
+    def handleSelectionChanged(self, item):
+        if self.selectionModel().hasSelection():
+            index = item.indexes()[0]
+            self.sibling.setRootIndex(index)

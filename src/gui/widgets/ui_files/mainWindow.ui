@@ -3128,7 +3128,11 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
                    <item>
-                    <widget class="CompositionTable" name="componentCompositionTable"/>
+                    <widget class="CompositionTable" name="componentCompositionTable">
+                     <property name="selectionMode">
+                      <enum>QAbstractItemView::ExtendedSelection</enum>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
