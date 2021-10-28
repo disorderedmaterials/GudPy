@@ -1,5 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtWidgets import QComboBox
+from PySide6.QtWidgets import QComboBox, QTableView
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 
@@ -187,3 +187,68 @@ class RatioCompositionDelegate(GudPyDelegate):
                 model.setData(index, value, Qt.EditRole)
             except Exception:
                 model.setData(index, 0., Qt.EditRole)
+
+class RatioCompositionTable(QTableView):
+    """
+    Class to represent a RatioCompositionTable. Inherits QTableView.
+
+    ...
+    Attributes
+    ----------
+    parent : QWidget
+        Parent widget.
+    Methods
+    -------
+    makeModel(data)
+        Creates the model using the data.
+    insertRow()
+        Inserts a row into the model.
+    removeRow(rows)
+        Removes selected rows from the model.
+    """
+    def __init__(self, parent):
+        """
+        Constructs all the necessary attributes
+        for the CompositionTable object.
+        Calls super().__init__.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
+        self.parent = parent
+        super(RatioCompositionTable, self).__init__(parent=parent)
+
+    def makeModel(self, data):
+        """
+        Makes the model and the delegate based on the data.
+        Collects all compositions.
+        Parameters
+        ----------
+        data : list
+            Data for model to use.
+        """
+        self.setModel(
+            RatioCompositionModel(
+                data, ["Component", "Ratio"], self.parent
+            )
+        )
+        self.setItemDelegate(RatioCompositionDelegate())
+        self.farmCompositions()
+
+    def insertRow(self):
+        """
+        Inserts a row into the model.
+        """
+        self.model().insertRow()
+
+    def removeRow(self, rows):
+        """
+        Removes rows from the model.
+        Parameters
+        ----------
+        rows : QModelIndexList
+            Rows to be removed.
+        """
+        for _row in rows:
+            self.model().removeRow(_row.row())

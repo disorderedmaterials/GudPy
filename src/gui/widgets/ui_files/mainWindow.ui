@@ -3512,7 +3512,7 @@
                    <item>
                     <widget class="QTabWidget" name="tabWidget_2">
                      <property name="currentIndex">
-                      <number>0</number>
+                      <number>1</number>
                      </property>
                      <widget class="QWidget" name="tab">
                       <attribute name="title">
@@ -3615,7 +3615,7 @@
                       </attribute>
                       <layout class="QHBoxLayout" name="horizontalLayout_15">
                        <item>
-                        <widget class="QTableView" name="normalisationRatioCompositionTable"/>
+                        <widget class="RatioCompositionTable" name="normalisationRatioCompositionTable"/>
                        </item>
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_52">
@@ -6982,6 +6982,11 @@
    <class>ComponentsList</class>
    <extends>QListView</extends>
    <header>src.gui.widgets.tables.components_table</header>
+  </customwidget>
+  <customwidget>
+   <class>RatioCompositionTable</class>
+   <extends>QTableView</extends>
+   <header>src.gui.widgets.tables.ratio_composition_table</header>
   </customwidget>
  </customwidgets>
  <resources>
