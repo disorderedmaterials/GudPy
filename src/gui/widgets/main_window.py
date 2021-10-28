@@ -1,23 +1,5 @@
-from queue import Queue
 from PySide6.QtCore import QFile
-from src.gui.widgets.component_slots import ComponentSlots
-from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
-from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
-from src.gudrun_classes.wavelength_subtraction_iterator import (
-    WavelengthSubtractionIterator
-)
-from src.gudrun_classes.gud_file import GudFile
-from src.gui.widgets.gudpy_charts import (
-  GudPyChart, PlotModes, GudPyChartView
-)
-from src.gui.widgets.missing_files_dialog import MissingFilesDialog
-from src.scripts.utils import nthint
-from src.gudrun_classes.file_library import GudPyFileLibrary
-from src.gui.widgets.iteration_dialog import IterationDialog
-import sys
-from src.gudrun_classes.gudrun_file import GudrunFile
-from src.gudrun_classes.exception import ParserException
-from src.gudrun_classes import config
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
     QFileDialog,
@@ -31,26 +13,54 @@ from PySide6.QtWidgets import (
     QStatusBar,
     QWidget
 )
-from src.gui.widgets.purge_dialog import PurgeDialog
-from src.gui.widgets.view_input_dialog import ViewInputDialog
+
+from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
+from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
+from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
+from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
+
 from src.gui.widgets.gudpy_tree import GudPyTreeView
-from src.gui.widgets.gudpy_tables import ComponentsList, GroupingParameterTable
-from src.gui.widgets.gudpy_tables import BeamProfileTable
-from src.gui.widgets.gudpy_tables import ResonanceTable
-from src.gui.widgets.gudpy_tables import CompositionTable
-from src.gui.widgets.gudpy_tables import ExponentialTable
+
+from src.gui.widgets.tables.composition_table import CompositionTable
+from src.gui.widgets.tables.beam_profile_table import BeamProfileTable
+from src.gui.widgets.tables.grouping_parameter_table import GroupingParameterTable
+from src.gui.widgets.tables.exponential_table import ExponentialTable
+from src.gui.widgets.tables.resonance_table import ResonanceTable
+from src.gui.widgets.tables.components_table import ComponentsList
+
+from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
+
+from src.gui.widgets.gudpy_charts import (
+  GudPyChart, PlotModes, GudPyChartView
+)
+
 from src.gudrun_classes.enums import Geometry
-import os
-from PySide6.QtUiTools import QUiLoader
-from src.gui.widgets.beam_slots import BeamSlots
-from src.gui.widgets.container_slots import ContainerSlots
-from src.gui.widgets.instrument_slots import InstrumentSlots
-from src.gui.widgets.normalisation_slots import NormalisationSlots
-from src.gui.widgets.sample_background_slots import SampleBackgroundSlots
-from src.gui.widgets.sample_slots import SampleSlots
-import math
+from src.gui.widgets.slots.instrument_slots import InstrumentSlots
+from src.gui.widgets.slots.beam_slots import BeamSlots
+from src.gui.widgets.slots.component_slots import ComponentSlots
+from src.gui.widgets.slots.normalisation_slots import NormalisationSlots
+from src.gui.widgets.slots.container_slots import ContainerSlots
+from src.gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
+from src.gui.widgets.slots.sample_slots import SampleSlots
 from src.gui.widgets.resources import resources_rc  # noqa
+
+from src.gudrun_classes.file_library import GudPyFileLibrary
+from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.exception import ParserException
+from src.gudrun_classes import config
+from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.wavelength_subtraction_iterator import (
+    WavelengthSubtractionIterator
+)
+from src.gudrun_classes.gud_file import GudFile
+
+from src.scripts.utils import nthint
+
+import os
+import sys
+import math
 import traceback
+from queue import Queue
 
 
 class GudPyMainWindow(QMainWindow):

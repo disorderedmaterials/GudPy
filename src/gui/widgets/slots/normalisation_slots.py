@@ -696,7 +696,7 @@ class NormalisationSlots():
         """
         if not config.USE_USER_DEFINED_COMPONENTS:
             self.widget.normalisationCompositionTable.makeModel(
-                self.normalisation.composition.elements
+                self.normalisation.composition.composition
             )
         if not self.widgetsRefreshing:
             self.parent.setModified()

@@ -12,7 +12,6 @@ class ComponentSlots():
 
     def setComponents(self, components):
         self.components = components
-        # self.widget.componentList.pair(self.widget.componentCompositionTable, self.components)
         self.loadComponentsList()
 
     def setupComponentSlots(self):
@@ -23,9 +22,6 @@ class ComponentSlots():
         self.widget.useComponentsCheckBox.stateChanged.connect(self.setUseComponentDefinitions)
 
     def loadComponentsList(self):
-        component = Component("H2O")
-        component.addElement(Element("H", 0, 2.))
-        self.components.addComponent(component)
         self.widget.componentList.makeModel(self.components,self.widget.componentCompositionTable )
 
     def addSubComponent(self):
@@ -44,6 +40,6 @@ class ComponentSlots():
             self.widget.componentCompositionTable
             .currentIndex()
         )
-    
+
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = state

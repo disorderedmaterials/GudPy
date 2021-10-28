@@ -554,7 +554,7 @@ class ContainerSlots():
         """
         if not config.USE_USER_DEFINED_COMPONENTS:
             self.widget.containerCompositionTable.makeModel(
-                self.container.composition.elements
+                self.container.composition.composition
             )
 
     def handleInsertElement(self):

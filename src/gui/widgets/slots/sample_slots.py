@@ -842,7 +842,7 @@ class SampleSlots():
         """
         if not config.USE_USER_DEFINED_COMPONENTS:
             self.widget.sampleCompositionTable.makeModel(
-                self.sample.composition.elements
+                self.sample.composition.composition
             )
 
     def handleInsertElement(self):

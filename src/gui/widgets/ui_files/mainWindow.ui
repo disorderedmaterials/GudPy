@@ -6951,7 +6951,7 @@
   <customwidget>
    <class>GroupingParameterTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.grouping_parameter_table</header>
   </customwidget>
   <customwidget>
    <class>BeamProfileTable</class>
