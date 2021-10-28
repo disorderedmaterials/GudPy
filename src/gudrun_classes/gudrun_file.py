@@ -1,6 +1,6 @@
 from PySide6.QtCore import QProcess
 from src.gudrun_classes.exception import ParserException
-from src.gudrun_classes.components import Components
+from src.gudrun_classes.composition import Components
 import sys
 import os
 from os.path import isfile
@@ -23,7 +23,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
-from src.gudrun_classes.components import Composition
+from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
@@ -678,7 +678,6 @@ class GudrunFile:
                     "Whilst parsing Normalisation, an exception occured."
                     " The input file is most likely of an incorrect format, "
                     "and some attributes were missing."
-                    f"{str(e)}"
             ) from e
 
     def parseSampleBackground(self):

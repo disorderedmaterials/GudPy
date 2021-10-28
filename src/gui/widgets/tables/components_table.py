@@ -2,7 +2,7 @@ from PySide6.QtCore import (
     QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
 )
 from PySide6.QtWidgets import QListView
-from src.gudrun_classes.components import Component
+from src.gudrun_classes.composition import Component
 from src.gudrun_classes.element import Element
 from src.gui.widgets.tables.composition_table import CompositionDelegate
 

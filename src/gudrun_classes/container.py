@@ -64,7 +64,7 @@ class Container:
         self.name = ""
         self.periodNumber = 0
         self.dataFiles = DataFiles([], "CONTAINER")
-        self.composition = Composition([], "CONTAINER")
+        self.composition = Composition("CONTAINER")
         self.geometry = Geometry.SameAsBeam
         self.upstreamThickness = 0.0
         self.downstreamThickness = 0.0

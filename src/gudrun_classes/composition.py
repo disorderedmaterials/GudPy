@@ -1,61 +1,82 @@
-from enum import Enum
-from src.gudrun_classes.components import Components
+from src.gudrun_classes.element import Element
 
 
-class CompositionType(Enum):
-    EXACT = 0
-    RATIOD = 1
+class Component():
+
+    def __init__(self, name):
+        self.elements = []
+        self.name = name
+
+    def addElement(self, element):
+        self.elements.append(element)
 
 
-class Composition:
-    """
-    Class to represent an Atomic Composition.
+class Components():
 
-    ...
+    def __init__(self):
+        self.components = []
 
-    Attributes
-    ----------
-    composition : list
-        List of Element/Component objects present in the composition.
-    type_ : str
-        Type of composition e.g. Sample.
-    Methods
-    -------
-    """
-    def __init__(self, composition, type_):
-        """
-        Constructs all the necessary attributes for the Composition object.
+    def addComponent(self, component):
+        self.components.append(component)
 
-        Parameters
-        ----------
-        None
-        """
-        self.composition = composition
+
+class WeightedComponent():
+
+    def __init__(self, component, ratio):
+        self.component = component
+        self.ratio = ratio
+
+    def translate(self):
+        elements = []
+        for element in self.component.elements:
+            abundance = self.ratio * element.abundance
+            elements.append(
+                Element(
+                    element.atomicSymbol, element.massNo, abundance
+                )
+            )
+        return elements
+
+
+class Composition():
+
+    def __init__(self, type_):
         self.type_ = type_
+        self.elements = []
+        self.weightedComponents = []
 
-        # Create an auxilliary list for storing strings
-        if isinstance(self.composition, Components):
-            self.str = [
-                str(c) + "        " + type_ + " atomic composition"
-                for c in self.composition.components
-            ]
-        else:
-            self.str = [
-                str(c) + "        " + type_ + " atomic composition"
-                for c in self.composition
-            ]
+    def addComponent(self, component, ratio):
+        self.weightedComponents.append(
+            WeightedComponent(component, ratio)
+        )
+
+    def addElement(self, element):
+        self.elements.append(element)
+
+    def addElements(self, elements):
+        self.elements.extend(elements)
+
+    def translate(self):
+        elements = []
+        self.elements = []
+        for component in self.weightedComponents:
+            elements.extend(component.translate())
+        self.sumAndMutate(elements)
+
+    def sumAndMutate(self, elements):
+        for element in elements:
+            exists = False
+            for element_ in self.elements:
+                if element.atomicSymbol == element_.atomicSymbol:
+                    element_.abundance += element.abundance
+                    exists = True
+            if not exists:
+                self.elements.append(element)
 
     def __str__(self):
-        """
-        Returns the string representation of the Composition object.
+        string = [
+            str(c) + "        " + self.type_ + " atomic composition"
+            for c in self.elements
+        ]
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        string : str
-            String representation of Composition.
-        """
-        return "\n".join(self.str) if len(self.str) > 0 else ""
+        return "\n".join(string) if len(string) else ""

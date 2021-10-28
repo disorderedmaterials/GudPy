@@ -1,6 +1,6 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtWidgets import QComboBox, QTableView
-from src.gudrun_classes.components import WeightedComponent
+from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 

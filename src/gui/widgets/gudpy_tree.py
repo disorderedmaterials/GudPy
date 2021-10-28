@@ -6,7 +6,7 @@ from PySide6.QtCore import (
     QPersistentModelIndex,
     Qt
 )
-from src.gudrun_classes.components import Components
+from src.gudrun_classes.composition import Components
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
