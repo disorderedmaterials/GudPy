@@ -227,7 +227,7 @@ class TestGudrunClasses(TestCase):
         composition = Composition([], "test")
 
         self.assertIsInstance(composition, Composition)
-        self.assertIsInstance(composition.elements, list)
+        self.assertIsInstance(composition.composition, list)
         self.assertIsInstance(composition.type_, str)
         self.assertIsInstance(composition.str, list)
 
