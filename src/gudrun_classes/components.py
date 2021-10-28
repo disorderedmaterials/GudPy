@@ -1,5 +1,3 @@
-
-
 from src.gudrun_classes.element import Element
 
 
@@ -8,17 +6,19 @@ class Component():
     def __init__(self, name):
         self.elements = []
         self.name = name
-    
+
     def addElement(self, element):
         self.elements.append(element)
 
+
 class Components():
-    
+
     def __init__(self):
         self.components = []
-    
+
     def addComponent(self, component):
         self.components.append(component)
+
 
 class WeightedComponent():
 
@@ -30,8 +30,13 @@ class WeightedComponent():
         elements = []
         for element in self.component.elements:
             abundance = self.ratio * element.abundance
-            elements.append(Element(element.atomicSymbol, element.massNo, abundance))
+            elements.append(
+                Element(
+                    element.atomicSymbol, element.massNo, abundance
+                )
+            )
         return elements
+
 
 class Composition():
 
@@ -39,18 +44,18 @@ class Composition():
         self.type_ = type_
         self.elements = []
         self.weightedComponents = []
-    
+
     def addComponent(self, component, ratio):
         self.weightedComponents.append(
             WeightedComponent(component, ratio)
         )
-    
+
     def addElement(self, element):
         self.elements.append(element)
-    
+
     def addElements(self, elements):
         self.elements.extend(elements)
-    
+
     def translate(self):
         elements = []
         self.elements = []
