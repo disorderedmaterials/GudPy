@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView, QSpinBox, QDoubleSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 
+
 class GroupingParameterModel(GudPyTableModel):
     """
     Class to represent a GroupingParameterModel. Inherits GudPyTableModel.

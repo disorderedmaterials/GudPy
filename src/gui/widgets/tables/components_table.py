@@ -1,8 +1,11 @@
-from PySide6.QtCore import QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
+from PySide6.QtCore import (
+    QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
+)
 from PySide6.QtWidgets import QListView
 from src.gudrun_classes.components import Component
 from src.gudrun_classes.element import Element
 from src.gui.widgets.tables.composition_table import CompositionDelegate
+
 
 class ComponentsModel(QAbstractItemModel):
 
@@ -10,13 +13,13 @@ class ComponentsModel(QAbstractItemModel):
         super(ComponentsModel, self).__init__(parent)
         self.components = components
         self.persistentIndexes = {}
-    
+
     def index(self, row, column, parent=QModelIndex()):
 
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
         elif not parent.isValid():
-            obj =  self.components.components[row]
+            obj = self.components.components[row]
             col = 0
         else:
             obj = self.components.components[parent.row()].elements[row]
@@ -24,7 +27,7 @@ class ComponentsModel(QAbstractItemModel):
         index = self.createIndex(row, col, obj)
         self.persistentIndexes[obj] = QPersistentModelIndex(index)
         return index
-    
+
     def parent(self, index):
         if not index.isValid():
             return QModelIndex()
@@ -49,11 +52,17 @@ class ComponentsModel(QAbstractItemModel):
                 self.components.components[index.row()].name = value
             else:
                 if index.column() == 0:
-                    self.components.components[index.parent().row()].elements[index.row()].atomicSymbol = value
+                    self.components.components[
+                        index.parent().row()
+                    ].elements[index.row()].atomicSymbol = value
                 elif index.column() == 1:
-                    self.components.components[index.parent().row()].elements[index.row()].massNo = value  
+                    self.components.components[
+                        index.parent().row()
+                    ].elements[index.row()].massNo = value
                 elif index.column() == 2:
-                    self.components.components[index.parent().row()].elements[index.row()].abundance = value
+                    self.components.components[
+                        index.parent().row()
+                    ].elements[index.row()].abundance = value
             return True
 
     def data(self, index, role):
@@ -72,7 +81,7 @@ class ComponentsModel(QAbstractItemModel):
                     return obj.abundance
         else:
             return None
-    
+
     def rowCount(self, parent=QModelIndex()):
         if not parent.isValid():
             return len(self.components.components)
@@ -83,13 +92,13 @@ class ComponentsModel(QAbstractItemModel):
                 return 0
         else:
             return 0
-    
+
     def columnCount(self, parent=QModelIndex()):
         if not parent.isValid():
             return 1
         else:
             return 3
-    
+
     def flags(self, index):
         flags = super(ComponentsModel, self).flags(index)
         flags |= Qt.ItemIsEditable
@@ -117,7 +126,7 @@ class ComponentsModel(QAbstractItemModel):
             remove = self.components.components[parent.row()].elements.remove
         else:
             return False
-        
+
         invalidated = []
         if isinstance(obj, Element):
             for otherObj in self.persistentIndexes.keys():
@@ -140,18 +149,21 @@ class ComponentsModel(QAbstractItemModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return ["Atomic Symbol", "Mass No.", "Abundance"][section]
 
+
 class ComponentsList(QListView):
 
     def __init__(self, parent):
         super(ComponentsList, self).__init__(parent=parent)
-    
+
     def makeModel(self, data, sibling):
         self.sibling = sibling
         model = ComponentsModel(self.parent(), data)
         self.setModel(model)
         self.sibling.setModel(model)
         self.sibling.setItemDelegate(CompositionDelegate())
-        self.selectionModel().selectionChanged.connect(self.handleSelectionChanged)
+        self.selectionModel().selectionChanged.connect(
+            self.handleSelectionChanged
+        )
         self.setCurrentIndex(
             self.model().index(0, 0)
         )

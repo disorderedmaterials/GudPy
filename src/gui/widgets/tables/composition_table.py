@@ -1,9 +1,13 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QCursor
-from PySide6.QtWidgets import QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView, QWidgetAction
+from PySide6.QtWidgets import (
+    QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView, QWidgetAction
+)
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
+
+
 class CompositionModel(GudPyTableModel):
     """
     Class to represent a CompositionModel. Inherits GudPyTableModel.
