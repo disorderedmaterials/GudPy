@@ -42,4 +42,5 @@ class ComponentSlots():
         )
 
     def setUseComponentDefinitions(self, state):
-        config.USE_USER_DEFINED_COMPONENTS = state
+        config.USE_USER_DEFINED_COMPONENTS = bool(state)
+        self.parent.normalisationSlots.updateCompositionTable()

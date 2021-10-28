@@ -23,7 +23,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
-from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.components import Composition
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
@@ -584,8 +584,9 @@ class GudrunFile:
 
             # Create a Composition object from the dataFiles list constructed.
             self.normalisation.composition = (
-                Composition(composition, "Normalisation")
+                Composition("Normalisation")
             )
+            self.normalisation.composition.addElements(composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is
@@ -792,7 +793,8 @@ class GudrunFile:
                 line = self.getNextToken()
 
             # Create a Composition object from the dataFiles list constructed.
-            sample.composition = Composition(composition, "Sample")
+            sample.composition = Composition("Sample")
+            sample.composition.addElements(composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is
@@ -978,7 +980,8 @@ class GudrunFile:
                 composition.append(Element(atomicSymbol, massNo, abundance))
                 line = self.getNextToken()
             # Create a Composition object from the dataFiles list constructed.
-            container.composition = Composition(composition, "Container")
+            container.composition = Composition("Container")
+            container.composition.addElements(composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is

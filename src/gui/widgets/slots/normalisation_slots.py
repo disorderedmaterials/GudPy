@@ -215,6 +215,14 @@ class NormalisationSlots():
             self.handleRemoveElement
         )
 
+        self.widget.insertNormalisationComponentButton.clicked.connect(
+            self.handleInsertComponent
+        )
+
+        self.widget.removeNormalisationComponentButton.clicked.connect(
+            self.handleRemoveComponent
+        )
+
     def handlePeriodNoChanged(self, value):
         """
         Slot for handling change in the period number.
@@ -694,12 +702,32 @@ class NormalisationSlots():
         """
         Fills the composition list.
         """
-        if not config.USE_USER_DEFINED_COMPONENTS:
-            self.widget.normalisationCompositionTable.makeModel(
-                self.normalisation.composition.composition
+        if config.USE_USER_DEFINED_COMPONENTS:
+            self.updateRatioCompositions()
+            self.widget.exactCompositionTab.setEnabled(False)
+            self.widget.ratioCompositionTab.setEnabled(True)
+            self.widget.normalisationCompositionTabs.setCurrentIndex(1)
+            self.widget.normalisationRatioCompositionTable.model().dataChanged.connect(
+                self.updateExactCompositions
             )
+        else:
+            self.updateExactCompositions()
+            self.widget.exactCompositionTab.setEnabled(True)
+            self.widget.ratioCompositionTab.setEnabled(False)
+            self.widget.normalisationCompositionTabs.setCurrentIndex(0)
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def updateRatioCompositions(self):
+        self.widget.normalisationRatioCompositionTable.makeModel(
+            self.normalisation.composition, self.parent.gudrunFile
+        )
+
+    def updateExactCompositions(self):
+        self.widget.normalisationCompositionTable.makeModel(
+            self.normalisation.composition.elements
+        )
+
 
     def handleInsertElement(self):
         """
@@ -713,12 +741,25 @@ class NormalisationSlots():
 
     def handleRemoveElement(self):
         """
-        Slot for removing files from the data files list.
+        Slot for removing elements from the composition table.
         Called when a clicked signal is emitted,
-        from the removeDataFileButton.
+        from the removeElementButton.
         """
         self.widget.normalisationCompositionTable.removeRow(
             self.widget.normalisationCompositionTable
+            .selectionModel().selectedRows()
+        )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleInsertComponent(self):
+        self.widget.normalisationRatioCompositionTable.insertRow()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+    
+    def handleRemoveComponent(self):
+        self.widget.normalisationRatioCompositionTable.removeRow(
+            self.widget.normalisationRatioCompositionTable
             .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:

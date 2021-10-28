@@ -3510,11 +3510,11 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_13">
                    <item>
-                    <widget class="QTabWidget" name="tabWidget_2">
+                    <widget class="QTabWidget" name="normalisationCompositionTabs">
                      <property name="currentIndex">
                       <number>1</number>
                      </property>
-                     <widget class="QWidget" name="tab">
+                     <widget class="QWidget" name="exactCompositionTab">
                       <attribute name="title">
                        <string>Exact Composition</string>
                       </attribute>
@@ -3609,7 +3609,7 @@
                        </item>
                       </layout>
                      </widget>
-                     <widget class="QWidget" name="tab_2">
+                     <widget class="QWidget" name="ratioCompositionTab">
                       <attribute name="title">
                        <string>Ratio Composition</string>
                       </attribute>

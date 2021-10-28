@@ -1,5 +1,6 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtWidgets import QComboBox, QTableView
+from src.gudrun_classes.components import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 
@@ -34,8 +35,12 @@ class RatioCompositionModel(GudPyTableModel):
         parent : QWidget
             Parent widget.
         """
-        super(RatioCompositionModel, self).__init__(data, headers, parent)
-        
+        super(RatioCompositionModel, self).__init__(data.weightedComponents, headers, parent)
+        self.composition = data
+
+    def rowCount(self, parent):
+        return len(self._data)
+
     def columnCount(self, parent):
         """
         Returns the number of columns in the model.
@@ -66,10 +71,12 @@ class RatioCompositionModel(GudPyTableModel):
         col = index.column()
         if role == Qt.EditRole:
             if  col == 0:
-                self._data.components[row].component = value
+                self._data[row].component = value
             elif col == 1:
-                self._data.components[row].ratio = value
-    
+                self._data[row].ratio = value
+            self.composition.translate()
+            self.dataChanged.emit(index, index)
+
     def insertRow(self, weightedComponent):
         """
         Inserts a row of data into the model.
@@ -77,7 +84,7 @@ class RatioCompositionModel(GudPyTableModel):
         self.beginInsertRows(
             QModelIndex(), self.rowCount(self), self.rowCount(self)
         )
-        self._data.components.append(
+        self._data.append(
             weightedComponent
         )
         self.endInsertRows()
@@ -101,9 +108,9 @@ class RatioCompositionModel(GudPyTableModel):
         col = index.column()
         if role == role & (Qt.DisplayRole | Qt.EditRole):
             if col == 0:
-                return self._data.components[row].component.name
+                return self._data[row].component.name
             elif col == 1:
-                return self._data.components[row].component.ratio
+                return self._data[row].ratio
 
 class RatioCompositionDelegate(GudPyDelegate):
     """
@@ -144,7 +151,7 @@ class RatioCompositionDelegate(GudPyDelegate):
         col = index.column()
         if col == 0:
             editor = QComboBox(parent)
-            for component in self.gudrunFile.components:
+            for component in self.gudrunFile.components.components:
                 editor.addItem(component.name, component)
         elif col == 1:
             editor = ExponentialSpinBox(parent)
@@ -162,9 +169,7 @@ class RatioCompositionDelegate(GudPyDelegate):
         """
         value = index.model().data(index, Qt.EditRole)
         if value:
-            if index.column() == 0:
-                editor.setCurrentIndex(str(value))
-            else:
+            if index.column() == 1:
                 editor.setValue(value)
 
     def setModelData(self, editor, model, index):
@@ -219,7 +224,7 @@ class RatioCompositionTable(QTableView):
         self.parent = parent
         super(RatioCompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, data, gudrunFile):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -228,19 +233,20 @@ class RatioCompositionTable(QTableView):
         data : list
             Data for model to use.
         """
+        self.gudrunFile = gudrunFile
         self.setModel(
             RatioCompositionModel(
                 data, ["Component", "Ratio"], self.parent
             )
         )
-        self.setItemDelegate(RatioCompositionDelegate())
-        self.farmCompositions()
+        self.setItemDelegate(RatioCompositionDelegate(self.parent, self.gudrunFile))
 
     def insertRow(self):
         """
         Inserts a row into the model.
         """
-        self.model().insertRow()
+        if len(self.gudrunFile.components.components):
+            self.model().insertRow(WeightedComponent(self.gudrunFile.components.components[0], 0.))
 
     def removeRow(self, rows):
         """
