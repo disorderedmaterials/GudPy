@@ -815,22 +815,16 @@ class GudPyMainWindow(QMainWindow):
         stepSize = math.ceil(100/(numGroups*3)) if numGroups else 0
         progress = stepSize * stdout.count("Grp")
         if "Total run time" in stdout:
-            return nthint(stdout, 0), True
+            return 100, True, nthint(stdout, 0)
         elif "Error" in stdout or "error" in stdout or "not found" in stdout:
             self.error = stdout
-            return -1, False
+            return -1, False, -1
         else:
-            return progress, False
+            return progress, False, -1
 
     def progressPurge(self):
-        progress, finished = self.progressIncrementPurge()
-        if finished:
-            detectors = progress
-            QMessageBox.warning(
-                self.mainWidget, "GudPy Warning",
-                f"{detectors} detectors made it through the purge."
-            )
-        elif progress == -1:
+        progress, finished, detectors = self.progressIncrementPurge()
+        if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
@@ -839,11 +833,16 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.purged = False
             self.procFinished()
             self.queue = Queue()
-        else:
-            progress += self.mainWidget.progressBar.value()
-            self.mainWidget.progressBar.setValue(
-                progress if progress <= 100 else 100
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+        if finished:
+            QMessageBox.warning(
+                self.mainWidget, "GudPy Warning",
+                f"{detectors} detectors made it through the purge."
             )
+
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
