@@ -1,5 +1,4 @@
 from src.gudrun_classes import config
-from src.gudrun_classes.components import Component, Components
 from src.gudrun_classes.element import Element
 
 class ComponentSlots():
@@ -44,3 +43,5 @@ class ComponentSlots():
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
         self.parent.normalisationSlots.updateCompositionTable()
+        self.parent.sampleSlots.updateCompositionTable()
+        self.parent.containerSlots.updateCompositionTable()

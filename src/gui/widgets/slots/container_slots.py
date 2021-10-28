@@ -561,6 +561,7 @@ class ContainerSlots():
         Fills the composition list.
         """
         if config.USE_USER_DEFINED_COMPONENTS:
+            self.widget.containerCompositionTable.setModel(None)
             self.updateRatioCompositions()
             self.widget.containerExactCompositionTab.setEnabled(False)
             self.widget.containerRatioCompositionTab.setEnabled(True)
