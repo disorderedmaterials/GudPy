@@ -12,6 +12,14 @@ class Component():
     def addElement(self, element):
         self.elements.append(element)
 
+class Components():
+    
+    def __init__(self):
+        self.components = []
+    
+    def addComponent(self, component):
+        self.components.append(component)
+
 class WeightedComponent():
 
     def __init__(self, component, ratio):
@@ -60,3 +68,10 @@ class Composition():
             if not exists:
                 self.elements.append(element)
 
+    def __str__(self):
+        string = [
+            str(c) + "        " + self.type_ + " atomic composition"
+            for c in self.elements
+        ]
+
+        return "\n".join(string) if len(string) else ""
