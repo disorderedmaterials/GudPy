@@ -3521,38 +3521,14 @@
                       <layout class="QHBoxLayout" name="horizontalLayout_13">
                        <item>
                         <widget class="CompositionTable" name="normalisationCompositionTable">
-                         <property name="minimumSize">
-                          <size>
-                           <width>191</width>
-                           <height>121</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>16777215</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
                          <property name="horizontalScrollBarPolicy">
                           <enum>Qt::ScrollBarAlwaysOff</enum>
                          </property>
                          <property name="selectionBehavior">
                           <enum>QAbstractItemView::SelectRows</enum>
                          </property>
-                         <attribute name="horizontalHeaderVisible">
-                          <bool>false</bool>
-                         </attribute>
-                         <attribute name="horizontalHeaderMinimumSectionSize">
-                          <number>19</number>
-                         </attribute>
                          <attribute name="horizontalHeaderDefaultSectionSize">
-                          <number>100</number>
-                         </attribute>
-                         <attribute name="horizontalHeaderHighlightSections">
-                          <bool>true</bool>
-                         </attribute>
-                         <attribute name="verticalHeaderHighlightSections">
-                          <bool>false</bool>
+                          <number>67</number>
                          </attribute>
                         </widget>
                        </item>
@@ -4657,7 +4633,7 @@
                         <item>
                          <widget class="QTabWidget" name="sampleCompositionTabs">
                           <property name="currentIndex">
-                           <number>1</number>
+                           <number>0</number>
                           </property>
                           <widget class="QWidget" name="sampleExactCompositionTab">
                            <attribute name="title">

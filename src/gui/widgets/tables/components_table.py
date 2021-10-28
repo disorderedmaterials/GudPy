@@ -136,6 +136,10 @@ class ComponentsModel(QAbstractItemModel):
         remove(obj)
         self.endRemoveRows()
 
+    def headerData(self, section, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return ["Atomic Symbol", "Mass No.", "Abundance"][section]
+
 class ComponentsList(QListView):
 
     def __init__(self, parent):

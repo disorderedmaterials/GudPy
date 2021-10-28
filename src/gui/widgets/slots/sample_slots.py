@@ -846,16 +846,12 @@ class SampleSlots():
 
     def updateCompositionTable(self):
         """
-        Fills the composition table.
-        """
-    def updateCompositionTable(self):
-        """
         Fills the composition list.
         """
         if config.USE_USER_DEFINED_COMPONENTS:
             self.updateRatioCompositions()
-            self.widget.exactCompositionTab.setEnabled(False)
-            self.widget.ratioCompositionTab.setEnabled(True)
+            self.widget.sampleExactCompositionTab.setEnabled(False)
+            self.widget.sampleRatioCompositionTab.setEnabled(True)
             self.widget.sampleCompositionTabs.setCurrentIndex(1)
             self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
                 self.updateExactCompositions
