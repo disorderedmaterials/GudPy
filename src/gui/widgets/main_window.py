@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QStatusBar,
     QWidget
 )
+from src.gudrun_classes.sample import Sample
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
 from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
@@ -423,7 +424,10 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
-        if self.mainWidget.objectStack.currentIndex() == 4:
+        if (
+            self.mainWidget.objectStack.currentIndex() == 4
+            and isinstance(self.mainWidget.objectTree.currentObject(), Sample)
+        ):
             try:
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
