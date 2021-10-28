@@ -425,7 +425,7 @@ class GudPyMainWindow(QMainWindow):
 
     def focusResult(self):
         if (
-            self.mainWidget.objectStack.currentIndex() == 4
+            self.mainWidget.objectStack.currentIndex() == 5
             and isinstance(self.mainWidget.objectTree.currentObject(), Sample)
         ):
             try:
