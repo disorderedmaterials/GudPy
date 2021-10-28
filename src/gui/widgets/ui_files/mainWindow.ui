@@ -6951,27 +6951,27 @@
   <customwidget>
    <class>GroupingParameterTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.grouping_parameter_table</header>
+   <header>src.gui.widgets.tables.grouping_parameter_table</header>
   </customwidget>
   <customwidget>
    <class>BeamProfileTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.tables.beam_profile_table</header>
   </customwidget>
   <customwidget>
    <class>CompositionTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.tables.composition_table</header>
   </customwidget>
   <customwidget>
    <class>ExponentialTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.tables.exponential_table</header>
   </customwidget>
   <customwidget>
    <class>ResonanceTable</class>
    <extends>QTableView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.tables.resonance_table</header>
   </customwidget>
   <customwidget>
    <class>ExponentialSpinBox</class>
@@ -6981,7 +6981,7 @@
   <customwidget>
    <class>ComponentsList</class>
    <extends>QListView</extends>
-   <header>src.gui.widgets.gudpy_tables</header>
+   <header>src.gui.widgets.tables.components_table</header>
   </customwidget>
  </customwidgets>
  <resources>
