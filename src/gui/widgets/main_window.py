@@ -811,7 +811,7 @@ class GudPyMainWindow(QMainWindow):
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as fp:
                 numGroups = nthint(fp.readlines()[0], 0)
-        
+
         stepSize = math.ceil(100/(numGroups*3)) if numGroups else 0
         progress = stepSize * stdout.count("Grp")
         if "Total run time" in stdout:
