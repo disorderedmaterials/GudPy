@@ -3512,7 +3512,7 @@
                    <item>
                     <widget class="QTabWidget" name="normalisationCompositionTabs">
                      <property name="currentIndex">
-                      <number>1</number>
+                      <number>0</number>
                      </property>
                      <widget class="QWidget" name="exactCompositionTab">
                       <attribute name="title">
@@ -4655,72 +4655,153 @@
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_26">
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_55">
-                          <item>
-                           <widget class="CompositionTable" name="sampleCompositionTable">
-                            <property name="horizontalScrollBarPolicy">
-                             <enum>Qt::ScrollBarAlwaysOff</enum>
-                            </property>
-                            <property name="selectionBehavior">
-                             <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <attribute name="horizontalHeaderDefaultSectionSize">
-                             <number>67</number>
-                            </attribute>
-                           </widget>
-                          </item>
-                          <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_27">
+                         <widget class="QTabWidget" name="sampleCompositionTabs">
+                          <property name="currentIndex">
+                           <number>0</number>
+                          </property>
+                          <widget class="QWidget" name="sampleExactCompositionTab">
+                           <attribute name="title">
+                            <string>Exact Composition</string>
+                           </attribute>
+                           <layout class="QHBoxLayout" name="horizontalLayout_16">
                             <item>
-                             <widget class="QToolButton" name="insertSampleElementButton">
-                              <property name="maximumSize">
-                               <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
-                               </size>
+                             <widget class="CompositionTable" name="sampleCompositionTable">
+                              <property name="horizontalScrollBarPolicy">
+                               <enum>Qt::ScrollBarAlwaysOff</enum>
                               </property>
-                              <property name="text">
-                               <string>+</string>
+                              <property name="selectionBehavior">
+                               <enum>QAbstractItemView::SelectRows</enum>
                               </property>
-                              <property name="icon">
-                               <iconset resource="../resources/resources.qrc">
-                                <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
-                              </property>
+                              <attribute name="horizontalHeaderDefaultSectionSize">
+                               <number>67</number>
+                              </attribute>
                              </widget>
                             </item>
                             <item>
-                             <widget class="QToolButton" name="removeSampleElementButton">
-                              <property name="maximumSize">
-                               <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>-</string>
-                              </property>
-                              <property name="icon">
-                               <iconset resource="../resources/resources.qrc">
-                                <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <spacer name="verticalSpacer_11">
-                              <property name="orientation">
-                               <enum>Qt::Vertical</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>20</width>
-                                <height>40</height>
-                               </size>
-                              </property>
-                             </spacer>
+                             <layout class="QVBoxLayout" name="verticalLayout_27">
+                              <item>
+                               <widget class="QToolButton" name="insertSampleElementButton">
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>16777215</width>
+                                  <height>16777215</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string>+</string>
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="../resources/resources.qrc">
+                                  <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QToolButton" name="removeSampleElementButton">
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>16777215</width>
+                                  <height>16777215</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string>-</string>
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="../resources/resources.qrc">
+                                  <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <spacer name="verticalSpacer_11">
+                                <property name="orientation">
+                                 <enum>Qt::Vertical</enum>
+                                </property>
+                                <property name="sizeHint" stdset="0">
+                                 <size>
+                                  <width>20</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                               </spacer>
+                              </item>
+                             </layout>
                             </item>
                            </layout>
-                          </item>
-                         </layout>
+                          </widget>
+                          <widget class="QWidget" name="sampleRatioCompositionTab">
+                           <attribute name="title">
+                            <string>Ratio Composition</string>
+                           </attribute>
+                           <layout class="QHBoxLayout" name="horizontalLayout_17">
+                            <item>
+                             <widget class="RatioCompositionTable" name="sampleRatioCompositionTable">
+                              <property name="horizontalScrollBarPolicy">
+                               <enum>Qt::ScrollBarAlwaysOff</enum>
+                              </property>
+                              <property name="selectionBehavior">
+                               <enum>QAbstractItemView::SelectRows</enum>
+                              </property>
+                              <attribute name="horizontalHeaderDefaultSectionSize">
+                               <number>67</number>
+                              </attribute>
+                             </widget>
+                            </item>
+                            <item>
+                             <layout class="QVBoxLayout" name="verticalLayout_53">
+                              <item>
+                               <widget class="QToolButton" name="insertSampleComponentButton">
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>16777215</width>
+                                  <height>16777215</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string>+</string>
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="../resources/resources.qrc">
+                                  <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QToolButton" name="removeSampleComponentButton">
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>16777215</width>
+                                  <height>16777215</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string>-</string>
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="../resources/resources.qrc">
+                                  <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <spacer name="verticalSpacer_24">
+                                <property name="orientation">
+                                 <enum>Qt::Vertical</enum>
+                                </property>
+                                <property name="sizeHint" stdset="0">
+                                 <size>
+                                  <width>20</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                               </spacer>
+                              </item>
+                             </layout>
+                            </item>
+                           </layout>
+                          </widget>
+                         </widget>
                         </item>
                         <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_56">
