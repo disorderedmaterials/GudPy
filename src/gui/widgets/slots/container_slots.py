@@ -561,13 +561,15 @@ class ContainerSlots():
         Fills the composition list.
         """
         if config.USE_USER_DEFINED_COMPONENTS:
-            self.widget.containerCompositionTable.setModel(None)
             self.updateRatioCompositions()
             self.widget.containerExactCompositionTab.setEnabled(False)
             self.widget.containerRatioCompositionTab.setEnabled(True)
             self.widget.containerCompositionTabs.setCurrentIndex(1)
-            self.widget.containerRatioCompositionTable.model().dataChanged.connect(
-                self.updateExactCompositions
+            (
+                self.widget.containerRatioCompositionTable
+                .model().dataChanged.connect(
+                    self.updateExactCompositions
+                )
             )
         else:
             self.updateExactCompositions()
@@ -614,7 +616,7 @@ class ContainerSlots():
         self.widget.containerRatioCompositionTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
-    
+
     def handleRemoveComponent(self):
         self.widget.containerRatioCompositionTable.removeRow(
             self.widget.containerRatioCompositionTable

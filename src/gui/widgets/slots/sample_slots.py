@@ -853,8 +853,11 @@ class SampleSlots():
             self.widget.sampleExactCompositionTab.setEnabled(False)
             self.widget.sampleRatioCompositionTab.setEnabled(True)
             self.widget.sampleCompositionTabs.setCurrentIndex(1)
-            self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
-                self.updateExactCompositions
+            (
+                self.widget.sampleRatioCompositionTable
+                .model().dataChanged.connect(
+                    self.updateExactCompositions
+                )
             )
         else:
             self.updateExactCompositions()
@@ -900,7 +903,7 @@ class SampleSlots():
         self.widget.sampleRatioCompositionTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
-    
+
     def handleRemoveComponent(self):
         self.widget.sampleRatioCompositionTable.removeRow(
             self.widget.sampleRatioCompositionTable

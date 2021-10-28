@@ -707,8 +707,11 @@ class NormalisationSlots():
             self.widget.exactCompositionTab.setEnabled(False)
             self.widget.ratioCompositionTab.setEnabled(True)
             self.widget.normalisationCompositionTabs.setCurrentIndex(1)
-            self.widget.normalisationRatioCompositionTable.model().dataChanged.connect(
-                self.updateExactCompositions
+            (
+                self.widget.normalisationRatioCompositionTable
+                .model().dataChanged.connect(
+                    self.updateExactCompositions
+                )
             )
         else:
             self.updateExactCompositions()
@@ -727,7 +730,6 @@ class NormalisationSlots():
         self.widget.normalisationCompositionTable.makeModel(
             self.normalisation.composition.elements
         )
-
 
     def handleInsertElement(self):
         """
@@ -756,7 +758,7 @@ class NormalisationSlots():
         self.widget.normalisationRatioCompositionTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
-    
+
     def handleRemoveComponent(self):
         self.widget.normalisationRatioCompositionTable.removeRow(
             self.widget.normalisationRatioCompositionTable

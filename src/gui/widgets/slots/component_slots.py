@@ -1,6 +1,7 @@
 from src.gudrun_classes import config
 from src.gudrun_classes.element import Element
 
+
 class ComponentSlots():
 
     def __init__(self, widget, parent):
@@ -14,14 +15,26 @@ class ComponentSlots():
         self.loadComponentsList()
 
     def setupComponentSlots(self):
-        self.widget.addComponentButton.clicked.connect(self.widget.componentList.insertComponent)
-        self.widget.removeComponentButton.clicked.connect(self.widget.componentList.removeComponent)
-        self.widget.addSubcomponentButton.clicked.connect(self.addSubComponent)
-        self.widget.removeSubcomponentButton.clicked.connect(self.removeSubComponent)
-        self.widget.useComponentsCheckBox.stateChanged.connect(self.setUseComponentDefinitions)
+        self.widget.addComponentButton.clicked.connect(
+            self.widget.componentList.insertComponent
+        )
+        self.widget.removeComponentButton.clicked.connect(
+            self.widget.componentList.removeComponent
+        )
+        self.widget.addSubcomponentButton.clicked.connect(
+            self.addSubComponent
+        )
+        self.widget.removeSubcomponentButton.clicked.connect(
+            self.removeSubComponent
+        )
+        self.widget.useComponentsCheckBox.stateChanged.connect(
+            self.setUseComponentDefinitions
+        )
 
     def loadComponentsList(self):
-        self.widget.componentList.makeModel(self.components,self.widget.componentCompositionTable )
+        self.widget.componentList.makeModel(
+            self.components, self.widget.componentCompositionTable
+        )
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(
