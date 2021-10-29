@@ -804,16 +804,15 @@ class GudPyMainWindow(QMainWindow):
         stdout = bytes(data).decode("utf8")
 
         path = os.path.join(
-            self.gudrunFile.instrument.startupFileFolder,
+            self.gudrunFile.instrument.GudrunStartFolder,
             self.gudrunFile.instrument.groupFileName
         )
         numGroups = 0
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as fp:
                 numGroups = nthint(fp.readlines()[0], 0)
-
         stepSize = math.ceil(100/(numGroups*3)) if numGroups else 0
-        progress = stepSize * stdout.count("Grp")
+        progress = stepSize * stdout.count("Grp:")
         if "Total run time" in stdout:
             return 100, True, nthint(stdout, 0)
         elif "Error" in stdout or "error" in stdout or "not found" in stdout:
