@@ -227,6 +227,7 @@ class RatioCompositionTable(QTableView):
             Parent widget.
         """
         self.parent = parent
+        self.compositions = []
         super(RatioCompositionTable, self).__init__(parent=parent)
 
     def makeModel(self, data, gudrunFile):
@@ -249,6 +250,7 @@ class RatioCompositionTable(QTableView):
                 self.parent, self.gudrunFile
             )
         )
+        self.farmCompositions()
 
     def insertRow(self):
         """
@@ -270,6 +272,30 @@ class RatioCompositionTable(QTableView):
         for _row in rows:
             self.model().removeRow(_row.row())
 
+    def farmCompositions(self):
+        """
+        Seeks up the widget heirarchy, and then collects all compositions.
+        """
+        ancestor = self.parent
+        while not isinstance(ancestor, QMainWindow):
+            ancestor = ancestor.parent
+            if callable(ancestor):
+                ancestor = ancestor()
+        self.compositions.clear()
+        self.compositions = [
+                (
+                    "Normalisation",
+                    ancestor.gudrunFile.normalisation.composition
+                )
+            ]
+        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                self.compositions.append((sample.name, sample.composition))
+                for container in sample.containers:
+                    self.compositions.append(
+                        (container.name, container.composition)
+                    )
+
     def copyFrom(self, composition):
         """
         Create a new model from a given composition,
@@ -279,7 +305,8 @@ class RatioCompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.makeModel(composition)
+        self.makeModel(composition, self.gudrunFile)
+    
 
     def contextMenuEvent(self, event):
         """
@@ -294,6 +321,7 @@ class RatioCompositionTable(QTableView):
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
+            action.setCheckable(False)
             action.triggered.connect(
                 lambda _, comp=composition[1]: self.copyFrom(comp)
             )
