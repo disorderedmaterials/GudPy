@@ -1,5 +1,6 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtWidgets import QComboBox, QTableView
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QComboBox, QMenu, QTableView, QWidgetAction
 from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
@@ -268,3 +269,33 @@ class RatioCompositionTable(QTableView):
         """
         for _row in rows:
             self.model().removeRow(_row.row())
+
+    def copyFrom(self, composition):
+        """
+        Create a new model from a given composition,
+        and replaces the current model with it.
+        Parameters
+        ----------
+        composition : Composition
+            Composition object to copy elements from.
+        """
+        self.makeModel(composition)
+
+    def contextMenuEvent(self, event):
+        """
+        Creates context menu, so that on right clicking the table,
+        the user is able to copy compositions in.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        self.menu = QMenu(self)
+        copyMenu = self.menu.addMenu("Copy from")
+        for composition in self.compositions:
+            action = QWidgetAction(f"{composition[0]}", copyMenu)
+            action.triggered.connect(
+                lambda _, comp=composition[1]: self.copyFrom(comp)
+            )
+            copyMenu.addAction(action)
+        self.menu.popup(QCursor.pos())
