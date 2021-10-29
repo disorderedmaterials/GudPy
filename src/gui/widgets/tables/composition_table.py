@@ -1,7 +1,7 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QCursor
+from PySide6.QtGui import QCursor, QAction
 from PySide6.QtWidgets import (
-    QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView, QWidgetAction
+    QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
@@ -308,7 +308,7 @@ class CompositionTable(QTableView):
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
         for composition in self.compositions:
-            action = QWidgetAction(f"{composition[0]}", copyMenu)
+            action = QAction(f"{composition[0]}", copyMenu)
             action.triggered.connect(
                 lambda _, comp=composition[1]: self.copyFrom(comp)
             )
