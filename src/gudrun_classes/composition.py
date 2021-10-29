@@ -40,10 +40,10 @@ class WeightedComponent():
 
 class Composition():
 
-    def __init__(self, type_):
+    def __init__(self, type_, elements=[], weightedComponents=[]):
         self.type_ = type_
-        self.elements = []
-        self.weightedComponents = []
+        self.elements = elements
+        self.weightedComponents = weightedComponents
 
     def addComponent(self, component, ratio):
         self.weightedComponents.append(
