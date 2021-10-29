@@ -306,7 +306,6 @@ class RatioCompositionTable(QTableView):
             Composition object to copy elements from.
         """
         self.makeModel(composition, self.gudrunFile)
-    
 
     def contextMenuEvent(self, event):
         """
