@@ -23,9 +23,13 @@ from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
 from src.gui.widgets.tables.composition_table import CompositionTable
-from src.gui.widgets.tables.ratio_composition_table import RatioCompositionTable
+from src.gui.widgets.tables.ratio_composition_table import (
+    RatioCompositionTable
+)
 from src.gui.widgets.tables.beam_profile_table import BeamProfileTable
-from src.gui.widgets.tables.grouping_parameter_table import GroupingParameterTable
+from src.gui.widgets.tables.grouping_parameter_table import (
+    GroupingParameterTable
+)
 from src.gui.widgets.tables.exponential_table import ExponentialTable
 from src.gui.widgets.tables.resonance_table import ResonanceTable
 from src.gui.widgets.tables.components_table import ComponentsList
