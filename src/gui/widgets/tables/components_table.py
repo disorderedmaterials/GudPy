@@ -8,14 +8,78 @@ from src.gui.widgets.tables.composition_table import CompositionDelegate
 
 
 class ComponentsModel(QAbstractItemModel):
+    """
+    Class to represent a CompositionModel. Inherits QAbstractItemModel.
 
+    ...
+
+    Attributes
+    ----------
+    components : Components
+        Components object associated with model.
+    persistentIndexes : dict
+        Dict of QPersistentIndexes,
+        key is a GudPy object, value is a QPersistentIndex.
+    Methods
+    -------
+    index(row, column, parent):
+        Returns index associated with given row, column and parent.
+    parent(index)
+        Returns parent of a given index.
+    findParent(item)
+        Finds the parent of a given Element.
+    data(index, role)
+        Returns the data at a given index.
+    setData(index, value, role)
+        Sets data at a given index.
+    rowCount(parent)
+        Returns the row count of an index.
+    columnCount(parent)
+        Returns the column count of an index.
+    flags(index)
+        Returns flags associated with a given index.
+    insertRow(obj, parent)
+        Insert a row containing an object to a parent index.
+    removeRow(index)
+        Remove a row from an index.
+    """
     def __init__(self, parent, components):
+        """
+        Constructs all the necessary attributes for the ComponentsModel object.
+        Calls super()._init__ which calls the dunder init method
+        from QAbstractItemModel.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        components : Components
+            Components object to create model from.
+        """
         super(ComponentsModel, self).__init__(parent)
         self.components = components
         self.persistentIndexes = {}
 
     def index(self, row, column, parent=QModelIndex()):
-
+        """
+        Returns index associated with given row, column and parent.
+        If no such index is possible, then an invalid QModelIndex
+        is returned.
+        Creates a QPersistentModelIndex and adds it to the dict,
+        to keep the internal pointer of the QModelIndex in
+        reference.
+        Parameters
+        ----------
+        row : int
+            Row number.
+        column : int
+            Column number.
+        parent, optional: QModelIndex
+            Parent index.
+        Returns
+        -------
+        QModelIndex
+            The index created.
+        """
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
         elif not parent.isValid():
@@ -29,6 +93,20 @@ class ComponentsModel(QAbstractItemModel):
         return index
 
     def parent(self, index):
+        """
+        Returns parent of a given index.
+        If the index is invalid, then an invalid QModelIndex is returned.
+        Parent is decided on by checking the data type of the internal pointer
+        of the index.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to find parent index of.
+        Returns
+        -------
+        QModelIndex
+            Parent index.
+        """
         if not index.isValid():
             return QModelIndex()
         elif isinstance(index.internalPointer(), Component):
@@ -40,11 +118,38 @@ class ComponentsModel(QAbstractItemModel):
             return QModelIndex()
 
     def findParent(self, item):
+        """
+        Finds the parent of a given Element.
+        Parameters
+        ----------
+        item : Element
+            Object to find parent of.
+        Returns
+        -------
+        Component
+            Parent object.
+        """
         for i, component in enumerate(self.components.components):
             if item in component.elements:
                 return self.components.components[i]
 
     def setData(self, index, value, role):
+        """
+        Sets data at a given index, if the index is valid.
+        Only used for assigning CheckStates to samples.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to set data at.
+        value : QVariant
+            Value to assign to data.
+        role : int
+            Role.
+        Returns
+        -------
+        bool
+            Success / Failure.
+        """
         if not index.isValid():
             return False
         elif role == Qt.EditRole:
@@ -66,6 +171,24 @@ class ComponentsModel(QAbstractItemModel):
             return True
 
     def data(self, index, role):
+        """
+        Returns the data at a given index.
+        If the index is invalid, or the role is not
+        Qt.EditRole | Qt.DisplayRole, then an empty
+        QVariant is returned.
+        Otherwise returns check state of index, or a QVariant constructed
+        from its name.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to extract data from.
+        role : int
+            Role.
+        Returns
+        -------
+        QVariant | QCheckState
+            Data at index.
+        """
         if not index.isValid():
             return None
         obj = index.internalPointer()
@@ -83,6 +206,18 @@ class ComponentsModel(QAbstractItemModel):
             return None
 
     def rowCount(self, parent=QModelIndex()):
+        """
+        Returns the row count of a given parent index.
+        The row count returned depends on the data type of the parent.
+        Parameters
+        ----------
+        parent : QModelIndex
+            Parent index to retrieve row count from.
+        Returns
+        -------
+        int
+            Row count.
+        """
         if not parent.isValid():
             return len(self.components.components)
         elif parent.isValid():
@@ -94,17 +229,48 @@ class ComponentsModel(QAbstractItemModel):
             return 0
 
     def columnCount(self, parent=QModelIndex()):
+        """
+        Returns the column count of an index.
+        Parameters
+        ----------
+        parent : QModelIndex
+            Parent index to retrieve column row count from.
+        Returns
+        -------
+        int
+            Column count. This is always 1.
+        """
         if not parent.isValid():
             return 1
         else:
             return 3
 
     def flags(self, index):
+        """
+        Returns flags associated with a given index.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to retreive flags from.
+        Returns
+        -------
+        int
+            Flags.
+        """
         flags = super(ComponentsModel, self).flags(index)
         flags |= Qt.ItemIsEditable
         return flags
 
     def insertRow(self, obj, parent):
+        """
+        Insert a row containing an object to a parent index.
+        Parameters
+        ----------
+        obj : Component | Element
+            Object to be inserted.
+        parent : QModelIndex
+            Parent index to append to.
+        """
         parentObj = parent.internalPointer()
         if isinstance(parentObj, Component):
             setter = self.components.components[parent.row()].addElement
@@ -117,6 +283,13 @@ class ComponentsModel(QAbstractItemModel):
         return self.index(start, 0, parent)
 
     def removeRow(self, index):
+        """
+        Remove a row from an index.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to remove.
+        """
         parent = index.parent()
         obj = index.internalPointer()
 
@@ -146,16 +319,66 @@ class ComponentsModel(QAbstractItemModel):
         self.endRemoveRows()
 
     def headerData(self, section, orientation, role):
+        """
+        Returns the column header for a given section.
+        Parameters
+        ----------
+        section : int
+            Column index.
+        orientation : int
+            Type of orientation (Horizontal/Vertical)
+        role : int
+            Role
+        Returns
+        -------
+        str | QVariant
+            column header | empty QVariant.
+        """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return ["Atomic Symbol", "Mass No.", "Abundance"][section]
 
 
 class ComponentsList(QListView):
+    """
+    Class to represent a ComponentsList. Inherits QTableView.
 
+    ...
+    Attributes
+    ----------
+    sibling : QTableView
+        Sibling table.
+    Methods
+    -------
+    makeModel(data)
+        Creates the model using the data.
+    handleSelectionChanged(item)
+        Handles change in selection in the model.
+    insertComponent()
+        Inserts a row into the model.
+    removeComponent(rows)
+        Removes selected rows from the model.
+    """
     def __init__(self, parent):
+        """
+        Constructs all the necessary attributes
+        for the ComponentsList object.
+        Calls super().__init__.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent widget.
+        """
         super(ComponentsList, self).__init__(parent=parent)
 
     def makeModel(self, data, sibling):
+        """
+        Makes the model and the delegate based on the data.
+        Collects all compositions.
+        Parameters
+        ----------
+        data : list
+            Data for model to use.
+        """
         self.sibling = sibling
         model = ComponentsModel(self.parent(), data)
         self.setModel(model)
@@ -169,13 +392,22 @@ class ComponentsList(QListView):
         )
 
     def handleSelectionChanged(self, item):
+        """
+        Handles selection change in the model.
+        """
         if self.selectionModel().hasSelection():
             index = item.indexes()[0]
             self.sibling.setRootIndex(index)
 
     def insertComponent(self):
+        """
+        Inserts a row into the model.
+        """
         new = self.model().insertRow(Component("Component"), QModelIndex())
         self.setCurrentIndex(new)
 
     def removeComponent(self):
+        """
+        Removes rows from the model.
+        """
         self.model().removeRow(self.currentIndex())
