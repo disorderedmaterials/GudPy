@@ -327,7 +327,7 @@ class TestGudPyIO(TestCase):
         self.expectedSampleA["composition"].elements = [
             Element("H", 0, 2.0),
             Element("O", 0, 1.0)
-        ] 
+        ]
 
         self.expectedSampleB = {
             "name": "D2O, Can N10",
