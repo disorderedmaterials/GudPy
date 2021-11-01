@@ -1,5 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QCursor, QAction
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
@@ -210,8 +210,10 @@ class CompositionTable(QTableView):
         Collect compositions from normalisation, all samples and containers.
     copyFrom(composition)
         Create a new model from a given composition.
-    contextMenuEvent(event)
+    showContextMenu(event)
         Creates context menu.
+    mousePressEvent(event)
+        Handles mouse presses.
     """
     def __init__(self, parent):
         """
@@ -296,7 +298,7 @@ class CompositionTable(QTableView):
         """
         self.makeModel(composition.elements)
 
-    def contextMenuEvent(self, event):
+    def showContextMenu(self, event):
         """
         Creates context menu, so that on right clicking the table,
         the user is able to copy compositions in.
@@ -305,12 +307,20 @@ class CompositionTable(QTableView):
         event : QMouseEvent
             The event that triggers the context menu.
         """
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
+        actionMap = {}
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
-            action.triggered.connect(
-                lambda _, comp=composition[1]: self.copyFrom(comp)
-            )
             copyMenu.addAction(action)
-        self.menu.popup(QCursor.pos())
+            actionMap[action] = composition[1]
+        action = self.menu.exec(self.mapToGlobal(event.pos()))
+        self.copyFrom(actionMap[action])
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            self.showContextMenu(event)
+            event.accept()
+        else:
+            return super().mousePressEvent(event)

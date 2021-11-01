@@ -1,5 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QCursor, QAction
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
 from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
@@ -215,6 +215,14 @@ class RatioCompositionTable(QTableView):
         Inserts a row into the model.
     removeRow(rows)
         Removes selected rows from the model.
+    farmCompositions()
+        Collect compositions from normalisation, all samples and containers.
+    copyFrom(composition)
+        Create a new model from a given composition.
+    showContextMenu(event)
+        Creates context menu.
+    mousePressEvent(event)
+        Handles mouse presses.
     """
     def __init__(self, parent):
         """
@@ -307,7 +315,7 @@ class RatioCompositionTable(QTableView):
         """
         self.makeModel(composition, self.gudrunFile)
 
-    def contextMenuEvent(self, event):
+    def showContextMenu(self, event):
         """
         Creates context menu, so that on right clicking the table,
         the user is able to copy compositions in.
@@ -316,13 +324,20 @@ class RatioCompositionTable(QTableView):
         event : QMouseEvent
             The event that triggers the context menu.
         """
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
+        actionMap = {}
         for composition in self.compositions:
             action = QAction(f"{composition[0]}", copyMenu)
-            action.setCheckable(False)
-            action.triggered.connect(
-                lambda _, comp=composition[1]: self.copyFrom(comp)
-            )
             copyMenu.addAction(action)
-        self.menu.popup(QCursor.pos())
+            actionMap[action] = composition[1]
+        action = self.menu.exec(event.pos())
+        self.copyFrom(actionMap[action])
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            self.showContextMenu(event)
+            event.accept()
+        else:
+            return super().mousePressEvent(event)
