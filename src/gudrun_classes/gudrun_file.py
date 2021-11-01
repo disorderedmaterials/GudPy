@@ -584,9 +584,8 @@ class GudrunFile:
 
             # Create a Composition object from the dataFiles list constructed.
             self.normalisation.composition = (
-                Composition("Normalisation")
+                Composition("Normalisation", elements=composition)
             )
-            self.normalisation.composition.addElements(composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is
@@ -793,8 +792,7 @@ class GudrunFile:
                 line = self.getNextToken()
 
             # Create a Composition object from the dataFiles list constructed.
-            sample.composition = Composition("Sample")
-            sample.composition.addElements(composition)
+            sample.composition = Composition("Sample", elements=composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is
@@ -980,8 +978,7 @@ class GudrunFile:
                 composition.append(Element(atomicSymbol, massNo, abundance))
                 line = self.getNextToken()
             # Create a Composition object from the dataFiles list constructed.
-            container.composition = Composition("Container")
-            container.composition.addElements(composition)
+            container.composition = Composition("Container", elements=composition)
 
             # For enumerated attributes,
             # where the member name of the attribute is
