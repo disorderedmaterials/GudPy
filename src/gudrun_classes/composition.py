@@ -74,9 +74,8 @@ class Composition():
                 self.elements.append(element)
 
     def __str__(self):
-        string = [
-            str(c) + "        " + self.type_ + " atomic composition"
-            for c in self.elements
-        ]
+        string = ""
+        for el in self.elements:
+            string+=str(el) + "        " + self.type_ + " atomic composition\n"
 
-        return "\n".join(string) if len(string) else ""
+        return string.rstrip()
