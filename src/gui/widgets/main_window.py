@@ -802,22 +802,30 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        dataFiles = []
 
-        path = os.path.join(
-            self.gudrunFile.instrument.GudrunStartFolder,
-            self.gudrunFile.instrument.groupFileName
-        )
-        numGroups = 0
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as fp:
-                numGroups = nthint(fp.readlines()[0], 0)
-        stepSize = math.ceil(100/(numGroups*3)) if numGroups else 0
-        progress = stepSize * stdout.count("Grp:")
-        if "Total run time" in stdout:
-            return 100, True, nthint(stdout, 0)
-        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
+        def appendDfs(dfs):
+            for df in dfs.splitlines():
+                dataFiles.append(df.split()[0].replace(
+                    self.gudrunFile.instrument.dataFileType, "grp")
+                )
+
+        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles)
+        appendDfs(self.gudrunFile.purgeFile.sampleBackgroundDataFiles)
+        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
+            appendDfs(self.gudrunFile.purgeFile.sampleDataFiles)
+            appendDfs(self.gudrunFile.purgeFile.containerDataFiles)
+
+        stepSize = math.ceil(100/len(dataFiles))
+        progress = 0
+        for df in dataFiles:
+            if df in stdout:
+                progress += stepSize
+        if "Error" in stdout or "error" in stdout or "not found" in stdout:
             self.error = stdout
             return -1, False, -1
+        elif dataFiles[-1] in stdout:
+            return 100, True, nthint(stdout, 0)
         else:
             return progress, False, -1
 
