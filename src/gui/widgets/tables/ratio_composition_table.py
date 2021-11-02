@@ -1,5 +1,6 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtWidgets import QComboBox, QTableView
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
 from src.gudrun_classes import config
 from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
@@ -276,3 +277,65 @@ class RatioCompositionTable(QTableView):
         """
         for _row in rows:
             self.model().removeRow(_row.row())
+
+    def farmCompositions(self):
+        """
+        Seeks up the widget heirarchy, and then collects all compositions.
+        """
+        ancestor = self.parent
+        while not isinstance(ancestor, QMainWindow):
+            ancestor = ancestor.parent
+            if callable(ancestor):
+                ancestor = ancestor()
+        self.compositions.clear()
+        self.compositions = [
+                (
+                    "Normalisation",
+                    ancestor.gudrunFile.normalisation.composition
+                )
+            ]
+        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                self.compositions.append((sample.name, sample.composition))
+                for container in sample.containers:
+                    self.compositions.append(
+                        (container.name, container.composition)
+                    )
+
+    def copyFrom(self, composition):
+        """
+        Create a new model from a given composition,
+        and replaces the current model with it.
+        Parameters
+        ----------
+        composition : Composition
+            Composition object to copy elements from.
+        """
+        self.makeModel(composition, self.gudrunFile)
+
+    def showContextMenu(self, event):
+        """
+        Creates context menu, so that on right clicking the table,
+        the user is able to copy compositions in.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.menu = QMenu(self)
+        copyMenu = self.menu.addMenu("Copy from")
+        actionMap = {}
+        for composition in self.compositions:
+            action = QAction(f"{composition[0]}", copyMenu)
+            copyMenu.addAction(action)
+            actionMap[action] = composition[1]
+        action = self.menu.exec(event.pos())
+        self.copyFrom(actionMap[action])
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.RightButton:
+            self.showContextMenu(event)
+            event.accept()
+        else:
+            return super().mousePressEvent(event)
