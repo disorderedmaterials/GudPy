@@ -123,7 +123,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [Element("V", 0, 1.0)], "Normalisation"
+                "Normalisation", [Element("V", 0, 1.0)]
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.15,
