@@ -67,8 +67,8 @@ stages:
           version: '$(pythonVersion)'
           arch: '$(arch)'
           os: '$(imageName)'
-          osName: $(osName)
-          gudrunTag: $(gudrunTag)
+          osName: '$(osName)'
+          gudrunTag: '$(gudrunTag)'
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -88,8 +88,8 @@ stages:
             version: '$(pythonVersion)'
             arch: '$(arch)'
             os: '$(imageName)'
-            osName: $(osName)
-            gudrunTag: $(gudrunTag)
+            osName: '$(osName)'
+            gudrunTag: '$(gudrunTag)'
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"
