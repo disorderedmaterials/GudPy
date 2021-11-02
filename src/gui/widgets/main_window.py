@@ -802,7 +802,8 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        dataFiles = []
+        print(stdout)
+        dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
             for df in dfs.splitlines():
