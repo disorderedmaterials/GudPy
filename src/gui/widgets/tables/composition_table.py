@@ -1,5 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
@@ -315,7 +315,7 @@ class CompositionTable(QTableView):
             action = QAction(f"{composition[0]}", copyMenu)
             copyMenu.addAction(action)
             actionMap[action] = composition[1]
-        action = self.menu.exec(self.mapToGlobal(event.pos()))
+        action = self.menu.exec(QCursor.pos())
         self.copyFrom(actionMap[action])
 
     def mousePressEvent(self, event):
