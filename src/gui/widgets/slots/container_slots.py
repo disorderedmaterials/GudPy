@@ -568,7 +568,7 @@ class ContainerSlots():
             (
                 self.widget.containerRatioCompositionTable
                 .model().dataChanged.connect(
-                    self.updateExactCompositions
+                    self.translateAndUpdate
                 )
             )
         else:
@@ -581,8 +581,12 @@ class ContainerSlots():
 
     def updateRatioCompositions(self):
         self.widget.containerRatioCompositionTable.makeModel(
-            self.container.composition, self.parent.gudrunFile
+            self.container.composition.weightedComponents
         )
+
+    def translateAndUpdate(self):
+        self.container.composition.translate()
+        self.updateExactCompositions()
 
     def updateExactCompositions(self):
         self.widget.containerCompositionTable.makeModel(

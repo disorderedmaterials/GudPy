@@ -1,6 +1,7 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
+from src.gudrun_classes import config
 from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
@@ -37,9 +38,8 @@ class RatioCompositionModel(GudPyTableModel):
             Parent widget.
         """
         super(RatioCompositionModel, self).__init__(
-            data.weightedComponents, headers, parent
+            data, headers, parent
         )
-        self.composition = data
 
     def rowCount(self, parent):
         return len(self._data)
@@ -77,7 +77,6 @@ class RatioCompositionModel(GudPyTableModel):
                 self._data[row].component = value
             elif col == 1:
                 self._data[row].ratio = value
-            self.composition.translate()
             self.dataChanged.emit(index, index)
 
     def insertRow(self, weightedComponent):
@@ -132,9 +131,9 @@ class RatioCompositionDelegate(GudPyDelegate):
         Sets data at a specific index inside the model.
     """
 
-    def __init__(self, parent, gudrunFile):
-        super(RatioCompositionDelegate, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
+    def __init__(self):
+        super(RatioCompositionDelegate, self).__init__()
+        self.components = config.components
 
     def createEditor(self, parent, option, index):
         """
@@ -155,7 +154,7 @@ class RatioCompositionDelegate(GudPyDelegate):
         col = index.column()
         if col == 0:
             editor = QComboBox(parent)
-            for component in self.gudrunFile.components.components:
+            for component in self.components.components:
                 editor.addItem(component.name, component)
         elif col == 1:
             editor = ExponentialSpinBox(parent)
@@ -172,9 +171,13 @@ class RatioCompositionDelegate(GudPyDelegate):
             Index in the model to set data at.
         """
         value = index.model().data(index, Qt.EditRole)
-        if value:
-            if index.column() == 1:
-                editor.setValue(value)
+        if index.column() == 1:
+            editor.setValue(value)
+        elif index.column() == 0:
+            for i, component in enumerate(self.components.components):
+                if component.name == value:
+                    editor.setCurrentIndex(i)
+
 
     def setModelData(self, editor, model, index):
         """
@@ -238,7 +241,7 @@ class RatioCompositionTable(QTableView):
         self.compositions = []
         super(RatioCompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data, gudrunFile):
+    def makeModel(self, data):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -247,26 +250,22 @@ class RatioCompositionTable(QTableView):
         data : list
             Data for model to use.
         """
-        self.gudrunFile = gudrunFile
         self.setModel(
             RatioCompositionModel(
                 data, ["Component", "Ratio"], self.parent
             )
         )
         self.setItemDelegate(
-            RatioCompositionDelegate(
-                self.parent, self.gudrunFile
-            )
+            RatioCompositionDelegate()
         )
-        self.farmCompositions()
 
     def insertRow(self):
         """
         Inserts a row into the model.
         """
-        if len(self.gudrunFile.components.components):
+        if len(config.components.components):
             self.model().insertRow(
-                WeightedComponent(self.gudrunFile.components.components[0], 0.)
+                WeightedComponent(config.components.components[0], 0.)
             )
 
     def removeRow(self, rows):
@@ -280,64 +279,3 @@ class RatioCompositionTable(QTableView):
         for _row in rows:
             self.model().removeRow(_row.row())
 
-    def farmCompositions(self):
-        """
-        Seeks up the widget heirarchy, and then collects all compositions.
-        """
-        ancestor = self.parent
-        while not isinstance(ancestor, QMainWindow):
-            ancestor = ancestor.parent
-            if callable(ancestor):
-                ancestor = ancestor()
-        self.compositions.clear()
-        self.compositions = [
-                (
-                    "Normalisation",
-                    ancestor.gudrunFile.normalisation.composition
-                )
-            ]
-        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
-                self.compositions.append((sample.name, sample.composition))
-                for container in sample.containers:
-                    self.compositions.append(
-                        (container.name, container.composition)
-                    )
-
-    def copyFrom(self, composition):
-        """
-        Create a new model from a given composition,
-        and replaces the current model with it.
-        Parameters
-        ----------
-        composition : Composition
-            Composition object to copy elements from.
-        """
-        self.makeModel(composition, self.gudrunFile)
-
-    def showContextMenu(self, event):
-        """
-        Creates context menu, so that on right clicking the table,
-        the user is able to copy compositions in.
-        Parameters
-        ----------
-        event : QMouseEvent
-            The event that triggers the context menu.
-        """
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.menu = QMenu(self)
-        copyMenu = self.menu.addMenu("Copy from")
-        actionMap = {}
-        for composition in self.compositions:
-            action = QAction(f"{composition[0]}", copyMenu)
-            copyMenu.addAction(action)
-            actionMap[action] = composition[1]
-        action = self.menu.exec(event.pos())
-        self.copyFrom(actionMap[action])
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.RightButton:
-            self.showContextMenu(event)
-            event.accept()
-        else:
-            return super().mousePressEvent(event)

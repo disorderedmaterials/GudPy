@@ -710,7 +710,7 @@ class NormalisationSlots():
             (
                 self.widget.normalisationRatioCompositionTable
                 .model().dataChanged.connect(
-                    self.updateExactCompositions
+                    self.translateAndUpdate
                 )
             )
         else:
@@ -723,8 +723,12 @@ class NormalisationSlots():
 
     def updateRatioCompositions(self):
         self.widget.normalisationRatioCompositionTable.makeModel(
-            self.normalisation.composition, self.parent.gudrunFile
+            self.normalisation.composition.weightedComponents
         )
+
+    def translateAndUpdate(self):
+        self.normalisation.composition.translate()
+        self.updateExactCompositions()
 
     def updateExactCompositions(self):
         self.widget.normalisationCompositionTable.makeModel(

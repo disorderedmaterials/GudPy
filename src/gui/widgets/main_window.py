@@ -322,7 +322,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
-        self.componentSlots.setComponents(self.gudrunFile.components)
+        self.componentSlots.setComponents(config.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
 
         if len(self.gudrunFile.sampleBackgrounds):

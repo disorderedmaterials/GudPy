@@ -856,7 +856,7 @@ class SampleSlots():
             (
                 self.widget.sampleRatioCompositionTable
                 .model().dataChanged.connect(
-                    self.updateExactCompositions
+                    self.translateAndUpdate
                 )
             )
         else:
@@ -869,8 +869,12 @@ class SampleSlots():
 
     def updateRatioCompositions(self):
         self.widget.sampleRatioCompositionTable.makeModel(
-            self.sample.composition, self.parent.gudrunFile
+            self.sample.composition.weightedComponents
         )
+
+    def translateAndUpdate(self):
+        self.sample.composition.translate()
+        self.updateExactCompositions()
 
     def updateExactCompositions(self):
         self.widget.sampleCompositionTable.makeModel(

@@ -145,7 +145,6 @@ class GudrunFile:
         self.beam = None
         self.normalisation = None
         self.sampleBackgrounds = []
-        self.components = Components()
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
