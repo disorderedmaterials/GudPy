@@ -1,5 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
 from src.gudrun_classes import config
 from src.gudrun_classes.composition import WeightedComponent
@@ -257,6 +257,7 @@ class RatioCompositionTable(QTableView):
         self.setItemDelegate(
             RatioCompositionDelegate()
         )
+        self.farmCompositions()
 
     def insertRow(self):
         """
@@ -311,7 +312,7 @@ class RatioCompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.makeModel(composition, self.gudrunFile)
+        self.makeModel(composition.weightedComponents)
 
     def showContextMenu(self, event):
         """
@@ -330,8 +331,9 @@ class RatioCompositionTable(QTableView):
             action = QAction(f"{composition[0]}", copyMenu)
             copyMenu.addAction(action)
             actionMap[action] = composition[1]
-        action = self.menu.exec(event.pos())
-        self.copyFrom(actionMap[action])
+        action = self.menu.exec(QCursor.pos())
+        if action:
+            self.copyFrom(actionMap[action])
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
