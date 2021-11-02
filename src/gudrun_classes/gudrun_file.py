@@ -1,6 +1,5 @@
 from PySide6.QtCore import QProcess
 from src.gudrun_classes.exception import ParserException
-from src.gudrun_classes.composition import Components
 import sys
 import os
 from os.path import isfile

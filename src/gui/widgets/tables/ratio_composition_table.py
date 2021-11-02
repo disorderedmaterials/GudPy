@@ -1,6 +1,5 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
+from PySide6.QtWidgets import QComboBox, QTableView
 from src.gudrun_classes import config
 from src.gudrun_classes.composition import WeightedComponent
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
@@ -178,7 +177,6 @@ class RatioCompositionDelegate(GudPyDelegate):
                 if component.name == value:
                     editor.setCurrentIndex(i)
 
-
     def setModelData(self, editor, model, index):
         """
         Sets data at a specific index inside the model.
@@ -278,4 +276,3 @@ class RatioCompositionTable(QTableView):
         """
         for _row in rows:
             self.model().removeRow(_row.row())
-
