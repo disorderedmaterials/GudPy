@@ -661,7 +661,7 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def progressIteration(self):
-        progress = self.progressIncrement()
+        progress = self.progressIncrementDCS()
         if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
@@ -742,7 +742,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.save.setEnabled(state)
         self.mainWidget.saveAs.setEnabled(state)
 
-    def progressIncrement(self):
+    def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         ERROR_KWDS = [
@@ -784,7 +784,7 @@ class GudPyMainWindow(QMainWindow):
         return progress
 
     def progressDCS(self):
-        progress = self.progressIncrement()
+        progress = self.progressIncrementDCS()
         if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
@@ -799,21 +799,56 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def progressPurge(self):
+    def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        if "Total run time" in stdout:
-            QMessageBox.warning(
-                self.mainWidget, "GudPy Warning",
-                f"{nthint(stdout, 0)} detectors made it through the purge."
-            )
-        elif "Error" in stdout or "error" in stdout or "not found" in stdout:
-            self.gudrunFile.purged = False
-            self.queue = Queue()
+        print(stdout)
+        dataFiles = [self.gudrunFile.instrument.groupFileName]
+
+        def appendDfs(dfs):
+            for df in dfs.splitlines():
+                dataFiles.append(df.split()[0].replace(
+                    self.gudrunFile.instrument.dataFileType, "grp")
+                )
+
+        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles)
+        appendDfs(self.gudrunFile.purgeFile.sampleBackgroundDataFiles)
+        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
+            appendDfs(self.gudrunFile.purgeFile.sampleDataFiles)
+            appendDfs(self.gudrunFile.purgeFile.containerDataFiles)
+
+        stepSize = math.ceil(100/len(dataFiles))
+        progress = 0
+        for df in dataFiles:
+            if df in stdout:
+                progress += stepSize
+        if "Error" in stdout or "error" in stdout or "not found" in stdout:
+            self.error = stdout
+            return -1, False, -1
+        elif dataFiles[-1] in stdout:
+            return 100, True, nthint(stdout, 0)
+        else:
+            return progress, False, -1
+
+    def progressPurge(self):
+        progress, finished, detectors = self.progressIncrementPurge()
+        if progress == -1:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 f"An error occurred. See the following traceback"
-                f" from purge_det\n{stdout}"
+                f" from purge_det\n{self.error}"
+            )
+            self.gudrunFile.purged = False
+            self.procFinished()
+            self.queue = Queue()
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+        if finished:
+            QMessageBox.warning(
+                self.mainWidget, "GudPy Warning",
+                f"{detectors} detectors made it through the purge."
             )
 
     def procStarted(self):
