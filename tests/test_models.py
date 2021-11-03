@@ -3,14 +3,14 @@ from unittest import TestCase
 from PySide6.QtCore import QModelIndex, Qt
 from src.gudrun_classes.element import Element
 
-from src.gui.widgets.gudpy_tables import (
-    BeamProfileModel,
-    CompositionModel,
-    ExponentialModel,
-    GroupingParameterModel,
-    GudPyTableModel,
-    ResonanceModel,
+from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
+from src.gui.widgets.tables.beam_profile_table import BeamProfileModel
+from src.gui.widgets.tables.composition_table import CompositionModel
+from src.gui.widgets.tables.exponential_table import ExponentialModel
+from src.gui.widgets.tables.grouping_parameter_table import (
+    GroupingParameterModel
 )
+from src.gui.widgets.tables.resonance_table import ResonanceModel
 
 
 class TestModels(TestCase):
