@@ -29,7 +29,7 @@ steps:
   - bash: |
       sudo apt-get install libopengl0 -ys
     condition: eq( '${{ parameters.osName }}' , 'linux')  
-    displayName: "Install OpenGL"ss
+    displayName: "Install OpenGL"
 
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
