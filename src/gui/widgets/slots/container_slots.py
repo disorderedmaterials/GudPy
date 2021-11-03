@@ -209,14 +209,6 @@ class ContainerSlots():
             self.handleRemoveElement
         )
 
-        self.widget.insertContainerComponentButton.clicked.connect(
-            self.handleInsertComponent
-        )
-
-        self.widget.removeContainerComponentButton.clicked.connect(
-            self.handleRemoveComponent
-        )
-
     def handlePeriodNoChanged(self, value):
         """
         Slot for handling change in the period number.
@@ -560,38 +552,11 @@ class ContainerSlots():
         """
         Fills the composition list.
         """
-        if config.USE_USER_DEFINED_COMPONENTS:
-            self.updateRatioCompositions()
-            self.widget.containerExactCompositionTab.setEnabled(False)
-            self.widget.containerRatioCompositionTab.setEnabled(True)
-            self.widget.containerCompositionTabs.setCurrentIndex(1)
-            (
-                self.widget.containerRatioCompositionTable
-                .model().dataChanged.connect(
-                    self.translateAndUpdate
-                )
-            )
-        else:
-            self.updateExactCompositions()
-            self.widget.containerExactCompositionTab.setEnabled(True)
-            self.widget.containerRatioCompositionTab.setEnabled(False)
-            self.widget.containerCompositionTabs.setCurrentIndex(0)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def updateRatioCompositions(self):
-        self.widget.containerRatioCompositionTable.makeModel(
-            self.container.composition.weightedComponents
-        )
-
-    def translateAndUpdate(self):
-        self.container.composition.translate()
-        self.updateExactCompositions()
-
-    def updateExactCompositions(self):
         self.widget.containerCompositionTable.makeModel(
             self.container.composition.elements
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleInsertElement(self):
         """
@@ -611,19 +576,6 @@ class ContainerSlots():
         """
         self.widget.containerCompositionTable.removeRow(
             self.widget.containerCompositionTable
-            .selectionModel().selectedRows()
-        )
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def handleInsertComponent(self):
-        self.widget.containerRatioCompositionTable.insertRow()
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def handleRemoveComponent(self):
-        self.widget.containerRatioCompositionTable.removeRow(
-            self.widget.containerRatioCompositionTable
             .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:

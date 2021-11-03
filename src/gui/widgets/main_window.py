@@ -424,11 +424,9 @@ class GudPyMainWindow(QMainWindow):
         for copying and pasting compositions between eachother.
         """
         self.mainWidget.normalisationCompositionTable.farmCompositions()
-        self.mainWidget.normalisationRatioCompositionTable.farmCompositions()
         self.mainWidget.sampleCompositionTable.farmCompositions()
         self.mainWidget.sampleRatioCompositionTable.farmCompositions()
         self.mainWidget.containerCompositionTable.farmCompositions()
-        self.mainWidget.containerRatioCompositionTable.farmCompositions()
 
     def focusResult(self):
         if (

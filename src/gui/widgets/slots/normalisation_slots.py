@@ -215,14 +215,6 @@ class NormalisationSlots():
             self.handleRemoveElement
         )
 
-        self.widget.insertNormalisationComponentButton.clicked.connect(
-            self.handleInsertComponent
-        )
-
-        self.widget.removeNormalisationComponentButton.clicked.connect(
-            self.handleRemoveComponent
-        )
-
     def handlePeriodNoChanged(self, value):
         """
         Slot for handling change in the period number.
@@ -702,38 +694,11 @@ class NormalisationSlots():
         """
         Fills the composition list.
         """
-        if config.USE_USER_DEFINED_COMPONENTS:
-            self.updateRatioCompositions()
-            self.widget.exactCompositionTab.setEnabled(False)
-            self.widget.ratioCompositionTab.setEnabled(True)
-            self.widget.normalisationCompositionTabs.setCurrentIndex(1)
-            (
-                self.widget.normalisationRatioCompositionTable
-                .model().dataChanged.connect(
-                    self.translateAndUpdate
-                )
-            )
-        else:
-            self.updateExactCompositions()
-            self.widget.exactCompositionTab.setEnabled(True)
-            self.widget.ratioCompositionTab.setEnabled(False)
-            self.widget.normalisationCompositionTabs.setCurrentIndex(0)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def updateRatioCompositions(self):
-        self.widget.normalisationRatioCompositionTable.makeModel(
-            self.normalisation.composition.weightedComponents
-        )
-
-    def translateAndUpdate(self):
-        self.normalisation.composition.translate()
-        self.updateExactCompositions()
-
-    def updateExactCompositions(self):
         self.widget.normalisationCompositionTable.makeModel(
             self.normalisation.composition.elements
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleInsertElement(self):
         """
@@ -753,19 +718,6 @@ class NormalisationSlots():
         """
         self.widget.normalisationCompositionTable.removeRow(
             self.widget.normalisationCompositionTable
-            .selectionModel().selectedRows()
-        )
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def handleInsertComponent(self):
-        self.widget.normalisationRatioCompositionTable.insertRow()
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def handleRemoveComponent(self):
-        self.widget.normalisationRatioCompositionTable.removeRow(
-            self.widget.normalisationRatioCompositionTable
             .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
