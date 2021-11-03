@@ -265,7 +265,7 @@ class RatioCompositionTable(QTableView):
         """
         if len(config.components.components):
             self.model().insertRow(
-                WeightedComponent(config.components.components[0], 0.)
+                WeightedComponent(config.components.components[0], 1.)
             )
 
     def removeRow(self, rows):
