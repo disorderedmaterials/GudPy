@@ -28,7 +28,7 @@ steps:
 
   - bash: |
       if [[ "${{ parameters.osName }}" == "linux" ]]
-        sudo apt-get install libopengl0 -ys
+        sudo apt-get install libopengl0 -y
     displayName: "Install OpenGL for linux"
 
   - bash: |
