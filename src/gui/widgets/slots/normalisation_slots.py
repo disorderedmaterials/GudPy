@@ -712,9 +712,9 @@ class NormalisationSlots():
 
     def handleRemoveElement(self):
         """
-        Slot for removing files from the data files list.
+        Slot for removing elements from the composition table.
         Called when a clicked signal is emitted,
-        from the removeDataFileButton.
+        from the removeElementButton.
         """
         self.widget.normalisationCompositionTable.removeRow(
             self.widget.normalisationCompositionTable

@@ -77,7 +77,7 @@ class Normalisation:
         self.periodNumberBg = 0
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
-        self.composition = Composition([], "NORMALISATION")
+        self.composition = Composition("NORMALISATION")
         self.geometry = Geometry.SameAsBeam
         self.upstreamThickness = 0.0
         self.downstreamThickness = 0.0

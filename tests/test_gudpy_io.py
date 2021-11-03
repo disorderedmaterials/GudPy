@@ -123,7 +123,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [Element("V", 0, 1.0)], "Normalisation"
+                "Normalisation", [Element("V", 0, 1.0)]
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.15,
@@ -156,7 +156,7 @@ class TestGudPyIO(TestCase):
                 "N9",
             ),
             "composition": Composition(
-                [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
+                "Container"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.1,
@@ -174,6 +174,11 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
         }
+
+        self.expectedContainerA["composition"].elements = [
+            Element("Ti", 0, 7.16),
+            Element("Zr", 0, 3.438)
+        ]
 
         self.expectedContainerB = {
             "name": "N10",
@@ -187,7 +192,7 @@ class TestGudPyIO(TestCase):
                 "N10",
             ),
             "composition": Composition(
-                [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
+                "Container"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.1,
@@ -205,6 +210,11 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
         }
+
+        self.expectedContainerB["composition"].elements = [
+            Element("Ti", 0, 7.16),
+            Element("Zr", 0, 3.438)
+        ]
 
         self.expectedContainerC = {
             "name": "N6",
@@ -213,7 +223,7 @@ class TestGudPyIO(TestCase):
                 ["NIMROD00014908_Empty_N6.raw"], "N6"
             ),
             "composition": Composition(
-                [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
+                "Container"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.1,
@@ -232,6 +242,11 @@ class TestGudPyIO(TestCase):
             "attenuationCoefficient": 0.0
         }
 
+        self.expectedContainerC["composition"].elements = [
+            Element("Ti", 0, 7.16),
+            Element("Zr", 0, 3.438)
+        ]
+
         self.expectedContainerD = {
             "name": "N8",
             "periodNumber": 1,
@@ -239,7 +254,7 @@ class TestGudPyIO(TestCase):
                 ["NIMROD00016994_Empty_N8.raw"], "N8"
             ),
             "composition": Composition(
-                [Element("Ti", 0, 7.16), Element("Zr", 0, 3.438)], "Container"
+                "Container"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.1,
@@ -257,6 +272,11 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0
         }
+
+        self.expectedContainerD["composition"].elements = [
+            Element("Ti", 0, 7.16),
+            Element("Zr", 0, 3.438)
+        ]
 
         self.expectedSampleA = {
             "name": "H2O, Can N9",
@@ -270,7 +290,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [Element("H", 0, 2.0), Element("O", 0, 1.0)], "Sample"
+                "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.05,
@@ -304,6 +324,11 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerA]
         }
 
+        self.expectedSampleA["composition"].elements = [
+            Element("H", 0, 2.0),
+            Element("O", 0, 1.0)
+        ]
+
         self.expectedSampleB = {
             "name": "D2O, Can N10",
             "periodNumber": 1,
@@ -316,7 +341,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [Element("H", 2, 2.0), Element("O", 0, 1.0)], "Sample"
+                "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.05,
@@ -350,6 +375,11 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerB]
         }
 
+        self.expectedSampleB["composition"].elements = [
+            Element("H", 2, 2.0),
+            Element("O", 0, 1.0)
+        ]
+
         self.expectedSampleC = {
             "name": "HDO, Can N6",
             "periodNumber": 1,
@@ -362,12 +392,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [
-                    Element("H", 0, 1.0),
-                    Element("O", 0, 1.0),
-                    Element("H", 2, 1.0),
-                ],
-                "Sample",
+                "Sample"
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.05,
@@ -401,6 +426,12 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerC]
         }
 
+        self.expectedSampleC["composition"].elements = [
+                    Element("H", 0, 1.0),
+                    Element("O", 0, 1.0),
+                    Element("H", 2, 1.0),
+        ]
+
         self.expectedSampleD = {
             "name": "Null Water, Can N8",
             "periodNumber": 1,
@@ -413,11 +444,6 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                [
-                    Element("H", 0, 1.281),
-                    Element("O", 0, 1.0),
-                    Element("H", 2, 0.7185),
-                ],
                 "Sample",
             ),
             "geometry": Geometry.SameAsBeam,
@@ -451,6 +477,12 @@ class TestGudPyIO(TestCase):
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerD]
         }
+
+        self.expectedSampleD["composition"].elements = [
+            Element("H", 0, 1.281),
+            Element("O", 0, 1.0),
+            Element("H", 2, 0.7185)
+        ]
 
         self.expectedSampleBackground = {
             "periodNumber": 1,
@@ -996,7 +1028,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("crossSectionFilename")
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
-            Composition([], "")
+            Composition("")
         )
         for i in range(len(expectedNormalisation.keys())):
 
@@ -1040,7 +1072,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("crossSectionFilename")
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
-            Composition([], "")
+            Composition("")
         )
         for i in range(50):
 
@@ -1117,7 +1149,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
-            Composition([], "")
+            Composition("")
         )
         self.goodSampleBackground.samples[0].resonanceValues = []
         self.goodSampleBackground.samples[0].exponentialValues = []
@@ -1170,7 +1202,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("crossSectionFilename")
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
-            Composition([], "")
+            Composition("")
         )
         self.goodSampleBackground.samples[0].resonanceValues = []
         self.goodSampleBackground.samples[0].exponentialValues = []
@@ -1227,7 +1259,7 @@ class TestGudPyIO(TestCase):
             DataFiles([], "")
         )
         self.goodSampleBackground.samples[0].containers[0].composition = (
-            Composition([], "")
+            Composition("")
         )
         for i in range(len(expectedContainerA.keys())):
             self.goodSampleBackground.samples = [
@@ -1278,7 +1310,7 @@ class TestGudPyIO(TestCase):
             DataFiles([], "")
         )
         self.goodSampleBackground.samples[0].containers[0].composition = (
-            Composition([], "")
+            Composition("")
         )
         for i in range(50):
             key = random.choice(list(expectedContainerA))

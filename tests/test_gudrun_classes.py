@@ -224,12 +224,11 @@ class TestGudrunClasses(TestCase):
 
     def testCompositionInitDataTypes(self):
 
-        composition = Composition([], "test")
+        composition = Composition("test", elements=[])
 
         self.assertIsInstance(composition, Composition)
         self.assertIsInstance(composition.elements, list)
         self.assertIsInstance(composition.type_, str)
-        self.assertIsInstance(composition.str, list)
 
     def testElementInitDataTypes(self):
 

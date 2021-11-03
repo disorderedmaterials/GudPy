@@ -46,7 +46,7 @@ class ViewInputDialog(QDialog):
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "ui_files", "viewInputDialog.ui"
+                    current_dir, "..", "ui_files", "viewInputDialog.ui"
                 )
             )
         loader = QUiLoader()

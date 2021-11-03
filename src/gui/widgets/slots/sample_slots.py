@@ -292,6 +292,14 @@ class SampleSlots():
             self.handleRemoveElement
         )
 
+        self.widget.insertSampleComponentButton.clicked.connect(
+            self.handleInsertComponent
+        )
+
+        self.widget.removeSampleComponentButton.clicked.connect(
+            self.handleRemoveComponent
+        )
+
         # Setup slots for exponential values.
         self.widget.insertExponentialButton.clicked.connect(
             self.handleInsertExponentialValue
@@ -838,8 +846,37 @@ class SampleSlots():
 
     def updateCompositionTable(self):
         """
-        Fills the composition table.
+        Fills the composition list.
         """
+        if config.USE_USER_DEFINED_COMPONENTS:
+            self.updateRatioCompositions()
+            self.widget.sampleExactCompositionTab.setEnabled(False)
+            self.widget.sampleRatioCompositionTab.setEnabled(True)
+            self.widget.sampleCompositionTabs.setCurrentIndex(1)
+            (
+                self.widget.sampleRatioCompositionTable
+                .model().dataChanged.connect(
+                    self.translateAndUpdate
+                )
+            )
+        else:
+            self.updateExactCompositions()
+            self.widget.sampleExactCompositionTab.setEnabled(True)
+            self.widget.sampleRatioCompositionTab.setEnabled(False)
+            self.widget.sampleCompositionTabs.setCurrentIndex(0)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def updateRatioCompositions(self):
+        self.widget.sampleRatioCompositionTable.makeModel(
+            self.sample.composition.weightedComponents
+        )
+
+    def translateAndUpdate(self):
+        self.sample.composition.translate()
+        self.updateExactCompositions()
+
+    def updateExactCompositions(self):
         self.widget.sampleCompositionTable.makeModel(
             self.sample.composition.elements
         )
@@ -862,6 +899,19 @@ class SampleSlots():
         """
         self.widget.sampleCompositionTable.removeRow(
             self.widget.sampleCompositionTable.selectionModel().selectedRows()
+        )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleInsertComponent(self):
+        self.widget.sampleRatioCompositionTable.insertRow()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleRemoveComponent(self):
+        self.widget.sampleRatioCompositionTable.removeRow(
+            self.widget.sampleRatioCompositionTable
+            .selectionModel().selectedRows()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

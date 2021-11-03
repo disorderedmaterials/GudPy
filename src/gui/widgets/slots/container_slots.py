@@ -555,6 +555,8 @@ class ContainerSlots():
         self.widget.containerCompositionTable.makeModel(
             self.container.composition.elements
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleInsertElement(self):
         """

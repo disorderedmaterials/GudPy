@@ -153,7 +153,7 @@ class IterationDialog(QDialog):
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "ui_files", "iterationDialog.ui"
+                    current_dir, "..", "ui_files", "iterationDialog.ui"
                 )
             )
         loader = QUiLoader()
