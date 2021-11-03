@@ -28,7 +28,7 @@ steps:
 
   - bash: |
       sudo apt-get install libopengl0 -y
-    condition: eq('${{ parameters.osName }}', 'linux')
+    condition: eq(${{ parameters.osName }}, 'linux')
     displayName: "Install OpenGL"
 
   - bash: |
@@ -49,7 +49,7 @@ steps:
       sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
       brew install npm
       npm install -g create-dmg
-    condition: eq('${{ parameters.osName }}', 'osx')  
+    condition: eq(${{ parameters.osName }}, 'osx')  
     displayName: 'Increase timeouts for OSX'
   - bash: |
       pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
@@ -59,10 +59,10 @@ steps:
   - bash: |
       create-dmg dist/*.app
       [ $? -eq 2 ]  || exit 0
-    condition: eq('${{ parameters.osName }}', 'osx')
+    condition: eq(${{ parameters.osName }}, 'osx')
     displayName: 'Create DMG for OSX.'
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
-    condition: eq('${{ parameters.osName }}', 'windows')
+    condition: eq(${{ parameters.osName }}, 'windows')
     displayName: 'Zip windows non-bundled version.'
