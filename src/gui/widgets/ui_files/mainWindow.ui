@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1218</width>
+    <width>1324</width>
     <height>1447</height>
    </rect>
   </property>
@@ -2979,14 +2979,14 @@
                      <attribute name="verticalHeaderVisible">
                       <bool>false</bool>
                      </attribute>
-                     <attribute name="verticalHeaderMinimumSectionSize">
-                      <number>0</number>
-                     </attribute>
                      <attribute name="verticalHeaderDefaultSectionSize">
                       <number>30</number>
                      </attribute>
                      <attribute name="verticalHeaderHighlightSections">
                       <bool>false</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderMinimumSectionSize">
+                      <number>0</number>
                      </attribute>
                     </widget>
                    </item>
@@ -3190,7 +3190,14 @@
               <item>
                <widget class="QCheckBox" name="useComponentsCheckBox">
                 <property name="text">
-                 <string>Use component/molecule definitions?</string>
+                 <string>Use component definitions for sample atomic compositions?</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>This will enable using the components defined above to define atomic compositions for samples.</string>
                 </property>
                </widget>
               </item>
@@ -5680,10 +5687,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>120</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>120</number>
                            </attribute>
                            <attribute name="verticalHeaderCascadingSectionResizes">
@@ -5783,10 +5790,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>128</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>128</number>
                            </attribute>
                            <attribute name="horizontalHeaderStretchLastSection">
@@ -6921,8 +6928,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1218</width>
-     <height>22</height>
+     <width>1324</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
