@@ -30,7 +30,7 @@ steps:
       if [[ "${{ parameters.osName }}" == "linux" ]]
       then
         sudo apt-get install libopengl0 -y
-        sudo apt install libgl1-mesa-glx -y
+        sudo apt-get install ffmpeg libsm6 libxext6  -y
       fi
     displayName: "Install OpenGL for linux"
 
