@@ -57,6 +57,10 @@ class Composition():
         self.elements.extend(elements)
 
     def translate(self):
+        """
+        Translates the weighted components present in the composition,
+        into a relative composition of elements.
+        """
         elements = []
         self.elements = []
         for component in self.weightedComponents:
@@ -64,6 +68,11 @@ class Composition():
         self.sumAndMutate(elements)
 
     def sumAndMutate(self, elements):
+        """
+        Sums the abundances of elements within the composition.
+        This ensures that the same element isn't written out
+        multiple times.
+        """
         for element in elements:
             exists = False
             for element_ in self.elements:
