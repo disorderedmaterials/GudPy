@@ -20,6 +20,7 @@ class SampleSlots():
         # Acquire the lock
         self.widgetsRefreshing = True
 
+
         # Populate period number widget.
         self.widget.samplePeriodNoSpinBox.setValue(self.sample.periodNumber)
 
@@ -315,6 +316,10 @@ class SampleSlots():
         )
         self.widget.removeResonanceButton.clicked.connect(
             self.handleRemoveResonanceValue
+        )
+
+        self.widget.normaliseCompositionsCheckBox.stateChanged.connect(
+            self.toggleNormaliseCompositions
         )
 
     def handlePeriodNoChanged(self, value):
@@ -984,3 +989,7 @@ class SampleSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def toggleNormaliseCompositions(self, state):
+        config.NORMALISE_COMPOSITIONS = bool(state)
+        self.updateExactCompositions()
