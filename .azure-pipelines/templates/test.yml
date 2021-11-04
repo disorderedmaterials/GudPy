@@ -27,13 +27,11 @@ steps:
     displayName: "Install dependencies"
 
   - bash: |
-      if [[ "${{ parameters.osName }}" == "linux" ]]
-      then
         sudo apt-get update
         sudo apt-get install libopengl0 -y 
         sudo apt-get install libgl1-mesa-glx -y
-      fi
     displayName: "Install OpenGL for linux"
+    condition: eq( '$(Agent.OS)', 'Linux' )
 
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
