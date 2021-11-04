@@ -1,9 +1,10 @@
+from PySide6.QtCore import QAbstractItemModel
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
     NormalisationType, OutputUnits, UnitsOfDensity
 )
 from src.gudrun_classes import config
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QAbstractItemView, QFileDialog
 
 
 class SampleSlots():
@@ -850,7 +851,10 @@ class SampleSlots():
         """
         if config.USE_USER_DEFINED_COMPONENTS:
             self.updateRatioCompositions()
-            self.widget.sampleExactCompositionTab.setEnabled(False)
+            self.widget.normaliseCompositionsCheckBox.setVisible(True)
+            self.widget.insertSampleElementButton.setEnabled(False)
+            self.widget.removeSampleElementButton.setEnabled(False)
+            self.widget.sampleCompositionTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             self.widget.sampleRatioCompositionTab.setEnabled(True)
             self.widget.sampleCompositionTabs.setCurrentIndex(1)
             (
@@ -861,8 +865,15 @@ class SampleSlots():
             )
         else:
             self.updateExactCompositions()
-            self.widget.sampleExactCompositionTab.setEnabled(True)
+            self.widget.normaliseCompositionsCheckBox.setVisible(False)
+            self.widget.insertSampleElementButton.setEnabled(True)
+            self.widget.removeSampleElementButton.setEnabled(True)
             self.widget.sampleRatioCompositionTab.setEnabled(False)
+            self.widget.sampleCompositionTable.setEditTriggers(
+                QAbstractItemView.EditTrigger.DoubleClicked |
+                QAbstractItemView.EditTrigger.EditKeyPressed |
+                QAbstractItemView.EditTrigger.AnyKeyPressed
+            )
             self.widget.sampleCompositionTabs.setCurrentIndex(0)
         if not self.widgetsRefreshing:
             self.parent.setModified()
