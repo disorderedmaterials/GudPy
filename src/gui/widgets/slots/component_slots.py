@@ -35,6 +35,9 @@ class ComponentSlots():
         self.widget.componentList.makeModel(
             self.components, self.widget.componentCompositionTable
         )
+        self.widget.componentCompositionTable.model().dataChanged.connect(
+            self.loadComponentsList
+        )
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(

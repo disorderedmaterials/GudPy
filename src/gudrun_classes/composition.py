@@ -1,15 +1,75 @@
+from itertools import starmap
+from os import getenv
 from src.gudrun_classes.element import Element
+from src.scripts.utils import isnumeric
 
+class ChemicalFormulaParser():
+
+    def __init__(self):
+        self.stream = None
+
+    def getNextToken(self):
+        return self.stream.pop(0) if self.stream else None
+
+    def peekNextToken(self):
+        return self.stream[0] if self.stream else None
+
+    def parse(self, stream):
+        self.stream = list(stream)
+        elements = []
+
+        while self.stream:
+            element = self.parseElement()
+            if element:
+                elements.append(element)
+            else:
+                return False
+        return elements
+
+    def parseElement(self):
+
+        symbol = self.parseSymbol()
+        abundance = self.parseAbundance()
+        if symbol and abundance:
+            return Element(symbol, 0, abundance)
+
+    def parseSymbol(self):
+        symbol = ""
+        token = self.peekNextToken()
+        if token:
+            if token.isupper():
+                symbol = self.getNextToken()
+                if self.peekNextToken() and self.peekNextToken().islower():
+                    symbol += self.getNextToken()
+        return symbol
+
+    def parseAbundance(self):
+        abundance = 1
+        token = self.peekNextToken()
+        if token:
+            if isnumeric(token):
+                abundanceStr = self.getNextToken()
+                while isnumeric(self.peekNextToken()):
+                    token = self.getNextToken()
+                    abundanceStr+=token
+                abundance = int(abundanceStr)
+        return abundance
 
 class Component():
 
     def __init__(self, name):
         self.elements = []
         self.name = name
+        self.parser = ChemicalFormulaParser()
+        self.nameChanged()
 
     def addElement(self, element):
         self.elements.append(element)
 
+    def nameChanged(self):
+        elements = self.parser.parse(self.name)
+        if elements:
+            self.elements = elements
 
 class Components():
 
