@@ -26,12 +26,12 @@ steps:
       pip install -r requirements.txt
     displayName: "Install dependencies"
 
-  - bash: |
-        sudo apt-get update
-        sudo apt-get install libopengl0 -y 
-        sudo apt-get install libgl1-mesa-glx -y
-    displayName: "Install OpenGL for linux"
-    condition: eq( '$(Agent.OS)', 'Linux' )
+  - ${{ if eq(parameters.osName, 'linux') }}
+    - bash: |
+          sudo apt-get update
+          sudo apt-get install libopengl0 -y 
+          sudo apt-get install libgl1-mesa-glx -y
+      displayName: "Install OpenGL for linux"
 
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
