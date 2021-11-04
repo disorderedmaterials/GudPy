@@ -1,4 +1,3 @@
-from PySide6.QtCore import QAbstractItemModel
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
     NormalisationType, OutputUnits, UnitsOfDensity
@@ -19,7 +18,6 @@ class SampleSlots():
         self.widget.parameterTabs.setTabText(0, self.sample.name)
         # Acquire the lock
         self.widgetsRefreshing = True
-
 
         # Populate period number widget.
         self.widget.samplePeriodNoSpinBox.setValue(self.sample.periodNumber)
@@ -859,7 +857,9 @@ class SampleSlots():
             self.widget.normaliseCompositionsCheckBox.setVisible(True)
             self.widget.insertSampleElementButton.setEnabled(False)
             self.widget.removeSampleElementButton.setEnabled(False)
-            self.widget.sampleCompositionTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+            self.widget.sampleCompositionTable.setEditTriggers(
+                QAbstractItemView.EditTrigger.NoEditTriggers
+            )
             self.widget.sampleRatioCompositionTab.setEnabled(True)
             self.widget.sampleCompositionTabs.setCurrentIndex(1)
             (

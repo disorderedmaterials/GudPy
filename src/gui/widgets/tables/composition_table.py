@@ -8,6 +8,7 @@ from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
 from src.gudrun_classes import config
 
+
 class CompositionModel(GudPyTableModel):
     """
     Class to represent a CompositionModel. Inherits GudPyTableModel.
@@ -102,8 +103,15 @@ class CompositionModel(GudPyTableModel):
         row = index.row()
         col = index.column()
         if role == role & (Qt.DisplayRole | Qt.EditRole):
-            if config.NORMALISE_COMPOSITIONS and col == 2 and config.USE_USER_DEFINED_COMPONENTS:
-                return self._data[row].abundance / sum([el.abundance for el in self._data])
+            if (
+                config.NORMALISE_COMPOSITIONS
+                and col == 2
+                and config.USE_USER_DEFINED_COMPONENTS
+            ):
+                return (
+                    self._data[row].abundance /
+                    sum([el.abundance for el in self._data])
+                )
             return self._data[row].__dict__[self.attrs[col]]
 
 
