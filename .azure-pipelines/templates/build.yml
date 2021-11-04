@@ -30,8 +30,8 @@ steps:
       sudo apt-get update
       sudo apt-get install libopengl0 -y 
       sudo apt-get install libegl1-mesa -y
-    displayName: "Install OpenGL for linux"
     condition: eq(variables.osName, 'linux')
+    displayName: "Install OpenGL for linux"
 
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
@@ -51,7 +51,8 @@ steps:
       sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
       brew install npm
       npm install -g create-dmg
-    condition: eq( '${{ parameters.osName }}', 'osx')  
+    condition: eq(variables.osName, 'osx')
+
     displayName: 'Increase timeouts for OSX'
   - bash: |
       pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
@@ -67,5 +68,5 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
-    condition: eq( '${{ parameters.osName }}', 'windows')
+    condition: eq(variables.osName, 'windows')
     displayName: 'Zip windows non-bundled version.'
