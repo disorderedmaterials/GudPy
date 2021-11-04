@@ -31,7 +31,6 @@ steps:
       then
         sudo apt-get update
         sudo apt-get install libopengl0 -y
-        sudo apt-get install ffmpeg libsm6 libxext6  -y
         sudo apt-get install libgl1-mesa-glx -y
       fi
     displayName: "Install OpenGL for linux"
