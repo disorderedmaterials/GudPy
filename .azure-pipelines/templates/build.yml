@@ -28,7 +28,7 @@ steps:
 
   - bash: |
       sudo apt-get install libopengl0 -y
-    condition: eq( '${{ parameters.osName }}', 'linux')
+    condition: eq(variables.osName, 'linux')
     displayName: "Install OpenGL"
 
   - bash: |
@@ -59,8 +59,9 @@ steps:
   - bash: |
       create-dmg dist/*.app
       [ $? -eq 2 ]  || exit 0
-    condition: eq( '${{ parameters.osName }}', 'osx')
+    condition: eq(variables.osName, 'osx')
     displayName: 'Create DMG for OSX.'
+
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
