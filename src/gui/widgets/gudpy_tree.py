@@ -775,7 +775,7 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(selectOnlyThisSample)
 
         # Copy/cut/paste actions
-        
+        copy_ = QAction("Copy", self.menu)
         copy_.triggered.connect(self.copy)
         copy_.setDisabled(True)
         self.menu.addAction(copy_)
