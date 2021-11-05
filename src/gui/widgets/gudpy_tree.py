@@ -593,7 +593,7 @@ class GudPyTreeView(QTreeView):
         Inserts a Sample into the GudrunFile.
     insertContainer_(container)
         Inserts a Container into the GudrunFile.
-    copy_()
+    copy()
         Copies the current object to the clipboard.
     cut_()
         Cuts the current object to the clipboard.
@@ -775,7 +775,7 @@ class GudPyTreeView(QTreeView):
         self.menu.addAction(selectOnlyThisSample)
 
         # Copy/cut/paste actions
-        copy_ = QAction("Copy", self.menu)
+        
         copy_.triggered.connect(self.copy)
         copy_.setDisabled(True)
         self.menu.addAction(copy_)
@@ -918,7 +918,7 @@ class GudPyTreeView(QTreeView):
         Copies the current object to the clipboard, and removes
         the object from the tree.
         """
-        self.copy_()
+        self.copy()
         if self.clipboard:
             self.removeRow()
 
