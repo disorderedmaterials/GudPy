@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>duplicate.png</file>
     <file>container.png</file>
     <file>minus.png</file>
     <file>plus.png</file>

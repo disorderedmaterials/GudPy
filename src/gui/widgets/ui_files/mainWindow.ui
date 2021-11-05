@@ -3115,7 +3115,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="duplicateButton">
+                      <widget class="QToolButton" name="duplicateButton">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -3123,7 +3123,11 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Duplicate</string>
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                        </property>
                       </widget>
                      </item>
