@@ -1,9 +1,8 @@
-from enum import Flag
-from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtWidgets import QDialogButtonBox, QMessageBox
 from src.gudrun_classes import config
 from src.gudrun_classes.element import Element
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
+
+
 class ComponentSlots():
 
     def __init__(self, widget, parent):

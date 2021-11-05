@@ -1,11 +1,13 @@
 from src.gudrun_classes.element import Element
 from src.scripts.utils import isnumeric
 import re
+
+
 class ChemicalFormulaParser():
 
     def __init__(self):
         self.stream = None
-        self.regex = re.compile("[A-Z][a-z]?\d*")
+        self.regex = re.compile(r"[A-Z][a-z]?\d*")
 
     def getNextToken(self):
         return self.stream.pop(0) if self.stream else None
@@ -51,9 +53,10 @@ class ChemicalFormulaParser():
                 abundanceStr = self.getNextToken()
                 while self.peekNextToken() and isnumeric(self.peekNextToken()):
                     token = self.getNextToken()
-                    abundanceStr+=token
+                    abundanceStr += token
                 abundance = int(abundanceStr)
         return abundance
+
 
 class Component():
 
@@ -72,6 +75,7 @@ class Component():
             self.elements = elements
         elif elements and not persistent:
             return elements
+
 
 class Components():
 
