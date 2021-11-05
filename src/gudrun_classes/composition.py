@@ -1,12 +1,11 @@
-from itertools import starmap
-from os import getenv
 from src.gudrun_classes.element import Element
 from src.scripts.utils import isnumeric
-
+import re
 class ChemicalFormulaParser():
 
     def __init__(self):
         self.stream = None
+        self.regex = re.compile("[A-Z][a-z]?\d*")
 
     def getNextToken(self):
         return self.stream.pop(0) if self.stream else None
@@ -15,9 +14,10 @@ class ChemicalFormulaParser():
         return self.stream[0] if self.stream else None
 
     def parse(self, stream):
+        if not self.regex.match(stream):
+            return None
         self.stream = list(stream)
         elements = []
-
         while self.stream:
             element = self.parseElement()
             if element:
@@ -49,7 +49,7 @@ class ChemicalFormulaParser():
         if token:
             if isnumeric(token):
                 abundanceStr = self.getNextToken()
-                while isnumeric(self.peekNextToken()):
+                while self.peekNextToken() and isnumeric(self.peekNextToken()):
                     token = self.getNextToken()
                     abundanceStr+=token
                 abundance = int(abundanceStr)
