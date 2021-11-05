@@ -316,10 +316,6 @@ class SampleSlots():
             self.handleRemoveResonanceValue
         )
 
-        self.widget.normaliseCompositionsCheckBox.stateChanged.connect(
-            self.toggleNormaliseCompositions
-        )
-
     def handlePeriodNoChanged(self, value):
         """
         Slot for handling change in the period number.
@@ -854,7 +850,6 @@ class SampleSlots():
         """
         if config.USE_USER_DEFINED_COMPONENTS:
             self.updateRatioCompositions()
-            self.widget.normaliseCompositionsCheckBox.setVisible(True)
             self.widget.insertSampleElementButton.setEnabled(False)
             self.widget.removeSampleElementButton.setEnabled(False)
             self.widget.sampleCompositionTable.setEditTriggers(
@@ -870,7 +865,6 @@ class SampleSlots():
             )
         else:
             self.updateExactCompositions()
-            self.widget.normaliseCompositionsCheckBox.setVisible(False)
             self.widget.insertSampleElementButton.setEnabled(True)
             self.widget.removeSampleElementButton.setEnabled(True)
             self.widget.sampleRatioCompositionTab.setEnabled(False)
@@ -989,7 +983,3 @@ class SampleSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
-
-    def toggleNormaliseCompositions(self, state):
-        config.NORMALISE_COMPOSITIONS = bool(state)
-        self.updateExactCompositions()

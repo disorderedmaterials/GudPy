@@ -30,6 +30,9 @@ class ComponentSlots():
         self.widget.useComponentsCheckBox.stateChanged.connect(
             self.setUseComponentDefinitions
         )
+        self.widget.normaliseCompositionsCheckBox.stateChanged.connect(
+            self.toggleNormaliseCompositions
+        )
 
     def loadComponentsList(self):
         self.widget.componentList.makeModel(
@@ -55,3 +58,6 @@ class ComponentSlots():
 
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
+
+    def toggleNormaliseCompositions(self, state):
+        config.NORMALISE_COMPOSITIONS = bool(state)

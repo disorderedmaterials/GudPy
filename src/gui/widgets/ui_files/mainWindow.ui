@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>5</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -3202,6 +3202,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="normaliseCompositionsCheckBox">
+                <property name="text">
+                 <string>Normalise compositions to 1?</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -4630,13 +4637,6 @@
                                </layout>
                               </item>
                              </layout>
-                            </item>
-                            <item>
-                             <widget class="QCheckBox" name="normaliseCompositionsCheckBox">
-                              <property name="text">
-                               <string>Normalise compositions?</string>
-                              </property>
-                             </widget>
                             </item>
                            </layout>
                           </widget>
