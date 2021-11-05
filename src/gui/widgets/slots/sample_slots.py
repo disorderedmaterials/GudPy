@@ -863,7 +863,6 @@ class SampleSlots():
                 )
             )
         else:
-            self.updateExactCompositions()
             self.widget.insertSampleElementButton.setEnabled(True)
             self.widget.removeSampleElementButton.setEnabled(True)
             self.widget.sampleRatioCompositionTab.setEnabled(False)
@@ -872,6 +871,7 @@ class SampleSlots():
                 QAbstractItemView.EditTrigger.EditKeyPressed |
                 QAbstractItemView.EditTrigger.AnyKeyPressed
             )
+        self.updateExactCompositions()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
