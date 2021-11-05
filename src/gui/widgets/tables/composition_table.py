@@ -229,7 +229,7 @@ class CompositionTable(QTableView):
         self.compositions = []
         super(CompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, data, farm=True):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -244,7 +244,8 @@ class CompositionTable(QTableView):
             )
         )
         self.setItemDelegate(CompositionDelegate())
-        self.farmCompositions()
+        if farm:
+            self.farmCompositions()
 
     def insertRow(self):
         """
