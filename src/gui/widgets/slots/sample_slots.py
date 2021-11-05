@@ -862,6 +862,12 @@ class SampleSlots():
                     self.translateAndUpdate
                 )
             )
+            (
+                self.widget.sampleRatioCompositionTable
+                .model().rowsInserted.connect(
+                    self.translateAndUpdate
+                )
+            )
         else:
             self.widget.insertSampleElementButton.setEnabled(True)
             self.widget.removeSampleElementButton.setEnabled(True)
