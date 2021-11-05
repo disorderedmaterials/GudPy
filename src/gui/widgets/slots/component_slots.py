@@ -33,6 +33,9 @@ class ComponentSlots():
         self.widget.normaliseCompositionsCheckBox.stateChanged.connect(
             self.toggleNormaliseCompositions
         )
+        self.widget.duplicateButton.clicked.connect(
+            self.duplicateComponent
+        )
 
     def loadComponentsList(self):
         self.widget.componentList.makeModel(
@@ -62,3 +65,6 @@ class ComponentSlots():
 
     def toggleNormaliseCompositions(self, state):
         config.NORMALISE_COMPOSITIONS = bool(state)
+
+    def duplicateComponent(self):
+        self.widget.componentList.duplicate()
