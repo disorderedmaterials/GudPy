@@ -410,6 +410,7 @@ class ComponentsList(QListView):
         else:
             new = self.model().insertRow(component, QModelIndex())
             self.setCurrentIndex(new)
+
     def removeComponent(self):
         """
         Removes rows from the model.
