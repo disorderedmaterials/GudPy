@@ -58,6 +58,7 @@ class ComponentSlots():
 
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
+        self.widget.normaliseCompositionsCheckBox.setEnabled(bool(state))
 
     def toggleNormaliseCompositions(self, state):
         config.NORMALISE_COMPOSITIONS = bool(state)
