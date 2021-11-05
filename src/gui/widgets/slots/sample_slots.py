@@ -856,7 +856,6 @@ class SampleSlots():
                 QAbstractItemView.EditTrigger.NoEditTriggers
             )
             self.widget.sampleRatioCompositionTab.setEnabled(True)
-            self.widget.sampleCompositionTabs.setCurrentIndex(1)
             (
                 self.widget.sampleRatioCompositionTable
                 .model().dataChanged.connect(
@@ -873,7 +872,6 @@ class SampleSlots():
                 QAbstractItemView.EditTrigger.EditKeyPressed |
                 QAbstractItemView.EditTrigger.AnyKeyPressed
             )
-            self.widget.sampleCompositionTabs.setCurrentIndex(0)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
