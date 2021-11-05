@@ -1,7 +1,8 @@
+from enum import Flag
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMessageBox
 from src.gudrun_classes import config
 from src.gudrun_classes.element import Element
-
-
 class ComponentSlots():
 
     def __init__(self, widget, parent):
@@ -36,8 +37,24 @@ class ComponentSlots():
             self.components, self.widget.componentCompositionTable
         )
         self.widget.componentCompositionTable.model().dataChanged.connect(
-            self.loadComponentsList
+            self.handleDataChanged
         )
+
+    def handleDataChanged(self, index, _):
+        component = index.internalPointer()
+        isotopes = "\n".join([str(el) for el in component.parse(persistent=False)])
+        result = (
+            QMessageBox.question(
+                self.widget, '',
+                f"{component.name} looks like a chemical formula."
+                f" Do you want it's isotopes resolved automatically?"
+                f" It looks like:\n{isotopes}",
+                QMessageBox.No | QMessageBox.Yes
+            )
+        )
+        if result == QMessageBox.Yes:
+            component.parse()
+        self.loadComponentsList()
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(

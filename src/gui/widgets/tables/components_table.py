@@ -155,7 +155,6 @@ class ComponentsModel(QAbstractItemModel):
         elif role == Qt.EditRole:
             if not index.parent().isValid():
                 self.components.components[index.row()].name = value
-                self.components.components[index.row()].nameChanged()
                 self.dataChanged.emit(index, index)
             else:
                 if index.column() == 0:

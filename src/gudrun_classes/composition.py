@@ -61,15 +61,17 @@ class Component():
         self.elements = []
         self.name = name
         self.parser = ChemicalFormulaParser()
-        self.nameChanged()
+        # self.nameChanged()
 
     def addElement(self, element):
         self.elements.append(element)
 
-    def nameChanged(self):
+    def parse(self, persistent=True):
         elements = self.parser.parse(self.name)
-        if elements:
+        if elements and persistent:
             self.elements = elements
+        elif elements and not persistent:
+            return elements
 
 class Components():
 
