@@ -40,7 +40,6 @@ class ChemicalFormulaParser():
             match = re.match(r"[A-Z][a-z]|[A-Z]", "".join(self.stream))
             if match:
                 self.consumeTokens(len(match.group(0)))
-                print(match.group(0))
                 return match.group(0)
 
     def parseAbundance(self):
@@ -48,7 +47,6 @@ class ChemicalFormulaParser():
             match = re.match(r"\d+\.\d+|\d+", "".join(self.stream))
             if match:
                 self.consumeTokens(len(match.group(0)))
-                print(match.group(0))
                 return match.group(0)
         return 1.0
 

@@ -42,10 +42,11 @@ class ComponentSlots():
 
     def handleDataChanged(self, index, _):
         component = index.internalPointer()
-        compositionDialog = CompositionDialog(self.widget, component)
-        result = compositionDialog.widget.exec()
-        if result:
-            component.parse()
+        if component.parse(persistent=False):
+            compositionDialog = CompositionDialog(self.widget, component)
+            result = compositionDialog.widget.exec()
+            if result:
+                component.parse()
         self.loadComponentsList()
 
     def addSubComponent(self):
