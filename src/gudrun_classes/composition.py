@@ -1,5 +1,4 @@
 from src.gudrun_classes.element import Element
-from src.scripts.utils import isnumeric
 import re
 
 
