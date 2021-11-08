@@ -9,11 +9,10 @@ class ChemicalFormulaParser():
         self.stream = None
         self.regex = re.compile(r"[A-Z][a-z]?\d*")
 
-    def getNextToken(self):
-        return self.stream.pop(0) if self.stream else None
-
-    def peekNextToken(self):
-        return self.stream[0] if self.stream else None
+    def consumeTokens(self, n):
+        for _ in range(n):
+            if self.stream:
+                self.stream.pop(0)
 
     def parse(self, stream):
         if not self.regex.match(stream):
@@ -29,33 +28,29 @@ class ChemicalFormulaParser():
         return elements
 
     def parseElement(self):
-
         symbol = self.parseSymbol()
+        if symbol == "D":
+            symbol = "H"
         abundance = self.parseAbundance()
         if symbol and abundance:
             return Element(symbol, 0, abundance)
 
     def parseSymbol(self):
-        symbol = ""
-        token = self.peekNextToken()
-        if token:
-            if token.isupper():
-                symbol = self.getNextToken()
-                if self.peekNextToken() and self.peekNextToken().islower():
-                    symbol += self.getNextToken()
-        return symbol
+        if self.stream:
+            match = re.match(r"[A-Z][a-z]|[A-Z]", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                print(match.group(0))
+                return match.group(0)
 
     def parseAbundance(self):
-        abundance = 1
-        token = self.peekNextToken()
-        if token:
-            if isnumeric(token):
-                abundanceStr = self.getNextToken()
-                while self.peekNextToken() and isnumeric(self.peekNextToken()):
-                    token = self.getNextToken()
-                    abundanceStr += token
-                abundance = int(abundanceStr)
-        return abundance
+        if self.stream:
+            match = re.match(r"\d+\.\d+|\d+", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                print(match.group(0))
+                return match.group(0)
+        return 1.0
 
 
 class Component():
@@ -64,7 +59,6 @@ class Component():
         self.elements = []
         self.name = name
         self.parser = ChemicalFormulaParser()
-        # self.nameChanged()
 
     def addElement(self, element):
         self.elements.append(element)
