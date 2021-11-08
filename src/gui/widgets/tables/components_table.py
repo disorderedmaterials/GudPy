@@ -407,7 +407,12 @@ class ComponentsList(QListView):
         Inserts a row into the model.
         """
         if not component:
-            new = self.model().insertRow(Component("Component"), QModelIndex())
+            name = "Component"
+            i = 0
+            while name in [c.name for c in self.model().components.components]:
+                i += 1
+                name = f"Component {i}"
+            new = self.model().insertRow(Component(name), QModelIndex())
             self.setCurrentIndex(new)
         else:
             new = self.model().insertRow(component, QModelIndex())
