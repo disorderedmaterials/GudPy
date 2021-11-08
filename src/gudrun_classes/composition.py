@@ -47,7 +47,7 @@ class ChemicalFormulaParser():
             match = re.match(r"\d+\.\d+|\d+", "".join(self.stream))
             if match:
                 self.consumeTokens(len(match.group(0)))
-                return match.group(0)
+                return float(match.group(0))
         return 1.0
 
 
