@@ -29,9 +29,10 @@ class ChemicalFormulaParser():
 
     def parseElement(self):
         symbol = self.parseSymbol()
+        abundance = self.parseAbundance()
         if symbol == "D":
             symbol = "H"
-        abundance = self.parseAbundance()
+            abundance = 2.0
         if symbol and abundance:
             return Element(symbol, 0, abundance)
 
