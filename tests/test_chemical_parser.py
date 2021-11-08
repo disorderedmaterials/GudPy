@@ -1,4 +1,4 @@
-from src.gudrun_classes.composition import Component, Element
+from src.gudrun_classes.composition import Component
 from unittest import TestCase
 
 
@@ -19,7 +19,7 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[1].atomicSymbol, "O")
         self.assertEqual(component.elements[1].massNo, 0)
         self.assertEqual(component.elements[1].abundance, 1.0)
-    
+
     def testInvalidParse(self):
 
         formula = "h2o"
@@ -27,7 +27,7 @@ class TestChemicalParser(TestCase):
         component.parse()
 
         self.assertEqual(len(component.elements), 0)
-    
+
     def testD2OParse(self):
 
         formula = "D2O"
@@ -79,7 +79,7 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[6].atomicSymbol, "K")
         self.assertEqual(component.elements[6].massNo, 0)
         self.assertEqual(component.elements[6].abundance, 1.0)
-    
+
     def testParseDecimalAbundance(self):
 
         formula = "H1.0K1.0Ar33.0Au26.5"
@@ -103,7 +103,7 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[3].atomicSymbol, "Au")
         self.assertEqual(component.elements[3].massNo, 0)
         self.assertEqual(component.elements[3].abundance, 26.5)
-    
+
     def testInvalidParse2(self):
 
         formula = "H2O1./"
