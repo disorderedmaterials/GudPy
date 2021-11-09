@@ -29,12 +29,13 @@ class ChemicalFormulaParser():
     def parseElement(self):
         symbol = self.parseSymbol()
         abundance = self.parseAbundance()
+        massNo = 0
         if symbol == "D":
             symbol = "H"
-            abundance = 2.0
+            massNo = 2.0
         from src.gudrun_classes import config
         if symbol and abundance and symbol in config.massData.keys():
-            return Element(symbol, 0, abundance)
+            return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
         if self.stream:
