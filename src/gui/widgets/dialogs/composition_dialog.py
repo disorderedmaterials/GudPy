@@ -52,7 +52,7 @@ class CompositionDialog(QDialog):
         self.widget.infoLabel.setText(
             f"{self.component.name} looks like a chemical formula.\n"
             f"Do you want the atomic composition resolved automatically?"
-            f" It looks like:\n"
+            f"It looks like:\n"
         )
 
         self.widget.compositionLookAheadTable.makeModel(
