@@ -76,7 +76,7 @@ class Composition():
         for element in elements:
             exists = False
             for element_ in self.elements:
-                if element.atomicSymbol == element_.atomicSymbol:
+                if element.atomicSymbol == element_.atomicSymbol and element.massNo == element_.massNo:
                     element_.abundance += element.abundance
                     exists = True
             if not exists:
