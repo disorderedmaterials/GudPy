@@ -1,5 +1,6 @@
 from src.gudrun_classes import config
 from src.gudrun_classes.element import Element
+from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 
 
 class ComponentSlots():
@@ -41,6 +42,24 @@ class ComponentSlots():
         self.widget.componentList.makeModel(
             self.components, self.widget.componentCompositionTable
         )
+        self.widget.componentList.model().dataChanged.connect(
+            self.handleDataChanged
+        )
+
+    def handleDataChanged(self, index, _):
+        component = index.internalPointer()
+        if component.parse(persistent=False):
+            compositionDialog = CompositionDialog(self.widget, component)
+            result = compositionDialog.widget.exec()
+            if result:
+                component.parse()
+            row = index.row()
+            self.loadComponentsList()
+            self.widget.componentList.setCurrentIndex(
+                self.widget.componentList.model().index(
+                    row, 0
+                )
+            )
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(

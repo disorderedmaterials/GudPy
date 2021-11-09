@@ -19,6 +19,7 @@ from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
 from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
 from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
+from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
@@ -148,6 +149,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
+        loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)

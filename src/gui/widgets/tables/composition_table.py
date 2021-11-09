@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
+from src.gudrun_classes import config
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
@@ -71,6 +72,14 @@ class CompositionModel(GudPyTableModel):
         row = index.row()
         col = index.column()
         if role == Qt.EditRole:
+            if col == 0:
+                print(value)
+                if value == "D":
+                    self._data[row].atomicSymbol = "H"
+                    self._data[row].massNo = 2
+                    return True
+                elif value not in config.massData.keys():
+                    return False
             self._data[row].__dict__[self.attrs[col]] = value
 
     def insertRow(self):
@@ -239,7 +248,7 @@ class CompositionTable(QTableView):
         self.compositions = []
         super(CompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, data, farm=True):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -254,7 +263,8 @@ class CompositionTable(QTableView):
             )
         )
         self.setItemDelegate(CompositionDelegate())
-        self.farmCompositions()
+        if farm:
+            self.farmCompositions()
 
     def insertRow(self):
         """

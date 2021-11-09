@@ -1,4 +1,56 @@
 from src.gudrun_classes.element import Element
+import re
+
+
+class ChemicalFormulaParser():
+
+    def __init__(self):
+        self.stream = None
+        self.regex = re.compile(r"[A-Z][a-z]?\d*")
+
+    def consumeTokens(self, n):
+        for _ in range(n):
+            if self.stream:
+                self.stream.pop(0)
+
+    def parse(self, stream):
+        if not self.regex.match(stream):
+            return None
+        self.stream = list(stream)
+        elements = []
+        while self.stream:
+            element = self.parseElement()
+            if element:
+                elements.append(element)
+            else:
+                return False
+        return elements
+
+    def parseElement(self):
+        symbol = self.parseSymbol()
+        abundance = self.parseAbundance()
+        massNo = 0
+        if symbol == "D":
+            symbol = "H"
+            massNo = 2.0
+        from src.gudrun_classes import config
+        if symbol and abundance and symbol in config.massData.keys():
+            return Element(symbol, massNo, abundance)
+
+    def parseSymbol(self):
+        if self.stream:
+            match = re.match(r"[A-Z][a-z]|[A-Z]", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                return match.group(0)
+
+    def parseAbundance(self):
+        if self.stream:
+            match = re.match(r"\d+\.\d+|\d+", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                return float(match.group(0))
+        return 1.0
 
 
 class Component():
@@ -6,9 +58,17 @@ class Component():
     def __init__(self, name):
         self.elements = []
         self.name = name
+        self.parser = ChemicalFormulaParser()
 
     def addElement(self, element):
         self.elements.append(element)
+
+    def parse(self, persistent=True):
+        elements = self.parser.parse(self.name)
+        if elements and persistent:
+            self.elements = elements
+        elif elements and not persistent:
+            return elements
 
 
 class Components():

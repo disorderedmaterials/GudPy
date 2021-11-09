@@ -3,6 +3,7 @@ from PySide6.QtCore import (
     QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
 )
 from PySide6.QtWidgets import QListView
+from src.gudrun_classes import config
 from src.gudrun_classes.composition import Component
 from src.gudrun_classes.element import Element
 from src.gui.widgets.tables.composition_table import CompositionDelegate
@@ -158,11 +159,20 @@ class ComponentsModel(QAbstractItemModel):
                 if value in [c.name for c in self.components.components]:
                     return False
                 self.components.components[index.row()].name = value
+                self.dataChanged.emit(index, index)
             else:
                 if index.column() == 0:
-                    self.components.components[
-                        index.parent().row()
-                    ].elements[index.row()].atomicSymbol = value
+                    if value in config.massData.keys():
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].atomicSymbol = value
+                    elif value == "D":
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].atomicSymbol = "H"
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].massNo = 2
                 elif index.column() == 1:
                     self.components.components[
                         index.parent().row()
