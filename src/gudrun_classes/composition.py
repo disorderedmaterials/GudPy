@@ -32,7 +32,8 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             abundance = 2.0
-        if symbol and abundance:
+        from src.gudrun_classes import config
+        if symbol and abundance and symbol in config.massData.keys():
             return Element(symbol, 0, abundance)
 
     def parseSymbol(self):

@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
+from src.gudrun_classes import config
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
@@ -70,6 +71,9 @@ class CompositionModel(GudPyTableModel):
         row = index.row()
         col = index.column()
         if role == Qt.EditRole:
+            if col == 0:
+                if not value in config.massData.keys():
+                    return False
             self._data[row].__dict__[self.attrs[col]] = value
 
     def insertRow(self):
