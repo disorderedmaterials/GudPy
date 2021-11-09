@@ -76,7 +76,7 @@ class CompositionModel(GudPyTableModel):
                 if value == "D":
                     self._data[row].atomicSymbol = "H"
                     self._data[row].massNo = 2
-                elif not value in config.massData.keys():
+                elif value not in config.massData.keys():
                     return False
             else:
                 self._data[row].__dict__[self.attrs[col]] = value
