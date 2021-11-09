@@ -69,7 +69,7 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[3].abundance, 9.0)
 
         self.assertEqual(component.elements[4].atomicSymbol, "H")
-        self.assertEqual(component.elements[4].massNo, 0)
+        self.assertEqual(component.elements[4].massNo, 2.0)
         self.assertEqual(component.elements[4].abundance, 2.0)
 
         self.assertEqual(component.elements[5].atomicSymbol, "O")
