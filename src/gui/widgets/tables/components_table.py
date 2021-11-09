@@ -415,6 +415,13 @@ class ComponentsList(QListView):
             new = self.model().insertRow(Component(name), QModelIndex())
             self.setCurrentIndex(new)
         else:
+            baseName = component.name
+            name = component.name
+            i = 0
+            while name in [c.name for c in self.model().components.components]:
+                i += 1
+                name = f"{baseName} {i}"
+            component.name = name
             new = self.model().insertRow(component, QModelIndex())
             self.setCurrentIndex(new)
 
