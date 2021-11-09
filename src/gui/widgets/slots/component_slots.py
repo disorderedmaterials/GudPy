@@ -30,6 +30,12 @@ class ComponentSlots():
         self.widget.useComponentsCheckBox.stateChanged.connect(
             self.setUseComponentDefinitions
         )
+        self.widget.normaliseCompositionsCheckBox.stateChanged.connect(
+            self.toggleNormaliseCompositions
+        )
+        self.widget.duplicateButton.clicked.connect(
+            self.duplicateComponent
+        )
 
     def loadComponentsList(self):
         self.widget.componentList.makeModel(
@@ -55,3 +61,10 @@ class ComponentSlots():
 
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
+        self.widget.normaliseCompositionsCheckBox.setEnabled(bool(state))
+
+    def toggleNormaliseCompositions(self, state):
+        config.NORMALISE_COMPOSITIONS = bool(state)
+
+    def duplicateComponent(self):
+        self.widget.componentList.duplicate()

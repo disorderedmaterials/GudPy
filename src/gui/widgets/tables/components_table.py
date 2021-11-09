@@ -1,3 +1,4 @@
+from copy import deepcopy
 from PySide6.QtCore import (
     QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
 )
@@ -154,6 +155,8 @@ class ComponentsModel(QAbstractItemModel):
             return False
         elif role == Qt.EditRole:
             if not index.parent().isValid():
+                if value in [c.name for c in self.components.components]:
+                    return False
                 self.components.components[index.row()].name = value
             else:
                 if index.column() == 0:
@@ -399,15 +402,45 @@ class ComponentsList(QListView):
             index = item.indexes()[0]
             self.sibling.setRootIndex(index)
 
-    def insertComponent(self):
+    def insertComponent(self, component=None):
         """
         Inserts a row into the model.
         """
-        new = self.model().insertRow(Component("Component"), QModelIndex())
-        self.setCurrentIndex(new)
+        if not component:
+            name = "Component"
+            i = 0
+            while name in [c.name for c in self.model().components.components]:
+                i += 1
+                name = f"Component {i}"
+            new = self.model().insertRow(Component(name), QModelIndex())
+            self.setCurrentIndex(new)
+        else:
+            baseName = component.name
+            name = component.name
+            i = 0
+            while name in [c.name for c in self.model().components.components]:
+                i += 1
+                name = f"{baseName} {i}"
+            component.name = name
+            new = self.model().insertRow(component, QModelIndex())
+            self.setCurrentIndex(new)
 
     def removeComponent(self):
         """
         Removes rows from the model.
         """
         self.model().removeRow(self.currentIndex())
+
+    def currentObject(self):
+        """
+        Returns the object associated with the current index.
+        Returns
+        -------
+        Component
+            Object associated with the current index.
+        """
+        return self.currentIndex().internalPointer()
+
+    def duplicate(self):
+        if isinstance(self.currentObject(), Component):
+            self.insertComponent(deepcopy(self.currentObject()))
