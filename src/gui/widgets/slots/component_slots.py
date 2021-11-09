@@ -36,7 +36,7 @@ class ComponentSlots():
         self.widget.componentList.makeModel(
             self.components, self.widget.componentCompositionTable
         )
-        self.widget.componentCompositionTable.model().dataChanged.connect(
+        self.widget.componentList.model().dataChanged.connect(
             self.handleDataChanged
         )
 
@@ -47,7 +47,13 @@ class ComponentSlots():
             result = compositionDialog.widget.exec()
             if result:
                 component.parse()
-        self.loadComponentsList()
+            row = index.row()
+            self.loadComponentsList()
+            self.widget.componentList.setCurrentIndex(
+                self.widget.componentList.model().index(
+                    row, 0
+                )
+            )
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(
