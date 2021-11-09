@@ -158,10 +158,18 @@ class ComponentsModel(QAbstractItemModel):
                 self.components.components[index.row()].name = value
                 self.dataChanged.emit(index, index)
             else:
-                if index.column() == 0 and value in config.massData.keys():
-                    self.components.components[
-                        index.parent().row()
-                    ].elements[index.row()].atomicSymbol = value
+                if index.column() == 0:
+                    if value in config.massData.keys():
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].atomicSymbol = value
+                    elif value == "D":
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].atomicSymbol = "H"
+                        self.components.components[
+                            index.parent().row()
+                        ].elements[index.row()].massNo = 2
                 elif index.column() == 1:
                     self.components.components[
                         index.parent().row()

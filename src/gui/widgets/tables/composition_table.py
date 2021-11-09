@@ -72,9 +72,14 @@ class CompositionModel(GudPyTableModel):
         col = index.column()
         if role == Qt.EditRole:
             if col == 0:
-                if not value in config.massData.keys():
+                print(value)
+                if value == "D":
+                    self._data[row].atomicSymbol = "H"
+                    self._data[row].massNo = 2
+                elif not value in config.massData.keys():
                     return False
-            self._data[row].__dict__[self.attrs[col]] = value
+            else:
+                self._data[row].__dict__[self.attrs[col]] = value
 
     def insertRow(self):
         """
