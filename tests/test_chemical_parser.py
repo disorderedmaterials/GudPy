@@ -112,3 +112,26 @@ class TestChemicalParser(TestCase):
         component.parse()
 
         self.assertEqual(len(component.elements), 0)
+
+    def testInvalidElements(self):
+
+        formula = "Ng12KThPa"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
+
+        formula = "OgTsLvNoRk"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
+
+        formula = "NdPmZkNeMk"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
