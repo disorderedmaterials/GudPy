@@ -1,23 +1,41 @@
 # -*- mode: python ; coding: utf-8 -*-
-VERSION = "0.0.1"
+VERSION = "1.0.0"
 binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
 block_cipher = None
+import sys
 
-a = Analysis(['main.py'],
-             pathex=[os.path.dirname(os.path.abspath('main.py'))],
-             binaries=binaries,
-             datas=[("bin/StartupFiles", "bin/StartupFiles"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")],
-             hiddenimports=[],
-             hookspath=[],
-             hooksconfig={},
-             runtime_hooks=[],
-             excludes=[],
-             win_no_prefer_redirects=False,
-             win_private_assemblies=False,
-             cipher=block_cipher,
-             noarchive=False)
-pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
+if sys.platform == "darwin":
+    a = Analysis(['main.py'],
+                pathex=[os.path.dirname(os.path.abspath('main.py'))],
+                binaries=None,
+                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")], *binaries],
+                hiddenimports=[],
+                hookspath=[],
+                hooksconfig={},
+                runtime_hooks=[],
+                excludes=[],
+                win_no_prefer_redirects=False,
+                win_private_assemblies=False,
+                cipher=block_cipher,
+                noarchive=False)
+    pyz = PYZ(a.pure, a.zipped_data,
+                cipher=block_cipher)
+else:
+    a = Analysis(['main.py'],
+                pathex=[os.path.dirname(os.path.abspath('main.py'))],
+                binaries=binaries,
+                datas=[("bin/StartupFiles", "bin/StartupFiles"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")],
+                hiddenimports=[],
+                hookspath=[],
+                hooksconfig={},
+                runtime_hooks=[],
+                excludes=[],
+                win_no_prefer_redirects=False,
+                win_private_assemblies=False,
+                cipher=block_cipher,
+                noarchive=False)
+    pyz = PYZ(a.pure, a.zipped_data,
+                cipher=block_cipher)
 
 exe = EXE(pyz,
           a.scripts,
@@ -38,7 +56,6 @@ exe = EXE(pyz,
           codesign_identity=None,
           entitlements_file=None )
 
-import sys
 if sys.platform == "darwin":
     app = BUNDLE(exe,
                 name=f'GudPy-{VERSION}.app')
