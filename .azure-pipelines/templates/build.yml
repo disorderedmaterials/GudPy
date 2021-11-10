@@ -49,17 +49,17 @@ steps:
       PYINSTALLER_PATH=$(echo "${PYINSTALLER_PATH}" | awk '{print $2}')
       PYINSTALLER_PATH="${PYINSTALLER_PATH}/pyinstaller/compat.py"
       sed -i '' -e 's/out, err = proc.communicate(timeout=60)/out, err = proc.communicate(timeout=240)/g' "${PYINSTALLER_PATH}"
-      brew install npm
-      npm install -g create-dmg
     condition: eq(variables.osName, 'osx')
-
     displayName: 'Increase timeouts for OSX'
+
   - bash: |
       pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
       pyinstaller gudpy.spec
     displayName: 'Create executables.'
   
   - bash: |
+      brew install npm
+      npm install -g create-dmg
       create-dmg dist/*.app
       [ $? -eq 2 ]  || exit 0
     condition: eq(variables.osName, 'osx')
