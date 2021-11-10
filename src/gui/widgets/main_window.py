@@ -495,14 +495,16 @@ class GudPyMainWindow(QMainWindow):
                 )
                 bottomChart.addSample(sample)
                 bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-                path = sample.dataFiles.dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType, "gud"
-                )
-                if not os.path.exists(path):
-                    path = os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir, path
+                path = None
+                if len(sample.dataFiles.dataFiles):
+                    path = sample.dataFiles.dataFiles[0].replace(
+                        self.gudrunFile.instrument.dataFileType, "gud"
                     )
-                gf = GudFile(path) if os.path.exists(path) else None
+                    if not os.path.exists(path):
+                        path = os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir, path
+                        )
+                gf = GudFile(path) if path and os.path.exists(path) else None
                 self.results[sample] = [topChart, bottomChart, gf]
 
     def updateAllSamples(self):
