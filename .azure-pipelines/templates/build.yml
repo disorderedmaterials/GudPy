@@ -61,6 +61,7 @@ steps:
       brew install npm
       npm install -g create-dmg
       create-dmg dist/*.app
+      mv *.dmg dist/
       [ $? -eq 2 ]  || exit 0
     condition: eq(variables.osName, 'osx')
     displayName: 'Create DMG for OSX.'
