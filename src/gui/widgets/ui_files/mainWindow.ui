@@ -245,41 +245,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="configLabel">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Instrument Config</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QLineEdit" name="configLineEdit">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="1" column="1" colspan="3">
                   <widget class="QLineEdit" name="detCalibrationLineEdit">
                    <property name="sizePolicy">
@@ -6809,7 +6774,7 @@
     <addaction name="viewLiveInputFile"/>
     <addaction name="save"/>
     <addaction name="saveAs"/>
-    <addaction name="new_"/>
+    <addaction name="actionNew"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -6962,7 +6927,7 @@
     <string>Check Files Exist</string>
    </property>
   </action>
-  <action name="new_">
+  <action name="actionNew">
    <property name="text">
     <string>New</string>
    </property>
