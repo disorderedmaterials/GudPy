@@ -27,10 +27,10 @@ steps:
       sed -i '' -e 's/tristan.youngs/jared.swift/g' scripts/update-release
       mkdir osx linux windows
       mv $(System.ArtifactsDirectory)/linux-artifacts/GudPy-$VERSION linux/GudPy-$VERSION-linux
-      mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION.app osx/GudPy-$VERSION-osx.app
+      mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION.app/* osx/GudPy-$VERSION-osx.app/*
       mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION.dmg osx/GudPy-$VERSION-osx.dmg
       mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION.exe windows/GudPy-$VERSION-windows.exe
-      mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION.zip windows/GudPy-$VERSION-windows.zip 
+      mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION-windows.zip windows/
       ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md linux/* osx/* windows/*
     env:
       GITHUB_TOKEN: $(REPO_SECRET)
