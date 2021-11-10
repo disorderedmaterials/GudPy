@@ -25,7 +25,7 @@ steps:
       git clone https://github.com/disorderedmaterials/scripts.git
       sed -i '' -e 's/trisyoungs/jswift-stfc/g' scripts/update-release
       sed -i '' -e 's/tristan.youngs/jared.swift/g' scripts/update-release
-      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/* $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*.app $(System.ArtifactsDirectory)/osx-artifacts/*.dmg
+      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/* $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*dmg $(System.ArtifactsDirectory)/osx-artifacts/GudPy-%VERSION.app 
     env:
       GITHUB_TOKEN: $(REPO_SECRET)
     displayName: 'Create Versioned Release (GitHub)'
