@@ -140,14 +140,20 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-        self.instrument = None
-        self.beam = None
-        self.normalisation = None
-        self.sampleBackgrounds = []
+        if path:
+            self.instrument = None
+            self.beam = None
+            self.normalisation = None
+            self.sampleBackgrounds = []
+            self.parse()
+        else:
+            self.instrument = Instrument()
+            self.beam = Beam()
+            self.normalisation = Normalisation()
+            self.sampleBackgrounds = []
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
-        self.parse()
         self.purgeFile = PurgeFile(self)
 
     def getNextToken(self):

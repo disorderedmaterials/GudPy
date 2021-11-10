@@ -308,6 +308,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.loadInputFile.triggered.connect(
             self.loadInputFile_
         )
+
+        self.mainWidget.new_.triggered.connect(
+            self.newInputFile
+        )
+
         self.mainWidget.objectStack.currentChanged.connect(
             self.updateComponents
         )
@@ -382,6 +387,10 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.outpath = filename
             self.gudrunFile.write_out()
             self.setUnModified()
+
+    def newInputFile(self):
+        self.gudrunFile = GudrunFile()
+        self.updateWidgets()
 
     def updateFromFile(self):
         """
@@ -499,33 +508,34 @@ class GudPyMainWindow(QMainWindow):
     def updateAllSamples(self):
 
         samples = self.mainWidget.objectTree.getSamples()
-        if len(self.allPlots):
-            if self.allPlots[0].data.keys() != samples:
+        if samples:                
+            if len(self.allPlots):
+                if self.allPlots[0].data.keys() != samples:
+                    allTopChart = GudPyChart(
+                        self.gudrunFile
+                    )
+                    allTopChart.addSamples(samples)
+                    allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+                if self.allPlots[1].data.keys() != samples:
+                    allBottomChart = GudPyChart(
+                        self.gudrunFile
+                    )
+                    allBottomChart.addSamples(samples)
+                    allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            else:
                 allTopChart = GudPyChart(
                     self.gudrunFile
                 )
                 allTopChart.addSamples(samples)
                 allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-            if self.allPlots[1].data.keys() != samples:
                 allBottomChart = GudPyChart(
                     self.gudrunFile
                 )
                 allBottomChart.addSamples(samples)
                 allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-        else:
-            allTopChart = GudPyChart(
-                self.gudrunFile
-            )
-            allTopChart.addSamples(samples)
-            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-            allBottomChart = GudPyChart(
-                self.gudrunFile
-            )
-            allBottomChart.addSamples(samples)
-            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-        self.allPlots = [allTopChart, allBottomChart]
-        self.mainWidget.allSampleTopPlot.setChart(allTopChart)
-        self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
+            self.allPlots = [allTopChart, allBottomChart]
+            self.mainWidget.allSampleTopPlot.setChart(allTopChart)
+            self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
 
     def updateResults(self):
 
