@@ -31,7 +31,7 @@ steps:
       mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION.dmg osx/GudPy-$VERSION-osx.dmg
       mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION.exe windows/GudPy-$VERSION-windows.exe
       mv $(System.ArtifactsDirectory)/windows-artifacts/GudPy-$VERSION-windows.zip windows/
-      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md linux/* osx/* windows/*
+      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md linux osx windows
     env:
       GITHUB_TOKEN: $(REPO_SECRET)
     displayName: 'Create Versioned Release (GitHub)'
