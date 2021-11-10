@@ -120,7 +120,7 @@ class Instrument:
         self.name = Instruments.NIMROD
         self.GudrunInputFileDir = ""
         self.dataFileDir = ""
-        self.dataFileType = ""
+        self.dataFileType = "raw"
         self.detectorCalibrationFileName = ""
         self.columnNoPhiVals = 0
         self.groupFileName = ""
