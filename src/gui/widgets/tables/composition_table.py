@@ -7,7 +7,6 @@ from src.gudrun_classes import config
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
-from src.gudrun_classes import config
 
 
 class CompositionModel(GudPyTableModel):
