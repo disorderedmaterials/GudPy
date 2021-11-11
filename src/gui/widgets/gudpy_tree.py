@@ -369,7 +369,9 @@ class GudPyTreeModel(QAbstractItemModel):
         flags = super(GudPyTreeModel, self).flags(index)
         # If is is a sample, make append checkable flag.
         if self.isSample(index):
-            flags |= Qt.ItemIsUserCheckable
+            flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
+        elif self.isContainer(index):
+            flags |= Qt.ItemIsEditable
         return flags
 
     def isSample(self, index):
@@ -385,6 +387,9 @@ class GudPyTreeModel(QAbstractItemModel):
             Is it a sample or not?
         """
         return isinstance(index.parent().internalPointer(), SampleBackground)
+
+    def isContainer(self, index):
+        return isinstance(index.parent().internalPointer(), Sample)
 
     def isIncluded(self, index):
         """
