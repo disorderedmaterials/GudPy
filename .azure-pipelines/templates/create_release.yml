@@ -26,7 +26,7 @@ steps:
       sed -i '' -e 's/trisyoungs/jswift-stfc/g' scripts/update-release
       sed -i '' -e 's/tristan.youngs/jared.swift/g' scripts/update-release
       mv $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION-osx
-      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/* $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*.dmg $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION-osx
+      ./scripts/update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/* $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/GudPy-$VERSION-osx
     env:
       GITHUB_TOKEN: $(REPO_SECRET)
     displayName: 'Create Versioned Release (GitHub)'
