@@ -252,7 +252,8 @@ class GudPyTreeModel(QAbstractItemModel):
     def setData(self, index, value, role):
         """
         Sets data at a given index, if the index is valid.
-        Only used for assigning CheckStates to samples.
+        Only used for assigning CheckStates to samples,
+        and altering the names of samples/containers.
         Parameters
         ----------
         index : QModelIndex
@@ -273,6 +274,9 @@ class GudPyTreeModel(QAbstractItemModel):
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
+            return True
+        elif role == Qt.EditRole and (self.isSample(index) or self.isContainer(index)):
+            index.internalPointer().name = value
             return True
         else:
             return False
