@@ -12,7 +12,7 @@ def read_plist(path):
 import os.path
 
 
-application = defines.get('app', './dist/GudPy-1.0.0.app')
+application = defines.get('app', './dist/GudPy-0.1.0.app')
 appname = os.path.basename(application)
 
 def icon_from_app(app_path):
