@@ -58,13 +58,10 @@ steps:
     displayName: 'Create executables.'
   
   - bash: |
-      brew install npm
-      npm install -g create-dmg
-      create-dmg dist/*.app
-      mv *.dmg dist/
-      [ $? -eq 2 ]  || exit 0
-    condition: eq(variables.osName, 'osx')
-    displayName: 'Create DMG for OSX.'
+    pip install dmgbuild
+    dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
+  condition: eq(variables.osName, 'osx')
+  displayName: 'Create DMG for OSX.'
 
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
