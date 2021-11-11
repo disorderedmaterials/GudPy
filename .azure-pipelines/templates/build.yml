@@ -62,8 +62,8 @@ steps:
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
       dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
-  condition: eq(variables.osName, 'osx')
-  displayName: 'Create DMG for OSX.'
+    condition: eq(variables.osName, 'osx')
+    displayName: 'Create DMG for OSX.'
 
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
