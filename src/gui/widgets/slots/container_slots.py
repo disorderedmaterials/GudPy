@@ -521,7 +521,10 @@ class ContainerSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        files, _ = QFileDialog.getOpenFileNames(self.widget, title, self.parent.gudrunFile.instrument.dataFileDir, regex)
+        files, _ = QFileDialog.getOpenFileNames(
+            self.widget, title,
+            self.parent.gudrunFile.instrument.dataFileDir, regex
+        )
         for file in files:
             if file:
                 target.addItem(file.split("/")[-1])

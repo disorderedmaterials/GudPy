@@ -633,7 +633,10 @@ class NormalisationSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(self.widget, title, self.parent.gudrunFile.instrument.dataFileDir, regex)
+        paths = QFileDialog.getOpenFileNames(
+            self.widget, title,
+            self.parent.gudrunFile.instrument.dataFileDir, regex
+        )
         for path in paths:
             if path:
                 target.addItem(path)

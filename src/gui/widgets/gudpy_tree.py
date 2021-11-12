@@ -275,7 +275,10 @@ class GudPyTreeModel(QAbstractItemModel):
             else:
                 index.internalPointer().runThisSample = False
             return True
-        elif role == Qt.EditRole and (self.isSample(index) or self.isContainer(index)):
+        elif (
+            role == Qt.EditRole
+            and (self.isSample(index) or self.isContainer(index))
+        ):
             index.internalPointer().name = value
             return True
         else:
