@@ -16,7 +16,7 @@ StartupFiles\GEM\banks_051m.grp          Groups file name
 30  4980          Channel numbers for spike analysis
 4          Spike analysis acceptance factor
 0.1  3.5  0.1          Wavelength range to use [Å] and step size
-100  30          No. of smooths on monitor and vanadium
+100          No. of smooths on monitor
 0.01  60.0  0.02          Min, Max and step in x-scale (-ve for logarithmic binning)
 0  0  0  0          0 0 0 0 to end input of specified values
 1.0          Groups acceptance factor 
