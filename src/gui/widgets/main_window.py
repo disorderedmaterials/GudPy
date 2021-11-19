@@ -309,6 +309,10 @@ class GudPyMainWindow(QMainWindow):
             self.loadInputFile_
         )
 
+        self.mainWidget.loadConfiguration.triggered.connect(
+            self.loadConfiguration_
+        )
+
         self.mainWidget.new_.triggered.connect(
             self.newInputFile
         )
@@ -365,6 +369,21 @@ class GudPyMainWindow(QMainWindow):
         if filename:
             try:
                 self.gudrunFile = GudrunFile(filename)
+                self.updateWidgets()
+            except ParserException as e:
+                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
+
+    def loadConfiguration_(self):
+        """
+        Opens a QFileDialog to load a configuration file.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Select configuration file for GudPy" ".", "GudPy Configuration"
+        )
+        if filename:
+            try:
+                instrument = GudrunFile(filename).instrument
+                self.gudrunFile.instrument = instrument
                 self.updateWidgets()
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))

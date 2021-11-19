@@ -5827,7 +5827,6 @@
                         <widget class="QLabel" name="dcsLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5846,7 +5845,6 @@
                         <widget class="QLabel" name="resultLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -6774,7 +6772,7 @@
     <addaction name="viewLiveInputFile"/>
     <addaction name="save"/>
     <addaction name="saveAs"/>
-    <addaction name="actionNew"/>
+    <addaction name="new_"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -6927,7 +6925,7 @@
     <string>Check Files Exist</string>
    </property>
   </action>
-  <action name="actionNew">
+  <action name="new_">
    <property name="text">
     <string>New</string>
    </property>

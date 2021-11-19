@@ -224,7 +224,7 @@ class GudrunFile:
         None
         """
         line = self.peekNextToken()
-        if line.isspace():
+        if line and line.isspace():
             self.getNextToken()
             line = self.peekNextToken()
 
@@ -1186,12 +1186,12 @@ class GudrunFile:
             line = self.getNextToken()
 
         # If we didn't parse each one of the keywords, then panic.
-        if not all(KEYWORDS.values()):
-            raise ParserException((
-                'INSTRUMENT, BEAM and NORMALISATION'
-                ' were not parsed. It\'s possible the file'
-                ' supplied is of an incorrect format!'
-            ))
+        #if not all(KEYWORDS.values()):
+        #    raise ParserException((
+        #        'INSTRUMENT, BEAM and NORMALISATION'
+        #        ' were not parsed. It\'s possible the file'
+        #        ' supplied is of an incorrect format!'
+        #    ))
 
         # Ignore whitespace.
         self.consumeWhitespace()
