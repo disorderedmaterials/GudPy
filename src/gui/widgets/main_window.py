@@ -313,8 +313,12 @@ class GudPyMainWindow(QMainWindow):
             self.loadConfiguration_
         )
 
-        self.mainWidget.new_.triggered.connect(
+        self.mainWidget.new__.triggered.connect(
             self.newInputFile
+        )
+
+        self.mainWidget.newFromConfig.triggered.connect(
+            self.newInputFileFromConfig
         )
 
         self.mainWidget.objectStack.currentChanged.connect(
@@ -411,6 +415,10 @@ class GudPyMainWindow(QMainWindow):
     def newInputFile(self):
         self.gudrunFile = GudrunFile()
         self.updateWidgets()
+    
+    def newInputFileFromConfig(self):
+        self.gudrunFile = GudrunFile()
+        self.loadConfiguration_()
 
     def updateFromFile(self):
         """
