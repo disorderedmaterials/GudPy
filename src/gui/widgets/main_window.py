@@ -377,8 +377,9 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load a configuration file.
         """
+        targetDir = os.path.join(sys._MEIPASS, "bin", "configs") if hasattr(sys, "_MEIPASS") else os.path.join("bin", "configs")
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select configuration file for GudPy" ".", "GudPy Configuration"
+            self, "Select configuration file for GudPy", targetDir, "GudPy Configuration (*.txt)"
         )
         if filename:
             try:
