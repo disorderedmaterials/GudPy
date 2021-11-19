@@ -28,7 +28,7 @@ StartupFiles/NOVA/NOVAdeadtime.cor          Deadtime constants file name
 StartupFiles/NIMROD/sears91_gudrun.dat          Neutron scattering parameters file
 1          Scale selection: 1 = Q, 2 = d-space, 3 = wavelength, 4 = energy, 5 = TOF
 0          Subtract wavelength-binned data?
-.n          Folder where Gudrun started
+.          Folder where Gudrun started
 .          Folder containing the startup file
 0.6          Logarithmic step size
 1          Hard group edges?
