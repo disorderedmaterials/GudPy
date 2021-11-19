@@ -252,7 +252,8 @@ class GudPyTreeModel(QAbstractItemModel):
     def setData(self, index, value, role):
         """
         Sets data at a given index, if the index is valid.
-        Only used for assigning CheckStates to samples.
+        Only used for assigning CheckStates to samples,
+        and altering the names of samples/containers.
         Parameters
         ----------
         index : QModelIndex
@@ -273,6 +274,12 @@ class GudPyTreeModel(QAbstractItemModel):
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
+            return True
+        elif (
+            role == Qt.EditRole
+            and (self.isSample(index) or self.isContainer(index))
+        ):
+            index.internalPointer().name = value
             return True
         else:
             return False
@@ -367,9 +374,12 @@ class GudPyTreeModel(QAbstractItemModel):
             Flags.
         """
         flags = super(GudPyTreeModel, self).flags(index)
-        # If is is a sample, make append checkable flag.
+        # If it is a sample, append checkable flag and editable flag.
         if self.isSample(index):
-            flags |= Qt.ItemIsUserCheckable
+            flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
+        # If it is a container, append editable flag.
+        elif self.isContainer(index):
+            flags |= Qt.ItemIsEditable
         return flags
 
     def isSample(self, index):
@@ -385,6 +395,20 @@ class GudPyTreeModel(QAbstractItemModel):
             Is it a sample or not?
         """
         return isinstance(index.parent().internalPointer(), SampleBackground)
+
+    def isContainer(self, index):
+        """
+        Returns whether a given index is associated with a container.
+        Parameters
+        ----------
+        index : QModelIndex
+            Index to check if container is associated with.
+        Returns
+        -------
+        bool
+            Is it a container or not?
+        """
+        return isinstance(index.parent().internalPointer(), Sample)
 
     def isIncluded(self, index):
         """
