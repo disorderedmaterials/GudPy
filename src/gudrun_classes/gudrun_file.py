@@ -316,6 +316,7 @@ class GudrunFile:
             self.instrument.wavelengthMax = wavelengthRange[1]
             self.instrument.wavelengthStep = wavelengthRange[2]
 
+    
             self.instrument.NoSmoothsOnMonitor = nthint(self.getNextToken(), 0)
 
             # Extract X range
@@ -392,11 +393,6 @@ class GudrunFile:
                     firstword(self.getNextToken())
                 )
 
-            self.instrument.numberIterations = nthint(self.getNextToken(), 0)
-            self.instrument.tweakTweakFactors = (
-                boolifyNum(nthint(self.getNextToken(), 0))
-            )
-
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
@@ -405,6 +401,7 @@ class GudrunFile:
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
                     "and some attributes were missing."
+                    f"{str(e)}"
             ) from e
 
     def parseBeam(self):

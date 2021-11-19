@@ -101,10 +101,6 @@ class Instrument:
         Should hard group edges be used?
     nxsDefinitionFile : str
         NeXus definition file to be used, if NeXus files are being used.
-    numberIterations : int
-        Number of iterations (may be obsolete).
-    tweakTweakFactors : bool
-        Should the tweak factors be tweaked? (may be obsolete).
     Methods
     -------
     """
@@ -158,8 +154,6 @@ class Instrument:
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
-        self.numberIterations = 0
-        self.tweakTweakFactors = False
 
     def __str__(self):
         """
@@ -298,8 +292,4 @@ class Instrument:
             f'{numifyBool(self.hardGroupEdges)}{TAB}'
             f'Hard group edges?\n'
             f'{nexusDefinitionLine}'
-            f'{self.numberIterations}{TAB}'
-            f'Number of iterations\n'
-            f'{numifyBool(self.tweakTweakFactors)}{TAB}'
-            f'Tweak the tweak factor(s)?'
         )

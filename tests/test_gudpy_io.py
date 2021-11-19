@@ -82,9 +82,7 @@ class TestGudPyIO(TestCase):
             "startupFileFolder": "StartupFiles",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
-            "nxsDefinitionFile": "",
-            "numberIterations": 2,
-            "tweakTweakFactors": False
+            "nxsDefinitionFile": ""
         }
 
         self.expectedBeam = {
