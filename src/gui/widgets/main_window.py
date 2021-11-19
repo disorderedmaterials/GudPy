@@ -383,7 +383,7 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
-                instrument = GudrunFile(filename).instrument
+                instrument = GudrunFile(filename, config=True).instrument
                 self.gudrunFile.instrument = instrument
                 self.updateWidgets()
             except ParserException as e:

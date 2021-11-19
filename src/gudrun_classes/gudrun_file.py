@@ -123,7 +123,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, config=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -145,7 +145,7 @@ class GudrunFile:
             self.beam = None
             self.normalisation = None
             self.sampleBackgrounds = []
-            self.parse()
+            self.parse(config=config)
         else:
             self.instrument = Instrument()
             self.beam = Beam()
@@ -397,6 +397,7 @@ class GudrunFile:
             self.consumeUpToDelim("}")
 
         except Exception as e:
+            print(e)
             raise ParserException(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1130,7 +1131,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self):
+    def parse(self, config=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1183,12 +1184,18 @@ class GudrunFile:
             line = self.getNextToken()
 
         # If we didn't parse each one of the keywords, then panic.
-        #if not all(KEYWORDS.values()):
-        #    raise ParserException((
-        #        'INSTRUMENT, BEAM and NORMALISATION'
-        #        ' were not parsed. It\'s possible the file'
-        #        ' supplied is of an incorrect format!'
-        #    ))
+        if not all(KEYWORDS.values()) and not config:
+           raise ParserException((
+               'INSTRUMENT, BEAM and NORMALISATION'
+               ' were not parsed. It\'s possible the file'
+               ' supplied is of an incorrect format!'
+           ))
+        elif not KEYWORDS["INSTRUMENT"] and config:
+            raise ParserException((
+                'INSTRUMENT was not parsed. It\'s possible the file'
+                ' supplied is of an incorrect format!'
+            ))
+
 
         # Ignore whitespace.
         self.consumeWhitespace()
