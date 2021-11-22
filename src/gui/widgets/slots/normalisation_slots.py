@@ -48,8 +48,19 @@ class NormalisationSlots():
             self.normalisation.downstreamThickness
         )
 
+        self.widget.normalisationAngleOfRotationSpinBox.setValue(
+            self.normalisation.angleOfRotation
+        )
+        self.widget.normalisationSampleWidthSpinBox.setValue(
+            self.normalisation.sampleWidth
+        )
+
         self.widget.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
         self.widget.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
+
+        self.widget.normalisationSampleHeightSpinBox.setValue(
+            self.normalisation.sampleHeight
+        )
 
         self.widget.totalCrossSectionComboBox.setCurrentIndex(
             self.normalisation.totalCrossSectionSource.value
@@ -163,12 +174,23 @@ class NormalisationSlots():
             self.handleDownstreamThicknessChanged
         )
 
+        self.widget.normalisationAngleOfRotationSpinBox.valueChanged.connect(
+            self.handleAngleOfRotationChanged
+        )
+        self.widget.normalisationSampleWidthSpinBox.valueChanged.connect(
+            self.handleSampleWidthChanged
+        )
+
         # Cylindrical
         self.widget.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
         )
         self.widget.outerRadiiSpinBox.valueChanged.connect(
             self.handleOuterRadiiChanged
+        )
+
+        self.widget.normalisationSampleHeightSpinBox.valueChanged.connect(
+            self.handleSampleHeightChanged
         )
 
         # Setup the other normalisation configurations widgets and slots.
@@ -318,6 +340,36 @@ class NormalisationSlots():
         self.normalisation.downstreamThickness = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+    
+    def handleAngleOfRotationChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationAngleOfRotationSpinBox.
+        Alters the normalisation's angle of rotation as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationAngleOfRotationSpinBox.
+        """
+        self.normalisation.angleOfRotation = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSampleWidthChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationSampleWidthSpinBox.
+        Alters the normalisation's sample width as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationSampleWidthSpinBox.
+        """
+        self.normalisation.sampleWidth = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleInnerRadiiChanged(self, value):
         """
@@ -346,6 +398,21 @@ class NormalisationSlots():
             The new value of the outerRadiiSpinBox.
         """
         self.normalisation.outerRadius = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSampleHeightChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationSampleHeightSpinBox.
+        Alters the normalisation's sample height as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationSampleHeightSpinBox.
+        """
+        self.normalisation.sampleHeight = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
