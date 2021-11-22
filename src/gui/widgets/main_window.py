@@ -765,7 +765,7 @@ class GudPyMainWindow(QMainWindow):
         if not self.modified:
             if self.gudrunFile.path:
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
-            self.modified = True
+                self.modified = True
 
     def setUnModified(self):
         self.mainWidget.setWindowTitle(self.gudrunFile.path)
@@ -792,7 +792,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state & self.gudrunFile.path)
+        self.mainWidget.save.setEnabled(state & len(self.gudrunFile.path))
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
