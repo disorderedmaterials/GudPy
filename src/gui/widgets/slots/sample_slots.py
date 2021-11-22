@@ -343,7 +343,7 @@ class SampleSlots():
             The new state of the sampleForceCorrectionsCheckBox
             (1: True, 0: False)
         """
-        self.sample.forceCalculationOfCorrections = state
+        self.sample.forceCalculationOfCorrections = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

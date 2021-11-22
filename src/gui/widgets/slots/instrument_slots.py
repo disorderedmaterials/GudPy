@@ -551,7 +551,7 @@ class InstrumentSlots():
         state : int
             The new state of the logarithmicBinningCheckBox (1: True, 0: False)
         """
-        self.instrument.useLogarithmicBinning = state
+        self.instrument.useLogarithmicBinning = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

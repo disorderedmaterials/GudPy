@@ -426,7 +426,7 @@ class NormalisationSlots():
         state : int
             The new state of the forceCorrectionsCheckBox (1: True, 0: False)
         """
-        self.normalisation.forceCalculationsOfCorrections = state
+        self.normalisation.forceCalculationOfCorrections = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

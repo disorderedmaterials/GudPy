@@ -60,7 +60,7 @@ class PurgeDialog(QDialog):
         self.stdsAroundMeanDeviation = value
 
     def ignoreBadChanged(self, state):
-        self.ignoreBad = state
+        self.ignoreBad = bool(state)
 
     def excludeSampleAndCanChanged(self, state):
         self.excludeSampleAndCan = state
