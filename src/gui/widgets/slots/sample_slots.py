@@ -516,7 +516,7 @@ class SampleSlots():
         value : float
             The new current value of the tweakFactorSpinBox.
         """
-        self.sample.tweakFactor = value
+        self.sample.sampleTweakFactor = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
