@@ -40,7 +40,7 @@ class ContainerSlots():
         self.widget.containerUpstreamSpinBox.setValue(
             self.container.upstreamThickness
         )
-        self.widget.containerDownStreamSPinBox.setValue(
+        self.widget.containerDownStreamSpinBox.setValue(
             self.container.downstreamThickness
         )
 
@@ -138,7 +138,7 @@ class ContainerSlots():
         self.widget.containerUpstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.widget.containerDownStreamSPinBox.valueChanged.connect(
+        self.widget.containerDownStreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
 
@@ -263,12 +263,12 @@ class ContainerSlots():
         """
         Slot for handling change in the downstream thickness.
         Called when a valueChanged signal is emitted,
-        from the containerDownStreamSPinBox.
+        from the containerDownStreamSpinBox.
         Alters the container's downstream thickness as such.
         Parameters
         ----------
         value : float
-            The new value of the containerDownStreamSPinBox.
+            The new value of the containerDownStreamSpinBox.
         """
         self.container.downstreamThickness = value
         if not self.widgetsRefreshing:
