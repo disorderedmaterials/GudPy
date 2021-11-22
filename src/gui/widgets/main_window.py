@@ -332,7 +332,7 @@ class GudPyMainWindow(QMainWindow):
 
     def updateWidgets(self, fromFile=False):
         if fromFile:
-            self.gudrunFile = GudrunFile(self.gudrunFile.path)
+            self.gudrunFile = GudrunFile(path=self.gudrunFile.path)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -372,8 +372,9 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
-                self.gudrunFile = GudrunFile(filename)
+                self.gudrunFile = GudrunFile(path=filename)
                 self.updateWidgets()
+                self.mainWidget.setWindowTitle(self.gudrunFile.path)
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
@@ -387,7 +388,7 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
-                instrument = GudrunFile(filename, config=True).instrument
+                instrument = GudrunFile(path=filename, config=True).instrument
                 self.gudrunFile.instrument = instrument
                 self.updateWidgets()
             except ParserException as e:
@@ -757,13 +758,12 @@ class GudPyMainWindow(QMainWindow):
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
-                self.setWindowTitle(self.gudrunFile.path + " *")
+                self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
             self.modified = True
 
     def setUnModified(self):
-        if self.modified:
-            self.setWindowTitle(self.gudrunFile.path)
-            self.modified = False
+        self.mainWidget.setWindowTitle(self.gudrunFile.path)
+        self.modified = False
 
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
@@ -786,7 +786,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state)
+        self.mainWidget.save.setEnabled(state & self.gudrunFile.path)
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
