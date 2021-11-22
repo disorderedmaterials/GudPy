@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1324</width>
+    <width>1580</width>
     <height>1447</height>
    </rect>
   </property>
@@ -995,7 +995,7 @@
                        </size>
                       </property>
                       <property name="maximum">
-                       <number>200</number>
+                       <number>1000000</number>
                       </property>
                      </widget>
                     </item>
@@ -1272,6 +1272,9 @@
                              <height>16777215</height>
                             </size>
                            </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
+                           </property>
                           </widget>
                          </item>
                          <item row="2" column="0">
@@ -1315,6 +1318,9 @@
                              <width>16777215</width>
                              <height>16777215</height>
                             </size>
+                           </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
                            </property>
                           </widget>
                          </item>
@@ -1385,6 +1391,9 @@
                              <height>16777215</height>
                             </size>
                            </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
+                           </property>
                           </widget>
                          </item>
                          <item row="0" column="0">
@@ -1453,6 +1462,9 @@
                              <width>16777215</width>
                              <height>16777215</height>
                             </size>
+                           </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
                            </property>
                           </widget>
                          </item>
@@ -1623,6 +1635,9 @@
                              <height>16777215</height>
                             </size>
                            </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
+                           </property>
                           </widget>
                          </item>
                          <item row="0" column="3">
@@ -1691,6 +1706,9 @@
                              <width>16777215</width>
                              <height>16777215</height>
                             </size>
+                           </property>
+                           <property name="maximum">
+                            <double>1000000.000000000000000</double>
                            </property>
                           </widget>
                          </item>
@@ -1797,6 +1815,9 @@
                              <height>16777215</height>
                             </size>
                            </property>
+                           <property name="maximum">
+                            <double>1.000000000000000</double>
+                           </property>
                           </widget>
                          </item>
                          <item row="2" column="1">
@@ -1812,6 +1833,9 @@
                              <width>0</width>
                              <height>0</height>
                             </size>
+                           </property>
+                           <property name="maximum">
+                            <number>4</number>
                            </property>
                           </widget>
                          </item>
@@ -2447,6 +2471,9 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="maximum">
+                      <number>1000000</number>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2563,6 +2590,12 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2578,6 +2611,12 @@
                        <width>16777215</width>
                        <height>16777215</height>
                       </size>
+                     </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -2595,6 +2634,12 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2604,6 +2649,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -2657,6 +2708,12 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2672,6 +2729,12 @@
                        <width>16777215</width>
                        <height>16777215</height>
                       </size>
+                     </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -2689,6 +2752,12 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2698,6 +2767,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -3329,7 +3404,11 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QSpinBox" name="periodNoSpinBox"/>
+                        <widget class="QSpinBox" name="periodNoSpinBox">
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <spacer name="horizontalSpacer_23">
@@ -3460,7 +3539,11 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QSpinBox" name="backgroundPeriodNoSpinBox"/>
+                        <widget class="QSpinBox" name="backgroundPeriodNoSpinBox">
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <spacer name="horizontalSpacer_24">
@@ -4041,6 +4124,9 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="maximum">
+                      <double>1000.000000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -4305,6 +4391,9 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="minimum">
+                      <number>1</number>
                      </property>
                     </widget>
                    </item>
@@ -4755,7 +4844,11 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="ExponentialSpinBox" name="tweakFactorSpinBox"/>
+                           <widget class="ExponentialSpinBox" name="tweakFactorSpinBox">
+                            <property name="maximum">
+                             <double>1000.000000000000000</double>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -4857,7 +4950,7 @@
                         <item>
                          <widget class="QStackedWidget" name="sampleGeometryInfoStack">
                           <property name="currentIndex">
-                           <number>0</number>
+                           <number>1</number>
                           </property>
                           <widget class="QWidget" name="page_2">
                            <layout class="QVBoxLayout" name="verticalLayout_28">
@@ -5162,6 +5255,9 @@
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
+                          <property name="minimum">
+                           <double>-99.000000000000000</double>
+                          </property>
                          </widget>
                         </item>
                         <item>
@@ -5307,6 +5403,9 @@
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                       <property name="minimum">
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -5894,7 +5993,11 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QSpinBox" name="containerPeriodNoSpinBox"/>
+                          <widget class="QSpinBox" name="containerPeriodNoSpinBox">
+                           <property name="minimum">
+                            <number>1</number>
+                           </property>
+                          </widget>
                          </item>
                          <item>
                           <spacer name="horizontalSpacer_36">
@@ -6696,7 +6799,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1324</width>
+     <width>1580</width>
      <height>22</height>
     </rect>
    </property>
