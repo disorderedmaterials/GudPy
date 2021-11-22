@@ -372,6 +372,8 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
+                if self.gudrunFile:
+                    del self.gudrunFile
                 self.gudrunFile = GudrunFile(path=filename)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path)
@@ -414,10 +416,14 @@ class GudPyMainWindow(QMainWindow):
             self.setUnModified()
 
     def newInputFile(self):
+        if self.gudrunFile:
+            del self.gudrunFile
         self.gudrunFile = GudrunFile()
         self.updateWidgets()
     
     def newInputFileFromConfig(self):
+        if self.gudrunFile:
+            del self.gudrunFile
         self.gudrunFile = GudrunFile()
         self.loadConfiguration_()
 
