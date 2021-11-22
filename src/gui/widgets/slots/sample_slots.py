@@ -41,9 +41,6 @@ class SampleSlots():
         self.widget.sampleGeometryInfoStack.setCurrentIndex(
             config.geometry.value
         )
-        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
-            config.geometry.value
-        )
 
         # Populate geometry specific attributes.
         # Flatplate
@@ -365,9 +362,6 @@ class SampleSlots():
             self.widget.sampleGeometryComboBox.itemData(index)
         )
         self.widget.sampleGeometryInfoStack.setCurrentIndex(
-            self.sample.geometry.value
-        )
-        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
             self.sample.geometry.value
         )
 

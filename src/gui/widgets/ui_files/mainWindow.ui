@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>5</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -4789,7 +4789,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QGroupBox" name="groupBox_4">
+                      <widget class="QGroupBox" name="groupBox_5">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                          <horstretch>0</horstretch>
@@ -4799,7 +4799,7 @@
                        <property name="title">
                         <string>Geometry</string>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_28">
+                       <layout class="QVBoxLayout" name="verticalLayout_29">
                         <item>
                          <widget class="QComboBox" name="sampleGeometryComboBox">
                           <property name="sizePolicy">
@@ -4817,47 +4817,35 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QStackedWidget" name="sampleGeometryInfoStack_">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
+                         <widget class="QStackedWidget" name="sampleGeometryInfoStack">
                           <property name="currentIndex">
                            <number>0</number>
                           </property>
-                          <widget class="QWidget" name="page_5">
-                           <layout class="QVBoxLayout" name="verticalLayout_29">
+                          <widget class="QWidget" name="page_2">
+                           <layout class="QVBoxLayout" name="verticalLayout_28">
                             <property name="leftMargin">
                              <number>0</number>
                             </property>
-                            <property name="rightMargin">
-                             <number>20</number>
-                            </property>
                             <item>
-                             <widget class="QGroupBox" name="groupBox_5">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
+                             <widget class="QGroupBox" name="thicknessGroupBox">
+                              <property name="styleSheet">
+                               <string notr="true"/>
                               </property>
                               <property name="title">
                                <string>Thickness</string>
                               </property>
-                              <property name="flat">
-                               <bool>true</bool>
+                              <property name="alignment">
+                               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                               </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_59">
+                              <property name="flat">
+                               <bool>false</bool>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_19">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="upstreamLabel_2">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
                                  <property name="text">
                                   <string>Upstream</string>
                                  </property>
@@ -4875,12 +4863,6 @@
                                </item>
                                <item>
                                 <widget class="QLabel" name="downstreamLabel_2">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
                                  <property name="text">
                                   <string>Downstream</string>
                                  </property>
@@ -4899,39 +4881,71 @@
                               </layout>
                              </widget>
                             </item>
+                            <item>
+                             <layout class="QHBoxLayout" name="horizontalLayout_20">
+                              <property name="leftMargin">
+                               <number>0</number>
+                              </property>
+                              <item>
+                               <widget class="QLabel" name="angleOfRotationLabel">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="text">
+                                 <string>Angle of Rotation</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="ExponentialSpinBox" name="angleOfRotationSpinBox">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QLabel" name="sampleWidthLabel">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="text">
+                                 <string>Sample Width</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="ExponentialSpinBox" name="sampleWidthSpinBox">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </item>
                            </layout>
                           </widget>
-                          <widget class="QWidget" name="page_6">
+                          <widget class="QWidget" name="page_5">
                            <layout class="QVBoxLayout" name="verticalLayout_30">
-                            <property name="leftMargin">
-                             <number>0</number>
-                            </property>
-                            <property name="rightMargin">
-                             <number>20</number>
-                            </property>
                             <item>
-                             <widget class="QGroupBox" name="groupBox_6">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
+                             <widget class="QGroupBox" name="radiiGroupBox">
                               <property name="title">
                                <string>Radii</string>
                               </property>
-                              <property name="flat">
-                               <bool>true</bool>
-                              </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_60">
+                              <layout class="QHBoxLayout" name="horizontalLayout_31">
                                <item>
                                 <widget class="QLabel" name="innerRadiiLabel_2">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
                                  <property name="text">
                                   <string>Inner</string>
                                  </property>
@@ -4949,12 +4963,6 @@
                                </item>
                                <item>
                                 <widget class="QLabel" name="outerRadiiLabel_2">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
                                  <property name="text">
                                   <string>Outer</string>
                                  </property>
@@ -4970,209 +4978,60 @@
                                  </property>
                                 </widget>
                                </item>
-                               <item>
-                                <spacer name="horizontalSpacer_27">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
-                                  <size>
-                                   <width>40</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
-                                </spacer>
-                               </item>
                               </layout>
                              </widget>
                             </item>
-                           </layout>
-                          </widget>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QStackedWidget" name="sampleGeometryInfoStack">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="currentIndex">
-                           <number>0</number>
-                          </property>
-                          <widget class="QWidget" name="FLATPLATE">
-                           <layout class="QHBoxLayout" name="horizontalLayout_61">
-                            <property name="leftMargin">
-                             <number>0</number>
-                            </property>
-                            <property name="rightMargin">
-                             <number>12</number>
-                            </property>
-                            <property name="bottomMargin">
-                             <number>9</number>
-                            </property>
                             <item>
-                             <widget class="QLabel" name="angleOfRotationLabel">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
+                             <layout class="QHBoxLayout" name="horizontalLayout_59">
+                              <property name="leftMargin">
+                               <number>9</number>
                               </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Angle of Rotation</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="ExponentialSpinBox" name="angleOfRotationSpinBox">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLabel" name="sampleWidthLabel">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Sample Width</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="ExponentialSpinBox" name="sampleWidthSpinBox">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_28">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                           </layout>
-                          </widget>
-                          <widget class="QWidget" name="CYLINDRICAL">
-                           <layout class="QHBoxLayout" name="horizontalLayout_62">
-                            <property name="leftMargin">
-                             <number>0</number>
-                            </property>
-                            <item>
-                             <widget class="QLabel" name="sampleHeightLabel">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Sample Height</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="ExponentialSpinBox" name="sampleHeightSpinBox">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_29">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeType">
-                               <enum>QSizePolicy::Expanding</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
+                              <item>
+                               <widget class="QLabel" name="sampleHeightLabel">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="text">
+                                 <string>Sample Width</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="ExponentialSpinBox" name="sampleHeightSpinBox">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <spacer name="horizontalSpacer_2">
+                                <property name="orientation">
+                                 <enum>Qt::Horizontal</enum>
+                                </property>
+                                <property name="sizeHint" stdset="0">
+                                 <size>
+                                  <width>40</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                               </spacer>
+                              </item>
+                             </layout>
                             </item>
                            </layout>
                           </widget>
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_63">
+                         <layout class="QHBoxLayout" name="horizontalLayout_18">
                           <item>
-                           <widget class="QLabel" name="densityLabel_2">
+                           <widget class="QLabel" name="densityLabel_4">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -5187,7 +5046,7 @@
                           <item>
                            <widget class="ExponentialSpinBox" name="sampleDensitySpinBox">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -5197,7 +5056,7 @@
                           <item>
                            <widget class="QComboBox" name="sampleDensityUnitsComboBox">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -5213,7 +5072,7 @@
                          </layout>
                         </item>
                         <item>
-                         <spacer name="verticalSpacer_12">
+                         <spacer name="verticalSpacer_23">
                           <property name="orientation">
                            <enum>Qt::Vertical</enum>
                           </property>
@@ -5367,6 +5226,19 @@
                       </item>
                      </layout>
                     </widget>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_5">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </widget>
