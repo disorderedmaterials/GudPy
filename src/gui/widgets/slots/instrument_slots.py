@@ -630,7 +630,7 @@ class InstrumentSlots():
         state : int
             The new state of the hardGroupEdgesCheckBox (1: True, 0: False)
         """
-        self.instrument.hardGroupEdges = state
+        self.instrument.hardGroupEdges = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
