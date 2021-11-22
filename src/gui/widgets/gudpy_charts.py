@@ -143,16 +143,16 @@ class GudPyChart(QChart):
             mdcsFile = ""
 
         # Try and resolve paths.
-        if not os.path.exists(mintFile):
+        if mintFile and not os.path.exists(mintFile):
             mintFile = os.path.join(self.inputDir, mintFile)
-        if not os.path.exists(mdcsFile):
+        if mdcsFile and not os.path.exists(mdcsFile):
             mdcsFile = os.path.join(self.inputDir, mdcsFile)
 
         mintData = []
         mdcsData = []
 
         # Check the file exists.
-        if os.path.exists(mintFile) and mintFile:
+        if mintFile and os.path.exists(mintFile):
 
             # Open it.
             with open(mintFile, "r", encoding="utf-8") as f:
@@ -169,7 +169,7 @@ class GudPyChart(QChart):
         self.data[sample]["mint01"] = mintData
 
         # Check the file exists.
-        if os.path.exists(mdcsFile) and mdcsFile:
+        if mdcsFile and os.path.exists(mdcsFile):
 
             # Open it.
             with open(mdcsFile, "r", encoding="utf-8") as f:
@@ -190,7 +190,7 @@ class GudPyChart(QChart):
             )
         else:
             gudPath = ""
-        if not os.path.exists(gudPath):
+        if gudPath and not os.path.exists(gudPath):
             gudPath = os.path.join(self.inputDir, gudPath)
 
         dcsData = []
@@ -223,15 +223,15 @@ class GudPyChart(QChart):
             mgorFile = ""
 
         # Try and resolve paths.
-        if not os.path.exists(mdorFile):
+        if mdorFile and not os.path.exists(mdorFile):
             mdorFile = os.path.join(self.inputDir, mdorFile)
-        if not os.path.exists(mgorFile):
+        if mgorFile and not os.path.exists(mgorFile):
             mgorFile = os.path.join(self.inputDir, mgorFile)
 
         mdorData = []
         mgorData = []
 
-        if os.path.exists(mdorFile) and mdorFile:
+        if mdorFile and os.path.exists(mdorFile):
 
             # Open it.
             with open(mdorFile, "r", encoding="utf-8") as f:
@@ -248,7 +248,7 @@ class GudPyChart(QChart):
                     mdorData.append([x, y, err])
         self.data[sample]["mdor01"] = mdorData
 
-        if os.path.exists(mgorFile) and mgorFile:
+        if mgorFile and os.path.exists(mgorFile):
 
             # Open it.
             with open(mgorFile, "r", encoding="utf-8") as f:
