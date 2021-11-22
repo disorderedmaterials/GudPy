@@ -633,13 +633,13 @@ class NormalisationSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(
+        files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
             self.parent.gudrunFile.instrument.dataFileDir, regex
         )
-        for path in paths:
-            if path:
-                target.addItem(path)
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
 
     def addDataFiles(self, target, title, regex):
         """
@@ -657,6 +657,8 @@ class NormalisationSlots():
         """
         self.addFiles(target, title, regex)
         self.handleDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+                self.parent.setModified()
 
     def addBgDataFiles(self, target, title, regex):
         """
@@ -674,7 +676,8 @@ class NormalisationSlots():
         """
         self.addFiles(target, title, regex)
         self.handleBgDataFileInserted(target.item(target.count() - 1))
-
+        if not self.widgetsRefreshing:
+                self.parent.setModified()
     def removeFile(self, target, dataFiles):
         """
         Slot for removing files from the data files list.
