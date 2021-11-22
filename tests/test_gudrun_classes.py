@@ -89,7 +89,6 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(beam, Beam)
         self.assertIsInstance(beam.sampleGeometry, Geometry)
-        self.assertIsInstance(beam.noBeamProfileValues, int)
         self.assertIsInstance(beam.beamProfileValues, list)
         self.assertIsInstance(beam.stepSizeAbsorption, float)
         self.assertIsInstance(beam.stepSizeMS, float)

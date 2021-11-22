@@ -436,9 +436,8 @@ class GudrunFile:
             # Set the global geometry.
             config.geometry = self.beam.sampleGeometry
 
-            # For single integer attributes,
-            # we extract the zeroth int from the line.
-            self.beam.noBeamProfileValues = nthint(self.getNextToken(), 0)
+            # Ignore the number of beam values.
+            self.consumeTokens(1)
 
             # For N float attributes,
             # we extract the first N floats from the line.

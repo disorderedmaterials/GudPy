@@ -12,8 +12,6 @@ class Beam:
     ----------
     sampleGeometry : Geometry
         geometry of the beam (FLATPLATE / CYLINDRICAL).
-    noBeamProfileValues : int
-        number of beam profile values.
     beamProfileValues : float[]
         list of beam profile values.
     stepSizeAbsorption : float
@@ -60,7 +58,6 @@ class Beam:
         None
         """
         self.sampleGeometry = Geometry.FLATPLATE
-        self.noBeamProfileValues = 0
         self.beamProfileValues = []
         self.stepSizeAbsorption = 0.0
         self.stepSizeMS = 0.0
@@ -123,7 +120,7 @@ class Beam:
 
             f'{Geometry(self.sampleGeometry.value).name}{TAB}'
             f'Sample geometry\n'
-            f'{self.noBeamProfileValues}{TAB}'
+            f'{len(self.beamProfileValues)}{TAB}'
             f'Number of beam profile values\n'
             f'{spacify(self.beamProfileValues)}{TAB}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'

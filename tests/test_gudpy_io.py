@@ -87,7 +87,6 @@ class TestGudPyIO(TestCase):
 
         self.expectedBeam = {
             "sampleGeometry": Geometry.FLATPLATE,
-            "noBeamProfileValues": 2,
             "beamProfileValues": [1.0, 1.0],
             "stepSizeAbsorption": 0.05,
             "stepSizeMS": 0.2,
