@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>6</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -242,6 +242,41 @@
                    </property>
                    <property name="text">
                     <string>Detector Calibration File</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="configLabel">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Instrument Config</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QLineEdit" name="configLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -958,6 +993,9 @@
                         <width>16777215</width>
                         <height>16777215</height>
                        </size>
+                      </property>
+                      <property name="maximum">
+                       <number>200</number>
                       </property>
                      </widget>
                     </item>
@@ -5705,6 +5743,7 @@
                         <widget class="QLabel" name="dcsLabel">
                          <property name="font">
                           <font>
+                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5723,6 +5762,7 @@
                         <widget class="QLabel" name="resultLabel">
                          <property name="font">
                           <font>
+                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -6667,13 +6707,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuNew">
-     <property name="title">
-      <string>New..</string>
-     </property>
-     <addaction name="new__"/>
-     <addaction name="newFromConfig"/>
-    </widget>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="loadInputFile"/>
@@ -6681,7 +6714,6 @@
     <addaction name="viewLiveInputFile"/>
     <addaction name="save"/>
     <addaction name="saveAs"/>
-    <addaction name="menuNew"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -6832,16 +6864,6 @@
   <action name="checkFilesExist">
    <property name="text">
     <string>Check Files Exist</string>
-   </property>
-  </action>
-  <action name="new__">
-   <property name="text">
-    <string>From scratch</string>
-   </property>
-  </action>
-  <action name="newFromConfig">
-   <property name="text">
-    <string>From config</string>
    </property>
   </action>
  </widget>

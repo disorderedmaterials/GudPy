@@ -756,7 +756,8 @@ class GudPyMainWindow(QMainWindow):
 
     def setModified(self):
         if not self.modified:
-            self.setWindowTitle(self.gudrunFile.path + " *")
+            if self.gudrunFile.path:
+                self.setWindowTitle(self.gudrunFile.path + " *")
             self.modified = True
 
     def setUnModified(self):
