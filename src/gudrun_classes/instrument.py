@@ -222,7 +222,7 @@ class Instrument:
         )
 
         nexusDefinitionLine = (
-            f'{self.nxsDefinitionFile}{TAB}'
+            f'\n{self.nxsDefinitionFile}{TAB}'
             f'NeXus definition file\n'
             if self.nxsDefinitionFile
             else
@@ -290,6 +290,6 @@ class Instrument:
             f'{self.logarithmicStepSize}{TAB}'
             f'Logarithmic step size\n'
             f'{numifyBool(self.hardGroupEdges)}{TAB}'
-            f'Hard group edges?\n'
+            f'Hard group edges?'
             f'{nexusDefinitionLine}'
         )
