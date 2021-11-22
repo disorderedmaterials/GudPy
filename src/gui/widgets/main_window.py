@@ -313,7 +313,7 @@ class GudPyMainWindow(QMainWindow):
             self.loadConfiguration_
         )
 
-        self.mainWidget.new__.triggered.connect(
+        self.mainWidget.newFromScratch.triggered.connect(
             self.newInputFile
         )
 

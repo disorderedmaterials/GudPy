@@ -6707,10 +6707,18 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="newFromScratch"/>
+     <addaction name="newFromConfig"/>
+    </widget>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="loadInputFile"/>
     <addaction name="loadConfiguration"/>
+    <addaction name="menuNew"/>
     <addaction name="viewLiveInputFile"/>
     <addaction name="save"/>
     <addaction name="saveAs"/>
@@ -6864,6 +6872,16 @@
   <action name="checkFilesExist">
    <property name="text">
     <string>Check Files Exist</string>
+   </property>
+  </action>
+  <action name="newFromScratch">
+   <property name="text">
+    <string>From scratch</string>
+   </property>
+  </action>
+  <action name="newFromConfig">
+   <property name="text">
+    <string>From config</string>
    </property>
   </action>
  </widget>
