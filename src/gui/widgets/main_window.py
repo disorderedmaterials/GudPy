@@ -524,46 +524,43 @@ class GudPyMainWindow(QMainWindow):
     def updateSamples(self):
         samples = self.mainWidget.objectTree.getSamples()
         for sample in samples:
-            if sample not in self.results.keys():
-                topChart = GudPyChart(
-                    self.gudrunFile
+            topChart = GudPyChart(
+                self.gudrunFile
+            )
+            topChart.addSample(sample)
+            topChart.plot(PlotModes.STRUCTURE_FACTOR)
+            bottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            bottomChart.addSample(sample)
+            bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            path = None
+            if len(sample.dataFiles.dataFiles):
+                path = sample.dataFiles.dataFiles[0].replace(
+                    self.gudrunFile.instrument.dataFileType, "gud"
                 )
-                topChart.addSample(sample)
-                topChart.plot(PlotModes.STRUCTURE_FACTOR)
-                bottomChart = GudPyChart(
-                    self.gudrunFile
-                )
-                bottomChart.addSample(sample)
-                bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-                path = None
-                if len(sample.dataFiles.dataFiles):
-                    path = sample.dataFiles.dataFiles[0].replace(
-                        self.gudrunFile.instrument.dataFileType, "gud"
+                if not os.path.exists(path):
+                    path = os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir, path
                     )
-                    if not os.path.exists(path):
-                        path = os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir, path
-                        )
-                gf = GudFile(path) if path and os.path.exists(path) else None
-                self.results[sample] = [topChart, bottomChart, gf]
+            gf = GudFile(path) if path and os.path.exists(path) else None
+            self.results[sample] = [topChart, bottomChart, gf]
 
     def updateAllSamples(self):
 
         samples = self.mainWidget.objectTree.getSamples()
         if samples:                
             if len(self.allPlots):
-                if self.allPlots[0].data.keys() != samples:
-                    allTopChart = GudPyChart(
-                        self.gudrunFile
-                    )
-                    allTopChart.addSamples(samples)
-                    allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-                if self.allPlots[1].data.keys() != samples:
-                    allBottomChart = GudPyChart(
-                        self.gudrunFile
-                    )
-                    allBottomChart.addSamples(samples)
-                    allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+                allTopChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allTopChart.addSamples(samples)
+                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+                allBottomChart = GudPyChart(
+                    self.gudrunFile
+                )
+                allBottomChart.addSamples(samples)
+                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
             else:
                 allTopChart = GudPyChart(
                     self.gudrunFile
@@ -583,6 +580,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.updateSamples()
         self.updateAllSamples()
+        self.focusResult()
 
     def updateComponents(self):
         """
