@@ -639,39 +639,48 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
+        elif not self.gudrunFile.purged and os.path.exists('purge_det.dat'):
+            self.purgeOptionsMessageBox(
+                dcs,
+                "purge_det.dat found, but wasn't run in this session. Continue?"
+            )
         elif not self.gudrunFile.purged:
-            messageBox = QMessageBox(self.mainWidget)
-            messageBox.setWindowTitle("GudPy Warning")
-            messageBox.setText(
+            self.purgeOptionsMessageBox(
+                dcs,
                 "It looks like you may not have purged detectors. Continue?"
             )
-            messageBox.addButton(QMessageBox.No)
-            openPurgeDialog = QPushButton(
-                "Open purge dialog", messageBox
-            )
-            purgeDefault = QPushButton(
-                "Purge with default parameters", messageBox
-            )
-
-            messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
-            messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
-
-            messageBox.addButton(QMessageBox.Yes)
-            result = messageBox.exec()
-
-            if messageBox.clickedButton() == openPurgeDialog:
-                self.purgeBeforeRunning(default=False)
-            elif messageBox.clickedButton() == purgeDefault:
-                self.purgeBeforeRunning()
-            elif result == messageBox.Yes:
-                self.gudrunFile.write_out()
-                self.makeProc(dcs, self.progressDCS)
-            else:
-                messageBox.close()
-                self.setControlsEnabled(True)
         else:
             self.gudrunFile.write_out()
             self.makeProc(dcs, self.progressDCS)
+
+    def purgeOptionsMessageBox(self, dcs, text):
+        messageBox = QMessageBox(self.mainWidget)
+        messageBox.setWindowTitle("GudPy Warning")
+        messageBox.setText(text)
+        messageBox.addButton(QMessageBox.No)
+        openPurgeDialog = QPushButton(
+            "Open purge dialog", messageBox
+        )
+        purgeDefault = QPushButton(
+            "Purge with default parameters", messageBox
+        )
+
+        messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
+        messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
+
+        messageBox.addButton(QMessageBox.Yes)
+        result = messageBox.exec()
+
+        if messageBox.clickedButton() == openPurgeDialog:
+            self.purgeBeforeRunning(default=False)
+        elif messageBox.clickedButton() == purgeDefault:
+            self.purgeBeforeRunning()
+        elif result == messageBox.Yes:
+            self.gudrunFile.write_out()
+            self.makeProc(dcs, self.progressDCS)
+        else:
+            messageBox.close()
+            self.setControlsEnabled(True)
 
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
