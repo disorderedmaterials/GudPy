@@ -157,6 +157,13 @@ class Sample:
 
         TAB = "          "
 
+        nameLine = (
+            f"SAMPLE {self.name}{TAB}"
+            if self.name != "SAMPLE"
+            else
+            f"SAMPLE{TAB}"
+        )
+
         dataFilesLine = (
             f'{str(self.dataFiles)}\n'
             if len(self.dataFiles.dataFiles) > 0
@@ -263,7 +270,7 @@ class Sample:
         )
 
         return (
-            f'\nSAMPLE {self.name}{TAB}{{\n\n'
+            f'\n{nameLine}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'

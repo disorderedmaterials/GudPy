@@ -749,6 +749,7 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
+            if not sample.name: sample.name = "SAMPLE"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -942,6 +943,7 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("CONTAINER", "").strip()
             )
+            if not container.name: container.name = "CONTAINER"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
