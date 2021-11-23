@@ -117,15 +117,15 @@ def firstNFloats(string, n):
         return floats
 
 
-def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
+def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False, suffix=None):
     iterable = [
-        str(i)
+        str(i) + f" {suffix}" if suffix else ""
         if not isinstance(i, (str, list, tuple))
         else i
         for i in iterable
     ]
     iterable = [
-        spacify(i)
+        spacify(i) + f" {suffix}" if suffix else ""
         if isinstance(i, (list, tuple))
         else i
         for i in iterable
