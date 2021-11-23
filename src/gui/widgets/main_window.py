@@ -400,8 +400,11 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file.
         """
-        self.gudrunFile.write_out(overwrite=True)
-        self.setUnModified()
+        if not self.gudrunFile.path:
+            self.saveInputFileAs()
+        else:
+            self.gudrunFile.write_out(overwrite=True)
+            self.setUnModified()
 
     def saveInputFileAs(self):
         """
@@ -411,8 +414,10 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", "."
         )
         if filename:
-            self.gudrunFile.outpath = filename
-            self.gudrunFile.write_out()
+            if not self.gudrunFile.path:
+                self.gudrunFile.instrument.GudrunInputFileDir = os.path.dirname(os.path.abspath(self.path))
+            self.gudrunFile.path = filename
+            self.gudrunFile.write_out(overwrite=True)
             self.setUnModified()
 
     def newInputFile(self):
@@ -792,7 +797,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state & len(self.gudrunFile.path) if self.gudrunFile.path else False)
+        self.mainWidget.save.setEnabled(state & len(self.gudrunFile.path) > 0 if self.gudrunFile.path else False)
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
