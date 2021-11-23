@@ -223,7 +223,8 @@ class Sample:
             bjoin(
                 self.exponentialValues,
                 " Exponential amplitude and decay [1/\u212b]\n",
-                sameseps=True
+                sameseps=True,
+                suffix = "0"
             )
         )
 
