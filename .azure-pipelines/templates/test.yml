@@ -36,7 +36,7 @@ steps:
   - bash: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
       unzip binaries.zip
-      mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }} bin
+      mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}/* bin
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin
