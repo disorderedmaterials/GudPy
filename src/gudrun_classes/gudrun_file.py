@@ -140,7 +140,7 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-        if path == None:
+        if type(path) == type(None):
             self.instrument = Instrument()
             self.beam = Beam()
             self.normalisation = Normalisation()
