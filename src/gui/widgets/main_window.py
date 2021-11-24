@@ -520,6 +520,11 @@ class GudPyMainWindow(QMainWindow):
                     self.mainWidget.resultLabel.setStyleSheet(
                         "background-color: green"
                     )
+                
+                tweakFactor = gudFile.suggestedTweakFactor
+                self.mainWidget.suggestedTweakFactorLabel.setText(
+                    f"Suggested Tweak Factor: {tweakFactor}"
+                )
 
     def updateSamples(self):
         samples = self.mainWidget.objectTree.getSamples()
