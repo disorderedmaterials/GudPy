@@ -500,11 +500,18 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot.setChart(
                 bottomPlot
             )
+
+            plotsMap = {
+                PlotModes.STRUCTURE_FACTOR: 0,
+                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
+            }
+
+
             self.mainWidget.topPlotComboBox.setCurrentIndex(
-                topPlot.plotMode.value
+                plotsMap[topPlot.plotMode]
             )
             self.mainWidget.bottomPlotComboBox.setCurrentIndex(
-                bottomPlot.plotMode.value
+                plotsMap[bottomPlot.plotMode]
             )
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
