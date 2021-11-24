@@ -40,6 +40,8 @@ steps:
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin
+      ls
+    displayName: "Collect binaries and startup files"
   - bash: |
       pip install nose2
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
