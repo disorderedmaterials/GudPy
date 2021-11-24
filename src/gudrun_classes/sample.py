@@ -224,7 +224,7 @@ class Sample:
                 self.exponentialValues,
                 " Exponential amplitude and decay [1/\u212b]\n",
                 sameseps=True,
-                suffix = "0"
+                suffix="0"
             )
         )
 

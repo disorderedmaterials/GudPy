@@ -340,7 +340,7 @@ class NormalisationSlots():
         self.normalisation.downstreamThickness = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-    
+
     def handleAngleOfRotationChanged(self, value):
         """
         Slot for handling change in the angle of rotation.
@@ -725,7 +725,7 @@ class NormalisationSlots():
         self.addFiles(target, title, regex)
         self.handleDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
-                self.parent.setModified()
+            self.parent.setModified()
 
     def addBgDataFiles(self, target, title, regex):
         """
@@ -744,7 +744,8 @@ class NormalisationSlots():
         self.addFiles(target, title, regex)
         self.handleBgDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
-                self.parent.setModified()
+            self.parent.setModified()
+
     def removeFile(self, target, dataFiles):
         """
         Slot for removing files from the data files list.

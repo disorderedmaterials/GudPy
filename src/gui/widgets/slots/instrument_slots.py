@@ -660,11 +660,12 @@ class InstrumentSlots():
         Parameters
         ----------
         state : int
-            The new state of the subWavelengthBinnedDataCheckBox (1: True, 0: False)
+            The new state of the subWavelengthBinnedDataCheckBox
+            (1: True, 0: False)
         """
         self.instrument.subWavelengthBinnedData = bool(state)
         if not self.widgetsRefreshing:
-            self.parent.setModified()   
+            self.parent.setModified()
 
     def handleSubSingleScatteringSwitched(self, state):
         """
@@ -676,7 +677,8 @@ class InstrumentSlots():
         Parameters
         ----------
         state : int
-            The new state of the subSingleScatteringCheckBox (1: True, 0: False)
+            The new state of the subSingleScatteringCheckBox
+            (1: True, 0: False)
         """
         self.instrument.subSingleAtomScattering = bool(state)
         if not self.widgetsRefreshing:
@@ -1164,9 +1166,16 @@ class InstrumentSlots():
         else:
             import os
             instrumentFilesDir = os.path.join(
-                self.instrument.GudrunStartFolder, self.instrument.startupFileFolder, Instruments(self.instrument.name.value).name
+                self.instrument.GudrunStartFolder,
+                self.instrument.startupFileFolder,
+                Instruments(self.instrument.name.value).name
             )
-            filename, _ = QFileDialog.getOpenFileName(self.widget, title, instrumentFilesDir, "")
+            filename, _ = QFileDialog.getOpenFileName(
+                self.widget,
+                title,
+                instrumentFilesDir,
+                ""
+            )
         return filename + "/" if filename else ""
 
     def updateGroupingParameterPanel(self):

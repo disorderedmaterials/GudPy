@@ -379,9 +379,16 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load a configuration file.
         """
-        targetDir = os.path.join(sys._MEIPASS, "bin", "configs") if hasattr(sys, "_MEIPASS") else os.path.join("bin", "configs")
+        targetDir = (
+            os.path.join(sys._MEIPASS, "bin", "configs")
+            if hasattr(sys, "_MEIPASS")
+            else os.path.join("bin", "configs")
+        )
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select configuration file for GudPy", targetDir, "GudPy Configuration (*.txt)"
+            self,
+            "Select configuration file for GudPy",
+            targetDir,
+            "GudPy Configuration (*.txt)"
         )
         if filename:
             try:
@@ -411,8 +418,9 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", "."
         )
         if filename:
-            if not self.gudrunFile.path:
-                self.gudrunFile.instrument.GudrunInputFileDir = os.path.dirname(os.path.abspath(self.path))
+            self.gudrunFile.instrument.GudrunInputFileDir = (
+                os.path.dirname(os.path.abspath(filename))
+            )
             self.gudrunFile.path = filename
             self.gudrunFile.write_out(overwrite=True)
             self.setUnModified()
@@ -497,7 +505,6 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
             }
 
-
             self.mainWidget.topPlotComboBox.setCurrentIndex(
                 plotsMap[topPlot.plotMode]
             )
@@ -518,7 +525,7 @@ class GudPyMainWindow(QMainWindow):
                     self.mainWidget.resultLabel.setStyleSheet(
                         "background-color: green"
                     )
-                
+
                 tweakFactor = gudFile.suggestedTweakFactor
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
@@ -552,7 +559,7 @@ class GudPyMainWindow(QMainWindow):
     def updateAllSamples(self):
 
         samples = self.mainWidget.objectTree.getSamples()
-        if samples:                
+        if samples:
             if len(self.allPlots):
                 allTopChart = GudPyChart(
                     self.gudrunFile
@@ -645,7 +652,8 @@ class GudPyMainWindow(QMainWindow):
         elif not self.gudrunFile.purged and os.path.exists('purge_det.dat'):
             self.purgeOptionsMessageBox(
                 dcs,
-                "purge_det.dat found, but wasn't run in this session. Continue?"
+                "purge_det.dat found, but wasn't run in this session. "
+                "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
@@ -807,7 +815,12 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state & len(self.gudrunFile.path) > 0 if self.gudrunFile.path else False)
+        self.mainWidget.save.setEnabled(
+            state &
+            len(self.gudrunFile.path) > 0
+            if self.gudrunFile.path
+            else False
+        )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)

@@ -316,7 +316,6 @@ class GudrunFile:
             self.instrument.wavelengthMax = wavelengthRange[1]
             self.instrument.wavelengthStep = wavelengthRange[2]
 
-    
             self.instrument.NoSmoothsOnMonitor = nthint(self.getNextToken(), 0)
 
             # Extract X range
@@ -749,7 +748,8 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
-            if not sample.name: sample.name = "SAMPLE"
+            if not sample.name:
+                sample.name = "SAMPLE"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -943,7 +943,8 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("CONTAINER", "").strip()
             )
-            if not container.name: container.name = "CONTAINER"
+            if not container.name:
+                container.name = "CONTAINER"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -1186,17 +1187,16 @@ class GudrunFile:
 
         # If we didn't parse each one of the keywords, then panic.
         if not all(KEYWORDS.values()) and not config:
-           raise ParserException((
+            raise ParserException((
                'INSTRUMENT, BEAM and NORMALISATION'
                ' were not parsed. It\'s possible the file'
                ' supplied is of an incorrect format!'
-           ))
+            ))
         elif not KEYWORDS["INSTRUMENT"] and config:
             raise ParserException((
                 'INSTRUMENT was not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
             ))
-
 
         # Ignore whitespace.
         self.consumeWhitespace()
