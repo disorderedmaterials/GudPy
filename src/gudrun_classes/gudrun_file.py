@@ -396,7 +396,6 @@ class GudrunFile:
             self.consumeUpToDelim("}")
 
         except Exception as e:
-            print(e)
             raise ParserException(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
