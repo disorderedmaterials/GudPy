@@ -153,7 +153,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
-
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
         self.mainWidget.statusBarLayout = QHBoxLayout(
@@ -313,12 +312,8 @@ class GudPyMainWindow(QMainWindow):
             self.loadConfiguration_
         )
 
-        self.mainWidget.newFromScratch.triggered.connect(
+        self.mainWidget.new_.triggered.connect(
             self.newInputFile
-        )
-
-        self.mainWidget.newFromConfig.triggered.connect(
-            self.newInputFileFromConfig
         )
 
         self.mainWidget.objectStack.currentChanged.connect(
@@ -390,6 +385,8 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
+                if not self.gudrunFile:
+                    self.gudrunFile = GudrunFile()
                 instrument = GudrunFile(path=filename, config=True).instrument
                 self.gudrunFile.instrument = instrument
                 self.updateWidgets()
@@ -425,12 +422,6 @@ class GudPyMainWindow(QMainWindow):
             del self.gudrunFile
         self.gudrunFile = GudrunFile()
         self.updateWidgets()
-    
-    def newInputFileFromConfig(self):
-        if self.gudrunFile:
-            del self.gudrunFile
-        self.gudrunFile = GudrunFile()
-        self.loadConfiguration_()
 
     def updateFromFile(self):
         """
