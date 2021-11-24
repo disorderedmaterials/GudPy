@@ -119,13 +119,13 @@ def firstNFloats(string, n):
 
 def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False, suffix=None):
     iterable = [
-        str(i) + f" {suffix}" if suffix else ""
+        str(i)
         if not isinstance(i, (str, list, tuple))
         else i
         for i in iterable
     ]
     iterable = [
-        spacify(i) + f" {suffix}" if suffix else ""
+        spacify(i)
         if isinstance(i, (list, tuple))
         else i
         for i in iterable
@@ -138,7 +138,8 @@ def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False, suffix=None):
         return ""
     elif len(iterable) == 1:
         return (iterable[0]) + sep
-
+    if suffix:
+        iterable = [i + f" {suffix}" for i in iterable]
     return sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
 
 

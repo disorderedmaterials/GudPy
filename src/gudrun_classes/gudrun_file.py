@@ -140,17 +140,17 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-        if path:
+        if path == None:
+            self.instrument = Instrument()
+            self.beam = Beam()
+            self.normalisation = Normalisation()
+            self.sampleBackgrounds = []
+        else:
             self.instrument = None
             self.beam = None
             self.normalisation = None
             self.sampleBackgrounds = []
             self.parse(config=config)
-        else:
-            self.instrument = Instrument()
-            self.beam = Beam()
-            self.normalisation = Normalisation()
-            self.sampleBackgrounds = []
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
