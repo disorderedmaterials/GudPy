@@ -1312,6 +1312,8 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
+            except Exception:
+                return False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
