@@ -708,6 +708,7 @@ class NormalisationSlots():
             if file:
                 target.addItem(file.split("/")[-1])
 
+
     def addDataFiles(self, target, title, regex):
         """
         Slot for adding files to the data files list.
