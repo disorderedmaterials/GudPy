@@ -1301,6 +1301,7 @@ class GudrunFile:
         if headless:
             try:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                print(gudrun_dcs)
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
@@ -1312,8 +1313,6 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
-            except Exception:
-                return False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
