@@ -27,7 +27,7 @@ class SampleBackground:
         ----------
         None
         """
-        self.periodNumber = 0
+        self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
         self.samples = []
 

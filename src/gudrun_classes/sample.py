@@ -105,7 +105,7 @@ class Sample:
         None
         """
         self.name = ""
-        self.periodNumber = 0
+        self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE")
         self.forceCalculationOfCorrections = False
         self.composition = Composition("SAMPLE")
