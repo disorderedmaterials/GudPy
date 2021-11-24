@@ -1162,7 +1162,11 @@ class InstrumentSlots():
                 QFileDialog.getExistingDirectory(self.widget, title, "")
             )
         else:
-            filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
+            import os
+            instrumentFilesDir = os.path.join(
+                self.instrument.GudrunStartFolder, self.instrument.startupFileFolder, Instruments(self.instrument.name.value).name
+            )
+            filename, _ = QFileDialog.getOpenFileName(self.widget, title, instrumentFilesDir, "")
         return filename + "/" if filename else ""
 
     def updateGroupingParameterPanel(self):
