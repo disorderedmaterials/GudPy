@@ -1339,8 +1339,12 @@ class GudrunFile:
             The result of calling gudrun_dcs using subprocess.run.
             Can access stdout/stderr from this.
         """
+        cwd = os.getcwd()
+        os.chdir(self.instrument.GudrunInputFileDir)
         self.write_out()
-        return self.dcs(path=self.outpath, headless=headless)
+        dcs = self.dcs(path=self.outpath, headless=headless)
+        os.chdir(cwd)
+        return dcs
 
     def purge(self, *args, **kwargs):
         """
