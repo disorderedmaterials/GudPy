@@ -1,3 +1,4 @@
+from PySide6.QtCharts import QChart
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -117,6 +118,7 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
+        self.cwd = os.getcwd()
 
     def initComponents(self):
         """
@@ -559,32 +561,31 @@ class GudPyMainWindow(QMainWindow):
     def updateAllSamples(self):
 
         samples = self.mainWidget.objectTree.getSamples()
-        if samples:
-            if len(self.allPlots):
-                allTopChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allTopChart.addSamples(samples)
-                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-                allBottomChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allBottomChart.addSamples(samples)
-                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-            else:
-                allTopChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allTopChart.addSamples(samples)
-                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-                allBottomChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allBottomChart.addSamples(samples)
-                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
-            self.allPlots = [allTopChart, allBottomChart]
-            self.mainWidget.allSampleTopPlot.setChart(allTopChart)
-            self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
+        if len(self.allPlots):
+            allTopChart = GudPyChart(
+                self.gudrunFile
+            )
+            allTopChart.addSamples(samples)
+            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allBottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            allBottomChart.addSamples(samples)
+            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+        else:
+            allTopChart = GudPyChart(
+                self.gudrunFile
+            )
+            allTopChart.addSamples(samples)
+            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allBottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            allBottomChart.addSamples(samples)
+            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+        self.allPlots = [allTopChart, allBottomChart]
+        self.mainWidget.allSampleTopPlot.setChart(allTopChart)
+        self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
 
     def updateResults(self):
 
@@ -650,17 +651,20 @@ class GudPyMainWindow(QMainWindow):
                 "Couldn't find gudrun_dcs binary."
             )
         elif not self.gudrunFile.purged and os.path.exists('purge_det.dat'):
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.purgeOptionsMessageBox(
                 dcs,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.purgeOptionsMessageBox(
                 dcs,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.gudrunFile.write_out()
             self.makeProc(dcs, self.progressDCS)
 
@@ -900,6 +904,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
+        if progress >= 100:
+            os.chdir(self.cwd)
 
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()

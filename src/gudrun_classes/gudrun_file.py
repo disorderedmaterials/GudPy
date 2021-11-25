@@ -1301,20 +1301,14 @@ class GudrunFile:
         if headless:
             try:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                print(gudrun_dcs, path, os.path.exists(gudrun_dcs))
+                cwd = os.getcwd()
+                os.chdir(self.instrument.GudrunInputFileDir)
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
+                os.chdir(cwd)
             except FileNotFoundError:
-                if hasattr(sys, '_MEIPASS'):
-                    gudrun_dcs = os.path.join(
-                        sys._MEIPASS, f"gudrun_dcs{SUFFIX}"
-                    )
-                    result = subprocess.run(
-                        [gudrun_dcs, path], capture_output=True, text=True
-                    )
-                else:
-                    return False
+                return False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):

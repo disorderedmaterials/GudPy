@@ -147,8 +147,8 @@ class Instrument:
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
         self.GudrunStartFolder = (
-            "bin" if not hasattr(sys, "_MEIPASS")
-            else os.path.join(sys._MEIPASS, "bin")
+            os.path.abspath("bin") if not hasattr(sys, "_MEIPASS")
+            else os.path.abspath(os.path.join(sys._MEIPASS, "bin"))
         )
         self.startupFileFolder = "StartupFiles"
         self.logarithmicStepSize = 0.0
