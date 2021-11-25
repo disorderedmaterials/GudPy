@@ -40,7 +40,7 @@ class TestGudPyIO(TestCase):
             )
         self.expectedInstrument = {
             "name": Instruments.NIMROD,
-            "GudrunInputFileDir": os.path.dirname(os.path.abspath(dirpath)),
+            "GudrunInputFileDir": os.path.abspath(os.path.dirname(os.path.abspath(dirpath))),
             "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
@@ -78,7 +78,7 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": "bin",
+            "GudrunStartFolder": os.path.abspath("bin"),
             "startupFileFolder": "StartupFiles",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
