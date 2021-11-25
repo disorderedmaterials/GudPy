@@ -22,7 +22,9 @@ class TestGudPyWorkflows(TestCase):
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "tests/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile(os.path.abspath("tests/TestData/NIMROD-water/good_water.txt"))
+        g = GudrunFile(
+            os.path.abspath("tests/TestData/NIMROD-water/good_water.txt")
+        )
 
         from pathlib import Path
 
@@ -50,28 +52,44 @@ class TestGudPyWorkflows(TestCase):
         self.g.dcs()
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf1 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf1 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.err)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 14.1, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf2 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf2 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf3 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf3 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 98.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf4 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf4 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.err)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
@@ -87,7 +105,10 @@ class TestGudPyWorkflows(TestCase):
             actualMintFile = f'tests/TestData/water-ref/plain/{mintFilename}'
 
             actualData = open(
-                os.path.join(self.g.instrument.GudrunInputFileDir, mintFilename), "r", encoding="utf-8"
+                os.path.join(
+                    self.g.instrument.GudrunInputFileDir, mintFilename
+                ),
+                "r", encoding="utf-8"
                 ).readlines()[10:]
             expectedData = open(
                 actualMintFile, "r", encoding="utf-8"
@@ -116,28 +137,44 @@ class TestGudPyWorkflows(TestCase):
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf1 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf1 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf2 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf2 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf3 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf3 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
         gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
-        gf4 = GudFile(os.path.join(self.g.instrument.GudrunInputFileDir, gfPath))
+        gf4 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
@@ -171,8 +208,7 @@ class TestGudPyWorkflows(TestCase):
                    os.path.join(
                        self.g.instrument.GudrunInputFileDir,
                        mintFilename
-                   ),
-                    "r", encoding="utf-8"
+                   ), "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
@@ -207,8 +243,7 @@ class TestGudPyWorkflows(TestCase):
                    os.path.join(
                        self.g.instrument.GudrunInputFileDir,
                        msubFilename
-                   ),
-                    "r", encoding="utf-8"
+                   ), "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMsubFilename, "r", encoding="utf-8"
