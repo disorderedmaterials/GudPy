@@ -721,7 +721,7 @@ class TestGudPyIO(TestCase):
                             valueInLines(val, inlines)
                 else:
                     if (
-                        value == "bin"
+                        value == os.path.abspath("bin")
                         or value == os.path.sep
                         or value == os.path.join("bin", "StartupFiles")
                         or value == self.g.instrument.GudrunInputFileDir

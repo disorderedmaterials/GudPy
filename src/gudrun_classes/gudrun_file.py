@@ -1307,7 +1307,8 @@ class GudrunFile:
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
                 os.chdir(cwd)
-            except FileNotFoundError:
+            except FileNotFoundError as e:
+                os.chdir(cwd)
                 return False
             return result
         else:
