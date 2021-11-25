@@ -272,13 +272,21 @@ class TestParseGudFile(TestCase):
     def testValidPath(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
+            )
+        )
         self.assertIsInstance(gf, GudFile)
 
     def testLoadGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
@@ -324,7 +332,12 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
@@ -370,7 +383,11 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileC(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016741_HDO_in_N6.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016741_HDO_in_N6.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
@@ -416,7 +433,12 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileD(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
