@@ -285,29 +285,20 @@ class PurgeFile():
         self.standardDeviation = standardDeviation
         self.ignoreBad = ignoreBad
         self.excludeSampleAndCan = excludeSampleAndCan
-        self.write_out()
         if headless:
             try:
+                cwd = os.getcwd()
+                os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+                self.write_out()
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
                     capture_output=True,
                     text=True
                 )
+                os.chdir(cwd)
             except FileNotFoundError:
-                # FileNotFoundError probably means that GudPy is being
-                # run as an executable.
-                # So prepend sys._MEIPASS to the path to purge_det.
-                if hasattr(sys, '_MEIPASS'):
-                    purge_det = os.path.join(
-                        sys._MEIPASS, f"purge_det{SUFFIX}"
-                    )
-                    result = subprocess.run(
-                        [purge_det, "purge_det.dat"],
-                        capture_output=True, text=True
-                    )
-                else:
-                    result = False
+                return False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
