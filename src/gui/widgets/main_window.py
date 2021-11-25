@@ -639,6 +639,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
         else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.makeProc(purge, self.progressPurge)
 
     def runGudrun_(self):
@@ -703,6 +704,7 @@ class GudPyMainWindow(QMainWindow):
             purge_det = self.gudrunFile.purge(
                 headless=False
             )
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.makeProc(purge_det, self.progressPurge)
         else:
             self.runPurge_()
@@ -958,6 +960,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Warning",
                 f"{detectors} detectors made it through the purge."
             )
+            os.chdir(self.cwd)
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
