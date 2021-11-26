@@ -201,7 +201,7 @@ class GudPyChart(QChart):
             and gudPath
         ):
             gudFile = GudFile(gudPath)
-            dcsLevel = gudFile.averageLevelMergedDCS
+            dcsLevel = gudFile.expectedDCS
             for x, _, _ in self.data[sample]["mdcs01"]:
                 dcsData.append((x, float(dcsLevel)))
         self.data[sample]["dcs"] = dcsData
