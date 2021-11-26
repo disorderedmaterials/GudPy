@@ -82,8 +82,6 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(instrument.logarithmicStepSize, float)
         self.assertIsInstance(instrument.hardGroupEdges, bool)
         self.assertIsInstance(instrument.nxsDefinitionFile, str)
-        self.assertIsInstance(instrument.numberIterations, int)
-        self.assertIsInstance(instrument.tweakTweakFactors, bool)
 
     def testBeamInitDataTypes(self):
 
@@ -91,7 +89,6 @@ class TestGudrunClasses(TestCase):
 
         self.assertIsInstance(beam, Beam)
         self.assertIsInstance(beam.sampleGeometry, Geometry)
-        self.assertIsInstance(beam.noBeamProfileValues, int)
         self.assertIsInstance(beam.beamProfileValues, list)
         self.assertIsInstance(beam.stepSizeAbsorption, float)
         self.assertIsInstance(beam.stepSizeMS, float)

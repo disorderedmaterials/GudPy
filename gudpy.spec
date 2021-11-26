@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 VERSION = "0.1.0"
-binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles"]
+binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles" or f == "configs"]
 block_cipher = None
 import sys
 
@@ -8,7 +8,7 @@ if sys.platform == "darwin":
     a = Analysis(['main.py'],
                 pathex=[os.path.dirname(os.path.abspath('main.py'))],
                 binaries=None,
-                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")], *binaries],
+                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")], *binaries],
                 hiddenimports=[],
                 hookspath=[],
                 hooksconfig={},
@@ -24,7 +24,7 @@ else:
     a = Analysis(['main.py'],
                 pathex=[os.path.dirname(os.path.abspath('main.py'))],
                 binaries=binaries,
-                datas=[("bin/StartupFiles", "bin/StartupFiles"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")],
+                datas=[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")],
                 hiddenimports=[],
                 hookspath=[],
                 hooksconfig={},

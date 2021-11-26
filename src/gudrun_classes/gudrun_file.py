@@ -123,7 +123,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, config=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -140,14 +140,20 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-        self.instrument = None
-        self.beam = None
-        self.normalisation = None
-        self.sampleBackgrounds = []
+        if isinstance(path, type(None)):
+            self.instrument = Instrument()
+            self.beam = Beam()
+            self.normalisation = Normalisation()
+            self.sampleBackgrounds = []
+        else:
+            self.instrument = None
+            self.beam = None
+            self.normalisation = None
+            self.sampleBackgrounds = []
+            self.parse(config=config)
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
-        self.parse()
         self.purgeFile = PurgeFile(self)
 
     def getNextToken(self):
@@ -218,7 +224,7 @@ class GudrunFile:
         None
         """
         line = self.peekNextToken()
-        if line.isspace():
+        if line and line.isspace():
             self.getNextToken()
             line = self.peekNextToken()
 
@@ -386,11 +392,6 @@ class GudrunFile:
                     firstword(self.getNextToken())
                 )
 
-            self.instrument.numberIterations = nthint(self.getNextToken(), 0)
-            self.instrument.tweakTweakFactors = (
-                boolifyNum(nthint(self.getNextToken(), 0))
-            )
-
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
@@ -399,6 +400,7 @@ class GudrunFile:
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
                     "and some attributes were missing."
+                    f"{str(e)}"
             ) from e
 
     def parseBeam(self):
@@ -432,9 +434,8 @@ class GudrunFile:
             # Set the global geometry.
             config.geometry = self.beam.sampleGeometry
 
-            # For single integer attributes,
-            # we extract the zeroth int from the line.
-            self.beam.noBeamProfileValues = nthint(self.getNextToken(), 0)
+            # Ignore the number of beam values.
+            self.consumeTokens(1)
 
             # For N float attributes,
             # we extract the first N floats from the line.
@@ -746,6 +747,8 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
+            if not sample.name:
+                sample.name = "SAMPLE"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -939,6 +942,8 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("CONTAINER", "").strip()
             )
+            if not container.name:
+                container.name = "CONTAINER"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -1127,7 +1132,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self):
+    def parse(self, config=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1180,10 +1185,15 @@ class GudrunFile:
             line = self.getNextToken()
 
         # If we didn't parse each one of the keywords, then panic.
-        if not all(KEYWORDS.values()):
+        if not all(KEYWORDS.values()) and not config:
             raise ParserException((
-                'INSTRUMENT, BEAM and NORMALISATION'
-                ' were not parsed. It\'s possible the file'
+               'INSTRUMENT, BEAM and NORMALISATION'
+               ' were not parsed. It\'s possible the file'
+               ' supplied is of an incorrect format!'
+            ))
+        elif not KEYWORDS["INSTRUMENT"] and config:
+            raise ParserException((
+                'INSTRUMENT was not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
             ))
 
@@ -1287,21 +1297,19 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         if not path:
-            path = self.path
+            path = os.path.basename(self.path)
         if headless:
             try:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                cwd = os.getcwd()
+                os.chdir(self.instrument.GudrunInputFileDir)
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
+                os.chdir(cwd)
             except FileNotFoundError:
-                if hasattr(sys, '_MEIPASS'):
-                    gudrun_dcs = os.path.join(
-                        sys._MEIPASS, f"gudrun_dcs{SUFFIX}"
-                    )
-                    result = subprocess.run(
-                        [gudrun_dcs, path], capture_output=True, text=True
-                    )
+                os.chdir(cwd)
+                return False
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1331,8 +1339,12 @@ class GudrunFile:
             The result of calling gudrun_dcs using subprocess.run.
             Can access stdout/stderr from this.
         """
+        cwd = os.getcwd()
+        os.chdir(self.instrument.GudrunInputFileDir)
         self.write_out()
-        return self.dcs(path=self.outpath, headless=headless)
+        dcs = self.dcs(path=self.outpath, headless=headless)
+        os.chdir(cwd)
+        return dcs
 
     def purge(self, *args, **kwargs):
         """

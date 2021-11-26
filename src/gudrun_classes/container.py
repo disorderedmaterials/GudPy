@@ -62,7 +62,7 @@ class Container:
         None
         """
         self.name = ""
-        self.periodNumber = 0
+        self.periodNumber = 1
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition("CONTAINER")
         self.geometry = Geometry.SameAsBeam
@@ -96,6 +96,14 @@ class Container:
         """
 
         TAB = "          "
+
+        nameLine = (
+            f"CONTAINER {self.name}{TAB}"
+            if self.name != "CONTAINER"
+            else
+            f"CONTAINER{TAB}"
+        )
+
         dataFilesLines = (
             f'{str(self.dataFiles)}\n'
             if len(self.dataFiles.dataFiles) > 0
@@ -146,7 +154,7 @@ class Container:
         )
 
         return (
-            f'CONTAINER {self.name}{TAB}{{\n\n'
+            f'{nameLine}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'

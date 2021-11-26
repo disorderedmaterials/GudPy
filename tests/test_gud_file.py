@@ -272,19 +272,27 @@ class TestParseGudFile(TestCase):
     def testValidPath(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
+            )
+        )
         self.assertIsInstance(gf, GudFile)
 
     def testLoadGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016608_H2O_in_N9.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "contents", "result", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -324,13 +332,19 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "contents", "err", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -370,13 +384,17 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileC(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016741_HDO_in_N6.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir, "NIMROD00016741_HDO_in_N6.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "contents", "err", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -416,13 +434,18 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileD(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
 
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "contents", "result", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -462,7 +485,12 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
         outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
@@ -470,7 +498,12 @@ class TestParseGudFile(TestCase):
     def testRewriteGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
 
         gf1 = GudFile(gf.outpath)
@@ -486,7 +519,12 @@ class TestParseGudFile(TestCase):
     def testReloadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
         gf.write_out()
         gf1 = GudFile(gf.outpath)
 
@@ -495,7 +533,12 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
         outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
@@ -503,7 +546,12 @@ class TestParseGudFile(TestCase):
     def testRewriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
         gf.write_out()
 
         gf1 = GudFile(gf.outpath)

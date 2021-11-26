@@ -117,6 +117,7 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
+        self.cwd = os.getcwd()
 
     def initComponents(self):
         """
@@ -153,7 +154,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
-
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
         self.mainWidget.statusBarLayout = QHBoxLayout(
@@ -308,6 +308,15 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.loadInputFile.triggered.connect(
             self.loadInputFile_
         )
+
+        self.mainWidget.loadConfiguration.triggered.connect(
+            self.loadConfiguration_
+        )
+
+        self.mainWidget.new_.triggered.connect(
+            self.newInputFile
+        )
+
         self.mainWidget.objectStack.currentChanged.connect(
             self.updateComponents
         )
@@ -319,7 +328,7 @@ class GudPyMainWindow(QMainWindow):
 
     def updateWidgets(self, fromFile=False):
         if fromFile:
-            self.gudrunFile = GudrunFile(self.gudrunFile.path)
+            self.gudrunFile = GudrunFile(path=self.gudrunFile.path)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -359,7 +368,35 @@ class GudPyMainWindow(QMainWindow):
         )
         if filename:
             try:
-                self.gudrunFile = GudrunFile(filename)
+                if self.gudrunFile:
+                    del self.gudrunFile
+                self.gudrunFile = GudrunFile(path=filename)
+                self.updateWidgets()
+                self.mainWidget.setWindowTitle(self.gudrunFile.path)
+            except ParserException as e:
+                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
+
+    def loadConfiguration_(self):
+        """
+        Opens a QFileDialog to load a configuration file.
+        """
+        targetDir = (
+            os.path.join(sys._MEIPASS, "bin", "configs")
+            if hasattr(sys, "_MEIPASS")
+            else os.path.join("bin", "configs")
+        )
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select configuration file for GudPy",
+            targetDir,
+            "GudPy Configuration (*.txt)"
+        )
+        if filename:
+            try:
+                if not self.gudrunFile:
+                    self.gudrunFile = GudrunFile()
+                instrument = GudrunFile(path=filename, config=True).instrument
+                self.gudrunFile.instrument = instrument
                 self.updateWidgets()
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
@@ -368,8 +405,11 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file.
         """
-        self.gudrunFile.write_out(overwrite=True)
-        self.setUnModified()
+        if not self.gudrunFile.path:
+            self.saveInputFileAs()
+        else:
+            self.gudrunFile.write_out(overwrite=True)
+            self.setUnModified()
 
     def saveInputFileAs(self):
         """
@@ -379,9 +419,18 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", "."
         )
         if filename:
-            self.gudrunFile.outpath = filename
-            self.gudrunFile.write_out()
+            self.gudrunFile.instrument.GudrunInputFileDir = (
+                os.path.dirname(os.path.abspath(filename))
+            )
+            self.gudrunFile.path = filename
+            self.gudrunFile.write_out(overwrite=True)
             self.setUnModified()
+
+    def newInputFile(self):
+        if self.gudrunFile:
+            del self.gudrunFile
+        self.gudrunFile = GudrunFile()
+        self.updateWidgets()
 
     def updateFromFile(self):
         """
@@ -451,11 +500,17 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot.setChart(
                 bottomPlot
             )
+
+            plotsMap = {
+                PlotModes.STRUCTURE_FACTOR: 0,
+                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
+            }
+
             self.mainWidget.topPlotComboBox.setCurrentIndex(
-                topPlot.plotMode.value
+                plotsMap[topPlot.plotMode]
             )
             self.mainWidget.bottomPlotComboBox.setCurrentIndex(
-                bottomPlot.plotMode.value
+                plotsMap[bottomPlot.plotMode]
             )
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
@@ -472,20 +527,26 @@ class GudPyMainWindow(QMainWindow):
                         "background-color: green"
                     )
 
+                tweakFactor = gudFile.suggestedTweakFactor
+                self.mainWidget.suggestedTweakFactorLabel.setText(
+                    f"Suggested Tweak Factor: {tweakFactor}"
+                )
+
     def updateSamples(self):
         samples = self.mainWidget.objectTree.getSamples()
         for sample in samples:
-            if sample not in self.results.keys():
-                topChart = GudPyChart(
-                    self.gudrunFile
-                )
-                topChart.addSample(sample)
-                topChart.plot(PlotModes.STRUCTURE_FACTOR)
-                bottomChart = GudPyChart(
-                    self.gudrunFile
-                )
-                bottomChart.addSample(sample)
-                bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            topChart = GudPyChart(
+                self.gudrunFile
+            )
+            topChart.addSample(sample)
+            topChart.plot(PlotModes.STRUCTURE_FACTOR)
+            bottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            bottomChart.addSample(sample)
+            bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            path = None
+            if len(sample.dataFiles.dataFiles):
                 path = sample.dataFiles.dataFiles[0].replace(
                     self.gudrunFile.instrument.dataFileType, "gud"
                 )
@@ -493,25 +554,23 @@ class GudPyMainWindow(QMainWindow):
                     path = os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir, path
                     )
-                gf = GudFile(path) if os.path.exists(path) else None
-                self.results[sample] = [topChart, bottomChart, gf]
+            gf = GudFile(path) if path and os.path.exists(path) else None
+            self.results[sample] = [topChart, bottomChart, gf]
 
     def updateAllSamples(self):
 
         samples = self.mainWidget.objectTree.getSamples()
         if len(self.allPlots):
-            if self.allPlots[0].data.keys() != samples:
-                allTopChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allTopChart.addSamples(samples)
-                allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
-            if self.allPlots[1].data.keys() != samples:
-                allBottomChart = GudPyChart(
-                    self.gudrunFile
-                )
-                allBottomChart.addSamples(samples)
-                allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            allTopChart = GudPyChart(
+                self.gudrunFile
+            )
+            allTopChart.addSamples(samples)
+            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allBottomChart = GudPyChart(
+                self.gudrunFile
+            )
+            allBottomChart.addSamples(samples)
+            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
         else:
             allTopChart = GudPyChart(
                 self.gudrunFile
@@ -531,6 +590,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.updateSamples()
         self.updateAllSamples()
+        self.focusResult()
 
     def updateComponents(self):
         """
@@ -578,6 +638,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
         else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.makeProc(purge, self.progressPurge)
 
     def runGudrun_(self):
@@ -589,39 +650,52 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
+        elif not self.gudrunFile.purged and os.path.exists('purge_det.dat'):
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+            self.purgeOptionsMessageBox(
+                dcs,
+                "purge_det.dat found, but wasn't run in this session. "
+                "Continue?"
+            )
         elif not self.gudrunFile.purged:
-            messageBox = QMessageBox(self.mainWidget)
-            messageBox.setWindowTitle("GudPy Warning")
-            messageBox.setText(
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+            self.purgeOptionsMessageBox(
+                dcs,
                 "It looks like you may not have purged detectors. Continue?"
             )
-            messageBox.addButton(QMessageBox.No)
-            openPurgeDialog = QPushButton(
-                "Open purge dialog", messageBox
-            )
-            purgeDefault = QPushButton(
-                "Purge with default parameters", messageBox
-            )
-
-            messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
-            messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
-
-            messageBox.addButton(QMessageBox.Yes)
-            result = messageBox.exec()
-
-            if messageBox.clickedButton() == openPurgeDialog:
-                self.purgeBeforeRunning(default=False)
-            elif messageBox.clickedButton() == purgeDefault:
-                self.purgeBeforeRunning()
-            elif result == messageBox.Yes:
-                self.gudrunFile.write_out()
-                self.makeProc(dcs, self.progressDCS)
-            else:
-                messageBox.close()
-                self.setControlsEnabled(True)
         else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.gudrunFile.write_out()
             self.makeProc(dcs, self.progressDCS)
+
+    def purgeOptionsMessageBox(self, dcs, text):
+        messageBox = QMessageBox(self.mainWidget)
+        messageBox.setWindowTitle("GudPy Warning")
+        messageBox.setText(text)
+        messageBox.addButton(QMessageBox.No)
+        openPurgeDialog = QPushButton(
+            "Open purge dialog", messageBox
+        )
+        purgeDefault = QPushButton(
+            "Purge with default parameters", messageBox
+        )
+
+        messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
+        messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
+
+        messageBox.addButton(QMessageBox.Yes)
+        result = messageBox.exec()
+
+        if messageBox.clickedButton() == openPurgeDialog:
+            self.purgeBeforeRunning(default=False)
+        elif messageBox.clickedButton() == purgeDefault:
+            self.purgeBeforeRunning()
+        elif result == messageBox.Yes:
+            self.gudrunFile.write_out()
+            self.makeProc(dcs, self.progressDCS)
+        else:
+            messageBox.close()
+            self.setControlsEnabled(True)
 
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
@@ -629,6 +703,7 @@ class GudPyMainWindow(QMainWindow):
             purge_det = self.gudrunFile.purge(
                 headless=False
             )
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.makeProc(purge_det, self.progressPurge)
         else:
             self.runPurge_()
@@ -716,13 +791,13 @@ class GudPyMainWindow(QMainWindow):
 
     def setModified(self):
         if not self.modified:
-            self.setWindowTitle(self.gudrunFile.path + " *")
-            self.modified = True
+            if self.gudrunFile.path:
+                self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
+                self.modified = True
 
     def setUnModified(self):
-        if self.modified:
-            self.setWindowTitle(self.gudrunFile.path)
-            self.modified = False
+        self.mainWidget.setWindowTitle(self.gudrunFile.path)
+        self.modified = False
 
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
@@ -745,7 +820,12 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state)
+        self.mainWidget.save.setEnabled(
+            state &
+            len(self.gudrunFile.path) > 0
+            if self.gudrunFile.path
+            else False
+        )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
@@ -825,6 +905,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
+        if progress >= 100:
+            os.chdir(self.cwd)
 
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
@@ -877,6 +959,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Warning",
                 f"{detectors} detectors made it through the purge."
             )
+            os.chdir(self.cwd)
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(

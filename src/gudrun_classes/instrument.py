@@ -101,10 +101,6 @@ class Instrument:
         Should hard group edges be used?
     nxsDefinitionFile : str
         NeXus definition file to be used, if NeXus files are being used.
-    numberIterations : int
-        Number of iterations (may be obsolete).
-    tweakTweakFactors : bool
-        Should the tweak factors be tweaked? (may be obsolete).
     Methods
     -------
     """
@@ -120,7 +116,7 @@ class Instrument:
         self.name = Instruments.NIMROD
         self.GudrunInputFileDir = ""
         self.dataFileDir = ""
-        self.dataFileType = ""
+        self.dataFileType = "raw"
         self.detectorCalibrationFileName = ""
         self.columnNoPhiVals = 0
         self.groupFileName = ""
@@ -151,15 +147,13 @@ class Instrument:
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
         self.GudrunStartFolder = (
-            "bin" if not hasattr(sys, "_MEIPASS")
-            else os.path.join(sys._MEIPASS, "bin")
+            os.path.abspath("bin") if not hasattr(sys, "_MEIPASS")
+            else os.path.abspath(os.path.join(sys._MEIPASS, "bin"))
         )
         self.startupFileFolder = "StartupFiles"
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
-        self.numberIterations = 0
-        self.tweakTweakFactors = False
 
     def __str__(self):
         """
@@ -228,7 +222,7 @@ class Instrument:
         )
 
         nexusDefinitionLine = (
-            f'{self.nxsDefinitionFile}{TAB}'
+            f'\n{self.nxsDefinitionFile}{TAB}'
             f'NeXus definition file\n'
             if self.nxsDefinitionFile
             else
@@ -296,10 +290,6 @@ class Instrument:
             f'{self.logarithmicStepSize}{TAB}'
             f'Logarithmic step size\n'
             f'{numifyBool(self.hardGroupEdges)}{TAB}'
-            f'Hard group edges?\n'
+            f'Hard group edges?'
             f'{nexusDefinitionLine}'
-            f'{self.numberIterations}{TAB}'
-            f'Number of iterations\n'
-            f'{numifyBool(self.tweakTweakFactors)}{TAB}'
-            f'Tweak the tweak factor(s)?'
         )

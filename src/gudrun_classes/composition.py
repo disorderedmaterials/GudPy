@@ -100,9 +100,12 @@ class WeightedComponent():
 
 class Composition():
 
-    def __init__(self, type_, elements=[]):
+    def __init__(self, type_, elements=None):
         self.type_ = type_
-        self.elements = elements
+        if not elements:
+            self.elements = []
+        else:
+            self.elements = elements
         self.weightedComponents = []
 
     def addComponent(self, component, ratio):

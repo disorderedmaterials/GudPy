@@ -41,9 +41,6 @@ class SampleSlots():
         self.widget.sampleGeometryInfoStack.setCurrentIndex(
             config.geometry.value
         )
-        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
-            config.geometry.value
-        )
 
         # Populate geometry specific attributes.
         # Flatplate
@@ -346,7 +343,7 @@ class SampleSlots():
             The new state of the sampleForceCorrectionsCheckBox
             (1: True, 0: False)
         """
-        self.sample.forceCalculationOfCorrections = state
+        self.sample.forceCalculationOfCorrections = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -365,9 +362,6 @@ class SampleSlots():
             self.widget.sampleGeometryComboBox.itemData(index)
         )
         self.widget.sampleGeometryInfoStack.setCurrentIndex(
-            self.sample.geometry.value
-        )
-        self.widget.sampleGeometryInfoStack_.setCurrentIndex(
             self.sample.geometry.value
         )
 
@@ -522,7 +516,7 @@ class SampleSlots():
         value : float
             The new current value of the tweakFactorSpinBox.
         """
-        self.sample.tweakFactor = value
+        self.sample.sampleTweakFactor = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

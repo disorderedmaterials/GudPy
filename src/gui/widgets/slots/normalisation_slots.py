@@ -48,8 +48,19 @@ class NormalisationSlots():
             self.normalisation.downstreamThickness
         )
 
+        self.widget.normalisationAngleOfRotationSpinBox.setValue(
+            self.normalisation.angleOfRotation
+        )
+        self.widget.normalisationSampleWidthSpinBox.setValue(
+            self.normalisation.sampleWidth
+        )
+
         self.widget.innerRadiiSpinBox.setValue(self.normalisation.innerRadius)
         self.widget.outerRadiiSpinBox.setValue(self.normalisation.outerRadius)
+
+        self.widget.normalisationSampleHeightSpinBox.setValue(
+            self.normalisation.sampleHeight
+        )
 
         self.widget.totalCrossSectionComboBox.setCurrentIndex(
             self.normalisation.totalCrossSectionSource.value
@@ -163,12 +174,23 @@ class NormalisationSlots():
             self.handleDownstreamThicknessChanged
         )
 
+        self.widget.normalisationAngleOfRotationSpinBox.valueChanged.connect(
+            self.handleAngleOfRotationChanged
+        )
+        self.widget.normalisationSampleWidthSpinBox.valueChanged.connect(
+            self.handleSampleWidthChanged
+        )
+
         # Cylindrical
         self.widget.innerRadiiSpinBox.valueChanged.connect(
             self.handleInnerRadiiChanged
         )
         self.widget.outerRadiiSpinBox.valueChanged.connect(
             self.handleOuterRadiiChanged
+        )
+
+        self.widget.normalisationSampleHeightSpinBox.valueChanged.connect(
+            self.handleSampleHeightChanged
         )
 
         # Setup the other normalisation configurations widgets and slots.
@@ -319,6 +341,36 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
+    def handleAngleOfRotationChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationAngleOfRotationSpinBox.
+        Alters the normalisation's angle of rotation as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationAngleOfRotationSpinBox.
+        """
+        self.normalisation.angleOfRotation = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSampleWidthChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationSampleWidthSpinBox.
+        Alters the normalisation's sample width as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationSampleWidthSpinBox.
+        """
+        self.normalisation.sampleWidth = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
     def handleInnerRadiiChanged(self, value):
         """
         Slot for handling change in the inner radii.
@@ -346,6 +398,21 @@ class NormalisationSlots():
             The new value of the outerRadiiSpinBox.
         """
         self.normalisation.outerRadius = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSampleHeightChanged(self, value):
+        """
+        Slot for handling change in the angle of rotation.
+        Called when a valueChanged signal is emitted,
+        from the normalisationSampleHeightSpinBox.
+        Alters the normalisation's sample height as such.
+        Parameters
+        ----------
+        value : float
+            The new value of the normalisationSampleHeightSpinBox.
+        """
+        self.normalisation.sampleHeight = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -426,7 +493,7 @@ class NormalisationSlots():
         state : int
             The new state of the forceCorrectionsCheckBox (1: True, 0: False)
         """
-        self.normalisation.forceCalculationsOfCorrections = state
+        self.normalisation.forceCalculationOfCorrections = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -633,13 +700,13 @@ class NormalisationSlots():
         regex : str
             Regex-like expression to use for specifying file types.
         """
-        paths = QFileDialog.getOpenFileNames(
+        files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
             self.parent.gudrunFile.instrument.dataFileDir, regex
         )
-        for path in paths:
-            if path:
-                target.addItem(path)
+        for file in files:
+            if file:
+                target.addItem(file.split("/")[-1])
 
     def addDataFiles(self, target, title, regex):
         """
@@ -657,6 +724,8 @@ class NormalisationSlots():
         """
         self.addFiles(target, title, regex)
         self.handleDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def addBgDataFiles(self, target, title, regex):
         """
@@ -674,6 +743,8 @@ class NormalisationSlots():
         """
         self.addFiles(target, title, regex)
         self.handleBgDataFileInserted(target.item(target.count() - 1))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeFile(self, target, dataFiles):
         """

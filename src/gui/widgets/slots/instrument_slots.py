@@ -161,6 +161,14 @@ class InstrumentSlots():
             self.instrument.hardGroupEdges
         )
 
+        self.widget.subWavelengthBinnedDataCheckBox.setChecked(
+            self.instrument.subWavelengthBinnedData
+        )
+
+        self.widget.subSingleScatteringCheckBox.setChecked(
+            self.instrument.subSingleAtomScattering
+        )
+
         self.updateGroupingParameterPanel()
 
         # Release the lock
@@ -433,6 +441,14 @@ class InstrumentSlots():
             self.handleHardGroupEdgesSwitched
         )
 
+        self.widget.subWavelengthBinnedDataCheckBox.stateChanged.connect(
+            self.handleSubWavelengthBinnedDataSwitched
+        )
+
+        self.widget.subSingleScatteringCheckBox.stateChanged.connect(
+            self.handleSubSingleScatteringSwitched
+        )
+
         # Setup the widgets and slots for the grouping parameter panel.
 
         self.widget.addGroupingParameterButton.clicked.connect(
@@ -551,7 +567,7 @@ class InstrumentSlots():
         state : int
             The new state of the logarithmicBinningCheckBox (1: True, 0: False)
         """
-        self.instrument.useLogarithmicBinning = state
+        self.instrument.useLogarithmicBinning = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -630,7 +646,41 @@ class InstrumentSlots():
         state : int
             The new state of the hardGroupEdgesCheckBox (1: True, 0: False)
         """
-        self.instrument.hardGroupEdges = state
+        self.instrument.hardGroupEdges = bool(state)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSubWavelengthBinnedDataSwitched(self, state):
+        """
+        Slot for handling switching subtracting of wavelength-binned
+        data on/off.
+        Called when the stateChanged signal is emitted,
+        from the subWavelengthBinnedDataCheckBox.
+        Updates the instrument as such.
+        Parameters
+        ----------
+        state : int
+            The new state of the subWavelengthBinnedDataCheckBox
+            (1: True, 0: False)
+        """
+        self.instrument.subWavelengthBinnedData = bool(state)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleSubSingleScatteringSwitched(self, state):
+        """
+        Slot for handling switching subtracting of single atom
+        scattering on/off.
+        Called when the stateChanged signal is emitted,
+        from the subSingleScatteringCheckBox.
+        Updates the instrument as such.
+        Parameters
+        ----------
+        state : int
+            The new state of the subSingleScatteringCheckBox
+            (1: True, 0: False)
+        """
+        self.instrument.subSingleAtomScattering = bool(state)
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -1114,7 +1164,18 @@ class InstrumentSlots():
                 QFileDialog.getExistingDirectory(self.widget, title, "")
             )
         else:
-            filename, _ = QFileDialog.getOpenFileName(self.widget, title, "")
+            import os
+            instrumentFilesDir = os.path.join(
+                self.instrument.GudrunStartFolder,
+                self.instrument.startupFileFolder,
+                Instruments(self.instrument.name.value).name
+            )
+            filename, _ = QFileDialog.getOpenFileName(
+                self.widget,
+                title,
+                instrumentFilesDir,
+                ""
+            )
         return filename + "/" if filename else ""
 
     def updateGroupingParameterPanel(self):

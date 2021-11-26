@@ -117,7 +117,7 @@ def firstNFloats(string, n):
         return floats
 
 
-def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
+def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False, suffix=None):
     iterable = [
         str(i)
         if not isinstance(i, (str, list, tuple))
@@ -138,7 +138,8 @@ def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False):
         return ""
     elif len(iterable) == 1:
         return (iterable[0]) + sep
-
+    if suffix:
+        iterable = [i + f" {suffix}" for i in iterable]
     return sep.join(iterable[:-1]) + lastsep + iterable[-1] + endsep
 
 

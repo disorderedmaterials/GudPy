@@ -105,7 +105,7 @@ class Sample:
         None
         """
         self.name = ""
-        self.periodNumber = 0
+        self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE")
         self.forceCalculationOfCorrections = False
         self.composition = Composition("SAMPLE")
@@ -156,6 +156,13 @@ class Sample:
         """
 
         TAB = "          "
+
+        nameLine = (
+            f"SAMPLE {self.name}{TAB}"
+            if self.name != "SAMPLE"
+            else
+            f"SAMPLE{TAB}"
+        )
 
         dataFilesLine = (
             f'{str(self.dataFiles)}\n'
@@ -216,7 +223,8 @@ class Sample:
             bjoin(
                 self.exponentialValues,
                 " Exponential amplitude and decay [1/\u212b]\n",
-                sameseps=True
+                sameseps=True,
+                suffix="0"
             )
         )
 
@@ -263,7 +271,7 @@ class Sample:
         )
 
         return (
-            f'\nSAMPLE {self.name}{TAB}{{\n\n'
+            f'\n{nameLine}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'
