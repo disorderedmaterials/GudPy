@@ -292,7 +292,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "contents", "result", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -332,6 +332,7 @@ class TestParseGudFile(TestCase):
     def testLoadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
+
         gf = GudFile(
             os.path.join(
                 g.instrument.GudrunInputFileDir,
@@ -343,7 +344,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "contents", "err", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -393,7 +394,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "contents", "err", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -444,7 +445,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "contents", "result", "outpath"]:
                 continue
             if key == "groupsTable":
 
@@ -484,7 +485,12 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
         outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
@@ -492,7 +498,12 @@ class TestParseGudFile(TestCase):
     def testRewriteGudFileA(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
 
         gf1 = GudFile(gf.outpath)
@@ -508,7 +519,12 @@ class TestParseGudFile(TestCase):
     def testReloadGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
         gf.write_out()
         gf1 = GudFile(gf.outpath)
 
@@ -517,7 +533,12 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016742_NullWater_in_N8.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016742_NullWater_in_N8.gud"
+            )
+        )
         gf.write_out()
         outlines = open(gf.outpath, encoding="utf-8").read()
         self.assertEqual(outlines, str(gf))
@@ -525,7 +546,12 @@ class TestParseGudFile(TestCase):
     def testRewriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
         g.dcs()
-        gf = GudFile("NIMROD00016609_D2O_in_N10.gud")
+        gf = GudFile(
+            os.path.join(
+                g.instrument.GudrunInputFileDir,
+                "NIMROD00016609_D2O_in_N10.gud"
+            )
+        )
         gf.write_out()
 
         gf1 = GudFile(gf.outpath)

@@ -288,9 +288,9 @@ class PurgeFile():
         if headless:
             try:
                 cwd = os.getcwd()
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
                 os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
                 self.write_out()
-                purge_det = resolve("bin", f"purge_det{SUFFIX}")
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
                     capture_output=True,

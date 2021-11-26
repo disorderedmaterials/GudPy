@@ -1,4 +1,5 @@
 from src.gudrun_classes.gud_file import GudFile
+import os
 
 
 class TweakFactorIterator():
@@ -44,7 +45,11 @@ class TweakFactorIterator():
                                 self.gudrunFile.instrument.dataFileType,
                                 "gud"
                             )
-                    gudFile = GudFile(gud)
+                    gudFile = GudFile(
+                        os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir, gud
+                        )
+                    )
                     tweakFactor = float(
                         gudFile.suggestedTweakFactor.strip()
                         )

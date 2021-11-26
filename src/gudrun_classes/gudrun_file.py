@@ -1297,7 +1297,7 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
         if not path:
-            path = self.path
+            path = os.path.basename(self.path)
         if headless:
             try:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
