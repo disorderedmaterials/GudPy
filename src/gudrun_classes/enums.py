@@ -1,4 +1,4 @@
-from enum import Enum, EnumMeta
+from enum import Enum
 from itertools import chain, product
 
 
