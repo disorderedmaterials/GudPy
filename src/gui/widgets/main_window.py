@@ -20,6 +20,7 @@ from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
 from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
+from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
@@ -118,6 +119,8 @@ class GudPyMainWindow(QMainWindow):
         self.results = {}
         self.allPlots = []
         self.cwd = os.getcwd()
+        self.output = ""
+        self.previousProcTitle = ""
 
     def initComponents(self):
         """
@@ -150,6 +153,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
+        loader.registerCustomWidget(ViewOutputDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
@@ -270,6 +274,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.checkFilesExist.triggered.connect(
             self.checkFilesExist_
+        )
+
+        self.mainWidget.showPreviousOutput.triggered.connect(
+            self.showPreviousOutput_
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -790,6 +798,11 @@ class GudPyMainWindow(QMainWindow):
             )
             missingFilesDialog.widget.exec_()
 
+    def showPreviousOutput_(self):
+        if self.output:
+            viewOutputDialog = ViewOutputDialog(self.previousProcTitle, self.output, self)
+            viewOutputDialog.widget.exec_()
+
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
@@ -853,6 +866,7 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        self.output+= stdout
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -912,7 +926,7 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
+        self.output+= stdout
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
@@ -970,6 +984,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
+        self.output = ""
 
     def procFinished(self):
         self.proc = None

@@ -6970,6 +6970,7 @@
     <addaction name="runGudrun"/>
     <addaction name="iterateGudrun"/>
     <addaction name="checkFilesExist"/>
+    <addaction name="showPreviousOutput"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -7125,6 +7126,11 @@
   <action name="new_">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="showPreviousOutput">
+   <property name="text">
+    <string>Show Previous Output</string>
    </property>
   </action>
  </widget>
