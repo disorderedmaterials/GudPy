@@ -117,7 +117,7 @@ class TestPurgeFile(TestCase):
         purgeAttrsDict = purge.__dict__
 
         self.assertIsInstance(purge, PurgeFile)
-        for key in purgeAttrsDict:
+        for key in self.expectedPurgeFile.keys():
             self.assertEqual(
                 self.expectedPurgeFile[key], purgeAttrsDict[key]
             )

@@ -1148,7 +1148,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         expectedSampleA.pop("resonanceValues", None)
         expectedSampleA.pop("exponentialValues", None)
-        expectedSampleA.pop("crossSectionFilename")
+        expectedSampleA.pop("crossSectionFilename", None)
+        expectedSampleA.pop("FTMode", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition("")
