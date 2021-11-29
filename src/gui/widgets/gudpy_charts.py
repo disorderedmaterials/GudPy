@@ -404,6 +404,7 @@ class GudPyChart(QChart):
                 )
                 pen = QPen(dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setWidth(2)
                 pen.setColor(mdcsSeries.color())
                 dcsSeries.setPen(pen)
                 self.addSeries(dcsSeries)
