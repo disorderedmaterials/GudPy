@@ -18,7 +18,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, Scales, UnitsOfDensity,
+    CrossSectionSource, FTModes, Instruments, Scales, UnitsOfDensity,
     MergeWeights, NormalisationType, OutputUnits,
     Geometry
 )
@@ -304,7 +304,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
@@ -355,7 +356,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.0,
             "resonanceValues": [],
@@ -406,7 +408,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
@@ -458,7 +461,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
