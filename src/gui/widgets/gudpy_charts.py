@@ -393,9 +393,9 @@ class GudPyChart(QChart):
 
                 dcsSeries = QLineSeries()
                 if len(self.data.keys()) > 1:
-                    dcsSeries.setName(f"{sample.name} dcs level")
+                    dcsSeries.setName(f"{sample.name} expected level")
                 else:
-                    dcsSeries.setName("DCS level")
+                    dcsSeries.setName("Expected level")
                 dcsSeries.append(
                     [
                         QPointF(x, y)
