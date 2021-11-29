@@ -43,6 +43,10 @@ class ContainerSlots():
         self.widget.containerDownStreamSpinBox.setValue(
             self.container.downstreamThickness
         )
+        self.widget.totalContainerThicknessSpinBox.setValue(
+            self.container.upstreamThickness +
+            self.container.downstreamThickness
+        )
 
         self.widget.containerAngleOfRotationSpinBox.setValue(
             self.container.angleOfRotation
@@ -256,6 +260,10 @@ class ContainerSlots():
             The new value of the containerUpstreamSpinBox.
         """
         self.container.upstreamThickness = value
+        self.widget.totalContainerThicknessSpinBox.setValue(
+            self.container.upstreamThickness +
+            self.container.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -271,6 +279,10 @@ class ContainerSlots():
             The new value of the containerDownStreamSpinBox.
         """
         self.container.downstreamThickness = value
+        self.widget.totalContainerThicknessSpinBox.setValue(
+            self.container.upstreamThickness +
+            self.container.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

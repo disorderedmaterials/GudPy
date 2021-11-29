@@ -6532,43 +6532,75 @@
                          <property name="flat">
                           <bool>false</bool>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_55">
-                          <property name="leftMargin">
-                           <number>0</number>
-                          </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_58">
                           <item>
-                           <widget class="QLabel" name="upstreamLabel_4">
-                            <property name="text">
-                             <string>Upstream</string>
-                            </property>
-                           </widget>
+                           <layout class="QHBoxLayout" name="horizontalLayout_84">
+                            <item>
+                             <widget class="QLabel" name="upstreamLabel_4">
+                              <property name="text">
+                               <string>Upstream</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="ExponentialSpinBox" name="containerUpstreamSpinBox">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="downstreamLabel_4">
+                              <property name="text">
+                               <string>Downstream</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="ExponentialSpinBox" name="containerDownStreamSpinBox">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
                           </item>
                           <item>
-                           <widget class="ExponentialSpinBox" name="containerUpstreamSpinBox">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="downstreamLabel_4">
-                            <property name="text">
-                             <string>Downstream</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="ExponentialSpinBox" name="containerDownStreamSpinBox">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                           </widget>
+                           <layout class="QHBoxLayout" name="horizontalLayout_55">
+                            <item>
+                             <widget class="QLabel" name="label_9">
+                              <property name="text">
+                               <string>Total</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="ExponentialSpinBox" name="totalContainerThicknessSpinBox">
+                              <property name="enabled">
+                               <bool>false</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <spacer name="horizontalSpacer_9">
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
+                              </property>
+                              <property name="sizeHint" stdset="0">
+                               <size>
+                                <width>40</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </spacer>
+                            </item>
+                           </layout>
                           </item>
                          </layout>
                         </widget>
