@@ -48,6 +48,11 @@ class NormalisationSlots():
             self.normalisation.downstreamThickness
         )
 
+        self.widget.totalNormalisationThicknessSpinBox.setValue(
+            self.normalisation.upstreamThickness +
+            self.normalisation.downstreamThickness
+        )
+
         self.widget.normalisationAngleOfRotationSpinBox.setValue(
             self.normalisation.angleOfRotation
         )
@@ -323,6 +328,10 @@ class NormalisationSlots():
             The new value of the upstreamSpinBox.
         """
         self.normalisation.upstreamThickness = value
+        self.widget.totalNormalisationThicknessSpinBox.setValue(
+            self.normalisation.upstreamThickness +
+            self.normalisation.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -338,6 +347,10 @@ class NormalisationSlots():
             The new value of the downstreamSpinBox.
         """
         self.normalisation.downstreamThickness = value
+        self.widget.totalNormalisationThicknessSpinBox.setValue(
+            self.normalisation.upstreamThickness +
+            self.normalisation.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
