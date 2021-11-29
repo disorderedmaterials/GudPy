@@ -12,8 +12,8 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.enums import (
-    FTModes, Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType,
-    OutputUnits, Geometry, CrossSectionSource
+    FTModes, Instruments, Scales, UnitsOfDensity, MergeWeights,
+    NormalisationType, OutputUnits, Geometry, CrossSectionSource
 )
 
 
