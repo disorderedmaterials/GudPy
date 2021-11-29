@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>5</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -5350,6 +5350,9 @@
                            <double>-99.000000000000000</double>
                           </property>
                          </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="singleAtomBackgroundScatteringSubtractionModeComboBox"/>
                         </item>
                         <item>
                          <widget class="QLabel" name="broadeningFunctionLabel">

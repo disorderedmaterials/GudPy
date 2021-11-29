@@ -2,7 +2,7 @@ from src.scripts.utils import bjoin, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
-    CrossSectionSource, UnitsOfDensity,
+    CrossSectionSource, TopHatWidths, UnitsOfDensity,
     NormalisationType, OutputUnits, Geometry
 )
 from src.gudrun_classes import config
@@ -124,6 +124,7 @@ class Sample:
         self.crossSectionFilename = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
+        self.singleAtomBackgroundScatteringSubtractionMode = TopHatWidths.SUB_AVERAGE
         self.minRadFT = 0.0
         self.grBroadening = 0.0
         self.resonanceValues = []
@@ -212,6 +213,13 @@ class Sample:
             f"{self.crossSectionFilename}{TAB}"
         )
 
+        if self.singleAtomBackgroundScatteringSubtractionMode == TopHatWidths.NO_FT:
+            topHatWidthLine = f"0{TAB}"
+        elif self.singleAtomBackgroundScatteringSubtractionMode == TopHatWidths.SUB_AVERAGE:
+            topHatWidthLine = f"{-self.topHatW}{TAB}"
+        else:
+            topHatWidthLine = f"{self.topHatW}{TAB}"
+
         resonanceLines = (
             bjoin(
                 self.resonanceValues,
@@ -289,7 +297,7 @@ class Sample:
             f'Total cross section source\n'
             f'{self.sampleTweakFactor}{TAB}'
             f'Sample tweak factor\n'
-            f'{self.topHatW}{TAB}'
+            f'{topHatWidthLine}'
             f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
             f'{self.minRadFT}{TAB}'
             f'Minimum radius for FT  [\u212b]\n'

@@ -1,6 +1,7 @@
+from os import EX_DATAERR
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
-    NormalisationType, OutputUnits, UnitsOfDensity
+    NormalisationType, OutputUnits, TopHatWidths, UnitsOfDensity
 )
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
@@ -99,6 +100,10 @@ class SampleSlots():
 
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
+
+        self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.setCurrentIndex(
+            self.sample.singleAtomBackgroundScatteringSubtractionMode.value
+        )
 
         self.widget.minSpinBox.setValue(self.sample.minRadFT)
         self.widget.maxSpinBox.setValue(self.sample.maxRadFT)
@@ -259,6 +264,15 @@ class SampleSlots():
         self.widget.topHatWidthSpinBox.valueChanged.connect(
             self.handleTopHatWidthChanged
         )
+
+        # Fill top hat width combo box.
+        for tp in TopHatWidths:
+            self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.addItem(tp.name, tp)
+
+        self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.currentIndexChanged.connect(
+            self.handleBackgroundScatteringSubtractionModeChanged
+        )
+
         self.widget.minSpinBox.valueChanged.connect(self.handleMinChanged)
         self.widget.maxSpinBox.valueChanged.connect(self.handleMaxChanged)
         self.widget.broadeningFunctionSpinBox.valueChanged.connect(
@@ -544,6 +558,26 @@ class SampleSlots():
             The new current value of the topHatWidthSpinBox.
         """
         self.sample.topHatW = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBackgroundScatteringSubtractionModeChanged(self, index):
+        """
+        Slot for handling change in single atom scattering
+        background subtraction mode.
+        Called when a currentIndexChanged signal is emitted,
+        from the singleAtomBackgroundScatteringSubtractionModeComboBox.
+        Alters the sample's single atom background scattering subtraction
+        mode as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the singleAtomBackgroundScatteringSubtractionModeComboBox.
+        """
+        self.sample.singleAtomBackgroundScatteringSubtractionMode = (
+            self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.itemData(index)
+        )
+
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

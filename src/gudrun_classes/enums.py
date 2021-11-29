@@ -1,6 +1,13 @@
 from enum import Enum
 from itertools import chain, product
 
+def enumFromDict(clsname, _dict):
+    return Enum(
+        value=clsname,
+        names=chain.from_iterable(
+            product(v, [k]) for k, v in _dict.items() # Cartesian product of all keys and values.
+        )
+    )
 
 class Instruments(Enum):
     SANDALS = 0
@@ -26,12 +33,7 @@ UNITS_OF_DENSITY = {
 }
 
 
-UnitsOfDensity = Enum(
-    value="UnitsOfDensity",
-    names=chain.from_iterable(
-        product(v, [k]) for k, v in UNITS_OF_DENSITY.items() # Cartesian product of all keys and values.
-    )
-)
+UnitsOfDensity = enumFromDict("UnitsOfDensity", UNITS_OF_DENSITY)
 
 class MergeWeights(Enum):
     NONE = 0
@@ -60,3 +62,11 @@ class CrossSectionSource(Enum):
     TABLES = 0
     TRANSMISSION = 1
     FILE = 2
+
+TOP_HAT_WIDTHS = {
+    0: ["No Fourier Transform", "NO_FT"],
+    1: ["Subtract Average (Qmin)", "SUB_AVERAGE"],
+    2: ["Absolute Width (DeltaQ)", "ABSOLUTE"]
+}
+
+TopHatWidths = enumFromDict("TopHatWidths", TOP_HAT_WIDTHS)
