@@ -736,6 +736,8 @@ class GudPyMainWindow(QMainWindow):
             self.nextIterableProc()
 
     def nextIteration(self):
+        if self.error:
+            self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
@@ -770,12 +772,12 @@ class GudPyMainWindow(QMainWindow):
                 f"{self.text}"
                 f" {(self.currentIteration+1)//2}/{self.numberIterations}"
             )
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
     def progressIteration(self):
         progress = self.progressIncrementDCS()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
@@ -910,13 +912,11 @@ class GudPyMainWindow(QMainWindow):
     def progressDCS(self):
         progress = self.progressIncrementDCS()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.queue = Queue()
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
-            self.procFinished()
-            self.queue = Queue()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -965,14 +965,12 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         progress, finished, detectors = self.progressIncrementPurge()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{self.error}"
             )
             self.gudrunFile.purged = False
-            self.procFinished()
-            self.queue = Queue()
+            return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
@@ -1000,6 +998,13 @@ class GudPyMainWindow(QMainWindow):
             self.updateResults()
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+        if self.error:
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                self.error
+            )
+            self.error = ""
+            self.queue = Queue()
         if not self.queue.empty():
             self.makeProc(*self.queue.get())
         else:
