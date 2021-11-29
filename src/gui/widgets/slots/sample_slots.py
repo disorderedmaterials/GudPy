@@ -50,6 +50,10 @@ class SampleSlots():
         self.widget.sampleDownstreamSpinBox.setValue(
             self.sample.downstreamThickness
         )
+        self.widget.totalSampleThicknessSpinBox.setValue(
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
 
         self.widget.angleOfRotationSpinBox.setValue(
             self.sample.angleOfRotation
@@ -377,6 +381,10 @@ class SampleSlots():
             The new value of the sampleUpstreamSpinBox.
         """
         self.sample.upstreamThickness = value
+        self.widget.totalSampleThicknessSpinBox.setValue(
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -392,6 +400,10 @@ class SampleSlots():
             The new value of the sampleDownstreamSpinBox.
         """
         self.sample.downstreamThickness = value
+        self.widget.totalSampleThicknessSpinBox.setValue(
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
