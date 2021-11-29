@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>5</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -5352,7 +5352,14 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QComboBox" name="singleAtomBackgroundScatteringSubtractionModeComboBox"/>
+                         <widget class="QComboBox" name="singleAtomBackgroundScatteringSubtractionModeComboBox">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <widget class="QLabel" name="broadeningFunctionLabel">
