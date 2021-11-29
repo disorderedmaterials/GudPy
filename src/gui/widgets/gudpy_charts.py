@@ -201,7 +201,7 @@ class GudPyChart(QChart):
             and gudPath
         ):
             gudFile = GudFile(gudPath)
-            dcsLevel = gudFile.averageLevelMergedDCS
+            dcsLevel = gudFile.expectedDCS
             for x, _, _ in self.data[sample]["mdcs01"]:
                 dcsData.append((x, float(dcsLevel)))
         self.data[sample]["dcs"] = dcsData
@@ -393,9 +393,9 @@ class GudPyChart(QChart):
 
                 dcsSeries = QLineSeries()
                 if len(self.data.keys()) > 1:
-                    dcsSeries.setName(f"{sample.name} dcs level")
+                    dcsSeries.setName(f"{sample.name} expected level")
                 else:
-                    dcsSeries.setName("DCS level")
+                    dcsSeries.setName("Expected level")
                 dcsSeries.append(
                     [
                         QPointF(x, y)
@@ -404,6 +404,7 @@ class GudPyChart(QChart):
                 )
                 pen = QPen(dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setWidth(2)
                 pen.setColor(mdcsSeries.color())
                 dcsSeries.setPen(pen)
                 self.addSeries(dcsSeries)
