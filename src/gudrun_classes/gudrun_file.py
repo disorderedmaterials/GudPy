@@ -1359,6 +1359,7 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
+        self.purgeFile = PurgeFile(self)
         result = self.purgeFile.purge(*args, **kwargs)
         if result:
             self.purged = True

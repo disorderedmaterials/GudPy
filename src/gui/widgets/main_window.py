@@ -639,6 +639,7 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
         else:
             os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+            self.gudrunFile.purgeFile.write_out()
             self.makeProc(purge, self.progressPurge)
 
     def runGudrun_(self):
@@ -915,16 +916,20 @@ class GudPyMainWindow(QMainWindow):
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
-            for df in dfs.splitlines():
-                dataFiles.append(df.split()[0].replace(
+            for df in dfs:
+                dataFiles.append(df.replace(
                     self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
-        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles)
-        appendDfs(self.gudrunFile.purgeFile.sampleBackgroundDataFiles)
+        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles[0])
+        appendDfs(self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0])
+        for dfs, _ in self.gudrunFile.purgeFile.sampleBackgroundDataFiles:
+            appendDfs(dfs)
         if not self.gudrunFile.purgeFile.excludeSampleAndCan:
-            appendDfs(self.gudrunFile.purgeFile.sampleDataFiles)
-            appendDfs(self.gudrunFile.purgeFile.containerDataFiles)
+            for dfs, _ in self.gudrunFile.purgeFile.sampleDataFiles:
+                appendDfs(dfs)
+            for dfs, _ in self.gudrunFile.purgeFile.containerDataFiles:
+                appendDfs(dfs)
 
         stepSize = math.ceil(100/len(dataFiles))
         progress = 0

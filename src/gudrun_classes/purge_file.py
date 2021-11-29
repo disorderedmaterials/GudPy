@@ -139,17 +139,17 @@ class PurgeFile():
             self.gudrunFile.normalisation.periodNumberBg
         )
 
-        self.normalisationDataFiles = self.gudrunFile.normalisation.dataFiles.dataFiles
-        self.normalisationBackgroundDataFiles = self.gudrunFile.normalisation.dataFilesBg.dataFiles
+        self.normalisationDataFiles = (self.gudrunFile.normalisation.dataFiles.dataFiles, self.gudrunFile.normalisation.periodNumber)
+        self.normalisationBackgroundDataFiles = (self.gudrunFile.normalisation.dataFilesBg.dataFiles, self.gudrunFile.normalisation.periodNumberBg)
 
 
         # Iterate through sample backgrounds, samples and containers
         # data files, building a list of data files and period numbers.
         # only append samples and their containers, if
         # the sample is set to run.
-        self.sampleBackgroundDataFiles = [(sb.dataFiles, sb.periodNumber) for sb in self.gudrunFile.sampleBackgrounds]
-        self.sampleDataFiles = [(s.dataFiles, s.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample]
-        self.containerDataFiles = [(c.dataFiles, c.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample for c in s.containers]
+        self.sampleBackgroundDataFiles = [(sb.dataFiles.dataFiles, sb.periodNumber) for sb in self.gudrunFile.sampleBackgrounds]
+        self.sampleDataFiles = [(s.dataFiles.dataFiles, s.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample]
+        self.containerDataFiles = [(c.dataFiles.dataFiles, c.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample for c in s.containers]
 
     def write_out(self):
         """
@@ -200,11 +200,11 @@ class PurgeFile():
         # Iterate through normalisation and normalisation background
         # data files, appending their string representation with
         # period number to the relevant string.
-        for dataFile in self.normalisationDataFiles:
+        for dataFile in self.normalisationDataFiles[0]:
             self.normalisationDataFilesString += (
                 f"{dataFile}  {str(self.normalisationPeriodNo)}{TAB}\n"
             )
-        for dataFile in self.normalisationBackgroundDataFiles.dataFiles:
+        for dataFile in self.normalisationBackgroundDataFiles[0]:
             self.normalisationBackgroundDataFilesString += (
                 f"{dataFile}  {str(self.normalisationPeriodNoBg)}{TAB}\n"
 
@@ -241,16 +241,16 @@ class PurgeFile():
                 )
 
         dataFileLines = (
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
-            f'{self.sampleDataFiles}'
-            f'{self.containerDataFiles}'
+            f'{self.normalisationDataFilesString}'
+            f'{self.normalisationBackgroundDataFilesString}'
+            f'{self.sampleBackgroundDataFilesString}'
+            f'{self.sampleDataFilesString}'
+            f'{self.containerDataFilesString}'
             if not self.excludeSampleAndCan
             else
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
+            f'{self.normalisationDataFilesString}'
+            f'{self.normalisationBackgroundDataFilesString}'
+            f'{self.sampleBackgroundDataFilesString}'
         )
         return (
             f'{HEADER}'
