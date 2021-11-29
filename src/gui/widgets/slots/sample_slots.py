@@ -101,7 +101,7 @@ class SampleSlots():
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
 
         self.widget.FTModeComboBox.setCurrentIndex(
-            self.sample.singleAtomBackgroundScatteringSubtractionMode.value
+            self.sample.FTMode.value
         )
 
         self.widget.minSpinBox.setValue(self.sample.minRadFT)
@@ -562,12 +562,10 @@ class SampleSlots():
 
     def handleBackgroundScatteringSubtractionModeChanged(self, index):
         """
-        Slot for handling change in single atom scattering
-        background subtraction mode.
+        Slot for handling change in FT Mode.
         Called when a currentIndexChanged signal is emitted,
         from the FTModeComboBox.
-        Alters the sample's single atom background scattering subtraction
-        mode as such.
+        Alters the sample's FT mode as such.
         Parameters
         ----------
         index : int
