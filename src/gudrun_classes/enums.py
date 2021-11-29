@@ -1,4 +1,5 @@
-from enum import Enum
+from enum import Enum, EnumMeta
+from itertools import chain, product
 
 
 class Instruments(Enum):
@@ -19,10 +20,18 @@ class Scales(Enum):
     TOF = 5
 
 
-class UnitsOfDensity(Enum):
-    ATOMIC = 0
-    CHEMICAL = 1
+UNITS_OF_DENSITY = {
+    0: ["atoms/\u212b^3", "ATOMIC"],
+    1: ["gm/cm^3", "CHEMICAL"]   
+}
 
+
+UnitsOfDensity = Enum(
+    value="UnitsOfDensity",
+    names=chain.from_iterable(
+        product(v, [k]) for k, v in UNITS_OF_DENSITY.items() # Cartesian product of all keys and values.
+    )
+)
 
 class MergeWeights(Enum):
     NONE = 0
