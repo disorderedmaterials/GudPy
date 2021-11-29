@@ -24,12 +24,12 @@ class ViewOutputDialog(QDialog):
     initComponents():
         Loads the UI file for the ViewOutputDialog
     """
+
     def __init__(self, title, content, parent):
         super(ViewOutputDialog, self).__init__(parent=parent)
         self.title = title
         self.content = content
         self.initComponents()
-
 
     def initComponents(self):
         """

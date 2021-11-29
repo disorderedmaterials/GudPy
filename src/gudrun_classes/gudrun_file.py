@@ -27,7 +27,7 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    TOP_HAT_WIDTHS, CrossSectionSource, Instruments, TopHatWidths, UnitsOfDensity, MergeWeights,
+    CrossSectionSource, Instruments, FTModes, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
@@ -856,13 +856,13 @@ class GudrunFile:
             topHatW = nthfloat(self.getNextToken(), 0)
             if topHatW == 0:
                 sample.topHatW = 0
-                sample.singleAtomBackgroundScatteringSubtractionMode = TOP_HAT_WIDTHS.NO_FT
+                sample.FTMode = FTModes.NO_FT
             elif topHatW < 0:
                 sample.topHatW = abs(topHatW)
-                sample.singleAtomBackgroundScatteringSubtractionMode = TopHatWidths.SUB_AVERAGE
+                sample.FTMode = FTModes.SUB_AVERAGE
             else:
                 sample.topHatW = topHatW
-                sample.singleAtomBackgroundScatteringSubtractionMode = TopHatWidths.ABSOLUTE
+                sample.FTMode = FTModes.ABSOLUTE
 
             sample.minRadFT = nthfloat(self.getNextToken(), 0)
             sample.grBroadening = nthfloat(self.getNextToken(), 0)

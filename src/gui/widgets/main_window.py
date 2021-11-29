@@ -800,7 +800,9 @@ class GudPyMainWindow(QMainWindow):
 
     def showPreviousOutput_(self):
         if self.output:
-            viewOutputDialog = ViewOutputDialog(self.previousProcTitle, self.output, self)
+            viewOutputDialog = ViewOutputDialog(
+                self.previousProcTitle, self.output, self
+            )
             viewOutputDialog.widget.exec_()
 
     def setModified(self):
@@ -866,7 +868,7 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        self.output+= stdout
+        self.output += stdout
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -926,7 +928,7 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        self.output+= stdout
+        self.output += stdout
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
@@ -936,7 +938,9 @@ class GudPyMainWindow(QMainWindow):
                 )
 
         appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles[0])
-        appendDfs(self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0])
+        appendDfs(
+            self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0]
+        )
         for dfs, _ in self.gudrunFile.purgeFile.sampleBackgroundDataFiles:
             appendDfs(dfs)
         if not self.gudrunFile.purgeFile.excludeSampleAndCan:

@@ -139,17 +139,34 @@ class PurgeFile():
             self.gudrunFile.normalisation.periodNumberBg
         )
 
-        self.normalisationDataFiles = (self.gudrunFile.normalisation.dataFiles.dataFiles, self.gudrunFile.normalisation.periodNumber)
-        self.normalisationBackgroundDataFiles = (self.gudrunFile.normalisation.dataFilesBg.dataFiles, self.gudrunFile.normalisation.periodNumberBg)
-
+        self.normalisationDataFiles = (
+            self.gudrunFile.normalisation.dataFiles.dataFiles,
+            self.gudrunFile.normalisation.periodNumber
+        )
+        self.normalisationBackgroundDataFiles = (
+            self.gudrunFile.normalisation.dataFilesBg.dataFiles,
+            self.gudrunFile.normalisation.periodNumberBg
+        )
 
         # Iterate through sample backgrounds, samples and containers
         # data files, building a list of data files and period numbers.
         # only append samples and their containers, if
         # the sample is set to run.
-        self.sampleBackgroundDataFiles = [(sb.dataFiles.dataFiles, sb.periodNumber) for sb in self.gudrunFile.sampleBackgrounds]
-        self.sampleDataFiles = [(s.dataFiles.dataFiles, s.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample]
-        self.containerDataFiles = [(c.dataFiles.dataFiles, c.periodNumber) for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample for c in s.containers]
+        self.sampleBackgroundDataFiles = [
+            (sb.dataFiles.dataFiles, sb.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+        ]
+        self.sampleDataFiles = [
+            (s.dataFiles.dataFiles, s.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+            for s in sb.samples if s.runThisSample
+        ]
+        self.containerDataFiles = [
+            (c.dataFiles.dataFiles, c.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+            for s in sb.samples if s.runThisSample
+            for c in s.containers
+        ]
 
     def write_out(self):
         """
@@ -185,7 +202,6 @@ class PurgeFile():
         HEADER = "'  '  '          '  '/'\n\n"
         TAB = "          "
 
-
         # Collect data files as strings of the format:
         # {name} {period number}
         # do this for normalisation, normalisation background,
@@ -212,7 +228,6 @@ class PurgeFile():
         self.sampleBackgroundDataFilesString = ""
         self.sampleDataFilesString = ""
         self.containerDataFilesString = ""
-
 
         # Iterate through sample background
         # data files, appending their string representation with

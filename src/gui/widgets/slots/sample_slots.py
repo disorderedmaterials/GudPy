@@ -1,7 +1,6 @@
-from os import EX_DATAERR
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
-    NormalisationType, OutputUnits, TopHatWidths, UnitsOfDensity
+    NormalisationType, OutputUnits, FTModes, UnitsOfDensity
 )
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
@@ -101,7 +100,7 @@ class SampleSlots():
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
 
-        self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.setCurrentIndex(
+        self.widget.FTModeComboBox.setCurrentIndex(
             self.sample.singleAtomBackgroundScatteringSubtractionMode.value
         )
 
@@ -266,10 +265,10 @@ class SampleSlots():
         )
 
         # Fill top hat width combo box.
-        for tp in TopHatWidths:
-            self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.addItem(tp.name, tp)
+        for tp in FTModes:
+            self.widget.FTModeComboBox.addItem(tp.name, tp)
 
-        self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.currentIndexChanged.connect(
+        self.widget.FTModeComboBox.currentIndexChanged.connect(
             self.handleBackgroundScatteringSubtractionModeChanged
         )
 
@@ -566,16 +565,17 @@ class SampleSlots():
         Slot for handling change in single atom scattering
         background subtraction mode.
         Called when a currentIndexChanged signal is emitted,
-        from the singleAtomBackgroundScatteringSubtractionModeComboBox.
+        from the FTModeComboBox.
         Alters the sample's single atom background scattering subtraction
         mode as such.
         Parameters
         ----------
         index : int
-            The new current index of the singleAtomBackgroundScatteringSubtractionModeComboBox.
+            The new current index of the
+            FTModeComboBox.
         """
         self.sample.singleAtomBackgroundScatteringSubtractionMode = (
-            self.widget.singleAtomBackgroundScatteringSubtractionModeComboBox.itemData(index)
+            self.widget.FTModeComboBox.itemData(index)
         )
 
         if not self.widgetsRefreshing:

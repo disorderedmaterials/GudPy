@@ -2,7 +2,7 @@ from src.scripts.utils import bjoin, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
-    CrossSectionSource, TopHatWidths, UnitsOfDensity,
+    CrossSectionSource, FTModes, UnitsOfDensity,
     NormalisationType, OutputUnits, Geometry
 )
 from src.gudrun_classes import config
@@ -124,7 +124,7 @@ class Sample:
         self.crossSectionFilename = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
-        self.singleAtomBackgroundScatteringSubtractionMode = TopHatWidths.SUB_AVERAGE
+        self.FTMode = FTModes.SUB_AVERAGE
         self.minRadFT = 0.0
         self.grBroadening = 0.0
         self.resonanceValues = []
@@ -213,9 +213,9 @@ class Sample:
             f"{self.crossSectionFilename}{TAB}"
         )
 
-        if self.singleAtomBackgroundScatteringSubtractionMode == TopHatWidths.NO_FT:
+        if self.FTMode == FTModes.NO_FT:
             topHatWidthLine = f"0{TAB}"
-        elif self.singleAtomBackgroundScatteringSubtractionMode == TopHatWidths.SUB_AVERAGE:
+        elif self.FTMode == FTModes.SUB_AVERAGE:
             topHatWidthLine = f"{-self.topHatW}{TAB}"
         else:
             topHatWidthLine = f"{self.topHatW}{TAB}"
