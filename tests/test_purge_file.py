@@ -48,7 +48,7 @@ class TestPurgeFile(TestCase):
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
             "dataFileDir": self.g.instrument.dataFileDir,
             "detCalibFile": os.path.join(
-                self.g.instrument.GudrunStartFolder,
+                str(self.g.instrument.GudrunStartFolder),
                 self.g.instrument.detectorCalibrationFileName
             ),
             "groupsFile": self.g.instrument.groupFileName,
