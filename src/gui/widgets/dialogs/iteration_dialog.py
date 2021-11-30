@@ -112,7 +112,7 @@ class IterationDialog(QDialog):
                 self.queue = Queue()
                 for i in range(self.numberIterations):
                     self.queue.put(
-                        self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+                        self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "gudpy.txt"), headless=False)
                     )
                 self.text = "Tweak by tweak factor"
                 self.widget.close()
