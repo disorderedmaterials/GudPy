@@ -616,18 +616,21 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
-    def makeProc(self, cmd, slot):
+    def makeProc(self, cmd, slot, func=None, args=None):
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(self.procStarted)
         self.proc.finished.connect(self.procFinished)
+        self.proc.setWorkingDirectory(self.gudrunFile.instrument.GudrunInputFileDir)
+        if func:
+            func(*args)
         self.proc.start()
 
     def runPurge_(self):
         self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         result = purgeDialog.widget.exec_()
-        purge = purgeDialog.purge_det
+        purge, func, args = purgeDialog.purge_det
         if purgeDialog.cancelled or result == QDialogButtonBox.No:
             self.setControlsEnabled(True)
             self.queue = Queue()
@@ -638,35 +641,31 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
         else:
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-            self.makeProc(purge, self.progressPurge)
+            self.makeProc(purge, self.progressPurge, func, args)
 
     def runGudrun_(self):
         self.setControlsEnabled(False)
         self.gudrunFile.write_out()
-        dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+        dcs, func, args = self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, self.gudrunFile.outpath), headless=False)
         if not dcs:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
         elif not self.gudrunFile.purged and os.path.exists('purge_det.dat'):
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.purgeOptionsMessageBox(
                 dcs,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.purgeOptionsMessageBox(
                 dcs,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.gudrunFile.write_out()
-            self.makeProc(dcs, self.progressDCS)
+            self.makeProc(dcs, self.progressDCS, func, args)
 
     def purgeOptionsMessageBox(self, dcs, text):
         messageBox = QMessageBox(self.mainWidget)
@@ -703,12 +702,11 @@ class GudPyMainWindow(QMainWindow):
             purge_det = self.gudrunFile.purge(
                 headless=False
             )
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.makeProc(purge_det, self.progressPurge)
         else:
             self.runPurge_()
         self.gudrunFile.write_out()
-        dcs = self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+        dcs = self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, self.gudrunFile.outpath), headless=False)
         self.queue.put((dcs, self.progressDCS))
 
     def iterateGudrun_(self):
@@ -740,7 +738,7 @@ class GudPyMainWindow(QMainWindow):
         self.currentIteration += 1
 
     def nextIterableProc(self):
-        self.proc = self.queue.get()
+        self.proc, func, args = self.queue.get()
         self.proc.started.connect(self.iterationStarted)
         if not self.queue.empty():
             self.proc.finished.connect(self.nextIteration)
@@ -748,6 +746,7 @@ class GudPyMainWindow(QMainWindow):
             self.proc.finished.connect(self.procFinished)
         self.proc.readyReadStandardOutput.connect(self.progressIteration)
         self.proc.started.connect(self.iterationStarted)
+        func(*args)
         self.proc.start()
 
     def iterationStarted(self):
@@ -905,8 +904,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
-        if progress >= 100:
-            os.chdir(self.cwd)
 
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
@@ -959,7 +956,6 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Warning",
                 f"{detectors} detectors made it through the purge."
             )
-            os.chdir(self.cwd)
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(

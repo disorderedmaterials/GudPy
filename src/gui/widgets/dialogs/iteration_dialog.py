@@ -128,7 +128,7 @@ class IterationDialog(QDialog):
                     path="gudpy.txt", headless=False)
                 )
                 self.queue.put(
-                    self.gudrunFile.dcs(path="gudpy.txt", headless=False)
+                    self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "gudpy.txt"), headless=False)
                 )
             self.text = "Inelasticity subtractions"
             self.widget.close()
