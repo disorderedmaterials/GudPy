@@ -47,7 +47,10 @@ class TestPurgeFile(TestCase):
             "instrumentName": self.g.instrument.name,
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
             "dataFileDir": self.g.instrument.dataFileDir,
-            "detCalibFile": self.g.instrument.detectorCalibrationFileName,
+            "detCalibFile": os.path.join(
+                self.g.instrument.GudrunStartFolder,
+                self.g.instrument.detectorCalibrationFileName
+            ),
             "groupsFile": self.g.instrument.groupFileName,
             "spectrumNumbers": (
                 self.g.instrument.spectrumNumbersForIncidentBeamMonitor
