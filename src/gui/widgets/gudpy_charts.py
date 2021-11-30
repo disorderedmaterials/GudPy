@@ -11,11 +11,26 @@ import os
 from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 
 from src.gudrun_classes.gud_file import GudFile
+from itertools import chain, product
 
+def enumFromDict(clsname, _dict):
+    return Enum(
+        value=clsname,
+        names=chain.from_iterable(
+            product(v, [k]) for k, v in _dict.items() # Cartesian product of all keys and values.
+        )
+    )
 
-class PlotModes(Enum):
-    STRUCTURE_FACTOR = 0
-    RADIAL_DISTRIBUTION_FUNCTIONS = 1
+PLOT_MODES = {
+    0: ["Structure Factor (mint01, mdcs01)", "SF"],
+    1: ["Structure Factor (mint01)", "SF_MINT01"],
+    2: ["Structure Factor (mdcs01)", "SF_MDCS01"],
+    3: ["Radial Distribution Functions", "RDF"]
+}
+
+PlotModes = enumFromDict(
+    "PlotModes", PLOT_MODES
+)
 
 
 class Axes(Enum):
@@ -293,10 +308,10 @@ class GudPyChart(QChart):
                 self.plotSample(sample)
 
             # Label axes
-            if self.plotMode == PlotModes.STRUCTURE_FACTOR:
+            if self.plotMode in [PlotModes.SF, PlotModes.SF_MINT01, PlotModes.SF_MDCS01]:
                 XLabel = "Q, 1\u212b"
                 YLabel = "DCS, barns/sr/atom"
-            elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+            elif self.plotMode == PlotModes.RDF:
                 XLabel = "r, \u212b"
                 YLabel = "G(r)"
 
@@ -350,7 +365,7 @@ class GudPyChart(QChart):
         offsetY = int(self.logarithmicY)*10
 
         # If the plotting mode is Structure Factor.
-        if self.plotMode == PlotModes.STRUCTURE_FACTOR:
+        if self.plotMode == PlotModes.SF:
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
@@ -410,8 +425,90 @@ class GudPyChart(QChart):
                 self.addSeries(dcsSeries)
                 self.seriesC[sample] = dcsSeries
 
+        elif self.plotMode == PlotModes.SF_MINT01:
+            # Instantiate the series.
+            mintSeries = QLineSeries()
+            # Set the name of the series.
+            if len(self.data.keys()) > 1:
+                mintSeries.setName(f"{sample.name} mint01")
+            else:
+                mintSeries.setName("mint01")
+            # Construct the series
+            mintSeries.append(
+                [
+                    QPointF(x+offsetX, y+offsetY)
+                    for x, y, _ in self.data[sample]["mint01"]
+                ]
+            )
+            # Add the series to the chart.
+            self.addSeries(mintSeries)
+            # Keep the series.
+            self.seriesA[sample] = mintSeries
+
+            if not (self.logarithmicY or self.logarithmicA):
+
+                dcsSeries = QLineSeries()
+                if len(self.data.keys()) > 1:
+                    dcsSeries.setName(f"{sample.name} expected level")
+                else:
+                    dcsSeries.setName("Expected level")
+                dcsSeries.append(
+                    [
+                        QPointF(x, y)
+                        for x, y in self.data[sample]["dcs"]
+                    ]
+                )
+                pen = QPen(dcsSeries.pen())
+                pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setWidth(2)
+                pen.setColor(mintSeries.color())
+                dcsSeries.setPen(pen)
+                self.addSeries(dcsSeries)
+                self.seriesB[sample] = dcsSeries
+
+        elif self.plotMode == PlotModes.SF_MDCS01:
+            # Instantiate the series.
+            mdcsSeries = QLineSeries()
+            # Set the name of the series.
+            if len(self.data.keys()) > 1:
+                mdcsSeries.setName(f"{sample.name} mdcs01")
+            else:
+                mdcsSeries.setName("mdcs01")
+            # Construct the series
+            mdcsSeries.append(
+                [
+                    QPointF(x+offsetX, y+offsetY)
+                    for x, y, _ in self.data[sample]["mdcs01"]
+                ]
+            )
+            # Add the series to the chart.
+            self.addSeries(mdcsSeries)
+            # Keep the series.
+            self.series[sample] = mdcsSeries
+
+            if not (self.logarithmicY or self.logarithmicA):
+
+                dcsSeries = QLineSeries()
+                if len(self.data.keys()) > 1:
+                    dcsSeries.setName(f"{sample.name} expected level")
+                else:
+                    dcsSeries.setName("Expected level")
+                dcsSeries.append(
+                    [
+                        QPointF(x, y)
+                        for x, y in self.data[sample]["dcs"]
+                    ]
+                )
+                pen = QPen(dcsSeries.pen())
+                pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setWidth(2)
+                pen.setColor(mdcsSeries.color())
+                dcsSeries.setPen(pen)
+                self.addSeries(dcsSeries)
+                self.seriesB[sample] = dcsSeries
+
         # If the plotting mode is RDF.
-        elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+        elif self.plotMode == PlotModes.RDF:
 
             # Instantiate the series.
             mdorSeries = QLineSeries()
@@ -517,13 +614,13 @@ class GudPyChart(QChart):
             List of tuples of points (x1, y1, x2, y2)
         """
         errorData = []
-        if self.plotMode == PlotModes.STRUCTURE_FACTOR:
+        if self.plotMode == PlotModes.SF:
             for sample in self.data.keys():
                 for x, y, err in self.data[sample]["mint01"]:
                     errorData.append((x, y-err, x, y+err))
                 for x, y, err in self.data[sample]["mdcs01"]:
                     errorData.append((x, y-err, x, y+err))
-        elif self.plotMode == PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS:
+        elif self.plotMode == PlotModes.RDF:
             for sample in self.data.keys():
                 for x, y, err in self.data[sample]["mdor01"]:
                     errorData.append((x, y-err, x, y+err))
@@ -675,7 +772,7 @@ class GudPyChartView(QChartView):
 
             self.menu.addMenu(toggleLogarithmicMenu)
 
-            if self.chart().plotMode == PlotModes.STRUCTURE_FACTOR:
+            if self.chart().plotMode == PlotModes.SF:
                 showMint01Action = QAction("Show mint01 data", self.menu)
                 showMint01Action.setCheckable(True)
                 showMint01Action.setChecked(
@@ -711,9 +808,22 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showDCSLevelAction)
+            elif self.chart().plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MDCS01]:
+
+                showDCSLevelAction = QAction("Show dcs level", self.menu)
+                showDCSLevelAction.setCheckable(True)
+                showDCSLevelAction.setChecked(
+                    self.chart().isVisible(self.chart().seriesB)
+                )
+                showDCSLevelAction.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        self.chart().seriesB
+                    )
+                )
+                self.menu.addAction(showDCSLevelAction)   
             elif (
                 self.chart().plotMode ==
-                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+                PlotModes.RDF
             ):
                 showMdor01Action = QAction("Show mdor01 data", self.menu)
                 showMdor01Action.setCheckable(True)
