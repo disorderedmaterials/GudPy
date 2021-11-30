@@ -68,7 +68,7 @@ import sys
 import math
 import traceback
 from queue import Queue
-
+from collections.abc import Sequence
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -630,7 +630,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         result = purgeDialog.widget.exec_()
-        purge, func, args = purgeDialog.purge_det
+        purge = purgeDialog.purge_det
         if purgeDialog.cancelled or result == QDialogButtonBox.No:
             self.setControlsEnabled(True)
             self.queue = Queue()
@@ -641,6 +641,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
         else:
+            purge, func, args = purge
             self.makeProc(purge, self.progressPurge, func, args)
 
     def runGudrun_(self):
@@ -908,7 +909,6 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
