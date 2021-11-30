@@ -30,15 +30,9 @@ class TestPurgeFile(TestCase):
 
         from pathlib import Path
 
-        parent = Path("tests").parent.absolute()
-        GudrunStartFolder = parent / "bin"
         dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
 
-        g.instrument.GudrunStartFolder = GudrunStartFolder
         g.instrument.dataFileDir = str(dataFileDir) + "/"
-        g.instrument.groupFileName = (
-            GudrunStartFolder / g.instrument.groupFileName
-        )
         g.write_out(overwrite=True)
         self.g = g
         samples = self.g.sampleBackgrounds[0].samples
@@ -48,7 +42,7 @@ class TestPurgeFile(TestCase):
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
             "dataFileDir": self.g.instrument.dataFileDir,
             "detCalibFile": os.path.join(
-                str(self.g.instrument.GudrunStartFolder),
+                self.g.instrument.GudrunStartFolder,
                 self.g.instrument.detectorCalibrationFileName
             ),
             "groupsFile": self.g.instrument.groupFileName,
