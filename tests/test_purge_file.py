@@ -36,7 +36,6 @@ class TestPurgeFile(TestCase):
         g.write_out(overwrite=True)
         self.g = g
         samples = self.g.sampleBackgrounds[0].samples
-        TAB = "          "
         self.expectedPurgeFile = {
             "instrumentName": self.g.instrument.name,
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
