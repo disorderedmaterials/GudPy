@@ -653,7 +653,13 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         self.g.write_out()
-        outlines = open(self.g.outpath, encoding="utf-8").read()
+        outlines = open(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir,
+                self.g.outpath
+            ),
+            encoding="utf-8"
+        ).read()
         self.assertEqual(outlines, str(self.g))
 
         def valueInLines(value, lines):
@@ -731,7 +737,10 @@ class TestGudPyIO(TestCase):
 
     def testRewriteGudrunFile(self):
         self.g.write_out()
-        g1 = GudrunFile(self.g.outpath)
+        g1 = GudrunFile(os.path.join(
+            self.g.outpath, self.g.instrument.GudrunInputFileDir
+            )
+        )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         g1.write_out()
 
@@ -748,7 +757,10 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         self.g.write_out()
-        g1 = GudrunFile(self.g.outpath)
+        g1 = GudrunFile(os.path.join(
+            self.g.outpath, self.g.instrument.GudrunInputFileDir
+            )
+        )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(str(g1), str(self.g))
 
