@@ -1,5 +1,8 @@
 import os
+import zipfile
 from src.gudrun_classes.enums import CrossSectionSource
+from zipfile import ZipFile, ZIP_DEFLATED
+from pathlib import Path
 
 
 class GudPyFileLibrary():
@@ -30,6 +33,7 @@ class GudPyFileLibrary():
         gudrunFile: GudrunFile
             Input file to create file system from.
         """
+        self.gudrunFile = gudrunFile
         dataFileType = gudrunFile.instrument.dataFileType
         dataFileDir = gudrunFile.instrument.dataFileDir
 
@@ -128,3 +132,27 @@ class GudPyFileLibrary():
             (os.path.isfile(path) | os.path.isdir(path), path)
             for path in self.files
         ]
+
+    def exportMintData(self, samples, renameDataFiles=False):
+        
+        zipFile = ZipFile(Path(self.gudrunFile.path).stem + ".zip", "w", ZIP_DEFLATED)
+
+        for sample in samples:
+            if len(sample.dataFiles.dataFiles):
+                path = os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                sample.dataFiles.dataFiles[0].replace(
+                    self.gudrunFile.instrument.dataFileType,
+                    "mint01"
+                )
+            )
+            if os.path.exists(path):
+                if renameDataFiles:
+                    newName = sample.name.replace(" ", "_") + ".mint01"
+                    os.rename(path, newName)
+                    path = newName
+                    sample.dataFiles.dataFiles[0] = os.path.abspath(path)
+                zipFile.write(path)
+        return zipFile.filename
+
+
