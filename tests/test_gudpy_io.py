@@ -753,8 +753,19 @@ class TestGudPyIO(TestCase):
             open(g1.outpath, encoding="utf-8").read()[:-5], str(g1)[:-5]
         )
         self.assertEqual(
-            open(g1.outpath, encoding="utf-8").read()[:-5],
-            open(g1.path, encoding="utf-8").read()[:-5],
+            open(
+                os.path.join(
+                    g1.instrument.GudrunInputFileDir,
+                    g1.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
+            open(os.path.join(
+                    self.g.instrument.GudrunInputFileDir,
+                    self.g.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
         )
 
     def testReloadGudrunFile(self):
