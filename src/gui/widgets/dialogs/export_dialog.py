@@ -16,11 +16,22 @@ class ExportDialog(QDialog):
 
     Attributes
     ----------
-    None
+    gudrunFile : GudrunFile
+        Object associated with the dialog.
     Methods
     -------
     initComponents()
         Loads the UI file for the MissingFilesDialog.
+    loadFileList()
+        Loads the initial file list.
+    toggleRename()
+        Toggles renaming files to the sample name.
+    performExport(filename)
+        Performs an export to a filename.
+    export()
+        Performs a standard export.
+    exportAs()
+        Allows exporting to a specific file.
     """
     def __init__(self, gudrunFile, parent):
         super(ExportDialog, self).__init__(parent=parent)
@@ -68,27 +79,44 @@ class ExportDialog(QDialog):
         self.widget.filesList.clear()
         for sample in [
             s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples
-            ]:
+        ]:
             if len(sample.dataFiles.dataFiles):
-                mintFile = sample.dataFiles.dataFiles[0].replace(self.gudrunFile.instrument.dataFileType, "mint01")
+                mintFile = (
+                    sample.dataFiles.dataFiles[0]
+                    .replace(
+                        self.gudrunFile.instrument.dataFileType,
+                        "mint01"
+                    )
+                )
                 if os.path.exists(os.path.join(
                     self.gudrunFile.instrument.GudrunInputFileDir, mintFile
                 )):
                     if rename:
-                        mintFile = sample.name.replace(" ", "_").replace(",", "") + ".mint01"
+                        mintFile = (
+                            sample.name.replace(" ", "_")
+                            .replace(",", "") + ".mint01"
+                        )
                     self.widget.filesList.addItem(mintFile)
-    
+
     def toggleRename(self, state):
         self.loadFilesList(rename=bool(state))
 
     def performExport(self, filename=None):
         fl = GudPyFileLibrary(self.gudrunFile)
         archive = fl.exportMintData(
-            [s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples],
+            [
+                s
+                for sb in self.gudrunFile.sampleBackgrounds
+                for s in sb.samples
+            ],
             renameDataFiles=self.widget.renameCheckBox.checkState(),
             exportTo=filename
         )
-        QMessageBox.warning(self.widget, "GudPy Export", f"Archived to {archive}!")
+        QMessageBox.warning(
+            self.widget,
+            "GudPy Export",
+            f"Archived to {archive}!"
+        )
         self.widget.close()
 
     def export(self):
