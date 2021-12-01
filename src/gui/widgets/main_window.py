@@ -1024,5 +1024,5 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def export(self):
-        exportDialog = ExportDialog(self)
+        exportDialog = ExportDialog(self.gudrunFile, self)
         exportDialog.widget.exec()
