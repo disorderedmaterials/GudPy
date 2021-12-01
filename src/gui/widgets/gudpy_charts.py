@@ -1,7 +1,7 @@
 from PySide6.QtCharts import (
-    QChart, QChartView, QLegend, QLineSeries, QLogValueAxis, QValueAxis
+    QChart, QChartView, QLegend, QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
 )
-from PySide6.QtCore import QPointF, QRectF, Qt
+from PySide6.QtCore import QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QPen
 )
@@ -117,6 +117,23 @@ class GudPyChart(QChart):
 
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
         self.legend().setAlignment(Qt.AlignRight)
+
+    def connectMarkers(self):
+        for marker in self.legend().markers():
+            marker.clicked.connect(self.handleMarkerClicked)
+
+    def disconnectMarkers(self):
+        for marker in self.legend().markers():
+            try:
+                marker.clicked.disconnect(self.handleMarkerClicked)
+            except RuntimeError:
+                continue
+
+    def handleMarkerClicked(self):
+        marker = QObject.sender(self)
+        if marker.type() == QLegendMarker.LegendMarkerTypeXY:
+            marker.series().setVisible(not marker.series().isVisible())
+            marker.setVisible(True)
 
     def addSamples(self, samples):
         """
@@ -347,6 +364,7 @@ class GudPyChart(QChart):
             if not self.seriesCVisible:
                 for series in self.seriesC.values():
                     series.setVisible(False)
+        self.connectMarkers()
 
     def plotSample(self, sample):
         """
