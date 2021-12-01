@@ -135,6 +135,26 @@ class GudPyChart(QChart):
             marker.series().setVisible(not marker.series().isVisible())
             marker.setVisible(True)
 
+            alpha = 1.0 if marker.series().isVisible() else 0.5
+            
+            brush = marker.labelBrush()
+            color = brush.color()
+            color.setAlphaF(alpha)
+            brush.setColor(color)
+            marker.setLabelBrush(brush)
+
+            brush = marker.brush()
+            color = brush.color()
+            color.setAlphaF(alpha)
+            brush.setColor(color)
+            marker.setBrush(brush)
+
+            pen = marker.pen()
+            color = pen.color()
+            color.setAlphaF(alpha)
+            pen.setColor(color)
+            marker.setPen(pen)
+
     def addSamples(self, samples):
         """
         Adds the given samples to the chart.
