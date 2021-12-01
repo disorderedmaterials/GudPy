@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from src.gudrun_classes.sample import Sample
+from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
 from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
@@ -150,6 +151,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
+        loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
@@ -320,6 +322,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.objectStack.currentChanged.connect(
             self.updateComponents
         )
+
+        self.mainWidget.exportArchive.triggered.connect(self.export)
 
         self.mainWidget.exit.triggered.connect(self.exit_)
 
@@ -1018,3 +1022,7 @@ class GudPyMainWindow(QMainWindow):
             "GudPy Error",
             f"{''.join(traceback.format_exception(cls, exception, tb))}"
         )
+
+    def export(self):
+        exportDialog = ExportDialog(self)
+        exportDialog.widget.exec()
