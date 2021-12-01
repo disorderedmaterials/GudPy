@@ -61,7 +61,7 @@ class ExportDialog(QDialog):
         )
 
         self.widget.cancelButton.clicked.connect(
-            self.close
+            self.widget.close
         )
 
     def loadFilesList(self, rename=False):
