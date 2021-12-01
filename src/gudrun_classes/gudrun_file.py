@@ -1272,7 +1272,11 @@ class GudrunFile:
         None
         """
         if not overwrite:
-            f = open(os.path.join(self.instrument.GudrunInputFileDir, self.outpath), "w", encoding="utf-8")
+            f = open(
+                os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath
+                ), "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
@@ -1322,7 +1326,16 @@ class GudrunFile:
                 proc = QProcess()
                 proc.setProgram(gudrun_dcs)
                 proc.setArguments([path])
-                return proc, self.write_out, [os.path.join(self.instrument.GudrunInputFileDir, "gudpy.txt")]
+                return (
+                    proc,
+                    self.write_out,
+                    [
+                        os.path.join(
+                            self.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        )
+                    ]
+                )
 
     def process(self, headless=True):
         """

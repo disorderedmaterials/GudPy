@@ -70,6 +70,7 @@ import traceback
 from queue import Queue
 from collections.abc import Sequence
 
+
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
@@ -621,7 +622,9 @@ class GudPyMainWindow(QMainWindow):
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(self.procStarted)
         self.proc.finished.connect(self.procFinished)
-        self.proc.setWorkingDirectory(self.gudrunFile.instrument.GudrunInputFileDir)
+        self.proc.setWorkingDirectory(
+            self.gudrunFile.instrument.GudrunInputFileDir
+        )
         if func:
             func(*args)
         self.proc.start()
@@ -649,7 +652,13 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun_(self):
         self.setControlsEnabled(False)
-        dcs = self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, self.gudrunFile.outpath), headless=False)
+        dcs = self.gudrunFile.dcs(
+            path=os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.outpath
+            ),
+            headless=False
+        )
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
@@ -657,7 +666,15 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
-        elif not self.gudrunFile.purged and os.path.exists(os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, 'purge_det.dat')):
+        elif (
+            not self.gudrunFile.purged
+            and os.path.exists(
+                os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    'purge_det.dat'
+                )
+            )
+        ):
             self.purgeOptionsMessageBox(
                 dcs, func, args,
                 "purge_det.dat found, but wasn't run in this session. "
@@ -710,7 +727,13 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(purge, self.progressPurge, func, args)
         else:
             self.runPurge_()
-        dcs = self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, self.gudrunFile.outpath), headless=False)
+        dcs = self.gudrunFile.dcs(
+            path=os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.outpath
+            ),
+            headless=False
+        )
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         elif isinstance(dcs, FileNotFoundError):

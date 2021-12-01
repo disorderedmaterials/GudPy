@@ -110,9 +110,13 @@ class IterationDialog(QDialog):
             if self.tweak == Iterables.TWEAK_FACTOR:
                 self.iterator = TweakFactorIterator(self.gudrunFile)
                 self.queue = Queue()
-                for i in range(self.numberIterations):
+                for _ in range(self.numberIterations):
                     self.queue.put(
-                        self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "gudpy.txt"), headless=False)
+                        self.gudrunFile.dcs(
+                            path=os.path.join(
+                                self.gudrunFile.instrument.GudrunInputFileDir,
+                                "gudpy.txt"
+                            ), headless=False)
                     )
                 self.text = "Tweak by tweak factor"
                 self.widget.close()
@@ -123,12 +127,16 @@ class IterationDialog(QDialog):
                 self.gudrunFile
             )
             self.queue = Queue()
-            for i in range(self.numberIterations):
+            for _ in range(self.numberIterations):
                 self.queue.put(self.gudrunFile.dcs(
                     path="gudpy.txt", headless=False)
                 )
                 self.queue.put(
-                    self.gudrunFile.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "gudpy.txt"), headless=False)
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
                 )
             self.text = "Inelasticity subtractions"
             self.widget.close()

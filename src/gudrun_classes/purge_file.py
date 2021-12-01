@@ -314,4 +314,13 @@ class PurgeFile():
             proc = QProcess()
             proc.setProgram(purge_det)
             proc.setArguments([])
-            return proc, self.write_out, [os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat")]
+            return (
+                proc,
+                self.write_out,
+                [
+                    os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        "purge_det.dat"
+                    )
+                ]
+            )
