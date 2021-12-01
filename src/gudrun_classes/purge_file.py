@@ -310,7 +310,7 @@ class PurgeFile():
             else:
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
             if not os.path.exists(purge_det):
-                return False
+                return FileNotFoundError()
             proc = QProcess()
             proc.setProgram(purge_det)
             proc.setArguments([])

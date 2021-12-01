@@ -1317,7 +1317,7 @@ class GudrunFile:
             else:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
             if not os.path.exists(gudrun_dcs):
-                return False
+                return FileNotFoundError()
             else:
                 proc = QProcess()
                 proc.setProgram(gudrun_dcs)
