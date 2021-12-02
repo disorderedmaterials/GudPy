@@ -1,7 +1,7 @@
 from PySide6.QtCharts import (
     QChart, QChartView, QLegend, QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
 )
-from PySide6.QtCore import QObject, QPointF, QRectF, Qt
+from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QPen
 )
@@ -754,14 +754,22 @@ class GudPyChartView(QChartView):
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.MouseButton.MiddleButton:
-            offset = event.pos() - self.previousPos
-
+            
+            if self.previousPos:
+                offset = event.pos() - self.previousPos
+            else:
+                offset = event.pos()
             self.chart().scroll(-offset.x(), offset.y())
 
             self.previousPos = event.pos()
             event.accept()
 
         return super().mouseMoveEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.MiddleButton:
+            self.previousPos = event.pos()
+        return super().mousePressEvent(event)
 
     def toggleLogarithmicAxes(self, axis):
         """
