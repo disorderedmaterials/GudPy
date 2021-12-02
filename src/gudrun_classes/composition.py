@@ -1,12 +1,14 @@
 from src.gudrun_classes.element import Element
 import re
 
+from src.scripts.utils import firstNInts
+
 
 class ChemicalFormulaParser():
 
     def __init__(self):
         self.stream = None
-        self.regex = re.compile(r"[A-Z][a-z]?\d*")
+        self.regex = re.compile(r"[A-Z][a-z]?\[\d+\]?\d*")
 
     def consumeTokens(self, n):
         for _ in range(n):
@@ -28,8 +30,9 @@ class ChemicalFormulaParser():
 
     def parseElement(self):
         symbol = self.parseSymbol()
+        massNo = self.parseMassNo()
         abundance = self.parseAbundance()
-        massNo = 0
+        print(massNo)
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
@@ -43,6 +46,14 @@ class ChemicalFormulaParser():
             if match:
                 self.consumeTokens(len(match.group(0)))
                 return match.group(0)
+
+    def parseMassNo(self):
+        if self.stream:
+            match = re.match(r"\[\d+\]", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                return int("".join(match.group(0)[1:-1]))
+        return 0
 
     def parseAbundance(self):
         if self.stream:
