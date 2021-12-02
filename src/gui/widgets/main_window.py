@@ -828,6 +828,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
                 self.modified = True
                 self._thread = threading.Thread(target = self.autosave, args=())
+                self._thread.setDaemon(True)
                 self._thread.start()
 
 
