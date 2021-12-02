@@ -72,6 +72,7 @@ from queue import Queue
 
 import time
 import threading
+from pathlib import Path
 
 class GudPyMainWindow(QMainWindow):
     """
@@ -113,14 +114,16 @@ class GudPyMainWindow(QMainWindow):
         """
         super(GudPyMainWindow, self).__init__()
         self.gudrunFile = None
-        self.initComponents()
-        self.clipboard = None
         self.modified = False
+        self.clipboard = None
         self.iterator = None
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
         self.cwd = os.getcwd()
+        self.initComponents()
+        self.tryAutorecover()
+
 
     def initComponents(self):
         """
@@ -328,6 +331,29 @@ class GudPyMainWindow(QMainWindow):
 
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
+    
+    def tryAutorecover(self):
+        for f in os.listdir():
+            if f.endswith(".recovery"):
+                messageBox = QMessageBox(self.mainWidget)
+                messageBox.setWindowTitle("GudPy Warning")
+                messageBox.setText(f"Found recovery file: {f}.\n Would you like to load it?")
+                messageBox.addButton(QMessageBox.No)
+                messageBox.addButton(QMessageBox.Yes)
+                deleteRecoveryFile = QPushButton("Delete recovery file", messageBox)
+
+                messageBox.addButton(deleteRecoveryFile, QMessageBox.RejectRole)
+
+                result = messageBox.exec()
+
+                if messageBox.clickedButton() == deleteRecoveryFile:
+                    os.remove(f)
+                elif result == messageBox.Yes:
+                    self.gudrunFile = GudrunFile(f)
+                    self.updateWidgets()
+                    self.mainWidget.setWindowTitle(self.gudrunFile.path)       
+                else:
+                    messageBox.close() 
 
     def updateWidgets(self, fromFile=False):
         if fromFile:
@@ -801,9 +827,9 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile.path:
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
                 self.modified = True
-
                 self._thread = threading.Thread(target = self.autosave, args=())
                 self._thread.start()
+
 
     def setUnModified(self):
         self.mainWidget.setWindowTitle(self.gudrunFile.path)
@@ -1028,3 +1054,4 @@ class GudPyMainWindow(QMainWindow):
             "GudPy Error",
             f"{''.join(traceback.format_exception(cls, exception, tb))}"
         )
+        self.gudrunFile.write_out(overwrite=False, path = Path(self.gudrunFile.path).stem + ".recovery")
