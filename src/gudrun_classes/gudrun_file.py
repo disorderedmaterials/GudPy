@@ -1256,7 +1256,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, overwrite=False):
+    def write_out(self, overwrite=False, path=""):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1266,15 +1266,18 @@ class GudrunFile:
         ----------
         overwrite : bool, optional
             Overwrite the initial file? (default is False).
-
+        path : str, optional
+            Path to write to.
         Returns
         -------
         None
         """
-        if not overwrite:
+        if not overwrite and not path:
             f = open(self.outpath, "w", encoding="utf-8")
-        else:
+        elif not path:
             f = open(self.path, "w", encoding="utf-8")
+        elif path:
+            f = open(path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
 
