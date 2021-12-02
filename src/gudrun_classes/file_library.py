@@ -152,7 +152,9 @@ class GudPyFileLibrary():
                     )
                 if os.path.exists(path):
                     if renameDataFiles:
-                        newName = sample.name.replace(" ", "_") + ".mint01"
+                        newName = sample.name.replace(" ", "_").translate(
+                            {ord(x): '' for x in '/\!*~,&|[]'}
+                        ) + ".mint01"
                         os.rename(path, newName)
                         path = newName
                         sample.dataFiles.dataFiles[0] = os.path.abspath(path)

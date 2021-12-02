@@ -92,10 +92,9 @@ class ExportDialog(QDialog):
                     self.gudrunFile.instrument.GudrunInputFileDir, mintFile
                 )):
                     if rename:
-                        mintFile = (
-                            sample.name.replace(" ", "_")
-                            .replace(",", "") + ".mint01"
-                        )
+                        mintFile = sample.name.replace(" ", "_").translate(
+                            {ord(x): '' for x in '/\!*~,&|[]'}
+                        ) + ".mint01"
                     self.widget.filesList.addItem(mintFile)
 
     def toggleRename(self, state):
