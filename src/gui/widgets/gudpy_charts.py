@@ -134,26 +134,28 @@ class GudPyChart(QChart):
         if marker.type() == QLegendMarker.LegendMarkerTypeXY:
             marker.series().setVisible(not marker.series().isVisible())
             marker.setVisible(True)
+            self.updateMarkerOpacity(marker)
 
-            alpha = 1.0 if marker.series().isVisible() else 0.5
-            
-            brush = marker.labelBrush()
-            color = brush.color()
-            color.setAlphaF(alpha)
-            brush.setColor(color)
-            marker.setLabelBrush(brush)
+    def updateMarkerOpacity(self, marker):
+        alpha = 1.0 if marker.series().isVisible() else 0.5
+        
+        brush = marker.labelBrush()
+        color = brush.color()
+        color.setAlphaF(alpha)
+        brush.setColor(color)
+        marker.setLabelBrush(brush)
 
-            brush = marker.brush()
-            color = brush.color()
-            color.setAlphaF(alpha)
-            brush.setColor(color)
-            marker.setBrush(brush)
+        brush = marker.brush()
+        color = brush.color()
+        color.setAlphaF(alpha)
+        brush.setColor(color)
+        marker.setBrush(brush)
 
-            pen = marker.pen()
-            color = pen.color()
-            color.setAlphaF(alpha)
-            pen.setColor(color)
-            marker.setPen(pen)
+        pen = marker.pen()
+        color = pen.color()
+        color.setAlphaF(alpha)
+        pen.setColor(color)
+        marker.setPen(pen)
 
     def addSamples(self, samples):
         """
@@ -666,7 +668,16 @@ class GudPyChart(QChart):
                     errorData.append((x, y-err, x, y+err))
         return errorData
 
+    def toggleSampleVisibility(self, chk, sample):
+        self.seriesA[sample].setVisible(chk)
+        self.seriesB[sample].setVisible(chk)
+        self.seriesC[sample].setVisible(chk)
 
+        for marker in self.legend().markers():
+            series = marker.series()
+            if series == self.seriesA[sample] or series == self.seriesB[sample] or series == self.seriesC[sample]:
+                marker.setVisible(True)
+                self.updateMarkerOpacity(marker)
 class GudPyChartView(QChartView):
     """
     Class to represent a GudPyChartView. Inherits QChartView.
@@ -908,11 +919,29 @@ class GudPyChartView(QChartView):
                 )
                 self.menu.addAction(showMgor01Action)
 
+        hideMenu = QMenu(self.menu)
+        hideMenu.setTitle("Hide..")
+        actionMap = {}
+        for sample in self.chart().data.keys():
+            action = QAction(f"Hide {sample.name}", hideMenu)
+            action.setCheckable(True)
+            action.setChecked(
+                self.chart().seriesA[sample].isVisible() &
+                self.chart().seriesB[sample].isVisible() &
+                self.chart().seriesC[sample].isVisible()
+            )
+            hideMenu.addAction(action)
+            actionMap[action] = sample
+        self.menu.addMenu(hideMenu)
         copyAction = QAction("Copy plot", self.menu)
         copyAction.triggered.connect(self.copyPlot)
         self.menu.addAction(copyAction)
 
-        self.menu.popup(QCursor.pos())
+
+        action = self.menu.exec(QCursor.pos())
+
+        if action in actionMap.keys():
+            self.chart().toggleSampleVisibility(action.isChecked(), actionMap[action])
 
     def copyPlot(self):
         pixMap = self.grab()
