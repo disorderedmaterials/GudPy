@@ -153,7 +153,7 @@ class GudPyFileLibrary():
                 if os.path.exists(path):
                     if renameDataFiles:
                         newName = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in '/\!*~,&|[]'}
+                            {ord(x): '' for x in r'/\!*~,&|[]'}
                         ) + ".mint01"
                         os.rename(path, newName)
                         path = newName

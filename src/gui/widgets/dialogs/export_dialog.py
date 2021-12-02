@@ -93,7 +93,7 @@ class ExportDialog(QDialog):
                 )):
                     if rename:
                         mintFile = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in '/\!*~,&|[]'}
+                            {ord(x): '' for x in r'/\!*~,&|[]'}
                         ) + ".mint01"
                     self.widget.filesList.addItem(mintFile)
 
