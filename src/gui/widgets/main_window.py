@@ -70,6 +70,9 @@ import traceback
 from queue import Queue
 
 
+import time
+import threading
+
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
@@ -789,11 +792,18 @@ class GudPyMainWindow(QMainWindow):
             )
             missingFilesDialog.widget.exec_()
 
+    def autosave(self):
+        time.sleep(30)
+        self.gudrunFile.write_out(overwrite=True)
+
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
                 self.modified = True
+
+                self._thread = threading.Thread(target = self.autosave, args=())
+                self._thread.start()
 
     def setUnModified(self):
         self.mainWidget.setWindowTitle(self.gudrunFile.path)
