@@ -715,6 +715,8 @@ class GudPyChartView(QChartView):
         self.setRenderHint(QPainter.Antialiasing)
         self.clipboard = QClipboard(self.parent())
 
+        self.previousPos = 0
+
     def wheelEvent(self, event):
         """
         Event handler called when the scroll wheel is used.
@@ -749,6 +751,17 @@ class GudPyChartView(QChartView):
 
         self.zoomArea = zoomArea
         self.scrolled = (delta.x(), -delta.y())
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.MouseButton.MiddleButton:
+            offset = event.pos() - self.previousPos
+
+            self.chart().scroll(-offset.x(), offset.y())
+
+            self.previousPos = event.pos()
+            event.accept()
+
+        return super().mouseMoveEvent(event)
 
     def toggleLogarithmicAxes(self, axis):
         """
