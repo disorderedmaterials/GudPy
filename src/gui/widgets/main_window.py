@@ -332,6 +332,8 @@ class GudPyMainWindow(QMainWindow):
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
     
+        self.setWindowModified(False)
+
     def tryAutorecover(self):
         for f in os.listdir():
             if f.endswith(".recovery"):
@@ -351,7 +353,7 @@ class GudPyMainWindow(QMainWindow):
                 elif result == messageBox.Yes:
                     self.gudrunFile = GudrunFile(f)
                     self.updateWidgets()
-                    self.mainWidget.setWindowTitle(self.gudrunFile.path)       
+                    self.mainWidget.setWindowTitle(self.gudrunFile.path +"[*]")       
                 else:
                     messageBox.close() 
 
@@ -401,7 +403,7 @@ class GudPyMainWindow(QMainWindow):
                     del self.gudrunFile
                 self.gudrunFile = GudrunFile(path=filename)
                 self.updateWidgets()
-                self.mainWidget.setWindowTitle(self.gudrunFile.path)
+                self.mainWidget.setWindowTitle(self.gudrunFile.path + "[*]")
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
@@ -825,17 +827,17 @@ class GudPyMainWindow(QMainWindow):
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
-                self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
                 self.modified = True
-                if not self.proc:
-                    self._thread = threading.Thread(target = self.autosave, args=())
-                    self._thread.setDaemon(True)
-                    self._thread.start()
+                self.setWindowModified(True)
+        if hasattr(self, "proc") and not self.proc:
+            self._thread = threading.Thread(target = self.autosave, args=())
+            self._thread.setDaemon(True)
+            self._thread.start()
 
 
     def setUnModified(self):
-        self.mainWidget.setWindowTitle(self.gudrunFile.path)
         self.modified = False
+        self.setWindowModified(False)
 
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
