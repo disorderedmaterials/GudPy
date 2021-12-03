@@ -43,9 +43,13 @@ class ContainerSlots():
         self.widget.containerDownStreamSpinBox.setValue(
             self.container.downstreamThickness
         )
-        self.widget.totalContainerThicknessSpinBox.setValue(
+
+        total = (
             self.container.upstreamThickness +
             self.container.downstreamThickness
+        )
+        self.widget.totalContainerThicknessLabel.setText(
+            f"Total: {total}cm"
         )
 
         self.widget.containerAngleOfRotationSpinBox.setValue(
@@ -260,9 +264,12 @@ class ContainerSlots():
             The new value of the containerUpstreamSpinBox.
         """
         self.container.upstreamThickness = value
-        self.widget.totalContainerThicknessSpinBox.setValue(
+        total = (
             self.container.upstreamThickness +
             self.container.downstreamThickness
+        )
+        self.widget.totalContainerThicknessLabel.setText(
+            f"Total: {total}cm"
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -279,9 +286,12 @@ class ContainerSlots():
             The new value of the containerDownStreamSpinBox.
         """
         self.container.downstreamThickness = value
-        self.widget.totalContainerThicknessSpinBox.setValue(
+        total = (
             self.container.upstreamThickness +
             self.container.downstreamThickness
+        )
+        self.widget.totalContainerThicknessLabel.setText(
+            f"Total: {total}cm"
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -3861,19 +3861,9 @@
                           <item>
                            <layout class="QHBoxLayout" name="horizontalLayout_63">
                             <item>
-                             <widget class="QLabel" name="label_7">
+                             <widget class="QLabel" name="totalNormalisationThicknessLabel">
                               <property name="text">
-                               <string>Total</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="ExponentialSpinBox" name="totalNormalisationThicknessSpinBox">
-                              <property name="enabled">
-                               <bool>false</bool>
-                              </property>
-                              <property name="suffix">
-                               <string>cm</string>
+                               <string>Total: 0.00cm</string>
                               </property>
                              </widget>
                             </item>
@@ -5061,19 +5051,9 @@
                                <item>
                                 <layout class="QHBoxLayout" name="horizontalLayout_19">
                                  <item>
-                                  <widget class="QLabel" name="label_8">
+                                  <widget class="QLabel" name="totalSampleThicknessLabel">
                                    <property name="text">
-                                    <string>Total</string>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="ExponentialSpinBox" name="totalSampleThicknessSpinBox">
-                                   <property name="enabled">
-                                    <bool>false</bool>
-                                   </property>
-                                   <property name="suffix">
-                                    <string>cm</string>
+                                    <string>Total: 0.00cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -6604,19 +6584,9 @@
                           <item>
                            <layout class="QHBoxLayout" name="horizontalLayout_55">
                             <item>
-                             <widget class="QLabel" name="label_9">
+                             <widget class="QLabel" name="totalContainerThicknessLabel">
                               <property name="text">
-                               <string>Total</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="ExponentialSpinBox" name="totalContainerThicknessSpinBox">
-                              <property name="enabled">
-                               <bool>false</bool>
-                              </property>
-                              <property name="suffix">
-                               <string>cm</string>
+                               <string>Total: 0.00cm</string>
                               </property>
                              </widget>
                             </item>
