@@ -88,13 +88,17 @@ class ExportDialog(QDialog):
                         "mint01"
                     )
                 )
-                if os.path.exists(os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir, mintFile
-                )):
-                    if rename:
-                        mintFile = sample.name.replace(" ", "_").translate(
+                namedAfterSample = sample.name.replace(" ", "_").translate(
                             {ord(x): '' for x in r'/\!*~,&|[]'}
                         ) + ".mint01"
+                
+                if os.path.exists(os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir, mintFile
+                )) or os.path.exists(os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir, namedAfterSample
+                )):
+                    if rename:
+                        mintFile = namedAfterSample
                     self.widget.filesList.addItem(mintFile)
 
     def toggleRename(self, state):

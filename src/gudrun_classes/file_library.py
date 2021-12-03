@@ -152,11 +152,10 @@ class GudPyFileLibrary():
                     )
                 if os.path.exists(path):
                     if renameDataFiles:
+                        print("renaming.")
                         newName = sample.name.replace(" ", "_").translate(
                             {ord(x): '' for x in r'/\!*~,&|[]'}
                         ) + ".mint01"
-                        os.rename(path, newName)
                         path = newName
-                        sample.dataFiles.dataFiles[0] = os.path.abspath(path)
                     zipFile.write(path, arcname=os.path.basename(path))
             return zipFile.filename
