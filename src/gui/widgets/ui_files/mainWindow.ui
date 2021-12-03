@@ -5869,6 +5869,7 @@
                         <widget class="QLabel" name="dcsLabel">
                          <property name="font">
                           <font>
+                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5887,6 +5888,7 @@
                         <widget class="QLabel" name="resultLabel">
                          <property name="font">
                           <font>
+                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5907,6 +5909,7 @@
                       <widget class="QLabel" name="suggestedTweakFactorLabel">
                        <property name="font">
                         <font>
+                         <weight>75</weight>
                          <bold>true</bold>
                         </font>
                        </property>
@@ -6853,14 +6856,17 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="loadInputFile"/>
     <addaction name="loadConfiguration"/>
     <addaction name="new_"/>
+    <addaction name="separator"/>
     <addaction name="viewLiveInputFile"/>
+    <addaction name="separator"/>
     <addaction name="save"/>
     <addaction name="saveAs"/>
+    <addaction name="separator"/>
+    <addaction name="exportArchive"/>
+    <addaction name="separator"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -7026,6 +7032,11 @@
   <action name="new_">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="exportArchive">
+   <property name="text">
+    <string>Export mint01 Archive</string>
    </property>
   </action>
  </widget>
