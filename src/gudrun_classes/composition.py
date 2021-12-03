@@ -37,7 +37,11 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-        if symbol and abundance and symbol in massData.keys() and Sears91().isIsotope(symbol, massNo):
+        if (
+            symbol and abundance
+            and symbol in massData.keys()
+            and Sears91().isIsotope(symbol, massNo)
+        ):
             return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
@@ -177,15 +181,18 @@ class Composition():
 
         return string.rstrip()
 
-
     @staticmethod
     def calculateExpectedDCSLevel(elements):
-        totalAbundance = sum([el.abundance for el in elements]) 
+        totalAbundance = sum([el.abundance for el in elements])
         s91 = Sears91()
         if len(elements):
             return round(sum(
                 [
-                    s91.totalXS(s91.isotopeData(el.atomicSymbol, el.massNo)) * (el.abundance/totalAbundance) for el in elements
+                    s91.totalXS(
+                        s91.isotopeData(
+                            el.atomicSymbol, el.massNo
+                        )
+                    ) * (el.abundance/totalAbundance) for el in elements
                 ]
             ) / 4.0 / math.pi, 5)
         return 0.0

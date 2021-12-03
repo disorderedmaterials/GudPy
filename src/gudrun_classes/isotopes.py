@@ -392,9 +392,9 @@ class Sears91():
         return isotope[3]
 
     @staticmethod
-    def atwt(self, isotope):
+    def atwt(isotope):
         return isotope[4]
-    
+
     @staticmethod
     def boundCoherent(isotope):
         return isotope[5]
@@ -419,16 +419,16 @@ class Sears91():
     def absorptionXS(isotope):
         return isotope[10]
 
-    def isotopes(self,element):
+    def isotopes(self, element):
         return [
-            isotope for isotope in self.sears91Data if self.element(isotope) == element
+            isotope
+            for isotope in self.sears91Data
+            if self.element(isotope) == element
         ]
 
     def isIsotope(self, element, mass):
-        
         isotopes = self.isotopes(element)
         for isotope in isotopes:
             if self.mass(isotope) == mass:
                 return True
         return False
-    
