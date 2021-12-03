@@ -122,7 +122,14 @@ class ExportDialog(QDialog):
         self.performExport()
 
     def exportAs(self):
-        filename, _ = QFileDialog.getSaveFileName(
-            self, "Export to..", "."
-        )
-        self.performExport(filename=filename)
+
+        dialog = QFileDialog()
+        dialog.setDefaultSuffix("zip")
+        dialog.setWindowTitle("Export to..")
+        dialog.setDirectory(".")
+        dialog.setAcceptMode(dialog.AcceptSave)
+        if dialog.exec() == dialog.Accepted:
+            filename = dialog.selectedFiles()[0]
+
+        if filename:
+            self.performExport(filename=filename)
