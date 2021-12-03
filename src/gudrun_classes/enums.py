@@ -1,6 +1,6 @@
 from enum import Enum
 from itertools import chain, product
-import html
+
 
 def enumFromDict(clsname, _dict):
     return Enum(
@@ -30,7 +30,7 @@ class Scales(Enum):
 
 
 UNITS_OF_DENSITY = {
-    0: [f"atoms/{html.unescape('&#8491;')}^3", "ATOMIC"],
+    0: ["atoms/\u212b^3", "ATOMIC"],
     1: ["gm/cm^3", "CHEMICAL"]
 }
 
