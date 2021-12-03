@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -3763,7 +3763,7 @@
                        <item>
                         <widget class="QGroupBox" name="groupBox_3">
                          <property name="title">
-                          <string>Thickness [cm]</string>
+                          <string>Thickness</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -3807,6 +3807,9 @@
                                 <height>16777215</height>
                                </size>
                               </property>
+                              <property name="suffix">
+                               <string>cm</string>
+                              </property>
                              </widget>
                             </item>
                             <item>
@@ -3848,6 +3851,9 @@
                                 <height>16777215</height>
                                </size>
                               </property>
+                              <property name="suffix">
+                               <string>cm</string>
+                              </property>
                              </widget>
                             </item>
                            </layout>
@@ -3865,6 +3871,9 @@
                              <widget class="ExponentialSpinBox" name="totalNormalisationThicknessSpinBox">
                               <property name="enabled">
                                <bool>false</bool>
+                              </property>
+                              <property name="suffix">
+                               <string>cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3897,7 +3906,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Angle of Rotation [cm]</string>
+                            <string>Angle of Rotation</string>
                            </property>
                           </widget>
                          </item>
@@ -3908,6 +3917,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
@@ -3920,7 +3932,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Sample Width [cm]</string>
+                            <string>Sample Width</string>
                            </property>
                           </widget>
                          </item>
@@ -3931,6 +3943,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
@@ -3943,7 +3958,7 @@
                        <item>
                         <widget class="QGroupBox" name="groupBox_4">
                          <property name="title">
-                          <string>Radii [cm]</string>
+                          <string>Radii</string>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_89">
                           <property name="leftMargin">
@@ -3970,6 +3985,9 @@
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
+                            <property name="suffix">
+                             <string>cm</string>
+                            </property>
                            </widget>
                           </item>
                           <item>
@@ -3993,6 +4011,9 @@
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
+                            <property name="suffix">
+                             <string>cm</string>
+                            </property>
                            </widget>
                           </item>
                          </layout>
@@ -4009,7 +4030,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Sample Height [cm]</string>
+                            <string>Sample Height</string>
                            </property>
                           </widget>
                          </item>
@@ -4020,6 +4041,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
@@ -4981,7 +5005,7 @@
                                <string notr="true"/>
                               </property>
                               <property name="title">
-                               <string>Thickness [cm]</string>
+                               <string>Thickness</string>
                               </property>
                               <property name="alignment">
                                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -5007,6 +5031,9 @@
                                      <verstretch>0</verstretch>
                                     </sizepolicy>
                                    </property>
+                                   <property name="suffix">
+                                    <string>cm</string>
+                                   </property>
                                   </widget>
                                  </item>
                                  <item>
@@ -5023,6 +5050,9 @@
                                      <horstretch>0</horstretch>
                                      <verstretch>0</verstretch>
                                     </sizepolicy>
+                                   </property>
+                                   <property name="suffix">
+                                    <string>cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5041,6 +5071,9 @@
                                   <widget class="ExponentialSpinBox" name="totalSampleThicknessSpinBox">
                                    <property name="enabled">
                                     <bool>false</bool>
+                                   </property>
+                                   <property name="suffix">
+                                    <string>cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5076,7 +5109,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="text">
-                                 <string>Angle of Rotation [cm]</string>
+                                 <string>Angle of Rotation</string>
                                 </property>
                                </widget>
                               </item>
@@ -5087,6 +5120,9 @@
                                   <horstretch>0</horstretch>
                                   <verstretch>0</verstretch>
                                  </sizepolicy>
+                                </property>
+                                <property name="suffix">
+                                 <string>cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5099,7 +5135,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="text">
-                                 <string>Sample Width [cm]</string>
+                                 <string>Sample Width</string>
                                 </property>
                                </widget>
                               </item>
@@ -5110,6 +5146,9 @@
                                   <horstretch>0</horstretch>
                                   <verstretch>0</verstretch>
                                  </sizepolicy>
+                                </property>
+                                <property name="suffix">
+                                 <string>cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5125,7 +5164,7 @@
                             <item>
                              <widget class="QGroupBox" name="radiiGroupBox">
                               <property name="title">
-                               <string>Radii [cm]</string>
+                               <string>Radii</string>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_31">
                                <property name="leftMargin">
@@ -5146,6 +5185,9 @@
                                    <verstretch>0</verstretch>
                                   </sizepolicy>
                                  </property>
+                                 <property name="suffix">
+                                  <string>cm</string>
+                                 </property>
                                 </widget>
                                </item>
                                <item>
@@ -5162,6 +5204,9 @@
                                    <horstretch>0</horstretch>
                                    <verstretch>0</verstretch>
                                   </sizepolicy>
+                                 </property>
+                                 <property name="suffix">
+                                  <string>cm</string>
                                  </property>
                                 </widget>
                                </item>
@@ -5182,7 +5227,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="text">
-                                 <string>Sample Height [cm]</string>
+                                 <string>Sample Height</string>
                                 </property>
                                </widget>
                               </item>
@@ -5193,6 +5238,9 @@
                                   <horstretch>0</horstretch>
                                   <verstretch>0</verstretch>
                                  </sizepolicy>
+                                </property>
+                                <property name="suffix">
+                                 <string>cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -6500,7 +6548,7 @@
                           <string notr="true"/>
                          </property>
                          <property name="title">
-                          <string>Thickness [cm]</string>
+                          <string>Thickness</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -6526,6 +6574,9 @@
                                 <verstretch>0</verstretch>
                                </sizepolicy>
                               </property>
+                              <property name="suffix">
+                               <string>cm</string>
+                              </property>
                              </widget>
                             </item>
                             <item>
@@ -6542,6 +6593,9 @@
                                 <horstretch>0</horstretch>
                                 <verstretch>0</verstretch>
                                </sizepolicy>
+                              </property>
+                              <property name="suffix">
+                               <string>cm</string>
                               </property>
                              </widget>
                             </item>
@@ -6560,6 +6614,9 @@
                              <widget class="ExponentialSpinBox" name="totalContainerThicknessSpinBox">
                               <property name="enabled">
                                <bool>false</bool>
+                              </property>
+                              <property name="suffix">
+                               <string>cm</string>
                               </property>
                              </widget>
                             </item>
@@ -6595,7 +6652,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Angle of Rotation [cm]</string>
+                            <string>Angle of Rotation</string>
                            </property>
                           </widget>
                          </item>
@@ -6606,6 +6663,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
@@ -6618,7 +6678,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Sample Width [cm]</string>
+                            <string>Sample Width</string>
                            </property>
                           </widget>
                          </item>
@@ -6629,6 +6689,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
@@ -6641,7 +6704,7 @@
                        <item>
                         <widget class="QGroupBox" name="radiiGroupBox_2">
                          <property name="title">
-                          <string>Radii [cm]</string>
+                          <string>Radii</string>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_61">
                           <property name="leftMargin">
@@ -6662,6 +6725,9 @@
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
+                            <property name="suffix">
+                             <string>cm</string>
+                            </property>
                            </widget>
                           </item>
                           <item>
@@ -6678,6 +6744,9 @@
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
+                            </property>
+                            <property name="suffix">
+                             <string>cm</string>
                             </property>
                            </widget>
                           </item>
@@ -6698,7 +6767,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Sample Height [cm]</string>
+                            <string>Sample Height</string>
                            </property>
                           </widget>
                          </item>
@@ -6709,6 +6778,9 @@
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
+                           </property>
+                           <property name="suffix">
+                            <string>cm</string>
                            </property>
                           </widget>
                          </item>
