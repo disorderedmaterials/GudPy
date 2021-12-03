@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
 from src.gudrun_classes import config
+from src.gudrun_classes.mass_data import massData
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gudrun_classes.element import Element
@@ -76,9 +77,10 @@ class CompositionModel(GudPyTableModel):
                     self._data[row].atomicSymbol = "H"
                     self._data[row].massNo = 2
                     return True
-                elif value not in config.massData.keys():
+                elif value not in massData.keys():
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
+        self.dataChanged.emit(index, index)
 
     def insertRow(self):
         """

@@ -133,6 +133,13 @@ class SampleSlots():
         # Populate the table containing resonance values.
         self.updateResonanceTable()
 
+        # Calculate the expected DCS level.
+        self.updateExpectedDCSLevel()
+
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+
         # Release the lock
         self.widgetsRefreshing = False
 
@@ -984,3 +991,11 @@ class SampleSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def updateExpectedDCSLevel(self, _=None, __=None):
+        """
+        Updates the expectedDcsLabel to show the expected DCS level of the sample.
+        """
+        self.widget.expectedDcsLabel.setText(
+            f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel()}"
+        )

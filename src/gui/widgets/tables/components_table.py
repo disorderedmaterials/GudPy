@@ -3,7 +3,7 @@ from PySide6.QtCore import (
     QModelIndex, QPersistentModelIndex, QAbstractItemModel, Qt
 )
 from PySide6.QtWidgets import QListView
-from src.gudrun_classes import config
+from src.gudrun_classes.mass_data import massData
 from src.gudrun_classes.composition import Component
 from src.gudrun_classes.element import Element
 from src.gui.widgets.tables.composition_table import CompositionDelegate
@@ -162,7 +162,7 @@ class ComponentsModel(QAbstractItemModel):
                 self.dataChanged.emit(index, index)
             else:
                 if index.column() == 0:
-                    if value in config.massData.keys():
+                    if value in massData.keys():
                         self.components.components[
                             index.parent().row()
                         ].elements[index.row()].atomicSymbol = value

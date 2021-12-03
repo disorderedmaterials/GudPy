@@ -1,7 +1,9 @@
 from src.gudrun_classes.element import Element
 import re
+import math
 
-from src.scripts.utils import firstNInts
+from src.gudrun_classes.isotopes import Sears91
+from src.gudrun_classes.mass_data import massData
 
 
 class ChemicalFormulaParser():
@@ -35,8 +37,7 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-        from src.gudrun_classes import config
-        if symbol and abundance and symbol in config.massData.keys() and config.sears91.isIsotope(symbol, massNo):
+        if symbol and abundance and symbol in massData.keys() and Sears91().isIsotope(symbol, massNo):
             return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
@@ -167,3 +168,15 @@ class Composition():
             )
 
         return string.rstrip()
+
+
+    def calculateExpectedDCSLevel(self):
+        totalAbundance = sum([el.abundance for el in self.elements]) 
+        s91 = Sears91()
+        if len(self.elements):
+            return sum(
+                [
+                    s91.totalXS(s91.isotopeData(el.atomicSymbol, el.massNo)) * (el.abundance/totalAbundance) for el in self.elements
+                ]
+            ) / 4.0 / math.pi
+        return 0.0

@@ -371,6 +371,10 @@ class Sears91():
 
     ]
 
+    def isotopeData(self, element, mass):
+        if self.isIsotope(element, mass):
+            return [isotope for isotope in self.sears91Data if self.element(isotope) == element and self.mass(isotope) == mass][0]
+
     @staticmethod
     def isotope(isotope_):
         return isotope_[0]
