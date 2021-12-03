@@ -139,6 +139,10 @@ class SampleSlots():
         self.widget.sampleCompositionTable.model().dataChanged.connect(
             self.updateExpectedDCSLevel
         )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -852,8 +856,9 @@ class SampleSlots():
         """
         Fills the composition list.
         """
+        self.updateRatioCompositions()
+        self.updateExactCompositions()
         if config.USE_USER_DEFINED_COMPONENTS:
-            self.updateRatioCompositions()
             self.widget.insertSampleElementButton.setEnabled(False)
             self.widget.removeSampleElementButton.setEnabled(False)
             self.widget.sampleCompositionTable.setEditTriggers(
@@ -881,7 +886,6 @@ class SampleSlots():
                 QAbstractItemView.EditTrigger.EditKeyPressed |
                 QAbstractItemView.EditTrigger.AnyKeyPressed
             )
-        self.updateExactCompositions()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -918,11 +922,13 @@ class SampleSlots():
         self.widget.sampleCompositionTable.removeRow(
             self.widget.sampleCompositionTable.selectionModel().selectedRows()
         )
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInsertComponent(self):
         self.widget.sampleRatioCompositionTable.insertRow()
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -931,6 +937,7 @@ class SampleSlots():
             self.widget.sampleRatioCompositionTable
             .selectionModel().selectedRows()
         )
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -996,6 +1003,13 @@ class SampleSlots():
         """
         Updates the expectedDcsLabel to show the expected DCS level of the sample.
         """
-        self.widget.expectedDcsLabel.setText(
-            f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel()}"
-        )
+        if config.USE_USER_DEFINED_COMPONENTS:
+            elements = self.sample.composition.shallowTranslate()
+            self.widget.expectedDcsLabel.setText(
+                f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel(elements)}"
+            )
+        else:
+            elements = self.sample.composition.elements
+            self.widget.expectedDcsLabel.setText(
+                f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel(elements)}"
+            )

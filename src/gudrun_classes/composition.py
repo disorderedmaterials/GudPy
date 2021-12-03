@@ -130,6 +130,13 @@ class Composition():
     def addElements(self, elements):
         self.elements.extend(elements)
 
+    def shallowTranslate(self):
+        elements = []
+        for component in self.weightedComponents:
+            elements.extend(component.translate())
+        self.sumAndMutate(elements, elements)
+        return elements
+
     def translate(self):
         """
         Translates the weighted components present in the composition,
@@ -139,9 +146,10 @@ class Composition():
         self.elements = []
         for component in self.weightedComponents:
             elements.extend(component.translate())
-        self.sumAndMutate(elements)
+        self.sumAndMutate(elements, self.elements)
 
-    def sumAndMutate(self, elements):
+    @staticmethod
+    def sumAndMutate(elements, target):
         """
         Sums the abundances of elements within the composition.
         This ensures that the same element isn't written out
@@ -149,7 +157,7 @@ class Composition():
         """
         for element in elements:
             exists = False
-            for element_ in self.elements:
+            for element_ in target:
                 if (
                     element.atomicSymbol == element_.atomicSymbol
                     and element.massNo == element_.massNo
@@ -157,7 +165,7 @@ class Composition():
                     element_.abundance += element.abundance
                     exists = True
             if not exists:
-                self.elements.append(element)
+                target.append(element)
 
     def __str__(self):
         string = ""
@@ -170,13 +178,14 @@ class Composition():
         return string.rstrip()
 
 
-    def calculateExpectedDCSLevel(self):
-        totalAbundance = sum([el.abundance for el in self.elements]) 
+    @staticmethod
+    def calculateExpectedDCSLevel(elements):
+        totalAbundance = sum([el.abundance for el in elements]) 
         s91 = Sears91()
-        if len(self.elements):
+        if len(elements):
             return sum(
                 [
-                    s91.totalXS(s91.isotopeData(el.atomicSymbol, el.massNo)) * (el.abundance/totalAbundance) for el in self.elements
+                    s91.totalXS(s91.isotopeData(el.atomicSymbol, el.massNo)) * (el.abundance/totalAbundance) for el in elements
                 ]
             ) / 4.0 / math.pi
         return 0.0

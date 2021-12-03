@@ -80,7 +80,7 @@ class CompositionModel(GudPyTableModel):
                 elif value not in massData.keys():
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
-        self.dataChanged.emit(index, index)
+            self.dataChanged.emit(index, index)
 
     def insertRow(self):
         """
