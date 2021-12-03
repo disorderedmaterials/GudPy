@@ -8,7 +8,7 @@ class ChemicalFormulaParser():
 
     def __init__(self):
         self.stream = None
-        self.regex = re.compile(r"[A-Z][a-z]?\[\d+\]?\d*")
+        self.regex = re.compile(r"[A-Z][a-z]?(\[\d+\])?\d*")
 
     def consumeTokens(self, n):
         for _ in range(n):
@@ -32,12 +32,11 @@ class ChemicalFormulaParser():
         symbol = self.parseSymbol()
         massNo = self.parseMassNo()
         abundance = self.parseAbundance()
-        print(massNo)
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
         from src.gudrun_classes import config
-        if symbol and abundance and symbol in config.massData.keys():
+        if symbol and abundance and symbol in config.massData.keys() and config.sears91.isIsotope(symbol, massNo):
             return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
