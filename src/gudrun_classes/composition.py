@@ -183,9 +183,9 @@ class Composition():
         totalAbundance = sum([el.abundance for el in elements]) 
         s91 = Sears91()
         if len(elements):
-            return sum(
+            return round(sum(
                 [
                     s91.totalXS(s91.isotopeData(el.atomicSymbol, el.massNo)) * (el.abundance/totalAbundance) for el in elements
                 ]
-            ) / 4.0 / math.pi
+            ) / 4.0 / math.pi, 5)
         return 0.0
