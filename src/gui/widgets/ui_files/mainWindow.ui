@@ -7102,6 +7102,8 @@
   <action name="showPreviousOutput">
    <property name="text">
     <string>Show Previous Output</string>
+   </property>
+  </action>
   <action name="exportArchive">
    <property name="text">
     <string>Export mint01 Archive</string>
