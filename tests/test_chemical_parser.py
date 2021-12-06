@@ -135,3 +135,68 @@ class TestChemicalParser(TestCase):
         component.parse()
 
         self.assertEqual(len(component.elements), 0)
+
+    def testParseBasicIsotope(self):
+
+        formula = "H[3]"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 1)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "H")
+        self.assertEqual(component.elements[0].massNo, 3)
+        self.assertEqual(component.elements[0].abundance, 1.0)
+    
+    def testParseDifficultIsotopes(self):
+
+        formula = "H[3]12.0C[13]6.5U[235]K[39]9.1"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 4)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "H")
+        self.assertEqual(component.elements[0].massNo, 3)
+        self.assertEqual(component.elements[0].abundance, 12.0)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "C")
+        self.assertEqual(component.elements[0].massNo, 13)
+        self.assertEqual(component.elements[0].abundance, 6.5)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "U")
+        self.assertEqual(component.elements[0].massNo, 235)
+        self.assertEqual(component.elements[0].abundance, 1.0)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "K")
+        self.assertEqual(component.elements[0].massNo, 39)
+        self.assertEqual(component.elements[0].abundance, 9.1)
+
+    def testParseInvalidIsotope(self):
+
+        formula = "H[4]"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
+
+    def testParseInvalidIsotopes(self):
+
+        formula = "H[4]O[2]99.2"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
+    
+    def testParseDifficultInvalidIsotopes(self):
+
+        formula = "H[19]12.0C[99]6.5U[345]K[2]9.1"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 0)
