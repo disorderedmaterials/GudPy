@@ -1,4 +1,4 @@
-from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.enums import Geometry, Instruments
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
 
@@ -398,8 +398,14 @@ class BeamSlots():
         Alters the corresponding line edit as such.
         as such.
         """
+        import os
+        instrumentFilesDir = os.path.join(
+            self.parent.gudrunFile.instrument.GudrunStartFolder,
+            self.parent.gudrunFile.instrument.startupFileFolder,
+            Instruments(self.parent.gudrunFile.instrument.name.value).name
+        )
         filename, _ = QFileDialog.getOpenFileName(
-            self.widget, "Incident beam spectrum parameters", "")
+            self.widget, "Incident beam spectrum parameters", instrumentFilesDir)
         if filename:
             (
                 self.widget.incidentBeamSpectrumParametersLineEdit
