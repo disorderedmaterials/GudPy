@@ -143,7 +143,6 @@ class SampleSlots():
             self.updateExpectedDCSLevel
         )
 
-
         # Release the lock
         self.widgetsRefreshing = False
 
@@ -1001,15 +1000,22 @@ class SampleSlots():
 
     def updateExpectedDCSLevel(self, _=None, __=None):
         """
-        Updates the expectedDcsLabel to show the expected DCS level of the sample.
+        Updates the expectedDcsLabel,
+        to show the expected DCS level of the sample.
         """
         if config.USE_USER_DEFINED_COMPONENTS:
             elements = self.sample.composition.shallowTranslate()
+            dcsLevel = self.sample.composition.calculateExpectedDCSLevel(
+                elements
+            )
             self.widget.expectedDcsLabel.setText(
-                f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel(elements)}"
+                f"Expected DCS Level: {dcsLevel}"
             )
         else:
             elements = self.sample.composition.elements
+            dcsLevel = self.sample.composition.calculateExpectedDCSLevel(
+                elements
+            )
             self.widget.expectedDcsLabel.setText(
-                f"Expected DCS Level: {self.sample.composition.calculateExpectedDCSLevel(elements)}"
+                f"Expected DCS Level: {dcsLevel}"
             )
