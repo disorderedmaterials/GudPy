@@ -192,15 +192,13 @@ class Sample:
         )
 
         if self.densityUnits == UnitsOfDensity.ATOMIC:
-            units = 'atoms/\u212b^3'
             density = self.density*-1
         elif self.densityUnits == UnitsOfDensity.CHEMICAL:
-            units = 'gm/cm^3'
             density = self.density
 
         densityLine = (
             f'{density}{TAB}'
-            f'Density {units}?\n'
+            f'Density {self.densityUnits.name}?\n'
         )
 
         crossSectionSource = (
@@ -242,26 +240,14 @@ class Sample:
             f' as a function of wavelength [\u212b]\n'
         )
 
-        if self.normaliseTo == NormalisationType.NOTHING:
-            normaliseTo = "Nothing"
-        elif self.normaliseTo == NormalisationType.AVERAGE_SQUARED:
-            normaliseTo = "<b>^2"
-        elif self.normaliseTo == NormalisationType.AVERAGE_OF_SQUARES:
-            normaliseTo = "<b^2>"
-
         normaliseLine = (
             f'{self.normaliseTo.value}{TAB}'
-            f'Normalise to:{normaliseTo}\n'
+            f'Normalise to:{self.normaliseTo.name}\n'
         )
-
-        if self.outputUnits == OutputUnits.BARNS_ATOM_SR:
-            outputUnits = "b/atom/sr"
-        elif self.outputUnits == OutputUnits.INV_CM_SR:
-            outputUnits = "cm**-1"
 
         unitsLine = (
             f'{self.outputUnits.value}{TAB}'
-            f'Output units: {outputUnits}\n'
+            f'Output units: {self.outputUnits.name}\n'
         )
 
         sampleEnvironmentLine = (

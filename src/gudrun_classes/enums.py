@@ -38,21 +38,28 @@ UNITS_OF_DENSITY = {
 UnitsOfDensity = enumFromDict("UnitsOfDensity", UNITS_OF_DENSITY)
 
 
-class MergeWeights(Enum):
-    NONE = 0
-    DETECTOR = 1
-    CHANNEL = 2
+MERGE_WEIGHTS = {
+    0: ["None", "NONE"],
+    1: ["By Detector", "DETECTOR"],
+    2: ["By Channel", "CHANNEL"]
+}
 
+MergeWeights = enumFromDict("MergeWeights", MERGE_WEIGHTS)
 
-class NormalisationType(Enum):
-    NOTHING = 0
-    AVERAGE_SQUARED = 1
-    AVERAGE_OF_SQUARES = 2
+NORMALISATION_TYPES = {
+    0: ["Nothing", "NOTHING"],
+    1: ["<b>^2", "AVERAGE_SQUARED"],
+    2: ["<b^2>", "AVERAGE_OF_SQUARES"]
+}
 
+NormalisationType = enumFromDict("NormalisationType", NORMALISATION_TYPES)
 
-class OutputUnits(Enum):
-    BARNS_ATOM_SR = 0
-    INV_CM_SR = 1
+OUTPUT_UNITS = {
+    0: ["barns/atom/sr", "BARNS_ATOM_SR"],
+    1: ["cm^-1/sr", "INV_CM_SR"]
+}
+
+OutputUnits = enumFromDict("OutputUnits", OUTPUT_UNITS)
 
 
 class Geometry(Enum):
