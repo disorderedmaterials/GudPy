@@ -148,7 +148,7 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[0].atomicSymbol, "H")
         self.assertEqual(component.elements[0].massNo, 3)
         self.assertEqual(component.elements[0].abundance, 1.0)
-    
+
     def testParseDifficultIsotopes(self):
 
         formula = "H[3]12.0C[13]6.5U[235]K[39]9.1"
@@ -191,7 +191,7 @@ class TestChemicalParser(TestCase):
         component.parse()
 
         self.assertEqual(len(component.elements), 0)
-    
+
     def testParseDifficultInvalidIsotopes(self):
 
         formula = "H[19]12.0C[99]6.5U[345]K[2]9.1"
