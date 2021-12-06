@@ -162,17 +162,17 @@ class TestChemicalParser(TestCase):
         self.assertEqual(component.elements[0].massNo, 3)
         self.assertEqual(component.elements[0].abundance, 12.0)
 
-        self.assertEqual(component.elements[0].atomicSymbol, "C")
-        self.assertEqual(component.elements[0].massNo, 13)
-        self.assertEqual(component.elements[0].abundance, 6.5)
+        self.assertEqual(component.elements[1].atomicSymbol, "C")
+        self.assertEqual(component.elements[1].massNo, 13)
+        self.assertEqual(component.elements[1].abundance, 6.5)
 
-        self.assertEqual(component.elements[0].atomicSymbol, "U")
-        self.assertEqual(component.elements[0].massNo, 235)
-        self.assertEqual(component.elements[0].abundance, 1.0)
+        self.assertEqual(component.elements[2].atomicSymbol, "U")
+        self.assertEqual(component.elements[2].massNo, 235)
+        self.assertEqual(component.elements[2].abundance, 1.0)
 
-        self.assertEqual(component.elements[0].atomicSymbol, "K")
-        self.assertEqual(component.elements[0].massNo, 39)
-        self.assertEqual(component.elements[0].abundance, 9.1)
+        self.assertEqual(component.elements[3].atomicSymbol, "K")
+        self.assertEqual(component.elements[3].massNo, 39)
+        self.assertEqual(component.elements[3].abundance, 9.1)
 
     def testParseInvalidIsotope(self):
 
