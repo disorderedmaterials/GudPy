@@ -405,7 +405,10 @@ class BeamSlots():
             Instruments(self.parent.gudrunFile.instrument.name.value).name
         )
         filename, _ = QFileDialog.getOpenFileName(
-            self.widget, "Incident beam spectrum parameters", instrumentFilesDir)
+            self.widget,
+            "Incident beam spectrum parameters",
+            instrumentFilesDir
+        )
         if filename:
             (
                 self.widget.incidentBeamSpectrumParametersLineEdit
