@@ -3,6 +3,7 @@ from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
 import regex as re
 
+
 class BeamSlots():
 
     def __init__(self, widget, parent):
@@ -386,7 +387,12 @@ class BeamSlots():
         value : str
             The new value of the incidentBeamSpectrumParametersLineEdit.
         """
-        self.beam.filenameIncidentBeamSpectrumParams = re.search(r"StartupFiles\S*", value).group()
+        self.beam.filenameIncidentBeamSpectrumParams = (
+            re.search(
+                r"StartupFiles\S*",
+                value
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

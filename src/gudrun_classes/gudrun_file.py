@@ -400,21 +400,32 @@ class GudrunFile:
             pattern = re.compile(r"StartupFiles\S*")
 
             self.instrument.detectorCalibrationFileName = (
-                re.search(pattern, self.instrument.detectorCalibrationFileName).group()
+                re.search(
+                    pattern,
+                    self.instrument.detectorCalibrationFileName
+                ).group()
             )
 
             self.instrument.groupFileName = (
-                re.search(pattern, self.instrument.groupFileName).group()
+                re.search(
+                    pattern,
+                    self.instrument.groupFileName
+                ).group()
             )
 
             self.instrument.deadtimeConstantsFileName = (
-                re.search(pattern, self.instrument.deadtimeConstantsFileName).group()
+                re.search(
+                    pattern,
+                    self.instrument.deadtimeConstantsFileName
+                ).group()
             )
 
             self.instrument.neutronScatteringParametersFile = (
-                re.search(pattern, self.instrument.neutronScatteringParametersFile).group()
+                re.search(
+                    pattern,
+                    self.instrument.neutronScatteringParametersFile
+                ).group()
             )
-
 
         except Exception as e:
             raise ParserException(
@@ -496,11 +507,15 @@ class GudrunFile:
                 firstword(self.getNextToken())
             )
 
-            # Now match it against a pattern, to resolve the path to be relative.
+            # Now match it against a pattern,
+            # to resolve the path to be relative.
             pattern = re.compile(r"StartupFiles\S*")
-            
+
             self.beam.filenameIncidentBeamSpectrumParams = (
-                re.search(pattern, self.beam.filenameIncidentBeamSpectrumParams).group()
+                re.search(
+                    pattern,
+                    self.beam.filenameIncidentBeamSpectrumParams
+                ).group()
             )
 
             self.beam.overallBackgroundFactor = (

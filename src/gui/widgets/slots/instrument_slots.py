@@ -5,6 +5,7 @@ from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 from PySide6.QtWidgets import QFileDialog
 import regex as re
 
+
 class InstrumentSlots():
 
     def __init__(self, widget, parent):
