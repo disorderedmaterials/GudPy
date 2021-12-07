@@ -10,3 +10,4 @@ dist/
 *.txt
 nexus_*
 *.DS_STORE
+resources_rc.py
