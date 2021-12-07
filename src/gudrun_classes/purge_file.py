@@ -190,24 +190,6 @@ class PurgeFile():
             for c in s.containers
         ]
 
-    def write_out(self):
-        """
-        Writes out the string representation of the PurgeFile to
-        purge_det.dat.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
-        """
-        # Write out the string representation of the PurgeFile
-        # To purge_det.dat.
-        f = open("purge_det.dat", "w", encoding="utf-8")
-        f.write(str(self))
-        f.close()
-
     def __str__(self):
         """
         Returns the string representation of the PurgeFile object.
