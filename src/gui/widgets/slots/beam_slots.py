@@ -386,7 +386,7 @@ class BeamSlots():
         value : str
             The new value of the incidentBeamSpectrumParametersLineEdit.
         """
-        self.beam.filenameIncidentBeamSpectrumParams = value
+        self.beam.filenameIncidentBeamSpectrumParams = re.search(r"StartupFiles\S*", value).group()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
