@@ -1,9 +1,9 @@
 from src.gudrun_classes.element import Element
-import re
-import math
-
 from src.gudrun_classes.isotopes import Sears91
 from src.gudrun_classes.exception import ChemicalFormulaParserException
+from src.gudrun_classes.mass_data import massData
+import re
+import math
 
 
 class ChemicalFormulaParser():
@@ -38,8 +38,13 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-        if symbol and abundance:
-            if not self.sears91.isIsotope(symbol, massNo):
+        if symbol in massData.keys():
+            if (
+                not self.sears91.isotopes(symbol)
+                or self.sears91.isIsotope(symbol, massNo)
+            ):
+                return Element(symbol, massNo, abundance)
+            else:
                 validIsotopes = "\n  -    ".join(
                     [
                         f"{self.sears91.isotope(isotope)}"
@@ -51,8 +56,6 @@ class ChemicalFormulaParser():
                     f"{symbol}_{massNo} is not a valid isotope of {symbol}\n."
                     f" The following are valid:\n  -    {validIsotopes}"
                 )
-            else:
-                return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
         if self.stream:

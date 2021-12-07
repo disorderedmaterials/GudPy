@@ -189,7 +189,8 @@ class TestChemicalParser(TestCase):
                 "  -    H_Natural, H[0]\n"
                 "  -    H_1, H[1]\n"
                 "  -    H_2, H[2]\n"
-                "  -    H_3, H[3]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
             )
 
     def testParseInvalidIsotopes(self):
@@ -205,7 +206,8 @@ class TestChemicalParser(TestCase):
                 "  -    H_Natural, H[0]\n"
                 "  -    H_1, H[1]\n"
                 "  -    H_2, H[2]\n"
-                "  -    H_3, H[3]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
             )
 
     def testParseDifficultInvalidIsotopes(self):
@@ -221,5 +223,6 @@ class TestChemicalParser(TestCase):
                 "  -    H_Natural, H[0]\n"
                 "  -    H_1, H[1]\n"
                 "  -    H_2, H[2]\n"
-                "  -    H_3, H[3]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
             )
