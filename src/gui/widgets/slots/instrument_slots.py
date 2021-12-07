@@ -1167,7 +1167,7 @@ class InstrumentSlots():
         filename = self.browseFile(title, dir=dir)
         if filename and not dir:
             target.setText(re.search(self.pathRegex, filename).group())
-        else:
+        elif filename:
             target.setText(filename)
 
     def browseFile(self, title, dir=False):
