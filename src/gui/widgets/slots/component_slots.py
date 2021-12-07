@@ -1,5 +1,7 @@
+from PySide6.QtWidgets import QMessageBox
 from src.gudrun_classes import config
 from src.gudrun_classes.element import Element
+from src.gudrun_classes.exception import ChemicalFormulaParserException
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 
 
@@ -48,17 +50,23 @@ class ComponentSlots():
 
     def handleDataChanged(self, index, _):
         component = index.internalPointer()
-        if component.parse(persistent=False):
-            compositionDialog = CompositionDialog(self.widget, component)
-            result = compositionDialog.widget.exec()
-            if result:
-                component.parse()
-            row = index.row()
-            self.loadComponentsList()
-            self.widget.componentList.setCurrentIndex(
-                self.widget.componentList.model().index(
-                    row, 0
+        try:
+            if component.parse(persistent=False):
+                compositionDialog = CompositionDialog(self.widget, component)
+                result = compositionDialog.widget.exec()
+                if result:
+                    component.parse()
+                row = index.row()
+                self.loadComponentsList()
+                self.widget.componentList.setCurrentIndex(
+                    self.widget.componentList.model().index(
+                        row, 0
+                    )
                 )
+        except ChemicalFormulaParserException as cfpm:
+            QMessageBox.warning(
+                self.widget, "GudPy Warning",
+                str(cfpm)
             )
 
     def addSubComponent(self):

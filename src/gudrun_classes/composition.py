@@ -3,7 +3,7 @@ import re
 import math
 
 from src.gudrun_classes.isotopes import Sears91
-from src.gudrun_classes.mass_data import massData
+from src.gudrun_classes.exception import ChemicalFormulaParserException
 
 
 class ChemicalFormulaParser():
@@ -11,6 +11,7 @@ class ChemicalFormulaParser():
     def __init__(self):
         self.stream = None
         self.regex = re.compile(r"[A-Z][a-z]?(\[\d+\])?\d*")
+        self.sears91 = Sears91()
 
     def consumeTokens(self, n):
         for _ in range(n):
@@ -37,12 +38,22 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-        if (
-            symbol and abundance
-            and symbol in massData.keys()
-            and Sears91().isIsotope(symbol, massNo)
-        ):
-            return Element(symbol, massNo, abundance)
+
+        if massNo and abundance:
+            if not self.sears91.isIsotope(symbol, massNo):
+                validIsotopes = "\n  -    ".join(
+                    [
+                        f"{self.sears91.isotope(isotope)}"
+                        f", {symbol}[{self.sears91.mass(isotope)}]"
+                        for isotope in self.sears91.isotopes(symbol)
+                    ]
+                )
+                raise ChemicalFormulaParserException(
+                    f"{symbol}_{massNo} is not a valid isotope of {symbol}\n."
+                    f" The following are valid:\n  -    {validIsotopes}"
+                )
+            else:
+                return Element(symbol, massNo, abundance)
 
     def parseSymbol(self):
         if self.stream:
