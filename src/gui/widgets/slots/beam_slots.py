@@ -1,6 +1,7 @@
 from src.gudrun_classes.enums import Geometry, Instruments
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
+import regex as re
 
 
 class BeamSlots():
@@ -386,7 +387,12 @@ class BeamSlots():
         value : str
             The new value of the incidentBeamSpectrumParametersLineEdit.
         """
-        self.beam.filenameIncidentBeamSpectrumParams = value
+        self.beam.filenameIncidentBeamSpectrumParams = (
+            re.search(
+                r"StartupFiles\S*",
+                value
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -412,7 +418,7 @@ class BeamSlots():
         if filename:
             (
                 self.widget.incidentBeamSpectrumParametersLineEdit
-            ).setText(filename)
+            ).setText(re.search(r"StartupFiles\S*", filename).group())
 
     def handleOverallBackgroundFactorChanged(self, value):
         """

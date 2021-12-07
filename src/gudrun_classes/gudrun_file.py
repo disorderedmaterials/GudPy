@@ -32,7 +32,7 @@ from src.gudrun_classes.enums import (
     Geometry
 )
 from src.gudrun_classes import config
-
+import re
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -395,6 +395,38 @@ class GudrunFile:
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
+            # Resolve the paths, to make them relative.
+            # First construct the regular expression to match against.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            self.instrument.detectorCalibrationFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.detectorCalibrationFileName
+                ).group()
+            )
+
+            self.instrument.groupFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.groupFileName
+                ).group()
+            )
+
+            self.instrument.deadtimeConstantsFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.deadtimeConstantsFileName
+                ).group()
+            )
+
+            self.instrument.neutronScatteringParametersFile = (
+                re.search(
+                    pattern,
+                    self.instrument.neutronScatteringParametersFile
+                ).group()
+            )
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Instrument, an exception occured."
@@ -473,6 +505,17 @@ class GudrunFile:
             # we simply extract the firstword in the line.
             self.beam.filenameIncidentBeamSpectrumParams = (
                 firstword(self.getNextToken())
+            )
+
+            # Now match it against a pattern,
+            # to resolve the path to be relative.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            self.beam.filenameIncidentBeamSpectrumParams = (
+                re.search(
+                    pattern,
+                    self.beam.filenameIncidentBeamSpectrumParams
+                ).group()
             )
 
             self.beam.overallBackgroundFactor = (
