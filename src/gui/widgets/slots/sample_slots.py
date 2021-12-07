@@ -1,6 +1,6 @@
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
-    NormalisationType, OutputUnits, UnitsOfDensity
+    NormalisationType, OutputUnits, FTModes, UnitsOfDensity
 )
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
@@ -50,6 +50,13 @@ class SampleSlots():
         self.widget.sampleDownstreamSpinBox.setValue(
             self.sample.downstreamThickness
         )
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total}cm"
+        )
 
         self.widget.angleOfRotationSpinBox.setValue(
             self.sample.angleOfRotation
@@ -95,6 +102,10 @@ class SampleSlots():
 
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
+
+        self.widget.FTModeComboBox.setCurrentIndex(
+            self.sample.FTMode.value
+        )
 
         self.widget.minSpinBox.setValue(self.sample.minRadFT)
         self.widget.maxSpinBox.setValue(self.sample.maxRadFT)
@@ -255,6 +266,15 @@ class SampleSlots():
         self.widget.topHatWidthSpinBox.valueChanged.connect(
             self.handleTopHatWidthChanged
         )
+
+        # Fill top hat width combo box.
+        for tp in FTModes:
+            self.widget.FTModeComboBox.addItem(tp.name, tp)
+
+        self.widget.FTModeComboBox.currentIndexChanged.connect(
+            self.handleBackgroundScatteringSubtractionModeChanged
+        )
+
         self.widget.minSpinBox.valueChanged.connect(self.handleMinChanged)
         self.widget.maxSpinBox.valueChanged.connect(self.handleMaxChanged)
         self.widget.broadeningFunctionSpinBox.valueChanged.connect(
@@ -377,6 +397,13 @@ class SampleSlots():
             The new value of the sampleUpstreamSpinBox.
         """
         self.sample.upstreamThickness = value
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total}cm"
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -392,6 +419,13 @@ class SampleSlots():
             The new value of the sampleDownstreamSpinBox.
         """
         self.sample.downstreamThickness = value
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total}cm"
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -532,6 +566,25 @@ class SampleSlots():
             The new current value of the topHatWidthSpinBox.
         """
         self.sample.topHatW = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBackgroundScatteringSubtractionModeChanged(self, index):
+        """
+        Slot for handling change in FT Mode.
+        Called when a currentIndexChanged signal is emitted,
+        from the FTModeComboBox.
+        Alters the sample's FT mode as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the
+            FTModeComboBox.
+        """
+        self.sample.singleAtomBackgroundScatteringSubtractionMode = (
+            self.widget.FTModeComboBox.itemData(index)
+        )
+
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

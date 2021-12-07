@@ -2,7 +2,7 @@ from src.scripts.utils import bjoin, numifyBool
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import (
-    CrossSectionSource, UnitsOfDensity,
+    CrossSectionSource, FTModes, UnitsOfDensity,
     NormalisationType, OutputUnits, Geometry
 )
 from src.gudrun_classes import config
@@ -124,6 +124,7 @@ class Sample:
         self.crossSectionFilename = ""
         self.sampleTweakFactor = 0.0
         self.topHatW = 0.0
+        self.FTMode = FTModes.SUB_AVERAGE
         self.minRadFT = 0.0
         self.grBroadening = 0.0
         self.resonanceValues = []
@@ -191,15 +192,13 @@ class Sample:
         )
 
         if self.densityUnits == UnitsOfDensity.ATOMIC:
-            units = 'atoms/\u212b^3'
             density = self.density*-1
         elif self.densityUnits == UnitsOfDensity.CHEMICAL:
-            units = 'gm/cm^3'
             density = self.density
 
         densityLine = (
             f'{density}{TAB}'
-            f'Density {units}?\n'
+            f'Density {self.densityUnits.name}?\n'
         )
 
         crossSectionSource = (
@@ -211,6 +210,13 @@ class Sample:
             else
             f"{self.crossSectionFilename}{TAB}"
         )
+
+        if self.FTMode == FTModes.NO_FT:
+            topHatWidthLine = f"0{TAB}"
+        elif self.FTMode == FTModes.SUB_AVERAGE:
+            topHatWidthLine = f"{-self.topHatW}{TAB}"
+        else:
+            topHatWidthLine = f"{self.topHatW}{TAB}"
 
         resonanceLines = (
             bjoin(
@@ -234,26 +240,14 @@ class Sample:
             f' as a function of wavelength [\u212b]\n'
         )
 
-        if self.normaliseTo == NormalisationType.NOTHING:
-            normaliseTo = "Nothing"
-        elif self.normaliseTo == NormalisationType.AVERAGE_SQUARED:
-            normaliseTo = "<b>^2"
-        elif self.normaliseTo == NormalisationType.AVERAGE_OF_SQUARES:
-            normaliseTo = "<b^2>"
-
         normaliseLine = (
             f'{self.normaliseTo.value}{TAB}'
-            f'Normalise to:{normaliseTo}\n'
+            f'Normalise to:{self.normaliseTo.name}\n'
         )
-
-        if self.outputUnits == OutputUnits.BARNS_ATOM_SR:
-            outputUnits = "b/atom/sr"
-        elif self.outputUnits == OutputUnits.INV_CM_SR:
-            outputUnits = "cm**-1"
 
         unitsLine = (
             f'{self.outputUnits.value}{TAB}'
-            f'Output units: {outputUnits}\n'
+            f'Output units: {self.outputUnits.name}\n'
         )
 
         sampleEnvironmentLine = (
@@ -289,7 +283,7 @@ class Sample:
             f'Total cross section source\n'
             f'{self.sampleTweakFactor}{TAB}'
             f'Sample tweak factor\n'
-            f'{self.topHatW}{TAB}'
+            f'{topHatWidthLine}'
             f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
             f'{self.minRadFT}{TAB}'
             f'Minimum radius for FT  [\u212b]\n'

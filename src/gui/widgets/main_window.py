@@ -21,6 +21,7 @@ from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
 from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
+from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
@@ -120,6 +121,8 @@ class GudPyMainWindow(QMainWindow):
         self.results = {}
         self.allPlots = []
         self.cwd = os.getcwd()
+        self.output = ""
+        self.previousProcTitle = ""
 
     def initComponents(self):
         """
@@ -152,11 +155,13 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(IterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
+        loader.registerCustomWidget(ViewOutputDialog)
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
+
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
         self.mainWidget.statusBarLayout = QHBoxLayout(
@@ -273,6 +278,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.checkFilesExist.triggered.connect(
             self.checkFilesExist_
+        )
+
+        self.mainWidget.showPreviousOutput.triggered.connect(
+            self.showPreviousOutput_
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -652,6 +661,8 @@ class GudPyMainWindow(QMainWindow):
         elif not purge:
             self.setControlsEnabled(True)
         else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+            self.gudrunFile.purgeFile.write_out()
             self.makeProc(purge, self.progressPurge, func, args)
 
     def runGudrun_(self):
@@ -763,6 +774,8 @@ class GudPyMainWindow(QMainWindow):
             self.nextIterableProc()
 
     def nextIteration(self):
+        if self.error:
+            self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
@@ -802,12 +815,12 @@ class GudPyMainWindow(QMainWindow):
                 f"{self.text}"
                 f" {(self.currentIteration+1)//2}/{self.numberIterations}"
             )
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
     def progressIteration(self):
         progress = self.progressIncrementDCS()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
@@ -829,6 +842,13 @@ class GudPyMainWindow(QMainWindow):
                 unresolved, self.mainWidget
             )
             missingFilesDialog.widget.exec_()
+
+    def showPreviousOutput_(self):
+        if self.output:
+            viewOutputDialog = ViewOutputDialog(
+                self.previousProcTitle, self.output, self
+            )
+            viewOutputDialog.widget.exec_()
 
     def setModified(self):
         if not self.modified:
@@ -893,6 +913,7 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        self.output += stdout
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -934,13 +955,11 @@ class GudPyMainWindow(QMainWindow):
     def progressDCS(self):
         progress = self.progressIncrementDCS()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.queue = Queue()
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from gudrun_dcs\n{self.error}"
             )
-            self.procFinished()
-            self.queue = Queue()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -950,19 +969,26 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementPurge(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        self.output += stdout
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
-            for df in dfs.splitlines():
-                dataFiles.append(df.split()[0].replace(
+            for df in dfs:
+                dataFiles.append(df.replace(
                     self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
-        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles)
-        appendDfs(self.gudrunFile.purgeFile.sampleBackgroundDataFiles)
+        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles[0])
+        appendDfs(
+            self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0]
+        )
+        for dfs, _ in self.gudrunFile.purgeFile.sampleBackgroundDataFiles:
+            appendDfs(dfs)
         if not self.gudrunFile.purgeFile.excludeSampleAndCan:
-            appendDfs(self.gudrunFile.purgeFile.sampleDataFiles)
-            appendDfs(self.gudrunFile.purgeFile.containerDataFiles)
+            for dfs, _ in self.gudrunFile.purgeFile.sampleDataFiles:
+                appendDfs(dfs)
+            for dfs, _ in self.gudrunFile.purgeFile.containerDataFiles:
+                appendDfs(dfs)
 
         stepSize = math.ceil(100/len(dataFiles))
         progress = 0
@@ -980,14 +1006,12 @@ class GudPyMainWindow(QMainWindow):
     def progressPurge(self):
         progress, finished, detectors = self.progressIncrementPurge()
         if progress == -1:
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
+            self.error = (
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{self.error}"
             )
             self.gudrunFile.purged = False
-            self.procFinished()
-            self.queue = Queue()
+            return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
@@ -1002,6 +1026,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
+        self.output = ""
 
     def procFinished(self):
         self.proc = None
@@ -1012,6 +1038,13 @@ class GudPyMainWindow(QMainWindow):
             self.updateResults()
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+        if self.error:
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                self.error
+            )
+            self.error = ""
+            self.queue = Queue()
         if not self.queue.empty():
             self.makeProc(*self.queue.get())
         else:

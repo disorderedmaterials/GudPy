@@ -27,7 +27,7 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, UnitsOfDensity, MergeWeights,
+    CrossSectionSource, Instruments, FTModes, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
@@ -895,7 +895,18 @@ class GudrunFile:
                 sample.totalCrossSectionSource = CrossSectionSource.FILE
                 sample.crossSectionFilename = crossSectionSource
             sample.sampleTweakFactor = nthfloat(self.getNextToken(), 0)
-            sample.topHatW = nthfloat(self.getNextToken(), 0)
+
+            topHatW = nthfloat(self.getNextToken(), 0)
+            if topHatW == 0:
+                sample.topHatW = 0
+                sample.FTMode = FTModes.NO_FT
+            elif topHatW < 0:
+                sample.topHatW = abs(topHatW)
+                sample.FTMode = FTModes.SUB_AVERAGE
+            else:
+                sample.topHatW = topHatW
+                sample.FTMode = FTModes.ABSOLUTE
+
             sample.minRadFT = nthfloat(self.getNextToken(), 0)
             sample.grBroadening = nthfloat(self.getNextToken(), 0)
 
@@ -1415,6 +1426,7 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
+        self.purgeFile = PurgeFile(self)
         result = self.purgeFile.purge(*args, **kwargs)
         if result:
             self.purged = True
