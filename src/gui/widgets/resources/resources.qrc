@@ -6,10 +6,4 @@
     <file>plus.png</file>
     <file>sample.png</file>
   </qresource>
-  <qresource prefix="fonts">
-    <file>NotoSans/NotoSans-Bold.ttf</file>
-    <file>NotoSans/NotoSans-BoldItalic.ttf</file>
-    <file>NotoSans/NotoSans-Italic.ttf</file>
-    <file>NotoSans/NotoSans-Regular.ttf</file>
-  </qresource>
 </RCC>

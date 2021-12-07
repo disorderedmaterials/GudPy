@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
     QStatusBar,
     QWidget
 )
-from PySide6.QtGui import QFontDatabase, QFont
 from src.gudrun_classes.sample import Sample
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
@@ -162,9 +161,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
-        self.mainWidget.fontDb = QFontDatabase()
-        self.mainWidget.fontDb.addApplicationFont(":/fonts/NotoSans")
-        self.mainWidget.setFont(QFont("Noto Sans", 12))
+
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
         self.mainWidget.statusBarLayout = QHBoxLayout(
