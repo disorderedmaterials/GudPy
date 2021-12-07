@@ -38,8 +38,7 @@ class ChemicalFormulaParser():
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-
-        if massNo and abundance:
+        if symbol and abundance:
             if not self.sears91.isIsotope(symbol, massNo):
                 validIsotopes = "\n  -    ".join(
                     [
