@@ -90,7 +90,7 @@ class PurgeFile():
         self.standardDeviation = (10, 10)
         self.ignoreBad = True
 
-    def write_out(self):
+    def write_out(self, path=""):
         """
         Writes out the string representation of the PurgeFile to
         purge_det.dat.
@@ -104,8 +104,12 @@ class PurgeFile():
         """
         # Write out the string representation of the PurgeFile
         # To purge_det.dat.
-        f = open("purge_det.dat", "w", encoding="utf-8")
-        f.write(str(self))
+        if not path:
+            f = open("purge_det.dat", "w", encoding="utf-8")
+            f.write(str(self))
+        else:
+            f = open(path, "w", encoding="utf-8")
+            f.write(str(self))
         f.close()
 
     def __str__(self):
@@ -306,8 +310,17 @@ class PurgeFile():
             else:
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
             if not os.path.exists(purge_det):
-                return False
+                return FileNotFoundError()
             proc = QProcess()
             proc.setProgram(purge_det)
             proc.setArguments([])
-            return proc
+            return (
+                proc,
+                self.write_out,
+                [
+                    os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        "purge_det.dat"
+                    )
+                ]
+            )
