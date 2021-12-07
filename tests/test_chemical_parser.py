@@ -1,6 +1,8 @@
 from src.gudrun_classes.composition import Component
 from unittest import TestCase
 
+from src.gudrun_classes.exception import ChemicalFormulaParserException
+
 
 class TestChemicalParser(TestCase):
 
@@ -179,24 +181,45 @@ class TestChemicalParser(TestCase):
         formula = "H[4]"
 
         component = Component(formula)
-        component.parse()
-
-        self.assertEqual(len(component.elements), 0)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_19 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n"
+            )
 
     def testParseInvalidIsotopes(self):
 
         formula = "H[4]O[2]99.2"
 
         component = Component(formula)
-        component.parse()
-
-        self.assertEqual(len(component.elements), 0)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_4 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n"
+            )
 
     def testParseDifficultInvalidIsotopes(self):
 
         formula = "H[19]12.0C[99]6.5U[345]K[2]9.1"
 
         component = Component(formula)
-        component.parse()
-
-        self.assertEqual(len(component.elements), 0)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_19 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n"
+            )
