@@ -1,6 +1,8 @@
 from src.gudrun_classes.composition import Component
 from unittest import TestCase
 
+from src.gudrun_classes.exception import ChemicalFormulaParserException
+
 
 class TestChemicalParser(TestCase):
 
@@ -135,3 +137,92 @@ class TestChemicalParser(TestCase):
         component.parse()
 
         self.assertEqual(len(component.elements), 0)
+
+    def testParseBasicIsotope(self):
+
+        formula = "H[3]"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 1)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "H")
+        self.assertEqual(component.elements[0].massNo, 3)
+        self.assertEqual(component.elements[0].abundance, 1.0)
+
+    def testParseDifficultIsotopes(self):
+
+        formula = "H[3]12.0C[13]6.5U[235]K[39]9.1"
+
+        component = Component(formula)
+        component.parse()
+
+        self.assertEqual(len(component.elements), 4)
+
+        self.assertEqual(component.elements[0].atomicSymbol, "H")
+        self.assertEqual(component.elements[0].massNo, 3)
+        self.assertEqual(component.elements[0].abundance, 12.0)
+
+        self.assertEqual(component.elements[1].atomicSymbol, "C")
+        self.assertEqual(component.elements[1].massNo, 13)
+        self.assertEqual(component.elements[1].abundance, 6.5)
+
+        self.assertEqual(component.elements[2].atomicSymbol, "U")
+        self.assertEqual(component.elements[2].massNo, 235)
+        self.assertEqual(component.elements[2].abundance, 1.0)
+
+        self.assertEqual(component.elements[3].atomicSymbol, "K")
+        self.assertEqual(component.elements[3].massNo, 39)
+        self.assertEqual(component.elements[3].abundance, 9.1)
+
+    def testParseInvalidIsotope(self):
+
+        formula = "H[4]"
+
+        component = Component(formula)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_19 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
+            )
+
+    def testParseInvalidIsotopes(self):
+
+        formula = "H[4]O[2]99.2"
+
+        component = Component(formula)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_4 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
+            )
+
+    def testParseDifficultInvalidIsotopes(self):
+
+        formula = "H[19]12.0C[99]6.5U[345]K[2]9.1"
+
+        component = Component(formula)
+        with self.assertRaises(ChemicalFormulaParserException) as cm:
+            component.parse()
+            self.assertEqual(
+                "H_19 is not a valid isotope of H."
+                "\nThe following are valid:\n"
+                "  -    H_Natural, H[0]\n"
+                "  -    H_1, H[1]\n"
+                "  -    H_2, H[2]\n"
+                "  -    H_3, H[3]\n",
+                str(cm.exception)
+            )

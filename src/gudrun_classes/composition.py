@@ -1,12 +1,17 @@
 from src.gudrun_classes.element import Element
+from src.gudrun_classes.isotopes import Sears91
+from src.gudrun_classes.exception import ChemicalFormulaParserException
+from src.gudrun_classes.mass_data import massData
 import re
+import math
 
 
 class ChemicalFormulaParser():
 
     def __init__(self):
         self.stream = None
-        self.regex = re.compile(r"[A-Z][a-z]?\d*")
+        self.regex = re.compile(r"[A-Z][a-z]?(\[\d+\])?\d*")
+        self.sears91 = Sears91()
 
     def consumeTokens(self, n):
         for _ in range(n):
@@ -28,14 +33,29 @@ class ChemicalFormulaParser():
 
     def parseElement(self):
         symbol = self.parseSymbol()
+        massNo = self.parseMassNo()
         abundance = self.parseAbundance()
-        massNo = 0
         if symbol == "D":
             symbol = "H"
             massNo = 2.0
-        from src.gudrun_classes import config
-        if symbol and abundance and symbol in config.massData.keys():
-            return Element(symbol, massNo, abundance)
+        if symbol in massData.keys():
+            if (
+                not self.sears91.isotopes(symbol)
+                or self.sears91.isIsotope(symbol, massNo)
+            ):
+                return Element(symbol, massNo, abundance)
+            else:
+                validIsotopes = "\n  -    ".join(
+                    [
+                        f"{self.sears91.isotope(isotope)}"
+                        f", {symbol}[{self.sears91.mass(isotope)}]"
+                        for isotope in self.sears91.isotopes(symbol)
+                    ]
+                )
+                raise ChemicalFormulaParserException(
+                    f"{symbol}_{massNo} is not a valid isotope of {symbol}\n."
+                    f" The following are valid:\n  -    {validIsotopes}"
+                )
 
     def parseSymbol(self):
         if self.stream:
@@ -43,6 +63,14 @@ class ChemicalFormulaParser():
             if match:
                 self.consumeTokens(len(match.group(0)))
                 return match.group(0)
+
+    def parseMassNo(self):
+        if self.stream:
+            match = re.match(r"\[\d+\]", "".join(self.stream))
+            if match:
+                self.consumeTokens(len(match.group(0)))
+                return int("".join(match.group(0)[1:-1]))
+        return 0
 
     def parseAbundance(self):
         if self.stream:
@@ -119,6 +147,13 @@ class Composition():
     def addElements(self, elements):
         self.elements.extend(elements)
 
+    def shallowTranslate(self):
+        elements = []
+        for component in self.weightedComponents:
+            elements.extend(component.translate())
+        self.sumAndMutate(elements, elements)
+        return elements
+
     def translate(self):
         """
         Translates the weighted components present in the composition,
@@ -128,9 +163,10 @@ class Composition():
         self.elements = []
         for component in self.weightedComponents:
             elements.extend(component.translate())
-        self.sumAndMutate(elements)
+        self.sumAndMutate(elements, self.elements)
 
-    def sumAndMutate(self, elements):
+    @staticmethod
+    def sumAndMutate(elements, target):
         """
         Sums the abundances of elements within the composition.
         This ensures that the same element isn't written out
@@ -138,7 +174,7 @@ class Composition():
         """
         for element in elements:
             exists = False
-            for element_ in self.elements:
+            for element_ in target:
                 if (
                     element.atomicSymbol == element_.atomicSymbol
                     and element.massNo == element_.massNo
@@ -146,7 +182,7 @@ class Composition():
                     element_.abundance += element.abundance
                     exists = True
             if not exists:
-                self.elements.append(element)
+                target.append(element)
 
     def __str__(self):
         string = ""
@@ -157,3 +193,19 @@ class Composition():
             )
 
         return string.rstrip()
+
+    @staticmethod
+    def calculateExpectedDCSLevel(elements):
+        totalAbundance = sum([el.abundance for el in elements])
+        s91 = Sears91()
+        if len(elements):
+            return round(sum(
+                [
+                    s91.totalXS(
+                        s91.isotopeData(
+                            el.atomicSymbol, el.massNo
+                        )
+                    ) * (el.abundance/totalAbundance) for el in elements
+                ]
+            ) / 4.0 / math.pi, 5)
+        return 0.0

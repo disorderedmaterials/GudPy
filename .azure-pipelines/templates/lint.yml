@@ -11,10 +11,10 @@ steps:
     displayName: 'Install dependencies'
   - script: |
       pip install flake8
-      python -m flake8 . 
+      python -m flake8 --exclude src/gudrun_classes/isotopes.py .
     condition: succeededOrFailed()
-    displayName: "Static code analysis for PEP8 conformance using flake8"    
-  - script: python -m flake8 . > flake8.err.log
+    displayName: "Static code analysis for PEP8 conformance using flake8. Ignore isotope definitions."    
+  - script: python -m flake8 --exclude src/gudrun_classes/isotopes.py . > flake8.err.log
     displayName: "Capture flake8 error log"
     condition: failed()
 
