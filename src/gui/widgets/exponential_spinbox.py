@@ -221,7 +221,7 @@ class ExponentialSpinBox(QDoubleSpinBox):
     def removeSuffix(self):
         self.prevSuffix = self.suffix()
         self.setSuffix("")
-    
+
     def appendSuffix(self):
         self.setSuffix(self.prevSuffix)
         self.clearFocus()
