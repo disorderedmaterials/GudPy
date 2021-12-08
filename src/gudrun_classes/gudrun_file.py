@@ -1310,7 +1310,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, overwrite=False):
+    def write_out(self, path='', overwrite=False, writeParameters=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1325,16 +1325,35 @@ class GudrunFile:
         -------
         None
         """
+
         if not overwrite:
-            f = open(
-                os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.outpath
-                ), "w", encoding="utf-8")
+            if not path:            
+                f = open(
+                    os.path.join(
+                        self.instrument.GudrunInputFileDir,
+                        self.outpath
+                    ), "w", encoding="utf-8")
+            else:
+                f = open(
+                    path, "w", encoding="utf-8"
+                )
         else:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
+
+        if writeParameters:
+            for sample in [s for sb in self.sampleBackgrounds for s in sb.samples if s.runThisSample]:
+                f = open(
+                    os.path.join(
+                        self.instrument.GudrunInputFileDir,
+                        sample.name.replace(" ", "_").translate(
+                            {ord(x): '' for x in r'/\!*~,&|[]'}
+                        )
+                    ) +".txt", "w", encoding="utf-8"
+                )
+                f.write(str(sample))
+                f.close()
 
     def dcs(self, path='', headless=True):
         """
@@ -1387,7 +1406,9 @@ class GudrunFile:
                         os.path.join(
                             self.instrument.GudrunInputFileDir,
                             "gudpy.txt"
-                        )
+                        ),
+                        False,
+                        True
                     ]
                 )
 
