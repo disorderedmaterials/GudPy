@@ -401,8 +401,8 @@ class GudPyChart(QChart):
         # Non-logarithmic = 0, logarithmic = 10.
         # Offset ensures that when plotting logarithmically,
         # that no undefined values are produced.
-        offsetX = int(self.logarithmicX)*10
-        offsetY = int(self.logarithmicY)*10
+        offsetX = 0 if self.logarithmicX else 0
+        offsetY = 1 if self.logarithmicY else 0
 
         # If the plotting mode is Structure Factor.
         if self.plotMode == PlotModes.SF:
@@ -925,11 +925,17 @@ class GudPyChartView(QChartView):
         for sample in self.chart().data.keys():
             action = QAction(f"Hide {sample.name}", hideMenu)
             action.setCheckable(True)
-            action.setChecked(
-                self.chart().seriesA[sample].isVisible() &
-                self.chart().seriesB[sample].isVisible() &
-                self.chart().seriesC[sample].isVisible()
-            )
+            if sample in self.chart().seriesC.keys():
+                action.setChecked(
+                    self.chart().seriesA[sample].isVisible() &
+                    self.chart().seriesB[sample].isVisible() &
+                    self.chart().seriesC[sample].isVisible()
+                )
+            else:
+                action.setChecked(
+                    self.chart().seriesA[sample].isVisible() &
+                    self.chart().seriesB[sample].isVisible()
+                )
             hideMenu.addAction(action)
             actionMap[action] = sample
         self.menu.addMenu(hideMenu)
