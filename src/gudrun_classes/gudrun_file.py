@@ -33,7 +33,7 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 import re
-
+from copy import deepcopy
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
@@ -793,7 +793,7 @@ class GudrunFile:
             if not sample.name:
                 sample.name = "SAMPLE"
             self.consumeWhitespace()
-
+            print(sample.name)
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
@@ -1350,9 +1350,11 @@ class GudrunFile:
                         sample.name.replace(" ", "_").translate(
                             {ord(x): '' for x in r'/\!*~,&|[]'}
                         )
-                    ) +".txt", "w", encoding="utf-8"
+                    ) +".sample", "w", encoding="utf-8"
                 )
-                f.write(str(sample))
+                auxSample = deepcopy(sample)
+                auxSample.containers = []
+                f.write(str(auxSample).lstrip())
                 f.close()
 
     def dcs(self, path='', headless=True):
