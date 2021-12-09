@@ -1343,18 +1343,7 @@ class GudrunFile:
 
         if writeParameters:
             for sample in [s for sb in self.sampleBackgrounds for s in sb.samples if s.runThisSample]:
-                f = open(
-                    os.path.join(
-                        self.instrument.GudrunInputFileDir,
-                        sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in r'/\!*~,&|[]'}
-                        )
-                    ) +".sample", "w", encoding="utf-8"
-                )
-                auxSample = deepcopy(sample)
-                auxSample.containers = []
-                f.write(str(auxSample).lstrip())
-                f.close()
+                sample.write_out(self.instrument.GudrunInputFileDir)
 
     def dcs(self, path='', headless=True):
         """

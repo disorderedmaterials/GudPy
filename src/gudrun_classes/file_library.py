@@ -1,4 +1,5 @@
 import os
+from sys import set_asyncgen_hooks
 from src.gudrun_classes.enums import CrossSectionSource
 from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
@@ -136,7 +137,7 @@ class GudPyFileLibrary():
         os.chdir(cwd)
         return ret
 
-    def exportMintData(self, samples, renameDataFiles=False, exportTo=None):
+    def exportMintData(self, samples, renameDataFiles=False, exportTo=None, includeParams=False):
         if not exportTo:
             exportTo = (
                 os.path.join(
@@ -154,11 +155,21 @@ class GudPyFileLibrary():
                             "mint01"
                         )
                     )
+                safeSampleName = sample.name.replace(" ", "_").translate(
+                    {ord(x): '' for x in r'/\!*~,&|[]'}
+                )
                 if os.path.exists(path):
                     if renameDataFiles:
-                        newName = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in r'/\!*~,&|[]'}
-                        ) + ".mint01"
+                        newName = safeSampleName + ".mint01"
                         path = newName
                     zipFile.write(path, arcname=os.path.basename(path))
+                    if includeParams:
+                        path = os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            safeSampleName + ".sample"
+                        )
+                        if not os.path.exists(path):
+                            sample.write_out(self.gudrunFile.instrument.GudrunInputFileDir)
+                        zipFile.write(path, arcname=os.path.basename(path))
+
             return zipFile.filename
