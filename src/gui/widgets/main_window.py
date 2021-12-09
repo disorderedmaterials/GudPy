@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.container import Container
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -207,6 +208,22 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot
         )
 
+        self.mainWidget.containerTopPlot = GudPyChartView(
+            self.mainWidget
+        )
+
+        self.mainWidget.topContainerPlotLayout.addWidget(
+            self.mainWidget.containerTopPlot
+        )
+
+        self.mainWidget.containerBottomPlot = GudPyChartView(
+            self.mainWidget
+        )
+
+        self.mainWidget.bottomContainerPlotLayout.addWidget(
+            self.mainWidget.containerBottomPlot
+        )
+
         self.mainWidget.allSampleTopPlot = GudPyChartView(
             self.mainWidget
         )
@@ -255,6 +272,24 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
             self.handleBottomPlotModeChanged
+        )
+
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            "Structure Factor",
+            PlotModes.STRUCTURE_FACTOR
+        )
+
+        self.mainWidget.topContainerPlotComboBox.currentIndexChanged.connect(
+            self.handleContainerTopPlotModeChanged
+        )
+
+        self.mainWidget.bottomContainerPlotComboBox.addItem(
+            "Radial Distribution Functions",
+            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+        )
+
+        self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
+            self.handleContainerBottomPlotModeChanged
         )
 
         self.mainWidget.setWindowTitle("GudPy")
@@ -501,7 +536,9 @@ class GudPyMainWindow(QMainWindow):
     def focusResult(self):
         if (
             self.mainWidget.objectStack.currentIndex() == 5
-            and isinstance(self.mainWidget.objectTree.currentObject(), Sample)
+            and isinstance(
+                self.mainWidget.objectTree.currentObject(), Sample
+            )
         ):
             try:
                 topPlot, bottomPlot, gudFile = (
@@ -550,9 +587,61 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
+        elif (
+            self.mainWidget.objectStack.currentIndex() == 6
+            and isinstance(
+                self.mainWidget.objectTree.currentObject(), Container
+            )
+        ):
+            try:
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            except KeyError:
+                self.updateSamples()
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            self.mainWidget.containerTopPlot.setChart(
+                topPlot
+            )
+            self.mainWidget.containerBottomPlot.setChart(
+                bottomPlot
+            )
+
+            plotsMap = {
+                PlotModes.STRUCTURE_FACTOR: 0,
+                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
+            }
+
+            self.mainWidget.topPlotComboBox.setCurrentIndex(
+                plotsMap[topPlot.plotMode]
+            )
+            self.mainWidget.bottomPlotComboBox.setCurrentIndex(
+                plotsMap[bottomPlot.plotMode]
+            )
+            if gudFile:
+                dcsLevel = gudFile.averageLevelMergedDCS
+                self.mainWidget.containerDcsLabel.setText(
+                    f"DCS Level: {dcsLevel}"
+                )
+                self.mainWidget.containerResultLabel.setText(gudFile.output)
+                if gudFile.err:
+                    self.mainWidget.containerResultLabel.setStyleSheet(
+                        "background-color: red"
+                    )
+                else:
+                    self.mainWidget.containerResultLabel.setStyleSheet(
+                        "background-color: green"
+                    )
+
+                tweakFactor = gudFile.suggestedTweakFactor
+                self.mainWidget.containerSuggestedTweakFactorLabel.setText(
+                    f"Suggested Tweak Factor: {tweakFactor}"
+                )
 
     def updateSamples(self):
-        samples = self.mainWidget.objectTree.getSamples()
+        samples = [*self.mainWidget.objectTree.getSamples(), *self.mainWidget.objectTree.getContainers()]
         for sample in samples:
             topChart = GudPyChart(
                 self.gudrunFile
@@ -578,7 +667,7 @@ class GudPyMainWindow(QMainWindow):
 
     def updateAllSamples(self):
 
-        samples = self.mainWidget.objectTree.getSamples()
+        samples = [*self.mainWidget.objectTree.getSamples(), *self.mainWidget.objectTree.getContainers()]
         if len(self.allPlots):
             allTopChart = GudPyChart(
                 self.gudrunFile
@@ -1106,6 +1195,18 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot.chart().plot,
             self.mainWidget.bottomPlotComboBox.itemData(index)
         )
+    
+    def handleContainerTopPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.containerTopPlot.chart().plot,
+            self.mainWidget.topContainerPlotComboBoxPlotComboBox.itemData(index)
+        )
+
+    def handleContainerBottomPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.containerBottomPlot.chart().plot,
+            self.mainWidget.bottomContainerPlotComboBox.itemData(index)
+        )
 
     def handleTopAllPlotModeChanged(self, index):
         self.handlePlotModeChanged(
@@ -1121,6 +1222,7 @@ class GudPyMainWindow(QMainWindow):
 
     def handlePlotModeChanged(self, plot, plotMode):
         plot(plotMode)
+
 
     def onException(self, cls, exception, tb):
         QMessageBox.critical(

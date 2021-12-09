@@ -1064,6 +1064,20 @@ class GudPyTreeView(QTreeView):
                 samples.append(sample)
         return samples
 
+    def getContainers(self):
+        containers = []
+        for i in range(
+            NUM_GUDPY_CORE_OBJECTS,
+            self.model().rowCount(QModelIndex())
+        ):
+            sampleBackground = self.model().index(i, 0, QModelIndex())
+            for j in range(self.model().rowCount(sampleBackground)):
+                sample = self.model().index(
+                    j, 0, sampleBackground
+                ).internalPointer()
+                containers = [*containers, *sample.containers]
+        return containers
+
     def convertToSample(self):
         container = self.currentObject()
         sample = self.gudrunFile.convertToSample(container)
