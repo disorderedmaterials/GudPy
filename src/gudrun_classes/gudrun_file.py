@@ -793,7 +793,6 @@ class GudrunFile:
             if not sample.name:
                 sample.name = "SAMPLE"
             self.consumeWhitespace()
-            print(sample.name)
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
