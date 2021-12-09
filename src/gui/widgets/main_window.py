@@ -1100,7 +1100,7 @@ class GudPyMainWindow(QMainWindow):
 
     def loadSample(self):
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select Sample parameters file for GudPy", ".", "GudPy Sample (*.sample)"
+            self, "Select Sample parameters file for GudPy", self.gudrunFile.instrument.GudrunInputFileDir, "GudPy Sample (*.sample)"
         )
 
         if filename:
