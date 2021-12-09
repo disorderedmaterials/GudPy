@@ -1311,7 +1311,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, overwrite=False):
+    def write_out(self, path='', overwrite=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1326,7 +1326,11 @@ class GudrunFile:
         -------
         None
         """
-        if not overwrite:
+        if path:
+            f = open(
+                path, "w", encoding="utf-8"
+            )
+        elif not overwrite:
             f = open(
                 os.path.join(
                     self.instrument.GudrunInputFileDir,
@@ -1385,10 +1389,7 @@ class GudrunFile:
                     proc,
                     self.write_out,
                     [
-                        os.path.join(
-                            self.instrument.GudrunInputFileDir,
-                            "gudpy.txt"
-                        )
+                        path
                     ]
                 )
 

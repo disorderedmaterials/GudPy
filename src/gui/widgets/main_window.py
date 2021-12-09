@@ -61,6 +61,7 @@ from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from src.gudrun_classes.run_containers_as_samples import RunContainersAsSamples
 from src.gudrun_classes.gud_file import GudFile
 
 from src.scripts.utils import nthint
@@ -123,6 +124,7 @@ class GudPyMainWindow(QMainWindow):
         self.cwd = os.getcwd()
         self.output = ""
         self.previousProcTitle = ""
+        self.error = ""
 
     def initComponents(self):
         """
@@ -274,6 +276,9 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.iterateGudrun.triggered.connect(
             self.iterateGudrun_
+        )
+        self.mainWidget.runContainersAsSamples.triggered.connect(
+            self.runContainersAsSamples
         )
 
         self.mainWidget.checkFilesExist.triggered.connect(
@@ -639,6 +644,7 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument.GudrunInputFileDir
         )
         if func:
+            print(func)
             func(*args)
         self.proc.start()
 
@@ -672,6 +678,40 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
             ),
+            headless=False
+        )
+        if isinstance(dcs, Sequence):
+            dcs, func, args = dcs
+        if isinstance(dcs, FileNotFoundError):
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                "Couldn't find gudrun_dcs binary."
+            )
+        elif (
+            not self.gudrunFile.purged
+            and os.path.exists(
+                os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    'purge_det.dat'
+                )
+            )
+        ):
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "purge_det.dat found, but wasn't run in this session. "
+                "Continue?"
+            )
+        elif not self.gudrunFile.purged:
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "It looks like you may not have purged detectors. Continue?"
+            )
+        else:
+            self.makeProc(dcs, self.progressDCS, func, args)
+
+    def runContainersAsSamples(self):
+        self.setControlsEnabled(False)
+        dcs = RunContainersAsSamples(self.gudrunFile).runContainersAsSamples(
             headless=False
         )
         if isinstance(dcs, Sequence):
