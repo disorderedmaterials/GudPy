@@ -895,11 +895,14 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
+        self.mainWidget.exportArchive.setEnabled(state)
+        self.mainWidget.showPreviousOutput.setEnabled(state)
 
     def setActionsEnabled(self, state):
 
         self.mainWidget.insertSampleBackground.setEnabled(state)
         self.mainWidget.insertSample.setEnabled(state)
+        self.mainWidget.loadSample.setEnabled(state)
         self.mainWidget.insertContainer.setEnabled(state)
         self.mainWidget.copy.setEnabled(state)
         self.mainWidget.cut.setEnabled(state)
@@ -914,6 +917,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(state)
         self.mainWidget.saveAs.setEnabled(state)
+        self.mainWidget.exportArchive.setEnabled(state)
+        self.mainWidget.showPreviousOutput.setEnabled(state)
+
 
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
