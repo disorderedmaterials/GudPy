@@ -822,6 +822,11 @@ class GudPyTreeView(QTreeView):
         duplicateOnlySample.setDisabled(True)
         self.menu.addAction(duplicateOnlySample)
 
+        convertToSample = QAction("Convert to Sample", self.menu)
+        convertToSample.triggered.connect(self.convertToSample)
+        convertToSample.setDisabled(True)
+        self.menu.addAction(convertToSample)
+
         if self.contextMenuEnabled:
             # If the model has been instantiated,
             # allow insertion of sample backgrounds.
@@ -873,6 +878,7 @@ class GudPyTreeView(QTreeView):
                 insertSample.setEnabled(True)
             if isinstance(self.currentObject(), (Sample, Container)):
                 insertContainer.setEnabled(True)
+                convertToSample.setEnabled(True)
             # Enable duplication, and selection.
             if isinstance(self.currentObject(), Sample):
                 duplicate.setEnabled(True)
@@ -1057,3 +1063,9 @@ class GudPyTreeView(QTreeView):
                 ).internalPointer()
                 samples.append(sample)
         return samples
+
+    def convertToSample(self):
+        container = self.currentObject()
+        sample = self.gudrunFile.convertToSample(container)
+        self.removeRow()
+        self.insertSample(sample)
