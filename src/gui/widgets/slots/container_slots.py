@@ -102,6 +102,13 @@ class ContainerSlots():
         # Populate composition table.
         self.updateCompositionTable()
 
+        # Calculate the expected DCS level.
+        self.updateExpectedDCSLevel()
+
+        self.widget.containerCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+
         # Release the lock
         self.widgetsRefreshing = False
 
@@ -590,6 +597,7 @@ class ContainerSlots():
         insertContainerElementButton.
         """
         self.widget.containerCompositionTable.insertRow()
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -603,5 +611,19 @@ class ContainerSlots():
             self.widget.containerCompositionTable
             .selectionModel().selectedRows()
         )
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def updateExpectedDCSLevel(self, _=None, __=None):
+        """
+        Updates the expectedDcsLabel,
+        to show the expected DCS level of the container.
+        """
+        elements = self.container.composition.elements
+        dcsLevel = self.container.composition.calculateExpectedDCSLevel(
+            elements
+        )
+        self.widget.containerExpectedDcsLabel.setText(
+            f"Expected DCS Level: {dcsLevel}"
+        )
