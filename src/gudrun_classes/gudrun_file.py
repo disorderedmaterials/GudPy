@@ -1310,7 +1310,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, path='',overwrite=False):
+    def write_out(self, path='', overwrite=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
