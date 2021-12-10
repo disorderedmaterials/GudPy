@@ -258,7 +258,7 @@ class Sample:
         )
 
         SAMPLE_CONTAINERS = (
-            "\n".join([str(x) for x in self.containers])
+            "\n".join([str(x) for x in self.containers if not x.runAsSample])
             if len(self.containers) > 0
             else
             ''

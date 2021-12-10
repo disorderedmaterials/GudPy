@@ -13,9 +13,7 @@ class RunContainersAsSamples:
             for sample in sampleBackground.samples:
                 for container in sample.containers:
                     containersAsSamples.append(
-                        self.gudrunFile.convertToSample(
-                            container
-                        )
+                        container.convertToSample()
                     )
             sampleBackground.samples = containersAsSamples
 

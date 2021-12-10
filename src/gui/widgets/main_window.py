@@ -733,7 +733,6 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument.GudrunInputFileDir
         )
         if func:
-            print(func)
             func(*args)
         self.proc.start()
 
@@ -801,6 +800,10 @@ class GudPyMainWindow(QMainWindow):
     def runContainersAsSamples(self):
         self.setControlsEnabled(False)
         dcs = RunContainersAsSamples(self.gudrunFile).runContainersAsSamples(
+            path=os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.outpath
+            ),
             headless=False
         )
         if isinstance(dcs, Sequence):

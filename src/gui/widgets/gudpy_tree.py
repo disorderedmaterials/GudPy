@@ -1080,6 +1080,6 @@ class GudPyTreeView(QTreeView):
 
     def convertToSample(self):
         container = self.currentObject()
-        sample = self.gudrunFile.convertToSample(container)
+        sample = container.convertToSample()
         self.removeRow()
         self.insertSample(sample)

@@ -45,7 +45,8 @@ class SampleBackground:
             String representation of SampleBackground.
         """
         TAB = "          "
-        SAMPLES = "\n".join([str(x) for x in self.samples if x.runThisSample])
+        CONV_SAMPLES = [str(c.convertToSample()) for s in self.samples for c in s.containers if c.runAsSample]
+        SAMPLES = "\n".join([*[str(x) for x in self.samples if x.runThisSample], *CONV_SAMPLES])
 
         dataFilesLine = (
             f'{str(self.dataFiles)}\n'

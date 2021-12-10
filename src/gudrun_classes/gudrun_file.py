@@ -1435,34 +1435,8 @@ class GudrunFile:
         return result
 
     def convertToSample(self, container, persist=False):
-
-        sample = Sample()
-        sample.name = container.name
-        sample.periodNumber = container.periodNumber
-        sample.dataFiles = deepcopy(container.dataFiles)
-        sample.forceCalculationOfCorrections = True
-        sample.composition = deepcopy(container.composition)
-        sample.geometry = container.geometry
-        sample.upstreamThickness = container.upstreamThickness
-        sample.downStreamThickness = container.downstreamThickness
-        sample.angleOfRotation = container.angleOfRotation
-        sample.sampleWidth = container.sampleWidth
-        sample.innerRadius = container.innerRadius
-        sample.outerRadius = container.outerRadius
-        sample.sampleHeight = container.sampleHeight
-        sample.density = container.density
-        sample.densityUnits = container.densityUnits
-        sample.totalCrossSectionSource = container.totalCrossSectionSource
-        sample.sampleTweakFactor = container.tweakFactor
-        sample.FTMode = FTModes.NO_FT
-        sample.grBroadening = 0.1
-        sample.exponentialValues = [(0.0, 1.0)]
-        sample.normalisationCorrectionFactor = 1.0
-        sample.fileSelfScattering = "*"
-        sample.maxRadFT = 20.0
-        sample.powerForBroadening = 0.2
-        sample.stepSize = 0.03
-        sample.scatteringFraction = 1.0
+    
+        sample = container.convertToSample()
 
         if persist:
             for i, sampleBackground in enumerate(self.sampleBackgrounds):
@@ -1472,7 +1446,6 @@ class GudrunFile:
                         break
             self.sampleBackgrounds[i].append(sample)
         return sample
-    
 
 
 if __name__ == "__main__":

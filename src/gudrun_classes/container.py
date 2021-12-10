@@ -1,8 +1,10 @@
+from copy import deepcopy
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import FT_MODES, FTModes, Geometry, UnitsOfDensity
 from src.gudrun_classes import config
 from src.gudrun_classes.enums import CrossSectionSource
+from src.gudrun_classes.sample import Sample
 
 
 class Container:
@@ -177,3 +179,35 @@ class Container:
             f'and attenuation coefficient [per \u212b]\n'
             f'\n}}\n'
         )
+
+    def convertToSample(self):
+
+        sample = Sample()
+        sample.name = self.name
+        sample.periodNumber = self.periodNumber
+        sample.dataFiles = deepcopy(self.dataFiles)
+        sample.forceCalculationOfCorrections = True
+        sample.composition = deepcopy(self.composition)
+        sample.geometry = self.geometry
+        sample.upstreamThickness = self.upstreamThickness
+        sample.downstreamThickness = self.downstreamThickness
+        sample.angleOfRotation = self.angleOfRotation
+        sample.sampleWidth = self.sampleWidth
+        sample.innerRadius = self.innerRadius
+        sample.outerRadius = self.outerRadius
+        sample.sampleHeight = self.sampleHeight
+        sample.density = self.density
+        sample.densityUnits = self.densityUnits
+        sample.totalCrossSectionSource = self.totalCrossSectionSource
+        sample.sampleTweakFactor = self.tweakFactor
+        sample.FTMode = FTModes.NO_FT
+        sample.grBroadening = 0.1
+        sample.exponentialValues = [(0.0, 1.0)]
+        sample.normalisationCorrectionFactor = 1.0
+        sample.fileSelfScattering = "*"
+        sample.maxRadFT = 20.0
+        sample.powerForBroadening = 0.2
+        sample.stepSize = 0.03
+        sample.scatteringFraction = 1.0
+
+        return sample
