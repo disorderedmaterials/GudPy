@@ -33,7 +33,7 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 import re
-from copy import deepcopy
+
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
@@ -1326,7 +1326,7 @@ class GudrunFile:
         """
 
         if not overwrite:
-            if not path:            
+            if not path:
                 f = open(
                     os.path.join(
                         self.instrument.GudrunInputFileDir,
@@ -1342,7 +1342,12 @@ class GudrunFile:
         f.close()
 
         if writeParameters:
-            for sample in [s for sb in self.sampleBackgrounds for s in sb.samples if s.runThisSample]:
+            for sample in [
+                s
+                for sb in self.sampleBackgrounds
+                for s in sb.samples
+                if s.runThisSample
+            ]:
                 sample.write_out(self.instrument.GudrunInputFileDir)
 
     def dcs(self, path='', headless=True):

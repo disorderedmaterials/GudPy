@@ -9,6 +9,7 @@ from src.gudrun_classes import config
 from copy import deepcopy
 import os
 
+
 class Sample:
     """
     Class to represent a Sample.
@@ -150,14 +151,13 @@ class Sample:
                 self.name.replace(" ", "_").translate(
                     {ord(x): '' for x in r'/\!*~,&|[]'}
                 )
-            ) +".sample", "w", encoding="utf-8"
+            ) + ".sample", "w", encoding="utf-8"
         )
         auxSample = deepcopy(self)
         auxSample.containers = []
         f.write(str(auxSample).lstrip())
         f.close()
         del auxSample
-
 
     def __str__(self):
         """

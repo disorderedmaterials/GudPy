@@ -920,7 +920,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
 
-
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
@@ -1106,12 +1105,17 @@ class GudPyMainWindow(QMainWindow):
 
     def loadSample(self):
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select Sample parameters file for GudPy", self.gudrunFile.instrument.GudrunInputFileDir, "GudPy Sample (*.sample)"
+            self,
+            "Select Sample parameters file for GudPy",
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            "GudPy Sample (*.sample)"
         )
 
         if filename:
-            self.gudrunFile.stream = open(filename, "r", encoding="utf-8").readlines()
+            self.gudrunFile.stream = open(
+                filename, "r", encoding="utf-8"
+            ).readlines()
             self.mainWidget.objectTree.insertSample(
                 self.gudrunFile.parseSample()
             )
-            self.gudrunFile.stream = []            
+            self.gudrunFile.stream = []
