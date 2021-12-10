@@ -33,7 +33,6 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 import re
-from copy import deepcopy
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -1435,7 +1434,7 @@ class GudrunFile:
         return result
 
     def convertToSample(self, container, persist=False):
-    
+
         sample = container.convertToSample()
 
         if persist:

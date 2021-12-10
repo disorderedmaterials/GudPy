@@ -1,7 +1,7 @@
 from copy import deepcopy
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
-from src.gudrun_classes.enums import FT_MODES, FTModes, Geometry, UnitsOfDensity
+from src.gudrun_classes.enums import FTModes, Geometry, UnitsOfDensity
 from src.gudrun_classes import config
 from src.gudrun_classes.enums import CrossSectionSource
 from src.gudrun_classes.sample import Sample

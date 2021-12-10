@@ -641,7 +641,10 @@ class GudPyMainWindow(QMainWindow):
                 )
 
     def updateSamples(self):
-        samples = [*self.mainWidget.objectTree.getSamples(), *self.mainWidget.objectTree.getContainers()]
+        samples = [
+            *self.mainWidget.objectTree.getSamples(),
+            *self.mainWidget.objectTree.getContainers()
+        ]
         for sample in samples:
             topChart = GudPyChart(
                 self.gudrunFile
@@ -667,7 +670,10 @@ class GudPyMainWindow(QMainWindow):
 
     def updateAllSamples(self):
 
-        samples = [*self.mainWidget.objectTree.getSamples(), *self.mainWidget.objectTree.getContainers()]
+        samples = [
+            *self.mainWidget.objectTree.getSamples(),
+            *self.mainWidget.objectTree.getContainers()
+        ]
         if len(self.allPlots):
             allTopChart = GudPyChart(
                 self.gudrunFile
@@ -1198,11 +1204,13 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot.chart().plot,
             self.mainWidget.bottomPlotComboBox.itemData(index)
         )
-    
+
     def handleContainerTopPlotModeChanged(self, index):
         self.handlePlotModeChanged(
             self.mainWidget.containerTopPlot.chart().plot,
-            self.mainWidget.topContainerPlotComboBoxPlotComboBox.itemData(index)
+            self.mainWidget.topContainerPlotComboBoxPlotComboBox.itemData(
+                index
+            )
         )
 
     def handleContainerBottomPlotModeChanged(self, index):
@@ -1225,7 +1233,6 @@ class GudPyMainWindow(QMainWindow):
 
     def handlePlotModeChanged(self, plot, plotMode):
         plot(plotMode)
-
 
     def onException(self, cls, exception, tb):
         QMessageBox.critical(
