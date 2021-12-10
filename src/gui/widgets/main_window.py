@@ -123,6 +123,7 @@ class GudPyMainWindow(QMainWindow):
         self.cwd = os.getcwd()
         self.output = ""
         self.previousProcTitle = ""
+        self.error = ""
 
     def initComponents(self):
         """
