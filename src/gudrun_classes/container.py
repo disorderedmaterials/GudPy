@@ -81,6 +81,8 @@ class Container:
         self.scatteringFraction = 0.0
         self.attenuationCoefficient = 0.0
 
+        self.runAsSample = False
+
     def __str__(self):
         """
         Returns the string representation of the Container object.

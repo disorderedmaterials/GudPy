@@ -99,6 +99,10 @@ class ContainerSlots():
             self.container.attenuationCoefficient
         )
 
+        self.widget.runAsSampleCheckBox.setChecked(
+            self.container.runAsSample
+        )
+
         # Populate composition table.
         self.updateCompositionTable()
 
@@ -214,6 +218,10 @@ class ContainerSlots():
             self.widget.containerAttenuationCoefficientSpinBox
         ).valueChanged.connect(
             self.handleAttenuationCoefficientChanged
+        )
+
+        self.widget.runAsSampleCheckBox.stateChanged.connect(
+            self.handleToggleRunAsSample
         )
 
         # Setup slots for composition table.
@@ -487,6 +495,19 @@ class ContainerSlots():
         self.container.attenuationCoefficient = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleToggleRunAsSample(self, state):
+        """
+        Slot for handling toggling running the container as
+        a sample. Called when a stateChanged signal is emitted,
+        from the runAsSampleCheckBox. Updates the class attribute
+        as such.
+        Parameters
+        ----------
+        state : int
+            The new state of the runAsSampleCheckBox.
+        """
+        self.container.runAsSample = bool(state)
 
     def handleDataFilesAltered(self, item):
         """
