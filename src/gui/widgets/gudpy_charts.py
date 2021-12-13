@@ -4,7 +4,7 @@ from PySide6.QtCharts import (
 )
 from PySide6.QtCore import QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QPainter, QPen
+    QAction, QClipboard, QCursor, QMouseEvent, QPainter, QPen
 )
 from enum import Enum
 import os
@@ -755,7 +755,7 @@ class GudPyChartView(QChartView):
         self.zoomArea = zoomArea
         self.scrolled = (delta.x(), -delta.y())
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event):  
         if event.buttons() & Qt.MouseButton.MiddleButton:
 
             if self.previousPos:
@@ -766,7 +766,6 @@ class GudPyChartView(QChartView):
 
             self.previousPos = event.pos()
             event.accept()
-
         return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
@@ -870,9 +869,8 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showDCSLevelAction)
-            elif self.chart().plotMode in [
-                PlotModes.SF_MINT01, PlotModes.SF_MDCS01
-            ]:
+            elif self.chart().plotMode == PlotModes.SF_MDCS01:
+
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
                 showDCSLevelAction.setCheckable(True)
                 showDCSLevelAction.setChecked(
@@ -918,17 +916,14 @@ class GudPyChartView(QChartView):
         for sample in self.chart().data.keys():
             action = QAction(f"Hide {sample.name}", hideMenu)
             action.setCheckable(True)
+            checked = True
+            if sample in self.chart().seriesA.keys():
+                checked &= self.chart().seriesA[sample].isVisible()
+            if sample in self.chart().seriesB.keys():
+                checked &= self.chart().seriesB[sample].isVisible()
             if sample in self.chart().seriesC.keys():
-                action.setChecked(
-                    self.chart().seriesA[sample].isVisible() &
-                    self.chart().seriesB[sample].isVisible() &
-                    self.chart().seriesC[sample].isVisible()
-                )
-            else:
-                action.setChecked(
-                    self.chart().seriesA[sample].isVisible() &
-                    self.chart().seriesB[sample].isVisible()
-                )
+                checked &= self.chart().seriesC[sample].isVisible()
+            action.setChecked(checked)
             hideMenu.addAction(action)
             actionMap[action] = sample
         self.menu.addMenu(hideMenu)
