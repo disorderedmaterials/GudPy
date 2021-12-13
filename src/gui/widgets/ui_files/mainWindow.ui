@@ -497,6 +497,9 @@
                        <height>16777215</height>
                       </size>
                      </property>
+                     <property name="suffix">
+                      <string> m</string>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -3850,7 +3853,7 @@
                             <item>
                              <widget class="QLabel" name="totalNormalisationThicknessLabel">
                               <property name="text">
-                               <string>Total: 0.00cm</string>
+                               <string>Total: 0.00 cm</string>
                               </property>
                              </widget>
                             </item>
@@ -5040,7 +5043,7 @@
                                  <item>
                                   <widget class="QLabel" name="totalSampleThicknessLabel">
                                    <property name="text">
-                                    <string>Total: 0.00cm</string>
+                                    <string>Total: 0.00 cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -6592,7 +6595,7 @@
                             <item>
                              <widget class="QLabel" name="totalContainerThicknessLabel">
                               <property name="text">
-                               <string>Total: 0.00cm</string>
+                               <string>Total: 0.00 cm</string>
                               </property>
                              </widget>
                             </item>
