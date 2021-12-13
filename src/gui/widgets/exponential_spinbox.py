@@ -211,6 +211,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
         string = "{:g}".format(mantissa)
         if groups[-1]:
             string += groups[-1]
+        if float(string) < self.minimum():
+            string = str(self.minimum())
+        elif float(string) > self.maximum():
+            string = str(self.maximum())
         self.lineEdit().setText(string)
 
     def keyPressEvent(self, event):
