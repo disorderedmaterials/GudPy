@@ -38,7 +38,7 @@ from src.gui.widgets.tables.components_table import ComponentsList
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
 from src.gui.widgets.gudpy_charts import (
-  PLOT_MODES, GudPyChart, PlotModes, GudPyChartView
+  GudPyChart, PlotModes, GudPyChartView
 )
 
 from src.gudrun_classes.enums import Geometry

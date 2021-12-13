@@ -1,7 +1,8 @@
 from PySide6.QtCharts import (
-    QChart, QChartView, QLegend, QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
+    QChart, QChartView, QLegend,
+    QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
 )
-from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
+from PySide6.QtCore import QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QPen
 )
@@ -13,13 +14,16 @@ from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 from src.gudrun_classes.gud_file import GudFile
 from itertools import chain, product
 
+
 def enumFromDict(clsname, _dict):
     return Enum(
         value=clsname,
+        # Cartesian product of all keys and values.
         names=chain.from_iterable(
-            product(v, [k]) for k, v in _dict.items() # Cartesian product of all keys and values.
+            product(v, [k]) for k, v in _dict.items()
         )
     )
+
 
 PLOT_MODES = {
     0: ["Structure Factor (mint01, mdcs01)", "SF"],
@@ -138,7 +142,7 @@ class GudPyChart(QChart):
 
     def updateMarkerOpacity(self, marker):
         alpha = 1.0 if marker.series().isVisible() else 0.5
-        
+
         brush = marker.labelBrush()
         color = brush.color()
         color.setAlphaF(alpha)
@@ -347,7 +351,10 @@ class GudPyChart(QChart):
                 self.plotSample(sample)
 
             # Label axes
-            if self.plotMode in [PlotModes.SF, PlotModes.SF_MINT01, PlotModes.SF_MDCS01]:
+            if self.plotMode in [
+                PlotModes.SF, PlotModes.SF_MINT01,
+                PlotModes.SF_MDCS01
+            ]:
                 XLabel = "Q, 1\u212b"
                 YLabel = "DCS, barns/sr/atom"
             elif self.plotMode == PlotModes.RDF:
@@ -675,9 +682,15 @@ class GudPyChart(QChart):
 
         for marker in self.legend().markers():
             series = marker.series()
-            if series == self.seriesA[sample] or series == self.seriesB[sample] or series == self.seriesC[sample]:
+            if (
+                series == self.seriesA[sample]
+                or series == self.seriesB[sample]
+                or series == self.seriesC[sample]
+            ):
                 marker.setVisible(True)
                 self.updateMarkerOpacity(marker)
+
+
 class GudPyChartView(QChartView):
     """
     Class to represent a GudPyChartView. Inherits QChartView.
@@ -765,7 +778,7 @@ class GudPyChartView(QChartView):
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.MouseButton.MiddleButton:
-            
+
             if self.previousPos:
                 offset = event.pos() - self.previousPos
             else:
@@ -878,8 +891,9 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showDCSLevelAction)
-            elif self.chart().plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MDCS01]:
-
+            elif self.chart().plotMode in [
+                PlotModes.SF_MINT01, PlotModes.SF_MDCS01
+            ]:
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
                 showDCSLevelAction.setCheckable(True)
                 showDCSLevelAction.setChecked(
@@ -890,7 +904,7 @@ class GudPyChartView(QChartView):
                         self.chart().seriesB
                     )
                 )
-                self.menu.addAction(showDCSLevelAction)   
+                self.menu.addAction(showDCSLevelAction)
             elif (
                 self.chart().plotMode ==
                 PlotModes.RDF
@@ -943,11 +957,13 @@ class GudPyChartView(QChartView):
         copyAction.triggered.connect(self.copyPlot)
         self.menu.addAction(copyAction)
 
-
         action = self.menu.exec(QCursor.pos())
 
         if action in actionMap.keys():
-            self.chart().toggleSampleVisibility(action.isChecked(), actionMap[action])
+            self.chart().toggleSampleVisibility(
+                action.isChecked(),
+                actionMap[action]
+            )
 
     def copyPlot(self):
         pixMap = self.grab()
