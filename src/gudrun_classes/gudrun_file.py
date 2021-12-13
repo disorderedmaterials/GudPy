@@ -1347,24 +1347,12 @@ class GudrunFile:
                         gf.__dict__ = deepcopy(self.__dict__)
                         gf.sampleBackgrounds = [deepcopy(sb)]
                         gf.sampleBackgrounds[0].samples = [deepcopy(s)]
-                        gf.write_out(path=os.path.join(self.instrument.GudrunInputFileDir, s.pathName()))
-
-
-            # for sample in [
-            #     s
-            #     for sb in self.sampleBackgrounds
-            #     for s in sb.samples
-            #     if s.runThisSample
-            # ]:
-                # gf = GudrunFile()
-                # gf.instrument = self.instrument
-                # gf.beam = self.beam
-                # gf.normalisation = self.normalisation
-                # gf.sampleBackgrounds = [sb for sb in self.sampleBackgrounds if sample in sb.samples]
-                # print(gf.sampleBackgrounds)
-                # gf.sampleBackgrounds[0].samples = [sample]
-                # gf.write_out(path=sample.pathName())
-                # # del gf
+                        gf.write_out(
+                            path=os.path.join(
+                                self.instrument.GudrunInputFileDir,
+                                s.pathName()
+                            )
+                        )
 
     def dcs(self, path='', headless=True):
         """

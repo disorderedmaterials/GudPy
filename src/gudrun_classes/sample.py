@@ -6,8 +6,6 @@ from src.gudrun_classes.enums import (
     NormalisationType, OutputUnits, Geometry
 )
 from src.gudrun_classes import config
-from copy import deepcopy
-import os
 
 
 class Sample:
