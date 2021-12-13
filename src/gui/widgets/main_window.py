@@ -379,7 +379,7 @@ class GudPyMainWindow(QMainWindow):
         Opens a QFileDialog to load an input file.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
+            self, "Select Input file for GudPy", ".", "GudPy Input (*.txt);;Sample Parameters (*.sample)"
         )
         if filename:
             try:
