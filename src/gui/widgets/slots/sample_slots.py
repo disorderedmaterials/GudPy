@@ -55,7 +55,7 @@ class SampleSlots():
             self.sample.downstreamThickness
         )
         self.widget.totalSampleThicknessLabel.setText(
-            f"Total: {total}cm"
+            f"Total: {total} cm"
         )
 
         self.widget.angleOfRotationSpinBox.setValue(
@@ -412,7 +412,7 @@ class SampleSlots():
             self.sample.downstreamThickness
         )
         self.widget.totalSampleThicknessLabel.setText(
-            f"Total: {total}cm"
+            f"Total: {total} cm"
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -434,7 +434,7 @@ class SampleSlots():
             self.sample.downstreamThickness
         )
         self.widget.totalSampleThicknessLabel.setText(
-            f"Total: {total}cm"
+            f"Total: {total} cm"
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
