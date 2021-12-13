@@ -1396,7 +1396,8 @@ class GudrunFile:
                     self.write_out,
                     [
                         path,
-                        False
+                        False,
+                        True
                     ]
                 )
 
