@@ -33,6 +33,7 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 import re
+from copy import deepcopy
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -1324,7 +1325,7 @@ class GudrunFile:
         -------
         None
         """
-
+        print(path)
         if path:
             f = open(path, "w", encoding="utf-8")
         elif not overwrite:
@@ -1339,13 +1340,31 @@ class GudrunFile:
         f.close()
 
         if writeParameters:
-            for sample in [
-                s
-                for sb in self.sampleBackgrounds
-                for s in sb.samples
-                if s.runThisSample
-            ]:
-                sample.write_out(self.instrument.GudrunInputFileDir)
+            for sb in self.sampleBackgrounds:
+                for s in sb.samples:
+                    if s.runThisSample:
+                        gf = GudrunFile()
+                        gf.__dict__ = deepcopy(self.__dict__)
+                        gf.sampleBackgrounds = [deepcopy(sb)]
+                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
+                        gf.write_out(path=os.path.join(self.instrument.GudrunInputFileDir, s.pathName()))
+
+
+            # for sample in [
+            #     s
+            #     for sb in self.sampleBackgrounds
+            #     for s in sb.samples
+            #     if s.runThisSample
+            # ]:
+                # gf = GudrunFile()
+                # gf.instrument = self.instrument
+                # gf.beam = self.beam
+                # gf.normalisation = self.normalisation
+                # gf.sampleBackgrounds = [sb for sb in self.sampleBackgrounds if sample in sb.samples]
+                # print(gf.sampleBackgrounds)
+                # gf.sampleBackgrounds[0].samples = [sample]
+                # gf.write_out(path=sample.pathName())
+                # # del gf
 
     def dcs(self, path='', headless=True):
         """

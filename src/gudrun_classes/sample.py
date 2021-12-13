@@ -144,20 +144,10 @@ class Sample:
 
         self.containers = []
 
-    def write_out(self, dir):
-        f = open(
-            os.path.join(
-                dir,
-                self.name.replace(" ", "_").translate(
-                    {ord(x): '' for x in r'/\!*~,&|[]'}
-                )
-            ) + ".sample", "w", encoding="utf-8"
-        )
-        auxSample = deepcopy(self)
-        auxSample.containers = []
-        f.write(str(auxSample).lstrip())
-        f.close()
-        del auxSample
+    def pathName(self):
+        return self.name.replace(" ", "_").translate(
+            {ord(x): '' for x in r'/\!*~,&|[]'}
+        ) + ".sample"
 
     def __str__(self):
         """
