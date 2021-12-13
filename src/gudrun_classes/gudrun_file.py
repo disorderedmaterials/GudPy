@@ -1325,17 +1325,14 @@ class GudrunFile:
         None
         """
 
-        if not overwrite:
-            if not path:
-                f = open(
-                    os.path.join(
-                        self.instrument.GudrunInputFileDir,
-                        self.outpath
-                    ), "w", encoding="utf-8")
-            else:
-                f = open(
-                    path, "w", encoding="utf-8"
-                )
+        if path:
+            f = open(path, "w", encoding="utf-8")
+        elif not overwrite:
+            f = open(
+                os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath
+                ), "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
@@ -1398,12 +1395,8 @@ class GudrunFile:
                     proc,
                     self.write_out,
                     [
-                        os.path.join(
-                            self.instrument.GudrunInputFileDir,
-                            "gudpy.txt"
-                        ),
-                        False,
-                        True
+                        path,
+                        False
                     ]
                 )
 
