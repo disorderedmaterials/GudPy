@@ -492,27 +492,6 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesA[sample] = mintSeries
 
-            if not (self.logarithmicY or self.logarithmicA):
-
-                dcsSeries = QLineSeries()
-                if len(self.data.keys()) > 1:
-                    dcsSeries.setName(f"{sample.name} expected level")
-                else:
-                    dcsSeries.setName("Expected level")
-                dcsSeries.append(
-                    [
-                        QPointF(x, y)
-                        for x, y in self.data[sample]["dcs"]
-                    ]
-                )
-                pen = QPen(dcsSeries.pen())
-                pen.setStyle(Qt.PenStyle.DashLine)
-                pen.setWidth(2)
-                pen.setColor(mintSeries.color())
-                dcsSeries.setPen(pen)
-                self.addSeries(dcsSeries)
-                self.seriesB[sample] = dcsSeries
-
         elif self.plotMode == PlotModes.SF_MDCS01:
             # Instantiate the series.
             mdcsSeries = QLineSeries()
@@ -531,7 +510,7 @@ class GudPyChart(QChart):
             # Add the series to the chart.
             self.addSeries(mdcsSeries)
             # Keep the series.
-            self.series[sample] = mdcsSeries
+            self.seriesA[sample] = mdcsSeries
 
             if not (self.logarithmicY or self.logarithmicA):
 
