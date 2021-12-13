@@ -264,6 +264,7 @@ class GudFile:
                 self.err+=self.getNextToken()
         else:
             self.result = token
+            self.consumeTokens(1)
 
         output = self.err if self.err else self.result
         if "BELOW" in output:
@@ -330,7 +331,7 @@ class GudFile:
             f'{self.averageLevelMergedDCS} b/sr/atom;\n\n'
             f' Gradient of merged dcs: '
             f'{self.gradient} of average level.\n\n'
-            f'{outLine}'
+            f'{outLine}\n'
             f' Suggested tweak factor:   '
             f'{self.suggestedTweakFactor}\n'
 
