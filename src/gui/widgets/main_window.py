@@ -301,10 +301,6 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.objectTree.insertSample
         )
 
-        self.mainWidget.loadSample.triggered.connect(
-            self.loadSample
-        )
-
         self.mainWidget.insertContainer.triggered.connect(
             self.mainWidget.objectTree.insertContainer
         )
@@ -902,7 +898,6 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.insertSampleBackground.setEnabled(state)
         self.mainWidget.insertSample.setEnabled(state)
-        self.mainWidget.loadSample.setEnabled(state)
         self.mainWidget.insertContainer.setEnabled(state)
         self.mainWidget.copy.setEnabled(state)
         self.mainWidget.cut.setEnabled(state)
@@ -1102,20 +1097,3 @@ class GudPyMainWindow(QMainWindow):
     def export(self):
         exportDialog = ExportDialog(self.gudrunFile, self)
         exportDialog.widget.exec()
-
-    def loadSample(self):
-        filename, _ = QFileDialog.getOpenFileName(
-            self,
-            "Select Sample parameters file for GudPy",
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            "GudPy Sample (*.sample)"
-        )
-
-        if filename:
-            self.gudrunFile.stream = open(
-                filename, "r", encoding="utf-8"
-            ).readlines()
-            self.mainWidget.objectTree.insertSample(
-                self.gudrunFile.parseSample()
-            )
-            self.gudrunFile.stream = []

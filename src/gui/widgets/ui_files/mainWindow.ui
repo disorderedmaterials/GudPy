@@ -6955,7 +6955,6 @@
     </property>
     <addaction name="insertSampleBackground"/>
     <addaction name="insertSample"/>
-    <addaction name="loadSample"/>
     <addaction name="insertContainer"/>
     <addaction name="separator"/>
     <addaction name="copy"/>
