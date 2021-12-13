@@ -2536,7 +2536,11 @@
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox"/>
+                         <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Top&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <spacer name="horizontalSpacer_28">
@@ -2555,6 +2559,9 @@
                       </item>
                       <item row="1" column="0">
                        <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="minimum">
                          <double>-99.000000000000000</double>
                         </property>
@@ -2573,13 +2580,20 @@
                           <layout class="QGridLayout" name="gridLayout_8">
                            <item row="1" column="0">
                             <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
                              <property name="minimum">
                               <double>-99.000000000000000</double>
                              </property>
                             </widget>
                            </item>
                            <item row="1" column="2">
-                            <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="1" column="1">
                             <widget class="QLabel" name="label_10">
@@ -2608,10 +2622,17 @@
                             </widget>
                            </item>
                            <item row="0" column="1">
-                            <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Top&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="2" column="1">
                             <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bottom&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
                              <property name="minimum">
                               <double>-99.000000000000000</double>
                              </property>
@@ -2623,7 +2644,11 @@
                        </widget>
                       </item>
                       <item row="1" column="2">
-                       <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox"/>
+                       <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                       </widget>
                       </item>
                       <item row="2" column="1">
                        <layout class="QHBoxLayout" name="horizontalLayout_91">
@@ -2642,6 +2667,9 @@
                         </item>
                         <item>
                          <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bottom&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
                           <property name="minimum">
                            <double>-99.000000000000000</double>
                           </property>
