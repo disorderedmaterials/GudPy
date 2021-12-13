@@ -4,7 +4,7 @@ from PySide6.QtCharts import (
 )
 from PySide6.QtCore import QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QMouseEvent, QPainter, QPen
+    QAction, QClipboard, QCursor, QPainter, QPen
 )
 from enum import Enum
 import os
@@ -755,7 +755,7 @@ class GudPyChartView(QChartView):
         self.zoomArea = zoomArea
         self.scrolled = (delta.x(), -delta.y())
 
-    def mouseMoveEvent(self, event):  
+    def mouseMoveEvent(self, event):
         if event.buttons() & Qt.MouseButton.MiddleButton:
 
             if self.previousPos:
