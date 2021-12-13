@@ -1,4 +1,5 @@
 import os
+from types import DynamicClassAttribute
 from src.gudrun_classes.exception import ParserException
 from unittest import TestCase
 from shutil import copyfile
@@ -19,13 +20,13 @@ class TestParseGudFile(TestCase):
                 ' Mod 195.3x115mm HxV JC6Y -10'),
             "author": "T. G. A. Youngs, D.",
             "stamp": "23-OCT-2012 17:45:25",
-            "atomicDensity": "0.100000E+00",
-            "chemicalDensity": "0.99717",
-            "averageScatteringLength": "-0.05583",
-            "averageScatteringLengthSquared": "0.311736E-02",
-            "averageSquareOfScatteringLength": "0.205450E+00",
-            "coherentRatio": "0.659052E+02",
-            "expectedDCS": "4.46355",
+            "atomicDensity": 0.1,
+            "chemicalDensity": 0.99717,
+            "averageScatteringLength": -0.05583,
+            "averageScatteringLengthSquared": 0.311736E-02,
+            "averageSquareOfScatteringLength": 0.205450E+00,
+            "coherentRatio": 0.659052E+02,
+            "expectedDCS": 4.46355,
             "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
@@ -52,16 +53,16 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        3.75996             -0.4879
    25            0.3153   49.9980        3.26407             -0.4735
 """,
-            "noGroups": "25",
-            "averageLevelMergedDCS": "3.81991",
-            "gradient": "-0.5106%",
-            "err": """ WARNING! This DCS level is   14.4% BELOW expected level.
+            "noGroups": 25,
+            "averageLevelMergedDCS": 3.81991,
+            "gradient": -0.5106,
+            "err": """WARNING! This DCS level is   14.4% BELOW expected level.
 
  Please check sample density, size or thickness, and composition.
  If all is in order, then refer to your local contact for further advice
 
 """,
-            "suggestedTweakFactor": "1.16850",
+            "suggestedTweakFactor": 1.16850,
             "output": "-14.4%"
         }
 
@@ -73,13 +74,13 @@ class TestParseGudFile(TestCase):
                 ' Mod 195.3x115mm HxV JC6Y -10'),
             "author": "T. G. A. Youngs, D.",
             "stamp": "23-OCT-2012 18:43:54",
-            "atomicDensity": "0.100000E+00",
-            "chemicalDensity": "1.10854",
-            "averageScatteringLength": "0.63817",
-            "averageScatteringLengthSquared": "0.407257E+00",
-            "averageSquareOfScatteringLength": "0.408931E+00",
-            "coherentRatio": "0.100411E+01",
-            "expectedDCS": "0.51757",
+            "atomicDensity": 0.1,
+            "chemicalDensity": 1.10854,
+            "averageScatteringLength": 0.63817,
+            "averageScatteringLengthSquared": 0.407257E+00,
+            "averageSquareOfScatteringLength": 0.408931E+00,
+            "coherentRatio": 0.100411E+01,
+            "expectedDCS": 0.51757,
             "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
@@ -106,11 +107,11 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        0.51460              0.0200
    25            0.3153   49.9980        0.51156              0.0656
 """,
-            "noGroups": "25",
-            "averageLevelMergedDCS": "0.51788",
-            "gradient": "-0.0235%",
-            "result": " This DCS level is  100.1% of expected level",
-            "suggestedTweakFactor": "0.99941",
+            "noGroups": 25,
+            "averageLevelMergedDCS": 0.51788,
+            "gradient": -0.0235,
+            "result": "This DCS level is  100.1% of expected level",
+            "suggestedTweakFactor": 0.99941,
             "output": "+0.1%"
         }
 
@@ -122,13 +123,13 @@ class TestParseGudFile(TestCase):
                 ' Mod 195.3x115mm HxV JC6Y -10'),
             "author": "T. Youngs",
             "stamp": "28-OCT-2012 12:56:29",
-            "atomicDensity": "0.100000E+00",
-            "chemicalDensity": "1.05285",
-            "averageScatteringLength": "0.29117",
-            "averageScatteringLengthSquared": "0.847780E-01",
-            "averageSquareOfScatteringLength": "0.307191E+00",
-            "coherentRatio": "0.362347E+01",
-            "expectedDCS": "2.49056",
+            "atomicDensity": 0.1,
+            "chemicalDensity": 1.05285,
+            "averageScatteringLength": 0.29117,
+            "averageScatteringLengthSquared": 0.847780E-01,
+            "averageSquareOfScatteringLength": 0.307191E+00,
+            "coherentRatio": 0.362347E+01,
+            "expectedDCS": 2.49056,
             "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
@@ -155,11 +156,11 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        2.45972             -0.3599
    25            0.3153   49.9980        2.18191             -0.2975
 """,
-            "noGroups": "25",
-            "averageLevelMergedDCS": "2.45211",
-            "gradient": "-0.3551%",
+            "noGroups": 25,
+            "averageLevelMergedDCS": 2.45211,
+            "gradient": -0.3551,
             "result": " This DCS level is   98.5% of expected level",
-            "suggestedTweakFactor": "1.01568",
+            "suggestedTweakFactor": 1.01568,
             "output": "-1.5%"
         }
 
@@ -171,13 +172,13 @@ class TestParseGudFile(TestCase):
                 ' Mod 195.3x115mm HxV JC'),
             "author": "T. Youngs",
             "stamp": "28-OCT-2012 13:53:13",
-            "atomicDensity": "0.100000E+00",
-            "chemicalDensity": "1.03732",
-            "averageScatteringLength": "0.19358",
-            "averageScatteringLengthSquared": "0.374735E-01",
-            "averageSquareOfScatteringLength": "0.278574E+00",
-            "coherentRatio": "0.743389E+01",
-            "expectedDCS": "3.04538",
+            "atomicDensity": 0.1,
+            "chemicalDensity": 1.03732,
+            "averageScatteringLength": 0.19358,
+            "averageScatteringLengthSquared": 0.374735E-01,
+            "averageSquareOfScatteringLength": 0.278574E+00,
+            "coherentRatio": 0.743389E+01,
+            "expectedDCS": 3.04538,
             "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
@@ -204,16 +205,16 @@ class TestParseGudFile(TestCase):
    24            0.2722   49.9980        2.63808             -0.3647
    25            0.3153   49.9980        2.33847             -0.3202
 """,
-            "noGroups": "25",
-            "averageLevelMergedDCS": "2.64872",
-            "gradient": "-0.3721%",
+            "noGroups": 25,
+            "averageLevelMergedDCS": 2.64872,
+            "gradient": -0.3721,
             "err": """WARNING! This DCS level is   13.0% BELOW expected level.
 
  Please check sample density, size or thickness, and composition.
  If all is in order, then refer to your local contact for further advice
 
 """,
-            "suggestedTweakFactor": "1.14976",
+            "suggestedTweakFactor": 1.14976,
             "output": "-13.0%"
         }
 
@@ -292,7 +293,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "stream", "result", "outpath", "err"]:
                 continue
             if key == "groupsTable":
 
@@ -304,14 +305,8 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
                 self.assertAlmostEqual(
-                    float(self.expectedGudFileA[key].replace("%", "")),
-                    float(gudAttrsDict[key].replace("%", "")),
-                    1,
-                )
-            elif key == "err":
-                self.assertAlmostEqual(
-                    extract_floats_from_string(self.expectedGudFileA[key][0]),
-                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    self.expectedGudFileA[key],
+                    gudAttrsDict[key],
                     1,
                 )
             else:
@@ -322,8 +317,8 @@ class TestParseGudFile(TestCase):
                 except AssertionError as e:
                     try:
                         self.assertAlmostEqual(
-                            float(self.expectedGudFileA[key].strip()),
-                            float(gudAttrsDict[key].strip()),
+                            float(self.expectedGudFileA[key]),
+                            float(gudAttrsDict[key]),
                             1,
                         )
                     except Exception:
@@ -344,7 +339,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "stream", "err", "outpath", "result"]:
                 continue
             if key == "groupsTable":
 
@@ -356,14 +351,8 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
                 self.assertAlmostEqual(
-                    float(self.expectedGudFileB[key].replace("%", "")),
-                    float(gudAttrsDict[key].replace("%", "")),
-                    1,
-                )
-            elif key == "result":
-                self.assertAlmostEqual(
-                    extract_floats_from_string(self.expectedGudFileB[key][0]),
-                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    self.expectedGudFileB[key],
+                    gudAttrsDict[key],
                     1,
                 )
             else:
@@ -374,8 +363,8 @@ class TestParseGudFile(TestCase):
                 except AssertionError as e:
                     try:
                         self.assertAlmostEqual(
-                            float(self.expectedGudFileB[key].strip()),
-                            float(gudAttrsDict[key].strip()),
+                            float(self.expectedGudFileB[key]),
+                            float(gudAttrsDict[key]),
                             1,
                         )
                     except Exception:
@@ -394,7 +383,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "contents", "err", "outpath"]:
+            if key in ["path", "groups", "stream", "err", "outpath", "result"]:
                 continue
             if key == "groupsTable":
 
@@ -406,14 +395,8 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
                 self.assertAlmostEqual(
-                    float(self.expectedGudFileC[key].replace("%", "")),
-                    float(gudAttrsDict[key].replace("%", "")),
-                    1,
-                )
-            elif key == "result":
-                self.assertAlmostEqual(
-                    extract_floats_from_string(self.expectedGudFileC[key][0]),
-                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    self.expectedGudFileC[key],
+                    gudAttrsDict[key],
                     1,
                 )
             else:
@@ -424,8 +407,8 @@ class TestParseGudFile(TestCase):
                 except AssertionError as e:
                     try:
                         self.assertAlmostEqual(
-                            float(self.expectedGudFileC[key].strip()),
-                            float(gudAttrsDict[key].strip()),
+                            float(self.expectedGudFileC[key]),
+                            float(gudAttrsDict[key]),
                             1,
                         )
                     except Exception:
@@ -445,7 +428,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "contents", "result", "outpath"]:
+            if key in ["path", "groups", "stream", "result", "outpath", "err"]:
                 continue
             if key == "groupsTable":
 
@@ -457,14 +440,8 @@ class TestParseGudFile(TestCase):
                         self.assertAlmostEqual(float(valueA), float(valueB), 1)
             elif key == "gradient":
                 self.assertAlmostEqual(
-                    float(self.expectedGudFileD[key].replace("%", "")),
-                    float(gudAttrsDict[key].replace("%", "")),
-                    1,
-                )
-            elif key == "err":
-                self.assertAlmostEqual(
-                    extract_floats_from_string(self.expectedGudFileA[key][0]),
-                    extract_floats_from_string(gudAttrsDict[key][0]),
+                    self.expectedGudFileD[key],
+                    gudAttrsDict[key],
                     1,
                 )
             else:
@@ -475,8 +452,8 @@ class TestParseGudFile(TestCase):
                 except AssertionError as e:
                     try:
                         self.assertAlmostEqual(
-                            float(self.expectedGudFileD[key].strip()),
-                            float(gudAttrsDict[key].strip()),
+                            float(self.expectedGudFileD[key]),
+                            float(gudAttrsDict[key]),
                             1,
                         )
                     except Exception:
@@ -492,43 +469,22 @@ class TestParseGudFile(TestCase):
             )
         )
         gf.write_out()
-        outlines = open(gf.outpath, encoding="utf-8").read()
-        self.assertEqual(outlines, str(gf))
-
-    def testRewriteGudFileA(self):
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
-        g.dcs()
-        gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016742_NullWater_in_N8.gud"
-            )
-        )
-        gf.write_out()
-
-        gf1 = GudFile(gf.outpath)
-        gf1.write_out()
-
-        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf))
-        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf1))
-        self.assertEqual(
-            open(gf1.outpath, encoding="utf-8").read(),
-            open(gf.outpath, encoding="utf-8").read(),
-        )
-
-    def testReloadGudFileB(self):
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
-        g.dcs()
-        gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016609_D2O_in_N10.gud"
-            )
-        )
-        gf.write_out()
         gf1 = GudFile(gf.outpath)
 
-        self.assertEqual(str(gf), str(gf1))
+        dicA = gf.__dict__
+        dicA.pop("outpath")
+        dicA.pop("path")
+        dicA.pop("result")
+        dicA.pop("err")
+
+        dicB = gf1.__dict__
+        dicB.pop("outpath")
+        dicB.pop("path")
+        dicB.pop("result")
+        dicB.pop("err")
+
+        for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
+            self.assertEqual(v1, v2)
 
     def testWriteGudFileB(self):
         g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
@@ -540,26 +496,19 @@ class TestParseGudFile(TestCase):
             )
         )
         gf.write_out()
-        outlines = open(gf.outpath, encoding="utf-8").read()
-        self.assertEqual(outlines, str(gf))
-
-    def testRewriteGudFileB(self):
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
-        g.dcs()
-        gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016609_D2O_in_N10.gud"
-            )
-        )
-        gf.write_out()
-
         gf1 = GudFile(gf.outpath)
-        gf1.write_out()
 
-        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf))
-        self.assertEqual(open(gf1.outpath, encoding="utf-8").read(), str(gf1))
-        self.assertEqual(
-            open(gf1.outpath, encoding="utf-8").read(),
-            open(gf.outpath, encoding="utf-8").read(),
-        )
+        dicA = gf.__dict__
+        dicA.pop("outpath")
+        dicA.pop("path")
+        dicA.pop("result")
+        dicA.pop("err")
+
+        dicB = gf1.__dict__
+        dicB.pop("outpath")
+        dicB.pop("path")
+        dicB.pop("result")
+        dicB.pop("err")
+
+        for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
+            self.assertEqual(v1, v2)
