@@ -221,8 +221,18 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topAllPlotComboBox.addItem(
-            "Structure Factor",
-            PlotModes.STRUCTURE_FACTOR
+            PlotModes.SF.name,
+            PlotModes.SF
+        )
+
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MINT01.name,
+            PlotModes.SF_MINT01
+        )
+
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MDCS01.name,
+            PlotModes.SF_MDCS01
         )
 
         self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
@@ -230,8 +240,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.bottomAllPlotComboBox.addItem(
-            "Radial Distribution Functions",
-            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            PlotModes.RDF.name,
+            PlotModes.RDF
         )
 
         self.mainWidget.bottomAllPlotComboBox.currentIndexChanged.connect(
@@ -239,8 +249,18 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topPlotComboBox.addItem(
-            "Structure Factor",
-            PlotModes.STRUCTURE_FACTOR
+            PlotModes.SF.name,
+            PlotModes.SF
+        )
+
+        self.mainWidget.topPlotComboBox.addItem(
+            PlotModes.SF_MINT01.name,
+            PlotModes.SF_MINT01
+        )
+
+        self.mainWidget.topPlotComboBox.addItem(
+            PlotModes.SF_MDCS01.name,
+            PlotModes.SF_MDCS01
         )
 
         self.mainWidget.topPlotComboBox.currentIndexChanged.connect(
@@ -248,8 +268,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.bottomPlotComboBox.addItem(
-            "Radial Distribution Functions",
-            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            PlotModes.RDF.name,
+            PlotModes.RDF
         )
 
         self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
@@ -517,8 +537,10 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.STRUCTURE_FACTOR: 0,
-                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
+                PlotModes.SF: 0,
+                PlotModes.SF_MINT01: 1,
+                PlotModes.SF_MDCS01: 2,
+                PlotModes.RDF: 0
             }
 
             self.mainWidget.topPlotComboBox.setCurrentIndex(
@@ -554,12 +576,12 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             topChart.addSample(sample)
-            topChart.plot(PlotModes.STRUCTURE_FACTOR)
+            topChart.plot(PlotModes.SF)
             bottomChart = GudPyChart(
                 self.gudrunFile
             )
             bottomChart.addSample(sample)
-            bottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            bottomChart.plot(PlotModes.RDF)
             path = None
             if len(sample.dataFiles.dataFiles):
                 path = sample.dataFiles.dataFiles[0].replace(
@@ -580,23 +602,23 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allTopChart.plot(PlotModes.SF)
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
             allBottomChart.addSamples(samples)
-            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            allBottomChart.plot(PlotModes.RDF)
         else:
             allTopChart = GudPyChart(
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(PlotModes.STRUCTURE_FACTOR)
+            allTopChart.plot(PlotModes.SF)
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
             allBottomChart.addSamples(samples)
-            allBottomChart.plot(PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS)
+            allBottomChart.plot(PlotModes.RDF)
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
