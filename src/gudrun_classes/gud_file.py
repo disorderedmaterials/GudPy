@@ -115,11 +115,11 @@ class GudFile:
         self.err = ""
         self.result = ""
         self.suggestedTweakFactor = 0.0
-        self.contents = ""
+        self.stream = []
         self.output = ""
 
         # Handle edge cases - invalid extensions and paths.
-        if self.path.split(".")[-1] != "gud":
+        if not self.path.endswith(".gud"):
             raise ParserException("Only .gud files can be parsed.")
 
         if not isfile(self.path):
@@ -127,6 +127,47 @@ class GudFile:
 
         # Parse the GudFile
         self.parse()
+
+    def getNextToken(self):
+        """
+        Pops the 'next token' from the stream and returns it.
+        Essentially removes the first line in the stream and returns it.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        str | None
+        """
+        return self.stream.pop(0) if self.stream else None
+
+    def peekNextToken(self):
+        """
+        Returns the next token in the input stream, without removing it.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        str | None
+        """
+        return self.stream[0] if self.stream else None
+
+    def consumeTokens(self, n):
+        """
+        Consume n tokens from the input stream.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        None
+        """
+        for _ in range(n):
+            self.getNextToken()
 
     def parse(self):
         """
@@ -143,62 +184,86 @@ class GudFile:
 
         # Read the contents into an auxilliary variable.
         with open(self.path) as f:
-            self.contents = f.readlines()
+            self.stream = f.readlines()
             f.close()
 
         # Simple cases, we can just extract the stripped lines.
-        self.name = self.contents[0].strip()
-        self.title = self.contents[2].strip()
-        self.author = self.contents[4].strip()
-        self.stamp = self.contents[6].strip()
 
-        # Extract the last item of data from the lines.
-        self.atomicDensity = self.contents[8].split(" ")[-1].strip()
-        self.chemicalDensity = self.contents[9].split(" ")[-1].strip()
-        self.averageScatteringLength = self.contents[10].split(" ")[-1].strip()
-        self.averageScatteringLengthSquared = (
-            self.contents[11].split(" ")[-1].strip()
+        self.name = self.getNextToken().strip()
+        self.consumeTokens(1)
+
+        self.title = self.getNextToken().strip()
+        self.consumeTokens(1)
+
+        self.author = self.getNextToken().strip()
+        self.consumeTokens(1)
+
+        self.stamp = self.getNextToken().strip()
+        self.consumeTokens(1)
+
+        self.atomicDensity = float(
+            self.getNextToken().split()[-1].strip()
         )
-        self.averageSquareOfScatteringLength = (
-            self.contents[12].split(" ")[-1].strip()
+
+        self.chemicalDensity = float(
+            self.getNextToken().split()[-1].strip()
         )
-        self.coherentRatio = self.contents[13].split(" ")[-1].strip()
-        self.expectedDCS = self.contents[15].split(" ")[-1].strip()
+
+        self.averageScatteringLength = float(
+            self.getNextToken().split()[-1].strip()
+        )
+
+        self.averageScatteringLengthSquared = float(
+            self.getNextToken().split()[-1].strip()
+        )
+
+        self.averageSquareOfScatteringLength = float(
+            self.getNextToken().split()[-1].strip()
+        )
+
+        self.coherentRatio = float(
+            self.getNextToken().split()[-1].strip()
+        )
+        self.consumeTokens(1)
+
+        self.expectedDCS = float(
+            self.getNextToken().split()[-1].strip()     
+        )
+
+
+        self.consumeTokens(3)
 
         # Extract the groups table.
-        line = self.contents[19]
-        i = 1
-        while not line.isspace():
-            self.groups.append(line)
-            line = self.contents[19 + i]
-            i += 1
+        while not self.peekNextToken().isspace():
+            self.groups.append(self.getNextToken())
 
         self.groupsTable = "".join(self.groups)
 
-        # Extract the last item of data from the line.
-        self.noGroups = self.contents[19 + i].split(" ")[-1].strip()
+        self.consumeTokens(1)
 
-        # Extract the last but one item of data from the line.
-        self.averageLevelMergedDCS = (
-            self.contents[19 + i + 2].split(" ")[-2].strip()
+        self.noGroups = int(
+            self.getNextToken().split()[-1].strip()
         )
 
-        # Extract the last but four item of data from the line.
-        self.gradient = self.contents[19 + i + 4].split(" ")[-4].strip()
+        self.consumeTokens(1)
 
-        # Get the output information (err/result).
-        start = 19 + i + 6
-        end = 0
-        line = self.contents[start]
-        if "WARNING!" in line:
-            while "Suggested tweak factor" not in line:
-                end += 1
-                line = self.contents[start + end]
-            end += 19 + i + 6
+        self.averageLevelMergedDCS = float(
+            self.getNextToken().split()[-2].strip()
+        )
+        self.consumeTokens(1)
 
-            self.err = "".join(self.contents[start:end])
+        self.gradient = float(
+            self.getNextToken().split()[-4].strip().replace("%", '')
+        )
+        self.consumeTokens(1)
+
+        token = self.getNextToken()
+        if "WARNING!" in token:
+            self.err = token
+            while "Suggested tweak factor" not in self.peekNextToken():
+                self.err+=self.getNextToken()
         else:
-            self.result = line
+            self.result = token
 
         output = self.err if self.err else self.result
         if "BELOW" in output:
@@ -214,7 +279,7 @@ class GudFile:
             else:
                 self.output = "0%"
         # Collect the suggested tweak factor from the end of the final line.
-        self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
+        self.suggestedTweakFactor = self.getNextToken().split()[-1].strip()
 
     def __str__(self):
         """
