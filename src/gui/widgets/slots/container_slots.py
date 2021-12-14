@@ -115,7 +115,9 @@ class ContainerSlots():
 
         # Populate Fourier Transform parameters.
 
-        self.widget.containerTopHatWidthSpinBox.setValue(self.container.topHatW)
+        self.widget.containerTopHatWidthSpinBox.setValue(
+            self.container.topHatW
+        )
         self.widget.containerFTModeComboBox.setCurrentIndex(
             self.container.FTMode.value
         )
@@ -254,13 +256,16 @@ class ContainerSlots():
         for tp in FTModes:
             self.widget.containerFTModeComboBox.addItem(tp.name, tp)
 
-
         self.widget.containerFTModeComboBox.currentIndexChanged.connect(
             self.handleBackgroundScatteringSubtractionModeChanged
         )
 
-        self.widget.containerMinSpinBox.valueChanged.connect(self.handleMinChanged)
-        self.widget.containerMaxSpinBox.valueChanged.connect(self.handleMaxChanged)
+        self.widget.containerMinSpinBox.valueChanged.connect(
+            self.handleMinChanged
+        )
+        self.widget.containerMaxSpinBox.valueChanged.connect(
+            self.handleMaxChanged
+        )
         self.widget.containerBroadeningFunctionSpinBox.valueChanged.connect(
             self.handleBroadeningFunctionChanged
         )
@@ -270,7 +275,6 @@ class ContainerSlots():
         self.widget.containerStepSizeSpinBox.valueChanged.connect(
             self.handleStepSizeChanged
         )
-
 
     def handlePeriodNoChanged(self, value):
         """

@@ -646,7 +646,7 @@ class GudPyMainWindow(QMainWindow):
                     ].values()
                 ]
             ):
-                self.mainWidget.containerSplitter.setSizes([1,0])
+                self.mainWidget.containerSplitter.setSizes([1, 0])
             else:
                 self.mainWidget.containerSplitter.setSizes([2, 1])
 
