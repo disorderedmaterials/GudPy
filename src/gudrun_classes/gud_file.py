@@ -281,7 +281,9 @@ class GudFile:
                     self.output = "0%"
             # Collect the suggested tweak factor
             # from the end of the final line.
-            self.suggestedTweakFactor = self.getNextLine(True).split()[-1].strip()
+            self.suggestedTweakFactor = self.getNextLine(
+                True
+            ).split()[-1].strip()
 
         except Exception as e:
             raise ParserException(
