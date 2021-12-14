@@ -473,7 +473,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Incident flight path [m]</string>
+                      <string>Incident flight path</string>
                      </property>
                     </widget>
                    </item>
@@ -496,6 +496,9 @@
                        <width>16777215</width>
                        <height>16777215</height>
                       </size>
+                     </property>
+                     <property name="suffix">
+                      <string> m</string>
                      </property>
                     </widget>
                    </item>
@@ -3839,7 +3842,7 @@
                                </size>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3883,7 +3886,7 @@
                                </size>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3894,7 +3897,7 @@
                             <item>
                              <widget class="QLabel" name="totalNormalisationThicknessLabel">
                               <property name="text">
-                               <string>Total: 0.00cm</string>
+                               <string>Total: 0.00 cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3940,7 +3943,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -3966,7 +3969,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -4007,7 +4010,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -4033,7 +4036,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -4064,7 +4067,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -5053,7 +5056,7 @@
                                     </sizepolicy>
                                    </property>
                                    <property name="suffix">
-                                    <string>cm</string>
+                                    <string> cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5073,7 +5076,7 @@
                                     </sizepolicy>
                                    </property>
                                    <property name="suffix">
-                                    <string>cm</string>
+                                    <string> cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5084,7 +5087,7 @@
                                  <item>
                                   <widget class="QLabel" name="totalSampleThicknessLabel">
                                    <property name="text">
-                                    <string>Total: 0.00cm</string>
+                                    <string>Total: 0.00 cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5133,7 +5136,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5159,7 +5162,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5197,7 +5200,7 @@
                                   </sizepolicy>
                                  </property>
                                  <property name="suffix">
-                                  <string>cm</string>
+                                  <string> cm</string>
                                  </property>
                                 </widget>
                                </item>
@@ -5217,7 +5220,7 @@
                                   </sizepolicy>
                                  </property>
                                  <property name="suffix">
-                                  <string>cm</string>
+                                  <string> cm</string>
                                  </property>
                                 </widget>
                                </item>
@@ -5251,7 +5254,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -6605,7 +6608,7 @@
                                </sizepolicy>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -6625,7 +6628,7 @@
                                </sizepolicy>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -6636,7 +6639,7 @@
                             <item>
                              <widget class="QLabel" name="totalContainerThicknessLabel">
                               <property name="text">
-                               <string>Total: 0.00cm</string>
+                               <string>Total: 0.00 cm</string>
                               </property>
                              </widget>
                             </item>
@@ -6685,7 +6688,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -6711,7 +6714,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -6746,7 +6749,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -6766,7 +6769,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -6800,7 +6803,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
