@@ -410,7 +410,7 @@ class GudPyMainWindow(QMainWindow):
                     del self.gudrunFile
                 self.gudrunFile = GudrunFile(path=filename)
                 self.updateWidgets()
-                self.mainWidget.setWindowTitle(self.gudrunFile.path)
+                self.mainWidget.setWindowTitle(self.gudrunFile.path + "[*]")
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
@@ -879,11 +879,11 @@ class GudPyMainWindow(QMainWindow):
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
-                self.mainWidget.setWindowTitle(self.gudrunFile.path + " *")
+                self.mainWidget.setWindowModified(True)
                 self.modified = True
 
     def setUnModified(self):
-        self.mainWidget.setWindowTitle(self.gudrunFile.path)
+        self.mainWidget.setWindowModified(False)
         self.modified = False
 
     def setControlsEnabled(self, state):
