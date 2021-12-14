@@ -33,6 +33,7 @@ from src.gudrun_classes.enums import (
 )
 from src.gudrun_classes import config
 import re
+from copy import deepcopy
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -793,7 +794,6 @@ class GudrunFile:
             if not sample.name:
                 sample.name = "SAMPLE"
             self.consumeWhitespace()
-
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
@@ -1310,7 +1310,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, path='', overwrite=False):
+    def write_out(self, path='', overwrite=False, writeParameters=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1325,6 +1325,7 @@ class GudrunFile:
         -------
         None
         """
+        print(path)
         if path:
             f = open(path, "w", encoding="utf-8")
         elif not overwrite:
@@ -1337,6 +1338,21 @@ class GudrunFile:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
+
+        if writeParameters:
+            for sb in self.sampleBackgrounds:
+                for s in sb.samples:
+                    if s.runThisSample:
+                        gf = GudrunFile()
+                        gf.__dict__ = deepcopy(self.__dict__)
+                        gf.sampleBackgrounds = [deepcopy(sb)]
+                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
+                        gf.write_out(
+                            path=os.path.join(
+                                self.instrument.GudrunInputFileDir,
+                                s.pathName()
+                            )
+                        )
 
     def dcs(self, path='', headless=True):
         """
@@ -1387,7 +1403,8 @@ class GudrunFile:
                     self.write_out,
                     [
                         path,
-                        False
+                        False,
+                        True
                     ]
                 )
 

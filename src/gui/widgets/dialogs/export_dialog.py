@@ -114,7 +114,8 @@ class ExportDialog(QDialog):
                 for s in sb.samples
             ],
             renameDataFiles=self.widget.renameCheckBox.checkState(),
-            exportTo=filename
+            exportTo=filename,
+            includeParams=self.widget.includeParamsCheckBox.checkState()
         )
         QMessageBox.warning(
             self.widget,

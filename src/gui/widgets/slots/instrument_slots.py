@@ -3,7 +3,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 from PySide6.QtWidgets import QFileDialog
-import regex as re
+import re
 
 
 class InstrumentSlots():

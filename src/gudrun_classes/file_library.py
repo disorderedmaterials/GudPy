@@ -127,12 +127,19 @@ class GudPyFileLibrary():
             List of tuples of boolean values and paths,
             indicating if the given path exists.
         """
-        return [
+        cwd = os.getcwd()
+        os.chdir(self.gudrunFile.GudrunInputFileDir)
+        ret = [
             (os.path.isfile(path) | os.path.isdir(path), path)
             for path in self.files
         ]
+        os.chdir(cwd)
+        return ret
 
-    def exportMintData(self, samples, renameDataFiles=False, exportTo=None):
+    def exportMintData(
+        self, samples, renameDataFiles=False,
+        exportTo=None, includeParams=False
+    ):
         if not exportTo:
             exportTo = (
                 os.path.join(
@@ -150,12 +157,23 @@ class GudPyFileLibrary():
                             "mint01"
                         )
                     )
+                safeSampleName = sample.name.replace(" ", "_").translate(
+                    {ord(x): '' for x in r'/\!*~,&|[]'}
+                )
                 if os.path.exists(path):
                     if renameDataFiles:
-                        print("renaming.")
-                        newName = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in r'/\!*~,&|[]'}
-                        ) + ".mint01"
+                        newName = safeSampleName + ".mint01"
                         path = newName
                     zipFile.write(path, arcname=os.path.basename(path))
+                    if includeParams:
+                        path = os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            safeSampleName + ".sample"
+                        )
+                        if not os.path.exists(path):
+                            sample.write_out(
+                                self.gudrunFile.instrument.GudrunInputFileDir
+                            )
+                        zipFile.write(path, arcname=os.path.basename(path))
+
             return zipFile.filename

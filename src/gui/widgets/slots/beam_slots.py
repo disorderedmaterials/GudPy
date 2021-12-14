@@ -1,7 +1,7 @@
 from src.gudrun_classes.enums import Geometry, Instruments
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
-import regex as re
+import re
 
 
 class BeamSlots():
