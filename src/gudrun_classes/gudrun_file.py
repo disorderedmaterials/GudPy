@@ -491,16 +491,16 @@ class GudrunFile:
             incidentBeamEdges = self.getNextToken()
             self.beam.incidentBeamLeftEdge = nthfloat(incidentBeamEdges, 0)
             self.beam.incidentBeamRightEdge = nthfloat(incidentBeamEdges, 1)
-            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 2)
-            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 3)
+            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 2)
+            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 3)
 
             # Extract the scattered beam edges
             # relative to the centroid of the sample.
             scatteredBeamEdges = self.getNextToken()
             self.beam.scatteredBeamLeftEdge = nthfloat(scatteredBeamEdges, 0)
             self.beam.scatteredBeamRightEdge = nthfloat(scatteredBeamEdges, 1)
-            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 2)
-            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 3)
+            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 2)
+            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 3)
 
             # For string attributes,
             # we simply extract the firstword in the line.

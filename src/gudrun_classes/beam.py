@@ -94,16 +94,16 @@ class Beam:
         incidentBeamLine = (
             f'{self.incidentBeamLeftEdge} '
             f'{self.incidentBeamRightEdge} '
-            f'{self.incidentBeamTopEdge} '
-            f'{self.incidentBeamBottomEdge}'
+            f'{self.incidentBeamBottomEdge} '
+            f'{self.incidentBeamTopEdge}'
             f'{TAB}'
             f'Incident beam edges relative to centre of sample [cm]\n'
         )
         scatteredBeamLine = (
             f'{self.scatteredBeamLeftEdge} '
             f'{self.scatteredBeamRightEdge} '
-            f'{self.scatteredBeamTopEdge} '
-            f'{self.scatteredBeamBottomEdge}'
+            f'{self.scatteredBeamBottomEdge} '
+            f'{self.scatteredBeamTopEdge}'
             f'{TAB}'
             f'Scattered beam edges relateive to centre of samples [cm]\n'
         )
