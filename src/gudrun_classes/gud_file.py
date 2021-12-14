@@ -128,23 +128,30 @@ class GudFile:
         # Parse the GudFile
         self.parse()
 
-    def getNextToken(self):
+    def getNextLine(self, ignoreEmpty=False):
         """
-        Pops the 'next token' from the stream and returns it.
+        Pops the next 'line' from the stream and returns it.
         Essentially removes the first line in the stream and returns it.
 
         Parameters
         ----------
-        None
+        ignoreEmpty : bool, default=False
+            Should empty lines be ignored?
         Returns
         -------
         str | None
         """
-        return self.stream.pop(0) if self.stream else None
+        if ignoreEmpty and self.stream:
+            line = self.stream.pop(0)
+            while line.isspace():
+                line = self.stream.pop(0)
+            return line
+        else:
+            return self.stream.pop(0) if self.stream else None
 
-    def peekNextToken(self):
+    def peekNextLine(self):
         """
-        Returns the next token in the input stream, without removing it.
+        Returns the next line in the input stream, without removing it.
 
         Parameters
         ----------
@@ -155,19 +162,20 @@ class GudFile:
         """
         return self.stream[0] if self.stream else None
 
-    def consumeTokens(self, n):
+    def consumeLines(self, n):
         """
-        Consume n tokens from the input stream.
+        Consume n lines from the input stream.
 
         Parameters
         ----------
-        None
+        n : int
+            Number of lines to consume
         Returns
         -------
         None
         """
         for _ in range(n):
-            self.getNextToken()
+            self.getNextLine()
 
     def parse(self):
         """
@@ -191,81 +199,70 @@ class GudFile:
 
         try:
 
-            self.name = self.getNextToken().strip()
-            self.consumeTokens(1)
+            self.name = self.getNextLine().strip()
 
-            self.title = self.getNextToken().strip()
-            self.consumeTokens(1)
+            self.title = self.getNextLine(True).strip()
 
-            self.author = self.getNextToken().strip()
-            self.consumeTokens(1)
+            self.author = self.getNextLine(True).strip()
 
-            self.stamp = self.getNextToken().strip()
-            self.consumeTokens(1)
+            self.stamp = self.getNextLine(True).strip()
 
             self.atomicDensity = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine(True).split()[-1].strip()
             )
 
             self.chemicalDensity = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine().split()[-1].strip()
             )
 
             self.averageScatteringLength = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine().split()[-1].strip()
             )
 
             self.averageScatteringLengthSquared = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine().split()[-1].strip()
             )
 
             self.averageSquareOfScatteringLength = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine().split()[-1].strip()
             )
 
             self.coherentRatio = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine().split()[-1].strip()
             )
-            self.consumeTokens(1)
 
             self.expectedDCS = float(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine(True).split()[-1].strip()
             )
 
-            self.consumeTokens(3)
+            self.consumeLines(3)
 
             # Extract the groups table.
-            while not self.peekNextToken().isspace():
-                self.groups.append(self.getNextToken())
+            while not self.peekNextLine().isspace():
+                self.groups.append(self.getNextLine())
 
             self.groupsTable = "".join(self.groups)
 
-            self.consumeTokens(1)
-
             self.noGroups = int(
-                self.getNextToken().split()[-1].strip()
+                self.getNextLine(True).split()[-1].strip()
             )
-
-            self.consumeTokens(1)
 
             self.averageLevelMergedDCS = float(
-                self.getNextToken().split()[-2].strip()
+                self.getNextLine(True).split()[-2].strip()
             )
-            self.consumeTokens(1)
 
             self.gradient = float(
-                self.getNextToken().split()[-4].strip().replace("%", '')
+                self.getNextLine(True).split()[-4].strip().replace("%", '')
             )
-            self.consumeTokens(1)
 
-            token = self.getNextToken()
+            token = self.getNextLine(True)
             if "WARNING!" in token:
                 self.err = token
-                while "Suggested tweak factor" not in self.peekNextToken():
-                    self.err += self.getNextToken()
+                while "Suggested tweak factor" not in self.peekNextLine():
+                    self.err += self.getNextLine()
             else:
                 self.result = token
-                self.consumeTokens(1)
+                self.consumeLines(1)
 
             output = self.err if self.err else self.result
             if "BELOW" in output:
@@ -284,7 +281,7 @@ class GudFile:
                     self.output = "0%"
             # Collect the suggested tweak factor
             # from the end of the final line.
-            self.suggestedTweakFactor = self.getNextToken().split()[-1].strip()
+            self.suggestedTweakFactor = self.getNextLine(True).split()[-1].strip()
 
         except Exception as e:
             raise ParserException(
