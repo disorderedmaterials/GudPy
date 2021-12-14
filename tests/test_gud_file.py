@@ -1,12 +1,10 @@
 import os
-from types import DynamicClassAttribute
 from src.gudrun_classes.exception import ParserException
 from unittest import TestCase
 from shutil import copyfile
 
 from src.gudrun_classes.gud_file import GudFile
 from src.gudrun_classes.gudrun_file import GudrunFile
-from src.scripts.utils import extract_floats_from_string
 
 
 class TestParseGudFile(TestCase):

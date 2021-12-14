@@ -229,9 +229,8 @@ class GudFile:
             self.consumeTokens(1)
 
             self.expectedDCS = float(
-                self.getNextToken().split()[-1].strip()     
+                self.getNextToken().split()[-1].strip()
             )
-
 
             self.consumeTokens(3)
 
@@ -263,7 +262,7 @@ class GudFile:
             if "WARNING!" in token:
                 self.err = token
                 while "Suggested tweak factor" not in self.peekNextToken():
-                    self.err+=self.getNextToken()
+                    self.err += self.getNextToken()
             else:
                 self.result = token
                 self.consumeTokens(1)
@@ -276,12 +275,15 @@ class GudFile:
             else:
                 percentage = float(re.findall(floatRegex, output)[0])
                 if percentage < 100:
-                    self.output = f"-{float(Decimal(100.0)-Decimal(percentage))}%"
+                    diff = float(Decimal(100.0)-Decimal(percentage))
+                    self.output = f"-{diff}%"
                 elif percentage > 100:
-                    self.output = f"+{float(Decimal(percentage)-Decimal(100.0))}%"
+                    diff = float(Decimal(percentage)-Decimal(100.0))
+                    self.output = f"+{diff}%"
                 else:
                     self.output = "0%"
-            # Collect the suggested tweak factor from the end of the final line.
+            # Collect the suggested tweak factor
+            # from the end of the final line.
             self.suggestedTweakFactor = self.getNextToken().split()[-1].strip()
 
         except Exception as e:
