@@ -1388,7 +1388,8 @@ class GudrunFile:
                     proc,
                     self.write_out,
                     [
-                        path
+                        path,
+                        False
                     ]
                 )
 
