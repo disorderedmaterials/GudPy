@@ -253,6 +253,11 @@ class GudPyMainWindow(QMainWindow):
             PlotModes.SF_MDCS01
         )
 
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_CANS.name,
+            PlotModes.SF_CANS
+        )
+
         self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
             self.handleTopAllPlotModeChanged
         )
@@ -260,6 +265,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.bottomAllPlotComboBox.addItem(
             PlotModes.RDF.name,
             PlotModes.RDF
+        )
+
+        self.mainWidget.bottomAllPlotComboBox.addItem(
+            PlotModes.RDF_CANS.name,
+            PlotModes.RDF_CANS
         )
 
         self.mainWidget.bottomAllPlotComboBox.currentIndexChanged.connect(
