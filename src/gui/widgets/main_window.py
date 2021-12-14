@@ -43,7 +43,7 @@ from src.gui.widgets.gudpy_charts import (
   GudPyChart, PlotModes, GudPyChartView
 )
 
-from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.enums import Geometry, Instruments
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
 from src.gui.widgets.slots.beam_slots import BeamSlots
 from src.gui.widgets.slots.component_slots import ComponentSlots
@@ -1046,11 +1046,26 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
+
+        detectorThresholds = {
+            Instruments.NIMROD: 2150
+        }
+
         if finished:
-            QMessageBox.warning(
-                self.mainWidget, "GudPy Warning",
-                f"{detectors} detectors made it through the purge."
-            )
+            if self.gudrunFile.instrument.name in detectorThresholds.keys():
+                thresh = detectorThresholds[self.gudrunFile.instrument.name]
+                if detectors < thresh:
+                    QMessageBox.warning(
+                        self.mainWidget, "GudPy Warning",
+                        f"{detectors} detectors made it through the purge."
+                        " The acceptable minimum for "
+                        f"{self.gudrunFile.instrument.name.name} is {thresh}"
+                    )
+            else:
+                QMessageBox.warning(
+                    self.mainWidget, "GudPy Warning",
+                    f"{detectors} detectors made it through the purge."
+                )
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
