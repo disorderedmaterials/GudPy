@@ -84,6 +84,13 @@ class Container:
         self.attenuationCoefficient = 0.0
 
         self.runAsSample = False
+        self.topHatW = 0.0
+        self.FTMode = FTModes.SUB_AVERAGE
+        self.minRadFT = 0.0
+        self.maxRadFT = 0.0
+        self.grBroadening = 0.
+        self.powerForBroadening = 0.0
+        self.stepSize = 0.0
 
     def __str__(self):
         """
@@ -200,14 +207,15 @@ class Container:
         sample.densityUnits = self.densityUnits
         sample.totalCrossSectionSource = self.totalCrossSectionSource
         sample.sampleTweakFactor = self.tweakFactor
-        sample.FTMode = FTModes.NO_FT
-        sample.grBroadening = 0.1
+        sample.FTMode = self.FTMode
+        sample.grBroadening = self.grBroadening
         sample.exponentialValues = [(0.0, 1.0)]
         sample.normalisationCorrectionFactor = 1.0
         sample.fileSelfScattering = "*"
-        sample.maxRadFT = 20.0
-        sample.powerForBroadening = 0.2
-        sample.stepSize = 0.03
+        sample.maxRadFT = self.maxRadFT
+        sample.minRadFT = self.minRadFT
+        sample.powerForBroadening = self.powerForBroadening
+        sample.stepSize = self.stepSize
         sample.scatteringFraction = 1.0
 
         return sample

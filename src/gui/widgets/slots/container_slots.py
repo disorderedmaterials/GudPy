@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QFileDialog
 from src.gudrun_classes import config
 from src.gudrun_classes.enums import (
-    CrossSectionSource, UnitsOfDensity, Geometry
+    CrossSectionSource, FTModes, UnitsOfDensity, Geometry
 )
 
 
@@ -99,7 +99,7 @@ class ContainerSlots():
             self.container.attenuationCoefficient
         )
 
-        self.widget.runAsSampleCheckBox.setChecked(
+        self.widget.runAsSampleGroupBox.setChecked(
             self.container.runAsSample
         )
 
@@ -112,6 +112,24 @@ class ContainerSlots():
         self.widget.containerCompositionTable.model().dataChanged.connect(
             self.updateExpectedDCSLevel
         )
+
+        # Populate Fourier Transform parameters.
+
+        self.widget.containerTopHatWidthSpinBox.setValue(self.container.topHatW)
+        self.widget.containerFTModeComboBox.setCurrentIndex(
+            self.container.FTMode.value
+        )
+
+        self.widget.containerMinSpinBox.setValue(self.container.minRadFT)
+        self.widget.containerMaxSpinBox.setValue(self.container.maxRadFT)
+
+        self.widget.containerBroadeningFunctionSpinBox.setValue(
+            self.container.grBroadening
+        )
+        self.widget.containerBroadeningPowerSpinBox.setValue(
+            self.container.powerForBroadening
+        )
+        self.widget.containerStepSizeSpinBox.setValue(self.container.stepSize)
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -220,7 +238,7 @@ class ContainerSlots():
             self.handleAttenuationCoefficientChanged
         )
 
-        self.widget.runAsSampleCheckBox.stateChanged.connect(
+        self.widget.runAsSampleGroupBox.clicked.connect(
             self.handleToggleRunAsSample
         )
 
@@ -231,6 +249,28 @@ class ContainerSlots():
         self.widget.removeContainerElementButton.clicked.connect(
             self.handleRemoveElement
         )
+
+        # Fill top hat width combo box.
+        for tp in FTModes:
+            self.widget.containerFTModeComboBox.addItem(tp.name, tp)
+
+
+        self.widget.containerFTModeComboBox.currentIndexChanged.connect(
+            self.handleBackgroundScatteringSubtractionModeChanged
+        )
+
+        self.widget.containerMinSpinBox.valueChanged.connect(self.handleMinChanged)
+        self.widget.containerMaxSpinBox.valueChanged.connect(self.handleMaxChanged)
+        self.widget.containerBroadeningFunctionSpinBox.valueChanged.connect(
+            self.handleBroadeningFunctionChanged
+        )
+        self.widget.containerBroadeningPowerSpinBox.valueChanged.connect(
+            self.handleBroadeningPowerChanged
+        )
+        self.widget.containerStepSizeSpinBox.valueChanged.connect(
+            self.handleStepSizeChanged
+        )
+
 
     def handlePeriodNoChanged(self, value):
         """
@@ -499,13 +539,13 @@ class ContainerSlots():
     def handleToggleRunAsSample(self, state):
         """
         Slot for handling toggling running the container as
-        a sample. Called when a stateChanged signal is emitted,
+        a sample. Called when a clicked signal is emitted,
         from the runAsSampleCheckBox. Updates the class attribute
         as such.
         Parameters
         ----------
         state : int
-            The new state of the runAsSampleCheckBox.
+            The new state of the runAsSampleGroupBox check bolx.
         """
         self.container.runAsSample = bool(state)
 
@@ -648,3 +688,112 @@ class ContainerSlots():
         self.widget.containerExpectedDcsLabel.setText(
             f"Expected DCS Level: {dcsLevel}"
         )
+
+    def handleTopHatWidthChanged(self, value):
+        """
+        Slot for handling change in the top hat width.
+        Called when a valueChanged signal is emitted,
+        from the the containerTopHatWidthSpinBox.
+        Alters the container's top hat width as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerTopHatWidthSpinBox.
+        """
+        self.container.topHatW = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBackgroundScatteringSubtractionModeChanged(self, index):
+        """
+        Slot for handling change in FT Mode.
+        Called when a currentIndexChanged signal is emitted,
+        from the containerFTModeComboBox.
+        Alters the container's FT mode as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the
+            containerFTModeComboBox.
+        """
+        self.container.singleAtomBackgroundScatteringSubtractionMode = (
+            self.widget.FTModeComboBox.itemData(index)
+        )
+
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleMinChanged(self, value):
+        """
+        Slot for handling change in the minimum radius for FT.
+        Called when a valueChanged signal is emitted,
+        from the the containerMinSpinBox.
+        Alters the container's minimum radius for FT as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerMinSpinBox.
+        """
+        self.container.minRadFT = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleMaxChanged(self, value):
+        """
+        Slot for handling change in the maximum radius for FT.
+        Called when a valueChanged signal is emitted,
+        from the the containerMaxSpinBox.
+        Alters the container's maximum radius for FT as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerMaxSpinBox.
+        """
+        self.container.maxRadFT = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBroadeningFunctionChanged(self, value):
+        """
+        Slot for handling change in g(r) broadening at r = 1A.
+        Called when a valueChanged signal is emitted,
+        from the the containerBroadeningFunctionSpinBox.
+        Alters the container's broadening function as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerBroadeningFunctionSpinBox.
+        """
+        self.container.grBroadening = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBroadeningPowerChanged(self, value):
+        """
+        Slot for handling change in the power for broadening.
+        Called when a valueChanged signal is emitted,
+        from the the containerBroadeningPowerSpinBox.
+        Alters the container's broadening power as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerBroadeningPowerSpinBox.
+        """
+        self.container.powerForBroadening = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleStepSizeChanged(self, value):
+        """
+        Slot for handling change in the step size in radius for final g(r).
+        Called when a valueChanged signal is emitted,
+        from the containerStepSizeSpinBox.
+        Alters the container's step size as such.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerStepSizeSpinBox.
+        """
+        self.container.stepSize = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
