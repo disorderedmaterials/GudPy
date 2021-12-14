@@ -124,6 +124,7 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.previousProcTitle = ""
         self.error = ""
+        self.defaultPurge = False
 
     def initComponents(self):
         """
@@ -760,6 +761,7 @@ class GudPyMainWindow(QMainWindow):
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
         if default:
+            self.defaultPurge = True
             purge_det = self.gudrunFile.purge(
                 headless=False
             )
@@ -1061,11 +1063,12 @@ class GudPyMainWindow(QMainWindow):
                         " The acceptable minimum for "
                         f"{self.gudrunFile.instrument.name.name} is {thresh}"
                     )
-            else:
+            elif not self.defaultPurge:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
                     f"{detectors} detectors made it through the purge."
                 )
+            self.defaultPurge = False
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
