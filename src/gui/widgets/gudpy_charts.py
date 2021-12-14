@@ -16,8 +16,6 @@ from src.gudrun_classes.container import Container
 from src.gudrun_classes.gud_file import GudFile
 from itertools import chain, product
 
-from src.scripts.utils import isin
-
 
 def enumFromDict(clsname, _dict):
     return Enum(
@@ -941,7 +939,8 @@ class GudPyChartView(QChartView):
             hideMenu.setTitle("Hide..")
             actionMap = {}
             if self.chart().plotMode in [
-                PlotModes.SF, PlotModes.SF_MINT01, PlotModes.SF_MDCS01, PlotModes.RDF
+                PlotModes.SF, PlotModes.SF_MINT01,
+                PlotModes.SF_MDCS01, PlotModes.RDF
             ]:
                 for sample in self.chart().data.keys():
                     if isinstance(sample, Sample):
