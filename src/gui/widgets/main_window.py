@@ -113,7 +113,6 @@ class GudPyMainWindow(QMainWindow):
         """
         super(GudPyMainWindow, self).__init__()
         self.gudrunFile = None
-        self.initComponents()
         self.clipboard = None
         self.modified = False
         self.iterator = None
@@ -124,6 +123,7 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.previousProcTitle = ""
         self.error = ""
+        self.initComponents()
 
     def initComponents(self):
         """
@@ -881,10 +881,12 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile.path:
                 self.mainWidget.setWindowModified(True)
                 self.modified = True
+                self.mainWidget.save.setEnabled(True)
 
     def setUnModified(self):
         self.mainWidget.setWindowModified(False)
         self.modified = False
+        self.mainWidget.save.setEnabled(False)
 
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
@@ -909,6 +911,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
+            self.modified &
             len(self.gudrunFile.path) > 0
             if self.gudrunFile.path
             else False
@@ -935,7 +938,10 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.checkFilesExist.setEnabled(state)
 
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state)
+        self.mainWidget.save.setEnabled(
+            state &
+            self.modified
+        )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
