@@ -142,6 +142,11 @@ class Sample:
 
         self.containers = []
 
+    def pathName(self):
+        return self.name.replace(" ", "_").translate(
+            {ord(x): '' for x in r'/\!*~,&|[]'}
+        ) + ".sample"
+
     def __str__(self):
         """
         Returns the string representation of the Sample object.

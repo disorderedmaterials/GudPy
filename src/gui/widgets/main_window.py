@@ -448,7 +448,10 @@ class GudPyMainWindow(QMainWindow):
         Opens a QFileDialog to load an input file.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Select Input file for GudPy", ".", "GudPy input (*.txt)"
+            self,
+            "Select Input file for GudPy",
+            ".",
+            "GudPy Input (*.txt);;Sample Parameters (*.sample)"
         )
         if filename:
             try:
@@ -1062,6 +1065,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.loadConfiguration.setEnabled(state)
+        self.mainWidget.exportArchive.setEnabled(state)
+        self.mainWidget.showPreviousOutput.setEnabled(state)
 
     def setActionsEnabled(self, state):
 
@@ -1081,6 +1086,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(state)
         self.mainWidget.saveAs.setEnabled(state)
+        self.mainWidget.exportArchive.setEnabled(state)
+        self.mainWidget.showPreviousOutput.setEnabled(state)
 
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()

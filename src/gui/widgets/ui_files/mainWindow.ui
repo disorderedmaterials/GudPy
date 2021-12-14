@@ -473,7 +473,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Incident flight path [m]</string>
+                      <string>Incident flight path</string>
                      </property>
                     </widget>
                    </item>
@@ -496,6 +496,9 @@
                        <width>16777215</width>
                        <height>16777215</height>
                       </size>
+                     </property>
+                     <property name="suffix">
+                      <string> m</string>
                      </property>
                     </widget>
                    </item>
@@ -2536,7 +2539,11 @@
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox"/>
+                         <widget class="QDoubleSpinBox" name="topScatteredBeamEdgeSpinBox">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Top Scattered Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <spacer name="horizontalSpacer_28">
@@ -2554,7 +2561,14 @@
                        </layout>
                       </item>
                       <item row="1" column="0">
-                       <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox"/>
+                       <widget class="QDoubleSpinBox" name="leftScatteredBeamEdgeSpinBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left Scattered Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="minimum">
+                         <double>-99.000000000000000</double>
+                        </property>
+                       </widget>
                       </item>
                       <item row="1" column="1">
                        <widget class="QFrame" name="frame_5">
@@ -2568,10 +2582,21 @@
                          <item>
                           <layout class="QGridLayout" name="gridLayout_8">
                            <item row="1" column="0">
-                            <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="leftIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left Incident Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                             <property name="minimum">
+                              <double>-99.000000000000000</double>
+                             </property>
+                            </widget>
                            </item>
                            <item row="1" column="2">
-                            <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="rightIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right Incident Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="1" column="1">
                             <widget class="QLabel" name="label_10">
@@ -2600,10 +2625,21 @@
                             </widget>
                            </item>
                            <item row="0" column="1">
-                            <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="topIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Top Incident Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="2" column="1">
-                            <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox"/>
+                            <widget class="QDoubleSpinBox" name="bottomIncidentBeamEdgeSpinBox">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bottom Incident Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                             <property name="minimum">
+                              <double>-99.000000000000000</double>
+                             </property>
+                            </widget>
                            </item>
                           </layout>
                          </item>
@@ -2611,7 +2647,11 @@
                        </widget>
                       </item>
                       <item row="1" column="2">
-                       <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox"/>
+                       <widget class="QDoubleSpinBox" name="rightScatteredBeamEdgeSpinBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right Scattered Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                       </widget>
                       </item>
                       <item row="2" column="1">
                        <layout class="QHBoxLayout" name="horizontalLayout_91">
@@ -2629,7 +2669,14 @@
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox"/>
+                         <widget class="QDoubleSpinBox" name="bottomScatteredBeamEdgeSpinBox">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bottom Scattered Beam Edge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="minimum">
+                           <double>-99.000000000000000</double>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <spacer name="horizontalSpacer_40">
@@ -3795,7 +3842,7 @@
                                </size>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3839,7 +3886,7 @@
                                </size>
                               </property>
                               <property name="suffix">
-                               <string>cm</string>
+                               <string> cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3850,7 +3897,7 @@
                             <item>
                              <widget class="QLabel" name="totalNormalisationThicknessLabel">
                               <property name="text">
-                               <string>Total: 0.00cm</string>
+                               <string>Total: 0.00 cm</string>
                               </property>
                              </widget>
                             </item>
@@ -3896,7 +3943,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -3922,7 +3969,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -3963,7 +4010,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -3989,7 +4036,7 @@
                              </sizepolicy>
                             </property>
                             <property name="suffix">
-                             <string>cm</string>
+                             <string> cm</string>
                             </property>
                            </widget>
                           </item>
@@ -4020,7 +4067,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string>cm</string>
+                            <string> cm</string>
                            </property>
                           </widget>
                          </item>
@@ -5009,7 +5056,7 @@
                                     </sizepolicy>
                                    </property>
                                    <property name="suffix">
-                                    <string>cm</string>
+                                    <string> cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5029,7 +5076,7 @@
                                     </sizepolicy>
                                    </property>
                                    <property name="suffix">
-                                    <string>cm</string>
+                                    <string> cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5040,7 +5087,7 @@
                                  <item>
                                   <widget class="QLabel" name="totalSampleThicknessLabel">
                                    <property name="text">
-                                    <string>Total: 0.00cm</string>
+                                    <string>Total: 0.00 cm</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -5089,7 +5136,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5115,7 +5162,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -5153,7 +5200,7 @@
                                   </sizepolicy>
                                  </property>
                                  <property name="suffix">
-                                  <string>cm</string>
+                                  <string> cm</string>
                                  </property>
                                 </widget>
                                </item>
@@ -5173,7 +5220,7 @@
                                   </sizepolicy>
                                  </property>
                                  <property name="suffix">
-                                  <string>cm</string>
+                                  <string> cm</string>
                                  </property>
                                 </widget>
                                </item>
@@ -5207,7 +5254,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string>cm</string>
+                                 <string> cm</string>
                                 </property>
                                </widget>
                               </item>
@@ -7108,10 +7155,12 @@
     <addaction name="insertSampleBackground"/>
     <addaction name="insertSample"/>
     <addaction name="insertContainer"/>
+    <addaction name="separator"/>
     <addaction name="copy"/>
     <addaction name="cut"/>
     <addaction name="paste"/>
     <addaction name="delete_"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuLoad"/>
    <addaction name="menuEdit"/>
@@ -7270,6 +7319,11 @@
   <action name="runContainersAsSamples">
    <property name="text">
     <string>Run Containers as Samples</string>
+   </property>
+  </action>
+  <action name="loadSample">
+   <property name="text">
+    <string>Load Sample</string>
    </property>
   </action>
  </widget>

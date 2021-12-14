@@ -1,5 +1,6 @@
 from PySide6.QtGui import QValidator
 from PySide6.QtWidgets import QDoubleSpinBox
+from PySide6.QtCore import Qt
 import re
 
 
@@ -115,6 +116,7 @@ class ExponentialSpinBox(QDoubleSpinBox):
         super(ExponentialSpinBox, self).__init__(parent=parent)
         self.validator = ExponentialValidator()
         self.setDecimals(16)
+        self.editingFinished.connect(self.appendSuffix)
 
     def validate(self, text, position):
         """
@@ -209,4 +211,29 @@ class ExponentialSpinBox(QDoubleSpinBox):
         string = "{:g}".format(mantissa)
         if groups[-1]:
             string += groups[-1]
+        if float(string) < self.minimum():
+            string = str(self.minimum())
+        elif float(string) > self.maximum():
+            string = str(self.maximum())
         self.lineEdit().setText(string)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.MouseButton.LeftButton:
+            self.focusInEvent(event)
+        return super().keyPressEvent(event)
+
+    def removeSuffix(self):
+        self.prevSuffix = self.suffix()
+        self.setSuffix("")
+
+    def appendSuffix(self):
+        self.setSuffix(self.prevSuffix)
+        self.clearFocus()
+
+    def focusInEvent(self, event):
+        self.removeSuffix()
+        return super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.appendSuffix()
+        return super().focusOutEvent(event)
