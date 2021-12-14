@@ -115,11 +115,11 @@ class GudFile:
         self.err = ""
         self.result = ""
         self.suggestedTweakFactor = 0.0
-        self.contents = ""
+        self.stream = []
         self.output = ""
 
         # Handle edge cases - invalid extensions and paths.
-        if self.path.split(".")[-1] != "gud":
+        if not self.path.endswith(".gud"):
             raise ParserException("Only .gud files can be parsed.")
 
         if not isfile(self.path):
@@ -127,6 +127,55 @@ class GudFile:
 
         # Parse the GudFile
         self.parse()
+
+    def getNextLine(self, ignoreEmpty=False):
+        """
+        Pops the next 'line' from the stream and returns it.
+        Essentially removes the first line in the stream and returns it.
+
+        Parameters
+        ----------
+        ignoreEmpty : bool, default=False
+            Should empty lines be ignored?
+        Returns
+        -------
+        str | None
+        """
+        if ignoreEmpty and self.stream:
+            line = self.stream.pop(0)
+            while line.isspace():
+                line = self.stream.pop(0)
+            return line
+        else:
+            return self.stream.pop(0) if self.stream else None
+
+    def peekNextLine(self):
+        """
+        Returns the next line in the input stream, without removing it.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        str | None
+        """
+        return self.stream[0] if self.stream else None
+
+    def consumeLines(self, n):
+        """
+        Consume n lines from the input stream.
+
+        Parameters
+        ----------
+        n : int
+            Number of lines to consume
+        Returns
+        -------
+        None
+        """
+        for _ in range(n):
+            self.getNextLine()
 
     def parse(self):
         """
@@ -143,78 +192,106 @@ class GudFile:
 
         # Read the contents into an auxilliary variable.
         with open(self.path) as f:
-            self.contents = f.readlines()
+            self.stream = f.readlines()
             f.close()
 
         # Simple cases, we can just extract the stripped lines.
-        self.name = self.contents[0].strip()
-        self.title = self.contents[2].strip()
-        self.author = self.contents[4].strip()
-        self.stamp = self.contents[6].strip()
 
-        # Extract the last item of data from the lines.
-        self.atomicDensity = self.contents[8].split(" ")[-1].strip()
-        self.chemicalDensity = self.contents[9].split(" ")[-1].strip()
-        self.averageScatteringLength = self.contents[10].split(" ")[-1].strip()
-        self.averageScatteringLengthSquared = (
-            self.contents[11].split(" ")[-1].strip()
-        )
-        self.averageSquareOfScatteringLength = (
-            self.contents[12].split(" ")[-1].strip()
-        )
-        self.coherentRatio = self.contents[13].split(" ")[-1].strip()
-        self.expectedDCS = self.contents[15].split(" ")[-1].strip()
+        try:
 
-        # Extract the groups table.
-        line = self.contents[19]
-        i = 1
-        while not line.isspace():
-            self.groups.append(line)
-            line = self.contents[19 + i]
-            i += 1
+            self.name = self.getNextLine().strip()
 
-        self.groupsTable = "".join(self.groups)
+            self.title = self.getNextLine(True).strip()
 
-        # Extract the last item of data from the line.
-        self.noGroups = self.contents[19 + i].split(" ")[-1].strip()
+            self.author = self.getNextLine(True).strip()
 
-        # Extract the last but one item of data from the line.
-        self.averageLevelMergedDCS = (
-            self.contents[19 + i + 2].split(" ")[-2].strip()
-        )
+            self.stamp = self.getNextLine(True).strip()
 
-        # Extract the last but four item of data from the line.
-        self.gradient = self.contents[19 + i + 4].split(" ")[-4].strip()
+            self.atomicDensity = float(
+                self.getNextLine(True).split()[-1].strip()
+            )
 
-        # Get the output information (err/result).
-        start = 19 + i + 6
-        end = 0
-        line = self.contents[start]
-        if "WARNING!" in line:
-            while "Suggested tweak factor" not in line:
-                end += 1
-                line = self.contents[start + end]
-            end += 19 + i + 6
+            self.chemicalDensity = float(
+                self.getNextLine().split()[-1].strip()
+            )
 
-            self.err = "".join(self.contents[start:end])
-        else:
-            self.result = line
+            self.averageScatteringLength = float(
+                self.getNextLine().split()[-1].strip()
+            )
 
-        output = self.err if self.err else self.result
-        if "BELOW" in output:
-            self.output = f"-{re.findall(percentageRegex, self.err)[0]}"
-        elif "ABOVE" in output:
-            self.output = f"+{re.findall(percentageRegex, self.err)[0]}"
-        else:
-            percentage = float(re.findall(floatRegex, output)[0])
-            if percentage < 100:
-                self.output = f"-{float(Decimal(100.0)-Decimal(percentage))}%"
-            elif percentage > 100:
-                self.output = f"+{float(Decimal(percentage)-Decimal(100.0))}%"
+            self.averageScatteringLengthSquared = float(
+                self.getNextLine().split()[-1].strip()
+            )
+
+            self.averageSquareOfScatteringLength = float(
+                self.getNextLine().split()[-1].strip()
+            )
+
+            self.coherentRatio = float(
+                self.getNextLine().split()[-1].strip()
+            )
+
+            self.expectedDCS = float(
+                self.getNextLine(True).split()[-1].strip()
+            )
+
+            self.consumeLines(3)
+
+            # Extract the groups table.
+            while not self.peekNextLine().isspace():
+                self.groups.append(self.getNextLine())
+
+            self.groupsTable = "".join(self.groups)
+
+            self.noGroups = int(
+                self.getNextLine(True).split()[-1].strip()
+            )
+
+            self.averageLevelMergedDCS = float(
+                self.getNextLine(True).split()[-2].strip()
+            )
+
+            self.gradient = float(
+                self.getNextLine(True).split()[-4].strip().replace("%", '')
+            )
+
+            token = self.getNextLine(True)
+            if "WARNING!" in token:
+                self.err = token
+                while "Suggested tweak factor" not in self.peekNextLine():
+                    self.err += self.getNextLine()
             else:
-                self.output = "0%"
-        # Collect the suggested tweak factor from the end of the final line.
-        self.suggestedTweakFactor = self.contents[-1].split(" ")[-1].strip()
+                self.result = token
+                self.consumeLines(1)
+
+            output = self.err if self.err else self.result
+            if "BELOW" in output:
+                self.output = f"-{re.findall(percentageRegex, self.err)[0]}"
+            elif "ABOVE" in output:
+                self.output = f"+{re.findall(percentageRegex, self.err)[0]}"
+            else:
+                percentage = float(re.findall(floatRegex, output)[0])
+                if percentage < 100:
+                    diff = float(Decimal(100.0)-Decimal(percentage))
+                    self.output = f"-{diff}%"
+                elif percentage > 100:
+                    diff = float(Decimal(percentage)-Decimal(100.0))
+                    self.output = f"+{diff}%"
+                else:
+                    self.output = "0%"
+            # Collect the suggested tweak factor
+            # from the end of the final line.
+            self.suggestedTweakFactor = self.getNextLine(
+                True
+            ).split()[-1].strip()
+
+        except Exception as e:
+            raise ParserException(
+                    f"Whilst parsing {self.path}, an exception occured."
+                    " It's likely gudrun_dcs failed, and invalid values"
+                    " were yielded. "
+                    f"{str(e)}"
+            ) from e
 
     def __str__(self):
         """
@@ -265,7 +342,7 @@ class GudFile:
             f'{self.averageLevelMergedDCS} b/sr/atom;\n\n'
             f' Gradient of merged dcs: '
             f'{self.gradient} of average level.\n\n'
-            f'{outLine}'
+            f'{outLine}\n'
             f' Suggested tweak factor:   '
             f'{self.suggestedTweakFactor}\n'
 
