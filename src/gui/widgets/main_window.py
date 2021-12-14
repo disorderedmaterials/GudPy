@@ -295,8 +295,18 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topContainerPlotComboBox.addItem(
-            "Structure Factor",
-            PlotModes.STRUCTURE_FACTOR
+            PlotModes.SF.name,
+            PlotModes.SF
+        )
+
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            PlotModes.SF_MINT01.name,
+            PlotModes.SF_MINT01
+        )
+
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            PlotModes.SF_MDCS01.name,
+            PlotModes.SF_MDCS01
         )
 
         self.mainWidget.topContainerPlotComboBox.currentIndexChanged.connect(
@@ -304,8 +314,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.bottomContainerPlotComboBox.addItem(
-            "Radial Distribution Functions",
-            PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS
+            PlotModes.RDF.name,
+            PlotModes.RDF
         )
 
         self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
@@ -632,8 +642,10 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.STRUCTURE_FACTOR: 0,
-                PlotModes.RADIAL_DISTRIBUTION_FUNCTIONS: 0
+                PlotModes.SF: 0,
+                PlotModes.SF_MINT01: 1,
+                PlotModes.SF_MDCS01: 2,
+                PlotModes.RDF: 0
             }
 
             self.mainWidget.topPlotComboBox.setCurrentIndex(
