@@ -189,98 +189,108 @@ class GudFile:
 
         # Simple cases, we can just extract the stripped lines.
 
-        self.name = self.getNextToken().strip()
-        self.consumeTokens(1)
+        try:
 
-        self.title = self.getNextToken().strip()
-        self.consumeTokens(1)
-
-        self.author = self.getNextToken().strip()
-        self.consumeTokens(1)
-
-        self.stamp = self.getNextToken().strip()
-        self.consumeTokens(1)
-
-        self.atomicDensity = float(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.chemicalDensity = float(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.averageScatteringLength = float(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.averageScatteringLengthSquared = float(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.averageSquareOfScatteringLength = float(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.coherentRatio = float(
-            self.getNextToken().split()[-1].strip()
-        )
-        self.consumeTokens(1)
-
-        self.expectedDCS = float(
-            self.getNextToken().split()[-1].strip()     
-        )
-
-
-        self.consumeTokens(3)
-
-        # Extract the groups table.
-        while not self.peekNextToken().isspace():
-            self.groups.append(self.getNextToken())
-
-        self.groupsTable = "".join(self.groups)
-
-        self.consumeTokens(1)
-
-        self.noGroups = int(
-            self.getNextToken().split()[-1].strip()
-        )
-
-        self.consumeTokens(1)
-
-        self.averageLevelMergedDCS = float(
-            self.getNextToken().split()[-2].strip()
-        )
-        self.consumeTokens(1)
-
-        self.gradient = float(
-            self.getNextToken().split()[-4].strip().replace("%", '')
-        )
-        self.consumeTokens(1)
-
-        token = self.getNextToken()
-        if "WARNING!" in token:
-            self.err = token
-            while "Suggested tweak factor" not in self.peekNextToken():
-                self.err+=self.getNextToken()
-        else:
-            self.result = token
+            self.name = self.getNextToken().strip()
             self.consumeTokens(1)
 
-        output = self.err if self.err else self.result
-        if "BELOW" in output:
-            self.output = f"-{re.findall(percentageRegex, self.err)[0]}"
-        elif "ABOVE" in output:
-            self.output = f"+{re.findall(percentageRegex, self.err)[0]}"
-        else:
-            percentage = float(re.findall(floatRegex, output)[0])
-            if percentage < 100:
-                self.output = f"-{float(Decimal(100.0)-Decimal(percentage))}%"
-            elif percentage > 100:
-                self.output = f"+{float(Decimal(percentage)-Decimal(100.0))}%"
+            self.title = self.getNextToken().strip()
+            self.consumeTokens(1)
+
+            self.author = self.getNextToken().strip()
+            self.consumeTokens(1)
+
+            self.stamp = self.getNextToken().strip()
+            self.consumeTokens(1)
+
+            self.atomicDensity = float(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.chemicalDensity = float(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.averageScatteringLength = float(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.averageScatteringLengthSquared = float(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.averageSquareOfScatteringLength = float(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.coherentRatio = float(
+                self.getNextToken().split()[-1].strip()
+            )
+            self.consumeTokens(1)
+
+            self.expectedDCS = float(
+                self.getNextToken().split()[-1].strip()     
+            )
+
+
+            self.consumeTokens(3)
+
+            # Extract the groups table.
+            while not self.peekNextToken().isspace():
+                self.groups.append(self.getNextToken())
+
+            self.groupsTable = "".join(self.groups)
+
+            self.consumeTokens(1)
+
+            self.noGroups = int(
+                self.getNextToken().split()[-1].strip()
+            )
+
+            self.consumeTokens(1)
+
+            self.averageLevelMergedDCS = float(
+                self.getNextToken().split()[-2].strip()
+            )
+            self.consumeTokens(1)
+
+            self.gradient = float(
+                self.getNextToken().split()[-4].strip().replace("%", '')
+            )
+            self.consumeTokens(1)
+
+            token = self.getNextToken()
+            if "WARNING!" in token:
+                self.err = token
+                while "Suggested tweak factor" not in self.peekNextToken():
+                    self.err+=self.getNextToken()
             else:
-                self.output = "0%"
-        # Collect the suggested tweak factor from the end of the final line.
-        self.suggestedTweakFactor = self.getNextToken().split()[-1].strip()
+                self.result = token
+                self.consumeTokens(1)
+
+            output = self.err if self.err else self.result
+            if "BELOW" in output:
+                self.output = f"-{re.findall(percentageRegex, self.err)[0]}"
+            elif "ABOVE" in output:
+                self.output = f"+{re.findall(percentageRegex, self.err)[0]}"
+            else:
+                percentage = float(re.findall(floatRegex, output)[0])
+                if percentage < 100:
+                    self.output = f"-{float(Decimal(100.0)-Decimal(percentage))}%"
+                elif percentage > 100:
+                    self.output = f"+{float(Decimal(percentage)-Decimal(100.0))}%"
+                else:
+                    self.output = "0%"
+            # Collect the suggested tweak factor from the end of the final line.
+            self.suggestedTweakFactor = self.getNextToken().split()[-1].strip()
+
+        except Exception as e:
+            raise ParserException(
+                    f"Whilst parsing {self.path}, an exception occured."
+                    " It's likely gudrun_dcs failed, and invalid values"
+                    " were yielded. "
+                    f"{str(e)}"
+            ) from e
 
     def __str__(self):
         """
