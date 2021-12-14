@@ -582,7 +582,6 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-
             self.mainWidget.sampleTopPlot.setChart(
                 topPlot
             )
@@ -637,6 +636,20 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
+            if not any(
+                [
+                    *topPlot.data[
+                        self.mainWidget.objectTree.currentObject()
+                    ].values(),
+                    *bottomPlot.data[
+                        self.mainWidget.objectTree.currentObject()
+                    ].values()
+                ]
+            ):
+                self.mainWidget.containerSplitter.setSizes([1,0])
+            else:
+                self.mainWidget.containerSplitter.setSizes([2, 1])
+
             self.mainWidget.containerTopPlot.setChart(
                 topPlot
             )
