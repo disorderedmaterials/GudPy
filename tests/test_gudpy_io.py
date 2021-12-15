@@ -1307,6 +1307,14 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("attenuationCoefficient", None)
         expectedContainerA.pop("crossSectionFilename", None)
         expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
+
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1359,6 +1367,13 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("attenuationCoefficient", None)
         expectedContainerA.pop("crossSectionFilename", None)
         expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
 
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
