@@ -43,7 +43,7 @@ from src.gui.widgets.gudpy_charts import (
   GudPyChart, PlotModes, GudPyChartView
 )
 
-from src.gudrun_classes.enums import Geometry, Instruments
+from src.gudrun_classes.enums import Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
 from src.gui.widgets.slots.beam_slots import BeamSlots
 from src.gui.widgets.slots.component_slots import ComponentSlots
