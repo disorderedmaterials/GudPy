@@ -171,7 +171,14 @@ class TestGudPyIO(TestCase):
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "runAsSample": False
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerA["composition"].elements = [
@@ -208,7 +215,14 @@ class TestGudPyIO(TestCase):
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "runAsSample": False
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerB["composition"].elements = [
@@ -240,7 +254,14 @@ class TestGudPyIO(TestCase):
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "runAsSample": False
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerC["composition"].elements = [
@@ -272,7 +293,14 @@ class TestGudPyIO(TestCase):
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "runAsSample": False
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerD["composition"].elements = [
