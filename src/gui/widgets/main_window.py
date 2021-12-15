@@ -1061,6 +1061,7 @@ class GudPyMainWindow(QMainWindow):
                         " The acceptable minimum for "
                         f"{self.gudrunFile.instrument.name.name} is {thresh}"
                     )
+            self.mainWidget.goodDetectorsLabel.setText(f"Number of Good Detectors: {detectors}")
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
