@@ -22,7 +22,7 @@
       </property>
       <widget class="QWidget" name="inputTab">
        <attribute name="title">
-        <string>GudPy Input File</string>
+        <string>Gudrun Parameters</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
@@ -6867,7 +6867,7 @@
       </widget>
       <widget class="QWidget" name="plotTab">
        <attribute name="title">
-        <string>Plots</string>
+        <string>Plot Results</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
