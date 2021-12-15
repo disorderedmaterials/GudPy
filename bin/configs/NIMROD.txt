@@ -34,5 +34,6 @@ StartupFiles/NIMROD/sears91_gudrun.dat          Neutron scattering parameters fi
 1          Hard group edges?
 0          Number of iterations
 0          Tweak the tweak factor(s)?
+9999        Good detector threshold
 
 }

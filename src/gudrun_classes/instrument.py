@@ -154,6 +154,7 @@ class Instrument:
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
+        self.goodDetectorThreshold = 0
 
     def __str__(self):
         """

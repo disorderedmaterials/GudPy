@@ -1055,19 +1055,14 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-        detectorThresholds = {
-            Instruments.NIMROD: 2150
-        }
-
         if finished:
-            if self.gudrunFile.instrument.name in detectorThresholds.keys():
-                thresh = detectorThresholds[self.gudrunFile.instrument.name]
-                if detectors < thresh:
-                    self.warning = (
-                        f"{detectors} detectors made it through the purge."
-                        " The acceptable minimum for "
-                        f"{self.gudrunFile.instrument.name.name} is {thresh}"
-                    )
+            thresh = self.gudrunFile.instrument.goodDetectorThreshold
+            if thresh and detectors < thresh:
+                self.warning = (
+                    f"{detectors} detectors made it through the purge."
+                    " The acceptable minimum for "
+                    f"{self.gudrunFile.instrument.name.name} is {thresh}"
+                )
             self.mainWidget.goodDetectorsLabel.setText(
                 f"Number of Good Detectors: {detectors}"
             )
