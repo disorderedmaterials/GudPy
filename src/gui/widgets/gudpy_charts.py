@@ -11,6 +11,8 @@ import os
 
 from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 
+from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.container import Container
 from src.gudrun_classes.gud_file import GudFile
 from itertools import chain, product
 
@@ -29,7 +31,11 @@ PLOT_MODES = {
     0: ["Structure Factor (mint01, mdcs01)", "SF"],
     1: ["Structure Factor (mint01)", "SF_MINT01"],
     2: ["Structure Factor (mdcs01)", "SF_MDCS01"],
-    3: ["Radial Distribution Functions", "RDF"]
+    3: ["Radial Distribution Functions", "RDF"],
+    4: ["Structure Factor (mint01, mdcs01), (Cans)", "SF_CANS"],
+    5: ["Radial Distribution Functions (Cans)", "RDF_CANS"],
+    6: ["Structure Factor (mint01), (Cans)", "SF_MINT01_CANS"],
+    7: ["Structure Factor (mdcs01), (Cans)", "SF_MDCS01_CANS"],
 }
 
 PlotModes = enumFromDict(
@@ -344,23 +350,41 @@ class GudPyChart(QChart):
         self.removeAllSeries()
         for axis in self.axes():
             self.removeAxis(axis)
+        if len(self.data.keys()) == 1:
+            self.plotSample(list(self.data.keys())[0])
 
-        # Plot all the samples stored.
+        elif self.data.keys():
+            # Plot all the samples stored.
+            if self.plotMode in [
+                PlotModes.SF, PlotModes.SF_MINT01,
+                PlotModes.SF_MDCS01, PlotModes.RDF
+            ]:
+                for sample in self.data.keys():
+                    if isinstance(sample, Sample):
+                        self.plotSample(sample)
+
+            elif self.plotMode in [
+                PlotModes.SF_CANS, PlotModes.RDF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
+            ]:
+                for sample in self.data.keys():
+                    if isinstance(sample, Container):
+                        self.plotSample(sample)
+
         if self.data.keys():
-            for sample in self.data.keys():
-                self.plotSample(sample)
-
             # Label axes
             if self.plotMode in [
                 PlotModes.SF, PlotModes.SF_MINT01,
-                PlotModes.SF_MDCS01
+                PlotModes.SF_MDCS01, PlotModes.SF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
             ]:
                 XLabel = "Q, 1\u212b"
                 YLabel = "DCS, barns/sr/atom"
-            elif self.plotMode == PlotModes.RDF:
+            elif self.plotMode in [
+                PlotModes.RDF, PlotModes.RDF_CANS
+            ]:
                 XLabel = "r, \u212b"
                 YLabel = "G(r)"
-
             self.createDefaultAxes()
             self.axisX().setTitleText(XLabel)
             self.axisY().setTitleText(YLabel)
@@ -412,7 +436,9 @@ class GudPyChart(QChart):
         offsetY = 1 if self.logarithmicY else 0
 
         # If the plotting mode is Structure Factor.
-        if self.plotMode == PlotModes.SF:
+        if self.plotMode in [
+            PlotModes.SF, PlotModes.SF_CANS
+        ]:
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
@@ -472,7 +498,10 @@ class GudPyChart(QChart):
                 self.addSeries(dcsSeries)
                 self.seriesC[sample] = dcsSeries
 
-        elif self.plotMode == PlotModes.SF_MINT01:
+        elif self.plotMode in [
+            PlotModes.SF_MINT01,
+            PlotModes.SF_MINT01_CANS
+        ]:
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
@@ -492,7 +521,10 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesA[sample] = mintSeries
 
-        elif self.plotMode == PlotModes.SF_MDCS01:
+        elif self.plotMode in [
+            PlotModes.SF_MDCS01,
+            PlotModes.SF_MDCS01_CANS
+        ]:
             # Instantiate the series.
             mdcsSeries = QLineSeries()
             # Set the name of the series.
@@ -534,7 +566,9 @@ class GudPyChart(QChart):
                 self.seriesB[sample] = dcsSeries
 
         # If the plotting mode is RDF.
-        elif self.plotMode == PlotModes.RDF:
+        elif self.plotMode in [
+            PlotModes.RDF, PlotModes.RDF_CANS
+        ]:
 
             # Instantiate the series.
             mdorSeries = QLineSeries()
@@ -833,7 +867,10 @@ class GudPyChartView(QChartView):
 
             self.menu.addMenu(toggleLogarithmicMenu)
 
-            if self.chart().plotMode == PlotModes.SF:
+            if self.chart().plotMode in [
+                PlotModes.SF,
+                PlotModes.SF_CANS
+            ]:
                 showMint01Action = QAction("Show mint01 data", self.menu)
                 showMint01Action.setCheckable(True)
                 showMint01Action.setChecked(
@@ -869,8 +906,10 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showDCSLevelAction)
-            elif self.chart().plotMode == PlotModes.SF_MDCS01:
-
+            elif self.chart().plotMode in [
+                 PlotModes.SF_MDCS01,
+                 PlotModes.SF_MDCS01_CANS
+            ]:
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
                 showDCSLevelAction.setCheckable(True)
                 showDCSLevelAction.setChecked(
@@ -883,8 +922,11 @@ class GudPyChartView(QChartView):
                 )
                 self.menu.addAction(showDCSLevelAction)
             elif (
-                self.chart().plotMode ==
-                PlotModes.RDF
+                self.chart().plotMode in
+                [
+                    PlotModes.RDF,
+                    PlotModes.RDF_CANS
+                ]
             ):
                 showMdor01Action = QAction("Show mdor01 data", self.menu)
                 showMdor01Action.setCheckable(True)
@@ -910,23 +952,47 @@ class GudPyChartView(QChartView):
                 )
                 self.menu.addAction(showMgor01Action)
 
-        hideMenu = QMenu(self.menu)
-        hideMenu.setTitle("Hide..")
-        actionMap = {}
-        for sample in self.chart().data.keys():
-            action = QAction(f"Hide {sample.name}", hideMenu)
-            action.setCheckable(True)
-            checked = True
-            if sample in self.chart().seriesA.keys():
-                checked &= self.chart().seriesA[sample].isVisible()
-            if sample in self.chart().seriesB.keys():
-                checked &= self.chart().seriesB[sample].isVisible()
-            if sample in self.chart().seriesC.keys():
-                checked &= self.chart().seriesC[sample].isVisible()
-            action.setChecked(checked)
-            hideMenu.addAction(action)
-            actionMap[action] = sample
-        self.menu.addMenu(hideMenu)
+        if len(self.chart().data.keys()) > 1:
+            hideMenu = QMenu(self.menu)
+            hideMenu.setTitle("Hide..")
+            actionMap = {}
+            if self.chart().plotMode in [
+                PlotModes.SF, PlotModes.SF_MINT01,
+                PlotModes.SF_MDCS01, PlotModes.RDF,
+            ]:
+                for sample in self.chart().data.keys():
+                    if isinstance(sample, Sample):
+                        action = QAction(f"Hide {sample.name}", hideMenu)
+                        action.setCheckable(True)
+                        checked = True
+                        if sample in self.chart().seriesA.keys():
+                            checked &= self.chart().seriesA[sample].isVisible()
+                        if sample in self.chart().seriesB.keys():
+                            checked &= self.chart().seriesB[sample].isVisible()
+                        if sample in self.chart().seriesC.keys():
+                            checked &= self.chart().seriesC[sample].isVisible()
+                        action.setChecked(checked)
+                        hideMenu.addAction(action)
+                        actionMap[action] = sample
+            elif self.chart().plotMode in [
+                PlotModes.SF_CANS, PlotModes.RDF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS,
+            ]:
+                for sample in self.chart().data.keys():
+                    if isinstance(sample, Container):
+                        action = QAction(f"Hide {sample.name}", hideMenu)
+                        action.setCheckable(True)
+                        checked = True
+                        if sample in self.chart().seriesA.keys():
+                            checked &= self.chart().seriesA[sample].isVisible()
+                        if sample in self.chart().seriesB.keys():
+                            checked &= self.chart().seriesB[sample].isVisible()
+                        if sample in self.chart().seriesC.keys():
+                            checked &= self.chart().seriesC[sample].isVisible()
+                        action.setChecked(checked)
+                        hideMenu.addAction(action)
+                        actionMap[action] = sample
+            self.menu.addMenu(hideMenu)
         copyAction = QAction("Copy plot", self.menu)
         copyAction.triggered.connect(self.copyPlot)
         self.menu.addAction(copyAction)

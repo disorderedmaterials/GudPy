@@ -1327,7 +1327,9 @@ class GudrunFile:
         """
         print(path)
         if path:
-            f = open(path, "w", encoding="utf-8")
+            f = open(
+                path, "w", encoding="utf-8"
+            )
         elif not overwrite:
             f = open(
                 os.path.join(
@@ -1448,6 +1450,19 @@ class GudrunFile:
         if result:
             self.purged = True
         return result
+
+    def convertToSample(self, container, persist=False):
+
+        sample = container.convertToSample()
+
+        if persist:
+            for i, sampleBackground in enumerate(self.sampleBackgrounds):
+                for sample in sampleBackground.samples:
+                    if container in sample.containers:
+                        sample.containers.remove(container)
+                        break
+            self.sampleBackgrounds[i].append(sample)
+        return sample
 
 
 if __name__ == "__main__":

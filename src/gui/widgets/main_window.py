@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.container import Container
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -61,6 +62,7 @@ from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from src.gudrun_classes.run_containers_as_samples import RunContainersAsSamples
 from src.gudrun_classes.gud_file import GudFile
 
 from src.scripts.utils import nthint
@@ -206,6 +208,22 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleBottomPlot
         )
 
+        self.mainWidget.containerTopPlot = GudPyChartView(
+            self.mainWidget
+        )
+
+        self.mainWidget.topContainerPlotLayout.addWidget(
+            self.mainWidget.containerTopPlot
+        )
+
+        self.mainWidget.containerBottomPlot = GudPyChartView(
+            self.mainWidget
+        )
+
+        self.mainWidget.bottomContainerPlotLayout.addWidget(
+            self.mainWidget.containerBottomPlot
+        )
+
         self.mainWidget.allSampleTopPlot = GudPyChartView(
             self.mainWidget
         )
@@ -235,6 +253,21 @@ class GudPyMainWindow(QMainWindow):
             PlotModes.SF_MDCS01
         )
 
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_CANS.name,
+            PlotModes.SF_CANS
+        )
+
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MINT01_CANS.name,
+            PlotModes.SF_MINT01_CANS
+        )
+
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MDCS01_CANS.name,
+            PlotModes.SF_MDCS01_CANS
+        )
+
         self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
             self.handleTopAllPlotModeChanged
         )
@@ -242,6 +275,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.bottomAllPlotComboBox.addItem(
             PlotModes.RDF.name,
             PlotModes.RDF
+        )
+
+        self.mainWidget.bottomAllPlotComboBox.addItem(
+            PlotModes.RDF_CANS.name,
+            PlotModes.RDF_CANS
         )
 
         self.mainWidget.bottomAllPlotComboBox.currentIndexChanged.connect(
@@ -276,6 +314,34 @@ class GudPyMainWindow(QMainWindow):
             self.handleBottomPlotModeChanged
         )
 
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            PlotModes.SF.name,
+            PlotModes.SF
+        )
+
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            PlotModes.SF_MINT01.name,
+            PlotModes.SF_MINT01
+        )
+
+        self.mainWidget.topContainerPlotComboBox.addItem(
+            PlotModes.SF_MDCS01.name,
+            PlotModes.SF_MDCS01
+        )
+
+        self.mainWidget.topContainerPlotComboBox.currentIndexChanged.connect(
+            self.handleContainerTopPlotModeChanged
+        )
+
+        self.mainWidget.bottomContainerPlotComboBox.addItem(
+            PlotModes.RDF.name,
+            PlotModes.RDF
+        )
+
+        self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
+            self.handleContainerBottomPlotModeChanged
+        )
+
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
         self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
@@ -295,6 +361,9 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.iterateGudrun.triggered.connect(
             self.iterateGudrun_
+        )
+        self.mainWidget.runContainersAsSamples.triggered.connect(
+            self.runContainersAsSamples
         )
 
         self.mainWidget.checkFilesExist.triggered.connect(
@@ -520,7 +589,9 @@ class GudPyMainWindow(QMainWindow):
     def focusResult(self):
         if (
             self.mainWidget.objectStack.currentIndex() == 5
-            and isinstance(self.mainWidget.objectTree.currentObject(), Sample)
+            and isinstance(
+                self.mainWidget.objectTree.currentObject(), Sample
+            )
         ):
             try:
                 topPlot, bottomPlot, gudFile = (
@@ -531,7 +602,6 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-
             self.mainWidget.sampleTopPlot.setChart(
                 topPlot
             )
@@ -571,9 +641,80 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
+        elif (
+            self.mainWidget.objectStack.currentIndex() == 6
+            and isinstance(
+                self.mainWidget.objectTree.currentObject(), Container
+            )
+        ):
+            try:
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            except KeyError:
+                self.updateSamples()
+                topPlot, bottomPlot, gudFile = (
+                    self.results[self.mainWidget.objectTree.currentObject()]
+                )
+            if not any(
+                [
+                    *topPlot.data[
+                        self.mainWidget.objectTree.currentObject()
+                    ].values(),
+                    *bottomPlot.data[
+                        self.mainWidget.objectTree.currentObject()
+                    ].values()
+                ]
+            ):
+                self.mainWidget.containerSplitter.setSizes([1, 0])
+            else:
+                self.mainWidget.containerSplitter.setSizes([2, 1])
+
+            self.mainWidget.containerTopPlot.setChart(
+                topPlot
+            )
+            self.mainWidget.containerBottomPlot.setChart(
+                bottomPlot
+            )
+
+            plotsMap = {
+                PlotModes.SF: 0,
+                PlotModes.SF_MINT01: 1,
+                PlotModes.SF_MDCS01: 2,
+                PlotModes.RDF: 0
+            }
+
+            self.mainWidget.topPlotComboBox.setCurrentIndex(
+                plotsMap[topPlot.plotMode]
+            )
+            self.mainWidget.bottomPlotComboBox.setCurrentIndex(
+                plotsMap[bottomPlot.plotMode]
+            )
+            if gudFile:
+                dcsLevel = gudFile.averageLevelMergedDCS
+                self.mainWidget.containerDcsLabel.setText(
+                    f"DCS Level: {dcsLevel}"
+                )
+                self.mainWidget.containerResultLabel.setText(gudFile.output)
+                if gudFile.err:
+                    self.mainWidget.containerResultLabel.setStyleSheet(
+                        "background-color: red"
+                    )
+                else:
+                    self.mainWidget.containerResultLabel.setStyleSheet(
+                        "background-color: green"
+                    )
+
+                tweakFactor = gudFile.suggestedTweakFactor
+                self.mainWidget.containerSuggestedTweakFactorLabel.setText(
+                    f"Suggested Tweak Factor: {tweakFactor}"
+                )
 
     def updateSamples(self):
-        samples = self.mainWidget.objectTree.getSamples()
+        samples = [
+            *self.mainWidget.objectTree.getSamples(),
+            *self.mainWidget.objectTree.getContainers()
+        ]
         for sample in samples:
             topChart = GudPyChart(
                 self.gudrunFile
@@ -599,7 +740,10 @@ class GudPyMainWindow(QMainWindow):
 
     def updateAllSamples(self):
 
-        samples = self.mainWidget.objectTree.getSamples()
+        samples = [
+            *self.mainWidget.objectTree.getSamples(),
+            *self.mainWidget.objectTree.getContainers()
+        ]
         if len(self.allPlots):
             allTopChart = GudPyChart(
                 self.gudrunFile
@@ -694,6 +838,44 @@ class GudPyMainWindow(QMainWindow):
     def runGudrun_(self):
         self.setControlsEnabled(False)
         dcs = self.gudrunFile.dcs(
+            path=os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.outpath
+            ),
+            headless=False
+        )
+        if isinstance(dcs, Sequence):
+            dcs, func, args = dcs
+        if isinstance(dcs, FileNotFoundError):
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                "Couldn't find gudrun_dcs binary."
+            )
+        elif (
+            not self.gudrunFile.purged
+            and os.path.exists(
+                os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    'purge_det.dat'
+                )
+            )
+        ):
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "purge_det.dat found, but wasn't run in this session. "
+                "Continue?"
+            )
+        elif not self.gudrunFile.purged:
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "It looks like you may not have purged detectors. Continue?"
+            )
+        else:
+            self.makeProc(dcs, self.progressDCS, func, args)
+
+    def runContainersAsSamples(self):
+        self.setControlsEnabled(False)
+        dcs = RunContainersAsSamples(self.gudrunFile).runContainersAsSamples(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
@@ -1101,6 +1283,20 @@ class GudPyMainWindow(QMainWindow):
         self.handlePlotModeChanged(
             self.mainWidget.sampleBottomPlot.chart().plot,
             self.mainWidget.bottomPlotComboBox.itemData(index)
+        )
+
+    def handleContainerTopPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.containerTopPlot.chart().plot,
+            self.mainWidget.topContainerPlotComboBox.itemData(
+                index
+            )
+        )
+
+    def handleContainerBottomPlotModeChanged(self, index):
+        self.handlePlotModeChanged(
+            self.mainWidget.containerBottomPlot.chart().plot,
+            self.mainWidget.bottomContainerPlotComboBox.itemData(index)
         )
 
     def handleTopAllPlotModeChanged(self, index):

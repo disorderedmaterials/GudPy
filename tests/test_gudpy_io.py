@@ -170,7 +170,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerA["composition"].elements = [
@@ -206,7 +214,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerB["composition"].elements = [
@@ -237,7 +253,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerC["composition"].elements = [
@@ -268,7 +292,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerD["composition"].elements = [
@@ -1300,8 +1332,17 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
-        expectedContainerA.pop("attenuationCoefficient")
-        expectedContainerA.pop("crossSectionFilename")
+        expectedContainerA.pop("attenuationCoefficient", None)
+        expectedContainerA.pop("crossSectionFilename", None)
+        expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
+
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1351,8 +1392,17 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
-        expectedContainerA.pop("attenuationCoefficient")
-        expectedContainerA.pop("crossSectionFilename")
+        expectedContainerA.pop("attenuationCoefficient", None)
+        expectedContainerA.pop("crossSectionFilename", None)
+        expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
+
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
