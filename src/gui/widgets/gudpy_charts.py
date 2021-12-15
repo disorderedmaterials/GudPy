@@ -867,7 +867,10 @@ class GudPyChartView(QChartView):
 
             self.menu.addMenu(toggleLogarithmicMenu)
 
-            if self.chart().plotMode == PlotModes.SF:
+            if self.chart().plotMode in [
+                PlotModes.SF,
+                PlotModes.SF_CANS
+            ]:
                 showMint01Action = QAction("Show mint01 data", self.menu)
                 showMint01Action.setCheckable(True)
                 showMint01Action.setChecked(
@@ -903,8 +906,10 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showDCSLevelAction)
-            elif self.chart().plotMode == PlotModes.SF_MDCS01:
-
+            elif self.chart().plotMode in [
+                 PlotModes.SF_MDCS01,
+                 PlotModes.SF_MDCS01_CANS
+            ]:
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
                 showDCSLevelAction.setCheckable(True)
                 showDCSLevelAction.setChecked(
@@ -917,8 +922,11 @@ class GudPyChartView(QChartView):
                 )
                 self.menu.addAction(showDCSLevelAction)
             elif (
-                self.chart().plotMode ==
-                PlotModes.RDF
+                self.chart().plotMode in
+                [
+                    PlotModes.RDF,
+                    PlotModes.RDF_CANS
+                ]
             ):
                 showMdor01Action = QAction("Show mdor01 data", self.menu)
                 showMdor01Action.setCheckable(True)
@@ -950,7 +958,7 @@ class GudPyChartView(QChartView):
             actionMap = {}
             if self.chart().plotMode in [
                 PlotModes.SF, PlotModes.SF_MINT01,
-                PlotModes.SF_MDCS01, PlotModes.RDF
+                PlotModes.SF_MDCS01, PlotModes.RDF,
             ]:
                 for sample in self.chart().data.keys():
                     if isinstance(sample, Sample):
@@ -967,7 +975,8 @@ class GudPyChartView(QChartView):
                         hideMenu.addAction(action)
                         actionMap[action] = sample
             elif self.chart().plotMode in [
-                PlotModes.SF_CANS, PlotModes.RDF_CANS
+                PlotModes.SF_CANS, PlotModes.RDF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS,
             ]:
                 for sample in self.chart().data.keys():
                     if isinstance(sample, Container):
