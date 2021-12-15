@@ -258,6 +258,16 @@ class GudPyMainWindow(QMainWindow):
             PlotModes.SF_CANS
         )
 
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MINT01_CANS.name,
+            PlotModes.SF_MINT01_CANS
+        )
+
+        self.mainWidget.topAllPlotComboBox.addItem(
+            PlotModes.SF_MDCS01_CANS.name,
+            PlotModes.SF_MDCS01_CANS
+        )
+
         self.mainWidget.topAllPlotComboBox.currentIndexChanged.connect(
             self.handleTopAllPlotModeChanged
         )
@@ -1272,7 +1282,7 @@ class GudPyMainWindow(QMainWindow):
     def handleContainerTopPlotModeChanged(self, index):
         self.handlePlotModeChanged(
             self.mainWidget.containerTopPlot.chart().plot,
-            self.mainWidget.topContainerPlotComboBoxPlotComboBox.itemData(
+            self.mainWidget.topContainerPlotComboBox.itemData(
                 index
             )
         )

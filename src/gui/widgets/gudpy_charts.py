@@ -33,7 +33,9 @@ PLOT_MODES = {
     2: ["Structure Factor (mdcs01)", "SF_MDCS01"],
     3: ["Radial Distribution Functions", "RDF"],
     4: ["Structure Factor (mint01, mdcs01), (Cans)", "SF_CANS"],
-    5: ["Radial Distribution Functions (Cans)", "RDF_CANS"]
+    5: ["Radial Distribution Functions (Cans)", "RDF_CANS"],
+    6: ["Structure Factor (mint01), (Cans)", "SF_MINT01_CANS"],
+    7: ["Structure Factor (mdcs01), (Cans)", "SF_MDCS01_CANS"],
 }
 
 PlotModes = enumFromDict(
@@ -362,7 +364,8 @@ class GudPyChart(QChart):
                         self.plotSample(sample)
 
             elif self.plotMode in [
-                PlotModes.SF_CANS, PlotModes.RDF_CANS
+                PlotModes.SF_CANS, PlotModes.RDF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
             ]:
                 for sample in self.data.keys():
                     if isinstance(sample, Container):
@@ -372,7 +375,8 @@ class GudPyChart(QChart):
             # Label axes
             if self.plotMode in [
                 PlotModes.SF, PlotModes.SF_MINT01,
-                PlotModes.SF_MDCS01, PlotModes.SF_CANS
+                PlotModes.SF_MDCS01, PlotModes.SF_CANS,
+                PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
             ]:
                 XLabel = "Q, 1\u212b"
                 YLabel = "DCS, barns/sr/atom"
@@ -494,7 +498,10 @@ class GudPyChart(QChart):
                 self.addSeries(dcsSeries)
                 self.seriesC[sample] = dcsSeries
 
-        elif self.plotMode == PlotModes.SF_MINT01:
+        elif self.plotMode in [
+            PlotModes.SF_MINT01,
+            PlotModes.SF_MINT01_CANS
+        ]:
             # Instantiate the series.
             mintSeries = QLineSeries()
             # Set the name of the series.
@@ -514,7 +521,10 @@ class GudPyChart(QChart):
             # Keep the series.
             self.seriesA[sample] = mintSeries
 
-        elif self.plotMode == PlotModes.SF_MDCS01:
+        elif self.plotMode in [
+            PlotModes.SF_MDCS01,
+            PlotModes.SF_MDCS01_CANS
+        ]:
             # Instantiate the series.
             mdcsSeries = QLineSeries()
             # Set the name of the series.
