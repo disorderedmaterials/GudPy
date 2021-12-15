@@ -1107,7 +1107,7 @@
                     </sizepolicy>
                    </property>
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="DataBinningTab">
                     <attribute name="title">
@@ -2263,6 +2263,13 @@
                     </spacer>
                    </item>
                   </layout>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="goodDetectorsLabel">
+                   <property name="text">
+                    <string>Number of Good Detectors: </string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>

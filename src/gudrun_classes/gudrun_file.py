@@ -148,8 +148,8 @@ class GudrunFile:
             self.sampleBackgrounds = []
         else:
             self.instrument = None
-            self.beam = None
-            self.normalisation = None
+            self.beam = Beam()
+            self.normalisation = Normalisation()
             self.sampleBackgrounds = []
             self.parse(config=config)
         self.purged = False
@@ -391,6 +391,11 @@ class GudrunFile:
             ):
                 self.instrument.nxsDefinitionFile = (
                     firstword(self.getNextToken())
+                )
+
+            if self.config:
+                self.instrument.goodDetectorThreshold = nthint(
+                    self.getNextToken(), 0
                 )
 
             # Consume whitespace and the closing brace.
@@ -1200,7 +1205,7 @@ class GudrunFile:
         -------
         None
         """
-
+        self.config = config
         # Ensure only valid files are given.
         if not self.path:
             raise ParserException(
