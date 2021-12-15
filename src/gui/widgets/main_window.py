@@ -120,6 +120,7 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
+        self.proc = None
         self.cwd = os.getcwd()
         self.initComponents()
         self.tryAutorecover()
@@ -829,7 +830,7 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile.path:
                 self.modified = True
                 self.setWindowModified(True)
-        if hasattr(self, "proc") and not self.proc:
+        if not self.proc:
             self._thread = threading.Thread(target = self.autosave, args=())
             self._thread.setDaemon(True)
             self._thread.start()
