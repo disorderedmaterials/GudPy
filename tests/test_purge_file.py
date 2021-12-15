@@ -30,25 +30,24 @@ class TestPurgeFile(TestCase):
 
         from pathlib import Path
 
-        parent = Path("tests").parent.absolute()
-        GudrunStartFolder = parent / "bin"
         dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
 
-        g.instrument.GudrunStartFolder = GudrunStartFolder
         g.instrument.dataFileDir = str(dataFileDir) + "/"
-        g.instrument.groupFileName = (
-            GudrunStartFolder / g.instrument.groupFileName
-        )
         g.write_out(overwrite=True)
         self.g = g
         samples = self.g.sampleBackgrounds[0].samples
-        TAB = "          "
         self.expectedPurgeFile = {
             "instrumentName": self.g.instrument.name,
             "inputFileDir": self.g.instrument.GudrunInputFileDir,
             "dataFileDir": self.g.instrument.dataFileDir,
-            "detCalibFile": self.g.instrument.detectorCalibrationFileName,
-            "groupsFile": self.g.instrument.groupFileName,
+            "detCalibFile": os.path.join(
+                self.g.instrument.GudrunStartFolder,
+                self.g.instrument.detectorCalibrationFileName
+            ),
+            "groupsFile": os.path.join(
+                self.g.instrument.GudrunStartFolder,
+                self.g.instrument.groupFileName,
+            ),
             "spectrumNumbers": (
                 self.g.instrument.spectrumNumbersForIncidentBeamMonitor
             ),
@@ -68,38 +67,26 @@ class TestPurgeFile(TestCase):
                 self.g.normalisation.periodNumberBg
             ),
             "normalisationDataFiles": (
-                f'{self.g.normalisation.dataFiles.dataFiles[0]}  1{TAB}\n'
+                self.g.normalisation.dataFiles.dataFiles,  1
             ),
             "normalisationBackgroundDataFiles": (
-                f'{self.g.normalisation.dataFilesBg.dataFiles[0]}  1{TAB}\n'
-                f'{self.g.normalisation.dataFilesBg.dataFiles[1]}  1{TAB}\n'
+                self.g.normalisation.dataFilesBg.dataFiles, 1
             ),
-            "sampleBackgroundDataFiles": (
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[0]}  1'
-                f'{TAB}\n'
-                f'{self.g.sampleBackgrounds[0].dataFiles.dataFiles[1]}  1'
-                f'{TAB}\n'
-            ),
-            "sampleDataFiles": (
-                f'{samples[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[0].dataFiles.dataFiles[1]}  1{TAB}\n'
-                f'{samples[1].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[1].dataFiles.dataFiles[1]}  1{TAB}\n'
-                f'{samples[2].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[2].dataFiles.dataFiles[1]}  1{TAB}\n'
-                f'{samples[3].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[3].dataFiles.dataFiles[1]}  1{TAB}\n'
-            ),
-            "containerDataFiles": (
-                f'{samples[0].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[0].containers[0].dataFiles.dataFiles[1]}  1{TAB}\n'
-                f'{samples[0].containers[0].dataFiles.dataFiles[2]}  1{TAB}\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[1]}  1{TAB}\n'
-                f'{samples[1].containers[0].dataFiles.dataFiles[2]}  1{TAB}\n'
-                f'{samples[2].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-                f'{samples[3].containers[0].dataFiles.dataFiles[0]}  1{TAB}\n'
-            )
+            "sampleBackgroundDataFiles": [
+                (self.g.sampleBackgrounds[0].dataFiles.dataFiles, 1)
+            ],
+            "sampleDataFiles": [
+                (samples[0].dataFiles.dataFiles, 1),
+                (samples[1].dataFiles.dataFiles, 1),
+                (samples[2].dataFiles.dataFiles, 1),
+                (samples[3].dataFiles.dataFiles, 1)
+            ],
+            "containerDataFiles": [
+                (samples[0].containers[0].dataFiles.dataFiles, 1),
+                (samples[1].containers[0].dataFiles.dataFiles, 1),
+                (samples[2].containers[0].dataFiles.dataFiles, 1),
+                (samples[3].containers[0].dataFiles.dataFiles, 1)
+            ]
 
         }
 
@@ -111,13 +98,12 @@ class TestPurgeFile(TestCase):
         return super().tearDown()
 
     def testCreatePurgeClass(self):
-
         purge = PurgeFile(self.g)
         purge.__dict__.pop("gudrunFile", None)
         purgeAttrsDict = purge.__dict__
 
         self.assertIsInstance(purge, PurgeFile)
-        for key in purgeAttrsDict:
+        for key in self.expectedPurgeFile.keys():
             self.assertEqual(
                 self.expectedPurgeFile[key], purgeAttrsDict[key]
             )

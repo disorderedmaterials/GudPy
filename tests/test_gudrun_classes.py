@@ -12,8 +12,8 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.enums import (
-    Instruments, Scales, UnitsOfDensity, MergeWeights, NormalisationType,
-    OutputUnits, Geometry, CrossSectionSource
+    FTModes, Instruments, Scales, UnitsOfDensity, MergeWeights,
+    NormalisationType, OutputUnits, Geometry, CrossSectionSource
 )
 
 
@@ -179,6 +179,7 @@ class TestGudrunClasses(TestCase):
         )
         self.assertIsInstance(sample.sampleTweakFactor, float)
         self.assertIsInstance(sample.topHatW, float)
+        self.assertIsInstance(sample.FTMode, FTModes)
         self.assertIsInstance(sample.minRadFT, float)
         self.assertIsInstance(sample.grBroadening, float)
         self.assertIsInstance(sample.resonanceValues, list)

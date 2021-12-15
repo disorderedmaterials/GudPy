@@ -68,6 +68,8 @@ class PurgeFile():
         and their period numbers.
     Methods
     -------
+    collectGudrunFileAttributes()
+        Collects the attributes needed for the purge file.
     write_out()
         Writes out the string representation of the PurgeFile to purge_det.dat
     purge()
@@ -90,7 +92,9 @@ class PurgeFile():
         self.standardDeviation = (10, 10)
         self.ignoreBad = True
 
-    def write_out(self):
+        self.collectGudrunFileAttributes()
+
+    def write_out(self, path=""):
         """
         Writes out the string representation of the PurgeFile to
         purge_det.dat.
@@ -104,25 +108,26 @@ class PurgeFile():
         """
         # Write out the string representation of the PurgeFile
         # To purge_det.dat.
-        f = open("purge_det.dat", "w", encoding="utf-8")
-        f.write(str(self))
+        if not path:
+            f = open("purge_det.dat", "w", encoding="utf-8")
+            f.write(str(self))
+        else:
+            f = open(path, "w", encoding="utf-8")
+            f.write(str(self))
         f.close()
 
-    def __str__(self):
+    def collectGudrunFileAttributes(self):
         """
-        Returns the string representation of the PurgeFile object.
+        Collects the attributes needed for the purge file, from the
+        GudrunFile object.
 
         Parameters
         ----------
         None
-
         Returns
         -------
-        string : str
-            String representation of PurgeFile.
+        None
         """
-        HEADER = "'  '  '          '  '/'\n\n"
-        TAB = "          "
 
         # Extract relevant attributes from the GudrunFile object.
         self.instrumentName = self.gudrunFile.instrument.name
@@ -156,6 +161,51 @@ class PurgeFile():
             self.gudrunFile.normalisation.periodNumberBg
         )
 
+        self.normalisationDataFiles = (
+            self.gudrunFile.normalisation.dataFiles.dataFiles,
+            self.gudrunFile.normalisation.periodNumber
+        )
+        self.normalisationBackgroundDataFiles = (
+            self.gudrunFile.normalisation.dataFilesBg.dataFiles,
+            self.gudrunFile.normalisation.periodNumberBg
+        )
+
+        # Iterate through sample backgrounds, samples and containers
+        # data files, building a list of data files and period numbers.
+        # only append samples and their containers, if
+        # the sample is set to run.
+        self.sampleBackgroundDataFiles = [
+            (sb.dataFiles.dataFiles, sb.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+        ]
+        self.sampleDataFiles = [
+            (s.dataFiles.dataFiles, s.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+            for s in sb.samples if s.runThisSample
+        ]
+        self.containerDataFiles = [
+            (c.dataFiles.dataFiles, c.periodNumber)
+            for sb in self.gudrunFile.sampleBackgrounds
+            for s in sb.samples if s.runThisSample
+            for c in s.containers
+        ]
+
+    def __str__(self):
+        """
+        Returns the string representation of the PurgeFile object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        string : str
+            String representation of PurgeFile.
+        """
+        HEADER = "'  '  '          '  '/'\n\n"
+        TAB = "          "
+
         # Collect data files as strings of the format:
         # {name} {period number}
         # do this for normalisation, normalisation background,
@@ -164,64 +214,62 @@ class PurgeFile():
         # for consistency with original Gudrun code.
 
         TAB = "          "
-        self.normalisationDataFiles = ""
-        self.normalisationBackgroundDataFiles = ""
+        self.normalisationDataFilesString = ""
+        self.normalisationBackgroundDataFilesString = ""
 
         # Iterate through normalisation and normalisation background
         # data files, appending their string representation with
         # period number to the relevant string.
-        for dataFile in self.gudrunFile.normalisation.dataFiles.dataFiles:
-            self.normalisationDataFiles += (
-                dataFile + "  " + str(self.normalisationPeriodNo) + TAB + "\n"
+        for dataFile in self.normalisationDataFiles[0]:
+            self.normalisationDataFilesString += (
+                f"{dataFile}  {str(self.normalisationPeriodNo)}{TAB}\n"
             )
-        for dataFile in self.gudrunFile.normalisation.dataFilesBg.dataFiles:
-            self.normalisationBackgroundDataFiles += (
-                dataFile + "  " + str(self.normalisationPeriodNoBg)
-                + TAB + "\n"
-            )
-        self.sampleBackgroundDataFiles = ""
-        self.sampleDataFiles = ""
-        self.containerDataFiles = ""
+        for dataFile in self.normalisationBackgroundDataFiles[0]:
+            self.normalisationBackgroundDataFilesString += (
+                f"{dataFile}  {str(self.normalisationPeriodNoBg)}{TAB}\n"
 
-        # Iterate through sample backgrounds, samples and containers
+            )
+        self.sampleBackgroundDataFilesString = ""
+        self.sampleDataFilesString = ""
+        self.containerDataFilesString = ""
+
+        # Iterate through sample background
         # data files, appending their string representation with
-        # period number to the relevant string
-        # only append samples and their containers, if
-        # the sample is set to run.
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            periodNumber = sampleBackground.periodNumber
-            for dataFile in sampleBackground.dataFiles.dataFiles:
-                self.sampleBackgroundDataFiles += (
-                    dataFile + "  " + str(periodNumber) + TAB + "\n"
+        # period number to the relevant string.
+        for dataFiles, periodNumber in self.sampleBackgroundDataFiles:
+            for dataFile in dataFiles:
+                self.sampleBackgroundDataFilesString += (
+                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
                 )
-            for sample in [
-                x
-                for x in sampleBackground.samples
-                if x.runThisSample
-                    ]:
-                periodNumber = sample.periodNumber
-                for dataFile in sample.dataFiles.dataFiles:
-                    self.sampleDataFiles += (
-                        dataFile + "  " + str(periodNumber) + TAB + "\n"
-                    )
-                for container in sample.containers:
-                    periodNumber = container.periodNumber
-                    for dataFile in container.dataFiles.dataFiles:
-                        self.containerDataFiles += (
-                            dataFile + "  " + str(periodNumber) + TAB + "\n"
-                        )
+        # Iterate through sample data files,
+        # appending their string representation with
+        # period number to the relevant string.
+        for dataFiles, periodNumber in self.sampleDataFiles:
+            for dataFile in dataFiles:
+                self.sampleDataFilesString += (
+                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
+                )
+
+        # Iterate through container data files,
+        # appending their string representation with
+        # period number to the relevant string.
+        for dataFiles, periodNumber in self.containerDataFiles:
+            for dataFile in dataFiles:
+                self.containerDataFilesString += (
+                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
+                )
 
         dataFileLines = (
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
-            f'{self.sampleDataFiles}'
-            f'{self.containerDataFiles}'
+            f'{self.normalisationDataFilesString}'
+            f'{self.normalisationBackgroundDataFilesString}'
+            f'{self.sampleBackgroundDataFilesString}'
+            f'{self.sampleDataFilesString}'
+            f'{self.containerDataFilesString}'
             if not self.excludeSampleAndCan
             else
-            f'{self.normalisationDataFiles}'
-            f'{self.normalisationBackgroundDataFiles}'
-            f'{self.sampleBackgroundDataFiles}'
+            f'{self.normalisationDataFilesString}'
+            f'{self.normalisationBackgroundDataFilesString}'
+            f'{self.sampleBackgroundDataFilesString}'
         )
         return (
             f'{HEADER}'
@@ -306,8 +354,17 @@ class PurgeFile():
             else:
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
             if not os.path.exists(purge_det):
-                return False
+                return FileNotFoundError()
             proc = QProcess()
             proc.setProgram(purge_det)
             proc.setArguments([])
-            return proc
+            return (
+                proc,
+                self.write_out,
+                [
+                    os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        "purge_det.dat"
+                    )
+                ]
+            )

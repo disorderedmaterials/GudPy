@@ -27,12 +27,13 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, UnitsOfDensity, MergeWeights,
+    CrossSectionSource, Instruments, FTModes, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
 from src.gudrun_classes import config
-
+import re
+from copy import deepcopy
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -395,6 +396,38 @@ class GudrunFile:
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
+            # Resolve the paths, to make them relative.
+            # First construct the regular expression to match against.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            self.instrument.detectorCalibrationFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.detectorCalibrationFileName
+                ).group()
+            )
+
+            self.instrument.groupFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.groupFileName
+                ).group()
+            )
+
+            self.instrument.deadtimeConstantsFileName = (
+                re.search(
+                    pattern,
+                    self.instrument.deadtimeConstantsFileName
+                ).group()
+            )
+
+            self.instrument.neutronScatteringParametersFile = (
+                re.search(
+                    pattern,
+                    self.instrument.neutronScatteringParametersFile
+                ).group()
+            )
+
         except Exception as e:
             raise ParserException(
                     "Whilst parsing Instrument, an exception occured."
@@ -458,21 +491,32 @@ class GudrunFile:
             incidentBeamEdges = self.getNextToken()
             self.beam.incidentBeamLeftEdge = nthfloat(incidentBeamEdges, 0)
             self.beam.incidentBeamRightEdge = nthfloat(incidentBeamEdges, 1)
-            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 2)
-            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 3)
+            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 2)
+            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 3)
 
             # Extract the scattered beam edges
             # relative to the centroid of the sample.
             scatteredBeamEdges = self.getNextToken()
             self.beam.scatteredBeamLeftEdge = nthfloat(scatteredBeamEdges, 0)
             self.beam.scatteredBeamRightEdge = nthfloat(scatteredBeamEdges, 1)
-            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 2)
-            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 3)
+            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 2)
+            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 3)
 
             # For string attributes,
             # we simply extract the firstword in the line.
             self.beam.filenameIncidentBeamSpectrumParams = (
                 firstword(self.getNextToken())
+            )
+
+            # Now match it against a pattern,
+            # to resolve the path to be relative.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            self.beam.filenameIncidentBeamSpectrumParams = (
+                re.search(
+                    pattern,
+                    self.beam.filenameIncidentBeamSpectrumParams
+                ).group()
             )
 
             self.beam.overallBackgroundFactor = (
@@ -750,7 +794,6 @@ class GudrunFile:
             if not sample.name:
                 sample.name = "SAMPLE"
             self.consumeWhitespace()
-
             # The number of files and period number are both stored
             # on the same line.
             # So we extract the 0th integer for the number of files,
@@ -852,7 +895,18 @@ class GudrunFile:
                 sample.totalCrossSectionSource = CrossSectionSource.FILE
                 sample.crossSectionFilename = crossSectionSource
             sample.sampleTweakFactor = nthfloat(self.getNextToken(), 0)
-            sample.topHatW = nthfloat(self.getNextToken(), 0)
+
+            topHatW = nthfloat(self.getNextToken(), 0)
+            if topHatW == 0:
+                sample.topHatW = 0
+                sample.FTMode = FTModes.NO_FT
+            elif topHatW < 0:
+                sample.topHatW = abs(topHatW)
+                sample.FTMode = FTModes.SUB_AVERAGE
+            else:
+                sample.topHatW = topHatW
+                sample.FTMode = FTModes.ABSOLUTE
+
             sample.minRadFT = nthfloat(self.getNextToken(), 0)
             sample.grBroadening = nthfloat(self.getNextToken(), 0)
 
@@ -1256,7 +1310,7 @@ class GudrunFile:
             + footer
         )
 
-    def write_out(self, overwrite=False, path=""):
+    def write_out(self, path='', overwrite=False, writeParameters=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1272,14 +1326,35 @@ class GudrunFile:
         -------
         None
         """
-        if not overwrite and not path:
-            f = open(self.outpath, "w", encoding="utf-8")
-        elif not path:
+        if path:
+            f = open(
+                path, "w", encoding="utf-8"
+            )
+        elif not overwrite:
+            f = open(
+                os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath
+                ), "w", encoding="utf-8")
+        else:
             f = open(self.path, "w", encoding="utf-8")
-        elif path:
-            f = open(path, "w", encoding="utf-8")
         f.write(str(self))
         f.close()
+
+        if writeParameters:
+            for sb in self.sampleBackgrounds:
+                for s in sb.samples:
+                    if s.runThisSample:
+                        gf = GudrunFile()
+                        gf.__dict__ = deepcopy(self.__dict__)
+                        gf.sampleBackgrounds = [deepcopy(sb)]
+                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
+                        gf.write_out(
+                            path=os.path.join(
+                                self.instrument.GudrunInputFileDir,
+                                s.pathName()
+                            )
+                        )
 
     def dcs(self, path='', headless=True):
         """
@@ -1320,12 +1395,20 @@ class GudrunFile:
             else:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
             if not os.path.exists(gudrun_dcs):
-                return False
+                return FileNotFoundError()
             else:
                 proc = QProcess()
                 proc.setProgram(gudrun_dcs)
                 proc.setArguments([path])
-                return proc
+                return (
+                    proc,
+                    self.write_out,
+                    [
+                        path,
+                        False,
+                        True
+                    ]
+                )
 
     def process(self, headless=True):
         """
@@ -1362,10 +1445,24 @@ class GudrunFile:
             The result of calling purge_det using subprocess.run.
             Can access stdout/stderr from this.
         """
+        self.purgeFile = PurgeFile(self)
         result = self.purgeFile.purge(*args, **kwargs)
         if result:
             self.purged = True
         return result
+
+    def convertToSample(self, container, persist=False):
+
+        sample = container.convertToSample()
+
+        if persist:
+            for i, sampleBackground in enumerate(self.sampleBackgrounds):
+                for sample in sampleBackground.samples:
+                    if container in sample.containers:
+                        sample.containers.remove(container)
+                        break
+            self.sampleBackgrounds[i].append(sample)
+        return sample
 
 
 if __name__ == "__main__":

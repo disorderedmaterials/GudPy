@@ -1,6 +1,6 @@
 from src.gudrun_classes.enums import (
     CrossSectionSource, Geometry,
-    NormalisationType, OutputUnits, UnitsOfDensity
+    NormalisationType, OutputUnits, FTModes, UnitsOfDensity
 )
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
@@ -50,6 +50,13 @@ class SampleSlots():
         self.widget.sampleDownstreamSpinBox.setValue(
             self.sample.downstreamThickness
         )
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total} cm"
+        )
 
         self.widget.angleOfRotationSpinBox.setValue(
             self.sample.angleOfRotation
@@ -96,6 +103,10 @@ class SampleSlots():
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
 
+        self.widget.FTModeComboBox.setCurrentIndex(
+            self.sample.FTMode.value
+        )
+
         self.widget.minSpinBox.setValue(self.sample.minRadFT)
         self.widget.maxSpinBox.setValue(self.sample.maxRadFT)
 
@@ -132,6 +143,16 @@ class SampleSlots():
 
         # Populate the table containing resonance values.
         self.updateResonanceTable()
+
+        # Calculate the expected DCS level.
+        self.updateExpectedDCSLevel()
+
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -255,6 +276,15 @@ class SampleSlots():
         self.widget.topHatWidthSpinBox.valueChanged.connect(
             self.handleTopHatWidthChanged
         )
+
+        # Fill top hat width combo box.
+        for tp in FTModes:
+            self.widget.FTModeComboBox.addItem(tp.name, tp)
+
+        self.widget.FTModeComboBox.currentIndexChanged.connect(
+            self.handleBackgroundScatteringSubtractionModeChanged
+        )
+
         self.widget.minSpinBox.valueChanged.connect(self.handleMinChanged)
         self.widget.maxSpinBox.valueChanged.connect(self.handleMaxChanged)
         self.widget.broadeningFunctionSpinBox.valueChanged.connect(
@@ -377,6 +407,13 @@ class SampleSlots():
             The new value of the sampleUpstreamSpinBox.
         """
         self.sample.upstreamThickness = value
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total} cm"
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -392,6 +429,13 @@ class SampleSlots():
             The new value of the sampleDownstreamSpinBox.
         """
         self.sample.downstreamThickness = value
+        total = (
+            self.sample.upstreamThickness +
+            self.sample.downstreamThickness
+        )
+        self.widget.totalSampleThicknessLabel.setText(
+            f"Total: {total} cm"
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -532,6 +576,25 @@ class SampleSlots():
             The new current value of the topHatWidthSpinBox.
         """
         self.sample.topHatW = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleBackgroundScatteringSubtractionModeChanged(self, index):
+        """
+        Slot for handling change in FT Mode.
+        Called when a currentIndexChanged signal is emitted,
+        from the FTModeComboBox.
+        Alters the sample's FT mode as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the
+            FTModeComboBox.
+        """
+        self.sample.singleAtomBackgroundScatteringSubtractionMode = (
+            self.widget.FTModeComboBox.itemData(index)
+        )
+
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -845,8 +908,9 @@ class SampleSlots():
         """
         Fills the composition list.
         """
+        self.updateRatioCompositions()
+        self.updateExactCompositions()
         if config.USE_USER_DEFINED_COMPONENTS:
-            self.updateRatioCompositions()
             self.widget.insertSampleElementButton.setEnabled(False)
             self.widget.removeSampleElementButton.setEnabled(False)
             self.widget.sampleCompositionTable.setEditTriggers(
@@ -874,7 +938,6 @@ class SampleSlots():
                 QAbstractItemView.EditTrigger.EditKeyPressed |
                 QAbstractItemView.EditTrigger.AnyKeyPressed
             )
-        self.updateExactCompositions()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -911,11 +974,13 @@ class SampleSlots():
         self.widget.sampleCompositionTable.removeRow(
             self.widget.sampleCompositionTable.selectionModel().selectedRows()
         )
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
     def handleInsertComponent(self):
         self.widget.sampleRatioCompositionTable.insertRow()
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -924,6 +989,7 @@ class SampleSlots():
             self.widget.sampleRatioCompositionTable
             .selectionModel().selectedRows()
         )
+        self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -984,3 +1050,25 @@ class SampleSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def updateExpectedDCSLevel(self, _=None, __=None):
+        """
+        Updates the expectedDcsLabel,
+        to show the expected DCS level of the sample.
+        """
+        if config.USE_USER_DEFINED_COMPONENTS:
+            elements = self.sample.composition.shallowTranslate()
+            dcsLevel = self.sample.composition.calculateExpectedDCSLevel(
+                elements
+            )
+            self.widget.expectedDcsLabel.setText(
+                f"Expected DCS Level: {dcsLevel}"
+            )
+        else:
+            elements = self.sample.composition.elements
+            dcsLevel = self.sample.composition.calculateExpectedDCSLevel(
+                elements
+            )
+            self.widget.expectedDcsLabel.setText(
+                f"Expected DCS Level: {dcsLevel}"
+            )

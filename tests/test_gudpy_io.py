@@ -18,7 +18,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, Scales, UnitsOfDensity,
+    CrossSectionSource, FTModes, Instruments, Scales, UnitsOfDensity,
     MergeWeights, NormalisationType, OutputUnits,
     Geometry
 )
@@ -95,12 +95,12 @@ class TestGudPyIO(TestCase):
             "angularStepForCorrections": 10,
             "incidentBeamLeftEdge": -1.5,
             "incidentBeamRightEdge": 1.5,
-            "incidentBeamTopEdge": -1.5,
-            "incidentBeamBottomEdge": 1.5,
+            "incidentBeamBottomEdge": -1.5,
+            "incidentBeamTopEdge": 1.5,
             "scatteredBeamLeftEdge": -2.1,
             "scatteredBeamRightEdge": 2.1,
-            "scatteredBeamTopEdge": -2.1,
-            "scatteredBeamBottomEdge": 2.1,
+            "scatteredBeamBottomEdge": -2.1,
+            "scatteredBeamTopEdge": 2.1,
             "filenameIncidentBeamSpectrumParams":
                 "StartupFiles/NIMROD/spectrum000.dat",
             "overallBackgroundFactor": 1.0,
@@ -170,7 +170,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerA["composition"].elements = [
@@ -206,7 +214,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerB["composition"].elements = [
@@ -237,7 +253,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerC["composition"].elements = [
@@ -268,7 +292,15 @@ class TestGudPyIO(TestCase):
             "crossSectionFilename": "",
             "tweakFactor": 1.0,
             "scatteringFraction": 1.0,
-            "attenuationCoefficient": 0.0
+            "attenuationCoefficient": 0.0,
+            "runAsSample": False,
+            "topHatW": 0.0,
+            "FTMode": FTModes.SUB_AVERAGE,
+            "minRadFT": 0.0,
+            "maxRadFT": 0.0,
+            "grBroadening": 0.0,
+            "powerForBroadening": 0.0,
+            "stepSize": 0.0
         }
 
         self.expectedContainerD["composition"].elements = [
@@ -304,7 +336,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
@@ -355,7 +388,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.0,
             "resonanceValues": [],
@@ -406,7 +440,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
@@ -458,7 +493,8 @@ class TestGudPyIO(TestCase):
             "totalCrossSectionSource": CrossSectionSource.TRANSMISSION,
             "crossSectionFilename": "",
             "sampleTweakFactor": 1.0,
-            "topHatW": -10.0,
+            "topHatW": 10.0,
+            "FTMode": FTModes.SUB_AVERAGE,
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
@@ -653,7 +689,13 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         self.g.write_out()
-        outlines = open(self.g.outpath, encoding="utf-8").read()
+        outlines = open(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir,
+                self.g.outpath
+            ),
+            encoding="utf-8"
+        ).read()
         self.assertEqual(outlines, str(self.g))
 
         def valueInLines(value, lines):
@@ -731,24 +773,61 @@ class TestGudPyIO(TestCase):
 
     def testRewriteGudrunFile(self):
         self.g.write_out()
-        g1 = GudrunFile(self.g.outpath)
+        g1 = GudrunFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir,
+                self.g.outpath
+            )
+        )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         g1.write_out()
 
         self.assertEqual(
-            open(g1.outpath, encoding="utf-8").read()[:-5], str(self.g)[:-5]
+            open(
+                os.path.join(
+                    g1.instrument.GudrunInputFileDir,
+                    g1.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
+            str(self.g)[:-5]
         )
+
         self.assertEqual(
-            open(g1.outpath, encoding="utf-8").read()[:-5], str(g1)[:-5]
+            open(
+                os.path.join(
+                    g1.instrument.GudrunInputFileDir,
+                    g1.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
+            str(g1)[:-5]
         )
+
         self.assertEqual(
-            open(g1.outpath, encoding="utf-8").read()[:-5],
-            open(self.g.outpath, encoding="utf-8").read()[:-5],
+            open(
+                os.path.join(
+                    g1.instrument.GudrunInputFileDir,
+                    g1.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
+            open(os.path.join(
+                    self.g.instrument.GudrunInputFileDir,
+                    self.g.outpath
+                ),
+                encoding="utf-8"
+            ).read()[:-5],
         )
 
     def testReloadGudrunFile(self):
         self.g.write_out()
-        g1 = GudrunFile(self.g.outpath)
+        g1 = GudrunFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir,
+                self.g.outpath
+            )
+        )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(str(g1), str(self.g))
 
@@ -1144,7 +1223,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         expectedSampleA.pop("resonanceValues", None)
         expectedSampleA.pop("exponentialValues", None)
-        expectedSampleA.pop("crossSectionFilename")
+        expectedSampleA.pop("crossSectionFilename", None)
+        expectedSampleA.pop("FTMode", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition("")
@@ -1197,7 +1277,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("sampleHeight", None)
         expectedSampleA.pop("resonanceValues", None)
         expectedSampleA.pop("exponentialValues", None)
-        expectedSampleA.pop("crossSectionFilename")
+        expectedSampleA.pop("crossSectionFilename", None)
+        expectedSampleA.pop("FTMode", None)
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition("")
@@ -1251,8 +1332,17 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
-        expectedContainerA.pop("attenuationCoefficient")
-        expectedContainerA.pop("crossSectionFilename")
+        expectedContainerA.pop("attenuationCoefficient", None)
+        expectedContainerA.pop("crossSectionFilename", None)
+        expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
+
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )
@@ -1302,8 +1392,17 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("outerRadius", None)
         expectedContainerA.pop("sampleHeight", None)
         expectedContainerA.pop("geometry", None)
-        expectedContainerA.pop("attenuationCoefficient")
-        expectedContainerA.pop("crossSectionFilename")
+        expectedContainerA.pop("attenuationCoefficient", None)
+        expectedContainerA.pop("crossSectionFilename", None)
+        expectedContainerA.pop("runAsSample", None)
+        expectedContainerA.pop("topHatW", None)
+        expectedContainerA.pop("FTMode", None)
+        expectedContainerA.pop("minRadFT", None)
+        expectedContainerA.pop("maxRadFT", None)
+        expectedContainerA.pop("grBroadening", None)
+        expectedContainerA.pop("powerForBroadening", None)
+        expectedContainerA.pop("stepSize", None)
+
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
         )

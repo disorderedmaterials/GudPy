@@ -3,6 +3,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 from PySide6.QtWidgets import QFileDialog
+import re
 
 
 class InstrumentSlots():
@@ -14,6 +15,7 @@ class InstrumentSlots():
 
     def setInstrument(self, instrument):
         self.instrument = instrument
+        self.pathRegex = re.compile(r"StartupFiles\S*")
         self.widgetsRefreshing = True
 
         self.widget.nameComboBox.setCurrentIndex(self.instrument.name.value)
@@ -520,7 +522,11 @@ class InstrumentSlots():
         value : str
             The new value of the detCalibrationLineEdit.
         """
-        self.instrument.detectorCalibrationFileName = text
+        self.instrument.detectorCalibrationFileName = (
+            re.search(
+                self.pathRegex, text
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
@@ -536,7 +542,12 @@ class InstrumentSlots():
         value : str
             The new value of the groupsFileLineEdit.
         """
-        self.instrument.groupFileName = text
+        self.instrument.groupFileName = (
+            re.search(
+                self.pathRegex,
+                text
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
@@ -552,7 +563,11 @@ class InstrumentSlots():
         value : str
             The new value of the deadtimeFileLineEdit.
         """
-        self.instrument.deadtimeConstantsFileName = text
+        self.instrument.deadtimeConstantsFileName = (
+            re.search(
+                self.pathRegex, text
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -616,7 +631,11 @@ class InstrumentSlots():
         value : str
             The new value of the neutronScatteringParamsFileLineEdit.
         """
-        self.instrument.neutronScatteringParametersFile = text
+        self.instrument.neutronScatteringParametersFile = (
+            re.search(
+                self.pathRegex, text
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -631,7 +650,11 @@ class InstrumentSlots():
         value : str
             The new value of the nexusDefintionFileLineEdit.
         """
-        self.instrument.nxsDefinitionFile = text
+        self.instrument.nxsDefinitionFile = (
+            re.search(
+                self.pathRegex, text
+            ).group()
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -1143,7 +1166,9 @@ class InstrumentSlots():
             Defaults to false. True means accept a directory.
         """
         filename = self.browseFile(title, dir=dir)
-        if filename:
+        if filename and not dir:
+            target.setText(re.search(self.pathRegex, filename).group())
+        elif filename:
             target.setText(filename)
 
     def browseFile(self, title, dir=False):
@@ -1176,7 +1201,10 @@ class InstrumentSlots():
                 instrumentFilesDir,
                 ""
             )
-        return filename + "/" if filename else ""
+        if dir:
+            return filename + "/" if filename else ""
+        else:
+            return filename if filename else ""
 
     def updateGroupingParameterPanel(self):
         """
