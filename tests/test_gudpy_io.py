@@ -83,7 +83,8 @@ class TestGudPyIO(TestCase):
             "startupFileFolder": "StartupFiles",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
-            "nxsDefinitionFile": ""
+            "nxsDefinitionFile": "",
+            "goodDetectorThreshold": 0
         }
 
         self.expectedBeam = {
@@ -932,7 +933,8 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("wavelengthStep", None)
         expectedInstrument.pop("useLogarithmicBinning", None)
         expectedInstrument.pop("nxsDefinitionFile", None)
-        expectedInstrument.pop("groupingParameterPanel")
+        expectedInstrument.pop("groupingParameterPanel", None)
+        expectedInstrument.pop("goodDetectorThreshold", None)
         for i in range(len(expectedInstrument.keys())):
 
             badInstrument = str(self.goodInstrument).split("\n")
@@ -964,6 +966,7 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("useLogarithmicBinning", None)
         expectedInstrument.pop("nxsDefinitionFile", None)
         expectedInstrument.pop("groupingParameterPanel", None)
+        expectedInstrument.pop("goodDetectorThreshold", None)
         for i in range(50):
 
             key = random.choice(list(expectedInstrument))
