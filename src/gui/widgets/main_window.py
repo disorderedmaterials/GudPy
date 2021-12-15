@@ -79,6 +79,7 @@ import time
 import threading
 from pathlib import Path
 
+
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
@@ -435,7 +436,6 @@ class GudPyMainWindow(QMainWindow):
 
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
-    
         self.setWindowModified(False)
 
     def tryAutorecover(self):
@@ -443,12 +443,18 @@ class GudPyMainWindow(QMainWindow):
             if f.endswith(".recovery"):
                 messageBox = QMessageBox(self.mainWidget)
                 messageBox.setWindowTitle("GudPy Warning")
-                messageBox.setText(f"Found recovery file: {f}.\n Would you like to load it?")
+                messageBox.setText(
+                    f"Found recovery file: {f}.\n Would you like to load it?"
+                )
                 messageBox.addButton(QMessageBox.No)
                 messageBox.addButton(QMessageBox.Yes)
-                deleteRecoveryFile = QPushButton("Delete recovery file", messageBox)
+                deleteRecoveryFile = QPushButton(
+                    "Delete recovery file", messageBox
+                )
 
-                messageBox.addButton(deleteRecoveryFile, QMessageBox.RejectRole)
+                messageBox.addButton(
+                    deleteRecoveryFile, QMessageBox.RejectRole
+                )
 
                 result = messageBox.exec()
 
@@ -457,9 +463,11 @@ class GudPyMainWindow(QMainWindow):
                 elif result == messageBox.Yes:
                     self.gudrunFile = GudrunFile(f)
                     self.updateWidgets()
-                    self.mainWidget.setWindowTitle(self.gudrunFile.path +"[*]")       
+                    self.mainWidget.setWindowTitle(
+                        self.gudrunFile.path + " [*]"
+                    )
                 else:
-                    messageBox.close() 
+                    messageBox.close()
 
     def updateWidgets(self, fromFile=False):
         if fromFile:
@@ -1100,7 +1108,7 @@ class GudPyMainWindow(QMainWindow):
                 self.setWindowModified(True)
                 self.mainWidget.save.setEnabled(True)
         if not self.proc:
-            self._thread = threading.Thread(target = self.autosave, args=())
+            self._thread = threading.Thread(target=self.autosave, args=())
             self._thread.setDaemon(True)
             self._thread.start()
 
@@ -1359,7 +1367,9 @@ class GudPyMainWindow(QMainWindow):
             "GudPy Error",
             f"{''.join(traceback.format_exception(cls, exception, tb))}"
         )
-        self.gudrunFile.write_out(overwrite=False, path = Path(self.gudrunFile.path).stem + ".recovery")
+        self.gudrunFile.write_out(
+            overwrite=False, path=Path(self.gudrunFile.path).stem + ".recovery"
+        )
 
     def export(self):
         exportDialog = ExportDialog(self.gudrunFile, self)
