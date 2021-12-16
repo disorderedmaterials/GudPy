@@ -456,7 +456,7 @@ class GudPyMainWindow(QMainWindow):
                     messageBox.setText(
                         f"Found autosaved file: {os.path.abspath(f)}.\n"
                         f"This file is newer ({autoLastModified.toString()})"
-                        f" than the input file you tried to load"
+                        f" than the loaded file"
                         f" ({lastModified.toString()}).\n"
                         f"Would you like to load it?"
                     )
