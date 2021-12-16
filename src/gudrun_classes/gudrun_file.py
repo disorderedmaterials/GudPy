@@ -1325,12 +1325,12 @@ class GudrunFile:
         ----------
         overwrite : bool, optional
             Overwrite the initial file? (default is False).
-
+        path : str, optional
+            Path to write to.
         Returns
         -------
         None
         """
-        print(path)
         if path:
             f = open(
                 path, "w", encoding="utf-8"

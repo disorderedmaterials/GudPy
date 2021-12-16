@@ -1,4 +1,4 @@
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -115,19 +115,22 @@ class GudPyMainWindow(QMainWindow):
         """
         super(GudPyMainWindow, self).__init__()
         self.gudrunFile = None
-        self.clipboard = None
         self.modified = False
+        self.clipboard = None
         self.iterator = None
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
-        self.cwd = os.getcwd()
+        self.proc = None
         self.output = ""
         self.previousProcTitle = ""
         self.error = ""
+        self.cwd = os.getcwd()
         self.warning = ""
-
         self.initComponents()
+        self.timer = QTimer(self)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.autosave)
 
     def initComponents(self):
         """
@@ -431,6 +434,42 @@ class GudPyMainWindow(QMainWindow):
 
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
+        self.setWindowModified(False)
+
+    def tryLoadAutosaved(self, path):
+        dir = os.path.dirname(path)
+        for f in os.listdir(dir):
+            if os.path.abspath(f) == path + ".autosave":
+
+                if str(GudrunFile(path))[:-5] == str(GudrunFile(f))[:-5]:
+                    return path
+
+                autoFileInfo = QFileInfo(f)
+                autoLastModified = autoFileInfo.lastModified()
+
+                fileInfo = QFileInfo(path)
+                lastModified = fileInfo.lastModified()
+
+                if autoLastModified > lastModified:
+                    messageBox = QMessageBox(self.mainWidget)
+                    messageBox.setWindowTitle("Autosave found")
+                    messageBox.setText(
+                        f"Found autosaved file: {os.path.abspath(f)}.\n"
+                        f"This file is newer ({autoLastModified.toString()})"
+                        f" than the loaded file"
+                        f" ({lastModified.toString()}).\n"
+                        f"Would you like to load the autosaved file instead?"
+                    )
+                    messageBox.addButton(QMessageBox.No)
+                    messageBox.addButton(QMessageBox.Yes)
+                    result = messageBox.exec()
+                    if result == messageBox.Yes:
+                        return os.path.abspath(f)
+                    else:
+                        return path
+                else:
+                    return path
+        return path
 
     def updateWidgets(self, fromFile=False):
         if fromFile:
@@ -479,7 +518,8 @@ class GudPyMainWindow(QMainWindow):
             try:
                 if self.gudrunFile:
                     del self.gudrunFile
-                self.gudrunFile = GudrunFile(path=filename)
+                path = self.tryLoadAutosaved(filename)
+                self.gudrunFile = GudrunFile(path=path)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
             except ParserException as e:
@@ -1053,6 +1093,10 @@ class GudPyMainWindow(QMainWindow):
             )
             missingFilesDialog.widget.exec_()
 
+    def autosave(self):
+        autosavePath = self.gudrunFile.path + ".autosave"
+        self.gudrunFile.write_out(path=autosavePath)
+
     def showPreviousOutput_(self):
         if self.output:
             viewOutputDialog = ViewOutputDialog(
@@ -1063,9 +1107,11 @@ class GudPyMainWindow(QMainWindow):
     def setModified(self):
         if not self.modified:
             if self.gudrunFile.path:
-                self.mainWidget.setWindowModified(True)
                 self.modified = True
+                self.setWindowModified(True)
                 self.mainWidget.save.setEnabled(True)
+        if not self.proc:
+            self.timer.start(30000)
 
     def setUnModified(self):
         self.mainWidget.setWindowModified(False)
