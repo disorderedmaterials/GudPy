@@ -458,7 +458,7 @@ class GudPyMainWindow(QMainWindow):
                         f"This file is newer ({autoLastModified.toString()})"
                         f" than the loaded file"
                         f" ({lastModified.toString()}).\n"
-                        f"Would you like to load it?"
+                        f"Would you like to load the autosaved file instead?"
                     )
                     messageBox.addButton(QMessageBox.No)
                     messageBox.addButton(QMessageBox.Yes)
