@@ -1111,9 +1111,7 @@ class GudPyMainWindow(QMainWindow):
                 self.setWindowModified(True)
                 self.mainWidget.save.setEnabled(True)
         if not self.proc:
-            self.timer.stop()
-            self.timer.setInterval(30000)
-            self.timer.start()
+            self.timer.start(30000)
 
     def setUnModified(self):
         self.mainWidget.setWindowModified(False)
