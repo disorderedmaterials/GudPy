@@ -75,11 +75,6 @@ from queue import Queue
 from collections.abc import Sequence
 
 
-import time
-import threading
-from pathlib import Path
-
-
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
