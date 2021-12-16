@@ -126,6 +126,7 @@ class GudPyMainWindow(QMainWindow):
         self.previousProcTitle = ""
         self.error = ""
         self.cwd = os.getcwd()
+        self.warning = ""
         self.initComponents()
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
@@ -1283,10 +1284,17 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
+
         if finished:
-            QMessageBox.warning(
-                self.mainWidget, "GudPy Warning",
-                f"{detectors} detectors made it through the purge."
+            thresh = self.gudrunFile.instrument.goodDetectorThreshold
+            if thresh and detectors < thresh:
+                self.warning = (
+                    f"{detectors} detectors made it through the purge."
+                    " The acceptable minimum for "
+                    f"{self.gudrunFile.instrument.name.name} is {thresh}"
+                )
+            self.mainWidget.goodDetectorsLabel.setText(
+                f"Number of Good Detectors: {detectors}"
             )
 
     def procStarted(self):
@@ -1315,6 +1323,12 @@ class GudPyMainWindow(QMainWindow):
         if not self.queue.empty():
             self.makeProc(*self.queue.get())
         else:
+            if self.warning:
+                QMessageBox.warning(
+                    self.mainWidget, "GudPy Warning",
+                    self.warning
+                )
+                self.warning = ""
             self.setControlsEnabled(True)
 
     def viewInput(self):
