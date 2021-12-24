@@ -95,12 +95,12 @@ steps:
       sudo git clone https://github.com/sylabs/singularity.git && \
       cd singularity
 
-      git checkout release-3.9
+      sudo git checkout release-3.9
 
-      cd ${GOPATH}/src/github.com/sylabs/singularity && \
-      ./mconfig && \
+      sudo cd ${GOPATH}/src/github.com/sylabs/singularity && \
+      sudo ./mconfig && \
       cd ./builddir && \
-      make && \
+      sudo make && \
       sudo make install
 
       singularity version
