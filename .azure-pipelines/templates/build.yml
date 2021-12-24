@@ -78,8 +78,8 @@ steps:
       export GOPATH=$(Agent.HomeDirectory)/go
       go version
       go get -d github.com/sylabs/singularity
-      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch
+      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout v3.6.2
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
       singularity version
     condition: eq(variables.osName, 'linux')
-    displayName: "Compile singularity for linux."    
+    displayName: "Compile singularity for linux." 
