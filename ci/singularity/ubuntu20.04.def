@@ -2,8 +2,6 @@ Bootstrap: library
 From: ubuntu:20.04
 
 %post
-    # Install Qt via aqtinstall as a precursor to the main stage in order to avoid bringing in unnecessary dependencies.
-    # The necessary libs will be copied over in the next stage.
     apt-get update
     apt-get install python3.8 python3-distutils curl build-essential libx11-xcb-dev libglu1-mesa-dev libxkbcommon0 libglx0 libfontconfig libglib2.0-0 libdbus-1-3 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 -y
     curl https://bootstrap.pypa.io/get-pip.py | python3.8
@@ -14,7 +12,6 @@ From: ubuntu:20.04
     A singularity container for GudPy.
 
 %setup
-
     mkdir ${SINGULARITY_ROOTFS}/opt/GudPy
 
 %files
@@ -23,12 +20,10 @@ From: ubuntu:20.04
 
 %runscript
     # If the container is executed, this line will be run.
-    export QT_DEBUG_PLUGINS=1
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
-    export QT_DEBUG_PLUGINS=1
     python3.8 /opt/GudPy/main.py
