@@ -92,7 +92,7 @@ steps:
 
       sudo mkdir -p ${GOPATH}/src/github.com/sylabs && \
       cd ${GOPATH}/src/github.com/sylabs && \
-      git clone https://github.com/sylabs/singularity.git && \
+      sudo git clone https://github.com/sylabs/singularity.git && \
       cd singularity
 
       git checkout release-3.9
