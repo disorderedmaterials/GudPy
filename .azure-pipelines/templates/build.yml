@@ -87,7 +87,3 @@ steps:
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."
   
-  - bash: |
-      singularity run dist/GudPy-$VERSION.sif
-    condition: eq(variables.osName, 'linux')
-    displayName: "Try running simg for linux."
