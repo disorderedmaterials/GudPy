@@ -83,7 +83,7 @@ steps:
     displayName: "Compile singularity for linux." 
   
   - bash: |
-      singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."
   
