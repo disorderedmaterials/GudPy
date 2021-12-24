@@ -5,7 +5,7 @@ From: ubuntu:20.04
     # Install Qt via aqtinstall as a precursor to the main stage in order to avoid bringing in unnecessary dependencies.
     # The necessary libs will be copied over in the next stage.
     apt-get update
-    apt-get install python3.8 python3-distutils curl build-essential libx11-xcb-dev libglu1-mesa-dev libxkbcommon0 libglx0 libfontconfig libglib2.0-0 libdbus-1-3 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 -y
+    apt-get install python3.8 python3-distutils curl build-essential libx11-xcb-dev libglu1-mesa-dev libxkbcommon0 libglx0 libfontconfig libglib2.0-0 libdbus-1-3 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 -y
     curl https://bootstrap.pypa.io/get-pip.py | python3.8
     python3.8 -m pip install PySide6==6.2.0 chardet
 
