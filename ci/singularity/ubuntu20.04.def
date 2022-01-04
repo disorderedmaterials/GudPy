@@ -16,14 +16,18 @@ From: ubuntu:20.04
 
 %files
 
-    ./* /opt/GudPy
+    ./src /opt/GudPy
+    ./bin /opt/GudPy
+    ./main.py /opt/GudPy
 
 %runscript
     # If the container is executed, this line will be run.
+    export QT_DEBUG_PLUGINS=1
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
+    export QT_DEBUG_PLUGINS=1
     python3.8 /opt/GudPy/main.py
