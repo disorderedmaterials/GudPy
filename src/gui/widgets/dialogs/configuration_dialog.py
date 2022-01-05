@@ -51,11 +51,11 @@ class ConfigurationDialog(QDialog):
         self.widget.setWindowTitle("Select Configuration")
         self.widget.configList.currentItemChanged.connect(self.setConfiguration)
 
-        self.widget.buttonBox.accepted.connect(
-            self.accept_
-        )
         self.widget.buttonBox.rejected.connect(
             self.cancel
+        )
+        self.widget.buttonBox.accepted.connect(
+            self.widget.accept
         )
 
     def loadConfigurations(self):
@@ -85,7 +85,6 @@ class ConfigurationDialog(QDialog):
 
     def cancel(self):
         self.cancelled = True
-        self.widget.close()
+        self.widget.reject()
+    
         
-    def accept_(self):
-        self.widget.close()
