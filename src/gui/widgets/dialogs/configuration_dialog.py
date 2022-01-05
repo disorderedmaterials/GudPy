@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, QModelIndex
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import sys
@@ -24,7 +24,10 @@ class ConfigurationDialog(QDialog):
     def __init__(self, parent):
         super(ConfigurationDialog, self).__init__(parent=parent)
         self.parent = parent
+        self.configuration = None
+        self.cancelled = False
         self.initComponents()
+        self.loadConfigurations()
 
     def initComponents(self):
         """
@@ -46,3 +49,43 @@ class ConfigurationDialog(QDialog):
         loader = QUiLoader()
         self.widget = loader.load(uifile)
         self.widget.setWindowTitle("Select Configuration")
+        self.widget.configList.currentItemChanged.connect(self.setConfiguration)
+
+        self.widget.buttonBox.accepted.connect(
+            self.accept_
+        )
+        self.widget.buttonBox.rejected.connect(
+            self.cancel
+        )
+
+    def loadConfigurations(self):
+        targetDir = (
+            os.path.join(sys._MEIPASS, "bin", "configs")
+            if hasattr(sys, "_MEIPASS")
+            else os.path.join("bin", "configs")
+        )
+        self.widget.configList.addItems([f for f in os.listdir(targetDir) if f.endswith('.config')])
+        self.widget.configList.setCurrentRow(0)
+
+    def setConfiguration(self, _prev, _curr):
+        targetDir = (
+            os.path.join(sys._MEIPASS, "bin", "configs")
+            if hasattr(sys, "_MEIPASS")
+            else os.path.join("bin", "configs")
+        )
+        self.configuration = os.path.abspath(
+            os.path.join(
+                targetDir,
+                self.widget.configList.currentItem().text()
+            )
+        )
+        self.widget.configDescriptionTextEdit.setText(
+            open(self.configuration, "r").readlines()[-1]
+        )
+
+    def cancel(self):
+        self.cancelled = True
+        self.widget.close()
+        
+    def accept_(self):
+        self.widget.close()

@@ -23,6 +23,7 @@ from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
+from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
@@ -166,6 +167,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ViewOutputDialog)
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
+        loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -550,25 +552,11 @@ class GudPyMainWindow(QMainWindow):
         if self.gudrunFile:
             del self.gudrunFile
         self.gudrunFile = GudrunFile()
-
-        targetDir = (
-            os.path.join(sys._MEIPASS, "bin", "configs")
-            if hasattr(sys, "_MEIPASS")
-            else os.path.join("bin", "configs")
-        )
-        filename, _ = QFileDialog.getOpenFileName(
-            self,
-            "Select configuration file for GudPy",
-            targetDir,
-            "GudPy Configuration (*.config)"
-        )
-        if filename:
-            try:
-                instrument = GudrunFile(path=filename, config=True).instrument
-                self.gudrunFile.instrument = instrument
-                self.updateWidgets()
-            except ParserException as e:
-                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
+        configurationDialog = ConfigurationDialog(self)
+        configurationDialog.widget.exec()
+        if not configurationDialog.cancelled and not configurationDialog.widget.rejected:
+            self.gudrunFile.instrument = GudrunFile(configurationDialog.configuration, config=True).instrument
+            self.updateWidgets()
 
     def updateFromFile(self):
         """
@@ -1137,7 +1125,6 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
-        self.mainWidget.loadConfiguration.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
 
