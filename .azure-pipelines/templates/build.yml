@@ -88,3 +88,8 @@ steps:
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."
   
+  - bash: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      singularity run dist/GudPy-$VERSION.sif
+    condition: eq(variables.osName, 'linux')
+    displayName: "Try running singularity image for linux."
