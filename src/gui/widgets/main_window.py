@@ -555,7 +555,9 @@ class GudPyMainWindow(QMainWindow):
         configurationDialog = ConfigurationDialog(self)
         result = configurationDialog.widget.exec()
         if not configurationDialog.cancelled and result:
-            self.gudrunFile.instrument = GudrunFile(configurationDialog.configuration, config=True).instrument
+            self.gudrunFile.instrument = GudrunFile(
+                configurationDialog.configuration, config=True
+            ).instrument
             self.updateWidgets()
 
     def updateFromFile(self):
