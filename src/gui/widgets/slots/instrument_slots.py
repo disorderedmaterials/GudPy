@@ -4,7 +4,7 @@ from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Scales, MergeWeights, Instruments
 from PySide6.QtWidgets import QFileDialog
 import re
-
+import os
 
 class InstrumentSlots():
 
@@ -1186,10 +1186,9 @@ class InstrumentSlots():
         """
         if dir:
             filename = (
-                QFileDialog.getExistingDirectory(self.widget, title, "")
+                QFileDialog.getExistingDirectory(self.widget, title, os.path.expanduser("~"))
             )
         else:
-            import os
             instrumentFilesDir = os.path.join(
                 self.instrument.GudrunStartFolder,
                 self.instrument.startupFileFolder,
