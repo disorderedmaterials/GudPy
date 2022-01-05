@@ -550,7 +550,25 @@ class GudPyMainWindow(QMainWindow):
         if self.gudrunFile:
             del self.gudrunFile
         self.gudrunFile = GudrunFile()
-        self.updateWidgets()
+
+        targetDir = (
+            os.path.join(sys._MEIPASS, "bin", "configs")
+            if hasattr(sys, "_MEIPASS")
+            else os.path.join("bin", "configs")
+        )
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select configuration file for GudPy",
+            targetDir,
+            "GudPy Configuration (*.config)"
+        )
+        if filename:
+            try:
+                instrument = GudrunFile(path=filename, config=True).instrument
+                self.gudrunFile.instrument = instrument
+                self.updateWidgets()
+            except ParserException as e:
+                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
     def updateFromFile(self):
         """
@@ -1119,6 +1137,7 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
+        self.mainWidget.loadConfiguration.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
 
