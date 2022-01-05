@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog
 import re
 import os
 
+
 class InstrumentSlots():
 
     def __init__(self, widget, parent):
@@ -1186,7 +1187,9 @@ class InstrumentSlots():
         """
         if dir:
             filename = (
-                QFileDialog.getExistingDirectory(self.widget, title, os.path.expanduser("~"))
+                QFileDialog.getExistingDirectory(
+                    self.widget, title, os.path.expanduser("~")
+                )
             )
         else:
             instrumentFilesDir = os.path.join(
