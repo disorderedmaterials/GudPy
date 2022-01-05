@@ -562,7 +562,7 @@ class NormalisationSlots():
         filename, _ = QFileDialog.getOpenFileName(
             self.widget, "Normalisation differential cross section file", ""
         )
-        if filename[0]:
+        if filename:
             self.widget.differentialCrossSectionFileLineEdit.setText(
                 filename
             )
