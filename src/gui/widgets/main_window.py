@@ -416,10 +416,6 @@ class GudPyMainWindow(QMainWindow):
             self.loadInputFile_
         )
 
-        self.mainWidget.loadConfiguration.triggered.connect(
-            self.loadConfiguration_
-        )
-
         self.mainWidget.new_.triggered.connect(
             self.newInputFile
         )
@@ -522,31 +518,6 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile = GudrunFile(path=path)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
-            except ParserException as e:
-                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
-
-    def loadConfiguration_(self):
-        """
-        Opens a QFileDialog to load a configuration file.
-        """
-        targetDir = (
-            os.path.join(sys._MEIPASS, "bin", "configs")
-            if hasattr(sys, "_MEIPASS")
-            else os.path.join("bin", "configs")
-        )
-        filename, _ = QFileDialog.getOpenFileName(
-            self,
-            "Select configuration file for GudPy",
-            targetDir,
-            "GudPy Configuration (*.txt)"
-        )
-        if filename:
-            try:
-                if not self.gudrunFile:
-                    self.gudrunFile = GudrunFile()
-                instrument = GudrunFile(path=filename, config=True).instrument
-                self.gudrunFile.instrument = instrument
-                self.updateWidgets()
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
@@ -1148,7 +1119,6 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
-        self.mainWidget.loadConfiguration.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
 
