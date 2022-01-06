@@ -85,6 +85,5 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
-      singularity run dist/GudPy-$VERSION.sif
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."
