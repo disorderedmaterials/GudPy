@@ -34,12 +34,13 @@ steps:
     displayName: "Install OpenGL for linux"
 
   - bash: |
+      rm -rf bin
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
       unzip binaries.zip
       mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }} bin
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
-      mv StartupFiles bin
+      mv StartupFiles bin/StartupFiles
       
   - script: |
       pip install pyinstaller
@@ -91,3 +92,5 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       singularity run dist/GudPy-$VERSION.sif
+    condition: eq(variables.osName, 'linux')
+    displayName: "Try running singularity image for linux."
