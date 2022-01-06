@@ -23,6 +23,7 @@ From: ubuntu:20.04
 %runscript
     # If the container is executed, this line will be run.
     ls /opt/GudPy/bin
+    chmod +x /opt/GudPy/bin/purge_det /opt/GudPy/gudrun_dcs
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
@@ -30,4 +31,5 @@ From: ubuntu:20.04
 
 %apprun GudPy
     ls /opt/GudPy/bin
+    chmod +x /opt/GudPy/bin/purge_det /opt/GudPy/gudrun_dcs
     python3.8 /opt/GudPy/main.py
