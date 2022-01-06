@@ -32,6 +32,7 @@ From: ubuntu:20.04
     python3.8 /opt/GudPy/main.py
 
 %test
+    ls /opt/GudPy/bin/
     ./opt/GudPy/bin/purge_det
     ./opt/GudPy/bin/gudrun_dcs
     ./opt/GudPy/bin/purge_det water.txt
