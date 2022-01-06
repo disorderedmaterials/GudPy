@@ -6,7 +6,7 @@ From: ubuntu:20.04
     apt-get install python3.8 python3-distutils curl build-essential libx11-xcb-dev libglu1-mesa-dev libxkbcommon0 libglx0 libfontconfig libglib2.0-0 libdbus-1-3 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 -y
     curl https://bootstrap.pypa.io/get-pip.py | python3.8
     python3.8 -m pip install PySide6==6.2.0 chardet
-
+    python3.8 -m pip uninstall pip -y
 %help
 
     A singularity container for GudPy.
@@ -19,17 +19,20 @@ From: ubuntu:20.04
     ./src /opt/GudPy
     ./bin /opt/GudPy
     ./main.py /opt/GudPy
+    ./tests/TestData/NIMROD-water/water.txt /opt/GudPy/water.txt
 
 %runscript
     # If the container is executed, this line will be run.
-    ls /opt/GudPy/bin
-    chmod +x /opt/GudPy/bin/purge_det /opt/GudPy/bin/gudrun_dcs
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
-    ls /opt/GudPy/bin
-    chmod +x /opt/GudPy/bin/purge_det /opt/GudPy/bin/gudrun_dcs
     python3.8 /opt/GudPy/main.py
+
+%test
+    ./opt/GudPy/bin/purge_det
+    ./opt/GudPy/bin/gudrun_dcs
+    ./opt/GudPy/bin/purge_det water.txt
+    ./opt/GudPy/bin/gudrun_dcs water.txt
