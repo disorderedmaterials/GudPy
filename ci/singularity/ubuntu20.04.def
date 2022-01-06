@@ -7,6 +7,7 @@ From: ubuntu:20.04
     curl https://bootstrap.pypa.io/get-pip.py | python3.8
     python3.8 -m pip install PySide6==6.2.0 chardet
     python3.8 -m pip uninstall pip -y
+
 %help
 
     A singularity container for GudPy.
@@ -19,7 +20,6 @@ From: ubuntu:20.04
     ./src /opt/GudPy
     ./bin /opt/GudPy
     ./main.py /opt/GudPy
-    ./tests/TestData/NIMROD-water/water.txt /opt/GudPy/water.txt
 
 %runscript
     # If the container is executed, this line will be run.
@@ -30,11 +30,3 @@ From: ubuntu:20.04
 
 %apprun GudPy
     python3.8 /opt/GudPy/main.py
-
-%test
-    ls /opt/GudPy/bin/
-    cd /opt/GudPy/bin/
-    ./purge_det
-    ./gudrun_dcs
-    ./purge_det /opt/GudPy/water.txt
-    ./gudrun_dcs /opt/GudPy/water.txt
