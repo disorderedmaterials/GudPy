@@ -989,7 +989,14 @@ class GudPyMainWindow(QMainWindow):
             )
             if isinstance(purge_det, Sequence):
                 purge, func, args = purge_det
-            self.makeProc(purge, self.progressPurge, func, args)
+                self.makeProc(purge, self.progressPurge, func, args)
+            elif isinstance(purge_det, FileNotFoundError):
+                QMessageBox.critical(
+                    self.mainWidget,
+                    "GudPy Error", "Couldn't find purge_det binary."
+            )
+            self.setControlsEnabled(True)  
+            return              
         else:
             self.runPurge_()
         dcs = self.gudrunFile.dcs(
