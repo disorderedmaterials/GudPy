@@ -22,10 +22,14 @@ From: ubuntu:20.04
 
 %runscript
     # If the container is executed, this line will be run.
+    ls /opt/GudPy
+    ls /opt/GudPy/bin
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
+    ls /opt/GudPy
+    ls /opt/GudPy/bin
     python3.8 /opt/GudPy/main.py
