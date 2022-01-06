@@ -33,7 +33,8 @@ From: ubuntu:20.04
 
 %test
     ls /opt/GudPy/bin/
-    ./opt/GudPy/bin/purge_det
-    ./opt/GudPy/bin/gudrun_dcs
-    ./opt/GudPy/bin/purge_det water.txt
-    ./opt/GudPy/bin/gudrun_dcs water.txt
+    cd /opt/GudPy/bin/
+    ./purge_det
+    ./gudrun_dcs
+    ./purge_det /opt/GudPy/water.txt
+    ./gudrun_dcs /opt/GudPy/water.txt
