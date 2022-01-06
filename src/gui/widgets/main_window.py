@@ -994,9 +994,9 @@ class GudPyMainWindow(QMainWindow):
                 QMessageBox.critical(
                     self.mainWidget,
                     "GudPy Error", "Couldn't find purge_det binary."
-            )
-            self.setControlsEnabled(True)  
-            return              
+                )
+            self.setControlsEnabled(True)
+            return
         else:
             self.runPurge_()
         dcs = self.gudrunFile.dcs(
