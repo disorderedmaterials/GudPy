@@ -36,7 +36,7 @@ class ConfigurationDialog(QDialog):
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
-                    sys._MEIPASS, "ui_files", "compositionDialog.ui"
+                    sys._MEIPASS, "ui_files", "configsDialog.ui"
                 )
             )
         else:
