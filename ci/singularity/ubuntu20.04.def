@@ -8,8 +8,8 @@ From: ubuntu:20.04
     python3.8 -m pip install PySide6==6.2.0 chardet
     cd /usr/local/lib/python3.8/dist-packages/PySide6
     ls
+    ls | grep .so | grep -v -e "QtCore.*" -e "QtGui.*" -e "QtCharts.*" -e "QtWidgets.*" -e "libpyside6" -e "libshiboken6" -e "QtUiTools" | xargs rm
     ls | grep libpyside6 | xargs ldd
-    ls | grep .so | grep -v -e "QtCore.*" -e "QtGui.*" -e "QtCharts.*" -e "QtWidgets.*" -e "libpyside6" -e "libshiboken6" | xargs rm
     cd
     python3.8 -m pip uninstall pip -y
     apt-get remove curl -y
