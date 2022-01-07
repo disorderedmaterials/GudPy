@@ -10,11 +10,11 @@ From: ubuntu:20.04
     QT_PATH=$(echo "${QT_PATH}" | awk '{print $2}')
     QT_PATH="${QT_PATH}/PySide6"
     cd "${QT_PATH}"
+    ls | grep libpyside6 | ldd
     ls | grep .so | grep -v -e "QtCore.*" -e "QtGui.*" -e "QtCharts.*" -e "QtWidgets.*" -e "libpyside6" | xargs rm
     cd
     python3.8 -m pip uninstall pip -y
     apt-get remove --auto-remove curl -y
-
 %help
 
     A singularity container for GudPy.
