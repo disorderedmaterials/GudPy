@@ -128,7 +128,7 @@ class GudPyFileLibrary():
             indicating if the given path exists.
         """
         cwd = os.getcwd()
-        os.chdir(self.gudrunFile.GudrunInputFileDir)
+        os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
         ret = [
             (os.path.isfile(path) | os.path.isdir(path), path)
             for path in self.files
