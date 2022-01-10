@@ -24,12 +24,19 @@ From: ubuntu:20.04
     ./bin /opt/GudPy
     ./main.py /opt/GudPy
 
+%environment
+
+    export SIF=1
+
+
 %runscript
     # If the container is executed, this line will be run.
+    echo $SIF
     python3.8 /opt/GudPy/main.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
+    echo $SIF
     python3.8 /opt/GudPy/main.py

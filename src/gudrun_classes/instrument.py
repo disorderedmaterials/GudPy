@@ -151,11 +151,9 @@ class Instrument:
                 sys._MEIPASS, "bin"
             )
             )
-        elif os.getenv('SINGULARITY_ROOTFS'):
+        elif os.getenv('SIF'):
             self.GudrunStartFolder = os.path.abspath(
-                os.path.join(
-                    os.getenv('SINGULARITY_ROOTFS'), "/opt/GudPy/bin"
-                )
+                "/opt/GudPy/bin"
             )
         else:
             self.GudrunStartFolder = os.path.abspath('bin')
