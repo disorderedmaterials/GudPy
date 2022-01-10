@@ -554,6 +554,9 @@
                  </item>
                  <item row="0" column="1" colspan="2">
                   <widget class="QComboBox" name="nameComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
