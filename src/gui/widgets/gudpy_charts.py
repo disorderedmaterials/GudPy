@@ -740,19 +740,22 @@ class GudPyChartView(QChartView):
         """
         super(GudPyChartView, self).__init__(parent=parent)
 
+        self.setRubberBand(QChartView.RectangleRubberBand)
+
         # Set size policy.
         self.setSizePolicy(
             QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         )
-
-        # Enable rectangualar rubber banding.
-        self.setRubberBand(QChartView.RectangleRubberBand)
 
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
         self.clipboard = QClipboard(self.parent())
 
         self.previousPos = 0
+
+        self.rubberBandOrigin = None
+        self.rubberBandCurr = None
+        self.rubberBandEnd = None
 
     def wheelEvent(self, event):
         """
@@ -805,6 +808,10 @@ class GudPyChartView(QChartView):
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.previousPos = event.pos()
+        elif event.button() == Qt.MouseButton.LeftButton:
+            # Catch the origin of the rubber band.
+            self.rubberBandOrigin = event.pos()
+        event.accept()
         return super().mousePressEvent(event)
 
     def toggleLogarithmicAxes(self, axis):
@@ -1012,6 +1019,42 @@ class GudPyChartView(QChartView):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
             event.accept()
+        elif event.button() == Qt.MouseButton.LeftButton:
+            # Catch the end of the rubber band.
+            self.rubberBandEnd = event.pos()
+
+            zoomFactor = 2.0
+
+            # Collect dims for rubber band rect.
+            top = max([self.rubberBandOrigin.x(), self.rubberBandEnd.x()])
+            left = min([self.rubberBandOrigin.y(), self.rubberBandEnd.y()])
+            width = abs(
+                self.rubberBandOrigin.y()-self.rubberBandEnd.y()
+            ) / zoomFactor
+            height = abs(
+                self.rubberBandOrigin.x()-self.rubberBandEnd.x()
+            ) / zoomFactor
+
+            # Create QRect area to zoom in on.
+            zoomArea = QRectF(top, left, width, height)
+
+            # Zoom in on the area.
+            self.chart().zoomIn(zoomArea)
+
+            # Move the rectangle to the mouse position.
+            mousePos = self.mapFromGlobal(QCursor.pos())
+            zoomArea.moveCenter(mousePos)
+
+            # Scroll to match the zoom.
+            delta = zoomArea.center() - mousePos
+
+            self.chart().scroll(delta.x(), -delta.y())
+
+            # Disable, then re-enable rubber banding
+            # to force hiding of the rect.
+            self.setRubberBand(QChartView.NoRubberBand)
+            event.accept()
+            self.setRubberBand(QChartView.RectangleRubberBand)
         else:
             return super(GudPyChartView, self).mouseReleaseEvent(event)
 
