@@ -2,7 +2,7 @@ from PySide6.QtCharts import (
     QChart, QChartView, QLegend,
     QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
 )
-from PySide6.QtCore import QObject, QPointF, QRectF, Qt
+from PySide6.QtCore import QObject, QPointF, QRect, QRectF, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QPen
 )
@@ -810,7 +810,8 @@ class GudPyChartView(QChartView):
             self.previousPos = event.pos()
         elif event.button() == Qt.MouseButton.LeftButton:
             # Catch the origin of the rubber band.
-            self.rubberBandOrigin = event.pos()
+            self.rubberBandOrigin =  event.pos()
+
         event.accept()
         return super().mousePressEvent(event)
 
@@ -1020,35 +1021,16 @@ class GudPyChartView(QChartView):
         if event.button() == Qt.MouseButton.RightButton:
             event.accept()
         elif event.button() == Qt.MouseButton.LeftButton:
-            # Catch the end of the rubber band.
-            self.rubberBandEnd = event.pos()
-
-            zoomFactor = 2.0
 
             # Collect dims for rubber band rect.
-            top = max([self.rubberBandOrigin.x(), self.rubberBandEnd.x()])
-            left = min([self.rubberBandOrigin.y(), self.rubberBandEnd.y()])
-            width = abs(
-                self.rubberBandOrigin.y()-self.rubberBandEnd.y()
-            ) / zoomFactor
-            height = abs(
-                self.rubberBandOrigin.x()-self.rubberBandEnd.x()
-            ) / zoomFactor
+            width = event.pos().x() - self.rubberBandOrigin.x()
+            height = event.pos().y() - self.rubberBandOrigin.y()
 
             # Create QRect area to zoom in on.
-            zoomArea = QRectF(top, left, width, height)
+            zoomArea = QRect(self.rubberBandOrigin.x(), self.rubberBandOrigin.y(), width, height).normalized()
 
             # Zoom in on the area.
             self.chart().zoomIn(zoomArea)
-
-            # Move the rectangle to the mouse position.
-            mousePos = self.mapFromGlobal(QCursor.pos())
-            zoomArea.moveCenter(mousePos)
-
-            # Scroll to match the zoom.
-            delta = zoomArea.center() - mousePos
-
-            self.chart().scroll(delta.x(), -delta.y())
 
             # Disable, then re-enable rubber banding
             # to force hiding of the rect.
