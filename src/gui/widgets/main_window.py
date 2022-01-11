@@ -1174,32 +1174,55 @@ class GudPyMainWindow(QMainWindow):
             self.error = stdout
             return -1
         # Number of GudPy objects.
-        markers = (
-            config.NUM_GUDPY_CORE_OBJECTS
-            + len(self.gudrunFile.sampleBackgrounds)
-            + sum(
-                [
-                    sum(
-                        [
-                            len(sampleBackground.samples), *[
-                                len(sample.containers)
-                                for sample in sampleBackground.samples
-                            ]
-                        ]
-                    ) for sampleBackground in self.gudrunFile.sampleBackgrounds
-                ]
-            )
-        )
+        INSTRUMENT_MARKERS = [
+            "Got to: Instrument",
+            self.gudrunFile.instrument.name.name,
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            self.gudrunFile.instrument.dataFileDir,
+            self.gudrunFile.instrument.detectorCalibrationFileName,
+            self.gudrunFile.instrument.columnNoPhiVals,
+            self.gudrunFile.instrument.groupFileName,
+            self.gudrunFile.instrument.deadtimeConstantsFileName,
+            len(self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor),
+            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor,
+            len(self.gudrunFile.instrument.spectrumNumbersForTransmissionMonitor),
+            self.gudrunFile.instrument.spectrumNumbersForTransmissionMonitor,
+            self.gudrunFile.instrument.neutronScatteringParametersFile,
+            self.gudrunFile.instrument.scaleSelection.value
+        ]
+
+        BEAM_MARKERS = [
+            "Got to: BEAM",
+            self.gudrunFile.beam.filenameIncidentBeamSpectrumParams
+        ]
+
+        NORMALISATION_MARKERS = [
+            "Got to: NORMALISATION",
+            os.path.join(self.gudrunFile.instrument.dataFileDir, self.gudrunFile.normalisation.dataFiles.dataFiles[0]),
+            "Closed data file",
+            "Set up detector and spectrum numbers",
+            "Got run parameters",
+            self.gudrunFile.instrument.deadtimeConstantsFileName,
+            "Got deadtimes",
+            "Got time channel boundaries",
+            self.gudrunFile.instrument.detectorCalibrationFileName,
+            "Got calibration",
+            self.gudrunFile.instrument.groupFileName,
+            "groups from file",
+            "Q-ranges for individual groups",
+            self.gudrunFile.instrument.groupFileName + ".cal",
+            "Got vanadium tranmission monitors",
+            "Got vanadium parameters",
+            "Set up correction angles",
+            "Got vanadium Placzek correction",
+            "Finished smoothing vanadium"
+        ]
+
+        markers = len([*INSTRUMENT_MARKERS, *BEAM_MARKERS, *NORMALISATION_MARKERS])
+
         stepSize = math.ceil(100/markers)
         progress = stepSize * sum(
-            [
-                stdout.count("Got to: INSTRUMENT"),
-                stdout.count("Got to: BEAM"),
-                stdout.count("Got to: NORMALISATION"),
-                stdout.count("Got to: SAMPLE BACKGROUND"),
-                stdout.count("Finished merging data for sample"),
-                stdout.count("Got to: CONTAINER")
-            ]
+            [stdout.count(str(x)) for x in [*INSTRUMENT_MARKERS, *BEAM_MARKERS, *NORMALISATION_MARKERS]]
         )
         return progress
 
