@@ -77,13 +77,13 @@ steps:
       libseccomp-dev pkg-config squashfs-tools cryptsetup
       export GOPATH=$(Agent.HomeDirectory)/go
       go get -d github.com/sylabs/singularity
-      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout v3.6.2
+      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout 2.5.2
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
     condition: eq(variables.osName, 'linux')
     displayName: "Compile singularity for linux." 
   
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo singularity build -w dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."
