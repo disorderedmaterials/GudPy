@@ -1112,7 +1112,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.advancedTab.setEnabled(state)
         self.mainWidget.containerPage.setEnabled(state)
         self.mainWidget.sampleBackgroundPage.setEnabled(state)
-        self.mainWidget.objectTree.setContextDisabled()
+        self.mainWidget.objectTree.setContextEnabled(state)
 
         self.mainWidget.insertSampleBackground.setEnabled(state)
         self.mainWidget.insertSample.setEnabled(state)
@@ -1136,6 +1136,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.showPreviousOutput.setEnabled(state)
+        self.mainWidget.new_.setEnabled(state)
+        self.mainWidget.checkFilesExist.setEnabled(state)
+        self.mainWidget.runContainersAsSamples.setEnabled(state)
 
     def setActionsEnabled(self, state):
 

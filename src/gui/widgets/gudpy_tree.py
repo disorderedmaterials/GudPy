@@ -633,10 +633,8 @@ class GudPyTreeView(QTreeView):
         Deselects all samples belonging to a SampleBackground.
     selectOnlyThisSample()
         Selects only the current sample, and deselects all others.
-    setContextDisabled()
-        Disable the context menu.
-    setContextEnabled()
-        Enable the context menu.
+    setContextEnabled(state)
+        Enable/Disable the context menu.
     """
 
     def __init__(self, parent):
@@ -1038,17 +1036,11 @@ class GudPyTreeView(QTreeView):
         if isinstance(self.currentObject(), Container):
             self.model().findParent(self.currentObject()).runThisSample = True
 
-    def setContextDisabled(self):
+    def setContextEnabled(self, state):
         """
-        Disables the context menu.
+        Disables/Enables the context menu.
         """
-        self.contextMenuEnabled = False
-
-    def setContextEnabled(self):
-        """
-        Enables the context menu.
-        """
-        self.contextMenuEnabled = True
+        self.contextMenuEnabled = state
 
     def getSamples(self):
         samples = []
