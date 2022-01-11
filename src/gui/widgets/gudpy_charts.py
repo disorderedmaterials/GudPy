@@ -810,7 +810,7 @@ class GudPyChartView(QChartView):
             self.previousPos = event.pos()
         elif event.button() == Qt.MouseButton.LeftButton:
             # Catch the origin of the rubber band.
-            self.rubberBandOrigin =  event.pos()
+            self.rubberBandOrigin = event.pos()
 
         event.accept()
         return super().mousePressEvent(event)
@@ -1027,7 +1027,12 @@ class GudPyChartView(QChartView):
             height = event.pos().y() - self.rubberBandOrigin.y()
 
             # Create QRect area to zoom in on.
-            zoomArea = QRect(self.rubberBandOrigin.x(), self.rubberBandOrigin.y(), width, height).normalized()
+            zoomArea = QRect(
+                self.rubberBandOrigin.x(),
+                self.rubberBandOrigin.y(),
+                width,
+                height
+            ).normalized()
 
             # Zoom in on the area.
             self.chart().zoomIn(zoomArea)
