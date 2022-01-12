@@ -114,7 +114,7 @@ class DCSLevel:
             self.data = [None]
         else:
             self.dcsLevel = self.extractDCSLevel(path)
-            self.data = [self.dcsLevel]
+            self.data = []
         self.visible = True
 
     @abstractmethod
@@ -122,15 +122,14 @@ class DCSLevel:
         gudFile = GudFile(path)
         return gudFile.expectedDCS
     
-    def extend(self, n):
-        self.data =  [QPointF(self.dcsLevel) for _ in range(n)]
+    def extend(self, xAxis):
+        self.data =  [QPointF(x, self.dcsLevel) for x in xAxis ]
 
     def toLineSeries(self, parent):
         self.series = QLineSeries(parent)
+        if self.data:
+            self.series.append(self.data)
         return self.series
-        return QLineSeries()
-        series = QLineSeries()
-        series.append(self.data)
 
 class SamplePlotData():
 
