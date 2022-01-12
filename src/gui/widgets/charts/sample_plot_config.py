@@ -66,7 +66,6 @@ class SamplePlotConfig():
             pen = QPen(self.dcsSeries.pen())
             pen.setStyle(Qt.PenStyle.DashLine)
             pen.setWidth(2)
-            pen.setColor(self.mdcs01Series.color())
             self.dcsSeries.setPen(pen)
 
             # mdor01 dataset.
@@ -116,18 +115,19 @@ class SamplePlotConfig():
     
     def SF_MINT01(self):
         return [
-            self.mint01Series,
+            self.mint01Series
         ]
     
     def SF_MDCS01(self):
         return [
-            self.mdcs01Series
+            self.mdcs01Series,
+            self.dcsSeries
         ]
 
     def RDF(self):
         return [
-            self.mdcs01Series,
-            self.dcsSeries
+            self.mdor01Series,
+            self.mgor01Series
         ]
     
     def plotData(self, plotMode):

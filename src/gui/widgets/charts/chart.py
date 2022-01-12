@@ -1,6 +1,7 @@
 
 from PySide6.QtCharts import QChart, QLegend, QLegendMarker
 from PySide6.QtCore import QObject, Qt
+from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
 from src.gui.widgets.charts.plot_modes import PlotModes
@@ -70,11 +71,19 @@ class GudPyChart(QChart):
         for axis in self.axes():
             self.removeAxis(axis)
 
+        plotsDCS = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS]
+
         for sample in self.samples:
             plotConfig = SamplePlotConfig(sample, self.inputDir, self)
             for series in plotConfig.plotData(plotMode):
                 self.addSeries(series)
-        
+            if plotsDCS:
+                pen = QPen(plotConfig.dcsSeries.pen())
+                pen.setStyle(Qt.PenStyle.DashLine)
+                pen.setWidth(2)
+                pen.setColor(plotConfig.mdcs01Series.color())
+                plotConfig.dcsSeries.setPen(pen)
+
         # Label axes
         if self.plotMode in [
             PlotModes.SF, PlotModes.SF_MINT01,
