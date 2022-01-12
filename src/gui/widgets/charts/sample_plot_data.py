@@ -31,9 +31,7 @@ class Point():
 class GudPyPlot():
     # mint01 / mdcs01 / mdor01 / mgor01 / dcs
     def __init__(self, path, exists):
-        print(exists)
         if not exists:
-            print("Couldn't find" + path)
             self.dataSet = None
         else:
             self.dataSet = self.constructDataSet(path)
