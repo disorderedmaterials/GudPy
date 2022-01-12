@@ -1,8 +1,6 @@
 
 import os
 
-from PySide6.QtGui import QPen
-from PySide6.QtCore import Qt
 from src.gui.widgets.charts.sample_plot_data import DCSLevel, Mdcs01Plot, Mdor01Plot, Mgor01Plot, Mint01Plot
 from src.gui.widgets.charts.plot_modes import PlotModes
 
@@ -63,10 +61,6 @@ class SamplePlotConfig():
             self.dcsLevel.extend([p.x() for p in self.mdcs01Series.points()])
             self.dcsSeries = self.dcsLevel.toLineSeries(self.parent)
             self.dcsSeries.setName(f"{self.sample.name} Expected DCS level")
-            pen = QPen(self.dcsSeries.pen())
-            pen.setStyle(Qt.PenStyle.DashLine)
-            pen.setWidth(2)
-            self.dcsSeries.setPen(pen)
 
             # mdor01 dataset.
             mdorPath = baseFile.replace(ext, ".mdor01")
@@ -136,5 +130,9 @@ class SamplePlotConfig():
             PlotModes.SF: self.SF,
             PlotModes.SF_MINT01: self.SF_MINT01,
             PlotModes.SF_MDCS01: self.SF_MDCS01,
-            PlotModes.RDF: self.RDF
+            PlotModes.RDF: self.RDF,
+            PlotModes.SF_CANS: self.SF,
+            PlotModes.SF_MINT01_CANS: self.SF_MINT01,
+            PlotModes.SF_MDCS01_CANS: self.SF_MDCS01,
+            PlotModes.RDF_CANS: self.RDF
         }[plotMode]()

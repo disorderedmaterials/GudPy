@@ -1,8 +1,8 @@
-
-from PySide6.QtCharts import QChart, QLegend, QLegendMarker
+from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.container import Container
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
 from src.gui.widgets.charts.plot_modes import PlotModes
 
@@ -16,6 +16,7 @@ class GudPyChart(QChart):
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
         self.legend().setAlignment(Qt.AlignRight)
         self.samples = []
+        self.containers = []
 
     def connectMarkers(self):
         for marker in self.legend().markers():
@@ -71,12 +72,17 @@ class GudPyChart(QChart):
         for axis in self.axes():
             self.removeAxis(axis)
 
-        plotsDCS = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS]
-
+        plotsDCS = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS]
+        plotsSamples = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_MINT01, PlotModes.RDF]
+        plotsContainers = plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
+        print(plotMode, plotsContainers)
         for sample in self.samples:
             plotConfig = SamplePlotConfig(sample, self.inputDir, self)
             for series in plotConfig.plotData(plotMode):
-                self.addSeries(series)
+                if isinstance(sample, Sample) and plotsSamples:
+                    self.addSeries(series)
+                elif isinstance(sample, Container) and plotsContainers:
+                    self.addSeries(series)
             if plotsDCS:
                 pen = QPen(plotConfig.dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
@@ -98,6 +104,12 @@ class GudPyChart(QChart):
             XLabel = "r, \u212b"
             YLabel = "G(r)"
         self.createDefaultAxes()
-        self.axisX().setTitleText(XLabel)
-        self.axisY().setTitleText(YLabel)
+        if self.series():
+            self.axisX().setTitleText(XLabel)
+            self.axisY().setTitleText(YLabel)
         self.connectMarkers()
+    
+    # def hasData(self, obj):
+    #     series = SamplePlotConfig(obj, self.inputDir, self).series()
+    #     print(sum([s.count() for s in series]))
+    #     return sum([s.count() for s in series])
