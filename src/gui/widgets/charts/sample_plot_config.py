@@ -2,7 +2,7 @@
 import os
 
 from src.gui.widgets.charts.sample_plot_data import DCSLevel, Mdcs01Plot, Mdor01Plot, Mgor01Plot, Mint01Plot
-from src.gui.widgets.charts.plot_modes import PlotModes
+from src.gui.widgets.charts.enums import PlotModes
 
 
 class SamplePlotConfig():
@@ -31,7 +31,8 @@ class SamplePlotConfig():
 
             self.mint01DataSet = Mint01Plot(mintPath, hasMintData)
             self.mint01Series = self.mint01DataSet.toLineSeries(self.parent)
-            self.mint01Series.setName(f"{self.sample.name} mint01")
+            if self.mint01Series:
+                self.mint01Series.setName(f"{self.sample.name} mint01")
 
             # mdcs01 dataset.
             mdcsPath = baseFile.replace(ext, ".mdcs01")
@@ -45,7 +46,8 @@ class SamplePlotConfig():
 
             self.mdcs01DataSet = Mdcs01Plot(mdcsPath, hasMdcsData)
             self.mdcs01Series = self.mdcs01DataSet.toLineSeries(self.parent)
-            self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
+            if self.mdcs01Series:
+                self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
 
             # gud data, for dcs level.
             gudPath = baseFile.replace(ext, ".gud")
@@ -60,7 +62,8 @@ class SamplePlotConfig():
             self.dcsLevel = DCSLevel(gudPath, hasDCSData)
             self.dcsLevel.extend([p.x() for p in self.mdcs01Series.points()])
             self.dcsSeries = self.dcsLevel.toLineSeries(self.parent)
-            self.dcsSeries.setName(f"{self.sample.name} Expected DCS level")
+            if self.dcsSeries:
+                self.dcsSeries.setName(f"{self.sample.name} Expected DCS level")
 
             # mdor01 dataset.
             mdorPath = baseFile.replace(ext, ".mdor01")
@@ -74,7 +77,8 @@ class SamplePlotConfig():
 
             self.mdor01DataSet = Mdor01Plot(mdorPath, hasMdorData)
             self.mdor01Series = self.mdor01DataSet.toLineSeries(self.parent)
-            self.mdor01Series.setName(f"{self.sample.name} mdor01")
+            if self.mdor01Series:
+                self.mdor01Series.setName(f"{self.sample.name} mdor01")
 
             # mgor01 dataset.
             mgorPath = baseFile.replace(ext, ".mgor01")
@@ -88,7 +92,8 @@ class SamplePlotConfig():
 
             self.mgor01DataSet = Mgor01Plot(mgorPath, hasMgorData)
             self.mgor01Series = self.mgor01DataSet.toLineSeries(self.parent)
-            self.mgor01Series.setName(f"{self.sample.name} mgor01")
+            if self.mgor01Series:
+                self.mgor01Series.setName(f"{self.sample.name} mgor01")
 
     # return all series
     def series(self):

@@ -4,7 +4,7 @@ from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
-from src.gui.widgets.charts.plot_modes import PlotModes
+from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
 
 class GudPyChart(QChart):
     
@@ -16,7 +16,7 @@ class GudPyChart(QChart):
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
         self.legend().setAlignment(Qt.AlignRight)
         self.samples = []
-        self.containers = []
+        self.configs = {}
 
     def connectMarkers(self):
         for marker in self.legend().markers():
@@ -77,7 +77,11 @@ class GudPyChart(QChart):
         plotsContainers = plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
         print(plotMode, plotsContainers)
         for sample in self.samples:
-            plotConfig = SamplePlotConfig(sample, self.inputDir, self)
+            if sample in self.configs.keys():
+                plotConfig = self.configs[sample]
+            else:
+                plotConfig = SamplePlotConfig(sample, self.inputDir, self)
+                self.configs[sample] = plotConfig
             for series in plotConfig.plotData(plotMode):
                 if isinstance(sample, Sample) and plotsSamples:
                     self.addSeries(series)
@@ -108,8 +112,56 @@ class GudPyChart(QChart):
             self.axisX().setTitleText(XLabel)
             self.axisY().setTitleText(YLabel)
         self.connectMarkers()
-    
-    # def hasData(self, obj):
-    #     series = SamplePlotConfig(obj, self.inputDir, self).series()
-    #     print(sum([s.count() for s in series]))
-    #     return sum([s.count() for s in series])
+
+    def toggleVisible(self, seriesType):
+        """
+        Toggles visibility of a given series, or set of series'.
+        Parameters
+        ----------
+        series : dict | QLineSeries
+            Series(') to toggle visibility on.
+        """
+        targetAttribute = (
+            {
+                SeriesTypes.MINT01: "mint01Series",
+                SeriesTypes.MDCS01: "mdcs01Series",
+                SeriesTypes.DCSLEVEL: "dcsSeries",
+                SeriesTypes.MGOR01: "mgor01Series",
+                SeriesTypes.MDOR01: "mdor01Series"
+            }[seriesType]
+        )
+
+        for sample in self.samples:
+            if self.configs[sample].__dict__[targetAttribute]:
+                self.configs[sample].__dict__[targetAttribute].setVisible(
+                    not self.configs[sample].__dict__[targetAttribute].isVisible()
+                )
+
+
+    def isVisible(self, seriesType):
+        """
+        Method for determining if a given series or set of series' is visible.
+        Parameters
+        ----------
+        series : dict | QLineSeries
+            Series(') to check visibility of.
+        """
+        # If it's a dict, assume that if any value (series)
+        # is visible, then they all should be.
+        targetAttribute = (
+            {
+                SeriesTypes.MINT01: "mint01Series",
+                SeriesTypes.MDCS01: "mdcs01Series",
+                SeriesTypes.DCSLEVEL: "dcsSeries",
+                SeriesTypes.MGOR01: "mgor01Series",
+                SeriesTypes.MDOR01: "mdor01Series"
+            }[seriesType]
+        )
+
+        return any(
+            [
+                self.configs[sample].__dict__[targetAttribute].isVisible()
+                for sample in self.samples
+                if self.configs[sample].__dict__[targetAttribute]
+            ]
+        )

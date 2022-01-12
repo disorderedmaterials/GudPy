@@ -25,3 +25,10 @@ PLOT_MODES = {
 PlotModes = enumFromDict(
     "PlotModes", PLOT_MODES
 )
+
+class SeriesTypes(Enum):
+    MINT01 = 0
+    MDCS01 = 1
+    MGOR01 = 2
+    MDOR01 = 3
+    DCSLEVEL = 4

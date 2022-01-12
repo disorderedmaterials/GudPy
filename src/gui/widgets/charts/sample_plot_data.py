@@ -1,20 +1,9 @@
 from abc import abstractmethod
-from enum import Enum
-import os.path
 from PySide6.QtCharts import QLineSeries
 
-from PySide6.QtCore import QLine, QPoint, QPointF
+from PySide6.QtCore import QPoint, QPointF
 
 from src.gudrun_classes.gud_file import GudFile
-
-
-class DataSets(Enum):
-    MINT01 = 0
-    MDCS01 = 1
-    MGOR01 = 2
-    MDOR01 = 3
-    DCSLEVEL = 4
-
 
 class Point():
     def __init__(self, x, y, err):
@@ -57,17 +46,17 @@ class GudPyPlot():
         return [x.toQPointF() for x in self.dataSet] if self.dataSet else None
 
     def toLineSeries(self, parent):
-        self.series = QLineSeries(parent)
-        points = self.toQPointFList()
-        if points:
-            self.series.append(points)
-        return self.series
+        if self.dataSet:
+            self.series = QLineSeries(parent)
+            points = self.toQPointFList()
+            if points:
+                self.series.append(points)
+            return self.series
 
 class Mint01Plot(GudPyPlot):
 
     def __init__(self, path, exists):
         self.path = path
-        self.type = DataSets.MINT01
         self.XLabel = "Q, 1\u212b"
         self.YLabel = "DCS, barns/sr/atom"
         super().__init__(path, exists)
@@ -77,7 +66,6 @@ class Mdcs01Plot(GudPyPlot):
 
     def __init__(self, path, exists):
         self.path = path
-        self.type = DataSets.MINT01
         self.XLabel = "Q, 1\u212b"
         self.YLabel = "DCS, barns/sr/atom"
         super().__init__(path, exists)
@@ -88,7 +76,6 @@ class Mdor01Plot(GudPyPlot):
 
     def __init__(self, path, exists):
         self.path = path
-        self.type = DataSets.MDOR01
         self.XLabel = "r, \u212b"
         self.YLabel = "G(r)"
         super().__init__(path, exists)
@@ -97,7 +84,6 @@ class Mgor01Plot(GudPyPlot):
 
     def __init__(self, path, exists):
         self.path = path
-        self.type = DataSets.MGOR01
         self.XLabel = "r, \u212b"
         self.YLabel = "G(r)"
         super().__init__(path, exists)
@@ -106,7 +92,6 @@ class DCSLevel:
 
     def __init__(self, path, exists):
         self.path = path
-        self.type = DataSets.DCSLEVEL
         if not exists:
             self.dcsLevel = None
             self.data = [None]

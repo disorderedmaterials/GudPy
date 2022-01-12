@@ -1,10 +1,10 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import (
-    QClipboard, QCursor, QPainter
+    QAction, QClipboard, QCursor, QPainter
 )
-from PySide6.QtWidgets import QSizePolicy
-
+from PySide6.QtWidgets import QMenu, QSizePolicy
+from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
 class GudPyChartView(QChartView):
     """
     Class to represent a GudPyChartView. Inherits QChartView.
@@ -135,3 +135,104 @@ class GudPyChartView(QChartView):
         # Relinquish focus.
         self.parent().setFocus(Qt.OtherFocusReason)
         return super().leaveEvent(event)
+    
+    def contextMenuEvent(self, event):
+        """
+        Creates context menu, so that on right clicking the chartview,
+        the user is able to perform actions.
+        Parameters
+        ----------
+        event : QMouseEvent
+            The event that triggers the context menu.
+        """
+        self.menu = QMenu(self)
+        if self.chart():
+            resetAction = QAction("Reset View", self.menu)
+            resetAction.triggered.connect(self.chart().zoomReset)
+            self.menu.addAction(resetAction)
+
+
+            if self.chart().plotMode in [
+                PlotModes.SF,
+                PlotModes.SF_CANS
+            ]:
+                showMint01Action = QAction("Show mint01 data", self.menu)
+                showMint01Action.setCheckable(True)
+                showMint01Action.setChecked(
+                    self.chart().isVisible(SeriesTypes.MINT01)
+                )
+                showMint01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.MINT01
+                    )
+                )
+                self.menu.addAction(showMint01Action)
+
+                showMdcs01Action = QAction("Show mdcs01 data", self.menu)
+                showMdcs01Action.setCheckable(True)
+                showMdcs01Action.setChecked(
+                    self.chart().isVisible(SeriesTypes.MDCS01)
+                )
+                showMdcs01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.MDCS01
+                    )
+                )
+                self.menu.addAction(showMdcs01Action)
+
+                showDCSLevelAction = QAction("Show dcs level", self.menu)
+                showDCSLevelAction.setCheckable(True)
+                showDCSLevelAction.setChecked(
+                    self.chart().isVisible(SeriesTypes.DCSLEVEL)
+                )
+                showDCSLevelAction.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.DCSLEVEL
+                    )
+                )
+                self.menu.addAction(showDCSLevelAction)
+            elif self.chart().plotMode in [
+                 PlotModes.SF_MDCS01,
+                 PlotModes.SF_MDCS01_CANS
+            ]:
+                showDCSLevelAction = QAction("Show dcs level", self.menu)
+                showDCSLevelAction.setCheckable(True)
+                showDCSLevelAction.setChecked(
+                    self.chart().isVisible(SeriesTypes.DCSLEVEL)
+                )
+                showDCSLevelAction.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.DCSLEVEL
+                    )
+                )
+            elif (
+                self.chart().plotMode in
+                [
+                    PlotModes.RDF,
+                    PlotModes.RDF_CANS
+                ]
+            ):
+                showMdor01Action = QAction("Show mdor01 data", self.menu)
+                showMdor01Action.setCheckable(True)
+                showMdor01Action.setChecked(
+                    self.chart().isVisible(SeriesTypes.MDOR01)
+                )
+                showMdor01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.MDOR01
+                    )
+                )
+                self.menu.addAction(showMdor01Action)
+
+                showMgor01Action = QAction("Show mgor01 data", self.menu)
+                showMgor01Action.setCheckable(True)
+                showMgor01Action.setChecked(
+                    self.chart().isVisible(SeriesTypes.MGOR01)
+                )
+                showMgor01Action.triggered.connect(
+                    lambda: self.chart().toggleVisible(
+                        SeriesTypes.MGOR01
+                    )
+                )
+                self.menu.addAction(showMgor01Action)
+        self.menu.exec(QCursor.pos())
