@@ -1,0 +1,11 @@
+GudPy Release 0.2.0.
+ - Plot expected DCS level.
+ - Calculate expected DCS level prior to running gudrun_dcs, from the composition.
+ - Parse isotopes when defining components.
+ - Autosave and autorecovery.
+ - Better units.
+ - Export archive of data.
+ - Produce .sample files for tracking parameters used for each sample.
+ - Acceptable ranges for input values.
+ - Rubber band zoom fix.
+ - Various smaller enhancements and fixes.
