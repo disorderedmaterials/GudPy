@@ -179,21 +179,9 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMdcs01Action)
-
-                showDCSLevelAction = QAction("Show dcs level", self.menu)
-                showDCSLevelAction.setCheckable(True)
-                showDCSLevelAction.setChecked(
-                    self.chart().isVisible(SeriesTypes.DCSLEVEL)
-                )
-                showDCSLevelAction.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.DCSLEVEL
-                    )
-                )
-                self.menu.addAction(showDCSLevelAction)
-            elif self.chart().plotMode in [
-                 PlotModes.SF_MDCS01,
-                 PlotModes.SF_MDCS01_CANS
+            if self.chart().plotMode in [
+                PlotModes.SF, PlotModes.SF_CANS,
+                PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
             ]:
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
                 showDCSLevelAction.setCheckable(True)
@@ -205,6 +193,7 @@ class GudPyChartView(QChartView):
                         SeriesTypes.DCSLEVEL
                     )
                 )
+                self.menu.addAction(showDCSLevelAction)
             elif (
                 self.chart().plotMode in
                 [
