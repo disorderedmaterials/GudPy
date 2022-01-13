@@ -60,7 +60,8 @@ class SamplePlotConfig():
                 hasDCSData = True
             
             self.dcsLevel = DCSLevel(gudPath, hasDCSData)
-            self.dcsLevel.extend([p.x() for p in self.mdcs01Series.points()])
+            if hasMdcsData:
+                self.dcsLevel.extend([p.x() for p in self.mdcs01Series.points()])
             self.dcsSeries = self.dcsLevel.toLineSeries(self.parent)
             if self.dcsSeries:
                 self.dcsSeries.setName(f"{self.sample.name} Expected DCS level")
@@ -84,10 +85,10 @@ class SamplePlotConfig():
             mgorPath = baseFile.replace(ext, ".mgor01")
             hasMgorData = False
 
-            if os.path.exists(mdorPath):
+            if os.path.exists(mgorPath):
                 hasMgorData = True
             elif os.path.exists(os.path.join(self.inputDir, mgorPath)):
-                mdorPath = os.path.join(self.inputDir, mgorPath)
+                mgorPath = os.path.join(self.inputDir, mgorPath)
                 hasMgorData = True
 
             self.mgor01DataSet = Mgor01Plot(mgorPath, hasMgorData)

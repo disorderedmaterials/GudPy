@@ -75,7 +75,6 @@ class GudPyChart(QChart):
         plotsDCS = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS]
         plotsSamples = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_MINT01, PlotModes.RDF]
         plotsContainers = plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
-        print(plotMode, plotsContainers)
         for sample in self.samples:
             if sample in self.configs.keys():
                 plotConfig = self.configs[sample]
@@ -87,7 +86,7 @@ class GudPyChart(QChart):
                     self.addSeries(series)
                 elif isinstance(sample, Container) and plotsContainers:
                     self.addSeries(series)
-            if plotsDCS:
+            if plotsDCS and plotConfig.mdcs01Series:
                 pen = QPen(plotConfig.dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
                 pen.setWidth(2)

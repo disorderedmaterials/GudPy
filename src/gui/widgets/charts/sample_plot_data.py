@@ -94,7 +94,7 @@ class DCSLevel:
         self.path = path
         if not exists:
             self.dcsLevel = None
-            self.data = [None]
+            self.data = []
         else:
             self.dcsLevel = self.extractDCSLevel(path)
             self.data = []

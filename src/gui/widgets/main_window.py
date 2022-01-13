@@ -47,7 +47,7 @@ from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
 from src.gui.widgets.charts.chart import GudPyChart
 from src.gui.widgets.charts.chartview import GudPyChartView
-from src.gui.widgets.charts.plot_modes import PlotModes
+from src.gui.widgets.charts.enums import PlotModes
 
 from src.gudrun_classes.enums import Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
@@ -681,16 +681,7 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-            if not any(
-                [
-                    *topPlot.data[
-                        self.mainWidget.objectTree.currentObject()
-                    ].values(),
-                    *bottomPlot.data[
-                        self.mainWidget.objectTree.currentObject()
-                    ].values()
-                ]
-            ):
+            if not topPlot.series() or not bottomPlot.series():
                 self.mainWidget.containerSplitter.setSizes([1, 0])
             else:
                 self.mainWidget.containerSplitter.setSizes([2, 1])
