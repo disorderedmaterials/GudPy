@@ -72,20 +72,23 @@ steps:
     displayName: 'Zip windows non-bundled version.'
 
   - bash: |
-      sudo apt-get update
-      sudo apt-get install python dh-autoreconf build-essential libarchive-dev
-      cd
-      git clone https://github.com/sylabs/singularity.git && cd singularity
-      git fetch && git checkout 2.5.2
-      ./autogen.sh
-      ./configure --prefix=/usr/local --sysconfdir=/etc
-      make && sudo make install
+      sudo apt-get update && \
+      sudo apt-get install -y build-essential \
+      libseccomp-dev pkg-config squashfs-tools cryptsetup
+      export GOPATH=$(Agent.HomeDirectory)/go
+      go get -d github.com/sylabs/singularity
+      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout v3.6.2
+      ./mconfig && make -C ./builddir && sudo make -C ./builddir install
     condition: eq(variables.osName, 'linux')
     displayName: "Compile singularity for linux." 
   
   - bash: |
       cd GudPy
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sudo singularity build -w dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      dd if=/dev/zero of=dist/overlay.img bs=1M count=200
+      mkfs.ext3 overlay.img
+      singularity sif add --datatype 4 --partfs 2 --parttype 4 --partarch 2 --groupid 1 dist/GudPy-$VERSION.sif dist/overlay.img
+      rm dist/overlay.img
     condition: eq(variables.osName, 'linux')
     displayName: "Build singularity image for linux."

@@ -1,4 +1,4 @@
-Bootstrap: docker
+Bootstrap: library
 From: ubuntu:20.04
 
 %post
@@ -11,7 +11,6 @@ From: ubuntu:20.04
     cd
     python3.8 -m pip uninstall pip -y
     apt-get remove curl -y
-    chmod -R 777 /opt/GudPy/bin/StartupFiles
 
 %help
 
@@ -19,6 +18,7 @@ From: ubuntu:20.04
 
 %setup
     mkdir ${SINGULARITY_ROOTFS}/opt/GudPy
+
 %files
 
     ./src /opt/GudPy
@@ -26,9 +26,7 @@ From: ubuntu:20.04
     ./main.py /opt/GudPy
 
 %environment
-
     export SIF=1
-
 
 %runscript
     # If the container is executed, this line will be run.
