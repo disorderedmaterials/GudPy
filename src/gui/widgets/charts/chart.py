@@ -1,10 +1,11 @@
-from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries, QValueAxis
+from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
 from PySide6.QtCore import QObject, QRect, QRectF, Qt
 from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
+from src.gui.widgets.gudpy_charts import Axes
 
 class GudPyChart(QChart):
     
@@ -17,6 +18,15 @@ class GudPyChart(QChart):
         self.legend().setAlignment(Qt.AlignRight)
         self.samples = []
         self.configs = {}
+
+        self.logarithmicA = False
+        self.logarithmicX = False
+        self.logarithmicY = False
+        self.logarithmicXAxis = QLogValueAxis(self)
+        self.logarithmicXAxis.setBase(10.0)
+        self.logarithmicYAxis = QLogValueAxis(self)
+        self.logarithmicYAxis.setBase(10.0)
+
 
     def connectMarkers(self):
         for marker in self.legend().markers():
@@ -76,16 +86,16 @@ class GudPyChart(QChart):
         for axis in self.axes():
             self.removeAxis(axis)
 
-        plotsDCS = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS]
-        plotsSamples = plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_MINT01, PlotModes.RDF]
-        plotsContainers = plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
+        plotsDCS = self.plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS]
+        plotsSamples = self.plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_MINT01, PlotModes.RDF]
+        plotsContainers = self.plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
         for sample in self.samples:
             if sample in self.configs.keys():
                 plotConfig = self.configs[sample]
             else:
                 plotConfig = SamplePlotConfig(sample, self.inputDir, self)
                 self.configs[sample] = plotConfig
-            for series in plotConfig.plotData(plotMode):
+            for series in plotConfig.plotData(self.plotMode):
                 if series:
                     if isinstance(sample, Sample) and plotsSamples:
                         self.addSeries(series)
@@ -117,6 +127,19 @@ class GudPyChart(QChart):
             self.createDefaultAxes()
             self.axisX().setTitleText(XLabel)
             self.axisY().setTitleText(YLabel)
+
+            if self.logarithmicX or self.logarithmicA:
+                self.removeAxis(self.axisX())
+                self.addAxis(self.logarithmicXAxis, Qt.AlignBottom)
+                for series in self.series():
+                    series.attachAxis(self.logarithmicXAxis)
+
+            if self.logarithmicY or self.logarithmicA:
+                self.addAxis(self.logarithmicYAxis, Qt.AlignLeft)
+                self.removeAxis(self.axisY())
+                for series in self.series():
+                    series.attachAxis(self.logarithmicYAxis)
+
         self.connectMarkers()
 
     def toggleVisible(self, seriesType):
@@ -189,6 +212,18 @@ class GudPyChart(QChart):
         self.configs[sample].dcsSeries.setVisible(state)
         self.configs[sample].mdor01Series.setVisible(state)
         self.configs[sample].mgor01Series.setVisible(state)
-    
-    def viewReset(self):
-        self.zoomReset()
+
+
+    def toggleLogarithmicAxis(self, axis):
+        if axis == Axes.A:
+            self.logarithmicA = not self.logarithmicA
+            self.logarithmicX = self.logarithmicA
+            self.logarithmicY = self.logarithmicA
+        elif axis == Axes.X:
+            self.logarithmicX = not self.logarithmicX
+            self.logarithmicA = self.logarithmicX and self.logarithmicY
+        elif axis == Axes.Y:
+            self.logarithmicY = not self.logarithmicY
+            self.logarithmicA = self.logarithmicX and self.logarithmicY
+
+        self.plot()

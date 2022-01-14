@@ -3,11 +3,13 @@ from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter
 )
-from PySide6.QtWidgets import QMenu, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.sample import Sample
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
-from src.gui.widgets.gudpy_charts import PLOT_MODES
+from sys import float_info
+
+from src.gui.widgets.gudpy_charts import Axes
 class GudPyChartView(QChartView):
     """
     Class to represent a GudPyChartView. Inherits QChartView.
@@ -98,7 +100,7 @@ class GudPyChartView(QChartView):
                 offset = event.pos() - self.previousPos
             else:
                 offset = event.pos()
-            self.chart().zoom(1.0000000001)
+            self.chart().zoom(1 + float_info.min)
             self.chart().scroll(-offset.x(), offset.y())
 
             self.previousPos = event.pos()
@@ -119,6 +121,31 @@ class GudPyChartView(QChartView):
             event.accept()
         else:
             return super(GudPyChartView, self).mouseReleaseEvent(event)
+
+    def keyPressEvent(self, event):
+        """
+        Handles key presses.
+        Used for implementing hotkeys / shortcuts.
+        """
+        modifiers = QApplication.keyboardModifiers()
+        if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
+            self.copyPlot()
+        # 'L/l' refers to logarithms.
+        elif event.key() == Qt.Key_L:
+            # Get the modifiers e.g. shift, control etc.
+            # 'Ctrl+L/l' toggles logarithmic X-axis.
+            if modifiers == Qt.ControlModifier:
+                self.toggleLogarithmicAxes(Axes.X)
+            # 'Ctrl+Shift+L/l' toggles logarithmic Y-axis.
+            elif modifiers == (Qt.ControlModifier | Qt.ShiftModifier):
+                self.toggleLogarithmicAxes(Axes.Y)
+            else:
+                # 'L/l' toggles both axes.
+                self.toggleLogarithmicAxes(Axes.A)
+        # 'A/a' refers to resetting the zoom / showing the limits.
+        elif event.key() == Qt.Key_A:
+            self.chart().zoomReset()
+        return super().keyPressEvent(event)
 
     def enterEvent(self, event):
         """
@@ -149,10 +176,49 @@ class GudPyChartView(QChartView):
         """
         self.menu = QMenu(self)
         if self.chart():
+
             resetAction = QAction("Reset View", self.menu)
             resetAction.triggered.connect(self.chart().zoomReset)
             self.menu.addAction(resetAction)
 
+            toggleLogarithmicMenu = QMenu(self.menu)
+            toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
+
+            toggleLogarithmicAllAxesAction = QAction(
+                "Toggle logarithmic all axis", toggleLogarithmicMenu
+            )
+
+            toggleLogarithmicAllAxesAction.setCheckable(True)
+            toggleLogarithmicAllAxesAction.setChecked(
+                self.chart().logarithmicX
+                & self.chart().logarithmicY
+            )
+            toggleLogarithmicAllAxesAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.A)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicAllAxesAction)
+
+            toggleLogarithmicXAxisAction = QAction(
+                "Toggle logarithmic X-axis", toggleLogarithmicMenu
+            )
+            toggleLogarithmicXAxisAction.setCheckable(True)
+            toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
+            toggleLogarithmicXAxisAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.X)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicXAxisAction)
+
+            toggleLogarithmicYAxisAction = QAction(
+                "Toggle logarithmic Y-axis", toggleLogarithmicMenu
+            )
+            toggleLogarithmicYAxisAction.setCheckable(True)
+            toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
+            toggleLogarithmicYAxisAction.triggered.connect(
+                lambda: self.toggleLogarithmicAxes(Axes.Y)
+            )
+            toggleLogarithmicMenu.addAction(toggleLogarithmicYAxisAction)
+
+            self.menu.addMenu(toggleLogarithmicMenu)
 
             if self.chart().plotMode in [
                 PlotModes.SF,
@@ -253,3 +319,9 @@ class GudPyChartView(QChartView):
                 action.isChecked(),
                 actionMap[action]
             )
+
+    def toggleLogarithmicAxes(self, axis):
+        """
+        Toggles logarithmic axes in the chart.
+        """
+        self.chart().toggleLogarithmicAxis(axis)
