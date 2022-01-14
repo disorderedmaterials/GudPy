@@ -46,12 +46,11 @@ class GudPyPlot():
         return [x.toQPointF() for x in self.dataSet] if self.dataSet else None
 
     def toLineSeries(self, parent):
-        if self.dataSet:
-            self.series = QLineSeries(parent)
-            points = self.toQPointFList()
-            if points:
-                self.series.append(points)
-            return self.series
+        self.series = QLineSeries(parent)
+        points = self.toQPointFList()
+        if points:
+            self.series.append(points)
+        return self.series
 
 class Mint01Plot(GudPyPlot):
 
@@ -106,18 +105,11 @@ class DCSLevel:
         return gudFile.expectedDCS
     
     def extend(self, xAxis):
-        self.data =  [QPointF(x, self.dcsLevel) for x in xAxis ]
+        self.data = [QPointF(x, self.dcsLevel) for x in xAxis ]
 
     def toLineSeries(self, parent):
         self.series = QLineSeries(parent)
         if self.data:
             self.series.append(self.data)
         return self.series
-
-class SamplePlotData():
-
-
-    def __init__(self, sample, inputDir):
-        self.sample = sample
-        self.inputDir = inputDir
 

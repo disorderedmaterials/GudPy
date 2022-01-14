@@ -1,4 +1,4 @@
-from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries
+from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries, QValueAxis
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
@@ -64,6 +64,10 @@ class GudPyChart(QChart):
     def addSample(self, sample):
         self.samples.append(sample)
 
+    def removeAllSeries(self):
+        for series in self.series():
+            self.removeSeries(series)
+
     def plot(self, plotMode=None):
         if plotMode:
             self.plotMode = plotMode
@@ -82,10 +86,13 @@ class GudPyChart(QChart):
                 plotConfig = SamplePlotConfig(sample, self.inputDir, self)
                 self.configs[sample] = plotConfig
             for series in plotConfig.plotData(plotMode):
-                if isinstance(sample, Sample) and plotsSamples:
-                    self.addSeries(series)
-                elif isinstance(sample, Container) and plotsContainers:
-                    self.addSeries(series)
+                if series:
+                    if isinstance(sample, Sample) and plotsSamples:
+                        self.addSeries(series)
+                    elif isinstance(sample, Container) and plotsContainers:
+                        self.addSeries(series)
+                    if not series.points():
+                        series.hide()
             if plotsDCS and plotConfig.mdcs01Series:
                 pen = QPen(plotConfig.dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
@@ -106,8 +113,8 @@ class GudPyChart(QChart):
         ]:
             XLabel = "r, \u212b"
             YLabel = "G(r)"
-        self.createDefaultAxes()
         if self.series():
+            self.createDefaultAxes()
             self.axisX().setTitleText(XLabel)
             self.axisY().setTitleText(YLabel)
         self.connectMarkers()
