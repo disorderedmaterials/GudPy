@@ -152,6 +152,7 @@ class GudPyChartView(QChartView):
         Handles the mouse entering the chart view.
         Gives focus to the chart view.
         """
+        
         # Acquire focus.
         self.setFocus(Qt.OtherFocusReason)
         return super().enterEvent(event)

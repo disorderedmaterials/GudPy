@@ -1,4 +1,6 @@
+from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile, QFileInfo, QTimer
+from PySide6.QtGui import QPainter
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -15,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
+from src.gui.widgets.charts.beam_plot import BeamChart
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -204,6 +207,19 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
+
+        self.mainWidget.beamPlot = QChartView(
+            self.mainWidget
+        )
+        self.mainWidget.beamPlot.setRenderHint(QPainter.Antialiasing)
+
+        self.mainWidget.beamProfileLayout.insertWidget(
+            1, self.mainWidget.beamPlot 
+        )
+
+        self.mainWidget.beamChart = BeamChart()
+
+        self.mainWidget.beamPlot.setChart(self.mainWidget.beamChart)
 
         self.mainWidget.sampleTopPlot = GudPyChartView(
             self.mainWidget
