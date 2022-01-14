@@ -1,4 +1,3 @@
-from email.errors import StartBoundaryNotFoundDefect
 from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -1255,7 +1254,9 @@ class GudPyMainWindow(QMainWindow):
             return -1, False, -1
         elif dataFiles[-1] in stdout:
             lines = stdout.split("\n")
-            targetLine = next((s for s in lines if "spectra in" in s and dataFiles[-1] in s))
+            targetLine = next(
+                (s for s in lines if "spectra in" in s and dataFiles[-1] in s)
+            )
             return 100, True, nthint(targetLine, 0)
         else:
             return progress, False, -1
