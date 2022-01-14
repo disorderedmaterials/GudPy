@@ -171,3 +171,21 @@ class GudPyChart(QChart):
                 if self.configs[sample].__dict__[targetAttribute]
             ]
         )
+    
+    def isSampleVisible(self, sample):
+
+        if self.plotMode in [PlotModes.SF, PlotModes.SF_CANS]:
+            return self.configs[sample].mint01Series.isVisible() | self.configs[sample].mdcs01Series.isVisible() | self.configs[sample].dcsSeries.isVisible()
+        elif self.plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MINT01_CANS]:
+            return self.configs[sample].mint01Series.isVisible()
+        elif self.plotMode in [PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS]:
+            return self.configs[sample].mdcs01Series.isVisible() | self.configs[sample].dcsSeries.isVisible()
+        elif  self.plotMode in [PlotModes.RDF, PlotModes.RDF_CANS]:
+            return self.configs[sample].mdor01Series.isVisible() | self.configs[sample].mgor01Series.isVisible()
+        
+    def toggleSampleVisibility(self, state, sample):
+        self.configs[sample].mint01Series.setVisible(state)
+        self.configs[sample].mdcs01Series.setVisible(state)
+        self.configs[sample].dcsSeries.setVisible(state)
+        self.configs[sample].mdor01Series.setVisible(state)
+        self.configs[sample].mgor01Series.setVisible(state)

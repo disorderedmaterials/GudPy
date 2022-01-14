@@ -4,7 +4,10 @@ from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter
 )
 from PySide6.QtWidgets import QMenu, QSizePolicy
+from src.gudrun_classes.container import Container
+from src.gudrun_classes.sample import Sample
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
+from src.gui.widgets.gudpy_charts import PLOT_MODES
 class GudPyChartView(QChartView):
     """
     Class to represent a GudPyChartView. Inherits QChartView.
@@ -224,4 +227,30 @@ class GudPyChartView(QChartView):
                     )
                 )
                 self.menu.addAction(showMgor01Action)
-        self.menu.exec(QCursor.pos())
+            if len(self.chart().samples) > 1:
+                showMenu = QMenu(self.menu)
+                showMenu.setTitle("Show..")
+                actionMap = {}
+                if self.chart().plotMode in [PlotModes.SF, PlotModes.SF_MINT01, PlotModes.SF_MDCS01, PlotModes.RDF]:
+                    samples = [sample for sample in self.chart().samples if isinstance(sample, Sample)]
+                elif self.chart().plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]:
+                    samples = [sample for sample in self.chart().samples if isinstance(sample, Container)]
+                for sample in samples:
+                    action = QAction(f"Show {sample.name}", showMenu)
+                    action.setCheckable(True)
+                    action.setChecked(self.chart().isSampleVisible(sample))
+                    showMenu.addAction(action)
+                    actionMap[action] = sample
+                self.menu.addMenu(showMenu)
+
+        copyAction = QAction("Copy plot", self.menu)
+        copyAction.triggered.connect(self.copyPlot)
+        self.menu.addAction(copyAction)
+
+        action = self.menu.exec(QCursor.pos())
+
+        if action in actionMap.keys():
+            self.chart().toggleSampleVisibility(
+                action.isChecked(),
+                actionMap[action]
+            )
