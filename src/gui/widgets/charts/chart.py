@@ -1,5 +1,5 @@
 from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries, QValueAxis
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import QObject, QRect, QRectF, Qt
 from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
@@ -189,3 +189,6 @@ class GudPyChart(QChart):
         self.configs[sample].dcsSeries.setVisible(state)
         self.configs[sample].mdor01Series.setVisible(state)
         self.configs[sample].mgor01Series.setVisible(state)
+    
+    def viewReset(self):
+        self.zoomReset()

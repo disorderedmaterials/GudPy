@@ -90,8 +90,6 @@ class GudPyChartView(QChartView):
         delta = self.chart().plotArea().center() - mousePos
         self.chart().scroll(delta.x(), -delta.y())
 
-        self.zoomArea = zoomArea
-        self.scrolled = (delta.x(), -delta.y())
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.MouseButton.MiddleButton:
@@ -100,6 +98,7 @@ class GudPyChartView(QChartView):
                 offset = event.pos() - self.previousPos
             else:
                 offset = event.pos()
+            self.chart().zoom(1.0000000001)
             self.chart().scroll(-offset.x(), offset.y())
 
             self.previousPos = event.pos()
