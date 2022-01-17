@@ -1,7 +1,9 @@
 
 import os
-
-from src.gui.widgets.charts.sample_plot_data import DCSLevel, Mdcs01Plot, Mdor01Plot, Mgor01Plot, Mint01Plot
+from src.gui.widgets.charts.sample_plot_data import (
+    DCSLevel, Mdcs01Plot,
+    Mdor01Plot, Mgor01Plot, Mint01Plot
+)
 from src.gui.widgets.charts.enums import PlotModes
 
 
@@ -58,13 +60,17 @@ class SamplePlotConfig():
             elif os.path.exists(os.path.join(self.inputDir, gudPath)):
                 gudPath = os.path.join(self.inputDir, gudPath)
                 hasDCSData = True
-            
+
             self.dcsLevel = DCSLevel(gudPath, hasDCSData)
             if hasMdcsData:
-                self.dcsLevel.extend([p.x() for p in self.mdcs01Series.points()])
+                self.dcsLevel.extend(
+                    [p.x() for p in self.mdcs01Series.points()]
+                )
             self.dcsSeries = self.dcsLevel.toLineSeries(self.parent)
             if self.dcsSeries:
-                self.dcsSeries.setName(f"{self.sample.name} Expected DCS level")
+                self.dcsSeries.setName(
+                    f"{self.sample.name} Expected DCS level"
+                )
 
             # mdor01 dataset.
             mdorPath = baseFile.replace(ext, ".mdor01")
@@ -105,19 +111,19 @@ class SamplePlotConfig():
             self.mdor01Series,
             self.mgor01Series
         ]
-    
+
     def SF(self):
         return [
             self.mint01Series,
             self.mdcs01Series,
             self.dcsSeries
         ]
-    
+
     def SF_MINT01(self):
         return [
             self.mint01Series
         ]
-    
+
     def SF_MDCS01(self):
         return [
             self.mdcs01Series,
@@ -129,7 +135,7 @@ class SamplePlotConfig():
             self.mdor01Series,
             self.mgor01Series
         ]
-    
+
     def plotData(self, plotMode):
 
         return {

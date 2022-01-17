@@ -1,6 +1,7 @@
 from itertools import chain, product
 from enum import Enum
 
+
 def enumFromDict(clsname, _dict):
     return Enum(
         value=clsname,
@@ -22,9 +23,11 @@ PLOT_MODES = {
     7: ["Structure Factor (mdcs01), (Cans)", "SF_MDCS01_CANS"],
 }
 
+
 PlotModes = enumFromDict(
     "PlotModes", PLOT_MODES
 )
+
 
 class SeriesTypes(Enum):
     MINT01 = 0
@@ -32,3 +35,9 @@ class SeriesTypes(Enum):
     MGOR01 = 2
     MDOR01 = 3
     DCSLEVEL = 4
+
+
+class Axes(Enum):
+    X = 0
+    Y = 1
+    A = 3

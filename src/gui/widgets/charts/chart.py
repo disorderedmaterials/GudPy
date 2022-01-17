@@ -1,14 +1,15 @@
-from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLineSeries, QLogValueAxis, QValueAxis
-from PySide6.QtCore import QObject, QRect, QRectF, Qt
+from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLogValueAxis
+from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPen
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
-from src.gui.widgets.gudpy_charts import Axes
+from src.gui.widgets.charts.enums import Axes
+
 
 class GudPyChart(QChart):
-    
+
     def __init__(self, gudrunFile, parent=None):
 
         super().__init__(parent)
@@ -26,7 +27,6 @@ class GudPyChart(QChart):
         self.logarithmicXAxis.setBase(10.0)
         self.logarithmicYAxis = QLogValueAxis(self)
         self.logarithmicYAxis.setBase(10.0)
-
 
     def connectMarkers(self):
         for marker in self.legend().markers():
@@ -86,9 +86,18 @@ class GudPyChart(QChart):
         for axis in self.axes():
             self.removeAxis(axis)
 
-        plotsDCS = self.plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS]
-        plotsSamples = self.plotMode in [PlotModes.SF, PlotModes.SF_MDCS01, PlotModes.SF_MINT01, PlotModes.RDF]
-        plotsContainers = self.plotMode in [PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS]
+        plotsDCS = self.plotMode in [
+            PlotModes.SF, PlotModes.SF_MDCS01,
+            PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS
+        ]
+        plotsSamples = self.plotMode in [
+            PlotModes.SF, PlotModes.SF_MDCS01,
+            PlotModes.SF_MINT01, PlotModes.RDF
+        ]
+        plotsContainers = self.plotMode in [
+            PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS,
+            PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
+        ]
         for sample in self.samples:
             if sample in self.configs.keys():
                 plotConfig = self.configs[sample]
@@ -150,7 +159,7 @@ class GudPyChart(QChart):
         series : dict | QLineSeries
             Series(') to toggle visibility on.
         """
-        targetAttribute = (
+        targetAttr = (
             {
                 SeriesTypes.MINT01: "mint01Series",
                 SeriesTypes.MDCS01: "mdcs01Series",
@@ -161,11 +170,10 @@ class GudPyChart(QChart):
         )
 
         for sample in self.samples:
-            if self.configs[sample].__dict__[targetAttribute]:
-                self.configs[sample].__dict__[targetAttribute].setVisible(
-                    not self.configs[sample].__dict__[targetAttribute].isVisible()
+            if self.configs[sample].__dict__[targetAttr]:
+                self.configs[sample].__dict__[targetAttr].setVisible(
+                    not self.configs[sample].__dict__[targetAttr].isVisible()
                 )
-
 
     def isVisible(self, seriesType):
         """
@@ -177,7 +185,7 @@ class GudPyChart(QChart):
         """
         # If it's a dict, assume that if any value (series)
         # is visible, then they all should be.
-        targetAttribute = (
+        targetAttr = (
             {
                 SeriesTypes.MINT01: "mint01Series",
                 SeriesTypes.MDCS01: "mdcs01Series",
@@ -189,30 +197,39 @@ class GudPyChart(QChart):
 
         return any(
             [
-                self.configs[sample].__dict__[targetAttribute].isVisible()
+                self.configs[sample].__dict__[targetAttr].isVisible()
                 for sample in self.samples
-                if self.configs[sample].__dict__[targetAttribute]
+                if self.configs[sample].__dict__[targetAttr]
             ]
         )
-    
+
     def isSampleVisible(self, sample):
 
         if self.plotMode in [PlotModes.SF, PlotModes.SF_CANS]:
-            return self.configs[sample].mint01Series.isVisible() | self.configs[sample].mdcs01Series.isVisible() | self.configs[sample].dcsSeries.isVisible()
+            return (
+                self.configs[sample].mint01Series.isVisible()
+                | self.configs[sample].mdcs01Series.isVisible()
+                | self.configs[sample].dcsSeries.isVisible()
+            )
         elif self.plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MINT01_CANS]:
             return self.configs[sample].mint01Series.isVisible()
         elif self.plotMode in [PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS]:
-            return self.configs[sample].mdcs01Series.isVisible() | self.configs[sample].dcsSeries.isVisible()
-        elif  self.plotMode in [PlotModes.RDF, PlotModes.RDF_CANS]:
-            return self.configs[sample].mdor01Series.isVisible() | self.configs[sample].mgor01Series.isVisible()
-        
+            return (
+                self.configs[sample].mdcs01Series.isVisible()
+                | self.configs[sample].dcsSeries.isVisible()
+            )
+        elif self.plotMode in [PlotModes.RDF, PlotModes.RDF_CANS]:
+            return (
+                self.configs[sample].mdor01Series.isVisible()
+                | self.configs[sample].mgor01Series.isVisible()
+            )
+
     def toggleSampleVisibility(self, state, sample):
         self.configs[sample].mint01Series.setVisible(state)
         self.configs[sample].mdcs01Series.setVisible(state)
         self.configs[sample].dcsSeries.setVisible(state)
         self.configs[sample].mdor01Series.setVisible(state)
         self.configs[sample].mgor01Series.setVisible(state)
-
 
     def toggleLogarithmicAxis(self, axis):
         if axis == Axes.A:
