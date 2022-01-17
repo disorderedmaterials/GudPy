@@ -74,7 +74,7 @@ class Normalisation:
         """
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "NORMALISATION")
-        self.periodNumberBg = 0
+        self.periodNumberBg = 1
         self.dataFilesBg = DataFiles([], "NORMALISATION BACKGROUND")
         self.forceCalculationOfCorrections = False
         self.composition = Composition("NORMALISATION")

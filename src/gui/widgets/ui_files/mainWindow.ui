@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1580</width>
-    <height>1447</height>
+    <height>1450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -4115,6 +4115,9 @@
                    <property name="text">
                     <string>Force calculation of corrections</string>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -4599,6 +4602,9 @@
                           </property>
                           <property name="text">
                            <string>Force corrections</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </item>

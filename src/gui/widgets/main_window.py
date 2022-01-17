@@ -1,4 +1,3 @@
-from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtGui import QPainter
 from PySide6.QtUiTools import QUiLoader
@@ -13,11 +12,12 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSizePolicy,
     QStatusBar,
-    QWidget
+    QWidget,
 )
+from PySide6.QtCharts import QChartView
+
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
-from src.gui.widgets.charts.beam_plot import BeamChart
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -44,12 +44,9 @@ from src.gui.widgets.tables.components_table import ComponentsList
 
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
-# from src.gui.widgets.gudpy_charts import (
-#   GudPyChart, PlotModes, GudPyChartView
-# )
-
 from src.gui.widgets.charts.chart import GudPyChart
 from src.gui.widgets.charts.chartview import GudPyChartView
+from src.gui.widgets.charts.beam_plot import BeamChart
 from src.gui.widgets.charts.enums import PlotModes
 
 from src.gudrun_classes.enums import Geometry
@@ -73,7 +70,7 @@ from src.gudrun_classes.wavelength_subtraction_iterator import (
 from src.gudrun_classes.run_containers_as_samples import RunContainersAsSamples
 from src.gudrun_classes.gud_file import GudFile
 
-from src.scripts.utils import nthint
+from src.scripts.utils import breplace, nthint
 
 import os
 import sys
@@ -760,8 +757,10 @@ class GudPyMainWindow(QMainWindow):
             bottomChart.plot(PlotModes.RDF)
             path = None
             if len(sample.dataFiles.dataFiles):
-                path = sample.dataFiles.dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType, "gud"
+                path = breplace(
+                    sample.dataFiles.dataFiles[0],
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
                 )
                 if not os.path.exists(path):
                     path = os.path.join(
@@ -1317,8 +1316,7 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
-        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
-            self.updateResults()
+
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         if self.error:
@@ -1338,6 +1336,15 @@ class GudPyMainWindow(QMainWindow):
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
+        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
+            try:
+                self.updateResults()
+            except ParserException:
+                QMessageBox.warning(
+                    self.mainWidget, "GudPy Warning",
+                    "The process did not entirely finish,"
+                    " please check your parameters."
+                )
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
