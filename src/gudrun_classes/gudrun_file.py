@@ -22,7 +22,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
-from src.gudrun_classes.composition import Component, Components, Composition
+from src.gudrun_classes.composition import Component, Composition
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
@@ -1131,7 +1131,7 @@ class GudrunFile:
                 "Whilst parsing Components, an exception occured."
                 " The input file is most likely of an incorrect format."
             ) from e
-    
+
     def parseComponent(self):
         name = self.getNextToken().rstrip()
         component = Component(name)
@@ -1141,7 +1141,7 @@ class GudrunFile:
         else:
             return
         line = self.getNextToken()
-        while line and not "}" in line:
+        while line and "}" not in line:
             atomicSymbol, massNo, abundance = line.split()
             element = Element(atomicSymbol, massNo, abundance)
             component.addElement(element)
@@ -1336,7 +1336,11 @@ class GudrunFile:
         footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(
             time.strftime("%Y%m%d %H:%M:%S")
         )
-        components = f"\n\nCOMPONENTS:\n{str(config.components)}" if len(config.components.components) else ""
+        components = (
+            f"\n\nCOMPONENTS:\n{str(config.components)}"
+            if len(config.components.components)
+            else ""
+        )
         return (
             header
             + instrument
