@@ -214,7 +214,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.beamPlot.setRenderHint(QPainter.Antialiasing)
 
         self.mainWidget.beamProfileLayout.insertWidget(
-            1, self.mainWidget.beamPlot 
+            1, self.mainWidget.beamPlot
         )
 
         self.mainWidget.beamChart = BeamChart()
