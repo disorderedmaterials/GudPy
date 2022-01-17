@@ -1256,7 +1256,11 @@ class GudPyMainWindow(QMainWindow):
             try:
                 lines = stdout.split("\n")
                 targetLine = next(
-                    (s for s in lines if "spectra in" in s and dataFiles[-1] in s)
+                    (
+                        s for s in lines
+                        if "spectra in" in s
+                        and dataFiles[-1] in s
+                    )
                 )
             except StopIteration:
                 return progress, False, -1
