@@ -1,5 +1,5 @@
 from PySide6.QtCharts import QChartView
-from PySide6.QtCore import QRectF, Qt
+from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter
 )
@@ -109,6 +109,11 @@ class GudPyChartView(QChartView):
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.previousPos = event.pos()
+        elif event.button() == Qt.MouseButton.LeftButton:
+            # Catch the origin of the rubber band.
+            self.rubberBandOrigin = event.pos()
+
+        event.accept()
         return super().mousePressEvent(event)
 
     def copyPlot(self):
@@ -118,6 +123,28 @@ class GudPyChartView(QChartView):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
             event.accept()
+        elif event.button() == Qt.MouseButton.LeftButton:
+
+            # Collect dims for rubber band rect.
+            width = event.pos().x() - self.rubberBandOrigin.x()
+            height = event.pos().y() - self.rubberBandOrigin.y()
+
+            # Create QRect area to zoom in on.
+            zoomArea = QRect(
+                self.rubberBandOrigin.x(),
+                self.rubberBandOrigin.y(),
+                width,
+                height
+            ).normalized()
+
+            # Zoom in on the area.
+            self.chart().zoomIn(zoomArea)
+
+            # Disable, then re-enable rubber banding
+            # to force hiding of the rect.
+            self.setRubberBand(QChartView.NoRubberBand)
+            event.accept()
+            self.setRubberBand(QChartView.RectangleRubberBand)
         else:
             return super(GudPyChartView, self).mouseReleaseEvent(event)
 
