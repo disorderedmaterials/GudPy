@@ -1,5 +1,6 @@
+import os
 from src.gudrun_classes.enums import (
-    Geometry, CrossSectionSource, UnitsOfDensity
+    Geometry, CrossSectionSource, UnitsOfDensity, Instruments
 )
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QFileDialog
@@ -559,8 +560,13 @@ class NormalisationSlots():
         Alters the normalisation's differential
         cross section file name as such.
         """
+        dir = os.path.join(
+            self.parent.gudrunFile.instrument.GudrunStartFolder,
+            self.parent.gudrunFile.instrument.startupFileFolder,
+            Instruments(self.parent.gudrunFile.instrument.name.value).name
+        )
         filename, _ = QFileDialog.getOpenFileName(
-            self.widget, "Normalisation differential cross section file", ""
+            self.widget, "Normalisation differential cross section file", dir
         )
         if filename:
             self.widget.differentialCrossSectionFileLineEdit.setText(
