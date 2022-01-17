@@ -12,7 +12,6 @@ class BeamChart(QChart):
         self.areaSeries = QAreaSeries(self)
         self.addSeries(self.areaSeries)
 
-
     def setBeam(self, beam):
         self.beam = beam
 
