@@ -1336,7 +1336,7 @@ class GudrunFile:
         footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(
             time.strftime("%Y%m%d %H:%M:%S")
         )
-        components = f"\n\nCOMPONENTS:\n{str(config.components)}"
+        components = f"\n\nCOMPONENTS:\n{str(config.components)}" if len(config.components.components) else ""
         return (
             header
             + instrument
