@@ -98,6 +98,10 @@ class Component():
         elif elements and not persistent:
             return elements
 
+    def __str__(self):
+        elements = "\n".join([str(x) for x in self.elements])
+        return f"{self.name}\n{{\n{elements}\n}}"
+
 
 class Components():
 
@@ -106,6 +110,11 @@ class Components():
 
     def addComponent(self, component):
         self.components.append(component)
+
+    def __str__(self):
+        return "\n".join(
+            [str(x) for x in self.components]
+        )
 
 
 class WeightedComponent():

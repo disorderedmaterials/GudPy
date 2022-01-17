@@ -22,7 +22,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.container import Container
-from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.composition import Component, Components, Composition
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
@@ -1120,6 +1120,34 @@ class GudrunFile:
                     "and some attributes were missing."
             ) from e
 
+    def parseComponents(self):
+        try:
+            while self.stream:
+                component = self.parseComponent()
+                if component:
+                    config.components.addComponent(component)
+        except Exception as e:
+            raise ParserException(
+                "Whilst parsing Components, an exception occured."
+                " The input file is most likely of an incorrect format."
+            ) from e
+    
+    def parseComponent(self):
+        name = self.getNextToken().rstrip()
+        component = Component(name)
+        line = self.peekNextToken()
+        if "{" in line:
+            self.consumeTokens(1)
+        else:
+            return
+        line = self.getNextToken()
+        while line and not "}" in line:
+            atomicSymbol, massNo, abundance = line.split()
+            element = Element(atomicSymbol, massNo, abundance)
+            component.addElement(element)
+            line = self.getNextToken()
+        return component
+
     def makeParse(self, key):
         """
         Calls a parsing function from a dictionary of parsing functions
@@ -1142,6 +1170,8 @@ class GudrunFile:
             if parsing Sample
         Container
             if parsing Container
+        None
+            if parsing Components
         """
 
         parsingFunctions = {
@@ -1151,6 +1181,7 @@ class GudrunFile:
             "SAMPLE BACKGROUND": self.parseSampleBackground,
             "SAMPLE": self.parseSample,
             "CONTAINER": self.parseContainer,
+            "COMPONENTS": self.parseComponents
         }
         # Return the result of the parsing function that was called.
         return parsingFunctions[key]()
@@ -1262,10 +1293,12 @@ class GudrunFile:
 
         # Parse sample backgrounds, alongside their samples and containers.
         while self.stream:
-            if ("SAMPLE BACKGROUND") in line and "{" in line:
+            if "SAMPLE BACKGROUND" in line and "{" in line:
                 self.sampleBackgrounds.append(
                     self.sampleBackgroundHelper()
                 )
+            elif "COMPONENTS:" in line:
+                self.makeParse("COMPONENTS")
             line = self.getNextToken()
 
     def __str__(self):
@@ -1303,6 +1336,7 @@ class GudrunFile:
         footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(
             time.strftime("%Y%m%d %H:%M:%S")
         )
+        components = f"\n\nCOMPONENTS:\n{str(config.components)}"
         return (
             header
             + instrument
@@ -1313,6 +1347,7 @@ class GudrunFile:
             + LINEBREAK
             + sampleBackgrounds
             + footer
+            + components
         )
 
     def write_out(self, path='', overwrite=False, writeParameters=False):
