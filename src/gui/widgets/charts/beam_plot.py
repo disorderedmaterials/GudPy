@@ -9,6 +9,9 @@ class BeamChart(QChart):
     def __init__(self):
         super().__init__()
         self.legend().setVisible(False)
+        self.areaSeries = QAreaSeries(self)
+        self.addSeries(self.areaSeries)
+
 
     def setBeam(self, beam):
         self.beam = beam
@@ -23,8 +26,8 @@ class BeamChart(QChart):
         self.upperSeries.append(intensities)
         self.lowerSeries = QLineSeries(self)
         self.lowerSeries.append([QPoint(p.x(), 0) for p in intensities])
-        self.intensitySeries = QAreaSeries(self.upperSeries, self.lowerSeries)
-        self.addSeries(self.intensitySeries)
+        self.areaSeries.setUpperSeries(self.upperSeries)
+        self.areaSeries.setLowerSeries(self.lowerSeries)
         self.createDefaultAxes()
         self.axisY().setTitleText("Intensity")
         self.axisY().setRange(0, 2)
@@ -33,4 +36,4 @@ class BeamChart(QChart):
             min([p.x() for p in intensities])-1,
             max([p.x() for p in intensities])+1
         )
-        self.axisX().hide()
+        self.axisX().setTitleText("Beam X, cm")
