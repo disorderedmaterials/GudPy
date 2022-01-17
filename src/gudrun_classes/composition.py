@@ -99,6 +99,8 @@ class Component():
             return elements
 
     def __str__(self):
+        if not self.elements:
+            return f"{self.name}\n{{\n}}"
         elements = "\n".join([str(x) for x in self.elements])
         return f"{self.name}\n{{\n{elements}\n}}"
 
