@@ -18,6 +18,7 @@ from src.gudrun_classes.gud_file import GudFile
 from itertools import chain, product
 from src.scripts.utils import breplace
 
+
 def enumFromDict(clsname, _dict):
     return Enum(
         value=clsname,

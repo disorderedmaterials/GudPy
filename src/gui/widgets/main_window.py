@@ -1328,12 +1328,13 @@ class GudPyMainWindow(QMainWindow):
                 self.warning = ""
             self.setControlsEnabled(True)
         if "purge_det" not in self.mainWidget.currentTaskLabel.text():
-            if progress >= 100:  
+            if progress >= 100:
                 self.updateResults()
             else:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
-                    "The process did not entirely finish, please check your parameters."
+                    "The process did not entirely finish,"
+                    " please check your parameters."
                 )
 
     def viewInput(self):
