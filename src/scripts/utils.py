@@ -1,7 +1,7 @@
 from collections import deque
 from itertools import islice
 import os
-
+import re
 
 def spacify(iterable, num_spaces=1):
     try:
@@ -149,3 +149,7 @@ def resolve(*args):
         os.path.realpath(__file__).split(os.sep)[:-3]
     )
     return os.path.join(topLevel, relativePath)
+
+def breplace(str, old, new):
+    pattern = re.compile(old, re.IGNORECASE)
+    return pattern.sub(new, str)

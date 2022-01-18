@@ -10,12 +10,13 @@ from enum import Enum
 import os
 
 from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
+from src.gudrun_classes.exception import ParserException
 
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.gud_file import GudFile
 from itertools import chain, product
-
+from src.scripts.utils import breplace
 
 def enumFromDict(clsname, _dict):
     return Enum(
@@ -192,15 +193,15 @@ class GudPyChart(QChart):
 
         # Get the mint01 and mdcs01 filenames.
         if len(sample.dataFiles.dataFiles):
-            mintFile = (
-                sample.dataFiles.dataFiles[0].replace(
-                    self.dataFileType, "mint01"
-                )
+            mintFile = breplace(
+                sample.dataFiles.dataFiles[0],
+                self.dataFileType,
+                "mint01"
             )
-            mdcsFile = (
-                sample.dataFiles.dataFiles[0].replace(
-                    self.dataFileType, "mdcs01"
-                )
+            mdcsFile = breplace(
+                sample.dataFiles.dataFiles[0],
+                self.dataFileType,
+                "mdcs01"
             )
         else:
             mintFile = ""
@@ -249,8 +250,10 @@ class GudPyChart(QChart):
         self.data[sample]["mdcs01"] = mdcsData
 
         if len(sample.dataFiles.dataFiles):
-            gudPath = sample.dataFiles.dataFiles[0].replace(
-                self.dataFileType, "gud"
+            gudPath = breplace(
+                sample.dataFiles.dataFiles[0],
+                self.dataFileType,
+                "gud"
             )
         else:
             gudPath = ""
@@ -264,23 +267,27 @@ class GudPyChart(QChart):
             and "mdcs01" in self.data[sample].keys()
             and gudPath
         ):
-            gudFile = GudFile(gudPath)
-            dcsLevel = gudFile.expectedDCS
-            for x, _, _ in self.data[sample]["mdcs01"]:
-                dcsData.append((x, float(dcsLevel)))
-        self.data[sample]["dcs"] = dcsData
-
+            try:
+                gudFile = GudFile(gudPath)
+                dcsLevel = gudFile.expectedDCS
+                for x, _, _ in self.data[sample]["mdcs01"]:
+                    dcsData.append((x, float(dcsLevel)))
+                self.data[sample]["dcs"] = dcsData
+            except ParserException:
+                self.data[sample]["dcs"] = []
+        else:
+            self.data[sample]["dcs"] = []
         # Get the mint01 and mdcs01 filenames.
         if len(sample.dataFiles.dataFiles):
-            mdorFile = (
-                sample.dataFiles.dataFiles[0].replace(
-                    self.dataFileType, "mdor01"
-                )
+            mdorFile = breplace(
+                sample.dataFiles.dataFiles[0],
+                self.dataFileType,
+                "mdor01"
             )
-            mgorFile = (
-                sample.dataFiles.dataFiles[0].replace(
-                    self.dataFileType, "mgor01"
-                )
+            mgorFile = breplace(
+                sample.dataFiles.dataFiles[0],
+                self.dataFileType,
+                "mgor01"
             )
         else:
             mdorFile = ""

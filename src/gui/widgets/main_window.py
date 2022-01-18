@@ -1306,9 +1306,9 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
-        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
-            self.updateResults()
+
         self.mainWidget.currentTaskLabel.setText("No task running.")
+        progress = self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(0)
         if self.error:
             QMessageBox.critical(
@@ -1327,6 +1327,14 @@ class GudPyMainWindow(QMainWindow):
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
+        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
+            if progress >= 100:  
+                self.updateResults()
+            else:
+                QMessageBox.warning(
+                    self.mainWidget, "GudPy Warning",
+                    "The process did not entirely finish, please check your parameters."
+                )
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
