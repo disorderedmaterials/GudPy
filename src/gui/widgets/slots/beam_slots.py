@@ -15,6 +15,8 @@ class BeamSlots():
     def setBeam(self, beam):
         self.beam = beam
 
+        self.widget.beamChart.setBeam(self.beam)
+
         self.widget.beamGeometryComboBox.setCurrentIndex(
             self.beam.sampleGeometry.value
         )
@@ -76,6 +78,8 @@ class BeamSlots():
         )
 
         self.updateBeamProfileValues()
+        self.widget.beamChart.plot()
+
         # Release the lock
         self.widgetsRefreshing = False
 
@@ -473,6 +477,9 @@ class BeamSlots():
         self.widget.beamProfileValuesTable.makeModel(
             self.beam.beamProfileValues
         )
+        self.widget.beamProfileValuesTable.model().dataChanged.connect(
+            self.widget.beamChart.plot
+        )
 
     def handleAddBeamProfileValue(self):
         """
@@ -483,6 +490,7 @@ class BeamSlots():
         self.widget.beamProfileValuesTable.insertRow()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+        self.widget.beamChart.plot()
 
     def handleRemoveBeamProfileValue(self):
         """
@@ -495,3 +503,4 @@ class BeamSlots():
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
+        self.widget.beamChart.plot()

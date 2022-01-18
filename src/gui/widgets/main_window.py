@@ -1,4 +1,6 @@
+from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QFile, QFileInfo, QTimer
+from PySide6.QtGui import QPainter
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -15,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
+from src.gui.widgets.charts.beam_plot import BeamChart
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -41,9 +44,13 @@ from src.gui.widgets.tables.components_table import ComponentsList
 
 from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 
-from src.gui.widgets.gudpy_charts import (
-  GudPyChart, PlotModes, GudPyChartView
-)
+# from src.gui.widgets.gudpy_charts import (
+#   GudPyChart, PlotModes, GudPyChartView
+# )
+
+from src.gui.widgets.charts.chart import GudPyChart
+from src.gui.widgets.charts.chartview import GudPyChartView
+from src.gui.widgets.charts.enums import PlotModes
 
 from src.gudrun_classes.enums import Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
@@ -200,6 +207,19 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
+
+        self.mainWidget.beamPlot = QChartView(
+            self.mainWidget
+        )
+        self.mainWidget.beamPlot.setRenderHint(QPainter.Antialiasing)
+
+        self.mainWidget.beamProfileLayout.insertWidget(
+            1, self.mainWidget.beamPlot
+        )
+
+        self.mainWidget.beamChart = BeamChart()
+
+        self.mainWidget.beamPlot.setChart(self.mainWidget.beamChart)
 
         self.mainWidget.sampleTopPlot = GudPyChartView(
             self.mainWidget
@@ -677,16 +697,7 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-            if not any(
-                [
-                    *topPlot.data[
-                        self.mainWidget.objectTree.currentObject()
-                    ].values(),
-                    *bottomPlot.data[
-                        self.mainWidget.objectTree.currentObject()
-                    ].values()
-                ]
-            ):
+            if not topPlot.series() or not bottomPlot.series():
                 self.mainWidget.containerSplitter.setSizes([1, 0])
             else:
                 self.mainWidget.containerSplitter.setSizes([2, 1])

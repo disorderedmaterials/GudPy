@@ -74,6 +74,7 @@ class BeamProfileModel(GudPyTableModel):
         row = index.row()
         if role == Qt.EditRole:
             self._data[row] = value
+            self.dataChanged.emit(index, index)
 
     def data(self, index, role):
         """
