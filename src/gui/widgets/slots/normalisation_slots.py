@@ -257,7 +257,7 @@ class NormalisationSlots():
         value : float
             The new value of the periodNoSpinBox.
         """
-        self.normalisation.periodNo = value
+        self.normalisation.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
@@ -273,7 +273,7 @@ class NormalisationSlots():
         value : float
             The new value of the periodNoSpinBox.
         """
-        self.normalisation.periodNoBg = value
+        self.normalisation.periodNumberBg = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
