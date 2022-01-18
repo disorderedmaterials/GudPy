@@ -58,7 +58,7 @@ class Beam:
         None
         """
         self.sampleGeometry = Geometry.FLATPLATE
-        self.beamProfileValues = [1.,1.]
+        self.beamProfileValues = [1., 1.]
         self.stepSizeAbsorption = 0.0
         self.stepSizeMS = 0.0
         self.noSlices = 0
