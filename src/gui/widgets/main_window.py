@@ -558,7 +558,7 @@ class GudPyMainWindow(QMainWindow):
         Saves the current state of the input file as...
         """
         filename, _ = QFileDialog.getSaveFileName(
-            self, "Save input file as..", "."
+            self, "Save input file as..", ".", "(*.txt)"
         )
         if filename:
             self.gudrunFile.instrument.GudrunInputFileDir = (
