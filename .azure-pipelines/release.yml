@@ -6,7 +6,7 @@ trigger:
 pr: none
 
 variables:
-  gudrunTag: 2022.1
+  gudrunTag: 2022.2
   targets: >
     {
       linuxPy39:

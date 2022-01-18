@@ -10,7 +10,7 @@ pr:
       - .azure-pipelines/continuous.yml
 
 variables:
-  gudrunTag: 2022.1
+  gudrunTag: 2022.2
   targets: >
     {
       linuxPy39:
