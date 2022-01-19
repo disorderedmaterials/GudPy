@@ -1,4 +1,3 @@
-from email.parser import Parser
 from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -750,7 +749,11 @@ class GudPyMainWindow(QMainWindow):
             bottomChart.plot(PlotModes.RDF)
             path = None
             if len(sample.dataFiles.dataFiles):
-                path = breplace(sample.dataFiles.dataFiles[0], self.gudrunFile.instrument.dataFileType, "gud")
+                path = breplace(
+                    sample.dataFiles.dataFiles[0],
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
+                )
                 if not os.path.exists(path):
                     path = os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir, path
