@@ -1,3 +1,4 @@
+from email.parser import Parser
 from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -66,7 +67,7 @@ from src.gudrun_classes.wavelength_subtraction_iterator import (
 from src.gudrun_classes.run_containers_as_samples import RunContainersAsSamples
 from src.gudrun_classes.gud_file import GudFile
 
-from src.scripts.utils import nthint
+from src.scripts.utils import breplace, nthint
 
 import os
 import sys
@@ -749,9 +750,7 @@ class GudPyMainWindow(QMainWindow):
             bottomChart.plot(PlotModes.RDF)
             path = None
             if len(sample.dataFiles.dataFiles):
-                path = sample.dataFiles.dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType, "gud"
-                )
+                path = breplace(sample.dataFiles.dataFiles[0], self.gudrunFile.instrument.dataFileType, "gud")
                 if not os.path.exists(path):
                     path = os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir, path
@@ -1328,9 +1327,9 @@ class GudPyMainWindow(QMainWindow):
                 self.warning = ""
             self.setControlsEnabled(True)
         if "purge_det" not in self.mainWidget.currentTaskLabel.text():
-            if progress >= 100:
+            try:
                 self.updateResults()
-            else:
+            except ParserException:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
                     "The process did not entirely finish,"
