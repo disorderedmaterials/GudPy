@@ -112,7 +112,7 @@ class GudPyChart(QChart):
                         self.addSeries(series)
                     if not series.points():
                         series.hide()
-            if plotsDCS and plotConfig.mdcs01Series:
+            if len(sample.dataFiles.dataFiles) and plotsDCS and plotConfig.mdcs01Series:
                 pen = QPen(plotConfig.dcsSeries.pen())
                 pen.setStyle(Qt.PenStyle.DashLine)
                 pen.setWidth(2)

@@ -137,14 +137,16 @@ class SamplePlotConfig():
         ]
 
     def plotData(self, plotMode):
-
-        return {
-            PlotModes.SF: self.SF,
-            PlotModes.SF_MINT01: self.SF_MINT01,
-            PlotModes.SF_MDCS01: self.SF_MDCS01,
-            PlotModes.RDF: self.RDF,
-            PlotModes.SF_CANS: self.SF,
-            PlotModes.SF_MINT01_CANS: self.SF_MINT01,
-            PlotModes.SF_MDCS01_CANS: self.SF_MDCS01,
-            PlotModes.RDF_CANS: self.RDF
-        }[plotMode]()
+        if len(self.sample.dataFiles.dataFiles):
+            return {
+                PlotModes.SF: self.SF,
+                PlotModes.SF_MINT01: self.SF_MINT01,
+                PlotModes.SF_MDCS01: self.SF_MDCS01,
+                PlotModes.RDF: self.RDF,
+                PlotModes.SF_CANS: self.SF,
+                PlotModes.SF_MINT01_CANS: self.SF_MINT01,
+                PlotModes.SF_MDCS01_CANS: self.SF_MDCS01,
+                PlotModes.RDF_CANS: self.RDF
+            }[plotMode]()
+        else:
+            return []
