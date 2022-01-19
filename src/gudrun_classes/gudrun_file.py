@@ -707,6 +707,7 @@ class GudrunFile:
             self.normalisation.normalisationDifferentialCrossSectionFile = (
                 firstword(self.getNextToken())
             )
+
             self.normalisation.lowerLimitSmoothedNormalisation = (
                 nthfloat(self.getNextToken(), 0)
             )
@@ -719,6 +720,17 @@ class GudrunFile:
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
+
+
+            # Resolve to relative.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            self.normalisation.normalisationDifferentialCrossSectionFile = (
+                re.search(
+                    pattern,
+                    self.instrument.normalisationDifferentialCrossSectionFile
+                ).group()
+            )
 
         except Exception as e:
             raise ParserException(
