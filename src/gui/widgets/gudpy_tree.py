@@ -666,6 +666,7 @@ class GudPyTreeView(QTreeView):
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
         self.expandToDepth(0)
+        self.model().rowsInserted.connect(self._expand)
 
     def makeModel(self):
         """
@@ -1075,3 +1076,6 @@ class GudPyTreeView(QTreeView):
         sample = container.convertToSample()
         self.removeRow()
         self.insertSample(sample)
+
+    def _expand(self, parent, _first, _last):
+        self.expand(parent)
