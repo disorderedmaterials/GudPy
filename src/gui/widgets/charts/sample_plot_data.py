@@ -109,7 +109,8 @@ class DCSLevel:
         return gudFile.expectedDCS
 
     def extend(self, xAxis):
-        self.data = [QPointF(x, self.dcsLevel) for x in xAxis]
+        if self.dcsLevel:
+            self.data = [QPointF(x, self.dcsLevel) for x in xAxis]
 
     def toLineSeries(self, parent):
         self.series = QLineSeries(parent)
