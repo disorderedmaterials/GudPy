@@ -1307,7 +1307,6 @@ class GudPyMainWindow(QMainWindow):
         self.iterator = None
 
         self.mainWidget.currentTaskLabel.setText("No task running.")
-        progress = self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(0)
         if self.error:
             QMessageBox.critical(
