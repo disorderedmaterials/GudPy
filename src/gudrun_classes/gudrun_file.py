@@ -721,16 +721,15 @@ class GudrunFile:
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
-
-            # Resolve to relative.
-            pattern = re.compile(r"StartupFiles\S*")
-
-            self.normalisation.normalisationDifferentialCrossSectionFile = (
-                re.search(
-                    pattern,
-                    self.normalisation.normalisationDifferentialCrossSectionFile
-                ).group()
-            )
+            if not '*' in self.normalisation.normalisationDifferentialCrossSectionFile:
+                # Resolve to relative.
+                pattern = re.compile(r"StartupFiles\S*")
+                self.normalisation.normalisationDifferentialCrossSectionFile = (
+                    re.search(
+                        pattern,
+                        self.normalisation.normalisationDifferentialCrossSectionFile
+                    ).group()
+                )
 
         except Exception as e:
             print(e)
