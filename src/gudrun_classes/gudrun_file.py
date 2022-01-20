@@ -721,13 +721,22 @@ class GudrunFile:
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
-            if not '*' in self.normalisation.normalisationDifferentialCrossSectionFile:
+            if (
+                '*' not in
+                self.normalisation.normalisationDifferentialCrossSectionFile
+            ):
                 # Resolve to relative.
                 pattern = re.compile(r"StartupFiles\S*")
-                self.normalisation.normalisationDifferentialCrossSectionFile = (
+                (
+                    self.normalisation.
+                    normalisationDifferentialCrossSectionFile
+                ) = (
                     re.search(
                         pattern,
-                        self.normalisation.normalisationDifferentialCrossSectionFile
+                        (
+                            self.normalisation.
+                            normalisationDifferentialCrossSectionFile
+                        )
                     ).group()
                 )
 
