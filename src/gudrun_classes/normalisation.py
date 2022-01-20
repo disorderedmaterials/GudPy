@@ -167,6 +167,9 @@ class Normalisation:
             f"{self.crossSectionFilename}{TAB}"
         )
 
+        if not self.normalisationDifferentialCrossSectionFile:
+            self.normalisationDifferentialCrossSectionFile = "*"
+
         return (
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
             f'Number of  files and period number\n'
