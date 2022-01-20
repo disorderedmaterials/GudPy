@@ -109,7 +109,6 @@ class Normalisation:
         string : str
             String representation of Normalisation.
         """
-        TAB = "          "
 
         dataFilesLineA = (
             f'{str(self.dataFiles)}\n'
@@ -128,9 +127,9 @@ class Normalisation:
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
         geometryLines = (
-            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
+            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}{config.spc2}'
             f'Upstream and downstream thickness [cm]\n'
-            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'{self.angleOfRotation}{config.spc2}{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 (
@@ -139,9 +138,9 @@ class Normalisation:
                 )
                 or self.geometry == Geometry.FLATPLATE)
             else
-            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
             f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{TAB}'
+            f'{self.sampleHeight}{config.spc5}'
             f'Sample height (cm)\n'
         )
 
@@ -153,7 +152,7 @@ class Normalisation:
             density = self.density
 
         densityLine = (
-            f'{density}{TAB}'
+            f'{density}{config.spc5}'
             f'Density {units}?\n'
         )
 
@@ -161,40 +160,40 @@ class Normalisation:
             CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
-            f"{crossSectionSource}{TAB}"
+            f"{crossSectionSource}{config.spc5}"
             if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
-            f"{self.crossSectionFilename}{TAB}"
+            f"{self.crossSectionFilename}{config.spc5}"
         )
 
         if not self.normalisationDifferentialCrossSectionFile:
             self.normalisationDifferentialCrossSectionFile = "*"
 
         return (
-            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}{config.spc2}{self.periodNumber}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
-            f'{len(self.dataFilesBg)}  {self.periodNumberBg}{TAB}'
+            f'{len(self.dataFilesBg)}{config.spc2}{self.periodNumberBg}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
-            f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
+            f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc5}'
             f'Force calculation of corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
-            f'{Geometry(self.geometry.value).name}{TAB}'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
+            f'{Geometry(self.geometry.value).name}{config.spc5}'
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
-            f'{self.tempForNormalisationPC}{TAB}'
+            f'{self.tempForNormalisationPC}{config.spc5}'
             f'Temperature for normalisation Placzek correction\n'
             f'{crossSectionLine}'
             f'Total cross section source\n'
-            f'{self.normalisationDifferentialCrossSectionFile}{TAB}'
+            f'{self.normalisationDifferentialCrossSectionFile}{config.spc5}'
             f'Normalisation differential cross section filename\n'
-            f'{self.lowerLimitSmoothedNormalisation}{TAB}'
+            f'{self.lowerLimitSmoothedNormalisation}{config.spc5}'
             f'Lower limit on smoothed normalisation\n'
-            f'{self.normalisationDegreeSmoothing}{TAB}'
+            f'{self.normalisationDegreeSmoothing}{config.spc5}'
             f'Normalisation degree of smoothing\n'
-            f'{self.minNormalisationSignalBR}{TAB}'
+            f'{self.minNormalisationSignalBR}{config.spc5}'
             f'Minimum normalisation signal to background ratio'
         )

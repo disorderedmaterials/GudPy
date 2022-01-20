@@ -2,6 +2,7 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.isotopes import Sears91
 from src.gudrun_classes.exception import ChemicalFormulaParserException
 from src.gudrun_classes.mass_data import massData
+from src.gudrun_classes import config
 import re
 import math
 
@@ -199,7 +200,7 @@ class Composition():
         string = ""
         for el in self.elements:
             string += (
-                str(el) + "        " +
+                str(el) + config.spc5 + config.spc2 +
                 self.type_ + " atomic composition\n"
             )
 

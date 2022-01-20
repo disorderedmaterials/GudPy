@@ -276,7 +276,7 @@ class Instrument:
             f'{self.mergePower}{config.spc5}'
             f'Merge power\n'
             f'{numifyBool(self.subSingleAtomScattering)}{config.spc5}'
-            f'Substract single atom scattering?\n'
+            f'Subtract single atom scattering?\n'
             f'{mergeWeightsLine}'
             f'{self.incidentFlightPath}{config.spc5}'
             f'Incident flight path [m]\n'
