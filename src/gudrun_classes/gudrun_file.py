@@ -1339,16 +1339,16 @@ class GudrunFile:
         """
 
         LINEBREAK = "\n\n"
-        header = f"'  '  '        '  '{os.path.sep}'" + LINEBREAK
+        header = f"'{config.spc2}'{config.spc2}'{config.spc5}'{config.spc2}'{os.path.sep}'" + LINEBREAK
         instrument = (
-            "INSTRUMENT          {\n\n"
+            f"INSTRUMENT{config.spc5}{{\n\n"
             + str(self.instrument)
             + LINEBREAK
             + "}"
         )
-        beam = "BEAM          {\n\n" + str(self.beam) + LINEBREAK + "}"
+        beam = f"BEAM{config.spc5}{{\n\n" + str(self.beam) + LINEBREAK + "}"
         normalisation = (
-            "NORMALISATION          {\n\n"
+            f"NORMALISATION{config.spc5}{{\n\n"
             + str(self.normalisation)
             + LINEBREAK
             + "}"
