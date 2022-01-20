@@ -1,5 +1,6 @@
 from src.scripts.utils import spacify, numifyBool, bjoin
 from src.gudrun_classes.enums import MergeWeights, Scales, Instruments
+from src.gudrun_classes import config
 import os
 import sys
 
@@ -169,39 +170,38 @@ class Instrument:
         string : str
             String representation of Instrument.
         """
-        TAB = "          "
 
         wavelengthLineA = spacify(
             self.wavelengthRangeForMonitorNormalisation,
-            num_spaces=2
+            num_spaces=len(config.spc2)
         )
 
         channelNosLine = spacify(
             self.channelNosSpikeAnalysis,
-            num_spaces=2
+            num_spaces=len(config.spc2)
         )
 
         wavelengthLineB = (
             f'{self.wavelengthMin}'
-            f'  {self.wavelengthMax}'
-            f'  {self.wavelengthStep}'
+            f'{config.spc2}{self.wavelengthMax}'
+            f'{config.spc2}{self.wavelengthStep}'
         )
 
         XScaleLine = (
-            f'{self.XMin}  {self.XMax}  -0.01'
+            f'{self.XMin}{config.spc2}{self.XMax}{config.spc2}-0.01'
             if self.useLogarithmicBinning
             else
-            f'{self.XMin}  {self.XMax}  {self.XStep}'
+            f'{self.XMin}{config.spc2}{self.XMax}{config.spc2}{self.XStep}'
         )
 
         joined = bjoin(
             self.groupingParameterPanel,
-            " Group, Xmin, Xmax, Background factor\n",
+            f"{config.spc5}Group, Xmin, Xmax, Background factor\n",
             sameseps=True
         )
         groupingParameterPanelLine = (
             f'{joined}'
-            f'0  0  0  0{TAB}0 0 0 0 to end input of specified values\n'
+            f'0{config.spc2}0{config.spc2}0{config.spc2}0{config.spc5}0 0 0 0 to end input of specified values\n'
         )
 
         if self.mergeWeights == MergeWeights.NONE:
@@ -212,87 +212,90 @@ class Instrument:
             mergeBy = "By channel?"
 
         mergeWeightsLine = (
-            f'{self.mergeWeights.value}{TAB}'
+            f'{self.mergeWeights.value}{config.spc5}'
             f'{mergeBy}\n'
         )
 
         scaleSelectionLine = (
-            f'{self.scaleSelection.value}        '
+            f'{self.scaleSelection.value}{config.spc5}'
             f'Scale selection: 1 = Q, 2 = d-space,'
             f' 3 = wavelength, 4 = energy, 5 = TOF\n'
         )
 
         nexusDefinitionLine = (
-            f'\n{self.nxsDefinitionFile}{TAB}'
-            f'NeXus definition file\n'
-            if self.nxsDefinitionFile
+            f'\n{self.nxsDefinitionFile}{config.spc5}'
+            f'NeXus definition file'
+            if (
+                self.dataFileType == "nxs" or
+                self.dataFileType == "NXS"
+            )
             else
             ""
         )
 
         return (
-            f'{Instruments(self.name.value).name}{TAB}'
+            f'{Instruments(self.name.value).name}{config.spc5}'
             f'Instrument name\n'
-            f'{self.GudrunInputFileDir}{TAB}'
+            f'{self.GudrunInputFileDir}{config.spc5}'
             f'Gudrun input file directory:\n'
-            f'{self.dataFileDir}{TAB}'
+            f'{self.dataFileDir}{config.spc5}'
             f'Data file directory\n'
-            f'{self.dataFileType}{TAB}'
+            f'{self.dataFileType}{config.spc5}'
             f'Data file type\n'
-            f'{self.detectorCalibrationFileName}{TAB}'
+            f'{self.detectorCalibrationFileName}{config.spc5}'
             f'Detector calibration file name\n'
-            f'{self.columnNoPhiVals}{TAB}'
+            f'{self.columnNoPhiVals}{config.spc5}'
             f'User table column number for phi values\n'
-            f'{self.groupFileName}{TAB}'
+            f'{self.groupFileName}{config.spc5}'
             f'Groups file name\n'
-            f'{self.deadtimeConstantsFileName}{TAB}'
+            f'{self.deadtimeConstantsFileName}{config.spc5}'
             f'Deadtime constants file name\n'
-            f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}{TAB}'
+            f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}{config.spc5}'
             f'Spectrum number(s) for incident beam monitor\n'
-            f'{wavelengthLineA}{TAB}'
+            f'{wavelengthLineA}{config.spc5}'
             f'Wavelength range [\u212b] for monitor normalisation\n'
-            f'{spacify(self.spectrumNumbersForTransmissionMonitor)}{TAB}'
+            f'{spacify(self.spectrumNumbersForTransmissionMonitor)}{config.spc5}'
             f'Spectrum number(s) for transmission monitor\n'
-            f'{self.incidentMonitorQuietCountConst}{TAB}'
+            f'{self.incidentMonitorQuietCountConst}{config.spc5}'
             f'Incident monitor quiet count constant\n'
-            f'{self.transmissionMonitorQuietCountConst}{TAB}'
+            f'{self.transmissionMonitorQuietCountConst}{config.spc5}'
             f'Transmission monitor quiet count constant\n'
-            f'{channelNosLine}{TAB}'
+            f'{channelNosLine}{config.spc5}'
             f'Channel numbers for spike analysis\n'
-            f'{self.spikeAnalysisAcceptanceFactor}{TAB}'
+            f'{self.spikeAnalysisAcceptanceFactor}{config.spc5}'
             f'Spike analysis acceptance factor\n'
-            f'{wavelengthLineB}{TAB}'
+            f'{wavelengthLineB}{config.spc5}'
             f'Wavelength range to use [\u212b] and step size\n'
-            f'{self.NoSmoothsOnMonitor}{TAB}'
+            f'{self.NoSmoothsOnMonitor}{config.spc2}{config.spc5}'
             f'No. of smooths on monitor\n'
-            f'{XScaleLine}{TAB}'
+            f'{XScaleLine}{config.spc5}'
             f'Min, Max and step in x-scale (-ve for logarithmic binning)\n'
             f'{groupingParameterPanelLine}'
-            f'{self.groupsAcceptanceFactor}{TAB}'
+            f'{self.groupsAcceptanceFactor}{config.spc5}'
             f'Groups acceptance factor\n'
-            f'{self.mergePower}{TAB}'
+            f'{self.mergePower}{config.spc5}'
             f'Merge power\n'
-            f'{numifyBool(self.subSingleAtomScattering)}{TAB}'
+            f'{numifyBool(self.subSingleAtomScattering)}{config.spc5}'
             f'Substract single atom scattering?\n'
             f'{mergeWeightsLine}'
-            f'{self.incidentFlightPath}{TAB}'
+            f'{self.incidentFlightPath}{config.spc5}'
             f'Incident flight path [m]\n'
-            f'{self.spectrumNumberForOutputDiagnosticFiles}{TAB}'
+            f'{self.spectrumNumberForOutputDiagnosticFiles}{config.spc5}'
             f'Spectrum number to output diagnostic files\n'
-            f'{self.neutronScatteringParametersFile}{TAB}'
+            f'{self.neutronScatteringParametersFile}{config.spc5}'
             f'Neutron scattering parameters file\n'
             f'{scaleSelectionLine}'
-            f'{numifyBool(self.subWavelengthBinnedData)}{TAB}'
+            f'{numifyBool(self.subWavelengthBinnedData)}{config.spc5}'
             f'Subtract wavelength-binned data?\n'
-            f'{self.GudrunStartFolder}{TAB}'
+            f'{self.GudrunStartFolder}{config.spc5}'
             f'Folder where Gudrun started\n'
-            f'{self.startupFileFolder}{TAB}'
+            f'{self.startupFileFolder}{config.spc5}'
             f'Folder containing the startup file\n'
-            f'{self.logarithmicStepSize}{TAB}'
+            f'{self.logarithmicStepSize}{config.spc5}'
             f'Logarithmic step size\n'
-            f'{numifyBool(self.hardGroupEdges)}{TAB}'
+            f'{numifyBool(self.hardGroupEdges)}{config.spc5}'
             f'Hard group edges?'
-            f'{nexusDefinitionLine}'
-            f'\n0{TAB}Number of iterations'
-            f'\n0{TAB}Tweak the tweak factor(s)?'
+            f'{nexusDefinitionLine}\n'
+            f'0{config.spc5}Number of iterations\n'
+            f'0{config.spc5}Tweak the tweak factor(s)?'
         )

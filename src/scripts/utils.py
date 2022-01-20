@@ -126,7 +126,7 @@ def bjoin(iterable, sep, lastsep=None, endsep='', sameseps=False, suffix=None):
         for i in iterable
     ]
     iterable = [
-        spacify(i)
+        spacify(i, num_spaces=2)
         if isinstance(i, (list, tuple))
         else i
         for i in iterable
