@@ -3,7 +3,7 @@ from src.gudrun_classes import config
 from src.gudrun_classes.enums import (
     CrossSectionSource, FTModes, UnitsOfDensity, Geometry
 )
-
+import os
 
 class ContainerSlots():
 
@@ -621,7 +621,7 @@ class ContainerSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split("/")[-1])
+                target.addItem(file.split(os.path.sep)[-1])
                 self.handleDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
             self.parent.setModified()

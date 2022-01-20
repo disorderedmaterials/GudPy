@@ -94,8 +94,7 @@ class GudFile:
         fname = os.path.basename(self.path)
         ref_fname = "gudpy_{}".format(fname)
         dir = os.path.dirname(os.path.abspath(self.path))
-        self.outpath = "{}/{}".format(dir, ref_fname)
-
+        self.outpath = f"{dir}{os.path.sep}{ref_fname}"
         self.name = ""
         self.title = ""
         self.author = ""
