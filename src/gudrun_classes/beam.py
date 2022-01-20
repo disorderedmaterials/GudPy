@@ -93,16 +93,16 @@ class Beam:
         absorptionAndMSLine = (
             f'{self.stepSizeAbsorption}{config.spc2}'
             f'{self.stepSizeMS}{config.spc2}'
-            f'{self.noSlices}{config.spc2}'
+            f'{self.noSlices}'
             f'{config.spc5}'
-            f'Step size for absorption and m.s. calculation of no. of slices\n'
+            f'Step size for absorption and m.s. calculation and no. of slices\n'
         )
 
         incidentBeamLine = (
             f'{self.incidentBeamLeftEdge}{config.spc2}'
             f'{self.incidentBeamRightEdge}{config.spc2}'
             f'{self.incidentBeamBottomEdge}{config.spc2}'
-            f'{self.incidentBeamTopEdge}{config.spc2}'
+            f'{self.incidentBeamTopEdge}'
             f'{config.spc5}'
             f'Incident beam edges relative to centre of sample [cm]\n'
         )
@@ -112,7 +112,7 @@ class Beam:
             f'{self.scatteredBeamBottomEdge}{config.spc2}'
             f'{self.scatteredBeamTopEdge}'
             f'{config.spc5}'
-            f'Scattered beam edges relateive to centre of samples [cm]\n'
+            f'Scattered beam edges relative to centre of sample [cm]\n'
         )
 
         return (
@@ -121,7 +121,7 @@ class Beam:
             f'Sample geometry\n'
             f'{len(self.beamProfileValues)}{config.spc5}'
             f'Number of beam profile values\n'
-            f'{spacify(self.beamProfileValues, num_spaces=2)}{config.spc5}'
+            f'{spacify(self.beamProfileValues, num_spaces=2)}{config.spc2}{config.spc5}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'
             f'{absorptionAndMSLine}'
             f'{self.angularStepForCorrections}{config.spc5}'

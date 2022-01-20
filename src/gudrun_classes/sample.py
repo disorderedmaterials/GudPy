@@ -161,13 +161,11 @@ class Sample:
             String representation of Sample.
         """
 
-        TAB = "          "
-
         nameLine = (
-            f"SAMPLE {self.name}{TAB}"
+            f"SAMPLE {self.name}{config.spc5}"
             if self.name != "SAMPLE"
             else
-            f"SAMPLE{TAB}"
+            f"SAMPLE{config.spc5}"
         )
 
         dataFilesLine = (
@@ -180,9 +178,9 @@ class Sample:
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
         geometryLines = (
-            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
-            f'Upstream and downstream thickness [cm]\n'
-            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}'
+            f'Upstream and downstream thicknesses [cm]\n'
+            f'{self.angleOfRotation}{config.spc2}{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 self.geometry == Geometry.SameAsBeam
@@ -190,9 +188,9 @@ class Sample:
             )
             or self.geometry == Geometry.FLATPLATE
             else
-            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
             f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{TAB}'
+            f'{self.sampleHeight}{config.spc5}'
             f'Sample height (cm)\n'
         )
 
@@ -202,7 +200,7 @@ class Sample:
             density = self.density
 
         densityLine = (
-            f'{density}{TAB}'
+            f'{density}{config.spc5}'
             f'Density {self.densityUnits.name}?\n'
         )
 
@@ -210,30 +208,30 @@ class Sample:
             CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
-            f"{crossSectionSource}{TAB}"
+            f"{crossSectionSource}{config.spc5}"
             if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
-            f"{self.crossSectionFilename}{TAB}"
+            f"{self.crossSectionFilename}{config.spc5}"
         )
 
         if self.FTMode == FTModes.NO_FT:
-            topHatWidthLine = f"0{TAB}"
+            topHatWidthLine = f"0{config.spc5}"
         elif self.FTMode == FTModes.SUB_AVERAGE:
-            topHatWidthLine = f"{-self.topHatW}{TAB}"
+            topHatWidthLine = f"{-self.topHatW}{config.spc5}"
         else:
-            topHatWidthLine = f"{self.topHatW}{TAB}"
+            topHatWidthLine = f"{self.topHatW}{config.spc5}"
 
         resonanceLines = (
             bjoin(
                 self.resonanceValues,
-                " Min. and max resonance wavelength [\u212b]. 0  0 to end.\n",
+                '{config.spc5}Min. and max resonance wavelength [\u212b]\n',
                 sameseps=True
             )
         )
         exponentialLines = (
             bjoin(
                 self.exponentialValues,
-                " Exponential amplitude and decay [1/\u212b]\n",
+                f'{config.spc5}Exponential amplitude and decay [1/\u212b]\n',
                 sameseps=True,
                 suffix="0"
             )
@@ -245,24 +243,24 @@ class Sample:
         )
 
         selfScatteringLine = (
-            f'{selfScatteringFile}{TAB}'
+            f'{selfScatteringFile}{config.spc5}'
             f'Name of file containing self scattering'
             f' as a function of wavelength [\u212b]\n'
         )
 
         normaliseLine = (
-            f'{self.normaliseTo.value}{TAB}'
+            f'{self.normaliseTo.value}{config.spc5}'
             f'Normalise to:{self.normaliseTo.name}\n'
         )
 
         unitsLine = (
-            f'{self.outputUnits.value}{TAB}'
+            f'{self.outputUnits.value}{config.spc5}'
             f'Output units: {self.outputUnits.name}\n'
         )
 
         sampleEnvironmentLine = (
-            f'{self.scatteringFraction}  {self.attenuationCoefficient}'
-            f'{TAB}'
+            f'{self.scatteringFraction}{config.spc2}{self.attenuationCoefficient}'
+            f'{config.spc5}'
             f'Sample environment scattering fraction'
             f' and attenuation coefficient [per \u212b]\n'
         )
@@ -276,47 +274,47 @@ class Sample:
 
         return (
             f'\n{nameLine}{{\n\n'
-            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}{config.spc2}{self.periodNumber}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'
-            f'{numifyBool(self.forceCalculationOfCorrections)}{TAB}'
+            f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc5}'
             f'Force calculation of sample corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*  0  0{TAB}* 0 0 to specify end of composition input\n'
-            f'{Geometry(self.geometry.value).name}{TAB}'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
+            f'{Geometry(self.geometry.value).name}{config.spc5}'
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
-            f'{self.tempForNormalisationPC}{TAB}'
+            f'{self.tempForNormalisationPC}{config.spc5}'
             f'Temperature for sample Placzek correction\n'
             f'{crossSectionLine}'
             f'Total cross section source\n'
-            f'{self.sampleTweakFactor}{TAB}'
+            f'{self.sampleTweakFactor}{config.spc5}'
             f'Sample tweak factor\n'
             f'{topHatWidthLine}'
             f'Top hat width (1/\u212b) for cleaning up Fourier Transform\n'
-            f'{self.minRadFT}{TAB}'
+            f'{self.minRadFT}{config.spc5}'
             f'Minimum radius for FT  [\u212b]\n'
-            f'{self.grBroadening}{TAB}'
+            f'{self.grBroadening}{config.spc5}'
             f'g(r) broadening at r = 1\u212b [\u212b]\n'
             f'{resonanceLines}'
-            f'0  0{TAB}0  0{TAB}'
-            f' to finish specifying wavelength range of resonance\n'
+            f'0{config.spc2}0{config.spc5}0   0{config.spc5}'
+            f'to finish specifying wavelength range of resonance\n'
             f'{exponentialLines}'
-            f'*  0  0{TAB}* 0 0 to specify end of exponential parameter input'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of exponential parameter input'
             f'\n'
-            f'{self.normalisationCorrectionFactor}{TAB}'
+            f'{self.normalisationCorrectionFactor}{config.spc5}'
             f'Normalisation correction factor\n'
             f'{selfScatteringLine}'
             f'{normaliseLine}'
-            f'{self.maxRadFT}{TAB}'
+            f'{self.maxRadFT}{config.spc5}'
             f'Maximum radius for FT [\u212b]\n'
             f'{unitsLine}'
-            f'{self.powerForBroadening}{TAB}'
+            f'{self.powerForBroadening}{config.spc5}'
             f'Power for broadening function e.g. 0.5\n'
-            f'{self.stepSize}{TAB}'
+            f'{self.stepSize}{config.spc5}'
             f'Step size [\u212b]\n'
-            f'{numifyBool(self.runThisSample)}{TAB}'
+            f'{numifyBool(self.runThisSample)}{config.spc5}'
             f'Analyse this sample?\n'
             f'{sampleEnvironmentLine}'
             f'\n}}\n\n'
