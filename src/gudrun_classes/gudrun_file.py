@@ -1339,7 +1339,7 @@ class GudrunFile:
         """
 
         LINEBREAK = "\n\n"
-        header = "'  '  '        '  '/'" + LINEBREAK
+        header = f"'  '  '        '  '{os.path.sep}'" + LINEBREAK
         instrument = (
             "INSTRUMENT          {\n\n"
             + str(self.instrument)

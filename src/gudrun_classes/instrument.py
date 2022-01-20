@@ -300,4 +300,6 @@ class Instrument:
             f'{numifyBool(self.hardGroupEdges)}{TAB}'
             f'Hard group edges?'
             f'{nexusDefinitionLine}'
+            f'\n0{TAB}Number of iterations'
+            f'\n0{TAB}Tweak the tweak factor(s)?'
         )

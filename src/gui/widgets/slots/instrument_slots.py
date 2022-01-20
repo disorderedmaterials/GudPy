@@ -1204,7 +1204,7 @@ class InstrumentSlots():
                 ""
             )
         if dir:
-            return filename + "/" if filename else ""
+            return filename + os.path.sep if filename else ""
         else:
             return filename if filename else ""
 
