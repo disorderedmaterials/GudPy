@@ -200,8 +200,8 @@ class Composition():
         string = ""
         for el in self.elements:
             string += (
-                str(el) + config.spc5 + config.spc2 +
-                self.type_ + " atomic composition\n"
+                str(el) + config.spc5 +
+                "Composition\n"
             )
 
         return string.rstrip()
