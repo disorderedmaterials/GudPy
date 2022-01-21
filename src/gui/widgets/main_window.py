@@ -669,6 +669,17 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
+            else:
+                self.mainWidget.dcsLabel.setText(
+                    "DCS Level"
+                )
+                self.mainWidget.resultLabel.setText("Error")
+                self.mainWidget.resultLabel.setStyleSheet(
+                    ""
+                )
+                self.mainWidget.suggestedTweakFactorLabel.setText(
+                    "Suggested Tweak Factor"
+                )
         elif (
             self.mainWidget.objectStack.currentIndex() == 6
             and isinstance(
