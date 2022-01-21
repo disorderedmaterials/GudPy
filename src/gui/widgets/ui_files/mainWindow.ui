@@ -6221,7 +6221,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Scattering Fraction</string>
+                            <string>Background Scattering Fraction</string>
                            </property>
                           </widget>
                          </item>
@@ -6248,7 +6248,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Attenuation Coefficient</string>
+                            <string>Background Attenuation Coefficient</string>
                            </property>
                           </widget>
                          </item>
