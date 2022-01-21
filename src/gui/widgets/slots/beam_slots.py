@@ -15,6 +15,8 @@ class BeamSlots():
     def setBeam(self, beam):
         self.beam = beam
 
+        self.widgetsRefreshing = True
+
         self.widget.beamGeometryComboBox.setCurrentIndex(
             self.beam.sampleGeometry.value
         )
