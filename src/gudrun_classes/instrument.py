@@ -208,7 +208,8 @@ class Instrument:
         )
         groupingParameterPanelLine = (
             f'{joined}'
-            f'0{config.spc2}0{config.spc2}0{config.spc2}0{config.spc5}0 0 0 0 to end input of specified values\n'
+            f'0{config.spc2}0{config.spc2}0{config.spc2}0{config.spc5}'
+            f'0 0 0 0 to end input of specified values\n'
         )
 
         if self.mergeWeights == MergeWeights.NONE:
@@ -257,11 +258,13 @@ class Instrument:
             f'Groups file name\n'
             f'{self.deadtimeConstantsFileName}{config.spc5}'
             f'Deadtime constants file name\n'
-            f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}{config.spc5}'
+            f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}'
+            f'{config.spc5}'
             f'Spectrum number(s) for incident beam monitor\n'
             f'{wavelengthLineA}{config.spc5}'
             f'Wavelength range [\u212b] for monitor normalisation\n'
-            f'{spacify(self.spectrumNumbersForTransmissionMonitor)}{config.spc5}'
+            f'{spacify(self.spectrumNumbersForTransmissionMonitor)}'
+            f'{config.spc5}'
             f'Spectrum number(s) for transmission monitor\n'
             f'{self.incidentMonitorQuietCountConst}{config.spc5}'
             f'Incident monitor quiet count constant\n'

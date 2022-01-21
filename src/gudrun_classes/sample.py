@@ -178,9 +178,11 @@ class Sample:
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
         geometryLines = (
-            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}'
+            f'{self.upstreamThickness}{config.spc2}'
+            f'{self.downstreamThickness}{config.spc5}'
             f'Upstream and downstream thicknesses [cm]\n'
-            f'{self.angleOfRotation}{config.spc2}{self.sampleWidth}{config.spc5}'
+            f'{self.angleOfRotation}{config.spc2}'
+            f'{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 self.geometry == Geometry.SameAsBeam
@@ -259,8 +261,8 @@ class Sample:
         )
 
         sampleEnvironmentLine = (
-            f'{self.scatteringFraction}{config.spc2}{self.attenuationCoefficient}'
-            f'{config.spc5}'
+            f'{self.scatteringFraction}{config.spc2}'
+            f'{self.attenuationCoefficient}{config.spc5}'
             f'Sample environment scattering fraction'
             f' and attenuation coefficient [per \u212b]\n'
         )
@@ -274,13 +276,15 @@ class Sample:
 
         return (
             f'\n{nameLine}{{\n\n'
-            f'{len(self.dataFiles)}{config.spc2}{self.periodNumber}{config.spc5}'
+            f'{len(self.dataFiles)}{config.spc2}'
+            f'{self.periodNumber}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLine}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc5}'
             f'Force calculation of sample corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'* 0 0 to specify end of composition input\n'
             f'SameAsBeam{config.spc5}'
             f'Geometry\n'
             f'{geometryLines}'
@@ -301,7 +305,8 @@ class Sample:
             f'0{config.spc2}0{config.spc5}0   0{config.spc5}'
             f'to finish specifying wavelength range of resonance\n'
             f'{exponentialLines}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of exponential parameter input'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'* 0 0 to specify end of exponential parameter input'
             f'\n'
             f'{self.normalisationCorrectionFactor}{config.spc5}'
             f'Normalisation correction factor\n'

@@ -2,6 +2,7 @@ from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes import config
 
+
 class Beam:
     """
     Class to represent a Beam.
@@ -95,7 +96,8 @@ class Beam:
             f'{self.stepSizeMS}{config.spc2}'
             f'{self.noSlices}'
             f'{config.spc5}'
-            f'Step size for absorption and m.s. calculation and no. of slices\n'
+            f'Step size for absorption and m.s. calculation'
+            f' and no. of slices\n'
         )
 
         incidentBeamLine = (
@@ -121,7 +123,8 @@ class Beam:
             f'Sample geometry\n'
             f'{len(self.beamProfileValues)}{config.spc5}'
             f'Number of beam profile values\n'
-            f'{spacify(self.beamProfileValues, num_spaces=2)}{config.spc2}{config.spc5}'
+            f'{spacify(self.beamProfileValues, num_spaces=2)}'
+            f'{config.spc2}{config.spc5}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'
             f'{absorptionAndMSLine}'
             f'{self.angularStepForCorrections}{config.spc5}'

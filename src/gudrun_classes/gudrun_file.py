@@ -1339,7 +1339,10 @@ class GudrunFile:
         """
 
         LINEBREAK = "\n\n"
-        header = f"'{config.spc2}'{config.spc2}'{config.spc5}'{config.spc2}'{os.path.sep}'" + LINEBREAK
+        header = (
+            f"'{config.spc2}'{config.spc2}'{config.spc5}'"
+            f"{config.spc2}'{os.path.sep}'{LINEBREAK}"
+        )
         instrument = (
             f"INSTRUMENT{config.spc5}{{\n\n"
             + str(self.instrument)
@@ -1356,7 +1359,7 @@ class GudrunFile:
         sampleBackgrounds = "\n".join(
             [str(x) for x in self.sampleBackgrounds]
         ).rstrip()
-        footer= (
+        footer = (
             f"\n\n\nEND{config.spc5}"
             f"\n1\nDate and time last written:  "
             f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc5}"

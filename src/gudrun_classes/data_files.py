@@ -1,4 +1,6 @@
 from src.gudrun_classes import config
+
+
 class DataFiles:
     """
     Class to represent a set of data files belonging to an object.

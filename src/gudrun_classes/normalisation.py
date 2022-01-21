@@ -126,7 +126,6 @@ class Normalisation:
 
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
-
         geometryLine = (
             f'SameAsBeam{config.spc5}Geometry\n'
             if self.geometry == Geometry.SameAsBeam
@@ -134,9 +133,11 @@ class Normalisation:
             f'{Geometry(self.geometry.value).name}{config.spc5}Geometry\n'
         )
         geometryLines = (
-            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}'
+            f'{self.upstreamThickness}{config.spc2}'
+            f'{self.downstreamThickness}{config.spc5}'
             f'Upstream and downstream thickness [cm]\n'
-            f'{self.angleOfRotation}{config.spc2}{self.sampleWidth}{config.spc5}'
+            f'{self.angleOfRotation}{config.spc2}'
+            f'{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 (
@@ -177,16 +178,19 @@ class Normalisation:
             self.normalisationDifferentialCrossSectionFile = "*"
 
         return (
-            f'{len(self.dataFiles)}{config.spc2}{self.periodNumber}{config.spc5}'
+            f'{len(self.dataFiles)}{config.spc2}'
+            f'{self.periodNumber}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
-            f'{len(self.dataFilesBg)}{config.spc2}{self.periodNumberBg}{config.spc5}'
+            f'{len(self.dataFilesBg)}{config.spc2}'
+            f'{self.periodNumberBg}{config.spc5}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
             f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc5}'
             f'Force calculation of corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'* 0 0 to specify end of composition input\n'
             f'{geometryLine}'
             f'{geometryLines}'
             f'{densityLine}'
