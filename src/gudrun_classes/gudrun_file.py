@@ -1159,12 +1159,12 @@ class GudrunFile:
         name = self.getNextToken().rstrip()
         component = Component(name)
         line = self.peekNextToken()
-        if "{" in line:
+        if "(" in line:
             self.consumeTokens(1)
         else:
             return
         line = self.getNextToken()
-        while line and "}" not in line:
+        while line and ")" not in line:
             atomicSymbol, massNo, abundance = line.split()
             element = Element(atomicSymbol, massNo, abundance)
             component.addElement(element)

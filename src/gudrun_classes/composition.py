@@ -103,7 +103,7 @@ class Component():
         if not self.elements:
             return f"{self.name}\n{{\n}}"
         elements = "\n".join([str(x) for x in self.elements])
-        return f"{self.name}\n{{\n{elements}\n}}"
+        return f"{self.name}\n(\n{elements}\n)"
 
 
 class Components():
