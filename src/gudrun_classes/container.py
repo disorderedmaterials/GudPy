@@ -68,18 +68,18 @@ class Container:
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition("CONTAINER")
         self.geometry = Geometry.SameAsBeam
-        self.upstreamThickness = 0.0
-        self.downstreamThickness = 0.0
+        self.upstreamThickness = 0.1
+        self.downstreamThickness = 0.1
         self.angleOfRotation = 0.0
-        self.sampleWidth = 0.0
+        self.sampleWidth = 5.0
         self.innerRadius = 0.0
         self.outerRadius = 0.0
         self.sampleHeight = 0.0
-        self.density = 0.0
+        self.density = 0.1
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.totalCrossSectionSource = CrossSectionSource.TABLES
         self.crossSectionFilename = ""
-        self.tweakFactor = 0.0
+        self.tweakFactor = 1.0
         self.scatteringFraction = 0.0
         self.attenuationCoefficient = 0.0
 
