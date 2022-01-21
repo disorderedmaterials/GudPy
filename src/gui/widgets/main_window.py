@@ -1093,10 +1093,11 @@ class GudPyMainWindow(QMainWindow):
             viewOutputDialog.widget.exec_()
 
     def setModified(self):
+
         if not self.modified:
             if self.gudrunFile.path:
                 self.modified = True
-                self.setWindowModified(True)
+                self.mainWidget.setWindowModified(True)
                 self.mainWidget.save.setEnabled(True)
         if not self.proc:
             self.timer.start(30000)
