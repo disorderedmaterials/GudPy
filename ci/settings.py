@@ -9,7 +9,7 @@ def read_plist(path):
         return plistlib.load(f)
 
 
-application = defines.get("app", "./dist/GudPy-0.2.3.app")  # noqa
+application = defines.get("app", "./dist/GudPy-0.2.4.app")  # noqa
 appname = os.path.basename(application)
 
 

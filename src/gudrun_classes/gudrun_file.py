@@ -152,6 +152,7 @@ class GudrunFile:
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
             self.parse(config=config)
+
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
@@ -1403,6 +1404,9 @@ class GudrunFile:
                 ), "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
+        if os.path.basename(f.name) == self.outpath:
+            for sampleBackground in self.sampleBackgrounds:
+                sampleBackground.writeAllSamples = False
         f.write(str(self))
         f.close()
 

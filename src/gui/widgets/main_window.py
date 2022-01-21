@@ -558,6 +558,13 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", ".", "(*.txt)"
         )
         if filename:
+            if os.path.basename(filename) == "gudpy.txt":
+                QMessageBox.warning(
+                    self.mainWidget,
+                    "GudPy Warning",
+                    f"Cannot save to {filename}, gudpy.txt is reserved."
+                )
+                return
             self.gudrunFile.instrument.GudrunInputFileDir = (
                 os.path.dirname(os.path.abspath(filename))
             )
@@ -678,6 +685,17 @@ class GudPyMainWindow(QMainWindow):
                 tweakFactor = gudFile.suggestedTweakFactor
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
+                )
+            else:
+                self.mainWidget.dcsLabel.setText(
+                    "DCS Level"
+                )
+                self.mainWidget.resultLabel.setText("Error")
+                self.mainWidget.resultLabel.setStyleSheet(
+                    ""
+                )
+                self.mainWidget.suggestedTweakFactorLabel.setText(
+                    "Suggested Tweak Factor"
                 )
         elif (
             self.mainWidget.objectStack.currentIndex() == 6
@@ -1101,10 +1119,11 @@ class GudPyMainWindow(QMainWindow):
             viewOutputDialog.widget.exec_()
 
     def setModified(self):
+
         if not self.modified:
             if self.gudrunFile.path:
                 self.modified = True
-                self.setWindowModified(True)
+                self.mainWidget.setWindowModified(True)
                 self.mainWidget.save.setEnabled(True)
         if not self.proc:
             self.timer.start(30000)

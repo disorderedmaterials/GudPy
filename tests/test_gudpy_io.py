@@ -533,6 +533,7 @@ class TestGudPyIO(TestCase):
                 self.expectedSampleB,
                 self.expectedSampleC,
             ],
+            "writeAllSamples": True
         }
 
         self.goodInstrument = Instrument()

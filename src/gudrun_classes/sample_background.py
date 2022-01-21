@@ -30,6 +30,7 @@ class SampleBackground:
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
         self.samples = []
+        self.writeAllSamples = True
 
     def __str__(self):
         """
@@ -51,16 +52,12 @@ class SampleBackground:
             for c in s.containers
             if c.runAsSample
         ]
-        SAMPLES = "\n".join(
-            [
-                *[
-                    str(x)
-                    for x in self.samples
-                    if x.runThisSample
-                ],
-                *CONV_SAMPLES
-            ]
-        )
+        if self.writeAllSamples:
+            samples = [str(x) for x in self.samples]
+        else:
+            samples = [str(x) for x in self.samples if x.runThisSample]
+        SAMPLES = "\n".join([*samples, *CONV_SAMPLES])
+        self.writeAllSamples = True
 
         dataFilesLine = (
             f'{str(self.dataFiles)}\n'
