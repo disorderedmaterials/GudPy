@@ -168,7 +168,7 @@ class Container:
             f'{dataFilesLines}'
             f'{str(self.composition)}{compositionSuffix}'
             f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
-            f'{Geometry(self.geometry.value).name}{config.spc5}'
+            f'SameAsBeam{config.spc5}'
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'

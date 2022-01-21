@@ -1356,14 +1356,19 @@ class GudrunFile:
         sampleBackgrounds = "\n".join(
             [str(x) for x in self.sampleBackgrounds]
         ).rstrip()
-        footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(
-            time.strftime("%Y%m%d %H:%M:%S")
+        footer= (
+            f"\n\n\nEND{config.spc5}"
+            f"\n1\nDate and time last written:  "
+            f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc5}"
+            f"\nN-1"
         )
+
         components = (
             f"\n\nCOMPONENTS:\n{str(config.components)}"
             if len(config.components.components)
             else ""
         )
+
         return (
             header
             + instrument

@@ -126,8 +126,15 @@ class Normalisation:
 
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
+
+        geometryLine = (
+            f'SameAsBeam{config.spc5}Geometry\n'
+            if self.geometry == Geometry.SameAsBeam
+            else
+            f'{Geometry(self.geometry.value).name}{config.spc5}Geometry\n'
+        )
         geometryLines = (
-            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}{config.spc2}'
+            f'{self.upstreamThickness}{config.spc2}{self.downstreamThickness}{config.spc5}'
             f'Upstream and downstream thickness [cm]\n'
             f'{self.angleOfRotation}{config.spc2}{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
@@ -180,8 +187,7 @@ class Normalisation:
             f'Force calculation of corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
             f'*{config.spc2}0{config.spc2}0{config.spc5}* 0 0 to specify end of composition input\n'
-            f'{Geometry(self.geometry.value).name}{config.spc5}'
-            f'Geometry\n'
+            f'{geometryLine}'
             f'{geometryLines}'
             f'{densityLine}'
             f'{self.tempForNormalisationPC}{config.spc5}'
