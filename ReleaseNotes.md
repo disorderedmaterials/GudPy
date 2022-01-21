@@ -1,2 +1,4 @@
-Hotfix release.
-Default to forcing calculations of corrections for Normalistion and Sample. Fix bug created whilst making plotting 'safer' from crashes, which might be caused by gudrun_dcs failing due to invalid parameters.
+Patches bug with samples not selected for analysis not being saved.
+Prevents saving files as "gudpy.txt", since it's reserved.
+Reset results group to defaults, if no results are available for the selected sample.
+Fix modification status issue.
