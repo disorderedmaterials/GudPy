@@ -541,6 +541,13 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", "."
         )
         if filename:
+            if os.path.basename(filename) == "gudpy.txt":
+                QMessageBox.warning(
+                    self.mainWidget,
+                    "GudPy Warning",
+                    f"Cannot save to {filename}, gudpy.txt is reserved."
+                )
+                return
             self.gudrunFile.instrument.GudrunInputFileDir = (
                 os.path.dirname(os.path.abspath(filename))
             )
