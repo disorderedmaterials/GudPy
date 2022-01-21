@@ -156,7 +156,7 @@ class ComponentsModel(QAbstractItemModel):
             return False
         elif role == Qt.EditRole:
             if not index.parent().isValid():
-                if value in [c.name for c in self.components.components]:
+                if value in [c.name for c in self.components.components] or "(" in value or ")" in value:
                     return False
                 self.components.components[index.row()].name = value
                 self.dataChanged.emit(index, index)
