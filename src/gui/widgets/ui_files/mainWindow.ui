@@ -20,6 +20,20 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="outputTab">
+       <attribute name="title">
+        <string>Output</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_61">
+        <item>
+         <widget class="OutputTextEdit" name="outputTextEdit">
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="inputTab">
        <attribute name="title">
         <string>Gudrun Parameters</string>
@@ -7517,6 +7531,11 @@
    <class>ComponentsList</class>
    <extends>QListView</extends>
    <header>src.gui.widgets.tables.components_table</header>
+  </customwidget>
+  <customwidget>
+   <class>OutputTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>src.gui.widgets.output_textedit</header>
   </customwidget>
  </customwidgets>
  <resources>
