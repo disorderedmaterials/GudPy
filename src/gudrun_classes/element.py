@@ -1,4 +1,6 @@
 from src.gudrun_classes import config
+
+
 class Element:
     """
     Class to represent an Element.
