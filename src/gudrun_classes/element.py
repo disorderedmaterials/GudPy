@@ -1,6 +1,3 @@
-from src.gudrun_classes import config
-
-
 class Element:
     """
     Class to represent an Element.
@@ -51,9 +48,9 @@ class Element:
         """
         return (
             self.atomicSymbol
-            + config.spc2
+            + "  "
             + str(self.massNo)
-            + config.spc2
+            + "  "
             + str(self.abundance)
         )
 
