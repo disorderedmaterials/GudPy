@@ -5,6 +5,7 @@ from src.gudrun_classes.enums import (
 )
 import os
 
+
 class ContainerSlots():
 
     def __init__(self, widget, parent):

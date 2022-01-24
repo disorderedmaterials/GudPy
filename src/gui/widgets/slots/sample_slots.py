@@ -6,6 +6,7 @@ from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
 import os
 
+
 class SampleSlots():
 
     def __init__(self, widget, parent):

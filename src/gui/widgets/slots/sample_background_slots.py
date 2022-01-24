@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QFileDialog
 import os
 
+
 class SampleBackgroundSlots():
 
     def __init__(self, widget, parent):
