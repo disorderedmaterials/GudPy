@@ -155,3 +155,9 @@ def resolve(*args):
 def breplace(str, old, new):
     pattern = re.compile(old, re.IGNORECASE)
     return pattern.sub(new, str)
+
+def nthreplace(str, old, new, nth):
+    tokens = str.split(old)
+    if len(tokens) > nth:
+        string = f'{old.join(tokens[:nth])}{new}{old.join(tokens[nth:])}'
+    return string
