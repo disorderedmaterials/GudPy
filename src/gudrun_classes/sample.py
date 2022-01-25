@@ -234,13 +234,18 @@ class Sample:
             bjoin(
                 self.exponentialValues,
                 " Exponential amplitude and decay [1/\u212b]\n",
-                sameseps=True,s
+                sameseps=True,
                 suffix="0"
             )
         )
 
+        selfScatteringFile = (
+            self.fileSelfScattering
+            if self.fileSelfScattering else "*"
+        )
+
         selfScatteringLine = (
-            f'{self.fileSelfScattering if self.fileSelfScattering else "*"}{TAB}'
+            f'{selfScatteringFile}{TAB}'
             f'Name of file containing self scattering'
             f' as a function of wavelength [\u212b]\n'
         )
