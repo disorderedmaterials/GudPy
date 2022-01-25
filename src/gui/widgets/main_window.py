@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from PySide6.QtCore import QFile, QFileInfo, QTimer
 from PySide6.QtGui import QPainter
 from PySide6.QtUiTools import QUiLoader
@@ -16,7 +15,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from PySide6.QtCharts import QChartView
-from black import out
 
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
@@ -31,7 +29,7 @@ from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
-from src.gui.widgets.output_textedit import OutputTextEdit, ScrollBarWithBookMarks
+from src.gui.widgets.output_textedit import OutputTextEdit
 
 from src.gui.widgets.tables.composition_table import CompositionTable
 from src.gui.widgets.tables.ratio_composition_table import (
@@ -177,7 +175,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
-        loader.registerCustomWidget(ScrollBarWithBookMarks)
         loader.registerCustomWidget(OutputTextEdit)
         self.mainWidget = loader.load(uifile)
 
@@ -1369,33 +1366,7 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-        self.mainWidget.outputTextEdit.setOutput(self.output, self.gudrunFile.sampleBackgrounds)
-        # self.outputDCSToMarkup()
-    # def outputDCSToMarkup(self):
-    #     # lines = self.output.split("\n")
-
-    #     # instrumentIndex= 0
-    #     # # beamIndex = 0
-    #     # # normalisationIndex = 0
-
-    #     # for i, line in enumerate(lines):
-    #     #     if "Got to: INSTRUMENT" in line:
-    #     #         instrumen
-    #     #     elif "Got to: BEAM" in line:
-    #     #         beamIndex = i
-    #     #     elif "Got to: NORMALISATION" in line:
-    #     #         normalisationIndex = i
-
-    #     # lines[instrumentIndex] = f"<a name=\"Instrument\">{lines[instrumentIndex]}</a>"
-    #     # output = "\n".join(lines)
-    #     output = self.output.replace("\n", "<br/>")
-    #     output.replace("Got to: INSTRUMENT", f"<a name=\"Instrument\">Got to: INSTRUMENT</a>")
-    #     markup = f"<html><p>{output}</p></html>"
-    #     self.mainWidget.outputTextEdit.setHtml(markup)
-    #     return markup
-
-
-
+        self.mainWidget.outputPlainTextEdit.setOutput(self.output, self.mainWidget, self.gudrunFile.sampleBackgrounds)
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
