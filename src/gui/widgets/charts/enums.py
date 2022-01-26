@@ -13,14 +13,12 @@ def enumFromDict(clsname, _dict):
 
 
 PLOT_MODES = {
-    0: ["Structure Factor (mint01, mdcs01)", "SF"],
-    1: ["Structure Factor (mint01)", "SF_MINT01"],
-    2: ["Structure Factor (mdcs01)", "SF_MDCS01"],
-    3: ["Radial Distribution Functions", "RDF"],
-    4: ["Structure Factor (mint01, mdcs01), (Cans)", "SF_CANS"],
-    5: ["Radial Distribution Functions (Cans)", "RDF_CANS"],
-    6: ["Structure Factor (mint01), (Cans)", "SF_MINT01_CANS"],
-    7: ["Structure Factor (mdcs01), (Cans)", "SF_MDCS01_CANS"],
+    0: ["Structure Factor (mint01)", "SF_MINT01"],
+    1: ["Structure Factor (mdcs01)", "SF_MDCS01"],
+    2: ["Radial Distribution Functions", "RDF"],
+    3: ["Radial Distribution Functions (Cans)", "RDF_CANS"],
+    4: ["Structure Factor (mint01), (Cans)", "SF_MINT01_CANS"],
+    5: ["Structure Factor (mdcs01), (Cans)", "SF_MDCS01_CANS"],
 }
 
 

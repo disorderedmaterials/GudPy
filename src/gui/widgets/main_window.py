@@ -263,11 +263,6 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topAllPlotComboBox.addItem(
-            PlotModes.SF.name,
-            PlotModes.SF
-        )
-
-        self.mainWidget.topAllPlotComboBox.addItem(
             PlotModes.SF_MINT01.name,
             PlotModes.SF_MINT01
         )
@@ -275,11 +270,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.topAllPlotComboBox.addItem(
             PlotModes.SF_MDCS01.name,
             PlotModes.SF_MDCS01
-        )
-
-        self.mainWidget.topAllPlotComboBox.addItem(
-            PlotModes.SF_CANS.name,
-            PlotModes.SF_CANS
         )
 
         self.mainWidget.topAllPlotComboBox.addItem(
@@ -311,11 +301,6 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topPlotComboBox.addItem(
-            PlotModes.SF.name,
-            PlotModes.SF
-        )
-
-        self.mainWidget.topPlotComboBox.addItem(
             PlotModes.SF_MINT01.name,
             PlotModes.SF_MINT01
         )
@@ -339,18 +324,13 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.topContainerPlotComboBox.addItem(
-            PlotModes.SF.name,
-            PlotModes.SF
+            PlotModes.SF_MINT01_CANS.name,
+            PlotModes.SF_MINT01_CANS
         )
 
         self.mainWidget.topContainerPlotComboBox.addItem(
-            PlotModes.SF_MINT01.name,
-            PlotModes.SF_MINT01
-        )
-
-        self.mainWidget.topContainerPlotComboBox.addItem(
-            PlotModes.SF_MDCS01.name,
-            PlotModes.SF_MDCS01
+            PlotModes.SF_MDCS01_CANS.name,
+            PlotModes.SF_MDCS01_CANS
         )
 
         self.mainWidget.topContainerPlotComboBox.currentIndexChanged.connect(
@@ -358,11 +338,11 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.bottomContainerPlotComboBox.addItem(
-            PlotModes.RDF.name,
-            PlotModes.RDF
+            PlotModes.RDF_CANS.name,
+            PlotModes.RDF_CANS
         )
 
-        self.mainWidget.bottomPlotComboBox.currentIndexChanged.connect(
+        self.mainWidget.bottomContainerPlotComboBox.currentIndexChanged.connect(
             self.handleContainerBottomPlotModeChanged
         )
 
@@ -655,9 +635,8 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.SF: 0,
-                PlotModes.SF_MINT01: 1,
-                PlotModes.SF_MDCS01: 2,
+                PlotModes.SF_MINT01: 0,
+                PlotModes.SF_MDCS01: 1,
                 PlotModes.RDF: 0
             }
 
@@ -712,10 +691,10 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-            if not topPlot.series() or not bottomPlot.series():
-                self.mainWidget.containerSplitter.setSizes([1, 0])
-            else:
+            if topPlot.series() or bottomPlot.series():
                 self.mainWidget.containerSplitter.setSizes([2, 1])
+            else:
+                self.mainWidget.containerSplitter.setSizes([1, 0])
 
             self.mainWidget.containerTopPlot.setChart(
                 topPlot
@@ -725,16 +704,15 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.SF: 0,
-                PlotModes.SF_MINT01: 1,
-                PlotModes.SF_MDCS01: 2,
-                PlotModes.RDF: 0
+                PlotModes.SF_MINT01_CANS: 0,
+                PlotModes.SF_MDCS01_CANS: 1,
+                PlotModes.RDF_CANS: 0
             }
 
-            self.mainWidget.topPlotComboBox.setCurrentIndex(
+            self.mainWidget.topContainerPlotComboBox.setCurrentIndex(
                 plotsMap[topPlot.plotMode]
             )
-            self.mainWidget.bottomPlotComboBox.setCurrentIndex(
+            self.mainWidget.bottomContainerPlotComboBox.setCurrentIndex(
                 plotsMap[bottomPlot.plotMode]
             )
             if gudFile:
@@ -767,12 +745,18 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             topChart.addSample(sample)
-            topChart.plot(self.mainWidget.topPlotComboBox.itemData(self.mainWidget.topPlotComboBox.currentIndex()))
+            if isinstance(sample, Sample):
+                topPlotMode = self.mainWidget.topPlotComboBox.itemData(self.mainWidget.topPlotComboBox.currentIndex())
+                bottomPlotMode = self.mainWidget.bottomPlotComboBox.itemData(self.mainWidget.bottomPlotComboBox.currentIndex())
+            else:
+                topPlotMode = self.mainWidget.topContainerPlotComboBox.itemData(self.mainWidget.topContainerPlotComboBox.currentIndex())
+                bottomPlotMode = self.mainWidget.bottomContainerPlotComboBox.itemData(self.mainWidget.bottomContainerPlotComboBox.currentIndex())
+            topChart.plot(topPlotMode)
             bottomChart = GudPyChart(
                 self.gudrunFile
             )
             bottomChart.addSample(sample)
-            bottomChart.plot(self.mainWidget.bottomPlotComboBox.itemData(self.mainWidget.bottomPlotComboBox.currentIndex()))
+            bottomChart.plot(bottomPlotMode)
             path = None
             if len(sample.dataFiles.dataFiles):
                 path = breplace(

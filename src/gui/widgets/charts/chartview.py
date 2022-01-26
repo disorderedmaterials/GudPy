@@ -1,7 +1,7 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QPainter
+    QAction, QClipboard, QCursor, QPainter, QMouseEvent
 )
 from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 from src.gudrun_classes.container import Container
@@ -93,18 +93,19 @@ class GudPyChartView(QChartView):
         self.chart().scroll(delta.x(), -delta.y())
 
     def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.MouseButton.MiddleButton:
+        if isinstance(event, QMouseEvent):
+            if event.buttons() & Qt.MouseButton.MiddleButton:
 
-            if self.previousPos:
-                offset = event.pos() - self.previousPos
-            else:
-                offset = event.pos()
-            self.chart().zoom(1 + 0.00000001)
-            self.chart().scroll(-offset.x(), offset.y())
+                if self.previousPos:
+                    offset = event.pos() - self.previousPos
+                else:
+                    offset = event.pos()
+                self.chart().zoom(1 + 0.00000001)
+                self.chart().scroll(-offset.x(), offset.y())
 
-            self.previousPos = event.pos()
-            event.accept()
-        return super().mouseMoveEvent(event)
+                self.previousPos = event.pos()
+                event.accept()
+            return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
@@ -248,34 +249,6 @@ class GudPyChartView(QChartView):
             self.menu.addMenu(toggleLogarithmicMenu)
 
             if self.chart().plotMode in [
-                PlotModes.SF,
-                PlotModes.SF_CANS
-            ]:
-                showMint01Action = QAction("Show mint01 data", self.menu)
-                showMint01Action.setCheckable(True)
-                showMint01Action.setChecked(
-                    self.chart().isVisible(SeriesTypes.MINT01)
-                )
-                showMint01Action.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.MINT01
-                    )
-                )
-                self.menu.addAction(showMint01Action)
-
-                showMdcs01Action = QAction("Show mdcs01 data", self.menu)
-                showMdcs01Action.setCheckable(True)
-                showMdcs01Action.setChecked(
-                    self.chart().isVisible(SeriesTypes.MDCS01)
-                )
-                showMdcs01Action.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.MDCS01
-                    )
-                )
-                self.menu.addAction(showMdcs01Action)
-            if self.chart().plotMode in [
-                PlotModes.SF, PlotModes.SF_CANS,
                 PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
             ]:
                 showDCSLevelAction = QAction("Show dcs level", self.menu)
@@ -324,7 +297,7 @@ class GudPyChartView(QChartView):
                 showMenu.setTitle("Show..")
                 actionMap = {}
                 if self.chart().plotMode in [
-                    PlotModes.SF, PlotModes.SF_MINT01,
+                    PlotModes.SF_MINT01,
                     PlotModes.SF_MDCS01, PlotModes.RDF
                 ]:
                     samples = [
@@ -332,7 +305,7 @@ class GudPyChartView(QChartView):
                         if isinstance(sample, Sample)
                     ]
                 elif self.chart().plotMode in [
-                    PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS,
+                    PlotModes.SF_MINT01_CANS,
                     PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
                 ]:
                     samples = [

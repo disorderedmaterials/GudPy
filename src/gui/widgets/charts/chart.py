@@ -87,15 +87,15 @@ class GudPyChart(QChart):
             self.removeAxis(axis)
 
         plotsDCS = self.plotMode in [
-            PlotModes.SF, PlotModes.SF_MDCS01,
-            PlotModes.SF_CANS, PlotModes.SF_MDCS01_CANS
+            PlotModes.SF_MDCS01,
+            PlotModes.SF_MDCS01_CANS
         ]
         plotsSamples = self.plotMode in [
-            PlotModes.SF, PlotModes.SF_MDCS01,
+            PlotModes.SF_MDCS01,
             PlotModes.SF_MINT01, PlotModes.RDF
         ]
         plotsContainers = self.plotMode in [
-            PlotModes.SF_CANS, PlotModes.SF_MINT01_CANS,
+            PlotModes.SF_MINT01_CANS,
             PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
         ]
         for sample in self.samples:
@@ -125,8 +125,8 @@ class GudPyChart(QChart):
 
         # Label axes
         if self.plotMode in [
-            PlotModes.SF, PlotModes.SF_MINT01,
-            PlotModes.SF_MDCS01, PlotModes.SF_CANS,
+           PlotModes.SF_MINT01,
+            PlotModes.SF_MDCS01,
             PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
         ]:
             XLabel = "Q, 1\u212b"
@@ -209,13 +209,7 @@ class GudPyChart(QChart):
 
     def isSampleVisible(self, sample):
 
-        if self.plotMode in [PlotModes.SF, PlotModes.SF_CANS]:
-            return (
-                self.configs[sample].mint01Series.isVisible()
-                | self.configs[sample].mdcs01Series.isVisible()
-                | self.configs[sample].dcsSeries.isVisible()
-            )
-        elif self.plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MINT01_CANS]:
+        if self.plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MINT01_CANS]:
             return self.configs[sample].mint01Series.isVisible()
         elif self.plotMode in [PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS]:
             return (
