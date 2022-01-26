@@ -85,5 +85,10 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
+      singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:v$VERSION
     condition: eq(variables.osName, 'linux')
-    displayName: "Build singularity image for linux."
+    env:
+      HARBOR_USER: $(HARBOR_USER)
+      HARBOR_SECRET: $(HARBOR_SECRET)
+    displayName: "Build and publish singularity image for linux, to Harbor registry."
