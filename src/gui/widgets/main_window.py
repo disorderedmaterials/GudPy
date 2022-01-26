@@ -767,12 +767,12 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             topChart.addSample(sample)
-            topChart.plot(PlotModes.SF)
+            topChart.plot(self.mainWidget.topPlotComboBox.itemData(self.mainWidget.topPlotComboBox.currentIndex()))
             bottomChart = GudPyChart(
                 self.gudrunFile
             )
             bottomChart.addSample(sample)
-            bottomChart.plot(PlotModes.RDF)
+            bottomChart.plot(self.mainWidget.bottomPlotComboBox.itemData(self.mainWidget.bottomPlotComboBox.currentIndex()))
             path = None
             if len(sample.dataFiles.dataFiles):
                 path = breplace(
@@ -798,23 +798,23 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(PlotModes.SF)
+            allTopChart.plot(self.mainWidget.topAllPlotComboBox.itemData(self.mainWidget.topAllPlotComboBox.currentIndex()))
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
             allBottomChart.addSamples(samples)
-            allBottomChart.plot(PlotModes.RDF)
+            allBottomChart.plot(self.mainWidget.bottomAllPlotComboBox.itemData(self.mainWidget.bottomAllPlotComboBox.currentIndex()))
         else:
             allTopChart = GudPyChart(
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(PlotModes.SF)
+            allTopChart.plot(self.mainWidget.topAllPlotComboBox.itemData(self.mainWidget.topAllPlotComboBox.currentIndex()))
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
             allBottomChart.addSamples(samples)
-            allBottomChart.plot(PlotModes.RDF)
+            allBottomChart.plot(self.mainWidget.bottomAllPlotComboBox.itemData(self.mainWidget.bottomAllPlotComboBox.currentIndex()))
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
