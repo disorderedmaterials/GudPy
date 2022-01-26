@@ -107,35 +107,35 @@ class Sample:
         self.name = ""
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE")
-        self.forceCalculationOfCorrections = False
+        self.forceCalculationOfCorrections = True
         self.composition = Composition("SAMPLE")
         self.geometry = Geometry.SameAsBeam
-        self.upstreamThickness = 0.0
-        self.downstreamThickness = 0.0
+        self.upstreamThickness = 0.05
+        self.downstreamThickness = 0.05
         self.angleOfRotation = 0.0
-        self.sampleWidth = 0.0
+        self.sampleWidth = 5.0
         self.innerRadius = 0.0
         self.outerRadius = 0.0
         self.sampleHeight = 0.0
-        self.density = 0.0
+        self.density = 0.1
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.tempForNormalisationPC = 0.0
         self.totalCrossSectionSource = CrossSectionSource.TRANSMISSION
         self.crossSectionFilename = ""
-        self.sampleTweakFactor = 0.0
-        self.topHatW = 0.0
-        self.FTMode = FTModes.SUB_AVERAGE
-        self.minRadFT = 0.0
+        self.sampleTweakFactor = 1.0
+        self.topHatW = 3.0
+        self.FTMode = FTModes.ABSOLUTE
+        self.minRadFT = 0.75
         self.grBroadening = 0.0
         self.resonanceValues = []
-        self.exponentialValues = []
-        self.normalisationCorrectionFactor = 0.0
+        self.exponentialValues = [(0, 1)]
+        self.normalisationCorrectionFactor = 1.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
-        self.maxRadFT = 0.0
+        self.maxRadFT = 20.0
         self.outputUnits = OutputUnits.BARNS_ATOM_SR
         self.powerForBroadening = 0.0
-        self.stepSize = 0.0
+        self.stepSize = 0.03
         self.runThisSample = True
         self.scatteringFraction = 0.0
         self.attenuationCoefficient = 0.0
@@ -239,8 +239,13 @@ class Sample:
             )
         )
 
+        selfScatteringFile = (
+            self.fileSelfScattering
+            if self.fileSelfScattering else "*"
+        )
+
         selfScatteringLine = (
-            f'{self.fileSelfScattering}{TAB}'
+            f'{selfScatteringFile}{TAB}'
             f'Name of file containing self scattering'
             f' as a function of wavelength [\u212b]\n'
         )

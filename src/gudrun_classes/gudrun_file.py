@@ -742,7 +742,6 @@ class GudrunFile:
                 )
 
         except Exception as e:
-            print(e)
             raise ParserException(
                     "Whilst parsing Normalisation, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -958,6 +957,8 @@ class GudrunFile:
             # If the marker line is encountered,
             # then the values has been parsed.
             line = self.getNextToken()
+            if "to specify end of exponential parameter input" not in line:
+                sample.exponentialValues = []
             while "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues.append(
                     tuple(extract_nums_from_string(line))

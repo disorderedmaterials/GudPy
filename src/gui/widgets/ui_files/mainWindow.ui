@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -3930,7 +3930,7 @@
                             </sizepolicy>
                            </property>
                            <property name="suffix">
-                            <string> cm</string>
+                            <string> °</string>
                            </property>
                           </widget>
                          </item>
@@ -6221,7 +6221,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Scattering Fraction</string>
+                            <string>Background Scattering Fraction</string>
                            </property>
                           </widget>
                          </item>
@@ -6248,7 +6248,7 @@
                             </sizepolicy>
                            </property>
                            <property name="text">
-                            <string>Attenuation Coefficient</string>
+                            <string>Background Attenuation Coefficient</string>
                            </property>
                           </widget>
                          </item>
