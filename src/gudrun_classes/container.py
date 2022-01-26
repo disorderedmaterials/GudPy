@@ -75,7 +75,7 @@ class Container:
         self.innerRadius = 0.0
         self.outerRadius = 0.0
         self.sampleHeight = 0.0
-        self.density = 0.1
+        self.density = 0.0542
         self.densityUnits = UnitsOfDensity.ATOMIC
         self.totalCrossSectionSource = CrossSectionSource.TABLES
         self.crossSectionFilename = ""
