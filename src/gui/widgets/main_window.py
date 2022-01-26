@@ -1325,7 +1325,6 @@ class GudPyMainWindow(QMainWindow):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
 
-
         if self.error:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
