@@ -24,23 +24,13 @@
        <attribute name="title">
         <string>Output</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_61">
+       <layout class="QHBoxLayout" name="horizontalLayout_99">
         <item>
-         <widget class="OutputTextEdit" name="outputPlainTextEdit"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_99">
+         <layout class="QVBoxLayout" name="verticalLayout_61">
           <item>
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Focus</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="outputFocusComboBox">
+           <widget class="QListWidget" name="outputFocusList">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -48,19 +38,26 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_14">
+           <spacer name="verticalSpacer_3">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>20</width>
+              <height>40</height>
              </size>
             </property>
            </spacer>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="outputTextEdit">
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -7335,7 +7332,6 @@
     <addaction name="runContainersAsSamples"/>
     <addaction name="iterateGudrun"/>
     <addaction name="checkFilesExist"/>
-    <addaction name="showPreviousOutput"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -7561,11 +7557,6 @@
    <class>ComponentsList</class>
    <extends>QListView</extends>
    <header>src.gui.widgets.tables.components_table</header>
-  </customwidget>
-  <customwidget>
-   <class>OutputTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>src.gui.widgets.output_textedit</header>
   </customwidget>
  </customwidgets>
  <resources>

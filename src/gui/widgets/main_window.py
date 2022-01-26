@@ -29,7 +29,6 @@ from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
-from src.gui.widgets.output_textedit import OutputTextEdit
 
 from src.gui.widgets.tables.composition_table import CompositionTable
 from src.gui.widgets.tables.ratio_composition_table import (
@@ -58,6 +57,7 @@ from src.gui.widgets.slots.normalisation_slots import NormalisationSlots
 from src.gui.widgets.slots.container_slots import ContainerSlots
 from src.gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
 from src.gui.widgets.slots.sample_slots import SampleSlots
+from src.gui.widgets.slots.output_slots import OutputSlots
 from src.gui.widgets.resources import resources_rc  # noqa
 
 from src.gudrun_classes.file_library import GudPyFileLibrary
@@ -175,7 +175,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
-        loader.registerCustomWidget(OutputTextEdit)
         self.mainWidget = loader.load(uifile)
 
         self.mainWidget.statusBar_ = QStatusBar(self)
@@ -379,6 +378,7 @@ class GudPyMainWindow(QMainWindow):
         )
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
+        self.outputSlots = OutputSlots(self.mainWidget, self)
         self.mainWidget.runPurge.triggered.connect(
             self.runPurge_
         )
@@ -394,10 +394,6 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.checkFilesExist.triggered.connect(
             self.checkFilesExist_
-        )
-
-        self.mainWidget.showPreviousOutput.triggered.connect(
-            self.showPreviousOutput_
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -1113,13 +1109,6 @@ class GudPyMainWindow(QMainWindow):
         autosavePath = self.gudrunFile.path + ".autosave"
         self.gudrunFile.write_out(path=autosavePath)
 
-    def showPreviousOutput_(self):
-        if self.output:
-            viewOutputDialog = ViewOutputDialog(
-                self.previousProcTitle, self.output, self
-            )
-            viewOutputDialog.widget.exec_()
-
     def setModified(self):
 
         if not self.modified:
@@ -1166,7 +1155,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
-        self.mainWidget.showPreviousOutput.setEnabled(state)
         self.mainWidget.new_.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
@@ -1193,7 +1181,6 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
-        self.mainWidget.showPreviousOutput.setEnabled(state)
 
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
@@ -1338,8 +1325,7 @@ class GudPyMainWindow(QMainWindow):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
 
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.mainWidget.progressBar.setValue(0)
+
         if self.error:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
@@ -1366,9 +1352,11 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-        self.mainWidget.outputPlainTextEdit.setOutput(
-            self.output, self.mainWidget, self.gudrunFile.sampleBackgrounds
-        )
+            self.outputSlots.setOutput(self.output, "gudrun_dcs")
+        else:
+            self.outputSlots.setOutput(self.output, "purge_det")
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.progressBar.setValue(0)
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
