@@ -956,7 +956,7 @@ class GudrunFile:
             # If the marker line is encountered,
             # then the values has been parsed.
             line = self.getNextToken()
-            if not "to specify end of exponential parameter input" in line:
+            if "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues = []
             while "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues.append(
