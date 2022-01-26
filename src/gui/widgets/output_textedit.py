@@ -1,7 +1,6 @@
 from PySide6.QtCore import QPoint
-from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QTextCursor
+from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QTextCursor
 from PySide6.QtWidgets import QScrollBar, QPlainTextEdit
-
 from collections import OrderedDict
 
 
@@ -14,6 +13,7 @@ class VerticalScrollBar(QScrollBar):
             self.parent().refocus
         )
 
+
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent):
         super().__init__(parent)
@@ -21,18 +21,20 @@ class Highlighter(QSyntaxHighlighter):
 
     def highlightLine(self, line, fmt):
         self.highlighted[line] = fmt
-        tb = self.document().findBlockByLineNumber(line)
-        self.rehighlightBlock(tb)
+        self.rehighlightBlock(
+            self.document().findBlockByLineNumber(
+                line
+            )
+        )
 
     def clearHighlight(self):
         self.highlighted = {}
         self.rehighlight()
 
     def highlightBlock(self, text):
-        line = self.currentBlock().blockNumber()
-        fmt = self.highlighted.get(line)
-        if fmt:
-            self.setFormat(0, len(text), fmt)
+        fmt = self.highlighted.get(self.currentBlock().blockNumber())
+        self.setFormat(0, len(text), fmt if fmt else QTextCharFormat())
+
 
 class OutputTextEdit(QPlainTextEdit):
 
@@ -45,37 +47,60 @@ class OutputTextEdit(QPlainTextEdit):
         self.appendPlainText(output)
         self.highlighter = Highlighter(self.document())
         self.buildFmtMap(sampleBackgrounds)
-        for sample in [s.name for sb in sampleBackgrounds for s in sb.samples if s.runThisSample]:
+        for sample in [
+            s.name for sb in sampleBackgrounds
+            for s in sb.samples if s.runThisSample
+        ]:
             widget.outputFocusComboBox.addItem(sample)
 
-        widget.outputFocusComboBox.currentTextChanged.connect(self.focusChanged)
+        widget.outputFocusComboBox.currentTextChanged.connect(
+            self.focusChanged
+        )
 
-        widget.outputFocusComboBox.setCurrentIndex(widget.outputFocusComboBox.count()-1)
+        widget.outputFocusComboBox.setCurrentIndex(
+            widget.outputFocusComboBox.count()-1
+        )
 
         self.widget = widget
-    
+
     def buildFmtMap(self, sampleBackgrounds):
         self.fmtMap = OrderedDict()
 
         output = self.toPlainText()
-        offsets = [n for n, l in enumerate(output.splitlines(keepends=True)) if  "Got to: SAMPLE BACKGROUND" in l]
+        offsets = [
+            n for n, l in
+            enumerate(output.splitlines(keepends=True))
+            if "Got to: SAMPLE BACKGROUND" in l
+        ]
         sbindicies = []
         for i in range(len(offsets)-1):
             sbindicies.append([offsets[i], offsets[i+1]-1])
 
         sbindicies.append([offsets[-1], len(output.splitlines(keepends=True))])
-        for sampleBackground, (start, end) in zip(sampleBackgrounds, sbindicies):
+        for sampleBackground, (start, end) in zip(
+            sampleBackgrounds, sbindicies
+        ):
             splicedOutput = output.splitlines(keepends=True)[start:end]
-            indices = [n for n, l in enumerate(splicedOutput) if "Got to: SAMPLE" in l][1:]
-            for sample, index in zip([s for sb in sampleBackgrounds for s in sb.samples if s.runThisSample], indices):
+            indices = [
+                n for n, l in
+                enumerate(splicedOutput) if "Got to: SAMPLE" in l
+            ][1:]
+            for sample, index in zip(
+                [
+                    s for sb in sampleBackgrounds
+                    for s in sb.samples
+                    if s.runThisSample
+                ], indices
+            ):
                 if not self.fmtMap.keys():
                     self.fmtMap[sample.name] = [index+start]
                 else:
-                    self.fmtMap[next(reversed(self.fmtMap))].append(index+start-1)
+                    self.fmtMap[
+                        next(reversed(self.fmtMap))
+                    ].append(index+start-1)
                     self.fmtMap[sample.name] = [index+start]
             if len(sampleBackground.samples):
                 self.fmtMap[next(reversed(self.fmtMap))].append(end)
-
 
     def focusChanged(self, sample):
         start, end = self.fmtMap[sample]
@@ -105,7 +130,7 @@ class OutputTextEdit(QPlainTextEdit):
         return super().wheelEvent(e)
 
     def focusedSample(self):
-        cursor = self.cursorForPosition(QPoint(0,0))
+        cursor = self.cursorForPosition(QPoint(0, 0))
         start = cursor.blockNumber()
         br = QPoint(self.viewport().width()-1, self.viewport().height()-1)
         end = self.cursorForPosition(br).position()
