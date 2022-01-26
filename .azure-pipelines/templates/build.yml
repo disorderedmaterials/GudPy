@@ -77,7 +77,7 @@ steps:
       libseccomp-dev pkg-config squashfs-tools cryptsetup
       export GOPATH=$(Agent.HomeDirectory)/go
       go get -d github.com/sylabs/singularity
-      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout v3.6.2
+      cd ${GOPATH}/src/github.com/sylabs/singularity && git fetch && git checkout v3.7.2
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
     condition: eq(variables.osName, 'linux')
     displayName: "Compile singularity for linux." 
