@@ -146,10 +146,17 @@ class Instrument:
         self.neutronScatteringParametersFile = ""
         self.scaleSelection = Scales.Q
         self.subWavelengthBinnedData = False
-        self.GudrunStartFolder = (
-            os.path.abspath("bin") if not hasattr(sys, "_MEIPASS")
-            else os.path.abspath(os.path.join(sys._MEIPASS, "bin"))
-        )
+        if hasattr(sys, '_MEIPASS'):
+            self.GudrunStartFolder = os.path.abspath(os.path.join(
+                sys._MEIPASS, "bin"
+            )
+            )
+        elif os.getenv('SIF'):
+            self.GudrunStartFolder = os.path.abspath(
+                "/opt/GudPy/bin"
+            )
+        else:
+            self.GudrunStartFolder = os.path.abspath('bin')
         self.startupFileFolder = "StartupFiles"
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False
