@@ -86,10 +86,10 @@ class OutputTextEdit(QPlainTextEdit):
 
     def highlight(self, start, end):
         fmt = QTextCharFormat()
-        fmt.setBackground(QColor("yellow"))
-        self.highlighter.clear_highlight()
+        fmt.setBackground(self.palette().highlight().color())
+        self.highlighter.clearHighlight()
         for n in range(start, end):
-            self.highlighter.highlight_line(n, fmt)
+            self.highlighter.highlightLine(n, fmt)
 
     def refocus(self):
         focusedSample = self.focusedSample()
@@ -120,5 +120,4 @@ class OutputTextEdit(QPlainTextEdit):
             elif abs(start-start_) < abs(start-currentStart):
                 currentStart = start_
                 ret = sample
-        
         return ret
