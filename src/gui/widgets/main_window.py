@@ -1366,7 +1366,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-        self.mainWidget.outputPlainTextEdit.setOutput(self.output, self.mainWidget, self.gudrunFile.sampleBackgrounds)
+        self.mainWidget.outputPlainTextEdit.setOutput(
+            self.output, self.mainWidget, self.gudrunFile.sampleBackgrounds
+        )
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
