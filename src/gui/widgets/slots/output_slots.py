@@ -1,9 +1,7 @@
 from collections import OrderedDict
-from PySide6.QtCore import QModelIndex
 
 
 class OutputSlots():
-
 
     def __init__(self, widget, parent):
         self.widget = widget
@@ -25,23 +23,31 @@ class OutputSlots():
                 enumerate(self.output.splitlines(keepends=True))
                 if "Got to: SAMPLE BACKGROUND" in l
             ]
-            
+
             if not offsets:
-                self.fmtMap["General"] = [0, len(self.output.splitlines(keepends=True))]
+                self.fmtMap["General"] = [
+                    0, len(self.output.splitlines(keepends=True))
+                ]
                 return
 
             sbindicies = []
             for i in range(len(offsets)-1):
                 sbindicies.append([offsets[i], offsets[i+1]-1])
 
-            sbindicies.append([offsets[-1], len(self.output.splitlines(keepends=True))])
+            sbindicies.append(
+                [
+                    offsets[-1], len(self.output.splitlines(keepends=True))
+                ]
+            )
 
             self.fmtMap["General"] = [0, sbindicies[0][0]]
 
             for sampleBackground, (start, end) in zip(
                 self.parent.gudrunFile.sampleBackgrounds, sbindicies
             ):
-                splicedOutput = self.output.splitlines(keepends=True)[start:end]
+                splicedOutput = (
+                    self.output.splitlines(keepends=True)[start:end]
+                )
                 indices = [
                     n for n, l in
                     enumerate(splicedOutput) if "Got to: SAMPLE" in l
@@ -53,7 +59,7 @@ class OutputSlots():
                         if s.runThisSample
                     ], indices
                 ):
-                    if not [k for k in self.fmtMap.keys() if k!="General"]:
+                    if not [k for k in self.fmtMap.keys() if k != "General"]:
                         self.fmtMap[sample.name] = [index+start]
                     else:
                         self.fmtMap[
@@ -63,12 +69,13 @@ class OutputSlots():
                 if len(sampleBackground.samples):
                     self.fmtMap[next(reversed(self.fmtMap))].append(end)
         else:
-            self.fmtMap["purge_det"] = [0, len(self.output.splitlines(keepends=True))]
+            self.fmtMap["purge_det"] = [
+                0, len(self.output.splitlines(keepends=True))
+            ]
 
         self.widget.outputFocusList.clear()
         self.widget.outputFocusList.addItems(list(self.fmtMap.keys()))
         self.widget.outputFocusList.setCurrentRow(0)
-
 
     def setupOutputSlots(self):
         self.widget.outputFocusList.currentRowChanged.connect(self.giveFocus)
@@ -80,5 +87,3 @@ class OutputSlots():
             self.widget.outputTextEdit.setText(
                 "\n".join(self.output.splitlines(keepends=True)[start:end])
             )
-
-            
