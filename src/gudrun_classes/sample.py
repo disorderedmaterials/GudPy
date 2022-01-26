@@ -125,7 +125,7 @@ class Sample:
         self.sampleTweakFactor = 1.0
         self.topHatW = 3.0
         self.FTMode = FTModes.ABSOLUTE
-        self.minRadFT = 0.0
+        self.minRadFT = 0.75
         self.grBroadening = 0.0
         self.resonanceValues = []
         self.exponentialValues = [0, 1]
