@@ -17,6 +17,7 @@ pr: none
 
 variables:
   gudrunTag: 2022.2
+  publishImage: true
   targets: >
     {
       linuxPy39:
@@ -96,6 +97,7 @@ stages:
             os: '$(imageName)'
             osName: '$(osName)'
             gudrunTag: '$(gudrunTag)'
+            publishImage: '$(publishImage)'
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"

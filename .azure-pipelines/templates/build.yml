@@ -14,6 +14,9 @@ parameters:
 - name: gudrunTag
   default: ''
   type: string
+- name: publishImage
+  default: false
+  type: boolean
 steps:
   - task: UsePythonVersion@0
     displayName: "Use Python Version ${{ parameters.version }}"
@@ -86,10 +89,15 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+    condition: eq(variables.osName, 'linux')
+    displayName: "Build singularity image"
+
+  - bash: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g") 
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
       singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:latest
-    condition: eq(variables.osName, 'linux')
-    env:
+  condition: and(eq(variables.osName, 'linux'), variables.publishImage)
+  env:
       HARBOR_USER: $(HARBOR_USER)
       HARBOR_SECRET: $(HARBOR_SECRET)
-    displayName: "Build and publish singularity image for linux, to Harbor registry."
+    displayName: "Publish singularity image to Harbor registry."
