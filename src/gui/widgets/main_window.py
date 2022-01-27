@@ -48,7 +48,7 @@ from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.charts.chart import GudPyChart
 from src.gui.widgets.charts.chartview import GudPyChartView
 from src.gui.widgets.charts.beam_plot import BeamChart
-from src.gui.widgets.charts.enums import PLOT_MODES, PlotModes, SPLIT_PLOTS
+from src.gui.widgets.charts.enums import PlotModes, SPLIT_PLOTS
 
 from src.gudrun_classes.enums import Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
@@ -269,22 +269,35 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomPlotFrame.setVisible(False)
 
-        for plotMode in [plotMode for plotMode in PlotModes if plotMode not in [PlotModes.SF, PlotModes.SF_RDF, PlotModes.SF_CANS, PlotModes.SF_RDF_CANS]]:
+        for plotMode in [
+            plotMode for plotMode in PlotModes
+            if plotMode not in [
+                PlotModes.SF, PlotModes.SF_RDF,
+                PlotModes.SF_CANS, PlotModes.SF_RDF_CANS
+            ]
+        ]:
             self.mainWidget.allPlotComboBox.addItem(plotMode.name, plotMode)
 
         self.mainWidget.allPlotComboBox.currentIndexChanged.connect(
             self.handleAllPlotModeChanged
         )
 
-        for plotMode in [plotMode for plotMode in PlotModes if "(Cans)" not in plotMode.name]:
+        for plotMode in [
+            plotMode for plotMode in PlotModes
+            if "(Cans)" not in plotMode.name
+        ]:
             self.mainWidget.plotComboBox.addItem(plotMode.name, plotMode)
 
         self.mainWidget.plotComboBox.currentIndexChanged.connect(
             self.handleSamplePlotModeChanged
         )
 
-        for plotMode in [plotMode for plotMode in PlotModes if "(Cans)" in plotMode.name]:
-            self.mainWidget.containerPlotComboBox.addItem(plotMode.name, plotMode)
+        for plotMode in [
+            plotMode for plotMode in PlotModes if "(Cans)" in plotMode.name
+        ]:
+            self.mainWidget.containerPlotComboBox.addItem(
+                plotMode.name, plotMode
+            )
 
         self.mainWidget.containerPlotComboBox.currentIndexChanged.connect(
             self.handleContainerPlotModeChanged
@@ -688,9 +701,13 @@ class GudPyMainWindow(QMainWindow):
             )
             topChart.addSample(sample)
             if isinstance(sample, Sample):
-                topPlotMode = self.mainWidget.plotComboBox.itemData(self.mainWidget.plotComboBox.currentIndex())
+                topPlotMode = self.mainWidget.plotComboBox.itemData(
+                    self.mainWidget.plotComboBox.currentIndex()
+                )
             else:
-                topPlotMode = self.mainWidget.containerPlotComboBox.itemData(self.mainWidget.containerPlotComboBox.currentIndex())
+                topPlotMode = self.mainWidget.containerPlotComboBox.itemData(
+                    self.mainWidget.containerPlotComboBox.currentIndex()
+                )
             topChart.plot(topPlotMode)
             bottomChart = GudPyChart(
                 self.gudrunFile
@@ -721,7 +738,11 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(self.mainWidget.allPlotComboBox.itemData(self.mainWidget.allPlotComboBox.currentIndex()))
+            allTopChart.plot(
+                self.mainWidget.allPlotComboBox.itemData(
+                    self.mainWidget.allPlotComboBox.currentIndex()
+                )
+            )
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
@@ -731,7 +752,11 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             allTopChart.addSamples(samples)
-            allTopChart.plot(self.mainWidget.allPlotComboBox.itemData(self.mainWidget.allPlotComboBox.currentIndex()))
+            allTopChart.plot(
+                self.mainWidget.allPlotComboBox.itemData(
+                    self.mainWidget.allPlotComboBox.currentIndex()
+                )
+            )
             allBottomChart = GudPyChart(
                 self.gudrunFile
             )
@@ -1295,45 +1320,63 @@ class GudPyMainWindow(QMainWindow):
         plotMode = self.mainWidget.allPlotComboBox.itemData(index)
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
-            self.handlePlotModeChanged(self.mainWidget.allSampleTopPlot.chart().plot, top)
-            self.handlePlotModeChanged(self.mainWidget.allSampleBottomPlot.chart().plot, bottom)
+            self.handlePlotModeChanged(
+                self.mainWidget.allSampleTopPlot.chart().plot, top
+            )
+            self.handlePlotModeChanged(
+                self.mainWidget.allSampleBottomPlot.chart().plot, bottom
+            )
             self.mainWidget.bottomPlotFrame.setVisible(True)
-            self.mainWidget.allPlotSplitter.setSizes([1,1])
+            self.mainWidget.allPlotSplitter.setSizes([1, 1])
         else:
-            self.handlePlotModeChanged(self.mainWidget.allSampleTopPlot.chart().plot, plotMode)
+            self.handlePlotModeChanged(
+                self.mainWidget.allSampleTopPlot.chart().plot, plotMode
+            )
             self.mainWidget.bottomPlotFrame.setVisible(False)
-            self.mainWidget.allPlotSplitter.setSizes([1,0])
+            self.mainWidget.allPlotSplitter.setSizes([1, 0])
 
     def handleSamplePlotModeChanged(self, index):
         plotMode = self.mainWidget.plotComboBox.itemData(index)
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
-            self.handlePlotModeChanged(self.mainWidget.sampleTopPlot.chart().plot, top)
-            self.handlePlotModeChanged(self.mainWidget.sampleBottomPlot.chart().plot, bottom)
+            self.handlePlotModeChanged(
+                self.mainWidget.sampleTopPlot.chart().plot, top
+            )
+            self.handlePlotModeChanged(
+                self.mainWidget.sampleBottomPlot.chart().plot, bottom
+            )
             self.mainWidget.bottomSamplePlotFrame.setVisible(True)
-            self.mainWidget.samplePlotSplitter.setSizes([1,1])
+            self.mainWidget.samplePlotSplitter.setSizes([1, 1])
         else:
-            self.handlePlotModeChanged(self.mainWidget.sampleTopPlot.chart().plot, plotMode)
+            self.handlePlotModeChanged(
+                self.mainWidget.sampleTopPlot.chart().plot, plotMode
+            )
             self.mainWidget.bottomSamplePlotFrame.setVisible(False)
-            self.mainWidget.samplePlotSplitter.setSizes([1,0])
+            self.mainWidget.samplePlotSplitter.setSizes([1, 0])
 
     def handleContainerPlotModeChanged(self, index):
         plotMode = self.mainWidget.plotComboBox.itemData(index)
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
-            self.handlePlotModeChanged(self.mainWidget.containerTopPlot.chart().plot, top)
-            self.handlePlotModeChanged(self.mainWidget.containerBottomPlot.chart().plot, bottom)
+            self.handlePlotModeChanged(
+                self.mainWidget.containerTopPlot.chart().plot, top
+            )
+            self.handlePlotModeChanged(
+                self.mainWidget.containerBottomPlot.chart().plot, bottom
+            )
             self.mainWidget.bottomContainerPlotFrame.setVisible(True)
-            self.mainWidget.containerPlotSplitter.setSizes([1,1])
+            self.mainWidget.containerPlotSplitter.setSizes([1, 1])
         else:
-            self.handlePlotModeChanged(self.mainWidget.containerTopPlot.chart().plot, plotMode)
+            self.handlePlotModeChanged(
+                self.mainWidget.containerTopPlot.chart().plot, plotMode
+            )
             self.mainWidget.bottomContainerPlotFrame.setVisible(False)
-            self.mainWidget.containerPlotSplitter.setSizes([1,0])
+            self.mainWidget.containerPlotSplitter.setSizes([1, 0])
 
     @abstractmethod
     def isPlotModeSplittable(self, plotMode):
         return plotMode in SPLIT_PLOTS.keys()
-    
+
     @abstractmethod
     def splitPlotMode(self, plotMode):
         return SPLIT_PLOTS[plotMode]
