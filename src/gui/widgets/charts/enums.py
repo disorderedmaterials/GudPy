@@ -43,7 +43,7 @@ PLOT_MODES = {
         "SF_MINT01_RDF_CANS"
     ],
     13: [
-        "Structure Factor (mdcs01), Radial Distribution Functions (Cans)"
+        "Structure Factor (mdcs01), Radial Distribution Functions (Cans)",
         "SF_MDCS01_RDF_CANS"
     ]
 }
