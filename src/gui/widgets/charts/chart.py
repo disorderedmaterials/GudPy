@@ -28,6 +28,8 @@ class GudPyChart(QChart):
         self.logarithmicYAxis = QLogValueAxis(self)
         self.logarithmicYAxis.setBase(10.0)
 
+        self.plotMode = PlotModes.SF_MINT01
+
     def connectMarkers(self):
         for marker in self.legend().markers():
             marker.clicked.connect(self.handleMarkerClicked)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1580</width>
-    <height>1450</height>
+    <height>1453</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -5992,37 +5992,32 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSplitter" name="splitter_3">
+                   <widget class="QSplitter" name="samplePlotSplitter">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
                     </property>
-                    <widget class="QFrame" name="frame_2">
+                    <widget class="QFrame" name="topSamplePlotFrame">
                      <property name="frameShape">
                       <enum>QFrame::Box</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QVBoxLayout" name="topPlotLayout">
-                      <item>
-                       <widget class="QComboBox" name="topPlotComboBox"/>
-                      </item>
-                     </layout>
+                     <layout class="QVBoxLayout" name="topPlotLayout"/>
                     </widget>
-                    <widget class="QFrame" name="frame_3">
+                    <widget class="QFrame" name="bottomSamplePlotFrame">
                      <property name="frameShape">
                       <enum>QFrame::Box</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QVBoxLayout" name="bottomPlotLayout">
-                      <item>
-                       <widget class="QComboBox" name="bottomPlotComboBox"/>
-                      </item>
-                     </layout>
+                     <layout class="QVBoxLayout" name="bottomPlotLayout"/>
                     </widget>
                    </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="plotComboBox"/>
                   </item>
                  </layout>
                 </widget>
@@ -7118,37 +7113,32 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSplitter" name="splitter_4">
+                   <widget class="QSplitter" name="containerPlotSplitter">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
                     </property>
-                    <widget class="QFrame" name="frame_7">
+                    <widget class="QFrame" name="topContainerPlotFrame">
                      <property name="frameShape">
                       <enum>QFrame::Box</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QVBoxLayout" name="topContainerPlotLayout">
-                      <item>
-                       <widget class="QComboBox" name="topContainerPlotComboBox"/>
-                      </item>
-                     </layout>
+                     <layout class="QVBoxLayout" name="topContainerPlotLayout"/>
                     </widget>
-                    <widget class="QFrame" name="frame_10">
+                    <widget class="QFrame" name="bottomContainerPlotFrame">
                      <property name="frameShape">
                       <enum>QFrame::Box</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QVBoxLayout" name="bottomContainerPlotLayout">
-                      <item>
-                       <widget class="QComboBox" name="bottomContainerPlotComboBox"/>
-                      </item>
-                     </layout>
+                     <layout class="QVBoxLayout" name="bottomContainerPlotLayout"/>
                     </widget>
                    </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="containerPlotComboBox"/>
                   </item>
                  </layout>
                 </widget>
@@ -7168,85 +7158,56 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QSplitter" name="splitter_2">
+         <widget class="QSplitter" name="allPlotSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QFrame" name="frame_8">
+          <widget class="QFrame" name="topPlotFrame">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QVBoxLayout" name="topAllPlotLayout">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_85">
-              <item>
-               <widget class="QComboBox" name="topAllPlotComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_38">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <layout class="QVBoxLayout" name="topAllPlotLayout"/>
           </widget>
-          <widget class="QFrame" name="frame_9">
+          <widget class="QFrame" name="bottomPlotFrame">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QVBoxLayout" name="bottomAllPlotLayout">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_86">
-              <item>
-               <widget class="QComboBox" name="bottomAllPlotComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_39">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <layout class="QVBoxLayout" name="bottomAllPlotLayout"/>
           </widget>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_99">
+          <item>
+           <widget class="QComboBox" name="allPlotComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_38">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
