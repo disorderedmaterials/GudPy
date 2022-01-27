@@ -1,9 +1,11 @@
 from PySide6.QtCharts import QChartView, QChart
-from PySide6.QtCore import QRectF, QRect, Qt, QPoint
+from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QMouseEvent
 )
-from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy, QGraphicsTextItem
+from PySide6.QtWidgets import (
+    QApplication, QMenu, QSizePolicy, QGraphicsTextItem
+)
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.sample import Sample
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
@@ -110,7 +112,9 @@ class GudPyChartView(QChartView):
             else:
                 if self.chart().plotArea().contains(event.pos()):
                     pos = self.chart().mapToValue(event.pos())
-                    self.label.setPlainText(f"{round(pos.y(), 2)}, {round(pos.x(), 2)}")
+                    self.label.setPlainText(
+                        f"{round(pos.y(), 2)}, {round(pos.x(), 2)}"
+                    )
             return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
@@ -346,10 +350,10 @@ class GudPyChartView(QChartView):
 
     def setChart(self, chart):
         self.label = QGraphicsTextItem("x,y", chart)
-        self.label.setPos(self.mapToScene(25,self.sceneRect().height()-50))
+        self.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
         self.label.show()
         return super().setChart(chart)
-    
+
     def resizeEvent(self, event):
-        self.label.setPos(self.mapToScene(25,self.sceneRect().height()-50))
+        self.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
         return super().resizeEvent(event)
