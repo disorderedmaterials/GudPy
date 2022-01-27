@@ -100,4 +100,4 @@ steps:
     env:
         HARBOR_USER: $(HARBOR_USER)
         HARBOR_SECRET: $(HARBOR_SECRET)
-      displayName: "Publish singularity image to Harbor registry."
+    displayName: "Publish singularity image to Harbor registry."
