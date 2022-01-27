@@ -85,5 +85,5 @@ class OutputSlots():
             key = self.widget.outputFocusList.currentItem().text()
             start, end = self.fmtMap[key]
             self.widget.outputTextEdit.setText(
-                "\n".join(self.output.splitlines(keepends=True)[start:end])
+                "".join(self.output.splitlines(keepends=True)[start:end])
             )
