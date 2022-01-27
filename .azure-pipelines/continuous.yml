@@ -97,7 +97,7 @@ stages:
             os: '$(imageName)'
             osName: '$(osName)'
             gudrunTag: '$(gudrunTag)'
-            publishImage: '$(publishImage)'
+            publishImage: ${{ publishImage }}
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"
