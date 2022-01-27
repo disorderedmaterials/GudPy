@@ -112,6 +112,12 @@ class SamplePlotConfig():
             self.mgor01Series
         ]
 
+    def SF(self):
+        return [
+            self.mint01Series,
+            self.mdcs01Series,
+            self.dcsSeries
+        ]
 
     def SF_MINT01(self):
         return [
@@ -133,9 +139,11 @@ class SamplePlotConfig():
     def plotData(self, plotMode):
         if len(self.sample.dataFiles.dataFiles):
             return {
+                PlotModes.SF: self.SF,
                 PlotModes.SF_MINT01: self.SF_MINT01,
                 PlotModes.SF_MDCS01: self.SF_MDCS01,
                 PlotModes.RDF: self.RDF,
+                PlotModes.SF_CANS: self.SF,
                 PlotModes.SF_MINT01_CANS: self.SF_MINT01,
                 PlotModes.SF_MDCS01_CANS: self.SF_MDCS01,
                 PlotModes.RDF_CANS: self.RDF

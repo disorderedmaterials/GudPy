@@ -48,7 +48,7 @@ from src.gui.widgets.exponential_spinbox import ExponentialSpinBox
 from src.gui.widgets.charts.chart import GudPyChart
 from src.gui.widgets.charts.chartview import GudPyChartView
 from src.gui.widgets.charts.beam_plot import BeamChart
-from src.gui.widgets.charts.enums import PlotModes, SPLIT_PLOTS
+from src.gui.widgets.charts.enums import PLOT_MODES, PlotModes, SPLIT_PLOTS
 
 from src.gudrun_classes.enums import Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
@@ -269,7 +269,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomPlotFrame.setVisible(False)
 
-        for plotMode in PlotModes:
+        for plotMode in [plotMode for plotMode in PlotModes if plotMode not in [PlotModes.SF, PlotModes.SF_RDF, PlotModes.SF_CANS, PlotModes.SF_RDF_CANS]]:
             self.mainWidget.allPlotComboBox.addItem(plotMode.name, plotMode)
 
         self.mainWidget.allPlotComboBox.currentIndexChanged.connect(
@@ -579,9 +579,9 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.SF_MINT01: 0,
-                PlotModes.SF_MDCS01: 1,
-                PlotModes.RDF: 0
+                PlotModes.SF: 0,
+                PlotModes.SF_MINT01: 1,
+                PlotModes.SF_MDCS01: 2,
             }
 
             self.mainWidget.plotComboBox.setCurrentIndex(

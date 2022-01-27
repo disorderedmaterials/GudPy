@@ -89,14 +89,18 @@ class GudPyChart(QChart):
             self.removeAxis(axis)
 
         plotsDCS = self.plotMode in [
+            PlotModes.SF,
+            PlotModes.SF_CANS,
             PlotModes.SF_MDCS01,
             PlotModes.SF_MDCS01_CANS
         ]
         plotsSamples = self.plotMode in [
+            PlotModes.SF,
             PlotModes.SF_MDCS01,
             PlotModes.SF_MINT01, PlotModes.RDF
         ]
         plotsContainers = self.plotMode in [
+            PlotModes.SF_CANS,
             PlotModes.SF_MINT01_CANS,
             PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
         ]
@@ -127,8 +131,10 @@ class GudPyChart(QChart):
 
         # Label axes
         if self.plotMode in [
-           PlotModes.SF_MINT01,
+            PlotModes.SF,
+            PlotModes.SF_MINT01,
             PlotModes.SF_MDCS01,
+            PlotModes.SF_CANS,
             PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
         ]:
             XLabel = "Q, 1\u212b"
