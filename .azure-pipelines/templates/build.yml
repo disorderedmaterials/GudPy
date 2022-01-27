@@ -17,6 +17,7 @@ parameters:
 - name: publishImage
   default: false
   type: boolean
+
 steps:
   - task: UsePythonVersion@0
     displayName: "Use Python Version ${{ parameters.version }}"
@@ -60,7 +61,7 @@ steps:
       pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
       pyinstaller gudpy.spec
     displayName: 'Create executables.'
-  
+
   - bash: |
       pip install dmgbuild
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
@@ -85,7 +86,7 @@ steps:
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
     condition: eq(variables.osName, 'linux')
     displayName: "Compile singularity for linux." 
-  
+
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
