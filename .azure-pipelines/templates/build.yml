@@ -43,6 +43,7 @@ steps:
       
   - script: |
       pip install pyinstaller
+      pyinstaller --version
       
   - bash: |
       PYINSTALLER_PATH=$(pip show pyinstaller | grep Location)
