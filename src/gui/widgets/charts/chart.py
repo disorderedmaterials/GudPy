@@ -1,6 +1,7 @@
 from PySide6.QtCharts import QChart, QLegend, QLegendMarker, QLogValueAxis
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPen
+from PySide6.QtWidgets import QGraphicsTextItem
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gui.widgets.charts.sample_plot_config import SamplePlotConfig
@@ -29,6 +30,8 @@ class GudPyChart(QChart):
         self.logarithmicYAxis.setBase(10.0)
 
         self.plotMode = PlotModes.SF_MINT01
+
+        self.label = QGraphicsTextItem("x=,y=", self)
 
     def connectMarkers(self):
         for marker in self.legend().markers():

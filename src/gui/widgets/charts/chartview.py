@@ -62,8 +62,6 @@ class GudPyChartView(QChartView):
 
         self.previousPos = 0
 
-        self.setChart(QChart())
-
     def wheelEvent(self, event):
         """
         Event handler called when the scroll wheel is used.
@@ -112,9 +110,13 @@ class GudPyChartView(QChartView):
             else:
                 if self.chart().plotArea().contains(event.pos()):
                     pos = self.chart().mapToValue(event.pos())
-                    self.label.setPlainText(
-                        f"{round(pos.y(), 2)}, {round(pos.x(), 2)}"
+                    self.chart().label.setPlainText(
+                        f"x={round(pos.x(), 2)},y={round(pos.y(), 2)}"
                     )
+                    if not self.chart().label.isVisible():
+                        self.chart().label.show()
+                else:
+                    self.chart().label.hide()
             return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
@@ -349,11 +351,10 @@ class GudPyChartView(QChartView):
         self.chart().toggleLogarithmicAxis(axis)
 
     def setChart(self, chart):
-        self.label = QGraphicsTextItem("x,y", chart)
-        self.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
-        self.label.show()
+        chart.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
+        chart.label.show()
         return super().setChart(chart)
 
     def resizeEvent(self, event):
-        self.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
+        self.chart().label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
         return super().resizeEvent(event)
