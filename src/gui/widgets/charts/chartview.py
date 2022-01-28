@@ -1,10 +1,10 @@
-from PySide6.QtCharts import QChartView, QChart
+from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
     QAction, QClipboard, QCursor, QPainter, QMouseEvent
 )
 from PySide6.QtWidgets import (
-    QApplication, QMenu, QSizePolicy, QGraphicsTextItem
+    QApplication, QMenu, QSizePolicy
 )
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.sample import Sample
@@ -356,5 +356,7 @@ class GudPyChartView(QChartView):
         return super().setChart(chart)
 
     def resizeEvent(self, event):
-        self.chart().label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
+        self.chart().label.setPos(
+            self.mapToScene(25, self.sceneRect().height()-50)
+        )
         return super().resizeEvent(event)
