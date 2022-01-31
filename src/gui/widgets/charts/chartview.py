@@ -111,7 +111,7 @@ class GudPyChartView(QChartView):
                 if self.chart().plotArea().contains(event.pos()):
                     pos = self.chart().mapToValue(event.pos())
                     self.chart().label.setPlainText(
-                        f"x={round(pos.x(), 2)},y={round(pos.y(), 2)}"
+                        f"x={round(pos.x(), 4)}, y={round(pos.y(), 4)}"
                     )
                     if not self.chart().label.isVisible():
                         self.chart().label.show()
