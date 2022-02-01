@@ -251,12 +251,9 @@ class ComponentsModel(QAbstractItemModel):
         Returns
         -------
         int
-            Column count. This is always 1.
+            Column count. This is always 3.
         """
-        if not parent.isValid():
-            return 1
-        else:
-            return 3
+        return 3
 
     def flags(self, index):
         """
