@@ -1363,7 +1363,7 @@ class GudrunFile:
             f"\n\n\nEND{config.spc5}"
             f"\n1\nDate and time last written:  "
             f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc5}"
-            f"\nN-1"
+            f"\nN"
         )
 
         components = (
