@@ -764,12 +764,23 @@ class GudPyTreeView(QTreeView):
         )
         insertSampleBackground.setDisabled(True)
         self.menu.addAction(insertSampleBackground)
-        insertContainer = QAction("Insert Container", self.menu)
+        insertContainerMenu = QMenu("Insert Container", self.menu)
+        insertContainer = QAction("Default", self.menu)
         insertContainer.triggered.connect(
             self.insertContainer
         )
         insertContainer.setDisabled(True)
-        self.menu.addAction(insertContainer)
+        insertContainerMenu.addAction(insertContainer)
+
+        insertContainerFromTemplate = QMenu("From Template..", self.menu)
+        for name, path in config.containerConfigurations.items():
+            action = QAction(f"{name}", insertContainerFromTemplate)
+            insertContainerFromTemplate.addAction(action)
+        insertContainerMenu.addMenu(insertContainerFromTemplate)
+        self.menu.addMenu(insertContainerMenu)
+
+
+
         insertSample = QAction("Insert Sample", self.menu)
         insertSample.triggered.connect(
             self.insertSample
