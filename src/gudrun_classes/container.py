@@ -1,12 +1,14 @@
 from copy import deepcopy
+from xml.dom.minidom import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import FTModes, Geometry, UnitsOfDensity
 from src.gudrun_classes import config
 from src.gudrun_classes.enums import CrossSectionSource
 from src.gudrun_classes.sample import Sample
-
-
+import os
+from src.gudrun_classes.exception import ParserException
+from src.scripts.utils import firstword, nthfloat, nthint
 class Container:
     """
     Class to represent a Container.
@@ -16,31 +18,31 @@ class Container:
     Attributes
     ----------
     name : str
-        Name of the container.
+        Name of the self.
     periodNumber : int
         Period number for the data files.
     dataFiles : DataFiles
-        DataFiles object storing data files belonging to the container.
+        DataFiles object storing data files belonging to the self.
     composition : Composition
-        Composition object storing the atomic composition of the container.
+        Composition object storing the atomic composition of the self.
     geometry : Geometry
-        Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
+        Geometry of the self (FLATPLATE / CYLINDRICAL / SameAsBeam).
     upstreamThickness : float
-        Upstream thickness of the container - if its geometry is FLATPLATE.
+        Upstream thickness of the self - if its geometry is FLATPLATE.
     downstreamThickness : float
-        Downstream thickness of the container - if its geometry is FLATPLATE.
+        Downstream thickness of the self - if its geometry is FLATPLATE.
     angleOfRotation : float
-        Angle of rotation of the container - if its geometry is FLATPLATE.
+        Angle of rotation of the self - if its geometry is FLATPLATE.
     sampleWidth : float
-        Width of the container - if its geometry is FLATPLATE.
+        Width of the self - if its geometry is FLATPLATE.
     innerRadius : float
-        Inner radius of the container - if its geometry is CYLINDRICAL.
+        Inner radius of the self - if its geometry is CYLINDRICAL.
     outerRadius : float
-        Outer radius of the container - if its geometry is CYLINDRICAL.
+        Outer radius of the self - if its geometry is CYLINDRICAL.
     sampleHeight : float
-        Height of the container - if its geometry is CYLINDRICAL.
+        Height of the self - if its geometry is CYLINDRICAL.
     density : float
-        Density of the container.
+        Density of the self.
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
@@ -219,3 +221,163 @@ class Container:
         sample.scatteringFraction = 1.0
 
         return sample
+
+    def parseFromConfig(self, path):
+        if not os.path.exists(path):
+            raise ParserException(
+                "The path supplied is invalid.\
+                 Cannot parse from an invalid path"
+            )
+        
+        # Decide the encoding
+        import chardet
+        with open(self.path, 'rb') as fp:
+            encoding = chardet.detect(fp.read())['encoding']
+
+        # Read the input stream into our attribute.
+        with open(self.path, encoding=encoding) as fp:
+            self.stream = fp.readlines()
+        
+    def parseContainer(self):
+        """
+        Intialises a Container object.
+        Parses the attributes of the Container from the input stream.
+        Raises a ParserException if any mandatory attributes are missing.
+        Returns the parsed object.
+
+        Parameters
+        ----------
+        None
+        Returns
+        -------
+        self : Container
+            The Container that was parsed from the input lines.
+        """
+
+        try:
+            # Create a new instance of Container.
+
+            # Extract the name from the lines,
+            # and then discard the unnecessary lines.
+            self.name = (
+                str(self.getNextToken()[:-2]).strip()
+                .replace("CONTAINER", "").strip()
+            )
+            if not self.name:
+                self.name = "CONTAINER"
+            self.consumeWhitespace()
+
+            # The number of files and period number are both stored
+            # on the same line.
+            # So we extract the 0th integer for the number of files,
+            # and the 1st integer for the period number.
+            dataFileInfo = self.getNextToken()
+            numberOfFiles = nthint(dataFileInfo, 0)
+            self.periodNumber = nthint(dataFileInfo, 1)
+
+            # Extract data files
+            dataFiles = []
+            for _ in range(numberOfFiles):
+                dataFiles.append(firstword(self.getNextToken()))
+
+            # Create a DataFiles object from the dataFiles list constructed.
+            self.dataFiles = DataFiles(dataFiles, self.name)
+
+            # Construct composition
+            composition = []
+            line = self.getNextToken()
+            # Extract the composition.
+            # Each element in the composition consists of the first 'word',
+            # integer at the second position, and float t the first position,
+            # (Atomic Symbol, MassNo, Abundance) in the line.
+            # If the marker line is encountered,
+            # then the panel has been parsed.
+            while "end of composition input" not in line:
+
+                atomicSymbol = firstword(line)
+                massNo = nthint(line, 1)
+                abundance = nthfloat(line, 2)
+
+                # Create an Element object and append to the composition list.
+                composition.append(Element(atomicSymbol, massNo, abundance))
+                line = self.getNextToken()
+            # Create a Composition object from the dataFiles list constructed.
+            self.composition = Composition(
+                "Container",
+                elements=composition
+            )
+
+            # For enumerated attributes,
+            # where the member name of the attribute is
+            # the first 'word' in the line, and we must get the member,
+            # we do this: Enum[memberName].
+            self.geometry = Geometry[firstword(self.getNextToken())]
+
+            # Is the geometry FLATPLATE?
+            if (
+                (
+                    self.geometry == Geometry.SameAsBeam
+                    and config.geometry == Geometry.FLATPLATE
+                )
+                    or self.geometry == Geometry.FLATPLATE):
+                # If is is FLATPLATE, then extract the upstream and downstream
+                # thickness, the angle of rotation and sample width.
+                thickness = self.getNextToken()
+                self.upstreamThickness = nthfloat(thickness, 0)
+                self.downstreamThickness = nthfloat(thickness, 1)
+
+                geometryValues = self.getNextToken()
+                self.angleOfRotation = nthfloat(geometryValues, 0)
+                self.sampleWidth = nthfloat(geometryValues, 1)
+            else:
+
+                # Otherwise, it is CYLINDRICAL,
+                # then extract the inner and outer
+                # radii and the sample height.
+                radii = self.getNextToken()
+                self.innerRadius = nthfloat(radii, 0)
+                self.outerRadius = nthfloat(radii, 1)
+                self.sampleHeight = nthfloat(self.getNextToken(), 0)
+
+            # Extract the density.
+            density = nthfloat(self.getNextToken(), 0)
+
+            # Take the absolute value of the density - since it could be -ve.
+            self.density = abs(density)
+
+            # Decide on the units of density.
+            # -ve density means it is atomic (atoms/A^3)
+            # +ve means it is chemical (gm/cm^3)
+            self.densityUnits = (
+                UnitsOfDensity.ATOMIC if
+                density < 0
+                else UnitsOfDensity.CHEMICAL
+            )
+            crossSectionSource = firstword(self.getNextToken())
+            if (
+                crossSectionSource == "TABLES"
+                or crossSectionSource == "TRANSMISSION"
+            ):
+                self.totalCrossSectionSource = (
+                    CrossSectionSource[crossSectionSource]
+                )
+            else:
+                self.totalCrossSectionSource = CrossSectionSource.FILE
+                self.crossSectionFilename = crossSectionSource
+            self.tweakFactor = nthfloat(self.getNextToken(), 0)
+
+            environmentValues = self.getNextToken()
+            self.scatteringFraction = nthfloat(environmentValues, 0)
+            self.attenuationCoefficient = nthfloat(environmentValues, 1)
+
+            # Consume whitespace and the closing brace.
+            self.consumeUpToDelim("}")
+
+            return self
+
+        except Exception as e:
+            raise ParserException(
+                    "Whilst parsing Container, an exception occured."
+                    " The input file is most likely of an incorrect format, "
+                    "and some attributes were missing."
+            ) from e
