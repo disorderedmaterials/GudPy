@@ -811,6 +811,11 @@ class GudPyTreeView(QTreeView):
         paste.triggered.connect(self.paste)
         self.menu.addAction(paste)
 
+        delete = QAction("Delete", self.menu)
+        delete.triggered.connect(self.del_)
+        delete.setDisabled(True)
+        self.menu.addAction(delete)
+
         # Duplicate actions
         duplicate = QAction("Duplicate Sample", self.menu)
         duplicate.triggered.connect(self.duplicateSample)
@@ -840,7 +845,7 @@ class GudPyTreeView(QTreeView):
             ):
                 copy_.setEnabled(True)
                 cut.setEnabled(True)
-
+                delete.setEnabled(True)
             # If the clipboard can be pasted under the current object.
             # Sample backgrounds default to append if this is not the case.
             if (
