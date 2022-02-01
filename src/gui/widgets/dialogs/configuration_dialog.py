@@ -62,9 +62,9 @@ class ConfigurationDialog(QDialog):
 
     def loadConfigurations(self):
         targetDir = (
-            os.path.join(sys._MEIPASS, "bin", "configs")
+            os.path.join(sys._MEIPASS, "bin", "configs", "instruments")
             if hasattr(sys, "_MEIPASS")
-            else os.path.join("bin", "configs")
+            else os.path.join("bin", "configs", "instruments")
         )
         self.widget.configList.addItems(
             [
@@ -76,9 +76,9 @@ class ConfigurationDialog(QDialog):
 
     def setConfiguration(self, _prev, _curr):
         targetDir = (
-            os.path.join(sys._MEIPASS, "bin", "configs")
+            os.path.join(sys._MEIPASS, "bin", "configs", "instruments")
             if hasattr(sys, "_MEIPASS")
-            else os.path.join("bin", "configs")
+            else os.path.join("bin", "configs", "instruments")
         )
         self.configuration = os.path.abspath(
             os.path.join(

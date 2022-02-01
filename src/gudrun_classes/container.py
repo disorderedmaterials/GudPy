@@ -57,7 +57,7 @@ class Container:
     Methods
     -------
     """
-    def __init__(self):
+    def __init__(self, config=None):
         """
         Constructs all the necessary attributes for the Container object.
 
@@ -93,6 +93,9 @@ class Container:
         self.grBroadening = 0.
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
+
+        if config:
+            self.parseFromConfig(config)
 
     def __str__(self):
         """
@@ -237,22 +240,6 @@ class Container:
         # Read the input stream into our attribute.
         with open(self.path, encoding=encoding) as fp:
             self.stream = fp.readlines()
-        
-    def parseContainer(self):
-        """
-        Intialises a Container object.
-        Parses the attributes of the Container from the input stream.
-        Raises a ParserException if any mandatory attributes are missing.
-        Returns the parsed object.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        self : Container
-            The Container that was parsed from the input lines.
-        """
 
         try:
             # Create a new instance of Container.
@@ -372,8 +359,6 @@ class Container:
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
-
-            return self
 
         except Exception as e:
             raise ParserException(
