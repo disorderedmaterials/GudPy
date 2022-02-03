@@ -652,7 +652,7 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-            if topPlot.series() or bottomPlot.series():
+            if sum([*[s.count() for s in topPlot.series()], *[s.count() for s in bottomPlot.series()]]):
                 self.mainWidget.containerSplitter.setSizes([2, 1])
             else:
                 self.mainWidget.containerSplitter.setSizes([1, 0])
