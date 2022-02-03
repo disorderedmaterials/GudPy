@@ -1,5 +1,5 @@
 from copy import deepcopy
-from xml.dom.minidom import Element
+from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.enums import FTModes, Geometry, UnitsOfDensity
