@@ -19,8 +19,13 @@ __dir__ = (
 containerConfigurations = {
     path
     .replace(".config", "")
-    .replace("_", " ") : 
+    .replace("_", " "):
     path for path in 
-    [os.path.abspath(os.path.join(__dir__, p)) for p in os.listdir(__dir__)]
-
+    [
+        os.path.abspath(
+            os.path.join(
+                __dir__, p
+            )
+        )
+        for p in os.listdir(__dir__)]
 }

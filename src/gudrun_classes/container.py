@@ -9,6 +9,8 @@ from src.gudrun_classes.sample import Sample
 import os
 from src.gudrun_classes.exception import ParserException
 from src.scripts.utils import firstword, nthfloat, nthint
+
+
 class Container:
     """
     Class to represent a Container.
@@ -231,7 +233,7 @@ class Container:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path"
             )
-        
+
         # Decide the encoding
         import chardet
         with open(path, 'rb') as fp:

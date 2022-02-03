@@ -1534,6 +1534,7 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
+
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken
 Container.consumeUpToDelim = GudrunFile.consumeUpToDelim

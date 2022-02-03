@@ -356,14 +356,25 @@ class GudPyMainWindow(QMainWindow):
         )
 
         actionMap = {
-            name : lambda: self.mainWidget.objectTree.insertContainer(container=Container(config=path))
+            name:
+            lambda:
+            self.mainWidget.objectTree.insertContainer(
+                container=Container(
+                    config=path
+                )
+            )
             for name, path in config.containerConfigurations.items()
         }
-        insertContainerFromTemplate = QMenu("From Template..", self.mainWidget.insertContainerMenu)
+        insertContainerFromTemplate = QMenu(
+            "From Template..",
+            self.mainWidget.insertContainerMenu
+        )
         for name, action in actionMap.items():
             insertContainerFromTemplate.addAction(name, action)
 
-        self.mainWidget.insertContainerMenu.addMenu(insertContainerFromTemplate)
+        self.mainWidget.insertContainerMenu.addMenu(
+            insertContainerFromTemplate
+        )
 
         self.mainWidget.copy.triggered.connect(
             self.mainWidget.objectTree.copy

@@ -4,8 +4,7 @@ from PySide6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QPersistentModelIndex,
-    Qt,
-    QPoint
+    Qt
 )
 from src.gudrun_classes import config
 from src.gudrun_classes.composition import Components
@@ -670,7 +669,8 @@ class GudPyTreeView(QTreeView):
         self.model().rowsInserted.connect(self._expand)
 
         self.parent.setTreeActionsEnabled(False)
-        self.click(self.model().index(0,0))
+        self.click(self.model().index(0, 0))
+
     def makeModel(self):
         """
         Creates the QStandardItemModel to be used for the GudPyTreeView.
@@ -719,7 +719,9 @@ class GudPyTreeView(QTreeView):
             (Instrument, Beam, Components, Normalisation, SampleBackground)
         ):
             self.parent.mainWidget.insertSampleBackground.setEnabled(True)
-        if isinstance(modelIndex.internalPointer(), (SampleBackground, Sample)):
+        if isinstance(
+            modelIndex.internalPointer(), (SampleBackground, Sample)
+        ):
             self.parent.mainWidget.insertSample.setEnabled(True)
         if isinstance(modelIndex.internalPointer(), (Sample, Container)):
             self.parent.mainWidget.insertContainerMenu.setEnabled(True)
@@ -817,7 +819,6 @@ class GudPyTreeView(QTreeView):
         )
         insertContainerMenu.addAction(insertContainer)
 
-
         actionMap = {}
         insertContainerFromTemplate = QMenu("From Template..", self.menu)
         for name, path in config.containerConfigurations.items():
@@ -826,8 +827,6 @@ class GudPyTreeView(QTreeView):
             actionMap[action] = path
         insertContainerMenu.addMenu(insertContainerFromTemplate)
         self.menu.addMenu(insertContainerMenu)
-
-
 
         insertSample = QAction("Insert Sample", self.menu)
         insertSample.triggered.connect(
