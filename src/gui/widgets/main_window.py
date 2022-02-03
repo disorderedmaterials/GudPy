@@ -128,6 +128,7 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.results = {}
         self.allPlots = []
+        self.plotModes = {}
         self.proc = None
         self.output = ""
         self.previousProcTitle = ""
@@ -593,11 +594,18 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.SF: 0,
                 PlotModes.SF_MINT01: 1,
                 PlotModes.SF_MDCS01: 2,
+                PlotModes.RDF: 3,
+                PlotModes.SF_RDF: 4,
+                PlotModes.SF_MINT01_RDF: 5,
+                PlotModes.SF_MDCS01_RDF: 6
             }
 
-            self.mainWidget.plotComboBox.setCurrentIndex(
-                plotsMap[topPlot.plotMode]
-            )
+            if self.mainWidget.objectTree.currentObject() in self.plotModes.keys():
+                self.mainWidget.plotComboBox.setCurrentIndex(
+                    plotsMap[self.plotModes[self.mainWidget.objectTree.currentObject()]]
+                )
+            else:
+                self.mainWidget.plotComboBox.setCurrentIndex(0)
 
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
@@ -657,17 +665,22 @@ class GudPyMainWindow(QMainWindow):
             )
 
             plotsMap = {
-                PlotModes.SF_MINT01_CANS: 0,
-                PlotModes.SF_MDCS01_CANS: 1,
-                PlotModes.RDF_CANS: 0
+                PlotModes.SF_CANS: 0,
+                PlotModes.SF_MINT01_CANS: 1,
+                PlotModes.SF_MDCS01_CANS: 2,
+                PlotModes.RDF_CANS: 3,
+                PlotModes.SF_RDF_CANS: 4,
+                PlotModes.SF_MINT01_RDF_CANS: 5,
+                PlotModes.SF_MDCS01_RDF_CANS: 6
             }
 
-            self.mainWidget.topContainerPlotComboBox.setCurrentIndex(
-                plotsMap[topPlot.plotMode]
-            )
-            self.mainWidget.bottomContainerPlotComboBox.setCurrentIndex(
-                plotsMap[bottomPlot.plotMode]
-            )
+            if self.mainWidget.objectTree.currentObject() in self.plotModes.keys():
+                self.mainWidget.plotComboBox.setCurrentIndex(
+                    plotsMap[self.plotModes[self.mainWidget.objectTree.currentObject()]]
+                )
+            else:
+                self.mainWidget.plotComboBox.setCurrentIndex(0)
+
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
                 self.mainWidget.containerDcsLabel.setText(
@@ -1311,6 +1324,7 @@ class GudPyMainWindow(QMainWindow):
 
     def handleAllPlotModeChanged(self, index):
         plotMode = self.mainWidget.allPlotComboBox.itemData(index)
+        self.plotModes["All"] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
@@ -1330,6 +1344,7 @@ class GudPyMainWindow(QMainWindow):
 
     def handleSamplePlotModeChanged(self, index):
         plotMode = self.mainWidget.plotComboBox.itemData(index)
+        self.plotModes[self.mainWidget.objectTree.currentObject()] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
@@ -1349,6 +1364,7 @@ class GudPyMainWindow(QMainWindow):
 
     def handleContainerPlotModeChanged(self, index):
         plotMode = self.mainWidget.plotComboBox.itemData(index)
+        self.plotModes[self.mainWidget.objectTree.currentObject()] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
