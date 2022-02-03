@@ -20,31 +20,31 @@ class Container:
     Attributes
     ----------
     name : str
-        Name of the self.
+        Name of the container.
     periodNumber : int
         Period number for the data files.
     dataFiles : DataFiles
-        DataFiles object storing data files belonging to the self.
+        DataFiles object storing data files belonging to the container.
     composition : Composition
-        Composition object storing the atomic composition of the self.
+        Composition object storing the atomic composition of the container.
     geometry : Geometry
-        Geometry of the self (FLATPLATE / CYLINDRICAL / SameAsBeam).
+        Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
     upstreamThickness : float
-        Upstream thickness of the self - if its geometry is FLATPLATE.
+        Upstream thickness of the container - if its geometry is FLATPLATE.
     downstreamThickness : float
-        Downstream thickness of the self - if its geometry is FLATPLATE.
+        Downstream thickness of the container - if its geometry is FLATPLATE.
     angleOfRotation : float
-        Angle of rotation of the self - if its geometry is FLATPLATE.
+        Angle of rotation of the container - if its geometry is FLATPLATE.
     sampleWidth : float
-        Width of the self - if its geometry is FLATPLATE.
+        Width of the container - if its geometry is FLATPLATE.
     innerRadius : float
-        Inner radius of the self - if its geometry is CYLINDRICAL.
+        Inner radius of the container - if its geometry is CYLINDRICAL.
     outerRadius : float
-        Outer radius of the self - if its geometry is CYLINDRICAL.
+        Outer radius of the container - if its geometry is CYLINDRICAL.
     sampleHeight : float
-        Height of the self - if its geometry is CYLINDRICAL.
+        Height of the container - if its geometry is CYLINDRICAL.
     density : float
-        Density of the self.
+        Density of the container.
     densityUnits : int
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
