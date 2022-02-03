@@ -4,7 +4,8 @@ from PySide6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QPersistentModelIndex,
-    Qt
+    Qt,
+    QPoint
 )
 from src.gudrun_classes import config
 from src.gudrun_classes.composition import Components
@@ -668,6 +669,8 @@ class GudPyTreeView(QTreeView):
         self.expandToDepth(0)
         self.model().rowsInserted.connect(self._expand)
 
+        self.parent.setTreeActionsEnabled(False)
+        self.click(self.model().index(0,0))
     def makeModel(self):
         """
         Creates the QStandardItemModel to be used for the GudPyTreeView.
@@ -704,11 +707,53 @@ class GudPyTreeView(QTreeView):
             Sample: (5, self.parent.sampleSlots.setSample),
             Container: (6, self.parent.containerSlots.setContainer)
         }
-        index, setter = indexMap[type(modelIndex.internalPointer())]
+        self.parent.setTreeActionsEnabled(False)
+        type_ = type(modelIndex.internalPointer())
+        index, setter = indexMap[type_]
         self.parent.mainWidget.objectStack.setCurrentIndex(index)
         self.parent.updateComponents()
         if setter:
             setter(modelIndex.internalPointer())
+        if isinstance(
+            modelIndex.internalPointer(),
+            (Instrument, Beam, Components, Normalisation, SampleBackground)
+        ):
+            self.parent.mainWidget.insertSampleBackground.setEnabled(True)
+        if isinstance(modelIndex.internalPointer(), (SampleBackground, Sample)):
+            self.parent.mainWidget.insertSample.setEnabled(True)
+        if isinstance(modelIndex.internalPointer(), (Sample, Container)):
+            self.parent.mainWidget.insertContainer.setEnabled(True)
+
+        if self.model() and isinstance(self.currentObject(), (
+            SampleBackground, Sample, Container)
+        ):
+            self.parent.mainWidget.copy.setEnabled(True)
+            self.parent.mainWidget.cut.setEnabled(True)
+            self.parent.mainWidget.delete_.setEnabled(True)
+
+        # If the clipboard can be pasted under the current object.
+        # Sample backgrounds default to append if this is not the case.
+        if (
+            isinstance(self.clipboard, SampleBackground)
+            or
+            (
+                isinstance(self.clipboard, type(self.currentObject()))
+                and self.clipboard
+            )
+            or
+            (
+                isinstance(self.clipboard, Sample)
+                and isinstance(self.currentObject(), SampleBackground)
+
+            )
+            or
+            (
+                isinstance(self.clipboard, Container)
+                and isinstance(self.currentObject(), Sample)
+            )
+            and self.clipboard
+        ):
+            self.parent.mainWidget.paste.setEnabled(True)
 
     def currentObject(self):
         """
@@ -765,11 +810,11 @@ class GudPyTreeView(QTreeView):
         insertSampleBackground.setDisabled(True)
         self.menu.addAction(insertSampleBackground)
         insertContainerMenu = QMenu("Insert Container", self.menu)
+        insertContainerMenu.setDisabled(True)
         insertContainer = QAction("Default", self.menu)
         insertContainer.triggered.connect(
             self.insertContainer
         )
-        insertContainer.setDisabled(True)
         insertContainerMenu.addAction(insertContainer)
 
 
@@ -895,14 +940,15 @@ class GudPyTreeView(QTreeView):
             if isinstance(self.currentObject(), (SampleBackground, Sample)):
                 insertSample.setEnabled(True)
             if isinstance(self.currentObject(), (Sample, Container)):
-                insertContainer.setEnabled(True)
-                convertToSample.setEnabled(True)
+                insertContainerMenu.setEnabled(True)
             # Enable duplication, and selection.
             if isinstance(self.currentObject(), Sample):
                 duplicate.setEnabled(True)
                 duplicateOnlySample.setEnabled(True)
                 selectOnlyThisSample.setEnabled(True)
-        
+            if isinstance(self.currentObject(), Container):
+                convertToSample.setEnabled(True)
+
         # Pop up the context menu.
         action = self.menu.exec(QCursor.pos())
 
