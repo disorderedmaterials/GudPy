@@ -772,10 +772,13 @@ class GudPyTreeView(QTreeView):
         insertContainer.setDisabled(True)
         insertContainerMenu.addAction(insertContainer)
 
+
+        actionMap = {}
         insertContainerFromTemplate = QMenu("From Template..", self.menu)
         for name, path in config.containerConfigurations.items():
             action = QAction(f"{name}", insertContainerFromTemplate)
             insertContainerFromTemplate.addAction(action)
+            actionMap[action] = path
         insertContainerMenu.addMenu(insertContainerFromTemplate)
         self.menu.addMenu(insertContainerMenu)
 
@@ -899,8 +902,12 @@ class GudPyTreeView(QTreeView):
                 duplicate.setEnabled(True)
                 duplicateOnlySample.setEnabled(True)
                 selectOnlyThisSample.setEnabled(True)
-            # Pop up the context menu.
-        self.menu.popup(QCursor.pos())
+        
+        # Pop up the context menu.
+        action = self.menu.exec(QCursor.pos())
+
+        if action in actionMap.keys():
+            self.insertContainer(container=Container(config=actionMap[action]))
 
     def insertSampleBackground(self, sampleBackground=None):
         """

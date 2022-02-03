@@ -9,13 +9,18 @@ USE_USER_DEFINED_COMPONENTS = False
 NORMALISE_COMPOSITIONS = False
 components = Components()
 
+
+__dir__ = (
+    os.path.join(sys._MEIPASS, "bin", "configs", "containers")
+    if hasattr(sys, "_MEIPASS")
+    else os.path.join("bin", "configs", "containers")
+)
+
 containerConfigurations = {
     path
     .replace(".config", "")
     .replace("_", " ") : 
-    path for path in os.listdir(
-        os.path.join(sys._MEIPASS, "bin", "configs", "containers")
-        if hasattr(sys, "_MEIPASS")
-        else os.path.join("bin", "configs", "containers")
-    )
+    path for path in 
+    [os.path.abspath(os.path.join(__dir__, p)) for p in os.listdir(__dir__)]
+
 }

@@ -234,11 +234,11 @@ class Container:
         
         # Decide the encoding
         import chardet
-        with open(self.path, 'rb') as fp:
+        with open(path, 'rb') as fp:
             encoding = chardet.detect(fp.read())['encoding']
 
         # Read the input stream into our attribute.
-        with open(self.path, encoding=encoding) as fp:
+        with open(path, encoding=encoding) as fp:
             self.stream = fp.readlines()
 
         try:
@@ -259,16 +259,7 @@ class Container:
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
             dataFileInfo = self.getNextToken()
-            numberOfFiles = nthint(dataFileInfo, 0)
             self.periodNumber = nthint(dataFileInfo, 1)
-
-            # Extract data files
-            dataFiles = []
-            for _ in range(numberOfFiles):
-                dataFiles.append(firstword(self.getNextToken()))
-
-            # Create a DataFiles object from the dataFiles list constructed.
-            self.dataFiles = DataFiles(dataFiles, self.name)
 
             # Construct composition
             composition = []
@@ -352,10 +343,6 @@ class Container:
                 self.totalCrossSectionSource = CrossSectionSource.FILE
                 self.crossSectionFilename = crossSectionSource
             self.tweakFactor = nthfloat(self.getNextToken(), 0)
-
-            environmentValues = self.getNextToken()
-            self.scatteringFraction = nthfloat(environmentValues, 0)
-            self.attenuationCoefficient = nthfloat(environmentValues, 1)
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")

@@ -1534,6 +1534,10 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
+Container.getNextToken = GudrunFile.getNextToken
+Container.peekNextToken = GudrunFile.peekNextToken
+Container.consumeUpToDelim = GudrunFile.consumeUpToDelim
+Container.consumeWhitespace = GudrunFile.consumeWhitespace
 
 if __name__ == "__main__":
     g = GudrunFile(
