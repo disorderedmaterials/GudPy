@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 )
 from src.gudrun_classes.container import Container
 from src.gudrun_classes.sample import Sample
+from src.gui.widgets.charts.chart import GudPyChart
 from src.gui.widgets.charts.enums import PlotModes, SeriesTypes
 from src.gui.widgets.charts.enums import Axes
 
@@ -108,15 +109,16 @@ class GudPyChartView(QChartView):
                 self.previousPos = event.pos()
                 event.accept()
             else:
-                if self.chart().plotArea().contains(event.pos()):
-                    pos = self.chart().mapToValue(event.pos())
-                    self.chart().label.setPlainText(
-                        f"x={round(pos.x(), 4)}, y={round(pos.y(), 4)}"
-                    )
-                    if not self.chart().label.isVisible():
-                        self.chart().label.show()
-                else:
-                    self.chart().label.hide()
+                if type(self.chart()) == GudPyChart:
+                    if self.chart().plotArea().contains(event.pos()):
+                        pos = self.chart().mapToValue(event.pos())
+                        self.chart().label.setPlainText(
+                            f"x={round(pos.x(), 4)}, y={round(pos.y(), 4)}"
+                        )
+                        if not self.chart().label.isVisible():
+                            self.chart().label.show()
+                    else:
+                        self.chart().label.hide()
             return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
@@ -351,12 +353,14 @@ class GudPyChartView(QChartView):
         self.chart().toggleLogarithmicAxis(axis)
 
     def setChart(self, chart):
-        chart.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
-        chart.label.show()
+        if type(chart) == GudPyChart:
+            chart.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
+            chart.label.show()
         return super().setChart(chart)
 
     def resizeEvent(self, event):
-        self.chart().label.setPos(
-            self.mapToScene(25, self.sceneRect().height()-50)
-        )
+        if type(self.chart()) == GudPyChart:
+            self.chart().label.setPos(
+                self.mapToScene(25, self.sceneRect().height()-50)
+            )
         return super().resizeEvent(event)
