@@ -722,7 +722,7 @@ class GudPyTreeView(QTreeView):
         if isinstance(modelIndex.internalPointer(), (SampleBackground, Sample)):
             self.parent.mainWidget.insertSample.setEnabled(True)
         if isinstance(modelIndex.internalPointer(), (Sample, Container)):
-            self.parent.mainWidget.insertContainer.setEnabled(True)
+            self.parent.mainWidget.insertContainerMenu.setEnabled(True)
 
         if self.model() and isinstance(self.currentObject(), (
             SampleBackground, Sample, Container)

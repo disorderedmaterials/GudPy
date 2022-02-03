@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStatusBar,
     QWidget,
+    QMenu
 )
 from PySide6.QtCharts import QChartView
 
@@ -350,9 +351,19 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.objectTree.insertSample
         )
 
-        self.mainWidget.insertContainer.triggered.connect(
+        self.mainWidget.insertDefaultContainer.triggered.connect(
             self.mainWidget.objectTree.insertContainer
         )
+
+        actionMap = {
+            name : lambda: self.mainWidget.objectTree.insertContainer(container=Container(config=path))
+            for name, path in config.containerConfigurations.items()
+        }
+        insertContainerFromTemplate = QMenu("From Template..", self.mainWidget.insertContainerMenu)
+        for name, action in actionMap.items():
+            insertContainerFromTemplate.addAction(name, action)
+
+        self.mainWidget.insertContainerMenu.addMenu(insertContainerFromTemplate)
 
         self.mainWidget.copy.triggered.connect(
             self.mainWidget.objectTree.copy
@@ -1153,7 +1164,7 @@ class GudPyMainWindow(QMainWindow):
     def setTreeActionsEnabled(self, state):
         self.mainWidget.insertSampleBackground.setEnabled(state)
         self.mainWidget.insertSample.setEnabled(state)
-        self.mainWidget.insertContainer.setEnabled(state)
+        self.mainWidget.insertContainerMenu.setEnabled(state)
         self.mainWidget.copy.setEnabled(state)
         self.mainWidget.cut.setEnabled(state)
         self.mainWidget.paste.setEnabled(state)
