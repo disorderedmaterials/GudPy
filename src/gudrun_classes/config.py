@@ -20,7 +20,7 @@ containerConfigurations = {
     path
     .replace(".config", "")
     .replace("_", " "):
-    path for path in 
+    path for path in
     [
         os.path.abspath(
             os.path.join(
