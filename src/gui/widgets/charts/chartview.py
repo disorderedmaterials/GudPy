@@ -354,7 +354,11 @@ class GudPyChartView(QChartView):
 
     def setChart(self, chart):
         if type(chart) == GudPyChart:
-            chart.label.setPos(self.mapToScene(25, self.sceneRect().height()-50))
+            chart.label.setPos(
+                self.mapToScene(
+                    25, self.sceneRect().height()-50
+                )
+            )
             chart.label.show()
         return super().setChart(chart)
 

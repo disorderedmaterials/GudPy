@@ -600,9 +600,16 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.SF_MDCS01_RDF: 6
             }
 
-            if self.mainWidget.objectTree.currentObject() in self.plotModes.keys():
+            if (
+                self.mainWidget.objectTree.currentObject()
+                in self.plotModes.keys()
+            ):
                 self.mainWidget.plotComboBox.setCurrentIndex(
-                    plotsMap[self.plotModes[self.mainWidget.objectTree.currentObject()]]
+                    plotsMap[
+                        self.plotModes[
+                            self.mainWidget.objectTree.currentObject()
+                        ]
+                    ]
                 )
             else:
                 self.mainWidget.plotComboBox.setCurrentIndex(0)
@@ -652,7 +659,12 @@ class GudPyMainWindow(QMainWindow):
                 topPlot, bottomPlot, gudFile = (
                     self.results[self.mainWidget.objectTree.currentObject()]
                 )
-            if sum([*[s.count() for s in topPlot.series()], *[s.count() for s in bottomPlot.series()]]):
+            if sum(
+                [
+                    *[s.count() for s in topPlot.series()],
+                    *[s.count() for s in bottomPlot.series()]
+                ]
+            ):
                 self.mainWidget.containerSplitter.setSizes([2, 1])
             else:
                 self.mainWidget.containerSplitter.setSizes([1, 0])
@@ -674,9 +686,16 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.SF_MDCS01_RDF_CANS: 6
             }
 
-            if self.mainWidget.objectTree.currentObject() in self.plotModes.keys():
+            if (
+                self.mainWidget.objectTree.currentObject()
+                in self.plotModes.keys()
+            ):
                 self.mainWidget.plotComboBox.setCurrentIndex(
-                    plotsMap[self.plotModes[self.mainWidget.objectTree.currentObject()]]
+                    plotsMap[
+                        self.plotModes[
+                            self.mainWidget.objectTree.currentObject()
+                        ]
+                    ]
                 )
             else:
                 self.mainWidget.plotComboBox.setCurrentIndex(0)
