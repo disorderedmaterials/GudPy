@@ -730,19 +730,19 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile
             )
             topChart.addSample(sample)
-            if isinstance(sample, Sample):
-                topPlotMode = self.mainWidget.plotComboBox.itemData(
-                    self.mainWidget.plotComboBox.currentIndex()
-                )
-            else:
-                topPlotMode = self.mainWidget.containerPlotComboBox.itemData(
-                    self.mainWidget.containerPlotComboBox.currentIndex()
-                )
-            topChart.plot(topPlotMode)
             bottomChart = GudPyChart(
                 self.gudrunFile
             )
             bottomChart.addSample(sample)
+            if sample not in self.plotModes.keys():
+                self.plotModes[sample] = PlotModes.SF
+            plotMode = self.plotModes[sample]
+            if self.isPlotModeSplittable(plotMode):
+                top, bottom = self.splitPlotMode(plotMode)
+                topChart.plot(top)
+                bottomChart.plot(bottom)
+            else:
+                topChart.plot(plotMode)
             path = None
             if len(sample.dataFiles.dataFiles):
                 path = breplace(
