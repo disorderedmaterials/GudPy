@@ -17,7 +17,7 @@ __dir__ = (
 )
 
 containerConfigurations = {
-    path
+    os.path.basename(path)
     .replace(".config", "")
     .replace("_", " "):
     path for path in
