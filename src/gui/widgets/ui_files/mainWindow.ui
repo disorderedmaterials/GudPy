@@ -7262,7 +7262,7 @@
      <x>0</x>
      <y>0</y>
      <width>1580</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -7298,9 +7298,15 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <widget class="QMenu" name="insertContainerMenu">
+     <property name="title">
+      <string>Insert Container</string>
+     </property>
+     <addaction name="insertDefaultContainer"/>
+    </widget>
     <addaction name="insertSampleBackground"/>
     <addaction name="insertSample"/>
-    <addaction name="insertContainer"/>
+    <addaction name="insertContainerMenu"/>
     <addaction name="separator"/>
     <addaction name="copy"/>
     <addaction name="cut"/>
@@ -7374,14 +7380,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
-   </property>
-  </action>
-  <action name="insertContainer">
-   <property name="text">
-    <string>Insert Container</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="insertSampleBackground">
@@ -7470,6 +7468,11 @@
   <action name="loadSample">
    <property name="text">
     <string>Load Sample</string>
+   </property>
+  </action>
+  <action name="insertDefaultContainer">
+   <property name="text">
+    <string>Default</string>
    </property>
   </action>
  </widget>

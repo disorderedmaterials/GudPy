@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStatusBar,
     QWidget,
+    QMenu
 )
 from PySide6.QtCharts import QChartView
 
@@ -350,8 +351,29 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.objectTree.insertSample
         )
 
-        self.mainWidget.insertContainer.triggered.connect(
+        self.mainWidget.insertDefaultContainer.triggered.connect(
             self.mainWidget.objectTree.insertContainer
+        )
+
+        actionMap = {
+            name:
+            lambda:
+            self.mainWidget.objectTree.insertContainer(
+                container=Container(
+                    config=path
+                )
+            )
+            for name, path in config.containerConfigurations.items()
+        }
+        insertContainerFromTemplate = QMenu(
+            "From Template..",
+            self.mainWidget.insertContainerMenu
+        )
+        for name, action in actionMap.items():
+            insertContainerFromTemplate.addAction(name, action)
+
+        self.mainWidget.insertContainerMenu.addMenu(
+            insertContainerFromTemplate
         )
 
         self.mainWidget.copy.triggered.connect(
@@ -451,8 +473,8 @@ class GudPyMainWindow(QMainWindow):
                         self.gudrunFile.sampleBackgrounds[0]
                         .samples[0].containers[0]
                     )
-        self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
         self.setActionsEnabled(True)
+        self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
         self.updateResults()
 
     def loadInputFile_(self):
@@ -1112,13 +1134,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.sampleBackgroundPage.setEnabled(state)
         self.mainWidget.objectTree.setContextEnabled(state)
 
-        self.mainWidget.insertSampleBackground.setEnabled(state)
-        self.mainWidget.insertSample.setEnabled(state)
-        self.mainWidget.insertContainer.setEnabled(state)
-        self.mainWidget.copy.setEnabled(state)
-        self.mainWidget.cut.setEnabled(state)
-        self.mainWidget.paste.setEnabled(state)
-        self.mainWidget.delete_.setEnabled(state)
+        self.setTreeActionsEnabled(state)
+
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
@@ -1139,13 +1156,7 @@ class GudPyMainWindow(QMainWindow):
 
     def setActionsEnabled(self, state):
 
-        self.mainWidget.insertSampleBackground.setEnabled(state)
-        self.mainWidget.insertSample.setEnabled(state)
-        self.mainWidget.insertContainer.setEnabled(state)
-        self.mainWidget.copy.setEnabled(state)
-        self.mainWidget.cut.setEnabled(state)
-        self.mainWidget.paste.setEnabled(state)
-        self.mainWidget.delete_.setEnabled(state)
+        self.setTreeActionsEnabled(state)
 
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
@@ -1160,6 +1171,15 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
+
+    def setTreeActionsEnabled(self, state):
+        self.mainWidget.insertSampleBackground.setEnabled(state)
+        self.mainWidget.insertSample.setEnabled(state)
+        self.mainWidget.insertContainerMenu.setEnabled(state)
+        self.mainWidget.copy.setEnabled(state)
+        self.mainWidget.cut.setEnabled(state)
+        self.mainWidget.paste.setEnabled(state)
+        self.mainWidget.delete_.setEnabled(state)
 
     def progressIncrementDCS(self):
         data = self.proc.readAllStandardOutput()
