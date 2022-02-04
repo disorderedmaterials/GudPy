@@ -10,7 +10,7 @@ NORMALISE_COMPOSITIONS = False
 components = Components()
 
 
-__dir__ = (
+__root__ = (
     os.path.join(sys._MEIPASS, "bin", "configs", "containers")
     if hasattr(sys, "_MEIPASS")
     else os.path.join("bin", "configs", "containers")
@@ -20,12 +20,9 @@ containerConfigurations = {
     os.path.basename(path)
     .replace(".config", "")
     .replace("_", " "):
-    path for path in
-    [
-        os.path.abspath(
-            os.path.join(
-                __dir__, p
-            )
-        )
-        for p in os.listdir(__dir__)]
+    path for path in [
+        os.path.join(path, name)
+        for path, _, files in os.walk(__root__)
+        for name in files
+    ]
 }
