@@ -14,7 +14,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStatusBar,
     QWidget,
-    QMenu
+    QMenu,
+    QToolButton
 )
 from PySide6.QtCharts import QChartView
 from src.gudrun_classes.composition_iterator import CompositionIterator
@@ -206,6 +207,16 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
+        self.mainWidget.stopTaskButton = QToolButton(
+            self.mainWidget.statusBarWidget
+        )
+        self.mainWidget.stopTaskButton.setIcon(
+            QIcon(":/icons/stop")
+        )
+        self.mainWidget.stopTaskButton.setSizePolicy(
+            QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        )
+
         self.mainWidget.progressBar = QProgressBar(
             self.mainWidget.statusBarWidget
         )
@@ -215,6 +226,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setTextVisible(False)
         self.mainWidget.statusBarLayout.addWidget(
             self.mainWidget.currentTaskLabel
+        )
+        self.mainWidget.statusBarLayout.addWidget(
+            self.mainWidget.stopTaskButton
         )
         self.mainWidget.statusBarLayout.addWidget(self.mainWidget.progressBar)
         self.mainWidget.statusBarWidget.setLayout(
