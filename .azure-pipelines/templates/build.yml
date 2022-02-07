@@ -95,7 +95,7 @@ steps:
   - bash: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g") 
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:$VERSION
+      singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:latest
     condition: and(eq(variables.osName, 'linux'), eq(variables.publishImage, 'true'))
     env:
         HARBOR_USER: $(HARBOR_USER)
