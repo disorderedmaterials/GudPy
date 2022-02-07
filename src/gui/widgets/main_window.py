@@ -1555,7 +1555,6 @@ class GudPyMainWindow(QMainWindow):
             self.proc.kill()
             self.procFinished()
 
-
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
         viewInputDialog = ViewInputDialog(self.gudrunFile, self)
