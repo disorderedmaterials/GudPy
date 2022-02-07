@@ -3,6 +3,7 @@ from src.gudrun_classes import config
 from src.gudrun_classes.enums import (
     CrossSectionSource, FTModes, UnitsOfDensity, Geometry
 )
+from src.scripts.utils import nthfloat
 
 
 class ContainerSlots():
@@ -692,6 +693,34 @@ class ContainerSlots():
         self.widget.containerExpectedDcsLabel.setText(
             f"Expected DCS Level: {dcsLevel}"
         )
+        if config.USE_USER_DEFINED_COMPONENTS:
+            elements = self.container.composition.shallowTranslate()
+            dcsLevel = self.container.composition.calculateExpectedDCSLevel(
+                elements
+            )
+            self.widget.containerExpectedDcsLabel.setText(
+                f"Expected DCS Level: {dcsLevel}"
+            )
+        else:
+            elements = self.container.composition.elements
+            dcsLevel = self.container.composition.calculateExpectedDCSLevel(
+                elements
+            )
+            self.widget.containerExpectedDcsLabel.setText(
+                f"Expected DCS Level: {dcsLevel}"
+            )
+        if self.widget.containerDcsLabel.text() != "DCS Level":
+            actualDcsLevel = nthfloat(self.widget.containerDcsLabel.text(), 2)
+            error = round(((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1)
+            self.widget.containerResultLabel.setText(f"{error}%")
+            if abs(error) > 10:
+                self.widget.containerResultLabel.setStyleSheet(
+                    "background-color: red"
+                )
+            else:
+                self.widget.containerResultLabel.setStyleSheet(
+                    "background-color: green"
+                )
 
     def handleTopHatWidthChanged(self, value):
         """
