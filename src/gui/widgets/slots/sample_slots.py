@@ -6,6 +6,8 @@ from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
 import os
 
+from src.scripts.utils import nthfloat
+
 
 class SampleSlots():
 
@@ -1073,3 +1075,17 @@ class SampleSlots():
             self.widget.expectedDcsLabel.setText(
                 f"Expected DCS Level: {dcsLevel}"
             )
+        if self.widget.dcsLabel.text() != "DCS Level":
+            actualDcsLevel = nthfloat(self.widget.dcsLabel.text(), 2)
+            error = round(
+                    ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
+            )
+            self.widget.resultLabel.setText(f"{error}%")
+            if abs(error) > 10:
+                self.widget.resultLabel.setStyleSheet(
+                    "background-color: red"
+                )
+            else:
+                self.widget.resultLabel.setStyleSheet(
+                    "background-color: green"
+                )

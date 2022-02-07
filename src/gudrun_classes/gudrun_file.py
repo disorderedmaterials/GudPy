@@ -1543,6 +1543,11 @@ class GudrunFile:
         return sample
 
 
+Container.getNextToken = GudrunFile.getNextToken
+Container.peekNextToken = GudrunFile.peekNextToken
+Container.consumeUpToDelim = GudrunFile.consumeUpToDelim
+Container.consumeWhitespace = GudrunFile.consumeWhitespace
+
 if __name__ == "__main__":
     g = GudrunFile(
         path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
