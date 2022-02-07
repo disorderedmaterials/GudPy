@@ -1,6 +1,6 @@
 from abc import abstractmethod
-from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread
-from PySide6.QtGui import QPainter
+from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread, QProcess
+from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -213,6 +213,11 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.stopTaskButton.setIcon(
             QIcon(":/icons/stop")
         )
+        self.mainWidget.stopTaskButton.clicked.connect(
+            self.stopProc
+        )
+        self.mainWidget.stopTaskButton.setEnabled(False)
+
         self.mainWidget.stopTaskButton.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
@@ -1065,6 +1070,7 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
             self.text = iterationDialog.text
+<<<<<<< HEAD
             self.outputIterations = {}
             if isinstance(self.iterator, CompositionIterator):
                 self.iterateByComposition()
@@ -1166,6 +1172,10 @@ class GudPyMainWindow(QMainWindow):
                 ]
             )
             self.nextCompositionIteration()
+=======
+            self.mainWidget.stopTaskButton.setEnabled(True)
+            self.nextIterableProc()
+>>>>>>> 7957951 (feat: stop button is working.)
 
     def nextIteration(self):
         if self.error:
@@ -1201,6 +1211,8 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
 
     def nextIterableProc(self):
+        if self.queue.empty():
+            return
         self.proc, func, args = self.queue.get()
         self.proc.started.connect(self.iterationStarted)
         self.proc.finished.connect(self.nextIteration)
@@ -1483,6 +1495,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
+        self.mainWidget.stopTaskButton.setEnabled(True)
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
@@ -1518,6 +1531,7 @@ class GudPyMainWindow(QMainWindow):
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
+            self.mainWidget.stopTaskButton.setEnabled(False)
         if "purge_det" not in self.mainWidget.currentTaskLabel.text():
             try:
                 self.updateResults()
@@ -1534,6 +1548,13 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+
+    def stopProc(self):
+        self.queue = Queue()
+        if self.proc.state() == QProcess.Running:
+            self.proc.kill()
+            self.procFinished()
+
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
