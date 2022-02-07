@@ -132,6 +132,7 @@ class GudPyMainWindow(QMainWindow):
         self.plotModes = {}
         self.proc = None
         self.output = ""
+        self.outputIterations = {}
         self.previousProcTitle = ""
         self.error = ""
         self.cwd = os.getcwd()
@@ -1033,9 +1034,12 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
             self.text = iterationDialog.text
+            self.outputIterations = {}
             self.nextIterableProc()
 
     def nextIteration(self):
+        self.outputIterations[self.currentIteration+1] = self.output
+        self.output = ""
         if self.error:
             self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
@@ -1320,6 +1324,10 @@ class GudPyMainWindow(QMainWindow):
 
     def procFinished(self):
         self.proc = None
+        output = self.output
+        if self.iterator:
+            self.outputIterations[self.currentIteration+1] = self.output
+            output = self.outputIterations
         if isinstance(self.iterator, TweakFactorIterator):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         self.iterator = None
@@ -1350,9 +1358,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(self.output, "gudrun_dcs")
+            self.outputSlots.setOutput(output, "gudrun_dcs")
         else:
-            self.outputSlots.setOutput(self.output, "purge_det")
+            self.outputSlots.setOutput(output, "purge_det")
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
 
