@@ -1,5 +1,7 @@
 from src.gudrun_classes.gud_file import GudFile
 import os
+import time
+from copy import deepcopy
 
 
 class TweakFactorIterator():
@@ -32,7 +34,7 @@ class TweakFactorIterator():
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
-        self.gudrunFile = gudrunFile
+        self.gudrunFile = deepcopy(gudrunFile)
 
     def performIteration(self, _n):
         # Iterate through all samples,
@@ -81,4 +83,5 @@ class TweakFactorIterator():
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
             self.gudrunFile.process()
+            time.sleep(1)
             self.performIteration(i)

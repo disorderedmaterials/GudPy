@@ -1,5 +1,7 @@
 from pathlib import Path
 from src.gudrun_classes.enums import Scales
+import time
+from copy import deepcopy
 
 
 class WavelengthSubtractionIterator():
@@ -64,7 +66,7 @@ class WavelengthSubtractionIterator():
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
-        self.gudrunFile = gudrunFile
+        self.gudrunFile = deepcopy(gudrunFile)
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
@@ -251,5 +253,7 @@ class WavelengthSubtractionIterator():
 
             self.wavelengthIteration(i)
             self.gudrunFile.process()
+            time.sleep(1)
             self.QIteration(i)
             self.gudrunFile.process()
+            time.sleep(1)

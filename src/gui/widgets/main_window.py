@@ -77,6 +77,7 @@ from src.scripts.utils import breplace, nthint
 
 import os
 import sys
+import time
 import math
 import traceback
 from queue import Queue
@@ -1039,9 +1040,11 @@ class GudPyMainWindow(QMainWindow):
         if self.error:
             self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
+            time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
             else:
