@@ -5,7 +5,7 @@ from src.gudrun_classes.enums import (
 from src.gudrun_classes import config
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
 
-from src.scripts.utils import extract_floats_from_string, nthfloat
+from src.scripts.utils import nthfloat
 
 
 class SampleSlots():
@@ -1077,9 +1077,7 @@ class SampleSlots():
         if self.widget.dcsLabel.text() != "DCS Level":
             actualDcsLevel = nthfloat(self.widget.dcsLabel.text(), 2)
             error = round(
-                (
-                    (actualDcsLevel - dcsLevel) / actualDcsLevel)*100,
-                    1
+                    ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
             )
             self.widget.resultLabel.setText(f"{error}%")
             if abs(error) > 10:

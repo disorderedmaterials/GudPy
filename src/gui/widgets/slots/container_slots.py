@@ -712,9 +712,7 @@ class ContainerSlots():
         if self.widget.containerDcsLabel.text() != "DCS Level":
             actualDcsLevel = nthfloat(self.widget.containerDcsLabel.text(), 2)
             error = round(
-                (
-                    (actualDcsLevel - dcsLevel) / actualDcsLevel)*100,
-                    1
+                ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
             )
             self.widget.containerResultLabel.setText(f"{error}%")
             if abs(error) > 10:
