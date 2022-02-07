@@ -1109,8 +1109,9 @@ class GudPyMainWindow(QMainWindow):
             missingFilesDialog.widget.exec_()
 
     def autosave(self):
-        autosavePath = self.gudrunFile.path + ".autosave"
-        self.gudrunFile.write_out(path=autosavePath)
+        if self.gudrunFile.path:
+            autosavePath = self.gudrunFile.path + ".autosave"
+            self.gudrunFile.write_out(path=autosavePath)
 
     def setModified(self):
 
