@@ -8,12 +8,16 @@ from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
+from src.gudrun_classes.density_iterator import DensityIterator
 
 from queue import Queue
 
 
 class Iterables(Enum):
     TWEAK_FACTOR = 0
+    THICKNESS = 1
+    DENSITY = 2
 
 
 class IterationDialog(QDialog):
@@ -101,6 +105,10 @@ class IterationDialog(QDialog):
         """
         self.numberIterations = value
 
+    def setTweakMode(self, state, tweakMode):
+        if state:
+            self.tweak = tweakMode
+
     def iterate(self):
         """
         Iterate Gudrun with the specified configuration.
@@ -120,8 +128,32 @@ class IterationDialog(QDialog):
                     )
                 self.text = "Tweak by tweak factor"
                 self.widget.close()
-            else:
-                pass
+            elif self.tweak == Iterables.THICKNESS:
+                self.iterator = ThicknessIterator(self.gudrunFile)
+                self.queue = Queue()
+                for _ in range(self.numberIterations):
+                    self.queue.put(
+                        self.gudrunFile.dcs(
+                            path=os.path.join(
+                                self.gudrunFile.instrument.GudrunInputFileDir,
+                                "gudpy.txt"
+                            ), headless=False)
+                    )
+                self.text = "Tweak by thickness"
+                self.widget.close()
+            elif self.tweak == Iterables.DENSITY:
+                self.iterator = DensityIterator(self.gudrunFile)
+                self.queue = Queue()
+                for _ in range(self.numberIterations):
+                    self.queue.put(
+                        self.gudrunFile.dcs(
+                            path=os.path.join(
+                                self.gudrunFile.instrument.GudrunInputFileDir,
+                                "gudpy.txt"
+                            ), headless=False)
+                    )
+                self.text = "Tweak by density"
+                self.widget.close()
         elif self.performInelasticitySubtractions:
             self.iterator = WavelengthSubtractionIterator(
                 self.gudrunFile
@@ -169,6 +201,19 @@ class IterationDialog(QDialog):
         self.widget.tweakButton.toggled.connect(
             self.handleTweakValuesChanged
         )
+
+        self.widget.tweakFactorButton.toggled.connect(
+            lambda state: self.setTweakMode(state, Iterables.TWEAK_FACTOR)
+        )
+
+        self.widget.thicknessButton.toggled.connect(
+            lambda state: self.setTweakMode(state, Iterables.THICKNESS)
+        )
+
+        self.widget.densityButton.toggled.connect(
+            lambda state: self.setTweakMode(state, Iterables.DENSITY)
+        )
+
         self.widget.inelasticitySubtractionsButton.toggled.connect(
             self.handlePerformInelasticitySubtractionsChanged
         )

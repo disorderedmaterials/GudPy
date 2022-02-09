@@ -74,6 +74,20 @@
           </widget>
          </item>
          <item>
+          <widget class="QRadioButton" name="thicknessButton">
+           <property name="text">
+            <string>Thickness</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="densityButton">
+           <property name="text">
+            <string>Density</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>

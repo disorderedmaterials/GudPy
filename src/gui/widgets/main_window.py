@@ -17,9 +17,11 @@ from PySide6.QtWidgets import (
     QMenu
 )
 from PySide6.QtCharts import QChartView
+from src.gudrun_classes.density_iterator import DensityIterator
 
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -1045,7 +1047,7 @@ class GudPyMainWindow(QMainWindow):
     def nextIteration(self):
         if self.error:
             self.proc.finished.connect(self.procFinished)
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, (TweakFactorIterator, DensityIterator, ThicknessIterator)):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
@@ -1082,7 +1084,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def iterationStarted(self):
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, (TweakFactorIterator, ThicknessIterator, DensityIterator)):
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
                 f" {self.currentIteration+1}/{self.numberIterations}"
@@ -1103,7 +1105,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, (TweakFactorIterator, ThicknessIterator, DensityIterator)):
             progress /= self.numberIterations
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             progress /= self.numberIterations
@@ -1338,7 +1340,7 @@ class GudPyMainWindow(QMainWindow):
     def procFinished(self):
         self.proc = None
         output = self.output
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, (TweakFactorIterator, ThicknessIterator, DensityIterator)):
             self.outputIterations[self.currentIteration+1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
         if self.iterator:
