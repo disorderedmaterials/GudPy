@@ -20,6 +20,8 @@ class TweakFactorIterator():
         Input GudrunFile that we will be using for iterating.
     Methods
     ----------
+    performIteration(_n)
+        Performs a single iteration.
     iterate(n)
         Perform n iterations of iterating by tweak factor.
     """
@@ -36,36 +38,35 @@ class TweakFactorIterator():
         self.gudrunFile = gudrunFile
 
     def performIteration(self, _n):
+        """
+        Performs a single iteration of the current workflow.
+
+        Parameters
+        ----------
+        _n : int
+            Iteration number.
+        """
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
-        iterator = enumerate(self.gudrunFile.sampleBackgrounds)
-        for j, sampleBackground in iterator:
-            for k, sample in enumerate(sampleBackground.samples):
-                if sample.runThisSample:
-                    gud = sample.dataFiles.dataFiles[0].replace(
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in [s for s in sampleBackground.samples if s.runThisSample]:
+                    gudPath = sample.dataFiles.dataFiles[0].replace(
                                 self.gudrunFile.instrument.dataFileType,
                                 "gud"
                             )
                     gudFile = GudFile(
                         os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir, gud
+                            self.gudrunFile.instrument.GudrunInputFileDir, gudPath
                         )
                     )
-                    tweakFactor = float(
-                        gudFile.suggestedTweakFactor.strip()
-                        )
-                    sampleBackground_ = (
-                        self.gudrunFile.sampleBackgrounds[j]
-                    )
-                    sampleBackground_.samples[k].sampleTweakFactor = (
-                                                tweakFactor
-                    )
+                    tweakFactor = float(gudFile.suggestedTweakFactor)
+                    sample.sampleTweakFactor = tweakFactor
 
     def iterate(self, n):
         """
         This method is the core of the TweakFactorIterator.
         It performs n iterations of tweaking by the tweak factor.
-        Namely, it performs gudurn_dcs n times, adjusting the tweak factor
+        Namely, it performs gudrun_dcs n times, adjusting the tweak factor
         for each sample before each iteration, after the first one, to
         the suggested tweak factor outputted from the previous iteration
         of gudrun_dcs. gudrun_dcs outputs a .gud file, which we
