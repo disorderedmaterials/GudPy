@@ -4,6 +4,8 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
+from src.gudrun_classes import config
+from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
@@ -209,6 +211,7 @@ class IterationDialog(QDialog):
         self.widget.thicknessButton.toggled.connect(
             lambda state: self.setTweakMode(state, Iterables.THICKNESS)
         )
+        self.widget.thicknessButton.setEnabled(config.geometry == Geometry.FLATPLATE)
 
         self.widget.densityButton.toggled.connect(
             lambda state: self.setTweakMode(state, Iterables.DENSITY)
@@ -226,3 +229,4 @@ class IterationDialog(QDialog):
         self.widget.buttonBox.rejected.connect(
             self.cancel
         )
+
