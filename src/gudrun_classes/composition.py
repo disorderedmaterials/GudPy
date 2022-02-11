@@ -105,8 +105,7 @@ class Component():
         return f"{self.name}\n{{\n{elements}\n}}"
 
     def eq(self, obj):
-        return self.elements == obj.elements and self.name == obj.name
-        
+        return all([e.eq(el) for e, el in zip(obj.elements)]) and self.name == obj.name        
 
 class Components():
 
@@ -139,8 +138,9 @@ class WeightedComponent():
             )
         return elements
 
-    def __eq__(self, obj):
-        return self.component == obj.component and self.ratio == obj.ratio
+    def eq(self, obj):
+        if hasattr(obj, "component") and hasattr(obj, "ratio"):
+            return self.component == obj.component and self.ratio == obj.ratio
 
 class Composition():
 

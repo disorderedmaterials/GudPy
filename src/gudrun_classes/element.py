@@ -69,5 +69,6 @@ class Element:
         """
         return str(self)
 
-    def __eq__(self, obj):
-        return self.atomicSymbol == obj.atomicSymbol and self.massNo == obj.massNo and self.abundance == obj.abundance
+    def eq(self, obj):
+        if hasattr(obj, 'atomicSymbol') and hasattr(obj, 'massNo') and hasattr(obj, 'abundance'):
+            return self.atomicSymbol == obj.atomicSymbol and self.massNo == obj.massNo and self.abundance == obj.abundance
