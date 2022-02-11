@@ -104,6 +104,8 @@ class Component():
         elements = "\n".join([str(x) for x in self.elements])
         return f"{self.name}\n{{\n{elements}\n}}"
 
+    def __eq__(self, obj):
+        return self.elements == obj.elements and self.name == obj.name
 
 class Components():
 
@@ -136,6 +138,8 @@ class WeightedComponent():
             )
         return elements
 
+    def __eq__(self, obj):
+        return self.component == obj.component and self.ratio == obj.ratio
 
 class Composition():
 

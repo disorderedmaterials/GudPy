@@ -68,3 +68,6 @@ class Element:
             String representation of Element.
         """
         return str(self)
+
+    def __eq__(self, obj):
+        return self.atomicSymbol == obj.atomicSymbol and self.massNo == obj.massNo and self.abundance == obj.abundance
