@@ -104,8 +104,9 @@ class Component():
         elements = "\n".join([str(x) for x in self.elements])
         return f"{self.name}\n{{\n{elements}\n}}"
 
-    def __eq__(self, obj):
+    def eq(self, obj):
         return self.elements == obj.elements and self.name == obj.name
+        
 
 class Components():
 
