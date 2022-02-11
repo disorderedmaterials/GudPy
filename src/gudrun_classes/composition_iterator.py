@@ -28,7 +28,7 @@ class CompositionIterator():
         gudrunFile.sampleBackgrounds = [sampleBackground]
 
         x = abs(x)
-        weightedComponents = [wc for wc in sampleBackground.samples[0].composition.weightedComponents for c in self.components if c == wc.component]
+        weightedComponents = [wc for wc in sampleBackground.samples[0].composition.weightedComponents for c in self.components if c.eq(wc.component)]
         for component in weightedComponents:
             component.ratio = x
             print(component.ratio)

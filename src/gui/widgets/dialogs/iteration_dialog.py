@@ -20,6 +20,8 @@ class Iterables(Enum):
     TWEAK_FACTOR = 0
     THICKNESS = 1
     DENSITY = 2
+    COMPOSITION_SINGLE_COMPONENT = 3
+    COMPOSITION_TWO_COMPONENTS = 4
 
 
 class IterationDialog(QDialog):
@@ -65,6 +67,7 @@ class IterationDialog(QDialog):
         self.iterator = None
         self.cancelled = False
         self.text = ""
+        self.components = [None, None]
 
     def handleTweakValuesChanged(self, state):
         """
@@ -110,7 +113,9 @@ class IterationDialog(QDialog):
     def setTweakMode(self, state, tweakMode):
         if state:
             self.tweak = tweakMode
-
+        if tweakMode == Iterables.COMPOSITION_SINGLE_COMPONENT:
+            self.widget.componentBComboBox.setEnabled(not state)
+        
     def iterate(self):
         """
         Iterate Gudrun with the specified configuration.
@@ -181,6 +186,26 @@ class IterationDialog(QDialog):
         self.cancelled = True
         self.widget.close()
 
+    def fillComboBoxA(self):
+        self.widget.componentAComboBox.clear()
+        for component in config.components.components:
+            self.widget.componentAComboBox.addItem(component.name, component)
+
+    def fillComboBoxB(self):
+        self.widget.componentBComboBox.clear()
+        for component in config.components.components:
+            self.widget.componentBComboBox.addItem(component.name, component)    
+
+    def componentAChanged(self, index):
+        self.components[0] = self.widget.componentAComboBox.itemData(index)
+        self.fillComboBoxB()
+        self.self.widget.componentBComboBox.removeItem(index)
+
+    def componentBChanged(self, index):
+        self.components[1] = self.widget.componentBComboBox.itemData(index)
+        self.fillComboBoxA()
+        self.self.widget.componentAComboBox.removeItem(index)
+
     def initComponents(self):
         """
         Loads the UI file for the IterationDialog object.
@@ -215,6 +240,32 @@ class IterationDialog(QDialog):
 
         self.widget.densityButton.toggled.connect(
             lambda state: self.setTweakMode(state, Iterables.DENSITY)
+        )
+
+        self.widget.compositionButton.toggled.connect(
+            self.widget.compositionIterationGroupBox.setVisible
+        )
+
+        self.widget.compositionIterationGroupBox.setVisible(False)
+
+        self.widget.singleComponentButton.toggled.connect(
+            lambda state: self.setTweakMode(state, Iterables.COMPOSITION_SINGLE_COMPONENT)
+        )
+
+        self.widget.twoComponentButton.toggled.connect(
+            lambda state: self.setTweakMode(state, Iterables.COMPOSITION_TWO_COMPONENTS)
+        )
+
+        self.fillComboBoxA()
+        self.fillComboBoxB()
+        self.widget.componentBComboBox.removeItem(self.widget.componentAComboBox.currentIndex())
+
+        self.widget.componentAComboBox.currentIndexChanged.connect(
+            self.componentAChanged
+        )
+
+        self.widget.componentBComboBox.currentIndexChanged.connect(
+            self.componentBChanged
         )
 
         self.widget.inelasticitySubtractionsButton.toggled.connect(
