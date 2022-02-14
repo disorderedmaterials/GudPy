@@ -1038,21 +1038,25 @@ class GudPyMainWindow(QMainWindow):
             self.nextIterableProc()
 
     def nextIteration(self):
-        self.outputIterations[self.currentIteration+1] = self.output
-        self.output = ""
         if self.error:
             self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
+            self.outputIterations[self.currentIteration+1] = self.output
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
             else:
                 self.iterator.wavelengthIteration(self.currentIteration)
+                if self.currentIteration == 0:
+                    self.outputIterations[1] = self.output
+                else:
+                    self.outputIterations[self.currentIteration] = self.output
             self.gudrunFile.write_out()
         self.nextIterableProc()
         self.currentIteration += 1
+        self.output = ""
 
     def nextIterableProc(self):
         self.proc, func, args = self.queue.get()
@@ -1077,9 +1081,10 @@ class GudPyMainWindow(QMainWindow):
                 f" {self.currentIteration+1}/{self.numberIterations}"
             )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            iteration = math.ceil((self.currentIteration+1)/2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
-                f" {(self.currentIteration+1)//2}/{self.numberIterations}"
+                f" {iteration}/{self.numberIterations}"
             )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1325,11 +1330,11 @@ class GudPyMainWindow(QMainWindow):
     def procFinished(self):
         self.proc = None
         output = self.output
-        if self.iterator:
-            self.outputIterations[self.currentIteration+1] = self.output
-            output = self.outputIterations
         if isinstance(self.iterator, TweakFactorIterator):
+            self.outputIterations[self.currentIteration+1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
+        if self.iterator:
+            output = self.outputIterations
         self.iterator = None
 
         if self.error:
