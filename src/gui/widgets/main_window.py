@@ -133,6 +133,7 @@ class GudPyMainWindow(QMainWindow):
         self.plotModes = {}
         self.proc = None
         self.output = ""
+        self.outputIterations = {}
         self.previousProcTitle = ""
         self.error = ""
         self.cwd = os.getcwd()
@@ -1034,6 +1035,7 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
             self.text = iterationDialog.text
+            self.outputIterations = {}
             self.nextIterableProc()
 
     def nextIteration(self):
@@ -1043,15 +1045,21 @@ class GudPyMainWindow(QMainWindow):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
+            self.outputIterations[self.currentIteration+1] = self.output
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
             else:
                 self.iterator.wavelengthIteration(self.currentIteration)
+                if self.currentIteration == 0:
+                    self.outputIterations[1] = self.output
+                else:
+                    self.outputIterations[self.currentIteration] = self.output
             self.gudrunFile.write_out()
         self.nextIterableProc()
         self.currentIteration += 1
+        self.output = ""
 
     def nextIterableProc(self):
         self.proc, func, args = self.queue.get()
@@ -1076,9 +1084,10 @@ class GudPyMainWindow(QMainWindow):
                 f" {self.currentIteration+1}/{self.numberIterations}"
             )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
+            iteration = math.ceil((self.currentIteration+1)/2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
-                f" {(self.currentIteration+1)//2}/{self.numberIterations}"
+                f" {iteration}/{self.numberIterations}"
             )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1324,8 +1333,12 @@ class GudPyMainWindow(QMainWindow):
 
     def procFinished(self):
         self.proc = None
+        output = self.output
         if isinstance(self.iterator, TweakFactorIterator):
+            self.outputIterations[self.currentIteration+1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
+        if self.iterator:
+            output = self.outputIterations
         self.iterator = None
 
         if self.error:
@@ -1354,9 +1367,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(self.output, "gudrun_dcs")
+            self.outputSlots.setOutput(output, "gudrun_dcs")
         else:
-            self.outputSlots.setOutput(self.output, "purge_det")
+            self.outputSlots.setOutput(output, "purge_det")
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
 
