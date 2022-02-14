@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>325</height>
+    <height>359</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -141,6 +141,30 @@
               </item>
              </layout>
             </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Relative Tolerance</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="ExponentialSpinBox" name="relativeToleranceSpinBox">
+                <property name="suffix">
+                 <string>%</string>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </item>
@@ -212,6 +236,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ExponentialSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>src.gui.widgets.exponential_spinbox</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>

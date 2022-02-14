@@ -64,6 +64,7 @@ class IterationDialog(QDialog):
         self.tweak = Iterables.TWEAK_FACTOR
         self.performInelasticitySubtractions = False
         self.numberIterations = 1
+        self.rtol = 0.
         self.iterator = None
         self.cancelled = False
         self.text = ""
@@ -206,6 +207,9 @@ class IterationDialog(QDialog):
         self.fillComboBoxA()
         self.self.widget.componentAComboBox.removeItem(index)
 
+    def handleRtolChanged(self, rtol):
+        self.rtol = rtol
+
     def initComponents(self):
         """
         Loads the UI file for the IterationDialog object.
@@ -254,6 +258,10 @@ class IterationDialog(QDialog):
 
         self.widget.twoComponentButton.toggled.connect(
             lambda state: self.setTweakMode(state, Iterables.COMPOSITION_TWO_COMPONENTS)
+        )
+
+        self.widget.relativeToleranceSpinBox.valueChanged.connect(
+            self.handleRtolChanged
         )
 
         self.fillComboBoxA()
