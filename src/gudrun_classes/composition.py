@@ -105,7 +105,7 @@ class Component():
         return f"{self.name}\n{{\n{elements}\n}}"
 
     def eq(self, obj):
-        return all([e.eq(el) for e, el in zip(obj.elements)]) and self.name == obj.name        
+        return all([e.eq(el) for e, el in zip(self.elements, obj.elements)]) and self.name == obj.name        
 
 class Components():
 
