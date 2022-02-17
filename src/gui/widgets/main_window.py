@@ -1146,7 +1146,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.containerPage.setEnabled(state)
         self.mainWidget.sampleBackgroundPage.setEnabled(state)
         self.mainWidget.objectTree.setContextEnabled(state)
-
+        self.mainWidget.objectTree.model().setEnabled(state)
         self.setTreeActionsEnabled(state)
 
         self.mainWidget.runPurge.setEnabled(state)

@@ -54,6 +54,8 @@ class GudPyTreeModel(QAbstractItemModel):
         Returns the row count of an index.
     columnCount(parent)
         Returns the column count of an index.
+    setEnabled(state)
+        Enables/disables "editing" of the tree.
     flags(index)
         Returns flags associated with a given index.
     isSample(index)
@@ -83,6 +85,7 @@ class GudPyTreeModel(QAbstractItemModel):
         self.persistentIndexes = {}
         self.sampleIcon = QIcon(":/icons/sample")
         self.containerIcon = QIcon(":/icons/container")
+        self.setEnabled(True)
 
     def index(self, row, column, parent=QModelIndex()):
         """
@@ -361,6 +364,16 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         return 1
 
+    def setEnabled(self, state):
+        self.flags_ = {}
+        # self.flags_[Sample]
+        if state:
+            self.flags_[Sample] = Qt.ItemIsEditable | Qt.ItemIsUserCheckable
+            self.flags_[Container] = Qt.ItemIsEditable
+        else:
+            self.flags_[Sample] = Qt.NoItemFlags
+            self.flags_[Container] = Qt.NoItemFlags
+
     def flags(self, index):
         """
         Returns flags associated with a given index.
@@ -373,13 +386,13 @@ class GudPyTreeModel(QAbstractItemModel):
         int
             Flags.
         """
-        flags = super(GudPyTreeModel, self).flags(index)
-        # If it is a sample, append checkable flag and editable flag.
+        flags = super().flags(index)
+        # If it is a sample, append checkable flag.
         if self.isSample(index):
-            flags |= Qt.ItemIsUserCheckable | Qt.ItemIsEditable
-        # If it is a container, append editable flag.
+            flags |= self.flags_[Sample]
+        # If it is a container, return current flags_.
         elif self.isContainer(index):
-            flags |= Qt.ItemIsEditable
+            flags |= self.flags_[Container]
         return flags
 
     def isSample(self, index):
