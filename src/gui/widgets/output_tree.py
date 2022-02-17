@@ -1,5 +1,4 @@
 from copy import deepcopy
-import json
 from typing import OrderedDict
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtCore import (
@@ -24,7 +23,11 @@ class OutputTreeModel(QAbstractItemModel):
         self.gudrunFile = gudrunFile
         self.map = {}
         self.refs = []
-        self.data_ = OrderedDict(sorted({i: [] for i in output.keys()}.items()))
+        self.data_ = OrderedDict(
+            sorted(
+                {i: [] for i in output.keys()}.items()
+            )
+        )
         self.persistentIndexes = {}
         self.setupData()
 
