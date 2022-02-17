@@ -92,7 +92,6 @@ class OutputTreeModel(QAbstractItemModel):
                         prev = s
                     self.data_[iteration].append(s)
                 if prev:
-                    print(prev.output, end)
                     prev.output = "".join(output.splitlines(keepends=True)[prev.output:end])
 
     def index(self, row, column, parent=QModelIndex()):
