@@ -13,6 +13,7 @@ from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.sample import Sample
 
+
 class OutputTreeModel(QAbstractItemModel):
 
     def __init__(self, output, gudrunFile, parent=None):
@@ -23,13 +24,11 @@ class OutputTreeModel(QAbstractItemModel):
         self.gudrunFile = gudrunFile
         self.map = {}
         self.refs = []
-        self.data_ = OrderedDict(sorted({i:[] for i in output.keys()}.items()))
+        self.data_ = OrderedDict(sorted({i: [] for i in output.keys()}.items()))
         self.persistentIndexes = {}
         self.setupData()
 
     def setupData(self):
-        with open(f"out.txt", "w") as f:
-            f.write(json.dumps(self.output))
         for iteration, output in self.output.items():
             gf = deepcopy(self.gudrunFile)
             gf.iteration = iteration
@@ -59,13 +58,14 @@ class OutputTreeModel(QAbstractItemModel):
             )
 
             i = deepcopy(self.gudrunFile.instrument)
-            i.output = "".join(output.splitlines(keepends=True)[0: sbindicies[0][0]])
+            i.output = "".join(
+                output.splitlines(keepends=True)
+                [0: sbindicies[0][0]]
+            )
             i.name = "General"
             self.data_[iteration].append(i)
             prev = None
-            for sampleBackground, (start, end) in zip(
-                self.gudrunFile.sampleBackgrounds, sbindicies
-            ):
+            for start, end in sbindicies:
                 splicedOutput = (
                     output.splitlines(keepends=True)[start:end]
                 )
@@ -87,12 +87,18 @@ class OutputTreeModel(QAbstractItemModel):
                         prev = s
                     else:
                         s = deepcopy(sample)
-                        prev.output = "".join(output.splitlines(keepends=True)[prev.output:index+start-1])
+                        prev.output = "".join(
+                            output.splitlines(keepends=True)
+                            [prev.output:index+start-1]
+                        )
                         s.output = index + start
                         prev = s
                     self.data_[iteration].append(s)
                 if prev:
-                    prev.output = "".join(output.splitlines(keepends=True)[prev.output:end])
+                    prev.output = "".join(
+                        output.splitlines(keepends=True)
+                        [prev.output:end]
+                    )
 
     def index(self, row, column, parent=QModelIndex()):
         # Check for invalid index.
@@ -104,7 +110,7 @@ class OutputTreeModel(QAbstractItemModel):
             elif len(self.data_.keys()) > 1:
                 obj = self.refs[row]
             else:
-                return QModelIndex()  
+                return QModelIndex()
         elif parent.isValid():
             obj = self.data_[self.refs.index(parent.internalPointer())+1][row]
         index = self.createIndex(row, 0, obj)
@@ -143,7 +149,6 @@ class OutputTreeModel(QAbstractItemModel):
             return len(self.data_[self.refs.index(parent.internalPointer())+1])
         else:
             return 0
-                   
 
     def columnCount(self, parent=QModelIndex()):
         return 1
@@ -159,6 +164,7 @@ class OutputTreeModel(QAbstractItemModel):
                 return obj.name
         else:
             return None
+
 
 class OutputTreeView(QTreeView):
 
@@ -180,5 +186,7 @@ class OutputTreeView(QTreeView):
 
     def currentChanged(self, current, previous):
         if current.internalPointer():
-            self.parent.widget.outputTextEdit.setText(current.internalPointer().output)
+            self.parent.widget.outputTextEdit.setText(
+                current.internalPointer().output
+            )
         return super().currentChanged(current, previous)
