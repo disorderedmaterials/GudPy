@@ -759,7 +759,8 @@ class GudPyMainWindow(QMainWindow):
             )
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
-                self.plotModes[sample] = PlotModes.SF
+                plotMode = PlotModes.SF if isinstance(sample, Sample) else PlotModes.SF_CANS
+                self.plotModes[sample] = plotMode
             plotMode = self.plotModes[sample]
             if self.isPlotModeSplittable(plotMode):
                 top, bottom = self.splitPlotMode(plotMode)
