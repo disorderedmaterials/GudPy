@@ -406,33 +406,45 @@ class GudrunFile:
             # First construct the regular expression to match against.
             pattern = re.compile(r"StartupFiles\S*")
 
-            self.instrument.detectorCalibrationFileName = (
-                re.search(
-                    pattern,
-                    self.instrument.detectorCalibrationFileName
-                ).group()
+            match = re.search(
+                pattern,
+                self.instrument.detectorCalibrationFileName
             )
 
-            self.instrument.groupFileName = (
-                re.search(
+            if match:
+                self.instrument.detectorCalibrationFileName = match.group()
+
+            match = re.search(
                     pattern,
                     self.instrument.groupFileName
-                ).group()
             )
 
-            self.instrument.deadtimeConstantsFileName = (
-                re.search(
+            if match:
+                self.instrument.groupFileName = match.group()
+
+            match = re.search(
                     pattern,
                     self.instrument.deadtimeConstantsFileName
-                ).group()
             )
 
-            self.instrument.neutronScatteringParametersFile = (
-                re.search(
+            if match:
+                self.instrument.deadtimeConstantsFileName = match.group()
+
+            match = re.search(
                     pattern,
                     self.instrument.neutronScatteringParametersFile
-                ).group()
             )
+
+            if match:
+                self.instrument.neutronScatteringParametersFile = match.group()
+
+            match = re.search(
+                    pattern,
+                    self.instrument.neutronScatteringParametersFile
+            )
+
+            if match:
+                self.instrument.neutronScatteringParametersFile = match.group()
 
         except Exception as e:
             raise ParserException(
@@ -518,12 +530,13 @@ class GudrunFile:
             # to resolve the path to be relative.
             pattern = re.compile(r"StartupFiles\S*")
 
-            self.beam.filenameIncidentBeamSpectrumParams = (
-                re.search(
+            match = re.search(
                     pattern,
                     self.beam.filenameIncidentBeamSpectrumParams
-                ).group()
             )
+
+            if match:
+                self.beam.filenameIncidentBeamSpectrumParams = match.group()
 
             self.beam.overallBackgroundFactor = (
                 nthfloat(self.getNextToken(), 0)
@@ -722,24 +735,22 @@ class GudrunFile:
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
-            if (
-                '*' not in
-                self.normalisation.normalisationDifferentialCrossSectionFile
-            ):
-                # Resolve to relative.
-                pattern = re.compile(r"StartupFiles\S*")
+            # Resolve to relative.
+            pattern = re.compile(r"StartupFiles\S*")
+
+            match = re.search(
+                pattern,
+                self.normalisation.
+                normalisationDifferentialCrossSectionFile
+            )
+
+            if match:
+                self.normalisation
+
                 (
                     self.normalisation.
                     normalisationDifferentialCrossSectionFile
-                ) = (
-                    re.search(
-                        pattern,
-                        (
-                            self.normalisation.
-                            normalisationDifferentialCrossSectionFile
-                        )
-                    ).group()
-                )
+                ) = match.group()
 
         except Exception as e:
             raise ParserException(
