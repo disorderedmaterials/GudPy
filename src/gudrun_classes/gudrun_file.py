@@ -418,7 +418,7 @@ class GudrunFile:
                     pattern,
                     self.instrument.groupFileName
             )
-            
+
             if match:
                 self.instrument.groupFileName = match.group()
 
@@ -426,7 +426,7 @@ class GudrunFile:
                     pattern,
                     self.instrument.deadtimeConstantsFileName
             )
-            
+
             if match:
                 self.instrument.deadtimeConstantsFileName = match.group()
 
@@ -437,7 +437,7 @@ class GudrunFile:
 
             if match:
                 self.instrument.neutronScatteringParametersFile = match.group()
-            
+
             match = re.search(
                     pattern,
                     self.instrument.neutronScatteringParametersFile
@@ -734,7 +734,6 @@ class GudrunFile:
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
-
 
             # Resolve to relative.
             pattern = re.compile(r"StartupFiles\S*")
