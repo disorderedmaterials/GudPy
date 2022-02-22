@@ -502,7 +502,9 @@ class InstrumentSlots():
         index : int
             New current index of the dataFileTypeCombo.
         """
-        self.instrument.dataFileType = self.widget.dataFileTypeCombo.itemText(index)
+        self.instrument.dataFileType = self.widget.dataFileTypeCombo.itemText(
+            index
+        )
         self.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
