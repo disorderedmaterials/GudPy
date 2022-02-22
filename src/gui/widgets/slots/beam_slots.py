@@ -392,12 +392,14 @@ class BeamSlots():
         value : str
             The new value of the incidentBeamSpectrumParametersLineEdit.
         """
-        self.beam.filenameIncidentBeamSpectrumParams = (
-            re.search(
-                r"StartupFiles\S*",
-                value
-            ).group()
+        match = re.search(
+            r"StartupFiles\S*",
+            value
         )
+        if match:
+            self.beam.filenameIncidentBeamSpectrumParams = match.group()
+        else:
+            self.beam.filenameIncidentBeamSpectrumParams = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -421,9 +423,15 @@ class BeamSlots():
             instrumentFilesDir
         )
         if filename:
-            (
-                self.widget.incidentBeamSpectrumParametersLineEdit
-            ).setText(re.search(r"StartupFiles\S*", filename).group())
+            match = re.search(r"StartupFiles\S*", filename)
+            if match:
+                self.widget.incidentBeamSpectrumParametersLineEdit.setText(
+                    match.group()
+                )
+            else:
+                self.widget.incidentBeamSpectrumParametersLineEdit.setText(
+                    filename
+                )
 
     def handleOverallBackgroundFactorChanged(self, value):
         """

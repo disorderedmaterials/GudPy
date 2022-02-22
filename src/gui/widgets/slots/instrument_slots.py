@@ -502,7 +502,7 @@ class InstrumentSlots():
         index : int
             New current index of the dataFileTypeCombo.
         """
-        self.instrument.dataFileType = self.dataFileTypeCombo.itemText(index)
+        self.instrument.dataFileType = self.widget.dataFileTypeCombo.itemText(index)
         self.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
@@ -523,11 +523,11 @@ class InstrumentSlots():
         value : str
             The new value of the detCalibrationLineEdit.
         """
-        self.instrument.detectorCalibrationFileName = (
-            re.search(
-                self.pathRegex, text
-            ).group()
-        )
+        match = re.search(self.pathRegex, text)
+        if match:
+            self.instrumentdetectorCalibrationFileName = match.group()
+        else:
+            self.instrument.detectorCalibrationFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
@@ -543,12 +543,11 @@ class InstrumentSlots():
         value : str
             The new value of the groupsFileLineEdit.
         """
-        self.instrument.groupFileName = (
-            re.search(
-                self.pathRegex,
-                text
-            ).group()
-        )
+        match = re.search(self.pathRegex, text)
+        if match:
+            self.instrument.groupFileName = match.group()
+        else:
+            self.instrument.groupFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
@@ -564,11 +563,11 @@ class InstrumentSlots():
         value : str
             The new value of the deadtimeFileLineEdit.
         """
-        self.instrument.deadtimeConstantsFileName = (
-            re.search(
-                self.pathRegex, text
-            ).group()
-        )
+        match = re.search(self.pathRegex, text)
+        if match:
+            self.instrument.deadtimeConstantsFileName = match.group()
+        else:
+            self.instrument.deadtimeConstantsFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -632,11 +631,11 @@ class InstrumentSlots():
         value : str
             The new value of the neutronScatteringParamsFileLineEdit.
         """
-        self.instrument.neutronScatteringParametersFile = (
-            re.search(
-                self.pathRegex, text
-            ).group()
-        )
+        match = re.search(self.pathRegex, text)
+        if match:
+            self.instrument.neutronScatteringParametersFile = match.group()
+        else:
+            self.instrument.neutronScatteringParametersFile = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -651,11 +650,11 @@ class InstrumentSlots():
         value : str
             The new value of the nexusDefintionFileLineEdit.
         """
-        self.instrument.nxsDefinitionFile = (
-            re.search(
-                self.pathRegex, text
-            ).group()
-        )
+        match = re.search(self.pathRegex, text)
+        if match:
+            self.instrument.nxsDefinitionFile = match.group()
+        else:
+            self.instrument.nxsDefinitionFile = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -1167,9 +1166,10 @@ class InstrumentSlots():
             Defaults to false. True means accept a directory.
         """
         filename = self.browseFile(title, dir=dir)
-        if filename and not dir:
-            target.setText(re.search(self.pathRegex, filename).group())
-        elif filename:
+        match = re.search(self.pathRegex, filename)
+        if match:
+            filename = match.group()
+        if filename:
             target.setText(filename)
 
     def browseFile(self, title, dir=False):
