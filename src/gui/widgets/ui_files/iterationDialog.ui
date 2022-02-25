@@ -15,11 +15,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QTabWidget" name="iterationTabs">
      <property name="currentIndex">
       <number>3</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="inelasticityTab">
       <attribute name="title">
        <string>Inelasticity Subtractions</string>
       </attribute>
@@ -81,7 +81,7 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tweakFactorTab">
       <attribute name="title">
        <string>Tweak  Factor</string>
       </attribute>
@@ -137,7 +137,7 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="densityTab">
       <attribute name="title">
        <string>Density</string>
       </attribute>
@@ -193,7 +193,7 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4">
+     <widget class="QWidget" name="compositionTab">
       <attribute name="title">
        <string>Composition</string>
       </attribute>
@@ -287,7 +287,11 @@ p, li { white-space: pre-wrap; }
           <widget class="QComboBox" name="firstComponentComboBox"/>
          </item>
          <item>
-          <widget class="QComboBox" name="secondComponentComboBox"/>
+          <widget class="QComboBox" name="secondComponentComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
