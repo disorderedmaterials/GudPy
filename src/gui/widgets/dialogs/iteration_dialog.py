@@ -6,6 +6,7 @@ from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
 from src.gudrun_classes import config
+from src.gudrun_classes.composition_iterator import CompositionIterator
 from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -121,8 +122,12 @@ class IterationDialog(QDialog):
             )
             self.queue = Queue()
             for _ in range(self.numberIterations):
-                self.queue.put(self.gudrunFile.dcs(
-                    path="gudpy.txt", headless=False)
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
                 )
                 self.queue.put(
                     self.gudrunFile.dcs(
@@ -133,8 +138,21 @@ class IterationDialog(QDialog):
                 )
             self.text = "Inelasticity subtractions"
             self.widget.close()
-        else:
-            pass
+        elif self.iterateBy == Iterables.COMPOSITION_SINGLE_COMPONENT:
+            self.iterator = CompositionIterator(
+                self.gudrunFile
+            )
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+                self.text = "Tweak by composition"
+                self.widget.close()
 
     def tabChanged(self, index):
         tabMap = {
