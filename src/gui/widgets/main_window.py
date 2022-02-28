@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QMenu
 )
 from PySide6.QtCharts import QChartView
+from src.gudrun_classes.composition_iterator import CompositionIterator, gss, calculateTotalMolecules
 from src.gudrun_classes.density_iterator import DensityIterator
 
 from src.gudrun_classes.sample import Sample
@@ -1042,12 +1043,19 @@ class GudPyMainWindow(QMainWindow):
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
-            self.nextIterableProc()
+            if isinstance(self.iterator, CompositionIterator):
+                self.iterateByComposition()
+            else:
+                self.nextIterableProc()
+
+    def iterateByComposition(self):
+        # Run gss in thread, emitting signals between iterations, to update progress bar?
+        pass
 
     def nextIteration(self):
         if self.error:
             self.proc.finished.connect(self.procFinished)
-        if isinstance(self.iterator, (TweakFactorIterator, DensityIterator, ThicknessIterator)):
+        if isinstance(self.iterator, (TweakFactorIterator, DensityIterator, ThicknessIterator, CompositionIterator)):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
