@@ -1,5 +1,6 @@
 from copy import deepcopy
 import math
+from random import sample
 from src.gudrun_classes.gud_file import GudFile
 import os
 import time
@@ -28,6 +29,7 @@ def gss(f, bounds, n, maxN, rtol, args=()):
         return gss(f, bounds, n+1, args=args)
 
 def calculateTotalMolecules(components, sample):
+    print(components)
     total = 0
     for wc in sample.composition.weightedComponents:
         for c in components:
@@ -35,6 +37,36 @@ def calculateTotalMolecules(components, sample):
                 total+=wc.ratio
                 break
     return total
+
+# def costSingleComponent(x, gudrunFile, sampleBackground, components):
+#     gf = deepcopy(gudrunFile)
+#     gf.sampleBackgrounds = [sampleBackground]
+
+#     x = abs(x)
+#     weightedComponents = [wc for wc in sampleBackground.samples[0].composition.weightedComponents for c in components if c.eq(wc.component)]
+#     for component in weightedComponents:
+#         component.ratio = x
+
+#     sampleBackground.samples[0].composition.translate()
+#     gudrunFile.process()
+
+#     time.sleep(1)
+#     gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
+#                 gudrunFile.instrument.dataFileType,
+#                 "gud"
+#             )
+
+#     gudFile = GudFile(
+#         os.path.join(
+#             gudrunFile.instrument.GudrunInputFileDir, gudPath
+#         )
+#     )
+
+#     print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2)
+#     if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
+#         return 0
+#     else:
+#         return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
 class CompositionIterator():
     def __init__(self, gudrunFile):

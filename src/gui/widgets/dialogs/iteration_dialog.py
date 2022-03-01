@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from copy import deepcopy
 import sys
 from PySide6.QtCore import QFile, Qt
 from PySide6.QtWidgets import QDialog
@@ -6,7 +7,7 @@ from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
 from src.gudrun_classes import config
-from src.gudrun_classes.composition_iterator import CompositionIterator
+from src.gudrun_classes.composition_iterator import CompositionIterator, gss, calculateTotalMolecules
 from src.gudrun_classes.enums import Geometry
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -62,16 +63,16 @@ class IterationDialog(QDialog):
     def __init__(self, gudrunFile, parent):
         super(IterationDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
-        self.initComponents()
         self.tweakValues = True
-        self.iterateBy = Iterables.TWEAK_FACTOR
+        self.iterateBy = Iterables.WAVELENGTH
         self.numberIterations = 1
         self.rtol = 0.
         self.iterator = None
         self.cancelled = False
         self.text = ""
         self.components = [None, None]
-        
+        self.initComponents()
+
     def iterate(self):
         """
         Iterate Gudrun with the specified configuration.
@@ -142,17 +143,29 @@ class IterationDialog(QDialog):
             self.iterator = CompositionIterator(
                 self.gudrunFile
             )
+            self.iterator.setComponents(self.components)
+            # filter(None, self.components)
+            # if len(self.components) == 1:
+            #     self.iterator.setComponent([self.components[0]])
+            # else:
+            #     self.iterator.setComponents(self.components)
             self.queue = Queue()
-            for _ in range(self.numberIterations):
-                self.queue.put(
-                    self.gudrunFile.dcs(
-                        path=os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir,
-                            "gudpy.txt"
-                        ), headless=False)
-                )
-                self.text = "Tweak by composition"
-                self.widget.close()
+            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    if sample.runThisSample:
+                        sb = deepcopy(sampleBackground)
+                        sb.samples = [sample]
+                        if len(self.iterator.components) == 1:
+                            self.queue.put(
+                                (gss, (([1e-2, self.iterator.ratio, 10], 0), {"args": (sampleBackground, )}))
+                            )
+                        # elif len(self.iterator.components) == 2:
+                        #     totalMolecules = calculateTotalMolecules(self.iterator.components, sample)
+                        #     self.queue.put(
+                        #         (gss, (([1e-2, self.iterator.ratio, 10], 0), {"args": (sampleBackground, totalMolecules, )}))
+                        #     )
+            self.text = "Tweak by composition"
+            self.widget.close()
 
     def tabChanged(self, index):
         tabMap = {
@@ -176,7 +189,8 @@ class IterationDialog(QDialog):
         self.widget.firstComponentComboBox.clear()
         for component in config.components.components:
             self.widget.firstComponentComboBox.addItem(component.name, component)
-    
+        self.components[0] = config.components.components[0]
+
     def loadSecondComponentsComboBox(self):
         self.widget.secondComponentComboBox.clear()
         for component in config.components.components:
@@ -213,6 +227,7 @@ class IterationDialog(QDialog):
         self.widget.secondComponentComboBox.setEnabled(not state)
         if state:
             self.enableItems(self.widget.firstComponentComboBox)
+            self.components[1] = None
         else:
             other = self.widget.firstComponentComboBox.model().item(self.widget.firstComponentComboBox.currentIndex())            
             self.setItemDisabled(
