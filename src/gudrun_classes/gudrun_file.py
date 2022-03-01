@@ -1177,7 +1177,7 @@ class GudrunFile:
         line = self.getNextToken()
         while line and "}" not in line:
             atomicSymbol, massNo, abundance = line.split()
-            element = Element(atomicSymbol, massNo, abundance)
+            element = Element(atomicSymbol, float(massNo), float(abundance))
             component.addElement(element)
             line = self.getNextToken()
         return component
