@@ -1,3 +1,6 @@
+from src.gudrun_classes import config
+
+
 class DataFiles:
     """
     Class to represent a set of data files belonging to an object.
@@ -41,7 +44,7 @@ class DataFiles:
             String representation of DataFiles.
         """
         self.str = [
-            df + "        " + self.name + " data files"
+            df + config.spc5 + self.name + " data files"
             for df in self.dataFiles
             ]
         return """\n""".join(self.str)

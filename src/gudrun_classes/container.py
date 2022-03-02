@@ -113,13 +113,11 @@ class Container:
             String representation of Container.
         """
 
-        TAB = "          "
-
         nameLine = (
-            f"CONTAINER {self.name}{TAB}"
+            f"CONTAINER {self.name}{config.spc5}"
             if self.name != "CONTAINER"
             else
-            f"CONTAINER{TAB}"
+            f"CONTAINER{config.spc5}"
         )
 
         dataFilesLines = (
@@ -139,25 +137,26 @@ class Container:
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
         geometryLines = (
-            f'{self.upstreamThickness}  {self.downstreamThickness}{TAB}'
-            f'Upstream and downstream thickness [cm]\n'
-            f'{self.angleOfRotation}  {self.sampleWidth}{TAB}'
+            f'{self.upstreamThickness}{config.spc2}'
+            f'{self.downstreamThickness}{config.spc5}'
+            f'Upstream and downstream thicknesses [cm]\n'
+            f'{self.angleOfRotation}{config.spc2}'
+            f'{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
-            if
-            (
+            if (
                 self.geometry == Geometry.SameAsBeam
                 and config.geometry == Geometry.FLATPLATE
             )
             or self.geometry == Geometry.FLATPLATE
             else
-            f'{self.innerRadius}  {self.outerRadius}{TAB}'
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
             f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{TAB}'
+            f'{self.sampleHeight}{config.spc5}'
             f'Sample height (cm)\n'
         )
 
         densityLine = (
-            f'{density}{TAB}'
+            f'{density}{config.spc5}'
             f'Density {units}?\n'
         )
 
@@ -165,30 +164,31 @@ class Container:
             CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
-            f"{crossSectionSource}{TAB}"
+            f"{crossSectionSource}{config.spc5}"
             if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
-            f"{self.crossSectionFilename}{TAB}"
+            f"{self.crossSectionFilename}{config.spc5}"
         )
 
         return (
             f'{nameLine}{{\n\n'
-            f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
+            f'{len(self.dataFiles)}{config.spc2}'
+            f'{self.periodNumber}{config.spc5}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*  0  0{TAB}'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}'
             f'* 0 0 to specify end of composition input\n'
-            f'{Geometry(self.geometry.value).name}{TAB}'
+            f'SameAsBeam{config.spc5}'
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
             f'{crossSectionLine}'
             f'Total cross section source\n'
-            f'{self.tweakFactor}{TAB}'
+            f'{self.tweakFactor}{config.spc5}'
             f'Tweak factor\n'
-            f'{self.scatteringFraction}  {self.attenuationCoefficient}'
-            f'{TAB}'
+            f'{self.scatteringFraction}{config.spc2}'
+            f'{self.attenuationCoefficient}{config.spc5}'
             f'Sample environment scattering fraction '
             f'and attenuation coefficient [per \u212b]\n'
             f'\n}}\n'

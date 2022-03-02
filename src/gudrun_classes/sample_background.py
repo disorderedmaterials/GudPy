@@ -69,7 +69,7 @@ class SampleBackground:
         return (
             f'SAMPLE BACKGROUND{TAB}{{\n\n'
             f'{len(self.dataFiles)}  {self.periodNumber}{TAB}'
-            f'Number of files and period number\n'
+            f'Number of  files and period number\n'
             f'{dataFilesLine}\n'
             f'}}\n'
             f'{SAMPLES}'
