@@ -6,7 +6,7 @@ import os
 import time
 
 def gss(f, bounds, n, maxN, rtol, args=()):
-    print(f"Golden Search: i={n}, f={f}, bounds={bounds}")
+    print(f"Golden Search: i={n}, f={f}, bounds={bounds}, args={args}")
     if n > maxN:
         print(f"WARNING: Maximum number of iterations achieved. Final value: {bounds[1]}")
         return bounds[1]
@@ -22,11 +22,11 @@ def gss(f, bounds, n, maxN, rtol, args=()):
     if f(d, *args) < f(bounds[1], *args):
         # Swap them, making the previous centre the new lower bound.
         bounds = [bounds[1], d, bounds[2]]
-        return gss(f, bounds, n+1, args=args)
+        return gss(f, bounds, n+1, maxN, rtol, args=args)
     # Otherwise, swap and reverse.
     else:
         bounds = [d, bounds[1], bounds[0]]
-        return gss(f, bounds, n+1, args=args)
+        return gss(f, bounds, n+1, maxN, rtol, args=args)
 
 def calculateTotalMolecules(components, sample):
     print(components)
@@ -78,9 +78,9 @@ class CompositionIterator():
         self.components = [component]
         self.ratio = ratio
     
-    def setComponents(self, components, ratios = [1,1]):
-        self.components = components
-        self.ratio = ratios
+    def setComponents(self, components, ratio=1):
+        self.components = [c for c in components if c]
+        self.ratio = ratio
 
     def processSingleComponent(self, x, sampleBackground):
         gudrunFile = deepcopy(self.gudrunFile)

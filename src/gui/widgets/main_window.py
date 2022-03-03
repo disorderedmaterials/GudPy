@@ -80,7 +80,7 @@ from src.gudrun_classes.gud_file import GudFile
 
 from src.scripts.utils import breplace, nthint
 
-from src.gui.widgets.worker import Worker
+from src.gui.widgets.worker import CompositionWorker
 
 import os
 import sys
@@ -1052,31 +1052,6 @@ class GudPyMainWindow(QMainWindow):
             else:
                 self.nextIterableProc()
 
-    # def compositionIteration(self, x, sampleBackground, components):
-    #     gudrunFile = deepcopy(self.gudrunFile)
-    #     gudrunFile.sampleBackgrounds = [sampleBackground]
-
-    #     x = abs(x)
-
-    #     if len(components) == 1:
-    #         weightedComponents = [
-    #             wc for wc in sampleBackground.samples[0].composition.
-    #             weightedComponents
-    #             for c in components if c.eq(wc.component)
-    #         ]
-    #         for c in weightedComponents:
-    #             c.ratio = x
-            
-    #         sampleBackground.samples[0].composition.translate()
-    #         proc, func, args = gudrunFile.dcs(
-    #             path = os.path.join(
-    #                 gudrunFile.instrument.GudrunInputFileDir,
-    #                 gudrunFile.outpath
-    #             )
-    #         )
-    #         func(*args)
-    #         proc.
-
     def finishedCompositionIterations(self, sample, ratio):
         print("Finished composition iterations!!!")
         print(f"{sample.name} new ratio is {ratio}.")
@@ -1087,79 +1062,23 @@ class GudPyMainWindow(QMainWindow):
             f" ({sample.name})"
         )
 
-    def compositionCostFunction(self, x, sampleBackground, totalMolecules=None):
-
-        gf = deepcopy(self.gudrunFile)
-        gf.sampleBackgrounds = [sampleBackground]
-
-        x = abs(x)
-        filter(None, self.iterator.components)
-        if len(self.iterator.components) == 1:
-            weightedComponents = [
-                wc for wc in sampleBackground.samples[0].composition.
-                weightedComponents
-                for c in self.iterator.components if c.eq(wc.component)
-            ]
-            for c in weightedComponents:
-                c.ratio = x
-
-        else:
-            wcA = wcB = None
-            for weightedComponent in sampleBackground.samples[0].composition.weightedComponents:
-                if weightedComponent.component.eq(self.iterator.components[0]):
-                    wcA = weightedComponent
-                elif weightedComponent.component.eq(self.iterator.components[1]):
-                    wcB = weightedComponent
-
-            if wcA and wcB:
-                wcA.ratio = x
-                wcB.ratio = abs(totalMolecules - x)
-            
-        sampleBackground.samples[0].composition.translate()
-        self.proc, func, args = gf.dcs(
-            path = os.path.join(
-                gf.instrument.GudrunInputFileDir,
-                gf.outpath
-            )
-        )
-
-        func(*args)
-        self.proc.setWorkingDirectory(
-            gf.instrument.GudrunInputFileDir
-        )
-        self.proc.start()
-        self.proc.waitForFinished()
-        gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
-            gf.instrument.dataFileType, "gud"
-        )
-        gudFile = GudFile(
-            os.path.join(
-                gf.instrument.GudrunInputFileDir, gudPath
-            )
-        )
-
-        print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2)
-        if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
-            return 0
-        else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
-
     def nextCompositionIteration(self):
-        func, (args, kwargs) = self.queue.get()
-        print(func, args, kwargs)
-        self.worker = Worker()
-        print("Created worked.")
+        args, kwargs = self.queue.get()
+        print(args, kwargs)
+        self.worker = CompositionWorker(args, kwargs)
+        print("Created worker.")
         self.workerThread = QThread()
-        print("Created worker thread.")
         self.worker.moveToThread(self.workerThread)
         print("Moved worker to worker thread.")
-        self.worker.started.connect(self.startedCompositionIteration)
-        self.workerThread.started.connect(lambda: self.worker.work(func, self.compositionCostFunction, args, kwargs))
+        self.worker.work()
+        self.workerThread.start()
+        # self.worker.started.connect(self.startedCompositionIteration)
+        print("Started worker.")
         if not self.queue.empty():
-            self.worker.finished.connect(self.nextCompositionIteration)
+            # self.worker.finished.connect(self.nextCompositionIteration)
             self.currentIteration+=1
-        else:
-            self.worker.finished.connect(self.finishedCompositionIterations)
+        # else:
+            # self.worker.finished.connect(self.finishedCompositionIterations)
 
     def iterateByComposition(self):
         if not self.iterator.components:

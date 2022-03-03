@@ -157,7 +157,7 @@ class IterationDialog(QDialog):
                         sb.samples = [sample]
                         if len(self.iterator.components) == 1:
                             self.queue.put(
-                                (gss, (([1e-2, self.iterator.ratio, 10], 0), {"args": (sampleBackground, )}))
+                                (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components)})
                             )
                         # elif len(self.iterator.components) == 2:
                         #     totalMolecules = calculateTotalMolecules(self.iterator.components, sample)
