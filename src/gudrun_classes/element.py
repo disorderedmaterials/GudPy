@@ -30,7 +30,7 @@ class Element:
             Abundance of the element.
         """
         self.atomicSymbol = atomicSymbol
-        self.massNo = massNo
+        self.massNo = int(massNo) if massNo % 1 == 0 else massNo
         self.abundance = abundance
 
     def __str__(self):
