@@ -122,7 +122,7 @@ class TestGudPyIO(TestCase):
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
-                "Normalisation", [Element("V", 0, 1.0)]
+                "Normalisation", [Element("V", 0.0, 1.0)]
             ),
             "geometry": Geometry.SameAsBeam,
             "upstreamThickness": 0.15,
@@ -183,8 +183,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerA["composition"].elements = [
-            Element("Ti", 0, 7.16),
-            Element("Zr", 0, 3.438)
+            Element("Ti", 0.0, 7.16),
+            Element("Zr", 0.0, 3.438)
         ]
 
         self.expectedContainerB = {
@@ -227,8 +227,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerB["composition"].elements = [
-            Element("Ti", 0, 7.16),
-            Element("Zr", 0, 3.438)
+            Element("Ti", 0.0, 7.16),
+            Element("Zr", 0.0, 3.438)
         ]
 
         self.expectedContainerC = {
@@ -266,8 +266,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerC["composition"].elements = [
-            Element("Ti", 0, 7.16),
-            Element("Zr", 0, 3.438)
+            Element("Ti", 0.0, 7.16),
+            Element("Zr", 0.0, 3.438)
         ]
 
         self.expectedContainerD = {
@@ -305,8 +305,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedContainerD["composition"].elements = [
-            Element("Ti", 0, 7.16),
-            Element("Zr", 0, 3.438)
+            Element("Ti", 0.0, 7.16),
+            Element("Zr", 0.0, 3.438)
         ]
 
         self.expectedSampleA = {
@@ -357,8 +357,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleA["composition"].elements = [
-            Element("H", 0, 2.0),
-            Element("O", 0, 1.0)
+            Element("H", 0.0, 2.0),
+            Element("O", 0.0, 1.0)
         ]
 
         self.expectedSampleB = {
@@ -409,8 +409,8 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleB["composition"].elements = [
-            Element("H", 2, 2.0),
-            Element("O", 0, 1.0)
+            Element("H", 2.0, 2.0),
+            Element("O", 0.0, 1.0)
         ]
 
         self.expectedSampleC = {
@@ -461,9 +461,9 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleC["composition"].elements = [
-                    Element("H", 0, 1.0),
-                    Element("O", 0, 1.0),
-                    Element("H", 2, 1.0),
+                    Element("H", 0.0, 1.0),
+                    Element("O", 0.0, 1.0),
+                    Element("H", 2.0, 1.0),
         ]
 
         self.expectedSampleD = {
@@ -514,9 +514,9 @@ class TestGudPyIO(TestCase):
         }
 
         self.expectedSampleD["composition"].elements = [
-            Element("H", 0, 1.281),
-            Element("O", 0, 1.0),
-            Element("H", 2, 0.7185)
+            Element("H", 0.0, 1.281),
+            Element("O", 0.0, 1.0),
+            Element("H", 2.0, 0.7185)
         ]
 
         self.expectedSampleBackground = {
