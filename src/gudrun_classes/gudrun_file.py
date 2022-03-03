@@ -635,7 +635,7 @@ class GudrunFile:
             # then the panel has been parsed.
             while "end of composition input" not in line:
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
@@ -865,7 +865,7 @@ class GudrunFile:
             while "end of composition input" not in line:
 
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
@@ -1067,7 +1067,7 @@ class GudrunFile:
             while "end of composition input" not in line:
 
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
