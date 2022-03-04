@@ -5,9 +5,11 @@ from src.gudrun_classes.gud_file import GudFile
 import os
 import time
 
+from src.gudrun_classes.gudrun_file import GudrunFile
+
 def gss(f, bounds, n, maxN, rtol, args=()):
     print(f"Golden Search: i={n}, f={f}, bounds={bounds}, args={args}")
-    if n > maxN:
+    if n >= maxN:
         print(f"WARNING: Maximum number of iterations achieved. Final value: {bounds[1]}")
         return bounds[1]
 
@@ -169,3 +171,13 @@ class CompositionIterator():
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
+
+if __name__ == "__main__":
+    import sys
+
+    path = sys.argv[1]
+    n = sys.argv[2]
+    if len(sys.argv) >=2:
+        rtol = sys.argv[3]
+    else:
+        rtol = None

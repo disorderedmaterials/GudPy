@@ -34,6 +34,7 @@ from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
+from src.gui.widgets.dialogs.composition_iteration_dialog import CompositionIterationDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 
@@ -185,6 +186,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
+        loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -1052,9 +1054,30 @@ class GudPyMainWindow(QMainWindow):
             else:
                 self.nextIterableProc()
 
-    def finishedCompositionIterations(self, sample, ratio):
-        print("Finished composition iterations!!!")
-        print(f"{sample.name} new ratio is {ratio}.")
+    def finishedCompositionIteration(self, originalSample, updatedSample):
+        self.compositionMap[originalSample] = updatedSample
+        self.mainWidget.progressBar.setValue(int((self.currentIteration/self.totalIterations)*100))
+        print("Finished composition iteration!!!")
+        if not self.queue.empty():
+            self.nextCompositionIteration()
+        else:
+            print("Finished all iterations.")
+            self.finishedCompositionIterations()
+
+    def finishedCompositionIterations(self):
+        print(self.compositionMap)
+        for original, new in self.compositionMap.items():
+            dialog = CompositionIterationDialog(new, self.mainWidget)
+            result = dialog.widget.exec()
+            if result:
+                original.composition = new.composition
+                if self.sampleSlots.sample == original:
+                    self.sampleSlots.setSample(original)
+            print(result)
+        self.setControlsEnabled(True)
+        self.mainWidget.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.queue = Queue()
 
     def startedCompositionIteration(self, sample):
         self.mainWidget.currentTaskLabel.setText(
@@ -1063,28 +1086,29 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def nextCompositionIteration(self):
-        args, kwargs = self.queue.get()
-        print(args, kwargs)
-        self.worker = CompositionWorker(args, kwargs)
-        print("Created worker.")
+        args, kwargs, sample = self.queue.get()
+        print(args, kwargs, sample.name)
+        self.worker = CompositionWorker(args, kwargs, sample)
+        self.worker.started.connect(self.startedCompositionIteration)
         self.workerThread = QThread()
         self.worker.moveToThread(self.workerThread)
-        print("Moved worker to worker thread.")
-        self.worker.work()
+        self.worker.finished.connect(self.workerThread.quit)
+        self.workerThread.started.connect(self.worker.work)
         self.workerThread.start()
-        # self.worker.started.connect(self.startedCompositionIteration)
         print("Started worker.")
-        if not self.queue.empty():
-            # self.worker.finished.connect(self.nextCompositionIteration)
-            self.currentIteration+=1
-        # else:
-            # self.worker.finished.connect(self.finishedCompositionIterations)
+        self.worker.finished.connect(self.finishedCompositionIteration)
+        self.currentIteration+=1
 
     def iterateByComposition(self):
         if not self.iterator.components:
             self.setControlsEnabled(True)
             return
         else:
+            self.compositionMap = {}
+            self.totalIterations = len(
+                [s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample and len([wc for c in self.iterator.components for wc in s.composition.weightedComponents if wc.component.eq(c) ])]
+            )
+            print(self.totalIterations)
             self.nextCompositionIteration()
 
     def nextIteration(self):

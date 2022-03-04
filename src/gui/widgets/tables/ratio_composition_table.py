@@ -283,25 +283,28 @@ class RatioCompositionTable(QTableView):
         """
         Seeks up the widget heirarchy, and then collects all compositions.
         """
-        ancestor = self.parent
-        while not isinstance(ancestor, QMainWindow):
-            ancestor = ancestor.parent
-            if callable(ancestor):
-                ancestor = ancestor()
-        self.compositions.clear()
-        self.compositions = [
-                (
-                    "Normalisation",
-                    ancestor.gudrunFile.normalisation.composition
-                )
-            ]
-        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
-                self.compositions.append((sample.name, sample.composition))
-                for container in sample.containers:
-                    self.compositions.append(
-                        (container.name, container.composition)
+        try:
+            ancestor = self.parent
+            while not isinstance(ancestor, QMainWindow):
+                ancestor = ancestor.parent
+                if callable(ancestor):
+                    ancestor = ancestor()
+            self.compositions.clear()
+            self.compositions = [
+                    (
+                        "Normalisation",
+                        ancestor.gudrunFile.normalisation.composition
                     )
+                ]
+            for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    self.compositions.append((sample.name, sample.composition))
+                    for container in sample.containers:
+                        self.compositions.append(
+                            (container.name, container.composition)
+                        )
+        except AttributeError:
+            pass
 
     def copyFrom(self, composition):
         """

@@ -144,26 +144,20 @@ class IterationDialog(QDialog):
                 self.gudrunFile
             )
             self.iterator.setComponents(self.components)
-            # filter(None, self.components)
-            # if len(self.components) == 1:
-            #     self.iterator.setComponent([self.components[0]])
-            # else:
-            #     self.iterator.setComponents(self.components)
             self.queue = Queue()
             for sampleBackground in self.gudrunFile.sampleBackgrounds:
                 for sample in sampleBackground.samples:
                     if sample.runThisSample:
                         sb = deepcopy(sampleBackground)
-                        sb.samples = [sample]
+                        sb.samples = [deepcopy(sample)]
                         if len(self.iterator.components) == 1:
                             self.queue.put(
-                                (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components)})
+                                (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components)}, sample)
                             )
-                        # elif len(self.iterator.components) == 2:
-                        #     totalMolecules = calculateTotalMolecules(self.iterator.components, sample)
-                        #     self.queue.put(
-                        #         (gss, (([1e-2, self.iterator.ratio, 10], 0), {"args": (sampleBackground, totalMolecules, )}))
-                        #     )
+                        elif len(self.iterator.components) == 2:
+                            self.queue.put(
+                                (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components, calculateTotalMolecules(self.iterator.components, sample))}, sample)
+                            )
             self.text = "Tweak by composition"
             self.widget.close()
 

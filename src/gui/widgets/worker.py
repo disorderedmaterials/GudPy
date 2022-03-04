@@ -6,19 +6,23 @@ from src.gudrun_classes.composition_iterator import gss
 from copy import deepcopy
 
 class CompositionWorker(QObject):
-    finished = Signal(Sample, float)
+    finished = Signal(Sample, Sample)
     started = Signal(Sample)
+    nextIteration = Signal(int)
 
-    def __init__(self, args, kwargs):
+    def __init__(self, args, kwargs, sample):
         self.args = args
         self.kwargs = kwargs
+        self.sample = sample
+        self.updatedSample = None
         super(CompositionWorker, self).__init__()
 
     def work(self):
-        # self.started.emit(Sample())
-        ratio = gss(self.costup, *self.args, **self.kwargs)
-        print(ratio)
-        # self.finished.emit(Sample(), ratio)
+        self.started.emit(self.sample)
+        print(self.sample.composition)
+        gss(self.costup, *self.args, **self.kwargs)
+        self.finished.emit(self.sample, self.updatedSample)
+        print(self.updatedSample.composition)
 
     def costup(self, x, gudrunFile, sampleBackground, components, totalMolecules=None):
 
@@ -47,18 +51,9 @@ class CompositionWorker(QObject):
                 wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
+        self.updatedSample = sampleBackground.samples[0]
+        gf.process()
 
-        # print(gf.process())
-
-        # func(*args)
-        # self.proc.setWorkingDirectory(
-        #     gf.instrument.GudrunInputFileDir
-        # )
-        # self.finished = False
-        # self.proc.finished.connect(self.setFinished)
-        # self.proc.start()
-        # while not self.finished:
-        #     self.thread().sleep(100)
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
             gudrunFile.instrument.dataFileType,
             "gud"
@@ -69,11 +64,11 @@ class CompositionWorker(QObject):
                 gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
         )
+
         print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2)
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
-    def setFinished(self):
-        self.finished = True
+
