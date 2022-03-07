@@ -1115,7 +1115,10 @@ class GudPyMainWindow(QMainWindow):
         if not self.iterator.components:
             self.setControlsEnabled(True)
             return
+        elif self.queue.empty():
+            QMessageBox.warning(self.mainWidget, "GudPy Warning", "No iterations were queued. It's likely no Samples selected for analysis use the Component(s) selected for iteration.")
         else:
+            print(list(self.queue.queue))
             self.compositionMap = {}
             self.totalIterations = len(
                 [s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples if s.runThisSample and len([wc for c in self.iterator.components for wc in s.composition.weightedComponents if wc.component.eq(c) ])]
