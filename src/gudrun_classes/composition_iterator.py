@@ -1,11 +1,9 @@
 from copy import deepcopy
 import math
-from random import sample
 from src.gudrun_classes.gud_file import GudFile
 import os
 import time
 
-from src.gudrun_classes.gudrun_file import GudrunFile
 
 def gss(f, bounds, n, maxN, rtol, args=()):
     print(f"Golden Search: i={n}, f={f}, bounds={bounds}, args={args}")
@@ -21,7 +19,13 @@ def gss(f, bounds, n, maxN, rtol, args=()):
     d = bounds[1] + (2 - (1 + math.sqrt(5))/2)*(bounds[2]-bounds[1])
 
     # If the new centre evaluates to less than the current
-    if f(d, *args) < f(bounds[1], *args):
+    fd1 = f(d, *args)
+    if fd1 is None:
+        return None
+    fd2 = f(bounds[1], *args)
+    if fd2 is None:
+        return None
+    if fd1 < fd2:
         # Swap them, making the previous centre the new lower bound.
         bounds = [bounds[1], d, bounds[2]]
         return gss(f, bounds, n+1, maxN, rtol, args=args)
@@ -31,7 +35,6 @@ def gss(f, bounds, n, maxN, rtol, args=()):
         return gss(f, bounds, n+1, maxN, rtol, args=args)
 
 def calculateTotalMolecules(components, sample):
-    print(components)
     total = 0
     for wc in sample.composition.weightedComponents:
         for c in components:

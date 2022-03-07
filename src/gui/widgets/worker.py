@@ -1,3 +1,5 @@
+from distutils.log import ERROR
+from sys import stdout
 from PySide6.QtCore import QObject, Signal
 import os
 from src.gudrun_classes.gud_file import GudFile
@@ -9,20 +11,21 @@ class CompositionWorker(QObject):
     finished = Signal(Sample, Sample)
     started = Signal(Sample)
     nextIteration = Signal(int)
+    errorOccured = Signal(str)
 
     def __init__(self, args, kwargs, sample):
         self.args = args
         self.kwargs = kwargs
         self.sample = sample
         self.updatedSample = None
+        self.errored = False
         super(CompositionWorker, self).__init__()
 
     def work(self):
         self.started.emit(self.sample)
-        print(self.sample.composition)
         gss(self.costup, *self.args, **self.kwargs)
-        self.finished.emit(self.sample, self.updatedSample)
-        print(self.updatedSample.composition)
+        if not self.errored:
+            self.finished.emit(self.sample, self.updatedSample)
 
     def costup(self, x, gudrunFile, sampleBackground, components, totalMolecules=None):
 
@@ -30,7 +33,6 @@ class CompositionWorker(QObject):
         gf.sampleBackgrounds = [sampleBackground]
 
         x = abs(x)
-        print(x)
 
         if len(components) == 1:
 
@@ -52,7 +54,19 @@ class CompositionWorker(QObject):
 
         sampleBackground.samples[0].composition.translate()
         self.updatedSample = sampleBackground.samples[0]
-        gf.process()
+        result = gf.process()
+        ERROR_KWDS = [
+            "does not exist",
+            "error",
+            "Error"
+        ]
+        if [KWD for KWD in ERROR_KWDS if KWD in result.stdout]:
+            self.errorOccured.emit(result.stdout)
+            self.errored = True
+            return None
+        elif result.stderr:
+            self.errorOccured.emit(result.stderr)
+            return None
 
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
             gudrunFile.instrument.dataFileType,
@@ -63,9 +77,7 @@ class CompositionWorker(QObject):
             os.path.join(
                 gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
-        )
-
-        print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2)
+        )        
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:

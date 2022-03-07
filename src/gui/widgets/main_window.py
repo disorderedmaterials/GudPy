@@ -1065,7 +1065,6 @@ class GudPyMainWindow(QMainWindow):
             self.finishedCompositionIterations()
 
     def finishedCompositionIterations(self):
-        print(self.compositionMap)
         for original, new in self.compositionMap.items():
             dialog = CompositionIterationDialog(new, self.mainWidget)
             result = dialog.widget.exec()
@@ -1073,7 +1072,6 @@ class GudPyMainWindow(QMainWindow):
                 original.composition = new.composition
                 if self.sampleSlots.sample == original:
                     self.sampleSlots.setSample(original)
-            print(result)
         self.setControlsEnabled(True)
         self.mainWidget.progressBar.setValue(0)
         self.mainWidget.currentTaskLabel.setText("No task running.")
@@ -1084,6 +1082,18 @@ class GudPyMainWindow(QMainWindow):
             f"{self.text}"
             f" ({sample.name})"
         )
+
+    def errorCompositionIteration(self, output):
+        QMessageBox.critical(
+            self.mainWidget, "GudPy Error",
+            "An error occured whilst iterating by composition."
+            " Please check the output to see what went wrong."
+        )
+        self.setControlsEnabled(True)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.progressBar.setValue(0)
+        self.outputSlots.setOutput(output, "gudrun_dcs")
+        self.queue = Queue()
 
     def nextCompositionIteration(self):
         args, kwargs, sample = self.queue.get()
@@ -1096,6 +1106,8 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.started.connect(self.worker.work)
         self.workerThread.start()
         print("Started worker.")
+        self.worker.errorOccured.connect(self.errorCompositionIteration)
+        self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
         self.currentIteration+=1
 

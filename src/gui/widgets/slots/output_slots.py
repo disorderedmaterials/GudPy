@@ -27,6 +27,9 @@ class OutputSlots():
                     self.fmtMap["General"] = [
                         0, len(self.output.splitlines(keepends=True))
                     ]
+                    self.widget.outputFocusList.clear()
+                    self.widget.outputFocusList.addItems(list(self.fmtMap.keys()))
+                    self.widget.outputFocusList.setCurrentRow(0)
                     return
 
                 sbindicies = []
