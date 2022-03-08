@@ -19,11 +19,12 @@ class CompositionWorker(QObject):
         self.sample = sample
         self.updatedSample = None
         self.errored = False
+        self.currentIteration = 0
         super(CompositionWorker, self).__init__()
 
     def work(self):
         self.started.emit(self.sample)
-        gss(self.costup, *self.args, **self.kwargs)
+        gss(self.costup, *self.args, **self.kwargs, startIterFunc=self.nextIteration.emit)
         if not self.errored:
             self.finished.emit(self.sample, self.updatedSample)
 
@@ -77,7 +78,8 @@ class CompositionWorker(QObject):
             os.path.join(
                 gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
-        )        
+        )
+
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:

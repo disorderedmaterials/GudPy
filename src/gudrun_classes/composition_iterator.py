@@ -5,8 +5,10 @@ import os
 import time
 
 
-def gss(f, bounds, n, maxN, rtol, args=()):
+def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
     print(f"Golden Search: i={n}, f={f}, bounds={bounds}, args={args}")
+    if startIterFunc:
+        startIterFunc(n)
     if n >= maxN:
         print(f"WARNING: Maximum number of iterations achieved. Final value: {bounds[1]}")
         return bounds[1]
@@ -28,11 +30,11 @@ def gss(f, bounds, n, maxN, rtol, args=()):
     if fd1 < fd2:
         # Swap them, making the previous centre the new lower bound.
         bounds = [bounds[1], d, bounds[2]]
-        return gss(f, bounds, n+1, maxN, rtol, args=args)
+        return gss(f, bounds, n+1, maxN, rtol, args=args, startIterFunc=startIterFunc)
     # Otherwise, swap and reverse.
     else:
         bounds = [d, bounds[1], bounds[0]]
-        return gss(f, bounds, n+1, maxN, rtol, args=args)
+        return gss(f, bounds, n+1, maxN, rtol, args=args, startIterFunc=startIterFunc)
 
 def calculateTotalMolecules(components, sample):
     total = 0

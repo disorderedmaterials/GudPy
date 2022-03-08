@@ -1095,6 +1095,10 @@ class GudPyMainWindow(QMainWindow):
         self.outputSlots.setOutput(output, "gudrun_dcs")
         self.queue = Queue()
 
+    def progressCompositionIteration(self, currentIteration):
+        progress = (currentIteration/self.numberIterations) * (self.currentIteration/self.totalIterations)
+        self.mainWidget.progressBar.setValue(int(progress*100))
+
     def nextCompositionIteration(self):
         args, kwargs, sample = self.queue.get()
         print(args, kwargs, sample.name)
@@ -1103,9 +1107,9 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread = QThread()
         self.worker.moveToThread(self.workerThread)
         self.worker.finished.connect(self.workerThread.quit)
+        self.worker.nextIteration.connect(self.progressCompositionIteration)
         self.workerThread.started.connect(self.worker.work)
         self.workerThread.start()
-        print("Started worker.")
         self.worker.errorOccured.connect(self.errorCompositionIteration)
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
