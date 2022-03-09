@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from copy import deepcopy
 import sys
 from PySide6.QtCore import QFile, Qt
@@ -7,8 +6,9 @@ from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
 from src.gudrun_classes import config
-from src.gudrun_classes.composition_iterator import CompositionIterator, gss, calculateTotalMolecules
-from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.composition_iterator import (
+    CompositionIterator, calculateTotalMolecules
+)
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
@@ -148,31 +148,76 @@ class IterationDialog(QDialog):
             for sampleBackground in self.gudrunFile.sampleBackgrounds:
                 for sample in sampleBackground.samples:
                     if sample.runThisSample:
-                        if [wc for wc in sample.composition.weightedComponents if self.components[0].eq(wc.component)]:
+                        if [
+                            wc for wc in sample.composition.weightedComponents
+                            if self.components[0].eq(wc.component)
+                        ]:
                             sb = deepcopy(sampleBackground)
                             sb.samples = [deepcopy(sample)]
                             if len(self.iterator.components) == 1:
                                 self.queue.put(
-                                    (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components)}, sample)
+                                    (
+                                        (
+                                            [1e-2, self.iterator.ratio, 10],
+                                            0,
+                                            self.numberIterations,
+                                            self.rtol
+                                        ),
+                                        {
+                                            "args": (
+                                                self.gudrunFile,
+                                                sb,
+                                                self.iterator.components
+                                            )
+                                        },
+                                        sample
+                                    )
                                 )
                             elif len(self.iterator.components) == 2:
                                 self.queue.put(
-                                    (([1e-2, self.iterator.ratio, 10], 0, self.numberIterations, self.rtol), {"args": (self.gudrunFile, sb, self.iterator.components, calculateTotalMolecules(self.iterator.components, sample))}, sample)
+                                    (
+                                        (
+                                            [1e-2, self.iterator.ratio, 10],
+                                            0,
+                                            self.numberIterations, self.rtol
+                                        ),
+                                        {
+                                            "args": (
+                                                self.gudrunFile,
+                                                sb,
+                                                self.iterator.components,
+                                                calculateTotalMolecules(
+                                                    self.iterator.components,
+                                                    sample
+                                                )
+                                            )
+                                        },
+                                        sample
+                                    )
                                 )
             self.text = "Tweak by composition"
             self.widget.close()
 
     def tabChanged(self, index):
         tabMap = {
-            0: (self.widget.inelasticityIterationsSpinBox.value(), Iterables.WAVELENGTH),
-            1: (self.widget.tweakFactorIterationsSpinBox.value(), Iterables.TWEAK_FACTOR),
-            2: (self.widget.densityIterationsSpinBox.value(), Iterables.DENSITY),
+            0: (
+                self.widget.inelasticityIterationsSpinBox.value(),
+                Iterables.WAVELENGTH
+                ),
+            1: (
+                self.widget.tweakFactorIterationsSpinBox.value(),
+                Iterables.TWEAK_FACTOR
+                ),
+            2: (
+                self.widget.densityIterationsSpinBox.value(),
+                Iterables.DENSITY
+                ),
             3: (
                 self.widget.compositionIterationsSpinBox.value(),
                 Iterables.COMPOSITION_SINGLE_COMPONENT
                 if self.widget.singleComponentCheckBox.isChecked()
                 else Iterables.COMPOSITION_TWO_COMPONENTS
-            )
+                )
         }
 
         self.numberIterations, self.iterateBy = tabMap[index]
@@ -183,13 +228,17 @@ class IterationDialog(QDialog):
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
         for component in config.components.components:
-            self.widget.firstComponentComboBox.addItem(component.name, component)
+            self.widget.firstComponentComboBox.addItem(
+                component.name, component
+            )
         self.components[0] = config.components.components[0]
 
     def loadSecondComponentsComboBox(self):
         self.widget.secondComponentComboBox.clear()
         for component in config.components.components:
-            self.widget.secondComponentComboBox.addItem(component.name, component)
+            self.widget.secondComponentComboBox.addItem(
+                component.name, component
+            )
 
     def firstComponentChanged(self, index):
         self.components[0] = self.widget.firstComponentComboBox.itemData(index)
@@ -200,7 +249,9 @@ class IterationDialog(QDialog):
         )
 
     def secondComponentChanged(self, index):
-        self.components[1] = self.widget.secondComponentComboBox.itemData(index)
+        self.components[1] = (
+            self.widget.secondComponentComboBox.itemData(index)
+        )
         other = self.widget.firstComponentComboBox.model().item(index)
         self.setItemDisabled(
             self.widget.firstComponentComboBox,
@@ -212,7 +263,9 @@ class IterationDialog(QDialog):
 
     def enableItems(self, comboBox):
         for i in range(len(config.components.components)):
-            comboBox.model().item(i).setFlags(comboBox.model().item(i).flags() | Qt.ItemIsEnabled)
+            comboBox.model().item(i).setFlags(
+                comboBox.model().item(i).flags() | Qt.ItemIsEnabled
+            )
 
     def setItemDisabled(self, comboBox, item):
         self.enableItems(comboBox)
@@ -224,14 +277,21 @@ class IterationDialog(QDialog):
             self.enableItems(self.widget.firstComponentComboBox)
             self.components[1] = None
         else:
-            other = self.widget.firstComponentComboBox.model().item(self.widget.firstComponentComboBox.currentIndex())            
+            other = self.widget.firstComponentComboBox.model().item(
+                self.widget.firstComponentComboBox.currentIndex()
+            )
             self.setItemDisabled(
                 self.widget.secondComponentComboBox,
                 other
             )
-            if self.widget.firstComponentComboBox.currentIndex() == self.widget.secondComponentComboBox.currentIndex():
+            if (
+                self.widget.firstComponentComboBox.currentIndex()
+                == self.widget.secondComponentComboBox.currentIndex()
+            ):
                 self.widget.secondComponentComboBox.setCurrentIndex(0)
-            other = self.widget.secondComponentComboBox.model().item(self.widget.secondComponentComboBox.currentIndex())            
+            other = self.widget.secondComponentComboBox.model().item(
+                self.widget.secondComponentComboBox.currentIndex()
+            )
             self.setItemDisabled(
                 self.widget.firstComponentComboBox,
                 other
@@ -261,21 +321,41 @@ class IterationDialog(QDialog):
             self.tabChanged
         )
 
-        self.widget.inelasticityIterationsSpinBox.valueChanged.connect(self.numberIterationsChanged)
-        self.widget.tweakFactorIterationsSpinBox.valueChanged.connect(self.numberIterationsChanged)
-        self.widget.densityIterationsSpinBox.valueChanged.connect(self.numberIterationsChanged)
-        self.widget.compositionIterationsSpinBox.valueChanged.connect(self.numberIterationsChanged)
+        self.widget.inelasticityIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+        self.widget.tweakFactorIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+        self.widget.densityIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+        self.widget.compositionIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
 
         self.loadFirstComponentsComboBox()
         self.loadSecondComponentsComboBox()
 
-        self.widget.firstComponentComboBox.currentIndexChanged.connect(self.firstComponentChanged)
-        self.widget.secondComponentComboBox.currentIndexChanged.connect(self.secondComponentChanged)
+        self.widget.firstComponentComboBox.currentIndexChanged.connect(
+            self.firstComponentChanged
+        )
+        self.widget.secondComponentComboBox.currentIndexChanged.connect(
+            self.secondComponentChanged
+        )
 
-        self.widget.compositionToleranceSpinBox.valueChanged.connect(self.compositionRtolChanged)
-        self.widget.singleComponentCheckBox.toggled.connect(self.toggleUseSingleComponent)
+        self.widget.compositionToleranceSpinBox.valueChanged.connect(
+            self.compositionRtolChanged
+        )
+        self.widget.singleComponentCheckBox.toggled.connect(
+            self.toggleUseSingleComponent
+        )
 
-        self.widget.iterateInelasticityPushButton.clicked.connect(self.iterate)
-        self.widget.iterateTweakFactorPushButton.clicked.connect(self.iterate)
+        self.widget.iterateInelasticityPushButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateTweakFactorPushButton.clicked.connect(
+            self.iterate
+        )
         self.widget.iterateDensityButton.clicked.connect(self.iterate)
         self.widget.iterateCompositionButton.clicked.connect(self.iterate)
