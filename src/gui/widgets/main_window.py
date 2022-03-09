@@ -1144,6 +1144,7 @@ class GudPyMainWindow(QMainWindow):
     def setControlsEnabled(self, state):
         self.mainWidget.instrumentPage.setEnabled(state)
         self.mainWidget.beamPage.setEnabled(state)
+        self.mainWidget.componentPage.setEnabled(state)
         self.mainWidget.normalisationPage.setEnabled(state)
         self.mainWidget.sampleTab.setEnabled(state)
         self.mainWidget.advancedTab.setEnabled(state)
