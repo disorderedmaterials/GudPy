@@ -505,10 +505,10 @@ class InstrumentSlots():
         self.instrument.dataFileType = self.widget.dataFileTypeCombo.itemText(
             index
         )
-        self.nexusDefintionFileLineEdit.setEnabled(
+        self.widget.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
-        self.browseNexusDefinitionButton.setEnabled(
+        self.widget.browseNexusDefinitionButton.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
         if not self.widgetsRefreshing:

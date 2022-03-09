@@ -337,8 +337,12 @@ class GudrunFile:
 
             line = self.getNextToken()
             while "to end input of specified values" not in line:
+                group = nthint(line, 0)
+                xMin = nthfloat(line, 1)
+                xMax = nthfloat(line, 2)
+                backgroundFactor = nthfloat(line, 3)
                 self.instrument.groupingParameterPanel.append(
-                    tuple(firstNInts(line, 4))
+                    (group, xMin, xMax, backgroundFactor)
                 )
                 line = self.getNextToken()
 
@@ -1482,7 +1486,11 @@ class GudrunFile:
             if hasattr(sys, '_MEIPASS'):
                 gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
             else:
-                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                gudrun_dcs = resolve(
+                    os.path.join(
+                        config.__rootdir__, "bin"
+                    ), f"gudrun_dcs{SUFFIX}"
+                )
             if not os.path.exists(gudrun_dcs):
                 return FileNotFoundError()
             else:
