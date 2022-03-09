@@ -49,18 +49,22 @@ class TweakFactorIterator():
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            for sample in [s for s in sampleBackground.samples if s.runThisSample]:
-                    gudPath = sample.dataFiles.dataFiles[0].replace(
-                                self.gudrunFile.instrument.dataFileType,
-                                "gud"
-                            )
-                    gudFile = GudFile(
-                        os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+            for sample in [
+                s for s in sampleBackground.samples
+                if s.runThisSample
+            ]:
+                gudPath = sample.dataFiles.dataFiles[0].replace(
+                            self.gudrunFile.instrument.dataFileType,
+                            "gud"
                         )
+                gudFile = GudFile(
+                    os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        gudPath
                     )
-                    tweakFactor = float(gudFile.suggestedTweakFactor)
-                    sample.sampleTweakFactor = tweakFactor
+                )
+                tweakFactor = float(gudFile.suggestedTweakFactor)
+                sample.sampleTweakFactor = tweakFactor
 
     def iterate(self, n):
         """

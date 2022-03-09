@@ -10,14 +10,23 @@ def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
     if startIterFunc:
         startIterFunc(n)
     if n >= maxN:
-        print(f"WARNING: Maximum number of iterations achieved. Final value: {bounds[1]}")
+        print(
+            "WARNING: Maximum number of iterations achieved. "
+            f"Final value: {bounds[1]}"
+        )
         return bounds[1]
 
-    if (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])])) < (rtol/100)**2:
-        print(f"CONVERGANCE at i={n}. Final value: {(bounds[2] + bounds[1]) / 2}")
+    if (
+        (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])]))
+        < (rtol/100)**2
+    ):
+        print(
+            f"CONVERGANCE at i={n}. "
+            f"Final value: {(bounds[2] + bounds[1]) / 2}"
+        )
         return (bounds[2] + bounds[1]) / 2
 
-    # Calculate a potential centre = c + 2 - GR * (upper-c)        
+    # Calculate a potential centre = c + 2 - GR * (upper-c)
     d = bounds[1] + (2 - (1 + math.sqrt(5))/2)*(bounds[2]-bounds[1])
 
     # If the new centre evaluates to less than the current
@@ -30,18 +39,25 @@ def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
     if fd1 < fd2:
         # Swap them, making the previous centre the new lower bound.
         bounds = [bounds[1], d, bounds[2]]
-        return gss(f, bounds, n+1, maxN, rtol, args=args, startIterFunc=startIterFunc)
+        return gss(
+            f, bounds, n+1, maxN, rtol,
+            args=args, startIterFunc=startIterFunc
+        )
     # Otherwise, swap and reverse.
     else:
         bounds = [d, bounds[1], bounds[0]]
-        return gss(f, bounds, n+1, maxN, rtol, args=args, startIterFunc=startIterFunc)
+        return gss(
+            f, bounds, n+1, maxN, rtol,
+            args=args, startIterFunc=startIterFunc
+        )
+
 
 def calculateTotalMolecules(components, sample):
     total = 0
     for wc in sample.composition.weightedComponents:
         for c in components:
             if wc.component.eq(c):
-                total+=wc.ratio
+                total += wc.ratio
                 break
     return total
 
@@ -55,7 +71,7 @@ class CompositionIterator():
     def setComponent(self, component, ratio=1):
         self.components = [component]
         self.ratio = ratio
-    
+
     def setComponents(self, components, ratio=1):
         self.components = [c for c in components if c]
         self.ratio = ratio
@@ -65,12 +81,18 @@ class CompositionIterator():
         gudrunFile.sampleBackgrounds = [sampleBackground]
 
         x = abs(x)
-        weightedComponents = [wc for wc in sampleBackground.samples[0].composition.weightedComponents for c in self.components if c.eq(wc.component)]
+        weightedComponents = [
+            wc for wc in (
+                sampleBackground.samples[0].composition.weightedComponents
+            )
+            for c in self.components
+            if c.eq(wc.component)
+        ]
         for component in weightedComponents:
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        (gudrunFile.process())
+        gudrunFile.process()
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
@@ -83,20 +105,19 @@ class CompositionIterator():
             )
         )
 
-
-        print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2)
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
-
 
     def processTwoComponents(self, x, sampleBackground, totalMolecules):
         gudrunFile = deepcopy(self.gudrunFile)
         gudrunFile.sampleBackgrounds = [sampleBackground]
         x = abs(x)
         wcA = wcB = None
-        for weightedComponent in sampleBackground.samples[0].composition.weightedComponents:
+        for weightedComponent in (
+            sampleBackground.samples[0].composition.weightedComponents
+        ):
             if weightedComponent.component.eq(self.components[0]):
                 wcA = weightedComponent
             elif weightedComponent.component.eq(self.components[1]):
@@ -106,9 +127,8 @@ class CompositionIterator():
             wcA.ratio = x
             wcB.ratio = abs(totalMolecules - x)
 
-
         sampleBackground.samples[0].composition.translate()
-        print(gudrunFile.process())
+        gudrunFile.process()
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
@@ -121,14 +141,21 @@ class CompositionIterator():
             )
         )
 
-        print(gudFile.averageLevelMergedDCS, gudFile.expectedDCS, (abs(gudFile.expectedDCS - gudFile.averageLevelMergedDCS) / min([abs(gudFile.averageLevelMergedDCS), abs(gudFile.expectedDCS)])))
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
-            return (abs(gudFile.expectedDCS - gudFile.averageLevelMergedDCS) / min([abs(gudFile.averageLevelMergedDCS), abs(gudFile.expectedDCS)])) #(gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+            return abs(
+                gudFile.expectedDCS - gudFile.averageLevelMergedDCS
+            ) / min(
+                [
+                    abs(gudFile.averageLevelMergedDCS),
+                    abs(gudFile.expectedDCS)
+                ]
+            )
 
     def iterate(self, n=10, rtol=10):
-        if not self.components or not self.ratio: return None
+        if not self.components or not self.ratio:
+            return None
         print(self.components)
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
@@ -138,22 +165,24 @@ class CompositionIterator():
                     if len(self.components) == 1:
                         self.maxIterations = n
                         self.rtol = rtol
-                        result = self.gss(self.processSingleComponent, [1e-2, self.ratio, 10], 0, args=(sb,))
-                        print(f"final ratio for component {self.components[0].name} in {sample.name}: {result}")
+                        result = self.gss(
+                            self.processSingleComponent,
+                            [1e-2, self.ratio, 10], 0,
+                            args=(sb,)
+                        )
+                        print(
+                            "final ratio for component "
+                            f"{self.components[0].name} in"
+                            f" {sample.name}: {result}"
+                        )
                     elif len(self.components) == 2:
                         totalMolecules = self.calculateTotalMolecules(sample)
-                        result = self.gss(self.processTwoComponents, [1e-2, self.ratio, 10], 0, args=(sb, totalMolecules,))
+                        result = self.gss(
+                            self.processTwoComponents,
+                            [1e-2, self.ratio, 10], 0,
+                            args=(sb, totalMolecules,)
+                        )
                         print(f"final ratio: {result}")
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
-
-if __name__ == "__main__":
-    import sys
-
-    path = sys.argv[1]
-    n = sys.argv[2]
-    if len(sys.argv) >=2:
-        rtol = sys.argv[3]
-    else:
-        rtol = None

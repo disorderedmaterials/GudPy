@@ -1,5 +1,6 @@
 from src.gudrun_classes.single_param_iterator import SingleParamIterator
 
+
 class DensityIterator(SingleParamIterator):
     """
     Class to represent a Density Iterator. Inherits SingleParamIterator.
@@ -28,4 +29,4 @@ class DensityIterator(SingleParamIterator):
             Coefficient to use.
         """
         # Apply the coefficient to the density.
-        object.density*=coefficient
+        object.density *= coefficient

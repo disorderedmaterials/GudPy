@@ -1,5 +1,6 @@
 from src.gudrun_classes.single_param_iterator import SingleParamIterator
 
+
 class ThicknessIterator(SingleParamIterator):
     """
     Class to represent a Thickness Iterator. Inherits SingleParamIterator.
@@ -19,7 +20,7 @@ class ThicknessIterator(SingleParamIterator):
     def applyCoefficientToAttribute(self, object, coefficient):
         # Determine a new total thickness.
         totalThickness = object.upstreamThickness + object.downstreamThickness
-        totalThickness*=coefficient
+        totalThickness *= coefficient
         # Assign the new thicknesses.
         object.downstreamThickness = totalThickness / 2
         object.upstreamThickness = totalThickness / 2

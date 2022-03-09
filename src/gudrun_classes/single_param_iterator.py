@@ -38,7 +38,7 @@ class SingleParamIterator():
             Input GudrunFile that we will be using for iterating.
         """
         self.gudrunFile = gudrunFile
-    
+
     def performIteration(self, _n):
         """
         Performs a single iteration of the current workflow.
@@ -51,21 +51,27 @@ class SingleParamIterator():
         # Iterate through all samples that are being run,
         # applying the coefficient to the target parameter.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            for sample in [s for s in sampleBackground.samples if s.runThisSample]:
-                    gudPath = sample.dataFiles.dataFiles[0].replace(
-                                self.gudrunFile.instrument.dataFileType,
-                                "gud"
-                            )
-                    gudFile = GudFile(
-                        os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+            for sample in [
+                s for s in sampleBackground.samples
+                if s.runThisSample
+            ]:
+                gudPath = sample.dataFiles.dataFiles[0].replace(
+                            self.gudrunFile.instrument.dataFileType,
+                            "gud"
                         )
+                gudFile = GudFile(
+                    os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        gudPath
                     )
-                    # Calculate coefficient: actualDCSLevel / expectedDCSLevel
-                    coefficient = gudFile.averageLevelMergedDCS / gudFile.expectedDCS
-                    # Apply the coefficient.
-                    self.applyCoefficientToAttribute(sample, coefficient)
-    
+                )
+                # Calculate coefficient: actualDCSLevel / expectedDCSLevel
+                coefficient = (
+                    gudFile.averageLevelMergedDCS / gudFile.expectedDCS
+                )
+                # Apply the coefficient.
+                self.applyCoefficientToAttribute(sample, coefficient)
+
     def applyCoefficientToAttribute(self, object, coefficient):
         """
         Stub method to be overriden by sub-classes.
@@ -86,8 +92,8 @@ class SingleParamIterator():
         This method is the core of the SingleParamIterator.
         It performs n iterations of tweaking by a class-specific parameter.
         Namely, it performs gudrun_dcs n times, adjusting said parameter
-        for each sample before each iteration, after the first one, using the results
-        of the previous iteration to do so.
+        for each sample before each iteration, after the first one,
+        using the results of the previous iteration to do so.
 
         Parameters
         ----------
