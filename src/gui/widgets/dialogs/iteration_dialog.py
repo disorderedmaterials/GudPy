@@ -269,33 +269,23 @@ class IterationDialog(QDialog):
 
     def setItemDisabled(self, comboBox, item):
         self.enableItems(comboBox)
-        item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+        if item:
+            item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
 
     def toggleUseSingleComponent(self, state):
-        self.widget.secondComponentComboBox.setEnabled(not state)
         if state:
             self.enableItems(self.widget.firstComponentComboBox)
             self.components[1] = None
         else:
-            other = self.widget.firstComponentComboBox.model().item(
+            other = self.widget.secondComponentComboBox.model().item(
                 self.widget.firstComponentComboBox.currentIndex()
             )
             self.setItemDisabled(
                 self.widget.secondComponentComboBox,
                 other
             )
-            if (
-                self.widget.firstComponentComboBox.currentIndex()
-                == self.widget.secondComponentComboBox.currentIndex()
-            ):
-                self.widget.secondComponentComboBox.setCurrentIndex(0)
-            other = self.widget.secondComponentComboBox.model().item(
-                self.widget.secondComponentComboBox.currentIndex()
-            )
-            self.setItemDisabled(
-                self.widget.firstComponentComboBox,
-                other
-            )
+        self.widget.secondComponentComboBox.setEnabled(not state)
+        self.widget.secondComponentComboBox.setCurrentIndex(-1)
 
     def initComponents(self):
         """
@@ -343,6 +333,7 @@ class IterationDialog(QDialog):
         self.widget.secondComponentComboBox.currentIndexChanged.connect(
             self.secondComponentChanged
         )
+        self.widget.secondComponentComboBox.setCurrentIndex(-1)
 
         self.widget.compositionToleranceSpinBox.valueChanged.connect(
             self.compositionRtolChanged
