@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+
 class OutputSlots():
 
     def __init__(self, widget, parent):
