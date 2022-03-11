@@ -31,6 +31,7 @@ from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
+from src.gui.widgets.output_tree import OutputTreeView
 
 from src.gui.widgets.tables.composition_table import CompositionTable
 from src.gui.widgets.tables.ratio_composition_table import (
@@ -164,6 +165,7 @@ class GudPyMainWindow(QMainWindow):
 
         loader = QUiLoader()
         loader.registerCustomWidget(GudPyTreeView)
+        loader.registerCustomWidget(OutputTreeView)
         loader.registerCustomWidget(GroupingParameterTable)
         loader.registerCustomWidget(BeamProfileTable)
         loader.registerCustomWidget(CompositionTable)
@@ -1374,6 +1376,8 @@ class GudPyMainWindow(QMainWindow):
             self.outputSlots.setOutput(output, "gudrun_dcs")
         else:
             self.outputSlots.setOutput(output, "purge_det")
+        self.outputIterations = {}
+        self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
 
