@@ -734,7 +734,7 @@ class NormalisationSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split("/")[-1])
+                target.addItem(file.split(os.path.sep)[-1])
 
     def addDataFiles(self, target, title, regex):
         """

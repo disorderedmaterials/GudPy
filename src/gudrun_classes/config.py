@@ -3,6 +3,9 @@ from src.gudrun_classes.enums import Geometry
 import os
 import sys
 
+spc2 = "  "
+spc5 = "          "
+
 geometry = Geometry.FLATPLATE
 NUM_GUDPY_CORE_OBJECTS = 4
 USE_USER_DEFINED_COMPONENTS = False

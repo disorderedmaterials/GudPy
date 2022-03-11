@@ -1,5 +1,6 @@
 from src.scripts.utils import spacify
 from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes import config
 
 
 class Beam:
@@ -89,53 +90,54 @@ class Beam:
         string : str
             String representation of Beam.
         """
-        TAB = "          "
+
+        absorptionAndMSLine = (
+            f'{self.stepSizeAbsorption}{config.spc2}'
+            f'{self.stepSizeMS}{config.spc2}'
+            f'{self.noSlices}'
+            f'{config.spc5}'
+            f'Step size for absorption and m.s. calculation'
+            f' and no. of slices\n'
+        )
 
         incidentBeamLine = (
-            f'{self.incidentBeamLeftEdge} '
-            f'{self.incidentBeamRightEdge} '
-            f'{self.incidentBeamBottomEdge} '
+            f'{self.incidentBeamLeftEdge}{config.spc2}'
+            f'{self.incidentBeamRightEdge}{config.spc2}'
+            f'{self.incidentBeamBottomEdge}{config.spc2}'
             f'{self.incidentBeamTopEdge}'
-            f'{TAB}'
+            f'{config.spc5}'
             f'Incident beam edges relative to centre of sample [cm]\n'
         )
         scatteredBeamLine = (
-            f'{self.scatteredBeamLeftEdge} '
-            f'{self.scatteredBeamRightEdge} '
-            f'{self.scatteredBeamBottomEdge} '
+            f'{self.scatteredBeamLeftEdge}{config.spc2}'
+            f'{self.scatteredBeamRightEdge}{config.spc2}'
+            f'{self.scatteredBeamBottomEdge}{config.spc2}'
             f'{self.scatteredBeamTopEdge}'
-            f'{TAB}'
-            f'Scattered beam edges relateive to centre of samples [cm]\n'
-        )
-
-        absorptionAndMSLine = (
-            f'{self.stepSizeAbsorption} '
-            f'{self.stepSizeMS} '
-            f'{self.noSlices}'
-            f'{TAB}'
-            f'Step size for absorption and m.s. calculation of no. of slices\n'
+            f'{config.spc5}'
+            f'Scattered beam edges relative to centre of sample [cm]\n'
         )
 
         return (
 
-            f'{Geometry(self.sampleGeometry.value).name}{TAB}'
+            f'{Geometry(self.sampleGeometry.value).name}{config.spc5}'
             f'Sample geometry\n'
-            f'{len(self.beamProfileValues)}{TAB}'
+            f'{len(self.beamProfileValues)}{config.spc5}'
             f'Number of beam profile values\n'
-            f'{spacify(self.beamProfileValues)}{TAB}'
+            f'{spacify(self.beamProfileValues, num_spaces=2)}'
+            f'{config.spc2}{config.spc5}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'
             f'{absorptionAndMSLine}'
-            f'{self.angularStepForCorrections}{TAB}'
+            f'{self.angularStepForCorrections}{config.spc5}'
             f'Angular step for corrections [deg.]\n'
             f'{incidentBeamLine}'
             f'{scatteredBeamLine}'
-            f'{self.filenameIncidentBeamSpectrumParams}{TAB}'
+            f'{self.filenameIncidentBeamSpectrumParams}{config.spc5}'
             f'Filename containing incident beam spectrum parameters\n'
-            f'{self.overallBackgroundFactor}{TAB}'
+            f'{self.overallBackgroundFactor}{config.spc5}'
             f'Overall background factor\n'
-            f'{self.sampleDependantBackgroundFactor}{TAB}'
+            f'{self.sampleDependantBackgroundFactor}{config.spc5}'
             f'Sample dependent background factor\n'
-            f'{self.shieldingAttenuationCoefficient}{TAB}'
+            f'{self.shieldingAttenuationCoefficient}{config.spc5}'
             f'Shielding attenuation coefficient [per m per \u212b]'
 
         )

@@ -203,7 +203,7 @@ class PurgeFile():
         string : str
             String representation of PurgeFile.
         """
-        HEADER = "'  '  '          '  '/'\n\n"
+        HEADER = f"'  '  '          '  '{os.path.sep}'\n\n"
         TAB = "          "
 
         # Collect data files as strings of the format:

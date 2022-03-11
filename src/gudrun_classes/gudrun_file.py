@@ -635,7 +635,7 @@ class GudrunFile:
             # then the panel has been parsed.
             while "end of composition input" not in line:
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
@@ -865,7 +865,7 @@ class GudrunFile:
             while "end of composition input" not in line:
 
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
@@ -1067,7 +1067,7 @@ class GudrunFile:
             while "end of composition input" not in line:
 
                 atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
+                massNo = nthfloat(line, 1)
                 abundance = nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
@@ -1170,12 +1170,12 @@ class GudrunFile:
         name = self.getNextToken().rstrip()
         component = Component(name)
         line = self.peekNextToken()
-        if "{" in line:
+        if "(" in line:
             self.consumeTokens(1)
         else:
             return
         line = self.getNextToken()
-        while line and "}" not in line:
+        while line and ")" not in line:
             atomicSymbol, massNo, abundance = line.split()
             element = Element(atomicSymbol, float(massNo), float(abundance))
             component.addElement(element)
@@ -1350,16 +1350,19 @@ class GudrunFile:
         """
 
         LINEBREAK = "\n\n"
-        header = "'  '  '        '  '/'" + LINEBREAK
+        header = (
+            f"'{config.spc2}'{config.spc2}'{config.spc5}'"
+            f"{config.spc2}'{os.path.sep}'{LINEBREAK}"
+        )
         instrument = (
-            "INSTRUMENT          {\n\n"
+            f"INSTRUMENT{config.spc5}{{\n\n"
             + str(self.instrument)
             + LINEBREAK
             + "}"
         )
-        beam = "BEAM          {\n\n" + str(self.beam) + LINEBREAK + "}"
+        beam = f"BEAM{config.spc5}{{\n\n" + str(self.beam) + LINEBREAK + "}"
         normalisation = (
-            "NORMALISATION          {\n\n"
+            f"NORMALISATION{config.spc5}{{\n\n"
             + str(self.normalisation)
             + LINEBREAK
             + "}"
@@ -1367,14 +1370,19 @@ class GudrunFile:
         sampleBackgrounds = "\n".join(
             [str(x) for x in self.sampleBackgrounds]
         ).rstrip()
-        footer = "\n\n\nEND\n1\nDate and Time last written:  {}\nN".format(
-            time.strftime("%Y%m%d %H:%M:%S")
+        footer = (
+            f"\n\n\nEND{config.spc5}"
+            f"\n1\nDate and time last written:  "
+            f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc5}"
+            f"\nN"
         )
+
         components = (
             f"\n\nCOMPONENTS:\n{str(config.components)}"
             if len(config.components.components)
             else ""
         )
+
         return (
             header
             + instrument

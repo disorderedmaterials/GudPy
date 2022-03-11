@@ -1,12 +1,8 @@
-from collections import OrderedDict
-
-
 class OutputSlots():
 
     def __init__(self, widget, parent):
         self.widget = widget
         self.parent = parent
-        self.setupOutputSlots()
 
     def setOutput(self, output, task):
         self.output = output
@@ -170,3 +166,4 @@ class OutputSlots():
                         [start:end]
                     )
                 )
+
