@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-VERSION = "0.2.6"
+VERSION = "0.2.7"
 binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f == "StartupFiles" or f == "configs"]
 block_cipher = None
 import sys
