@@ -69,18 +69,26 @@ class CompositionWorker(QObject):
 
         sampleBackground.samples[0].composition.translate()
         self.updatedSample = sampleBackground.samples[0]
-        result = gf.process()
+        outpath = os.path.join(
+            gf.instrument.GudrunInputFileDir,
+            "gudpy.txt"
+        )
+        self.proc, func, args = gf.dcs(path=outpath, headless=False)
+        func(*args)
+        self.proc.setWorkingDirectory(gf.instrument.GudrunInputFileDir)
+        self.proc.start()
+        self.proc.waitForFinished(-1)
+        result = bytes(self.proc.readAllStandardOutput()).decode("utf8")
+        print(result)
+
         ERROR_KWDS = [
             "does not exist",
             "error",
             "Error"
         ]
-        if [KWD for KWD in ERROR_KWDS if KWD in result.stdout]:
-            self.errorOccured.emit(result.stdout)
+        if [KWD for KWD in ERROR_KWDS if KWD in result]:
+            self.errorOccured.emit(result)
             self.errored = True
-            return None
-        elif result.stderr:
-            self.errorOccured.emit(result.stderr)
             return None
 
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
