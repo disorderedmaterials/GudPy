@@ -337,8 +337,12 @@ class GudrunFile:
 
             line = self.getNextToken()
             while "to end input of specified values" not in line:
+                group = nthint(line, 0)
+                xMin = nthfloat(line, 1)
+                xMax = nthfloat(line, 2)
+                backgroundFactor = nthfloat(line, 3)
                 self.instrument.groupingParameterPanel.append(
-                    tuple(firstNInts(line, 4))
+                    (group, xMin, xMax, backgroundFactor)
                 )
                 line = self.getNextToken()
 
