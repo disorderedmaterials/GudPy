@@ -324,23 +324,29 @@ class IterationDialog(QDialog):
             self.numberIterationsChanged
         )
 
-        self.loadFirstComponentsComboBox()
-        self.loadSecondComponentsComboBox()
+        if len(config.components.components):
 
-        self.widget.firstComponentComboBox.currentIndexChanged.connect(
-            self.firstComponentChanged
-        )
-        self.widget.secondComponentComboBox.currentIndexChanged.connect(
-            self.secondComponentChanged
-        )
-        self.widget.secondComponentComboBox.setCurrentIndex(-1)
+            self.loadFirstComponentsComboBox()
+            self.loadSecondComponentsComboBox()
 
-        self.widget.compositionToleranceSpinBox.valueChanged.connect(
-            self.compositionRtolChanged
-        )
-        self.widget.singleComponentCheckBox.toggled.connect(
-            self.toggleUseSingleComponent
-        )
+            self.widget.firstComponentComboBox.currentIndexChanged.connect(
+                self.firstComponentChanged
+            )
+            self.widget.secondComponentComboBox.currentIndexChanged.connect(
+                self.secondComponentChanged
+            )
+            self.widget.secondComponentComboBox.setCurrentIndex(-1)
+
+            self.widget.compositionToleranceSpinBox.valueChanged.connect(
+                self.compositionRtolChanged
+            )
+            self.widget.singleComponentCheckBox.toggled.connect(
+                self.toggleUseSingleComponent
+            )
+            self.widget.iterateCompositionButton.clicked.connect(self.iterate)
+
+        else:
+            self.widget.compositionTab.setEnabled(False)
 
         self.widget.iterateInelasticityPushButton.clicked.connect(
             self.iterate
@@ -349,4 +355,3 @@ class IterationDialog(QDialog):
             self.iterate
         )
         self.widget.iterateDensityButton.clicked.connect(self.iterate)
-        self.widget.iterateCompositionButton.clicked.connect(self.iterate)
