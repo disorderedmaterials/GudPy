@@ -12,11 +12,12 @@ USE_USER_DEFINED_COMPONENTS = False
 NORMALISE_COMPOSITIONS = False
 components = Components()
 
+__rootdir__ = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 __root__ = (
     os.path.join(sys._MEIPASS, "bin", "configs", "containers")
     if hasattr(sys, "_MEIPASS")
-    else os.path.join("bin", "configs", "containers")
+    else os.path.join(__rootdir__, "bin", "configs", "containers")
 )
 
 containerConfigurations = {
