@@ -1,2 +1,3 @@
-Hotfix Release 0.2.7
- - Stop casting XMin, XMax and Background Factor to integers during parsing of Grouping Parameter Panel.
+Hotfix Release 0.2.8
+ - Fix bug with NeXus definitions file.
+ - Fix Singularity image bug stopping binaries from being run, and new input files being created.
