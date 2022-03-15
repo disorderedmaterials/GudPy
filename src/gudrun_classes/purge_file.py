@@ -352,7 +352,11 @@ class PurgeFile():
             if hasattr(sys, '_MEIPASS'):
                 purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
             else:
-                purge_det = resolve(os.path.join(config.__rootdir__, "bin"), f"purge_det{SUFFIX}")
+                purge_det = resolve(
+                    os.path.join(
+                        config.__rootdir__, "bin"
+                    ), f"purge_det{SUFFIX}"
+                )
             if not os.path.exists(purge_det):
                 return FileNotFoundError()
             proc = QProcess()

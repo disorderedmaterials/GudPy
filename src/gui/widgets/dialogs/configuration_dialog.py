@@ -5,6 +5,7 @@ from PySide6.QtUiTools import QUiLoader
 import sys
 from src.gudrun_classes import config
 
+
 class ConfigurationDialog(QDialog):
     """
     Class to represent the ConfigurationDialog. Inherits QDialog.
@@ -64,7 +65,9 @@ class ConfigurationDialog(QDialog):
         targetDir = (
             os.path.join(sys._MEIPASS, "bin", "configs", "instruments")
             if hasattr(sys, "_MEIPASS")
-            else os.path.join(config.__rootdir__, "bin", "configs", "instruments")
+            else os.path.join(
+                config.__rootdir__, "bin", "configs", "instruments"
+            )
         )
         self.widget.configList.addItems(
             [
@@ -78,7 +81,9 @@ class ConfigurationDialog(QDialog):
         targetDir = (
             os.path.join(sys._MEIPASS, "bin", "configs", "instruments")
             if hasattr(sys, "_MEIPASS")
-            else os.path.join(config.__rootdir__, "bin", "configs", "instruments")
+            else os.path.join(
+                config.__rootdir__, "bin", "configs", "instruments"
+            )
         )
         self.configuration = os.path.abspath(
             os.path.join(

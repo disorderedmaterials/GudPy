@@ -1486,7 +1486,11 @@ class GudrunFile:
             if hasattr(sys, '_MEIPASS'):
                 gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
             else:
-                gudrun_dcs = resolve(os.path.join(config.__rootdir__, "bin"), f"gudrun_dcs{SUFFIX}")
+                gudrun_dcs = resolve(
+                    os.path.join(
+                        config.__rootdir__, "bin"
+                    ), f"gudrun_dcs{SUFFIX}"
+                )
             if not os.path.exists(gudrun_dcs):
                 return FileNotFoundError()
             else:
