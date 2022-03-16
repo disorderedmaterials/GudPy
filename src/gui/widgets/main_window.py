@@ -1109,7 +1109,6 @@ class GudPyMainWindow(QMainWindow):
 
     def nextCompositionIteration(self):
         args, kwargs, sample = self.queue.get()
-        print(args, kwargs, sample.name)
         self.worker = CompositionWorker(args, kwargs, sample)
         self.worker.started.connect(self.startedCompositionIteration)
         self.workerThread = QThread()
@@ -1136,7 +1135,6 @@ class GudPyMainWindow(QMainWindow):
                 " use the Component(s) selected for iteration."
             )
         else:
-            print(list(self.queue.queue))
             self.compositionMap = {}
             self.totalIterations = len(
                 [
@@ -1152,7 +1150,6 @@ class GudPyMainWindow(QMainWindow):
                     )
                 ]
             )
-            print(self.totalIterations)
             self.nextCompositionIteration()
 
     def nextIteration(self):
@@ -1219,7 +1216,6 @@ class GudPyMainWindow(QMainWindow):
 
     def progressIteration(self):
         progress = self.progressIncrementDCS()
-        print(self.numberIterations)
         if progress == -1:
             self.error = (
                 f"An error occurred. See the following traceback"
@@ -1235,7 +1231,6 @@ class GudPyMainWindow(QMainWindow):
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             progress /= self.numberIterations
         progress += self.mainWidget.progressBar.value()
-        print(progress)
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )

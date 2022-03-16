@@ -79,7 +79,6 @@ class CompositionWorker(QObject):
         self.proc.start()
         self.proc.waitForFinished(-1)
         result = bytes(self.proc.readAllStandardOutput()).decode("utf8")
-        print(result)
 
         ERROR_KWDS = [
             "does not exist",

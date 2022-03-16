@@ -6,24 +6,15 @@ import time
 
 
 def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
-    print(f"Golden Search: i={n}, f={f}, bounds={bounds}, args={args}")
     if startIterFunc:
         startIterFunc(n)
     if n >= maxN:
-        print(
-            "WARNING: Maximum number of iterations achieved. "
-            f"Final value: {bounds[1]}"
-        )
         return bounds[1]
 
     if (
         (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])]))
         < (rtol/100)**2
     ):
-        print(
-            f"CONVERGANCE at i={n}. "
-            f"Final value: {(bounds[2] + bounds[1]) / 2}"
-        )
         return (bounds[2] + bounds[1]) / 2
 
     # Calculate a potential centre = c + 2 - GR * (upper-c)
@@ -156,7 +147,6 @@ class CompositionIterator():
     def iterate(self, n=10, rtol=10):
         if not self.components or not self.ratio:
             return None
-        print(self.components)
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
@@ -170,11 +160,6 @@ class CompositionIterator():
                             [1e-2, self.ratio, 10], 0,
                             args=(sb,)
                         )
-                        print(
-                            "final ratio for component "
-                            f"{self.components[0].name} in"
-                            f" {sample.name}: {result}"
-                        )
                     elif len(self.components) == 2:
                         totalMolecules = self.calculateTotalMolecules(sample)
                         result = self.gss(
@@ -182,7 +167,6 @@ class CompositionIterator():
                             [1e-2, self.ratio, 10], 0,
                             args=(sb, totalMolecules,)
                         )
-                        print(f"final ratio: {result}")
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)

@@ -15,7 +15,6 @@ class CompositionIterationDialog(QDialog):
 
     def accepted(self):
         self.accepted_ = True
-        print("accepted")
         self.widget.close()
 
     def initComponents(self):
