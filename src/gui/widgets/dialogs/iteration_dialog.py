@@ -6,7 +6,6 @@ from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
 
-from numpy import iterable
 from src.gudrun_classes import config
 from src.gudrun_classes.composition_iterator import (
     CompositionIterator, calculateTotalMolecules
@@ -210,7 +209,8 @@ class IterationDialog(QDialog):
                                         (
                                             [1e-2, self.iterator.ratio, 10],
                                             0,
-                                            self.numberIterations, self.rtol
+                                            self.numberIterations,
+                                            self.rtol
                                         ),
                                         {
                                             "args": (
