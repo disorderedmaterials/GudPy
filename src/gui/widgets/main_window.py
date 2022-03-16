@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCharts import QChartView
 from src.gudrun_classes.composition_iterator import CompositionIterator
 from src.gudrun_classes.density_iterator import DensityIterator
+from src.gudrun_classes.radius_iterator import RadiusIterator
 
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
@@ -1157,7 +1158,8 @@ class GudPyMainWindow(QMainWindow):
             self.proc.finished.connect(self.procFinished)
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator, DensityIterator
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
             )
         ):
             time.sleep(1)
@@ -1200,7 +1202,8 @@ class GudPyMainWindow(QMainWindow):
     def iterationStarted(self):
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator, DensityIterator
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
             )
         ):
             self.mainWidget.currentTaskLabel.setText(
@@ -1225,7 +1228,8 @@ class GudPyMainWindow(QMainWindow):
             return
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator, DensityIterator
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
             )
         ):
             progress /= self.numberIterations
@@ -1472,7 +1476,8 @@ class GudPyMainWindow(QMainWindow):
         output = self.output
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator, DensityIterator
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
             )
         ):
             self.outputIterations[self.currentIteration+1] = self.output

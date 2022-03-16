@@ -5,10 +5,13 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
+
+from numpy import iterable
 from src.gudrun_classes import config
 from src.gudrun_classes.composition_iterator import (
     CompositionIterator, calculateTotalMolecules
 )
+from src.gudrun_classes.radius_iterator import RadiusIterator
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
@@ -24,9 +27,11 @@ class Iterables(Enum):
     WAVELENGTH = 0
     TWEAK_FACTOR = 1
     THICKNESS = 2
-    DENSITY = 3
-    COMPOSITION_SINGLE_COMPONENT = 4
-    COMPOSITION_TWO_COMPONENTS = 5
+    INNER_RADIUS = 3
+    OUTER_RADIUS = 4
+    DENSITY = 5
+    COMPOSITION_SINGLE_COMPONENT = 6
+    COMPOSITION_TWO_COMPONENTS = 7
 
 
 class IterationDialog(QDialog):
@@ -104,6 +109,28 @@ class IterationDialog(QDialog):
                         ), headless=False)
                 )
             self.text = "Tweak by thickness"
+            self.widget.close()
+        elif (
+            self.iterateBy == Iterables.INNER_RADIUS
+            or self.iterateBy == Iterables.OUTER_RADIUS
+        ):
+            self.iterator = RadiusIterator(self.gudrunFile)
+            self.iterator.setTargetRadius(
+                {
+                    Iterables.INNER_RADIUS: "inner",
+                    Iterables.OUTER_RADIUS: "outer"
+                }[self.iterateBy]
+            )
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+            self.text = f"Tweak by {self.iterator.targetRadius} radius"
             self.widget.close()
         elif self.iterateBy == Iterables.DENSITY:
             self.iterator = DensityIterator(self.gudrunFile)
@@ -218,6 +245,12 @@ class IterationDialog(QDialog):
                 Iterables.THICKNESS
                 ),
             4: (
+                self.widget.radiusIterationsSpinBox.value(),
+                Iterables.INNER_RADIUS
+                if self.widget.innerRadiusRadioButton.isChecked()
+                else Iterables.OUTER_RADIUS
+            ),
+            5: (
                 self.widget.compositionIterationsSpinBox.value(),
                 Iterables.COMPOSITION_SINGLE_COMPONENT
                 if self.widget.singleComponentCheckBox.isChecked()
@@ -330,6 +363,10 @@ class IterationDialog(QDialog):
             self.numberIterationsChanged
         )
 
+        self.widget.radiusIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
         self.widget.compositionIterationsSpinBox.valueChanged.connect(
             self.numberIterationsChanged
         )
@@ -361,6 +398,10 @@ class IterationDialog(QDialog):
             config.geometry == Geometry.FLATPLATE
         )
 
+        self.widget.radiusTab.setEnabled(
+            config.geometry == Geometry.CYLINDRICAL
+        )
+
         self.widget.iterateInelasticityButton.clicked.connect(
             self.iterate
         )
@@ -371,6 +412,9 @@ class IterationDialog(QDialog):
             self.iterate
         )
         self.widget.iterateThicknessButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateRadiusButton.clicked.connect(
             self.iterate
         )
         self.widget.iterateCompositionButton.clicked.connect(
