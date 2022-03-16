@@ -15,6 +15,7 @@ from src.gudrun_classes.wavelength_subtraction_iterator import (
 )
 from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gudrun_classes.density_iterator import DensityIterator
+from src.gudrun_classes.enums import Geometry
 
 from queue import Queue
 
@@ -213,6 +214,10 @@ class IterationDialog(QDialog):
                 Iterables.DENSITY
                 ),
             3: (
+                self.widget.thicknessIterationsSpinBox.value(),
+                Iterables.THICKNESS
+                ),
+            4: (
                 self.widget.compositionIterationsSpinBox.value(),
                 Iterables.COMPOSITION_SINGLE_COMPONENT
                 if self.widget.singleComponentCheckBox.isChecked()
@@ -320,8 +325,28 @@ class IterationDialog(QDialog):
         self.widget.densityIterationsSpinBox.valueChanged.connect(
             self.numberIterationsChanged
         )
+
+        self.widget.thicknessIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
         self.widget.compositionIterationsSpinBox.valueChanged.connect(
             self.numberIterationsChanged
+        )
+
+        self.widget.firstComponentComboBox.currentIndexChanged.connect(
+            self.firstComponentChanged
+        )
+        self.widget.secondComponentComboBox.currentIndexChanged.connect(
+            self.secondComponentChanged
+        )
+        self.widget.secondComponentComboBox.setCurrentIndex(-1)
+
+        self.widget.compositionToleranceSpinBox.valueChanged.connect(
+            self.compositionRtolChanged
+        )
+        self.widget.singleComponentCheckBox.toggled.connect(
+            self.toggleUseSingleComponent
         )
 
         if len(config.components.components):
@@ -329,29 +354,23 @@ class IterationDialog(QDialog):
             self.loadFirstComponentsComboBox()
             self.loadSecondComponentsComboBox()
 
-            self.widget.firstComponentComboBox.currentIndexChanged.connect(
-                self.firstComponentChanged
-            )
-            self.widget.secondComponentComboBox.currentIndexChanged.connect(
-                self.secondComponentChanged
-            )
-            self.widget.secondComponentComboBox.setCurrentIndex(-1)
-
-            self.widget.compositionToleranceSpinBox.valueChanged.connect(
-                self.compositionRtolChanged
-            )
-            self.widget.singleComponentCheckBox.toggled.connect(
-                self.toggleUseSingleComponent
-            )
-            self.widget.iterateCompositionButton.clicked.connect(self.iterate)
-
         else:
             self.widget.compositionTab.setEnabled(False)
 
-        self.widget.iterateInelasticityPushButton.clicked.connect(
+        self.widget.thicknessTab.setEnabled(config.geometry == Geometry.FLATPLATE)
+
+        self.widget.iterateInelasticityButton.clicked.connect(
             self.iterate
         )
-        self.widget.iterateTweakFactorPushButton.clicked.connect(
+        self.widget.iterateTweakFactorButton.clicked.connect(
             self.iterate
         )
-        self.widget.iterateDensityButton.clicked.connect(self.iterate)
+        self.widget.iterateDensityButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateThicknessButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateCompositionButton.clicked.connect(
+            self.iterate
+        )
