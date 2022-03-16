@@ -1178,17 +1178,18 @@ class GudPyMainWindow(QMainWindow):
                 else:
                     self.outputIterations[self.currentIteration] = self.output
             self.gudrunFile.write_out()
-        self.nextIterableProc()
-        self.currentIteration += 1
+        
+        if not self.queue.empty():
+            self.nextIterableProc()
+            self.currentIteration += 1
+        else:
+            self.procFinished()
         self.output = ""
 
     def nextIterableProc(self):
         self.proc, func, args = self.queue.get()
         self.proc.started.connect(self.iterationStarted)
-        if not self.queue.empty():
-            self.proc.finished.connect(self.nextIteration)
-        else:
-            self.proc.finished.connect(self.procFinished)
+        self.proc.finished.connect(self.nextIteration)
         self.proc.readyReadStandardOutput.connect(self.progressIteration)
         self.proc.started.connect(self.iterationStarted)
         self.proc.setWorkingDirectory(
@@ -1218,6 +1219,7 @@ class GudPyMainWindow(QMainWindow):
 
     def progressIteration(self):
         progress = self.progressIncrementDCS()
+        print(self.numberIterations)
         if progress == -1:
             self.error = (
                 f"An error occurred. See the following traceback"
@@ -1233,6 +1235,7 @@ class GudPyMainWindow(QMainWindow):
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             progress /= self.numberIterations
         progress += self.mainWidget.progressBar.value()
+        print(progress)
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
@@ -1343,9 +1346,17 @@ class GudPyMainWindow(QMainWindow):
                 [
                     sum(
                         [
-                            len(sampleBackground.samples), *[
+                            len(
+                                [
+                                    sample
+                                    for sample in sampleBackground.samples
+                                    if sample.runThisSample
+                                ]
+                                ),
+                            *[  
                                 len(sample.containers)
                                 for sample in sampleBackground.samples
+                                if sample.runThisSample
                             ]
                         ]
                     ) for sampleBackground in self.gudrunFile.sampleBackgrounds
