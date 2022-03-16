@@ -1178,7 +1178,7 @@ class GudPyMainWindow(QMainWindow):
                 else:
                     self.outputIterations[self.currentIteration] = self.output
             self.gudrunFile.write_out()
-        
+
         if not self.queue.empty():
             self.nextIterableProc()
             self.currentIteration += 1
@@ -1353,7 +1353,7 @@ class GudPyMainWindow(QMainWindow):
                                     if sample.runThisSample
                                 ]
                                 ),
-                            *[  
+                            *[
                                 len(sample.containers)
                                 for sample in sampleBackground.samples
                                 if sample.runThisSample
