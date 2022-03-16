@@ -248,7 +248,9 @@ class GudPyChartView(QChartView):
                     "Toggle logarithmic X-axis", toggleLogarithmicMenu
                 )
                 toggleLogarithmicXAxisAction.setCheckable(True)
-                toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
+                toggleLogarithmicXAxisAction.setChecked(
+                    self.chart().logarithmicX
+                )
                 toggleLogarithmicXAxisAction.triggered.connect(
                     lambda: self.toggleLogarithmicAxes(Axes.X)
                 )
@@ -258,7 +260,9 @@ class GudPyChartView(QChartView):
                     "Toggle logarithmic Y-axis", toggleLogarithmicMenu
                 )
                 toggleLogarithmicYAxisAction.setCheckable(True)
-                toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
+                toggleLogarithmicYAxisAction.setChecked(
+                    self.chart().logarithmicY
+                )
                 toggleLogarithmicYAxisAction.triggered.connect(
                     lambda: self.toggleLogarithmicAxes(Axes.Y)
                 )
