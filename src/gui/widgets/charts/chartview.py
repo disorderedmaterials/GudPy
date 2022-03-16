@@ -1,7 +1,7 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QPainter, QMouseEvent
+    QAction, QClipboard, QCursor, QPainter, QMouseEvent, QContextMenuEvent
 )
 from PySide6.QtWidgets import (
     QApplication, QMenu, QSizePolicy
@@ -122,46 +122,48 @@ class GudPyChartView(QChartView):
             return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.MiddleButton:
-            self.previousPos = event.pos()
-        elif event.button() == Qt.MouseButton.LeftButton:
-            # Catch the origin of the rubber band.
-            self.rubberBandOrigin = event.pos()
+        if isinstance(event, QMouseEvent):
+            if event.button() == Qt.MouseButton.MiddleButton:
+                self.previousPos = event.pos()
+            elif event.button() == Qt.MouseButton.LeftButton:
+                # Catch the origin of the rubber band.
+                self.rubberBandOrigin = event.pos()
 
-        event.accept()
-        return super().mousePressEvent(event)
+            event.accept()
+            return super().mousePressEvent(event)
 
     def copyPlot(self):
         pixMap = self.grab()
         self.clipboard.setPixmap(pixMap)
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.RightButton:
-            event.accept()
-        elif event.button() == Qt.MouseButton.LeftButton:
+        if isinstance(event, QMouseEvent):
+            if event.button() == Qt.MouseButton.RightButton:
+                event.accept()
+            elif event.button() == Qt.MouseButton.LeftButton:
 
-            # Collect dims for rubber band rect.
-            width = event.pos().x() - self.rubberBandOrigin.x()
-            height = event.pos().y() - self.rubberBandOrigin.y()
+                # Collect dims for rubber band rect.
+                width = event.pos().x() - self.rubberBandOrigin.x()
+                height = event.pos().y() - self.rubberBandOrigin.y()
 
-            # Create QRect area to zoom in on.
-            zoomArea = QRect(
-                self.rubberBandOrigin.x(),
-                self.rubberBandOrigin.y(),
-                width,
-                height
-            ).normalized()
+                # Create QRect area to zoom in on.
+                zoomArea = QRect(
+                    self.rubberBandOrigin.x(),
+                    self.rubberBandOrigin.y(),
+                    width,
+                    height
+                ).normalized()
 
-            # Zoom in on the area.
-            self.chart().zoomIn(zoomArea)
+                # Zoom in on the area.
+                self.chart().zoomIn(zoomArea)
 
-            # Disable, then re-enable rubber banding
-            # to force hiding of the rect.
-            self.setRubberBand(QChartView.NoRubberBand)
-            event.accept()
-            self.setRubberBand(QChartView.RectangleRubberBand)
-        else:
-            return super(GudPyChartView, self).mouseReleaseEvent(event)
+                # Disable, then re-enable rubber banding
+                # to force hiding of the rect.
+                self.setRubberBand(QChartView.NoRubberBand)
+                event.accept()
+                self.setRubberBand(QChartView.RectangleRubberBand)
+            else:
+                return super(GudPyChartView, self).mouseReleaseEvent(event)
 
     def keyPressEvent(self, event):
         """
@@ -216,135 +218,136 @@ class GudPyChartView(QChartView):
         event : QMouseEvent
             The event that triggers the context menu.
         """
-        self.menu = QMenu(self)
-        if self.chart():
+        if isinstance(event, QContextMenuEvent):
+            self.menu = QMenu(self)
+            actionMap = {}
+            if self.chart():
 
-            resetAction = QAction("Reset View", self.menu)
-            resetAction.triggered.connect(self.chart().zoomReset)
-            self.menu.addAction(resetAction)
+                resetAction = QAction("Reset View", self.menu)
+                resetAction.triggered.connect(self.chart().zoomReset)
+                self.menu.addAction(resetAction)
 
-            toggleLogarithmicMenu = QMenu(self.menu)
-            toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
+                toggleLogarithmicMenu = QMenu(self.menu)
+                toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
 
-            toggleLogarithmicAllAxesAction = QAction(
-                "Toggle logarithmic all axis", toggleLogarithmicMenu
-            )
-
-            toggleLogarithmicAllAxesAction.setCheckable(True)
-            toggleLogarithmicAllAxesAction.setChecked(
-                self.chart().logarithmicX
-                & self.chart().logarithmicY
-            )
-            toggleLogarithmicAllAxesAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes(Axes.A)
-            )
-            toggleLogarithmicMenu.addAction(toggleLogarithmicAllAxesAction)
-
-            toggleLogarithmicXAxisAction = QAction(
-                "Toggle logarithmic X-axis", toggleLogarithmicMenu
-            )
-            toggleLogarithmicXAxisAction.setCheckable(True)
-            toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
-            toggleLogarithmicXAxisAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes(Axes.X)
-            )
-            toggleLogarithmicMenu.addAction(toggleLogarithmicXAxisAction)
-
-            toggleLogarithmicYAxisAction = QAction(
-                "Toggle logarithmic Y-axis", toggleLogarithmicMenu
-            )
-            toggleLogarithmicYAxisAction.setCheckable(True)
-            toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
-            toggleLogarithmicYAxisAction.triggered.connect(
-                lambda: self.toggleLogarithmicAxes(Axes.Y)
-            )
-            toggleLogarithmicMenu.addAction(toggleLogarithmicYAxisAction)
-
-            self.menu.addMenu(toggleLogarithmicMenu)
-
-            if self.chart().plotMode in [
-                PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
-            ]:
-                showDCSLevelAction = QAction("Show dcs level", self.menu)
-                showDCSLevelAction.setCheckable(True)
-                showDCSLevelAction.setChecked(
-                    self.chart().isVisible(SeriesTypes.DCSLEVEL)
+                toggleLogarithmicAllAxesAction = QAction(
+                    "Toggle logarithmic all axis", toggleLogarithmicMenu
                 )
-                showDCSLevelAction.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.DCSLEVEL
-                    )
-                )
-                self.menu.addAction(showDCSLevelAction)
-            elif (
-                self.chart().plotMode in
-                [
-                    PlotModes.RDF,
-                    PlotModes.RDF_CANS
-                ]
-            ):
-                showMdor01Action = QAction("Show mdor01 data", self.menu)
-                showMdor01Action.setCheckable(True)
-                showMdor01Action.setChecked(
-                    self.chart().isVisible(SeriesTypes.MDOR01)
-                )
-                showMdor01Action.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.MDOR01
-                    )
-                )
-                self.menu.addAction(showMdor01Action)
 
-                showMgor01Action = QAction("Show mgor01 data", self.menu)
-                showMgor01Action.setCheckable(True)
-                showMgor01Action.setChecked(
-                    self.chart().isVisible(SeriesTypes.MGOR01)
+                toggleLogarithmicAllAxesAction.setCheckable(True)
+                toggleLogarithmicAllAxesAction.setChecked(
+                    self.chart().logarithmicX
+                    & self.chart().logarithmicY
                 )
-                showMgor01Action.triggered.connect(
-                    lambda: self.chart().toggleVisible(
-                        SeriesTypes.MGOR01
-                    )
+                toggleLogarithmicAllAxesAction.triggered.connect(
+                    lambda: self.toggleLogarithmicAxes(Axes.A)
                 )
-                self.menu.addAction(showMgor01Action)
-            if len(self.chart().samples) > 1:
-                showMenu = QMenu(self.menu)
-                showMenu.setTitle("Show..")
-                actionMap = {}
+                toggleLogarithmicMenu.addAction(toggleLogarithmicAllAxesAction)
+
+                toggleLogarithmicXAxisAction = QAction(
+                    "Toggle logarithmic X-axis", toggleLogarithmicMenu
+                )
+                toggleLogarithmicXAxisAction.setCheckable(True)
+                toggleLogarithmicXAxisAction.setChecked(self.chart().logarithmicX)
+                toggleLogarithmicXAxisAction.triggered.connect(
+                    lambda: self.toggleLogarithmicAxes(Axes.X)
+                )
+                toggleLogarithmicMenu.addAction(toggleLogarithmicXAxisAction)
+
+                toggleLogarithmicYAxisAction = QAction(
+                    "Toggle logarithmic Y-axis", toggleLogarithmicMenu
+                )
+                toggleLogarithmicYAxisAction.setCheckable(True)
+                toggleLogarithmicYAxisAction.setChecked(self.chart().logarithmicY)
+                toggleLogarithmicYAxisAction.triggered.connect(
+                    lambda: self.toggleLogarithmicAxes(Axes.Y)
+                )
+                toggleLogarithmicMenu.addAction(toggleLogarithmicYAxisAction)
+
+                self.menu.addMenu(toggleLogarithmicMenu)
+
                 if self.chart().plotMode in [
-                    PlotModes.SF_MINT01,
-                    PlotModes.SF_MDCS01, PlotModes.RDF
+                    PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
                 ]:
-                    samples = [
-                        sample for sample in self.chart().samples
-                        if isinstance(sample, Sample)
+                    showDCSLevelAction = QAction("Show dcs level", self.menu)
+                    showDCSLevelAction.setCheckable(True)
+                    showDCSLevelAction.setChecked(
+                        self.chart().isVisible(SeriesTypes.DCSLEVEL)
+                    )
+                    showDCSLevelAction.triggered.connect(
+                        lambda: self.chart().toggleVisible(
+                            SeriesTypes.DCSLEVEL
+                        )
+                    )
+                    self.menu.addAction(showDCSLevelAction)
+                elif (
+                    self.chart().plotMode in
+                    [
+                        PlotModes.RDF,
+                        PlotModes.RDF_CANS
                     ]
-                elif self.chart().plotMode in [
-                    PlotModes.SF_MINT01_CANS,
-                    PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
-                ]:
-                    samples = [
-                        sample for sample in self.chart().samples
-                        if isinstance(sample, Container)
-                    ]
-                for sample in samples:
-                    action = QAction(f"Show {sample.name}", showMenu)
-                    action.setCheckable(True)
-                    action.setChecked(self.chart().isSampleVisible(sample))
-                    showMenu.addAction(action)
-                    actionMap[action] = sample
-                self.menu.addMenu(showMenu)
+                ):
+                    showMdor01Action = QAction("Show mdor01 data", self.menu)
+                    showMdor01Action.setCheckable(True)
+                    showMdor01Action.setChecked(
+                        self.chart().isVisible(SeriesTypes.MDOR01)
+                    )
+                    showMdor01Action.triggered.connect(
+                        lambda: self.chart().toggleVisible(
+                            SeriesTypes.MDOR01
+                        )
+                    )
+                    self.menu.addAction(showMdor01Action)
 
-        copyAction = QAction("Copy plot", self.menu)
-        copyAction.triggered.connect(self.copyPlot)
-        self.menu.addAction(copyAction)
+                    showMgor01Action = QAction("Show mgor01 data", self.menu)
+                    showMgor01Action.setCheckable(True)
+                    showMgor01Action.setChecked(
+                        self.chart().isVisible(SeriesTypes.MGOR01)
+                    )
+                    showMgor01Action.triggered.connect(
+                        lambda: self.chart().toggleVisible(
+                            SeriesTypes.MGOR01
+                        )
+                    )
+                    self.menu.addAction(showMgor01Action)
+                if len(self.chart().samples) > 1:
+                    showMenu = QMenu(self.menu)
+                    showMenu.setTitle("Show..")
+                    if self.chart().plotMode in [
+                        PlotModes.SF_MINT01,
+                        PlotModes.SF_MDCS01, PlotModes.RDF
+                    ]:
+                        samples = [
+                            sample for sample in self.chart().samples
+                            if isinstance(sample, Sample)
+                        ]
+                    elif self.chart().plotMode in [
+                        PlotModes.SF_MINT01_CANS,
+                        PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
+                    ]:
+                        samples = [
+                            sample for sample in self.chart().samples
+                            if isinstance(sample, Container)
+                        ]
+                    for sample in samples:
+                        action = QAction(f"Show {sample.name}", showMenu)
+                        action.setCheckable(True)
+                        action.setChecked(self.chart().isSampleVisible(sample))
+                        showMenu.addAction(action)
+                        actionMap[action] = sample
+                    self.menu.addMenu(showMenu)
 
-        action = self.menu.exec(QCursor.pos())
+            copyAction = QAction("Copy plot", self.menu)
+            copyAction.triggered.connect(self.copyPlot)
+            self.menu.addAction(copyAction)
 
-        if action in actionMap.keys():
-            self.chart().toggleSampleVisibility(
-                action.isChecked(),
-                actionMap[action]
-            )
+            action = self.menu.exec(QCursor.pos())
+
+            if action in actionMap.keys():
+                self.chart().toggleSampleVisibility(
+                    action.isChecked(),
+                    actionMap[action]
+                )
 
     def toggleLogarithmicAxes(self, axis):
         """
