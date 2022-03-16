@@ -155,14 +155,14 @@ class CompositionIterator():
                     if len(self.components) == 1:
                         self.maxIterations = n
                         self.rtol = rtol
-                        result = self.gss(
+                        self.gss(
                             self.processSingleComponent,
                             [1e-2, self.ratio, 10], 0,
                             args=(sb,)
                         )
                     elif len(self.components) == 2:
                         totalMolecules = self.calculateTotalMolecules(sample)
-                        result = self.gss(
+                        self.gss(
                             self.processTwoComponents,
                             [1e-2, self.ratio, 10], 0,
                             args=(sb, totalMolecules,)

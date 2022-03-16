@@ -357,7 +357,9 @@ class IterationDialog(QDialog):
         else:
             self.widget.compositionTab.setEnabled(False)
 
-        self.widget.thicknessTab.setEnabled(config.geometry == Geometry.FLATPLATE)
+        self.widget.thicknessTab.setEnabled(
+            config.geometry == Geometry.FLATPLATE
+        )
 
         self.widget.iterateInelasticityButton.clicked.connect(
             self.iterate
