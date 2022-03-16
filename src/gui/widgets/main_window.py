@@ -1164,6 +1164,7 @@ class GudPyMainWindow(QMainWindow):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration+1] = self.output
+            self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:

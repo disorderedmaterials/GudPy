@@ -111,7 +111,10 @@ class OutputTreeModel(QAbstractItemModel):
             if len(self.data_.keys()) == 1:
                 obj = self.data_[1][row]
             elif len(self.data_.keys()) > 1:
-                obj = self.refs[row]
+                try:
+                    obj = self.refs[row]
+                except KeyError:
+                    return QModelIndex()
             else:
                 return QModelIndex()
         elif parent.isValid():
