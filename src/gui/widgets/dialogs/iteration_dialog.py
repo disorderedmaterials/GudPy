@@ -167,7 +167,10 @@ class IterationDialog(QDialog):
                 )
             self.text = "Inelasticity subtractions"
             self.widget.close()
-        elif self.iterateBy == Iterables.COMPOSITION_SINGLE_COMPONENT:
+        elif (
+            self.iterateBy == Iterables.COMPOSITION_SINGLE_COMPONENT
+            or self.iterateBy == Iterables.COMPOSITION_TWO_COMPONENTS
+        ):
             self.iterator = CompositionIterator(
                 self.gudrunFile
             )
@@ -301,9 +304,11 @@ class IterationDialog(QDialog):
 
     def enableItems(self, comboBox):
         for i in range(len(config.components.components)):
-            comboBox.model().item(i).setFlags(
-                comboBox.model().item(i).flags() | Qt.ItemIsEnabled
-            )
+            item = comboBox.model().item(i)
+            if item:
+                item.setFlags(
+                    item.flags() | Qt.ItemIsEnabled
+                )
 
     def setItemDisabled(self, comboBox, item):
         self.enableItems(comboBox)
