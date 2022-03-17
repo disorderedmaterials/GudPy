@@ -23,6 +23,7 @@ class CompositionWorker(QObject):
 
     def work(self):
         self.started.emit(self.sample)
+        # perform golden-section search.
         gss(
             self.costup,
             *self.args,
@@ -30,6 +31,7 @@ class CompositionWorker(QObject):
             startIterFunc=self.nextIteration.emit
         )
         if not self.errored:
+            # If an error occurs emit appropiate signal.
             self.finished.emit(self.sample, self.updatedSample)
 
     def costup(
@@ -40,10 +42,11 @@ class CompositionWorker(QObject):
         gf = deepcopy(gudrunFile)
         gf.sampleBackgrounds = [sampleBackground]
 
+        # Prevent negative x.
         x = abs(x)
 
         if len(components) == 1:
-
+            # Determine instances where target components are used.
             weightedComponents = [
                 wc for wc in sampleBackground.samples[0]
                 .composition.weightedComponents
@@ -55,6 +58,7 @@ class CompositionWorker(QObject):
 
         elif len(components) == 2:
             wcA = wcB = None
+            # Determine instances where target components are used.
             for weightedComponent in (
                 sampleBackground.samples[0].composition.weightedComponents
             ):
@@ -64,11 +68,15 @@ class CompositionWorker(QObject):
                     wcB = weightedComponent
 
             if wcA and wcB:
+                # Ensure combined ratio == totalMolecules.
                 wcA.ratio = x
                 wcB.ratio = abs(totalMolecules - x)
 
+        # Update composition
         sampleBackground.samples[0].composition.translate()
         self.updatedSample = sampleBackground.samples[0]
+
+        # Set up process and execute.
         outpath = os.path.join(
             gf.instrument.GudrunInputFileDir,
             "gudpy.txt"
@@ -77,9 +85,12 @@ class CompositionWorker(QObject):
         func(*args)
         self.proc.setWorkingDirectory(gf.instrument.GudrunInputFileDir)
         self.proc.start()
+        # Block until process is finished.
         self.proc.waitForFinished(-1)
+        # Read from stdout.
         result = bytes(self.proc.readAllStandardOutput()).decode("utf8")
 
+        # Check for errors.
         ERROR_KWDS = [
             "does not exist",
             "error",
@@ -101,6 +112,7 @@ class CompositionWorker(QObject):
             )
         )
 
+        # Determine cost.
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:

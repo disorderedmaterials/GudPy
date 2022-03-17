@@ -44,6 +44,7 @@ def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
 
 
 def calculateTotalMolecules(components, sample):
+    # Sum molecules in sample composition, belongiong to components.
     total = 0
     for wc in sample.composition.weightedComponents:
         for c in components:
@@ -54,19 +55,83 @@ def calculateTotalMolecules(components, sample):
 
 
 class CompositionIterator():
+    """
+    Class to represent a Composition Iterator.
+    This class is used for iteratively tweaking composition
+    by defined components. 
+    This is achieved by running gudrun_dcs iteratively,
+    using golden-section search to find the optimal value of
+    ratio's of components in composition, or ratio between two components,
+    and altering the values as such between iterations.
+
+    ...
+
+    Attributes
+    ----------
+    gudrunFile : GudrunFile
+        Input GudrunFile that we will be using for iterating.
+    components : Component[]
+        Components to perform iteration on.
+    ratio : float
+        Starting ratio.
+    Methods
+    ----------
+    setComponent(component, ratio=1)
+        Sets component and ratio.
+    setComponents(components, ratio)
+        Sets components and ratio.
+    processSingleComponent(x, sampleBackground)
+        Cost function for processing a single component.
+    processTwoComponents(x, sampleBackground, totalMolecules)
+        Cost function for processing two components.
+    iterate(n=10, rtol=10)
+        Performs n iterations with a relative tolerance of 10.
+    gss(f, bounds, n, args=())
+        Performs n iterations using cost function f, args and bounds.
+    """
     def __init__(self, gudrunFile):
         self.gudrunFile = deepcopy(gudrunFile)
         self.components = []
         self.ratio = 0
 
+    """
+    Sets component and ratio.
+
+    Parameters
+    ----------
+    component : Component
+        Component to set.
+    ratio : int, optional
+        Ratio of component.
+    """
     def setComponent(self, component, ratio=1):
         self.components = [component]
         self.ratio = ratio
 
+    """
+    Sets components and ratio.
+
+    Parameters
+    ----------
+    components : Component[]
+        Components to set.
+    ratio : int, optional
+        Ratio of component.
+    """
     def setComponents(self, components, ratio=1):
         self.components = [c for c in components if c]
         self.ratio = ratio
 
+    """
+    Cost function for processing a single component.
+
+    Parameters
+    ----------
+    x : float
+        Chosen ratio.
+    sampleBackground : SampleBackground
+        Target Sample Background.
+    """
     def processSingleComponent(self, x, sampleBackground):
         gudrunFile = deepcopy(self.gudrunFile)
         gudrunFile.sampleBackgrounds = [sampleBackground]
@@ -101,6 +166,18 @@ class CompositionIterator():
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
+    """
+    Cost function for processing two components.
+
+    Parameters
+    ----------
+    x : float
+        Chosen ratio.
+    sampleBackground : SampleBackground
+        Target Sample Background.
+    totalMolecules : float
+        Sum of molecules of both components.
+    """
     def processTwoComponents(self, x, sampleBackground, totalMolecules):
         gudrunFile = deepcopy(self.gudrunFile)
         gudrunFile.sampleBackgrounds = [sampleBackground]
@@ -144,9 +221,21 @@ class CompositionIterator():
                 ]
             )
 
+    """
+    This method is the core of the CompositionIterato.
+    It performs n iterations of tweaking by the ratio of component(s).
+
+    Parameters
+    ----------
+    n : int
+        Number of iterations to perform.
+    rtol : float
+        Relative tolerance
+    """
     def iterate(self, n=10, rtol=10):
         if not self.components or not self.ratio:
             return None
+        # Only include samples that are marked for analysis.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
@@ -155,6 +244,7 @@ class CompositionIterator():
                     if len(self.components) == 1:
                         self.maxIterations = n
                         self.rtol = rtol
+                        # Perform golden-section search.
                         self.gss(
                             self.processSingleComponent,
                             [1e-2, self.ratio, 10], 0,
@@ -162,6 +252,7 @@ class CompositionIterator():
                         )
                     elif len(self.components) == 2:
                         totalMolecules = self.calculateTotalMolecules(sample)
+                        # Perform golden-section search.
                         self.gss(
                             self.processTwoComponents,
                             [1e-2, self.ratio, 10], 0,
