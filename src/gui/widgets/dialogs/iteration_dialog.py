@@ -1,19 +1,36 @@
+from copy import deepcopy
 import sys
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, Qt
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 import os
 from enum import Enum
+
+from src.gudrun_classes import config
+from src.gudrun_classes.composition_iterator import (
+    CompositionIterator, calculateTotalMolecules
+)
+from src.gudrun_classes.radius_iterator import RadiusIterator
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
+from src.gudrun_classes.density_iterator import DensityIterator
+from src.gudrun_classes.enums import Geometry
 
 from queue import Queue
 
 
 class Iterables(Enum):
-    TWEAK_FACTOR = 0
+    WAVELENGTH = 0
+    TWEAK_FACTOR = 1
+    THICKNESS = 2
+    INNER_RADIUS = 3
+    OUTER_RADIUS = 4
+    DENSITY = 5
+    COMPOSITION_SINGLE_COMPONENT = 6
+    COMPOSITION_TWO_COMPONENTS = 7
 
 
 class IterationDialog(QDialog):
@@ -51,85 +68,94 @@ class IterationDialog(QDialog):
     def __init__(self, gudrunFile, parent):
         super(IterationDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
-        self.initComponents()
         self.tweakValues = True
-        self.tweak = Iterables.TWEAK_FACTOR
-        self.performInelasticitySubtractions = False
+        self.iterateBy = Iterables.WAVELENGTH
         self.numberIterations = 1
+        self.rtol = 0.
         self.iterator = None
         self.cancelled = False
         self.text = ""
-
-    def handleTweakValuesChanged(self, state):
-        """
-        Slot for handling toggling iteration by tweaking.
-        Caled when a toggled signal is emitted from the tweakButton.
-        Updates the iteration configuration as such, and toggles the
-        visibility of the tweakWidget as such.
-        Parameters
-        ----------
-        state : int
-            The new state of the tweakButton (1: True, 0: False).
-        """
-        self.tweakValues = state
-        self.widget.tweakWidget.setVisible(state)
-
-    def handlePerformInelasticitySubtractionsChanged(self, state):
-        """
-        Slot for handling toggling performing inelasticity subtractions.
-        Caled when a toggled signal is emitted from the
-        inelasticitySubtractionsButton.
-        Updates the iteration configuration as such.
-        Parameters
-        ----------
-        state : int
-            The new state of the inelasticitySubtractionsButton
-            (1: True, 0: False).
-        """
-        self.performInelasticitySubtractions = state
-
-    def handleNumberIterationsChanged(self, value):
-        """
-        Slot for handling change in the number of iterations.
-        Caled when a valueChanged signal is emitted from the
-        noIterationsSpinBox.
-        Updates the iteration configuration as such.
-        Parameters
-        ----------
-        value : int
-            The new value of the noIterationsSpinBox.
-        """
-        self.numberIterations = value
+        self.components = [None, None]
+        self.initComponents()
 
     def iterate(self):
         """
         Iterate Gudrun with the specified configuration.
         Called when an accepted signal is emmited from the buttonBox.
         """
-        if self.tweakValues:
-            if self.tweak == Iterables.TWEAK_FACTOR:
-                self.iterator = TweakFactorIterator(self.gudrunFile)
-                self.queue = Queue()
-                for _ in range(self.numberIterations):
-                    self.queue.put(
-                        self.gudrunFile.dcs(
-                            path=os.path.join(
-                                self.gudrunFile.instrument.GudrunInputFileDir,
-                                "gudpy.txt"
-                            ), headless=False)
-                    )
-                self.text = "Tweak by tweak factor"
-                self.widget.close()
-            else:
-                pass
-        elif self.performInelasticitySubtractions:
+        if self.iterateBy == Iterables.TWEAK_FACTOR:
+            self.iterator = TweakFactorIterator(self.gudrunFile)
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+            self.text = "Tweak by tweak factor"
+            self.widget.close()
+        elif self.iterateBy == Iterables.THICKNESS:
+            self.iterator = ThicknessIterator(self.gudrunFile)
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+            self.text = "Tweak by thickness"
+            self.widget.close()
+        elif (
+            self.iterateBy == Iterables.INNER_RADIUS
+            or self.iterateBy == Iterables.OUTER_RADIUS
+        ):
+            self.iterator = RadiusIterator(self.gudrunFile)
+            self.iterator.setTargetRadius(
+                {
+                    Iterables.INNER_RADIUS: "inner",
+                    Iterables.OUTER_RADIUS: "outer"
+                }[self.iterateBy]
+            )
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+            self.text = f"Tweak by {self.iterator.targetRadius} radius"
+            self.widget.close()
+        elif self.iterateBy == Iterables.DENSITY:
+            self.iterator = DensityIterator(self.gudrunFile)
+            self.queue = Queue()
+            for _ in range(self.numberIterations):
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
+                )
+            self.text = "Tweak by density"
+            self.widget.close()
+        elif self.iterateBy == Iterables.WAVELENGTH:
             self.iterator = WavelengthSubtractionIterator(
                 self.gudrunFile
             )
             self.queue = Queue()
             for _ in range(self.numberIterations):
-                self.queue.put(self.gudrunFile.dcs(
-                    path="gudpy.txt", headless=False)
+                self.queue.put(
+                    self.gudrunFile.dcs(
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        ), headless=False)
                 )
                 self.queue.put(
                     self.gudrunFile.dcs(
@@ -140,12 +166,169 @@ class IterationDialog(QDialog):
                 )
             self.text = "Inelasticity subtractions"
             self.widget.close()
-        else:
-            pass
+        elif (
+            self.iterateBy == Iterables.COMPOSITION_SINGLE_COMPONENT
+            or self.iterateBy == Iterables.COMPOSITION_TWO_COMPONENTS
+        ):
+            self.iterator = CompositionIterator(
+                self.gudrunFile
+            )
+            self.iterator.setComponents(self.components)
+            self.queue = Queue()
+            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+                for sample in sampleBackground.samples:
+                    if sample.runThisSample:
+                        if [
+                            wc for wc in sample.composition.weightedComponents
+                            if self.components[0].eq(wc.component)
+                        ]:
+                            sb = deepcopy(sampleBackground)
+                            sb.samples = [deepcopy(sample)]
+                            if len(self.iterator.components) == 1:
+                                self.queue.put(
+                                    (
+                                        (
+                                            [1e-2, self.iterator.ratio, 10],
+                                            0,
+                                            self.numberIterations,
+                                            self.rtol
+                                        ),
+                                        {
+                                            "args": (
+                                                self.gudrunFile,
+                                                sb,
+                                                self.iterator.components
+                                            )
+                                        },
+                                        sample
+                                    )
+                                )
+                            elif len(self.iterator.components) == 2:
+                                self.queue.put(
+                                    (
+                                        (
+                                            [1e-2, self.iterator.ratio, 10],
+                                            0,
+                                            self.numberIterations,
+                                            self.rtol
+                                        ),
+                                        {
+                                            "args": (
+                                                self.gudrunFile,
+                                                sb,
+                                                self.iterator.components,
+                                                calculateTotalMolecules(
+                                                    self.iterator.components,
+                                                    sample
+                                                )
+                                            )
+                                        },
+                                        sample
+                                    )
+                                )
+            self.text = "Tweak by composition"
+            self.widget.close()
 
-    def cancel(self):
-        self.cancelled = True
-        self.widget.close()
+    def tabChanged(self, index):
+        tabMap = {
+            0: (
+                self.widget.inelasticityIterationsSpinBox.value(),
+                Iterables.WAVELENGTH
+                ),
+            1: (
+                self.widget.tweakFactorIterationsSpinBox.value(),
+                Iterables.TWEAK_FACTOR
+                ),
+            2: (
+                self.widget.densityIterationsSpinBox.value(),
+                Iterables.DENSITY
+                ),
+            3: (
+                self.widget.thicknessIterationsSpinBox.value(),
+                Iterables.THICKNESS
+                ),
+            4: (
+                self.widget.radiusIterationsSpinBox.value(),
+                Iterables.INNER_RADIUS
+                if self.widget.innerRadiusRadioButton.isChecked()
+                else Iterables.OUTER_RADIUS
+            ),
+            5: (
+                self.widget.compositionIterationsSpinBox.value(),
+                Iterables.COMPOSITION_SINGLE_COMPONENT
+                if self.widget.singleComponentCheckBox.isChecked()
+                else Iterables.COMPOSITION_TWO_COMPONENTS
+                )
+        }
+
+        self.numberIterations, self.iterateBy = tabMap[index]
+
+    def numberIterationsChanged(self, value):
+        self.numberIterations = value
+
+    def loadFirstComponentsComboBox(self):
+        self.widget.firstComponentComboBox.clear()
+        for component in config.components.components:
+            self.widget.firstComponentComboBox.addItem(
+                component.name, component
+            )
+        self.components[0] = config.components.components[0]
+
+    def loadSecondComponentsComboBox(self):
+        self.widget.secondComponentComboBox.clear()
+        for component in config.components.components:
+            self.widget.secondComponentComboBox.addItem(
+                component.name, component
+            )
+
+    def firstComponentChanged(self, index):
+        self.components[0] = self.widget.firstComponentComboBox.itemData(index)
+        other = self.widget.secondComponentComboBox.model().item(index)
+        self.setItemDisabled(
+            self.widget.secondComponentComboBox,
+            other
+        )
+
+    def secondComponentChanged(self, index):
+        self.components[1] = (
+            self.widget.secondComponentComboBox.itemData(index)
+        )
+        other = self.widget.firstComponentComboBox.model().item(index)
+        self.setItemDisabled(
+            self.widget.firstComponentComboBox,
+            other
+        )
+
+    def compositionRtolChanged(self, value):
+        self.rtol = value
+
+    def enableItems(self, comboBox):
+        for i in range(len(config.components.components)):
+            item = comboBox.model().item(i)
+            if item:
+                item.setFlags(
+                    item.flags() | Qt.ItemIsEnabled
+                )
+
+    def setItemDisabled(self, comboBox, item):
+        self.enableItems(comboBox)
+        if item:
+            item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+
+    def toggleUseSingleComponent(self, state):
+        if state:
+            self.enableItems(self.widget.firstComponentComboBox)
+            self.components[1] = None
+        else:
+            other = self.widget.secondComponentComboBox.model().item(
+                self.widget.firstComponentComboBox.currentIndex()
+            )
+            self.setItemDisabled(
+                self.widget.secondComponentComboBox,
+                other
+            )
+        self.widget.secondComponentComboBox.setEnabled(not state)
+        self.widget.secondComponentComboBox.setCurrentIndex(-1)
 
     def initComponents(self):
         """
@@ -166,18 +349,79 @@ class IterationDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
-        self.widget.tweakButton.toggled.connect(
-            self.handleTweakValuesChanged
+
+        self.widget.iterationTabs.currentChanged.connect(
+            self.tabChanged
         )
-        self.widget.inelasticitySubtractionsButton.toggled.connect(
-            self.handlePerformInelasticitySubtractionsChanged
+
+        self.widget.inelasticityIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
         )
-        self.widget.noIterationsSpinBox.valueChanged.connect(
-            self.handleNumberIterationsChanged
+        self.widget.tweakFactorIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
         )
-        self.widget.buttonBox.accepted.connect(
+        self.widget.densityIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
+        self.widget.thicknessIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
+        self.widget.radiusIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
+        self.widget.compositionIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
+        self.widget.firstComponentComboBox.currentIndexChanged.connect(
+            self.firstComponentChanged
+        )
+        self.widget.secondComponentComboBox.currentIndexChanged.connect(
+            self.secondComponentChanged
+        )
+        self.widget.secondComponentComboBox.setCurrentIndex(-1)
+
+        self.widget.compositionToleranceSpinBox.valueChanged.connect(
+            self.compositionRtolChanged
+        )
+        self.widget.singleComponentCheckBox.toggled.connect(
+            self.toggleUseSingleComponent
+        )
+
+        if len(config.components.components):
+
+            self.loadFirstComponentsComboBox()
+            self.loadSecondComponentsComboBox()
+
+        else:
+            self.widget.compositionTab.setEnabled(False)
+
+        self.widget.thicknessTab.setEnabled(
+            config.geometry == Geometry.FLATPLATE
+        )
+
+        self.widget.radiusTab.setEnabled(
+            config.geometry == Geometry.CYLINDRICAL
+        )
+
+        self.widget.iterateInelasticityButton.clicked.connect(
             self.iterate
         )
-        self.widget.buttonBox.rejected.connect(
-            self.cancel
+        self.widget.iterateTweakFactorButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateDensityButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateThicknessButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateRadiusButton.clicked.connect(
+            self.iterate
+        )
+        self.widget.iterateCompositionButton.clicked.connect(
+            self.iterate
         )

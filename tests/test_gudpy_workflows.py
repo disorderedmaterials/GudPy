@@ -5,6 +5,8 @@ import re
 import math
 
 from src.gudrun_classes.gudrun_file import GudrunFile
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
+from src.gudrun_classes.density_iterator import DensityIterator
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
 from src.gudrun_classes.gud_file import GudFile
 from src.gudrun_classes.wavelength_subtraction_iterator import (
@@ -134,6 +136,106 @@ class TestGudPyWorkflows(TestCase):
         self.g.purge()
         tweakFactorIterator = TweakFactorIterator(self.g)
         tweakFactorIterator.iterate(5)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf1 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf2 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf3 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf4 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+    def testGudPyIterateByThickness(self):
+
+        self.g.purge()
+        thicknessIterator = ThicknessIterator(self.g)
+        thicknessIterator.iterate(5)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf1 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf2 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf2.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf3 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf3.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
+        gf4 = GudFile(
+            os.path.join(
+                self.g.instrument.GudrunInputFileDir, gfPath
+            )
+        )
+        dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
+        dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
+        self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+    def testGudPyIterateByDensity(self):
+
+        self.g.purge()
+        densityIterator = DensityIterator(self.g)
+        densityIterator.iterate(5)
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')

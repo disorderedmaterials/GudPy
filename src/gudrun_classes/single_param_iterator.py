@@ -3,13 +3,13 @@ import os
 import time
 
 
-class TweakFactorIterator():
+class SingleParamIterator():
     """
-    Class to represent a Tweak Factor Iterator.
-    This class is used for iteratively tweaking by the tweak factor.
-    This means running gudrun_dcs iteratively, and adjusting the tweak
-    factor of each sample across iterations. The new tweak factor
-    applied is the tweak factor suggested by
+    Class to represent a Single Param Iterator.
+    This class is used for iteratively tweaking a parameter by a coefficient.
+    This means running gudrun_dcs iteratively, and adjusting parameter
+    of each sample across iterations. The new coefficient
+    applied is the coefficient calculated from the results of
     gudrun_dcs in the previous iteration.
 
     ...
@@ -22,13 +22,15 @@ class TweakFactorIterator():
     ----------
     performIteration(_n)
         Performs a single iteration.
+    applyCoefficientToAttribute(object, coefficient)
+        To be overriden by sub-classes.
     iterate(n)
         Perform n iterations of iterating by tweak factor.
     """
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
-        TweakFactorIterator object.
+        SingleParamIterator object.
 
         Parameters
         ----------
@@ -46,8 +48,8 @@ class TweakFactorIterator():
         _n : int
             Iteration number.
         """
-        # Iterate through all samples,
-        # updating their tweak factor from the output of gudrun_dcs.
+        # Iterate through all samples that are being run,
+        # applying the coefficient to the target parameter.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in [
                 s for s in sampleBackground.samples
@@ -63,29 +65,42 @@ class TweakFactorIterator():
                         gudPath
                     )
                 )
-                tweakFactor = float(gudFile.suggestedTweakFactor)
-                sample.sampleTweakFactor = tweakFactor
+                # Calculate coefficient: actualDCSLevel / expectedDCSLevel
+                coefficient = (
+                    gudFile.averageLevelMergedDCS / gudFile.expectedDCS
+                )
+                # Apply the coefficient.
+                self.applyCoefficientToAttribute(sample, coefficient)
+
+    def applyCoefficientToAttribute(self, object, coefficient):
+        """
+        Stub method to be overriden by sub-classes.
+        The idea is that this method applies the 'coefficient'
+        to a class-specific attribute of 'object'.
+
+        Parameters
+        ----------
+        object : Sample
+            Target object.
+        coefficient : float
+            Coefficient to use.
+        """
+        pass
 
     def iterate(self, n):
         """
-        This method is the core of the TweakFactorIterator.
-        It performs n iterations of tweaking by the tweak factor.
-        Namely, it performs gudrun_dcs n times, adjusting the tweak factor
-        for each sample before each iteration, after the first one, to
-        the suggested tweak factor outputted from the previous iteration
-        of gudrun_dcs. gudrun_dcs outputs a .gud file, which we
-        parse to extract the suggested tweak factor from.
+        This method is the core of the SingleParamIterator.
+        It performs n iterations of tweaking by a class-specific parameter.
+        Namely, it performs gudrun_dcs n times, adjusting said parameter
+        for each sample before each iteration, after the first one,
+        using the results of the previous iteration to do so.
 
         Parameters
         ----------
         n : int
             Number of iterations to perform.
         """
-        # Perform n iterations of tweaking by tweak factor.
         for i in range(n):
-
-            # Write out what we currently have,
-            # and run gudrun_dcs on that file.
             self.gudrunFile.process()
             time.sleep(1)
             self.performIteration(i)

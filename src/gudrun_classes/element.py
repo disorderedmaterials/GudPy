@@ -68,3 +68,15 @@ class Element:
             String representation of Element.
         """
         return str(self)
+
+    def eq(self, obj):
+        if (
+            hasattr(obj, 'atomicSymbol')
+            and hasattr(obj, 'massNo')
+            and hasattr(obj, 'abundance')
+        ):
+            return (
+                self.atomicSymbol == obj.atomicSymbol
+                and self.massNo == obj.massNo
+                and self.abundance == obj.abundance
+            )

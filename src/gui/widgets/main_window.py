@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from PySide6.QtCore import QFile, QFileInfo, QTimer
+from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread
 from PySide6.QtGui import QPainter
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -17,9 +17,13 @@ from PySide6.QtWidgets import (
     QMenu
 )
 from PySide6.QtCharts import QChartView
+from src.gudrun_classes.composition_iterator import CompositionIterator
+from src.gudrun_classes.density_iterator import DensityIterator
+from src.gudrun_classes.radius_iterator import RadiusIterator
 
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
@@ -29,6 +33,9 @@ from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
+from src.gui.widgets.dialogs.composition_iteration_dialog import (
+    CompositionIterationDialog
+)
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
 from src.gui.widgets.output_tree import OutputTreeView
@@ -75,6 +82,8 @@ from src.gudrun_classes.run_containers_as_samples import RunContainersAsSamples
 from src.gudrun_classes.gud_file import GudFile
 
 from src.scripts.utils import breplace, nthint
+
+from src.gui.widgets.worker import CompositionWorker
 
 import os
 import sys
@@ -180,6 +189,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
+        loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -1042,16 +1052,121 @@ class GudPyMainWindow(QMainWindow):
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
-            self.nextIterableProc()
+            if isinstance(self.iterator, CompositionIterator):
+                self.iterateByComposition()
+            else:
+                self.nextIterableProc()
+
+    def finishedCompositionIteration(self, originalSample, updatedSample):
+        self.compositionMap[originalSample] = updatedSample
+        self.mainWidget.progressBar.setValue(
+            int(
+                (
+                    self.currentIteration / self.totalIterations
+                ) * 100
+            )
+        )
+        if not self.queue.empty():
+            self.nextCompositionIteration()
+        else:
+            self.finishedCompositionIterations()
+
+    def finishedCompositionIterations(self):
+        for original, new in self.compositionMap.items():
+            dialog = CompositionIterationDialog(new, self.mainWidget)
+            result = dialog.widget.exec()
+            if result:
+                original.composition = new.composition
+                if self.sampleSlots.sample == original:
+                    self.sampleSlots.setSample(original)
+        self.setControlsEnabled(True)
+        self.mainWidget.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.queue = Queue()
+
+    def startedCompositionIteration(self, sample):
+        self.mainWidget.currentTaskLabel.setText(
+            f"{self.text}"
+            f" ({sample.name})"
+        )
+
+    def errorCompositionIteration(self, output):
+        QMessageBox.critical(
+            self.mainWidget, "GudPy Error",
+            "An error occured whilst iterating by composition."
+            " Please check the output to see what went wrong."
+        )
+        self.setControlsEnabled(True)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.mainWidget.progressBar.setValue(0)
+        self.outputSlots.setOutput(output, "gudrun_dcs")
+        self.queue = Queue()
+
+    def progressCompositionIteration(self, currentIteration):
+        progress = (
+            currentIteration / self.numberIterations
+        ) * (self.currentIteration / self.totalIterations)
+        self.mainWidget.progressBar.setValue(int(progress*100))
+
+    def nextCompositionIteration(self):
+        args, kwargs, sample = self.queue.get()
+        self.worker = CompositionWorker(args, kwargs, sample)
+        self.worker.started.connect(self.startedCompositionIteration)
+        self.workerThread = QThread()
+        self.worker.moveToThread(self.workerThread)
+        self.worker.finished.connect(self.workerThread.quit)
+        self.worker.nextIteration.connect(self.progressCompositionIteration)
+        self.workerThread.started.connect(self.worker.work)
+        self.workerThread.start()
+        self.worker.errorOccured.connect(self.errorCompositionIteration)
+        self.worker.errorOccured.connect(self.workerThread.quit)
+        self.worker.finished.connect(self.finishedCompositionIteration)
+        self.currentIteration += 1
+
+    def iterateByComposition(self):
+        if not self.iterator.components:
+            self.setControlsEnabled(True)
+            return
+        elif self.queue.empty():
+            QMessageBox.warning(
+                self.mainWidget,
+                "GudPy Warning",
+                "No iterations were queued."
+                " It's likely no Samples selected for analysis"
+                " use the Component(s) selected for iteration."
+            )
+        else:
+            self.compositionMap = {}
+            self.totalIterations = len(
+                [
+                    s for sb in self.gudrunFile.sampleBackgrounds
+                    for s in sb.samples
+                    if s.runThisSample
+                    and len(
+                        [
+                            wc for c in self.iterator.components
+                            for wc in s.composition.weightedComponents
+                            if wc.component.eq(c)
+                        ]
+                    )
+                ]
+            )
+            self.nextCompositionIteration()
 
     def nextIteration(self):
         if self.error:
             self.proc.finished.connect(self.procFinished)
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(
+            self.iterator, (
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
+            )
+        ):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration+1] = self.output
+            self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
@@ -1063,17 +1178,18 @@ class GudPyMainWindow(QMainWindow):
                 else:
                     self.outputIterations[self.currentIteration] = self.output
             self.gudrunFile.write_out()
-        self.nextIterableProc()
-        self.currentIteration += 1
+
+        if not self.queue.empty():
+            self.nextIterableProc()
+            self.currentIteration += 1
+        else:
+            self.procFinished()
         self.output = ""
 
     def nextIterableProc(self):
         self.proc, func, args = self.queue.get()
         self.proc.started.connect(self.iterationStarted)
-        if not self.queue.empty():
-            self.proc.finished.connect(self.nextIteration)
-        else:
-            self.proc.finished.connect(self.procFinished)
+        self.proc.finished.connect(self.nextIteration)
         self.proc.readyReadStandardOutput.connect(self.progressIteration)
         self.proc.started.connect(self.iterationStarted)
         self.proc.setWorkingDirectory(
@@ -1084,7 +1200,12 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def iterationStarted(self):
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(
+            self.iterator, (
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
+            )
+        ):
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
                 f" {self.currentIteration+1}/{self.numberIterations}"
@@ -1105,7 +1226,12 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(
+            self.iterator, (
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
+            )
+        ):
             progress /= self.numberIterations
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             progress /= self.numberIterations
@@ -1221,9 +1347,17 @@ class GudPyMainWindow(QMainWindow):
                 [
                     sum(
                         [
-                            len(sampleBackground.samples), *[
+                            len(
+                                [
+                                    sample
+                                    for sample in sampleBackground.samples
+                                    if sample.runThisSample
+                                ]
+                                ),
+                            *[
                                 len(sample.containers)
                                 for sample in sampleBackground.samples
+                                if sample.runThisSample
                             ]
                         ]
                     ) for sampleBackground in self.gudrunFile.sampleBackgrounds
@@ -1341,7 +1475,12 @@ class GudPyMainWindow(QMainWindow):
     def procFinished(self):
         self.proc = None
         output = self.output
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(
+            self.iterator, (
+                TweakFactorIterator, ThicknessIterator,
+                RadiusIterator, DensityIterator
+            )
+        ):
             self.outputIterations[self.currentIteration+1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
         if self.iterator:
