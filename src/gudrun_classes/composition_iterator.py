@@ -58,7 +58,7 @@ class CompositionIterator():
     """
     Class to represent a Composition Iterator.
     This class is used for iteratively tweaking composition
-    by defined components. 
+    by defined components.
     This is achieved by running gudrun_dcs iteratively,
     using golden-section search to find the optimal value of
     ratio's of components in composition, or ratio between two components,
