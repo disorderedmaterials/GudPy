@@ -149,6 +149,8 @@ class GudPyMainWindow(QMainWindow):
         self.error = ""
         self.cwd = os.getcwd()
         self.warning = ""
+        self.worker = None
+        self.workerThread = None
         self.initComponents()
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
@@ -1070,12 +1072,12 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = iterationDialog.numberIterations
             self.currentIteration = 0
             self.text = iterationDialog.text
-<<<<<<< HEAD
             self.outputIterations = {}
             if isinstance(self.iterator, CompositionIterator):
                 self.iterateByComposition()
             else:
                 self.nextIterableProc()
+            self.mainWidget.stopTaskButton.setEnabled(True)
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
@@ -1172,10 +1174,6 @@ class GudPyMainWindow(QMainWindow):
                 ]
             )
             self.nextCompositionIteration()
-=======
-            self.mainWidget.stopTaskButton.setEnabled(True)
-            self.nextIterableProc()
->>>>>>> 7957951 (feat: stop button is working.)
 
     def nextIteration(self):
         if self.error:
@@ -1551,9 +1549,12 @@ class GudPyMainWindow(QMainWindow):
 
     def stopProc(self):
         self.queue = Queue()
-        if self.proc.state() == QProcess.Running:
-            self.proc.kill()
-            self.procFinished()
+        if self.proc:
+            if self.proc.state() == QProcess.Running:
+                self.proc.kill()
+                self.procFinished()
+        if self.workerThread:
+            self.workerThread.requestInterruption()
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
