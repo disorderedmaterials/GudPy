@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, QThread
 import os
 from src.gudrun_classes.gud_file import GudFile
 from src.gudrun_classes.sample import Sample
@@ -39,6 +39,8 @@ class CompositionWorker(QObject):
         components, totalMolecules=None
     ):
 
+        if QThread.currentThread().isInterruptionRequested():
+            return None
         gf = deepcopy(gudrunFile)
         gf.sampleBackgrounds = [sampleBackground]
 

@@ -1,6 +1,6 @@
 from abc import abstractmethod
-from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread
-from PySide6.QtGui import QPainter
+from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread, QProcess
+from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -14,7 +14,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStatusBar,
     QWidget,
-    QMenu
+    QMenu,
+    QToolButton
 )
 from PySide6.QtCharts import QChartView
 from src.gudrun_classes.composition_iterator import CompositionIterator
@@ -148,6 +149,8 @@ class GudPyMainWindow(QMainWindow):
         self.error = ""
         self.cwd = os.getcwd()
         self.warning = ""
+        self.worker = None
+        self.workerThread = None
         self.initComponents()
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
@@ -206,6 +209,21 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
+        self.mainWidget.stopTaskButton = QToolButton(
+            self.mainWidget.statusBarWidget
+        )
+        self.mainWidget.stopTaskButton.setIcon(
+            QIcon(":/icons/stop")
+        )
+        self.mainWidget.stopTaskButton.clicked.connect(
+            self.stopProc
+        )
+        self.mainWidget.stopTaskButton.setEnabled(False)
+
+        self.mainWidget.stopTaskButton.setSizePolicy(
+            QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        )
+
         self.mainWidget.progressBar = QProgressBar(
             self.mainWidget.statusBarWidget
         )
@@ -215,6 +233,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setTextVisible(False)
         self.mainWidget.statusBarLayout.addWidget(
             self.mainWidget.currentTaskLabel
+        )
+        self.mainWidget.statusBarLayout.addWidget(
+            self.mainWidget.stopTaskButton
         )
         self.mainWidget.statusBarLayout.addWidget(self.mainWidget.progressBar)
         self.mainWidget.statusBarWidget.setLayout(
@@ -1056,6 +1077,7 @@ class GudPyMainWindow(QMainWindow):
                 self.iterateByComposition()
             else:
                 self.nextIterableProc()
+            self.mainWidget.stopTaskButton.setEnabled(True)
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
@@ -1187,6 +1209,8 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
 
     def nextIterableProc(self):
+        if self.queue.empty():
+            return
         self.proc, func, args = self.queue.get()
         self.proc.started.connect(self.iterationStarted)
         self.proc.finished.connect(self.nextIteration)
@@ -1469,6 +1493,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(
             self.proc.program().split(os.path.sep)[-1]
         )
+        self.mainWidget.stopTaskButton.setEnabled(True)
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
@@ -1504,6 +1529,7 @@ class GudPyMainWindow(QMainWindow):
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
+            self.mainWidget.stopTaskButton.setEnabled(False)
         if "purge_det" not in self.mainWidget.currentTaskLabel.text():
             try:
                 self.updateResults()
@@ -1520,6 +1546,15 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+
+    def stopProc(self):
+        self.queue = Queue()
+        if self.proc:
+            if self.proc.state() == QProcess.Running:
+                self.proc.kill()
+                self.procFinished()
+        if self.workerThread:
+            self.workerThread.requestInterruption()
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
