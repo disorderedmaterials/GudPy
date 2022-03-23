@@ -1018,8 +1018,8 @@ class GudPyMainWindow(QMainWindow):
                     self.mainWidget,
                     "GudPy Error", "Couldn't find purge_det binary."
                 )
-            self.setControlsEnabled(True)
-            return
+                self.setControlsEnabled(True)
+                return
         else:
             self.runPurge_()
         dcs = self.gudrunFile.dcs(
@@ -1036,6 +1036,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
+            self.setControlsEnabled(True)
             return
         self.queue.put((dcs, self.progressDCS, func, args))
 
