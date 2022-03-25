@@ -1,6 +1,9 @@
 from abc import abstractmethod
 from enum import Enum
 
+from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.element import Element
+
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
 from src.gudrun_classes.normalisation import Normalisation
@@ -68,3 +71,14 @@ class YAML:
                     cls.containers.append(container)
             else:
                 setattr(cls, k, v)
+    
+    @abstractmethod
+    def toYaml(self, var):
+        if var.__class__.__module__ == "builtins":
+            print(var)
+            return var
+        elif isinstance(var, Enum):
+            print(type(var))
+            return type(var)(var.value).name
+        elif isinstance(var, (Instrument, Beam, Normalisation, SampleBackground, Sample, Container, Composition, Element)):
+            return {k: self.toYaml(v) for k,v in var.__dict__.items() if k not in var.yamlignore }
