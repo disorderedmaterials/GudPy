@@ -158,6 +158,10 @@ class Composition():
             self.elements = elements
         self.weightedComponents = []
 
+        self.yamlignore = {
+            "yamlignore"
+        }
+
     def addComponent(self, component, ratio):
         self.weightedComponents.append(
             WeightedComponent(component, ratio)

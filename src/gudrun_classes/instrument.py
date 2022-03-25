@@ -164,6 +164,14 @@ class Instrument:
         self.nxsDefinitionFile = ""
         self.goodDetectorThreshold = 0
 
+        self.yamlignore = {
+            "GudrunInputFileDir",            
+            "GudrunStartFolder",
+            "startupFileFolder",
+            "goodDetectorThreshold",
+            "yamlignore"
+        }
+
     def __str__(self):
         """
         Returns the string representation of the Instrument object.

@@ -96,6 +96,10 @@ class Normalisation:
         self.normalisationDegreeSmoothing = 0.0
         self.minNormalisationSignalBR = 0.0
 
+        self.yamlignore = {
+            "yamlignore"
+        }
+
     def __str__(self):
         """
         Returns the string representation of the Normalisation object.

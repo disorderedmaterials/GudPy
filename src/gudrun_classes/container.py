@@ -96,6 +96,18 @@ class Container:
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
 
+        self.yamlignore = {
+            "runAsSample",
+            "topHatW",
+            "FTMode",
+            "minRadFT",
+            "maxRadFT",
+            "grBroadening",
+            "powerForBroadening",
+            "stepSize",
+            "yamlignore"
+        }
+
         if config:
             self.parseFromConfig(config)
 

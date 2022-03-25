@@ -142,6 +142,10 @@ class Sample:
 
         self.containers = []
 
+        self.yamlignore = {
+            "yamlignore"
+        }
+
     def pathName(self):
         return self.name.replace(" ", "_").translate(
             {ord(x): '' for x in r'/\!*~,&|[]'}
