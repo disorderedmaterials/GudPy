@@ -2,6 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 
 from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.element import Element
 
 from src.gudrun_classes.instrument import Instrument
@@ -15,6 +16,7 @@ class YAML:
 
     def __init__(self):
         self.yaml = self.getYamlModule()
+        self.scanner = self.yaml.scanner
         self.loader = self.yaml.BaseLoader
         self.dumper = self.yaml.BaseDumper
         self.classesToLookup = {
@@ -57,9 +59,12 @@ class YAML:
     def maskYAMLtoClass(self, cls, yamldict):
         for k,v in yamldict.items():
             if isinstance(cls.__dict__[k], Enum):
-                print(type(cls.__dict__[k])[v])
                 setattr(cls, k, type(cls.__dict__[k])[v])
-            if isinstance(cls, SampleBackground) and k == "samples":
+            elif type(cls.__dict__[k]) == bool:
+                setattr(cls, k, {"true": True, "false": False}[v])
+            elif isinstance(cls.__dict__[k], DataFiles):
+                setattr(cls, k, DataFiles(v, cls.__class__.__name__))
+            elif isinstance(cls, SampleBackground) and k == "samples":
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
                     self.maskYAMLtoClass(sample, sampleyaml)
@@ -70,8 +75,7 @@ class YAML:
                     self.maskYAMLtoClass(container, contyaml)
                     cls.containers.append(container)
             else:
-                setattr(cls, k, v)
-    
+                setattr(cls, k, type(cls.__dict__[k])(v))    
     @abstractmethod
     def toYaml(self, var):
         if var.__class__.__module__ == "builtins":
