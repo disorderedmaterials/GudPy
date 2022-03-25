@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from enum import Enum
+from ruamel.yaml import YAML as yaml
 
 from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.data_files import DataFiles
@@ -16,28 +17,19 @@ class YAML:
 
     def __init__(self):
         self.yaml = self.getYamlModule()
-        self.scanner = self.yaml.scanner
-        self.loader = self.yaml.BaseLoader
-        self.dumper = self.yaml.BaseDumper
-        self.classesToLookup = {
-            Instrument,
-            Beam,
-            Normalisation,
-            SampleBackground,
-            Sample,
-            Container
-        }
 
     def getYamlModule(self):
-        import yaml
-        return yaml
+        yaml_ = yaml()
+        yaml_.preserve_quotes = True
+        yaml_.default_flow_style = None
+        return yaml_
 
     def parseYaml(self, path):
         return self.constructClasses(self.yamlToDict(path))
 
     def yamlToDict(self, path):
         with open(path, "r") as fp:
-            return self.yaml.load(fp, self.loader)
+            return self.yaml.load(fp)
 
     def constructClasses(self, yamldict):
         instrument = Instrument()
@@ -60,8 +52,6 @@ class YAML:
         for k,v in yamldict.items():
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
-            elif type(cls.__dict__[k]) == bool:
-                setattr(cls, k, {"true": True, "false": False}[v])
             elif isinstance(cls.__dict__[k], DataFiles):
                 setattr(cls, k, DataFiles(v, cls.__class__.__name__))
             elif isinstance(cls, SampleBackground) and k == "samples":
@@ -75,14 +65,26 @@ class YAML:
                     self.maskYAMLtoClass(container, contyaml)
                     cls.containers.append(container)
             else:
-                setattr(cls, k, type(cls.__dict__[k])(v))    
+                setattr(cls, k, type(cls.__dict__[k])(v))
+
+    def writeYAML(self, base, path):
+        with open(path, "w") as fp:
+            outyaml = {
+                "Instrument" : base.instrument,
+                "Beam" : base.beam,
+                "Normalisation" : base.normalisation,
+                "SampleBackgrounds" : base.sampleBackgrounds
+            }
+            self.yaml.dump({k: self.toYaml(v) for k,v in outyaml.items()}, fp)
+
     @abstractmethod
     def toYaml(self, var):
         if var.__class__.__module__ == "builtins":
-            print(var)
-            return var
+            if isinstance(var, (list, tuple)):
+                return type(var)([self.toYaml(v) for v in var])
+            else:
+                return var
         elif isinstance(var, Enum):
-            print(type(var))
             return type(var)(var.value).name
-        elif isinstance(var, (Instrument, Beam, Normalisation, SampleBackground, Sample, Container, Composition, Element)):
-            return {k: self.toYaml(v) for k,v in var.__dict__.items() if k not in var.yamlignore }
+        elif isinstance(var, (Instrument, Beam, Normalisation, SampleBackground, Sample, Container, Composition, Element, DataFiles)):
+            return {k : self.toYaml(v) for k,v in var.__dict__.items() if k not in var.yamlignore }
