@@ -27,11 +27,12 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, FTModes, UnitsOfDensity, MergeWeights,
+    CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity, MergeWeights,
     Scales, NormalisationType, OutputUnits,
     Geometry
 )
 from src.gudrun_classes import config
+from src.gudrun_classes.gudpy_yaml import YAML
 import re
 from copy import deepcopy
 
@@ -137,7 +138,7 @@ class GudrunFile:
         """
 
         self.path = path
-
+        self.yaml = YAML()
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
@@ -1285,59 +1286,63 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path"
             )
-        parsing = ""
-        KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
-        # Decide the encoding
-        import chardet
-        with open(self.path, 'rb') as fp:
-            encoding = chardet.detect(fp.read())['encoding']
+        try:
+            self.instrument, self.beam, self.normalisation, self.sampleBackgrounds = self.yaml.parseYaml(self.path)
+        except:
+            parsing = ""
+            KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
-        # Read the input stream into our attribute.
-        with open(self.path, encoding=encoding) as fp:
-            self.stream = fp.readlines()
+            # Decide the encoding
+            import chardet
+            with open(self.path, 'rb') as fp:
+                encoding = chardet.detect(fp.read())['encoding']
 
-        # Here we go! Get the first token and begin parsing.
-        line = self.getNextToken()
+            # Read the input stream into our attribute.
+            with open(self.path, encoding=encoding) as fp:
+                self.stream = fp.readlines()
 
-        # Iterate through the file,
-        # parsing the Instrument, Beam and Normalisation.
-        while self.stream and not all(value for value in KEYWORDS.values()):
-            if (
-                firstword(line) in KEYWORDS.keys()
-                and not KEYWORDS[firstword(line)]
-            ):
-                parsing = firstword(line)
-                self.makeParse(parsing)
-                KEYWORDS[parsing] = True
+            # Here we go! Get the first token and begin parsing.
             line = self.getNextToken()
 
-        # If we didn't parse each one of the keywords, then panic.
-        if not all(KEYWORDS.values()) and not config:
-            raise ParserException((
-               'INSTRUMENT, BEAM and NORMALISATION'
-               ' were not parsed. It\'s possible the file'
-               ' supplied is of an incorrect format!'
-            ))
-        elif not KEYWORDS["INSTRUMENT"] and config:
-            raise ParserException((
-                'INSTRUMENT was not parsed. It\'s possible the file'
+            # Iterate through the file,
+            # parsing the Instrument, Beam and Normalisation.
+            while self.stream and not all(value for value in KEYWORDS.values()):
+                if (
+                    firstword(line) in KEYWORDS.keys()
+                    and not KEYWORDS[firstword(line)]
+                ):
+                    parsing = firstword(line)
+                    self.makeParse(parsing)
+                    KEYWORDS[parsing] = True
+                line = self.getNextToken()
+
+            # If we didn't parse each one of the keywords, then panic.
+            if not all(KEYWORDS.values()) and not config:
+                raise ParserException((
+                'INSTRUMENT, BEAM and NORMALISATION'
+                ' were not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
-            ))
+                ))
+            elif not KEYWORDS["INSTRUMENT"] and config:
+                raise ParserException((
+                    'INSTRUMENT was not parsed. It\'s possible the file'
+                    ' supplied is of an incorrect format!'
+                ))
 
-        # Ignore whitespace.
-        self.consumeWhitespace()
-        line = self.peekNextToken()
+            # Ignore whitespace.
+            self.consumeWhitespace()
+            line = self.peekNextToken()
 
-        # Parse sample backgrounds, alongside their samples and containers.
-        while self.stream:
-            if "SAMPLE BACKGROUND" in line and "{" in line:
-                self.sampleBackgrounds.append(
-                    self.sampleBackgroundHelper()
-                )
-            elif "COMPONENTS:" in line:
-                self.makeParse("COMPONENTS")
-            line = self.getNextToken()
+            # Parse sample backgrounds, alongside their samples and containers.
+            while self.stream:
+                if "SAMPLE BACKGROUND" in line and "{" in line:
+                    self.sampleBackgrounds.append(
+                        self.sampleBackgroundHelper()
+                    )
+                elif "COMPONENTS:" in line:
+                    self.makeParse("COMPONENTS")
+                line = self.getNextToken()
 
     def __str__(self):
         """
@@ -1399,6 +1404,19 @@ class GudrunFile:
             + footer
             + components
         )
+
+    def save(self, path='', format=Format.TXT):
+
+        if not path:
+            path = self.path
+
+        if format == Format.TXT:
+            self.write_out(path=path.replace(path.split(".")[-1], "txt"))
+        elif format == Format.YAML:
+            self.write_yaml(path=path.replace(path.split(".")[-1], "yaml"))
+
+    def write_yaml(self, path):
+        self.yaml.writeYAML(self, path)
 
     def write_out(self, path='', overwrite=False, writeParameters=False):
         """
