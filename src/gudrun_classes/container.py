@@ -105,6 +105,7 @@ class Container:
             "grBroadening",
             "powerForBroadening",
             "stepSize",
+            "singleAtomBackgroundScatteringSubtractionMode",
             "yamlignore"
         }
 
