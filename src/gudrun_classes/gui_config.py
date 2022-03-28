@@ -1,7 +1,7 @@
 
 class GUIConfig():
     def __init__(self):
-        self.useComponents = True
+        self.useComponents = False
         self.yamlignore = {
             "yamlignore"
         }
