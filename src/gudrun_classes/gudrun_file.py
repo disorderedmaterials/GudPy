@@ -27,8 +27,8 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity, MergeWeights,
-    Scales, NormalisationType, OutputUnits,
+    CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
+    MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
 from src.gudrun_classes import config
@@ -1288,10 +1288,22 @@ class GudrunFile:
             )
 
         try:
-            self.instrument, self.beam, config.components, self.normalisation, self.sampleBackgrounds, config.GUI = self.yaml.parseYaml(self.path)
-        except:
+            (
+                self.instrument,
+                self.beam,
+                config.components,
+                self.normalisation,
+                self.sampleBackgrounds,
+                config.GUI
+            ) = self.yaml.parseYaml(self.path)
+        except Exception:
+
             parsing = ""
-            KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
+            KEYWORDS = {
+                "INSTRUMENT": False,
+                "BEAM": False,
+                "NORMALISATION": False
+            }
 
             # Decide the encoding
             import chardet
@@ -1307,7 +1319,10 @@ class GudrunFile:
 
             # Iterate through the file,
             # parsing the Instrument, Beam and Normalisation.
-            while self.stream and not all(value for value in KEYWORDS.values()):
+            while (
+                self.stream
+                and not all(value for value in KEYWORDS.values())
+            ):
                 if (
                     firstword(line) in KEYWORDS.keys()
                     and not KEYWORDS[firstword(line)]
@@ -1318,13 +1333,13 @@ class GudrunFile:
                 line = self.getNextToken()
 
             # If we didn't parse each one of the keywords, then panic.
-            if not all(KEYWORDS.values()) and not config:
+            if not all(KEYWORDS.values()) and not config_:
                 raise ParserException((
-                'INSTRUMENT, BEAM and NORMALISATION'
-                ' were not parsed. It\'s possible the file'
-                ' supplied is of an incorrect format!'
+                    'INSTRUMENT, BEAM and NORMALISATION'
+                    ' were not parsed. It\'s possible the file'
+                    ' supplied is of an incorrect format!'
                 ))
-            elif not KEYWORDS["INSTRUMENT"] and config:
+            elif not KEYWORDS["INSTRUMENT"] and config_:
                 raise ParserException((
                     'INSTRUMENT was not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'

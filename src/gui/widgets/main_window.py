@@ -95,6 +95,7 @@ from queue import Queue
 from collections.abc import Sequence
 import re
 
+
 class GudPyMainWindow(QMainWindow):
     """
     Class to represent the GudPyMainWindow. Inherits QMainWindow.
@@ -520,7 +521,8 @@ class GudPyMainWindow(QMainWindow):
             self,
             "Select Input file for GudPy",
             ".",
-            "YAML (*.yaml);;Gudrun Compatible (*.txt);;Sample Parameters (*.sample)"
+            "YAML (*.yaml);;Gudrun Compatible "
+            "(*.txt);;Sample Parameters (*.sample)"
         )
         if filename:
             try:
@@ -548,13 +550,15 @@ class GudPyMainWindow(QMainWindow):
         Saves the current state of the input file as...
         """
         filename, filter = QFileDialog.getSaveFileName(
-            self, "Save input file as..", ".", "YAML (*.yaml);;Gudrun Compatible (*.txt)"
+            self,
+            "Save input file as..", ".",
+            "YAML (*.yaml);;Gudrun Compatible (*.txt)"
         )
         if filename:
-            ext = re.search('\((.+?)\)',filter).group(1).replace('*','')
+            ext = re.search(r'\((.+?)\)', filter).group(1).replace('*', '')
             fmt = Format.TXT if ext == ".txt" else Format.YAML
             if filter and sys.platform.startswith("linux"):
-                filename+= ext
+                filename += ext
             if os.path.basename(filename) == "gudpy.txt":
                 QMessageBox.warning(
                     self.mainWidget,

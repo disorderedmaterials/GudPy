@@ -140,6 +140,9 @@ class WeightedComponent():
     def __init__(self, component, ratio):
         self.component = component
         self.ratio = ratio
+        self.yamlignore = {
+            "yamlignore"
+        }
 
     def translate(self):
         elements = []
