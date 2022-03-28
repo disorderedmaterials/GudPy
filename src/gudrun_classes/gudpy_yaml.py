@@ -2,7 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
 
-from src.gudrun_classes.composition import Component, Components, Composition
+from src.gudrun_classes.composition import Component, Components, Composition, WeightedComponent
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.element import Element
 from src.gudrun_classes.gui_config import GUIConfig
@@ -14,6 +14,7 @@ from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
 from src.gudrun_classes import config
+from src.scripts.utils import isin
 
 class YAML:
 
@@ -72,6 +73,14 @@ class YAML:
                     )
                     elements.append(element_)
                 setattr(cls, k, elements)
+            elif isinstance(cls, Composition) and k == "weightedComponents":
+                weightedComponents = []
+                for weightedComponent in v:
+                    component = Component()
+                    self.maskYAMLDicttoClass(component, weightedComponent["component"])
+                    ratio = weightedComponent["ratio"]
+                    weightedComponents.append(WeightedComponent(component, float(ratio)))
+                setattr(cls, k, weightedComponents)
             elif isinstance(cls, (Normalisation, Sample, Container)) and k == "composition":
                 self.maskYAMLDicttoClass(cls.__dict__[k], v)
             elif isinstance(cls, SampleBackground) and k == "samples":
@@ -117,5 +126,5 @@ class YAML:
                 return var
         elif isinstance(var, Enum):
             return type(var)(var.value).name
-        elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, Component, Composition, Element, DataFiles, GUIConfig)):
+        elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, WeightedComponent, Component, Composition, Element, DataFiles, GUIConfig)):
             return {k : self.toYaml(v) for k, v in var.__dict__.items() if k not in var.yamlignore }
