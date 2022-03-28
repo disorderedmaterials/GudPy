@@ -84,9 +84,14 @@ class ChemicalFormulaParser():
 class Component():
 
     def __init__(self, name):
-        self.elements = []
         self.name = name
+        self.elements = []
         self.parser = ChemicalFormulaParser()
+
+        self.yamlignore = {
+            "parser",
+            "yamlignore"
+        }
 
     def addElement(self, element):
         self.elements.append(element)
@@ -116,6 +121,10 @@ class Components():
 
     def __init__(self):
         self.components = []
+
+        self.yamlignore = {
+            "yamlignore"
+        }
 
     def addComponent(self, component):
         self.components.append(component)

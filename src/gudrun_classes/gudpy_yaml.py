@@ -2,7 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
 
-from src.gudrun_classes.composition import Composition
+from src.gudrun_classes.composition import Component, Components, Composition
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.element import Element
 
@@ -12,6 +12,7 @@ from src.gudrun_classes.normalisation import Normalisation
 from src.gudrun_classes.sample_background import SampleBackground
 from src.gudrun_classes.sample import Sample
 from src.gudrun_classes.container import Container
+from src.gudrun_classes import config
 
 class YAML:
 
@@ -72,6 +73,7 @@ class YAML:
             outyaml = {
                 "Instrument" : base.instrument,
                 "Beam" : base.beam,
+                "Components" : config.components,
                 "Normalisation" : base.normalisation,
                 "SampleBackgrounds" : base.sampleBackgrounds
             }
@@ -86,5 +88,5 @@ class YAML:
                 return var
         elif isinstance(var, Enum):
             return type(var)(var.value).name
-        elif isinstance(var, (Instrument, Beam, Normalisation, SampleBackground, Sample, Container, Composition, Element, DataFiles)):
+        elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, Component, Composition, Element, DataFiles)):
             return {k : self.toYaml(v) for k,v in var.__dict__.items() if k not in var.yamlignore }
