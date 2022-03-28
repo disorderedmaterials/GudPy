@@ -34,48 +34,75 @@ class YAML:
 
     def constructClasses(self, yamldict):
         instrument = Instrument()
-        self.maskYAMLtoClass(instrument, yamldict["Instrument"])
+        self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
         beam = Beam()
-        self.maskYAMLtoClass(beam, yamldict["Beam"])
+        self.maskYAMLDicttoClass(beam, yamldict["Beam"])
+        components = Components()
+        self.maskYAMLSeqtoClss(components, yamldict["Components"])
         normalisation = Normalisation()
-        self.maskYAMLtoClass(normalisation, yamldict["Normalisation"])
-
+        self.maskYAMLDicttoClass(normalisation, yamldict["Normalisation"])
         sampleBackgrounds = []
         for sbyaml in yamldict["SampleBackgrounds"]:
             sampleBackground = SampleBackground()
-            self.maskYAMLtoClass(sampleBackground, sbyaml)
+            self.maskYAMLDicttoClass(sampleBackground, sbyaml)
             sampleBackgrounds.append(sampleBackground)
 
-        return instrument, beam, normalisation, sampleBackgrounds
+        GUI = {k : v for k,v in yamldict["GUI"].items()}
+
+        return instrument, beam, components, normalisation, sampleBackgrounds, GUI
 
     @abstractmethod
-    def maskYAMLtoClass(self, cls, yamldict):
+    def maskYAMLDicttoClass(self, cls, yamldict):
         for k,v in yamldict.items():
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
             elif isinstance(cls.__dict__[k], DataFiles):
-                setattr(cls, k, DataFiles(v["dataFiles"], v["name"]))
+                setattr(cls, k, DataFiles([v_ for v_ in v["dataFiles"]], v["name"]))
+            elif isinstance(cls, (Component, Composition)) and k == "elements":
+                elements = []
+                for element in v:
+                    element_ = Element(
+                        **{
+                            "atomicSymbol": element["atomicSymbol"],
+                            "massNo": float(element["massNo"]),
+                            "abundance": float(element["abundance"])
+                        }
+                    )
+                    elements.append(element_)
+                setattr(cls, k, elements)
+            elif isinstance(cls, (Normalisation, Sample, Container)) and k == "composition":
+                self.maskYAMLDicttoClass(cls.__dict__[k], v)
             elif isinstance(cls, SampleBackground) and k == "samples":
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
-                    self.maskYAMLtoClass(sample, sampleyaml)
+                    self.maskYAMLDicttoClass(sample, sampleyaml)
                     cls.samples.append(sample)
             elif isinstance(cls, Sample) and k == "containers":
                 for contyaml in yamldict[k]:
                     container = Container()
-                    self.maskYAMLtoClass(container, contyaml)
+                    self.maskYAMLDicttoClass(container, contyaml)
                     cls.containers.append(container)
             else:
                 setattr(cls, k, type(cls.__dict__[k])(v))
+
+    def maskYAMLSeqtoClss(self, cls, yamlseq):
+        if isinstance(cls, Components):
+            components = []
+            for component in yamlseq:
+                component_ =  Component()
+                self.maskYAMLDicttoClass(component_, component)
+                components.append(component_)
+            setattr(cls, "components", components)
 
     def writeYAML(self, base, path):
         with open(path, "w") as fp:
             outyaml = {
                 "Instrument" : base.instrument,
                 "Beam" : base.beam,
-                "Components" : config.components,
+                "Components" : config.components.components,
                 "Normalisation" : base.normalisation,
-                "SampleBackgrounds" : base.sampleBackgrounds
+                "SampleBackgrounds" : base.sampleBackgrounds,
+                "GUI" : config.GUI
             }
             self.yaml.dump({k: self.toYaml(v) for k,v in outyaml.items()}, fp)
 
@@ -89,4 +116,4 @@ class YAML:
         elif isinstance(var, Enum):
             return type(var)(var.value).name
         elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, Component, Composition, Element, DataFiles)):
-            return {k : self.toYaml(v) for k,v in var.__dict__.items() if k not in var.yamlignore }
+            return {k : self.toYaml(v) for k, v in var.__dict__.items() if k not in var.yamlignore }
