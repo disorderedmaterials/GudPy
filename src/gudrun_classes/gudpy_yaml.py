@@ -5,6 +5,7 @@ from ruamel.yaml import YAML as yaml
 from src.gudrun_classes.composition import Component, Components, Composition
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.element import Element
+from src.gudrun_classes.gui_config import GUIConfig
 
 from src.gudrun_classes.instrument import Instrument
 from src.gudrun_classes.beam import Beam
@@ -47,7 +48,8 @@ class YAML:
             self.maskYAMLDicttoClass(sampleBackground, sbyaml)
             sampleBackgrounds.append(sampleBackground)
 
-        GUI = {k : v for k,v in yamldict["GUI"].items()}
+        GUI = GUIConfig()
+        self.maskYAMLDicttoClass(GUI, yamldict["GUI"])
 
         return instrument, beam, components, normalisation, sampleBackgrounds, GUI
 
@@ -115,5 +117,5 @@ class YAML:
                 return var
         elif isinstance(var, Enum):
             return type(var)(var.value).name
-        elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, Component, Composition, Element, DataFiles)):
+        elif isinstance(var, (Instrument, Beam, Components, Normalisation, SampleBackground, Sample, Container, Component, Composition, Element, DataFiles, GUIConfig)):
             return {k : self.toYaml(v) for k, v in var.__dict__.items() if k not in var.yamlignore }
