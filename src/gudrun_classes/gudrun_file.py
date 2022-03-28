@@ -159,6 +159,15 @@ class GudrunFile:
         self.stream = None
         self.purgeFile = PurgeFile(self)
 
+    def __deepcopy__(self, memo):
+        result = self.__class__.__new__(self.__class__)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k == "yaml":
+                continue
+            setattr(result, k, deepcopy(v, memo))
+        return result
+
     def getNextToken(self):
         """
         Pops the 'next token' from the stream and returns it.
