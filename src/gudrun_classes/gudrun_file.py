@@ -125,7 +125,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config=False):
+    def __init__(self, path=None, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -152,7 +152,7 @@ class GudrunFile:
             self.beam = Beam()
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
-            self.parse(config=config)
+            self.parse(config_=config_)
 
         self.purged = False
         # Parse the GudrunFile.
@@ -1261,7 +1261,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self, config=False):
+    def parse(self, config_=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1275,7 +1275,7 @@ class GudrunFile:
         -------
         None
         """
-        self.config = config
+        self.config = config_
         # Ensure only valid files are given.
         if not self.path:
             raise ParserException(
@@ -1288,7 +1288,7 @@ class GudrunFile:
             )
 
         try:
-            self.instrument, self.beam, self.normalisation, self.sampleBackgrounds = self.yaml.parseYaml(self.path)
+            self.instrument, self.beam, config.components, self.normalisation, self.sampleBackgrounds, config.GUI = self.yaml.parseYaml(self.path)
         except:
             parsing = ""
             KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
