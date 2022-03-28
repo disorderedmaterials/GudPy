@@ -12,6 +12,7 @@ class ComponentSlots():
         self.parent = parent
 
         self.setupComponentSlots()
+        self.widget.useComponentsCheckBox.setChecked(config.GUI.useComponents)
 
     def setComponents(self, components):
         self.components = components
