@@ -165,7 +165,7 @@ class Instrument:
         self.goodDetectorThreshold = 0
 
         self.yamlignore = {
-            "GudrunInputFileDir",            
+            "GudrunInputFileDir",
             "GudrunStartFolder",
             "startupFileFolder",
             "goodDetectorThreshold",
