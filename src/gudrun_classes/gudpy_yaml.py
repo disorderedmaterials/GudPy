@@ -53,7 +53,7 @@ class YAML:
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
             elif isinstance(cls.__dict__[k], DataFiles):
-                setattr(cls, k, DataFiles(v, cls.__class__.__name__))
+                setattr(cls, k, DataFiles(v["dataFiles"], v["name"]))
             elif isinstance(cls, SampleBackground) and k == "samples":
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
