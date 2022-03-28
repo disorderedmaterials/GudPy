@@ -84,7 +84,14 @@ class TestGudPyIO(TestCase):
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
             "nxsDefinitionFile": "",
-            "goodDetectorThreshold": 0
+            "goodDetectorThreshold": 0,
+            "yamlignore": {
+                "GudrunInputFileDir",
+                "GudrunStartFolder",
+                "startupFileFolder",
+                "goodDetectorThreshold",
+                "yamlignore"
+            }
         }
 
         self.expectedBeam = {
@@ -107,6 +114,9 @@ class TestGudPyIO(TestCase):
             "overallBackgroundFactor": 1.0,
             "sampleDependantBackgroundFactor": 0.0,
             "shieldingAttenuationCoefficient": 0.0,
+            "yamlignore": {
+               "yamlignore"
+            }
         }
 
         self.expectedNormalisation = {
@@ -141,6 +151,9 @@ class TestGudPyIO(TestCase):
             "lowerLimitSmoothedNormalisation": 0.01,
             "normalisationDegreeSmoothing": 1.00,
             "minNormalisationSignalBR": 0.0,
+            "yamlignore": {
+                "yamlignore"
+            }
         }
 
         self.expectedContainerA = {
@@ -179,7 +192,19 @@ class TestGudPyIO(TestCase):
             "maxRadFT": 0.0,
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
-            "stepSize": 0.0
+            "stepSize": 0.0,
+            "yamlignore": {
+                "runAsSample",
+                "topHatW",
+                "FTMode",
+                "minRadFT",
+                "maxRadFT",
+                "grBroadening",
+                "powerForBroadening",
+                "stepSize",
+                "singleAtomBackgroundScatteringSubtractionMode",
+                "yamlignore"
+            }
         }
 
         self.expectedContainerA["composition"].elements = [
@@ -223,7 +248,19 @@ class TestGudPyIO(TestCase):
             "maxRadFT": 0.0,
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
-            "stepSize": 0.0
+            "stepSize": 0.0,
+            "yamlignore": {
+                "runAsSample",
+                "topHatW",
+                "FTMode",
+                "minRadFT",
+                "maxRadFT",
+                "grBroadening",
+                "powerForBroadening",
+                "stepSize",
+                "singleAtomBackgroundScatteringSubtractionMode",
+                "yamlignore"
+            }
         }
 
         self.expectedContainerB["composition"].elements = [
@@ -262,7 +299,19 @@ class TestGudPyIO(TestCase):
             "maxRadFT": 0.0,
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
-            "stepSize": 0.0
+            "stepSize": 0.0,
+            "yamlignore": {
+                "runAsSample",
+                "topHatW",
+                "FTMode",
+                "minRadFT",
+                "maxRadFT",
+                "grBroadening",
+                "powerForBroadening",
+                "stepSize",
+                "singleAtomBackgroundScatteringSubtractionMode",
+                "yamlignore"
+            }
         }
 
         self.expectedContainerC["composition"].elements = [
@@ -301,7 +350,19 @@ class TestGudPyIO(TestCase):
             "maxRadFT": 0.0,
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
-            "stepSize": 0.0
+            "stepSize": 0.0,
+            "yamlignore": {
+                "runAsSample",
+                "topHatW",
+                "FTMode",
+                "minRadFT",
+                "maxRadFT",
+                "grBroadening",
+                "powerForBroadening",
+                "stepSize",
+                "singleAtomBackgroundScatteringSubtractionMode",
+                "yamlignore"
+            }
         }
 
         self.expectedContainerD["composition"].elements = [
@@ -353,7 +414,11 @@ class TestGudPyIO(TestCase):
             "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerA]
+            "containers": [self.expectedContainerA],
+            "yamlignore": {
+                "yamlignore",
+                "singleAtomBackgroundScatteringSubtractionMode"
+            }
         }
 
         self.expectedSampleA["composition"].elements = [
@@ -405,7 +470,11 @@ class TestGudPyIO(TestCase):
             "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerB]
+            "containers": [self.expectedContainerB],
+            "yamlignore": {
+                "yamlignore",
+                "singleAtomBackgroundScatteringSubtractionMode"
+            }
         }
 
         self.expectedSampleB["composition"].elements = [
@@ -457,7 +526,11 @@ class TestGudPyIO(TestCase):
             "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerC]
+            "containers": [self.expectedContainerC],
+            "yamlignore": {
+                "yamlignore",
+                "singleAtomBackgroundScatteringSubtractionMode"
+            }
         }
 
         self.expectedSampleC["composition"].elements = [
@@ -510,7 +583,11 @@ class TestGudPyIO(TestCase):
             "runThisSample": True,
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
-            "containers": [self.expectedContainerD]
+            "containers": [self.expectedContainerD],
+            "yamlignore": {
+                "yamlignore",
+                "singleAtomBackgroundScatteringSubtractionMode"
+            }
         }
 
         self.expectedSampleD["composition"].elements = [
@@ -533,7 +610,11 @@ class TestGudPyIO(TestCase):
                 self.expectedSampleB,
                 self.expectedSampleC,
             ],
-            "writeAllSamples": True
+            "writeAllSamples": True,
+            "yamlignore": {
+                "writeAllSamples",
+                "yamlignore"
+            }
         }
 
         self.goodInstrument = Instrument()
@@ -968,6 +1049,7 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("nxsDefinitionFile", None)
         expectedInstrument.pop("groupingParameterPanel", None)
         expectedInstrument.pop("goodDetectorThreshold", None)
+        expectedInstrument.pop("yamlignore", None)
         for i in range(len(expectedInstrument.keys())):
 
             badInstrument = str(self.goodInstrument).split("\n")
@@ -1000,6 +1082,7 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("nxsDefinitionFile", None)
         expectedInstrument.pop("groupingParameterPanel", None)
         expectedInstrument.pop("goodDetectorThreshold", None)
+        expectedInstrument.pop("yamlignore", None)
         for i in range(50):
 
             key = random.choice(list(expectedInstrument))
@@ -1034,6 +1117,7 @@ class TestGudPyIO(TestCase):
         expectedBeam.pop("scatteredBeamBottomEdge", None)
         expectedBeam.pop("stepSizeMS", None)
         expectedBeam.pop("noSlices", None)
+        expectedBeam.pop("yamlignore", None)
 
         for i in range(len(expectedBeam.keys())):
             badBeam = str(self.goodBeam).split("\n")
@@ -1069,6 +1153,8 @@ class TestGudPyIO(TestCase):
         expectedBeam.pop("scatteredBeamBottomEdge", None)
         expectedBeam.pop("stepSizeMS", None)
         expectedBeam.pop("noSlices", None)
+        expectedBeam.pop("yamlignore", None)
+
         for i in range(50):
 
             key = random.choice(list(expectedBeam))
@@ -1107,6 +1193,8 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         expectedNormalisation.pop("crossSectionFilename")
+        expectedNormalisation.pop("yamlignore", None)
+
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
             Composition("")
@@ -1151,6 +1239,8 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         expectedNormalisation.pop("crossSectionFilename")
+        expectedNormalisation.pop("yamlignore", None)
+
         self.goodNormalisation.dataFiles = DataFiles([], "")
         self.goodNormalisation.composition = (
             Composition("")
@@ -1189,7 +1279,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingSampleBackgroundAttributes(self):
-
         badSampleBackground = str(self.goodSampleBackground).split("\n")
         del badSampleBackground[2]
         badSampleBackground = "\n".join(badSampleBackground)
@@ -1229,6 +1318,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("exponentialValues", None)
         expectedSampleA.pop("crossSectionFilename", None)
         expectedSampleA.pop("FTMode", None)
+        expectedSampleA.pop("yamlignore", None)
+
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition("")
@@ -1283,6 +1374,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("exponentialValues", None)
         expectedSampleA.pop("crossSectionFilename", None)
         expectedSampleA.pop("FTMode", None)
+        expectedSampleA.pop("yamlignore", None)
+
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
         self.goodSampleBackground.samples[0].composition = (
             Composition("")
@@ -1346,6 +1439,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("grBroadening", None)
         expectedContainerA.pop("powerForBroadening", None)
         expectedContainerA.pop("stepSize", None)
+        expectedContainerA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
@@ -1406,6 +1500,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("grBroadening", None)
         expectedContainerA.pop("powerForBroadening", None)
         expectedContainerA.pop("stepSize", None)
+        expectedContainerA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
