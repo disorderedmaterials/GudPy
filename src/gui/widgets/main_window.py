@@ -551,10 +551,10 @@ class GudPyMainWindow(QMainWindow):
             self, "Save input file as..", ".", "YAML (*.yaml);;Gudrun Compatible (*.txt)"
         )
         if filename:
-            if filter:
-                ext = re.search('\((.+?)\)',filter).group(1).replace('*','')
+            ext = re.search('\((.+?)\)',filter).group(1).replace('*','')
+            fmt = Format.TXT if ext == ".txt" else Format.YAML
+            if filter and sys.platform.startswith("linux"):
                 filename+= ext
-                fmt = Format.TXT if ext == ".txt" else Format.YAML
             if os.path.basename(filename) == "gudpy.txt":
                 QMessageBox.warning(
                     self.mainWidget,
