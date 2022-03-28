@@ -31,6 +31,7 @@ class DataFiles:
         self.name = name
 
         self.yamlignore = {
+            "str",
             "yamlignore"
         }
 
