@@ -30,3 +30,7 @@ containerConfigurations = {
         for name in files
     ]
 }
+
+GUI = {
+    "useComponents" : False,
+}
