@@ -41,7 +41,11 @@ class YAML:
     def constructClasses(self, yamldict):
         instrument = Instrument()
         self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
-        instrument.GudrunInputFileDir =  os.path.dirname(os.path.abspath(self.path))
+        instrument.GudrunInputFileDir = os.path.dirname(
+            os.path.abspath(
+                self.path
+            )
+        )
         beam = Beam()
         self.maskYAMLDicttoClass(beam, yamldict["Beam"])
         components = Components()
