@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
+import os
 
 from src.gudrun_classes.composition import (
     Component, Components, Composition, WeightedComponent
@@ -30,6 +31,7 @@ class YAML:
         return yaml_
 
     def parseYaml(self, path):
+        self.path = path
         return self.constructClasses(self.yamlToDict(path))
 
     def yamlToDict(self, path):
@@ -39,6 +41,7 @@ class YAML:
     def constructClasses(self, yamldict):
         instrument = Instrument()
         self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
+        instrument.GudrunInputFileDir =  os.path.dirname(os.path.abspath(self.path))
         beam = Beam()
         self.maskYAMLDicttoClass(beam, yamldict["Beam"])
         components = Components()
