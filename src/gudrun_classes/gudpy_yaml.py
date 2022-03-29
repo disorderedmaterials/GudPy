@@ -2,7 +2,6 @@ from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
 import os
-import pathlib
 
 from src.gudrun_classes.composition import (
     Component, Components, Composition, WeightedComponent
