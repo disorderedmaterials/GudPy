@@ -2,6 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
 import os
+import pathlib
 
 from src.gudrun_classes.composition import (
     Component, Components, Composition, WeightedComponent
@@ -140,19 +141,19 @@ class YAML:
             setattr(cls, "components", components)
 
     def writeYAML(self, base, path):
-        with open(path, "w") as fp:
-            outyaml = {
-                "Instrument": base.instrument,
-                "Beam": base.beam,
-                "Components": config.components.components,
-                "Normalisation": base.normalisation,
-                "SampleBackgrounds": base.sampleBackgrounds,
-                "GUI": config.GUI
-            }
-            self.yaml.dump(
-                {k: self.toYaml(v) for k, v in outyaml.items()},
-                fp
-            )
+        fp = pathlib.Path(path)
+        outyaml = {
+            "Instrument": base.instrument,
+            "Beam": base.beam,
+            "Components": config.components.components,
+            "Normalisation": base.normalisation,
+            "SampleBackgrounds": base.sampleBackgrounds,
+            "GUI": config.GUI
+        }
+        self.yaml.dump(
+            {k: self.toYaml(v) for k, v in outyaml.items()},
+            fp
+        )
 
     @abstractmethod
     def toYaml(self, var):
