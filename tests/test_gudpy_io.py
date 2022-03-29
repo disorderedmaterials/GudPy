@@ -54,11 +54,11 @@ class TestGudPyIO(TestCase):
             "deadtimeConstantsFileName":
                 "StartupFiles/NIMROD/NIMRODdeadtimeNone.cor",
             "spectrumNumbersForIncidentBeamMonitor": [4, 5],
-            "wavelengthRangeForMonitorNormalisation": (0, 0),
+            "wavelengthRangeForMonitorNormalisation": [0, 0],
             "spectrumNumbersForTransmissionMonitor": [8, 9],
             "incidentMonitorQuietCountConst": 0.0001,
             "transmissionMonitorQuietCountConst": 0.0001,
-            "channelNosSpikeAnalysis": (0, 0),
+            "channelNosSpikeAnalysis": [0, 0],
             "spikeAnalysisAcceptanceFactor": 5,
             "wavelengthMin": 0.05,
             "wavelengthMax": 12.0,
@@ -403,7 +403,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
-            "exponentialValues": [(0.0, 1.5, 0)],
+            "exponentialValues": [[0.0, 1.5, 0]],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016608_H2O_in_N9.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -459,7 +459,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.0,
             "resonanceValues": [],
-            "exponentialValues": [(0.0, 1.5, 0)],
+            "exponentialValues": [[0.0, 1.5, 0]],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016609_D2O_in_N10.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -515,7 +515,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
-            "exponentialValues": [(0.0, 1.5, 0)],
+            "exponentialValues": [[0.0, 1.5, 0]],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016741_HDO_in_N6.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -572,7 +572,7 @@ class TestGudPyIO(TestCase):
             "minRadFT": 0.8,
             "grBroadening": 0.1,
             "resonanceValues": [],
-            "exponentialValues": [(0.0, 1.5, 0)],
+            "exponentialValues": [[0.0, 1.5, 0]],
             "normalisationCorrectionFactor": 1.0,
             "fileSelfScattering": "NIMROD00016742_NullWater_in_N8.msubw01",
             "normaliseTo": NormalisationType.NOTHING,
@@ -816,7 +816,7 @@ class TestGudPyIO(TestCase):
             else:
                 if "        " in str(value):
                     self.assertTrue(str(value).split("        ")[0] in lines)
-                else:
+                elif isinstance(value, str):
                     self.assertTrue(
                         str(value) in lines
                         or str(int(value)) in lines

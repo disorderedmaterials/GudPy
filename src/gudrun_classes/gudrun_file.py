@@ -290,15 +290,15 @@ class GudrunFile:
             # For integer pair attributes,
             # we extract the first 2 integers from the line.
             self.instrument.wavelengthRangeForMonitorNormalisation = (
-                tuple(firstNFloats(self.getNextToken(), 2))
+                firstNFloats(self.getNextToken(), 2)
             )
 
             if all(
                 self.instrument.wavelengthRangeForMonitorNormalisation
             ) == 0.0:
-                self.instrument.wavelengthRangeForMonitorNormalisation = (
+                self.instrument.wavelengthRangeForMonitorNormalisation = [
                     0, 0
-                )
+                ]
 
             self.instrument.spectrumNumbersForTransmissionMonitor = (
                 extract_ints_from_string(self.getNextToken())
@@ -314,7 +314,7 @@ class GudrunFile:
             )
 
             self.instrument.channelNosSpikeAnalysis = (
-                tuple(firstNInts(self.getNextToken(), 2))
+                firstNInts(self.getNextToken(), 2)
             )
             self.instrument.spikeAnalysisAcceptanceFactor = (
                 nthfloat(self.getNextToken(), 0)
@@ -352,7 +352,7 @@ class GudrunFile:
                 xMax = nthfloat(line, 2)
                 backgroundFactor = nthfloat(line, 3)
                 self.instrument.groupingParameterPanel.append(
-                    (group, xMin, xMax, backgroundFactor)
+                    [group, xMin, xMax, backgroundFactor]
                 )
                 line = self.getNextToken()
 
@@ -972,7 +972,7 @@ class GudrunFile:
                     not in line
                     ):
                 sample.resonanceValues.append(
-                    tuple(extract_floats_from_string(line))
+                    extract_floats_from_string(line)
                 )
                 line = self.getNextToken()
 
@@ -986,7 +986,7 @@ class GudrunFile:
                 sample.exponentialValues = []
             while "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues.append(
-                    tuple(extract_nums_from_string(line))
+                    extract_nums_from_string(line)
                 )
 
                 line = self.getNextToken()

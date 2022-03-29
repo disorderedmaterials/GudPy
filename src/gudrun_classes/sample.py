@@ -128,7 +128,7 @@ class Sample:
         self.minRadFT = 0.75
         self.grBroadening = 0.0
         self.resonanceValues = []
-        self.exponentialValues = [(0, 1)]
+        self.exponentialValues = [[0, 1]]
         self.normalisationCorrectionFactor = 1.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
