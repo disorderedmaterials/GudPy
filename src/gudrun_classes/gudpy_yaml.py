@@ -141,19 +141,19 @@ class YAML:
             setattr(cls, "components", components)
 
     def writeYAML(self, base, path):
-        fp = pathlib.Path(path)
-        outyaml = {
-            "Instrument": base.instrument,
-            "Beam": base.beam,
-            "Components": config.components.components,
-            "Normalisation": base.normalisation,
-            "SampleBackgrounds": base.sampleBackgrounds,
-            "GUI": config.GUI
-        }
-        self.yaml.dump(
-            {k: self.toYaml(v) for k, v in outyaml.items()},
-            fp
-        )
+        with open(path, "wb", encoding='utf-8') as fp:
+            outyaml = {
+                "Instrument": base.instrument,
+                "Beam": base.beam,
+                "Components": config.components.components,
+                "Normalisation": base.normalisation,
+                "SampleBackgrounds": base.sampleBackgrounds,
+                "GUI": config.GUI
+            }
+            self.yaml.dump(
+                {k: self.toYaml(v) for k, v in outyaml.items()},
+                fp
+            )
 
     @abstractmethod
     def toYaml(self, var):
