@@ -140,7 +140,7 @@ class YAML:
             setattr(cls, "components", components)
 
     def writeYAML(self, base, path):
-        with open(path, "wb", encoding='utf-8') as fp:
+        with open(path, "wb") as fp:
             outyaml = {
                 "Instrument": base.instrument,
                 "Beam": base.beam,
