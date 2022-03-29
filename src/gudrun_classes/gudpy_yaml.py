@@ -28,6 +28,7 @@ class YAML:
         yaml_ = yaml()
         yaml_.preserve_quotes = True
         yaml_.default_flow_style = None
+        yaml_.encoding = 'utf-8'
         return yaml_
 
     def parseYaml(self, path):
