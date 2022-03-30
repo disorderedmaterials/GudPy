@@ -46,7 +46,7 @@ class TestGudrunClasses(TestCase):
             instrument.spectrumNumbersForIncidentBeamMonitor, list
         )
         self.assertIsInstance(
-            instrument.wavelengthRangeForMonitorNormalisation, tuple
+            instrument.wavelengthRangeForMonitorNormalisation, list
         )
         self.assertIsInstance(
             instrument.spectrumNumbersForTransmissionMonitor, list
@@ -55,7 +55,7 @@ class TestGudrunClasses(TestCase):
         self.assertIsInstance(
             instrument.transmissionMonitorQuietCountConst, float
         )
-        self.assertIsInstance(instrument.channelNosSpikeAnalysis, tuple)
+        self.assertIsInstance(instrument.channelNosSpikeAnalysis, list)
         self.assertIsInstance(instrument.spikeAnalysisAcceptanceFactor, float)
         self.assertIsInstance(instrument.wavelengthMin, float)
         self.assertIsInstance(instrument.wavelengthMax, float)

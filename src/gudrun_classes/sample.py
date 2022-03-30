@@ -128,7 +128,7 @@ class Sample:
         self.minRadFT = 0.75
         self.grBroadening = 0.0
         self.resonanceValues = []
-        self.exponentialValues = [(0, 1)]
+        self.exponentialValues = [[0, 1]]
         self.normalisationCorrectionFactor = 1.0
         self.fileSelfScattering = ""
         self.normaliseTo = NormalisationType.NOTHING
@@ -141,6 +141,11 @@ class Sample:
         self.attenuationCoefficient = 0.0
 
         self.containers = []
+
+        self.yamlignore = {
+            "yamlignore",
+            "singleAtomBackgroundScatteringSubtractionMode"
+        }
 
     def pathName(self):
         return self.name.replace(" ", "_").translate(

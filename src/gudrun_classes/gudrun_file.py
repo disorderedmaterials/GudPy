@@ -27,11 +27,12 @@ from src.gudrun_classes.element import Element
 from src.gudrun_classes.data_files import DataFiles
 from src.gudrun_classes.purge_file import PurgeFile
 from src.gudrun_classes.enums import (
-    CrossSectionSource, Instruments, FTModes, UnitsOfDensity, MergeWeights,
-    Scales, NormalisationType, OutputUnits,
+    CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
+    MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
 from src.gudrun_classes import config
+from src.gudrun_classes.gudpy_yaml import YAML
 import re
 from copy import deepcopy
 
@@ -124,7 +125,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config=False):
+    def __init__(self, path=None, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -137,7 +138,7 @@ class GudrunFile:
         """
 
         self.path = path
-
+        self.yaml = YAML()
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
@@ -151,12 +152,21 @@ class GudrunFile:
             self.beam = Beam()
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
-            self.parse(config=config)
+            self.parse(config_=config_)
 
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
         self.purgeFile = PurgeFile(self)
+
+    def __deepcopy__(self, memo):
+        result = self.__class__.__new__(self.__class__)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k == "yaml":
+                continue
+            setattr(result, k, deepcopy(v, memo))
+        return result
 
     def getNextToken(self):
         """
@@ -280,15 +290,15 @@ class GudrunFile:
             # For integer pair attributes,
             # we extract the first 2 integers from the line.
             self.instrument.wavelengthRangeForMonitorNormalisation = (
-                tuple(firstNFloats(self.getNextToken(), 2))
+                firstNFloats(self.getNextToken(), 2)
             )
 
             if all(
                 self.instrument.wavelengthRangeForMonitorNormalisation
             ) == 0.0:
-                self.instrument.wavelengthRangeForMonitorNormalisation = (
+                self.instrument.wavelengthRangeForMonitorNormalisation = [
                     0, 0
-                )
+                ]
 
             self.instrument.spectrumNumbersForTransmissionMonitor = (
                 extract_ints_from_string(self.getNextToken())
@@ -304,7 +314,7 @@ class GudrunFile:
             )
 
             self.instrument.channelNosSpikeAnalysis = (
-                tuple(firstNInts(self.getNextToken(), 2))
+                firstNInts(self.getNextToken(), 2)
             )
             self.instrument.spikeAnalysisAcceptanceFactor = (
                 nthfloat(self.getNextToken(), 0)
@@ -342,7 +352,7 @@ class GudrunFile:
                 xMax = nthfloat(line, 2)
                 backgroundFactor = nthfloat(line, 3)
                 self.instrument.groupingParameterPanel.append(
-                    (group, xMin, xMax, backgroundFactor)
+                    [group, xMin, xMax, backgroundFactor]
                 )
                 line = self.getNextToken()
 
@@ -962,7 +972,7 @@ class GudrunFile:
                     not in line
                     ):
                 sample.resonanceValues.append(
-                    tuple(extract_floats_from_string(line))
+                    extract_floats_from_string(line)
                 )
                 line = self.getNextToken()
 
@@ -976,7 +986,7 @@ class GudrunFile:
                 sample.exponentialValues = []
             while "to specify end of exponential parameter input" not in line:
                 sample.exponentialValues.append(
-                    tuple(extract_nums_from_string(line))
+                    extract_nums_from_string(line)
                 )
 
                 line = self.getNextToken()
@@ -1260,7 +1270,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self, config=False):
+    def parse(self, config_=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1274,7 +1284,7 @@ class GudrunFile:
         -------
         None
         """
-        self.config = config
+        self.config = config_
         # Ensure only valid files are given.
         if not self.path:
             raise ParserException(
@@ -1285,59 +1295,78 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path"
             )
-        parsing = ""
-        KEYWORDS = {"INSTRUMENT": False, "BEAM": False, "NORMALISATION": False}
 
-        # Decide the encoding
-        import chardet
-        with open(self.path, 'rb') as fp:
-            encoding = chardet.detect(fp.read())['encoding']
+        try:
+            (
+                self.instrument,
+                self.beam,
+                config.components,
+                self.normalisation,
+                self.sampleBackgrounds,
+                config.GUI
+            ) = self.yaml.parseYaml(self.path)
+        except Exception:
 
-        # Read the input stream into our attribute.
-        with open(self.path, encoding=encoding) as fp:
-            self.stream = fp.readlines()
+            parsing = ""
+            KEYWORDS = {
+                "INSTRUMENT": False,
+                "BEAM": False,
+                "NORMALISATION": False
+            }
 
-        # Here we go! Get the first token and begin parsing.
-        line = self.getNextToken()
+            # Decide the encoding
+            import chardet
+            with open(self.path, 'rb') as fp:
+                encoding = chardet.detect(fp.read())['encoding']
 
-        # Iterate through the file,
-        # parsing the Instrument, Beam and Normalisation.
-        while self.stream and not all(value for value in KEYWORDS.values()):
-            if (
-                firstword(line) in KEYWORDS.keys()
-                and not KEYWORDS[firstword(line)]
+            # Read the input stream into our attribute.
+            with open(self.path, encoding=encoding) as fp:
+                self.stream = fp.readlines()
+
+            # Here we go! Get the first token and begin parsing.
+            line = self.getNextToken()
+
+            # Iterate through the file,
+            # parsing the Instrument, Beam and Normalisation.
+            while (
+                self.stream
+                and not all(value for value in KEYWORDS.values())
             ):
-                parsing = firstword(line)
-                self.makeParse(parsing)
-                KEYWORDS[parsing] = True
-            line = self.getNextToken()
+                if (
+                    firstword(line) in KEYWORDS.keys()
+                    and not KEYWORDS[firstword(line)]
+                ):
+                    parsing = firstword(line)
+                    self.makeParse(parsing)
+                    KEYWORDS[parsing] = True
+                line = self.getNextToken()
 
-        # If we didn't parse each one of the keywords, then panic.
-        if not all(KEYWORDS.values()) and not config:
-            raise ParserException((
-               'INSTRUMENT, BEAM and NORMALISATION'
-               ' were not parsed. It\'s possible the file'
-               ' supplied is of an incorrect format!'
-            ))
-        elif not KEYWORDS["INSTRUMENT"] and config:
-            raise ParserException((
-                'INSTRUMENT was not parsed. It\'s possible the file'
-                ' supplied is of an incorrect format!'
-            ))
+            # If we didn't parse each one of the keywords, then panic.
+            if not all(KEYWORDS.values()) and not config_:
+                raise ParserException((
+                    'INSTRUMENT, BEAM and NORMALISATION'
+                    ' were not parsed. It\'s possible the file'
+                    ' supplied is of an incorrect format!'
+                ))
+            elif not KEYWORDS["INSTRUMENT"] and config_:
+                raise ParserException((
+                    'INSTRUMENT was not parsed. It\'s possible the file'
+                    ' supplied is of an incorrect format!'
+                ))
 
-        # Ignore whitespace.
-        self.consumeWhitespace()
-        line = self.peekNextToken()
+            # Ignore whitespace.
+            self.consumeWhitespace()
+            line = self.peekNextToken()
 
-        # Parse sample backgrounds, alongside their samples and containers.
-        while self.stream:
-            if "SAMPLE BACKGROUND" in line and "{" in line:
-                self.sampleBackgrounds.append(
-                    self.sampleBackgroundHelper()
-                )
-            elif "COMPONENTS:" in line:
-                self.makeParse("COMPONENTS")
-            line = self.getNextToken()
+            # Parse sample backgrounds, alongside their samples and containers.
+            while self.stream:
+                if "SAMPLE BACKGROUND" in line and "{" in line:
+                    self.sampleBackgrounds.append(
+                        self.sampleBackgroundHelper()
+                    )
+                elif "COMPONENTS:" in line:
+                    self.makeParse("COMPONENTS")
+                line = self.getNextToken()
 
     def __str__(self):
         """
@@ -1399,6 +1428,19 @@ class GudrunFile:
             + footer
             + components
         )
+
+    def save(self, path='', format=Format.TXT):
+
+        if not path:
+            path = self.path
+
+        if format == Format.TXT:
+            self.write_out(path=path.replace(path.split(".")[-1], "txt"))
+        elif format == Format.YAML:
+            self.write_yaml(path=path.replace(path.split(".")[-1], "yaml"))
+
+    def write_yaml(self, path):
+        self.yaml.writeYAML(self, path)
 
     def write_out(self, path='', overwrite=False, writeParameters=False):
         """

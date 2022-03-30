@@ -77,6 +77,10 @@ class Beam:
         self.sampleDependantBackgroundFactor = 0.0
         self.shieldingAttenuationCoefficient = 0.0
 
+        self.yamlignore = {
+            "yamlignore"
+        }
+
     def __str__(self):
         """
         Returns the string representation of the Beam object.

@@ -33,6 +33,10 @@ class Element:
         self.massNo = int(massNo) if massNo % 1 == 0 else massNo
         self.abundance = abundance
 
+        self.yamlignore = {
+            "yamlignore"
+        }
+
     def __str__(self):
         """
         Returns the string representation of the Element object.

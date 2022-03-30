@@ -123,11 +123,11 @@ class Instrument:
         self.groupFileName = ""
         self.deadtimeConstantsFileName = ""
         self.spectrumNumbersForIncidentBeamMonitor = []
-        self.wavelengthRangeForMonitorNormalisation = (0., 0.)
+        self.wavelengthRangeForMonitorNormalisation = [0., 0.]
         self.spectrumNumbersForTransmissionMonitor = []
         self.incidentMonitorQuietCountConst = 0.0
         self.transmissionMonitorQuietCountConst = 0.0
-        self.channelNosSpikeAnalysis = (0, 0)
+        self.channelNosSpikeAnalysis = [0, 0]
         self.spikeAnalysisAcceptanceFactor = 0.0
         self.wavelengthMin = 0.
         self.wavelengthMax = 0.
@@ -163,6 +163,14 @@ class Instrument:
         self.hardGroupEdges = False
         self.nxsDefinitionFile = ""
         self.goodDetectorThreshold = 0
+
+        self.yamlignore = {
+            "GudrunInputFileDir",
+            "GudrunStartFolder",
+            "startupFileFolder",
+            "goodDetectorThreshold",
+            "yamlignore"
+        }
 
     def __str__(self):
         """

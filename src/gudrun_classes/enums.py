@@ -81,3 +81,8 @@ FT_MODES = {
 }
 
 FTModes = enumFromDict("FTModes", FT_MODES)
+
+
+class Format(Enum):
+    TXT = 0
+    YAML = 1

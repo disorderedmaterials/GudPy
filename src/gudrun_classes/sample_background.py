@@ -32,6 +32,11 @@ class SampleBackground:
         self.samples = []
         self.writeAllSamples = True
 
+        self.yamlignore = {
+            "writeAllSamples",
+            "yamlignore"
+        }
+
     def __str__(self):
         """
         Returns the string representation of the SampleBackground object.

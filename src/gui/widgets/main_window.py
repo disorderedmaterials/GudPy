@@ -60,7 +60,7 @@ from src.gui.widgets.charts.chartview import GudPyChartView
 from src.gui.widgets.charts.beam_plot import BeamChart
 from src.gui.widgets.charts.enums import PlotModes, SPLIT_PLOTS
 
-from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.enums import Format, Geometry
 from src.gui.widgets.slots.instrument_slots import InstrumentSlots
 from src.gui.widgets.slots.beam_slots import BeamSlots
 from src.gui.widgets.slots.component_slots import ComponentSlots
@@ -93,6 +93,7 @@ import math
 import traceback
 from queue import Queue
 from collections.abc import Sequence
+import re
 
 
 class GudPyMainWindow(QMainWindow):
@@ -520,7 +521,8 @@ class GudPyMainWindow(QMainWindow):
             self,
             "Select Input file for GudPy",
             ".",
-            "GudPy Input (*.txt);;Sample Parameters (*.sample)"
+            "YAML (*.yaml);;Gudrun Compatible "
+            "(*.txt);;Sample Parameters (*.sample)"
         )
         if filename:
             try:
@@ -540,17 +542,23 @@ class GudPyMainWindow(QMainWindow):
         if not self.gudrunFile.path:
             self.saveInputFileAs()
         else:
-            self.gudrunFile.write_out(overwrite=True)
+            self.gudrunFile.save()
             self.setUnModified()
 
     def saveInputFileAs(self):
         """
         Saves the current state of the input file as...
         """
-        filename, _ = QFileDialog.getSaveFileName(
-            self, "Save input file as..", ".", "(*.txt)"
+        filename, filter = QFileDialog.getSaveFileName(
+            self,
+            "Save input file as..", ".",
+            "YAML (*.yaml);;Gudrun Compatible (*.txt)"
         )
         if filename:
+            ext = re.search(r'\((.+?)\)', filter).group(1).replace('*', '')
+            fmt = Format.TXT if ext == ".txt" else Format.YAML
+            if filter and sys.platform.startswith("linux"):
+                filename += ext
             if os.path.basename(filename) == "gudpy.txt":
                 QMessageBox.warning(
                     self.mainWidget,
@@ -562,7 +570,7 @@ class GudPyMainWindow(QMainWindow):
                 os.path.dirname(os.path.abspath(filename))
             )
             self.gudrunFile.path = filename
-            self.gudrunFile.write_out(overwrite=True)
+            self.gudrunFile.save(path=filename, format=fmt)
             self.setUnModified()
 
     def newInputFile(self):

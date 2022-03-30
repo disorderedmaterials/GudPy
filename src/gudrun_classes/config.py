@@ -1,5 +1,6 @@
 from src.gudrun_classes.composition import Components
 from src.gudrun_classes.enums import Geometry
+from src.gudrun_classes.gui_config import GUIConfig
 import os
 import sys
 
@@ -30,3 +31,5 @@ containerConfigurations = {
         for name in files
     ]
 }
+
+GUI = GUIConfig()
