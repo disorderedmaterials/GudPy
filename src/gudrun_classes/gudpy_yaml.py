@@ -36,7 +36,13 @@ class YAML:
         return self.constructClasses(self.yamlToDict(path))
 
     def yamlToDict(self, path):
-        with open(path, "r") as fp:
+        # Decide the encoding
+        import chardet
+        with open(path, 'rb') as fp:
+            encoding = chardet.detect(fp.read())['encoding']
+
+        # Read the input stream into our attribute.
+        with open(path, encoding=encoding) as fp:
             return self.yaml.load(fp)
 
     def constructClasses(self, yamldict):
