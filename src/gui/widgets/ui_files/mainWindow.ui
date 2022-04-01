@@ -7288,10 +7288,21 @@
     <property name="title">
      <string>Run</string>
     </property>
+    <widget class="QMenu" name="menuIterate_Gudrun">
+     <property name="title">
+      <string>Iterate Gudrun</string>
+     </property>
+     <addaction name="iterateInelasticitySubtractions"/>
+     <addaction name="iterateTweakFactor"/>
+     <addaction name="iterateDensity"/>
+     <addaction name="iterateThickness"/>
+     <addaction name="iterateRadius"/>
+     <addaction name="actionBy_Composition"/>
+    </widget>
     <addaction name="runPurge"/>
     <addaction name="runGudrun"/>
     <addaction name="runContainersAsSamples"/>
-    <addaction name="iterateGudrun"/>
+    <addaction name="menuIterate_Gudrun"/>
     <addaction name="checkFilesExist"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -7346,14 +7357,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
-   </property>
-  </action>
-  <action name="iterateGudrun">
-   <property name="text">
-    <string>Iterate Gudrun</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="viewLiveInputFile">
@@ -7473,6 +7476,36 @@
   <action name="insertDefaultContainer">
    <property name="text">
     <string>Default</string>
+   </property>
+  </action>
+  <action name="iterateInelasticitySubtractions">
+   <property name="text">
+    <string>Inelasticity Subtractions</string>
+   </property>
+  </action>
+  <action name="iterateTweakFactor">
+   <property name="text">
+    <string>By Tweak Factor</string>
+   </property>
+  </action>
+  <action name="iterateDensity">
+   <property name="text">
+    <string>By Density</string>
+   </property>
+  </action>
+  <action name="iterateThickness">
+   <property name="text">
+    <string>By Thickness</string>
+   </property>
+  </action>
+  <action name="iterateRadius">
+   <property name="text">
+    <string>By Radius</string>
+   </property>
+  </action>
+  <action name="actionBy_Composition">
+   <property name="text">
+    <string>By Composition</string>
    </property>
   </action>
  </widget>
