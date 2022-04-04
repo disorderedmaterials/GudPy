@@ -237,10 +237,11 @@ class RatioCompositionTable(QTableView):
             Parent widget.
         """
         self.parent = parent
+        self.parentObject = None
         self.compositions = []
         super(RatioCompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, data, parentObject):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -258,6 +259,7 @@ class RatioCompositionTable(QTableView):
             RatioCompositionDelegate()
         )
         self.farmCompositions()
+        self.parentObject = parentObject
 
     def insertRow(self):
         """
@@ -298,11 +300,13 @@ class RatioCompositionTable(QTableView):
                 ]
             for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
                 for sample in sampleBackground.samples:
-                    self.compositions.append((sample.name, sample.composition))
+                    if sample != self.parentObject:
+                        self.compositions.append((sample.name, sample.composition))
                     for container in sample.containers:
-                        self.compositions.append(
-                            (container.name, container.composition)
-                        )
+                        if container != self.parentObject:
+                            self.compositions.append(
+                                (container.name, container.composition)
+                            )
         except AttributeError:
             pass
 
@@ -315,7 +319,7 @@ class RatioCompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.makeModel(composition.weightedComponents)
+        self.makeModel(composition.weightedComponents, self.parentObject)
 
     def showContextMenu(self, event):
         """

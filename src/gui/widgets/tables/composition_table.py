@@ -306,9 +306,10 @@ class CompositionTable(QTableView):
                 if sample != self.parentObject:
                     self.compositions.append((sample.name, sample.composition))
                 for container in sample.containers:
-                    self.compositions.append(
-                        (container.name, container.composition)
-                    )
+                    if container != self.parentObject:
+                        self.compositions.append(
+                            (container.name, container.composition)
+                        )
 
     def copyFrom(self, composition):
         """

@@ -946,7 +946,7 @@ class SampleSlots():
 
     def updateRatioCompositions(self):
         self.widget.sampleRatioCompositionTable.makeModel(
-            self.sample.composition.weightedComponents#, self.sample
+            self.sample.composition.weightedComponents, self.sample
         )
 
     def translateAndUpdate(self):
