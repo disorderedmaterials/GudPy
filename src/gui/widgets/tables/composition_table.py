@@ -336,7 +336,8 @@ class CompositionTable(QTableView):
             copyMenu.addAction(action)
             actionMap[action] = composition[1]
         action = self.menu.exec(QCursor.pos())
-        self.copyFrom(actionMap[action])
+        if action:
+            self.copyFrom(actionMap[action])
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
