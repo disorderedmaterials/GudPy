@@ -301,7 +301,9 @@ class RatioCompositionTable(QTableView):
             for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
                 for sample in sampleBackground.samples:
                     if sample != self.parentObject:
-                        self.compositions.append((sample.name, sample.composition))
+                        self.compositions.append(
+                            (sample.name, sample.composition)
+                        )
                     for container in sample.containers:
                         if container != self.parentObject:
                             self.compositions.append(

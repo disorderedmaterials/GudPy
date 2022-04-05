@@ -333,8 +333,6 @@ class ComponentsModel(QAbstractItemModel):
         remove(obj)
         self.endRemoveRows()
 
-
-
     def headerData(self, section, orientation, role):
         """
         Returns the column header for a given section.
