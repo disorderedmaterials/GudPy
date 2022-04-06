@@ -45,7 +45,6 @@ class IterationDialog(QDialog):
                     current_dir, "..", "ui_files", f"{self.name}.ui"
                 )
             )
-        print(f"{self.name}.ui")
         loader = QUiLoader()
         self.widget = loader.load(uifile)
     
