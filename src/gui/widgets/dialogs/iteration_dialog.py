@@ -1,4 +1,5 @@
 import os
+from queue import Queue
 import sys
 
 from PySide6.QtWidgets import QDialog
@@ -16,7 +17,13 @@ class IterationDialog():
         self.initComponents()
 
     def initComponents(self):
-        pass
+        self.widget.numberIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
+        )
+
+        self.widget.iterateButton.clicked.connect(
+            self.iterate
+        )
 
     def loadUI(self):
         """
@@ -37,3 +44,20 @@ class IterationDialog():
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
+    
+    def iterate(self):
+        pass
+
+    def numberIterationsChanged(self, value):
+        pass
+    
+    def enqueueTasks(self):
+        self.queue = Queue()
+        for _ in range(self.numberIterations):
+            self.queue.put(
+                self.gudrunFile.dcs(
+                    path=os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        "gudpy.txt"
+                    ), headless=False)
+            )
