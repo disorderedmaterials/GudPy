@@ -9,6 +9,11 @@ from src.gudrun_classes import config
 
 class CompositionIterationDialog(IterationDialog):
 
+    def __init__(self, name, gudrunFile, parent):
+        self.components = [None, None]
+        self.rtol = 0.
+        super().__init__(name, gudrunFile, parent)
+
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
         for component in config.components.components:
@@ -97,6 +102,7 @@ class CompositionIterationDialog(IterationDialog):
 
     def iterate(self):
         self.iterator = CompositionIterator(self.gudrunFile)
+        self.iterator.setComponents(self.components)
         self.queue = Queue()
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
