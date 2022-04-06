@@ -52,7 +52,7 @@ class IterationDialog(QDialog):
         pass
 
     def numberIterationsChanged(self, value):
-        pass
+        self.numberIterations = value
     
     def enqueueTasks(self):
         self.queue = Queue()

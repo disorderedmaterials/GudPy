@@ -35,7 +35,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="compositionIterationsSpinBox">
+      <widget class="QSpinBox" name="numberIterationsSpinBox">
        <property name="minimum">
         <number>1</number>
        </property>
