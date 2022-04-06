@@ -6,13 +6,16 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
-class IterationDialog():
+class IterationDialog(QDialog):
 
     def __init__(self, name, gudrunFile, parent):
         super(IterationDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
         self.name = name
         self.numberIterations = 1
+        self.cancelled = False
+        self.iterator = None
+        self.text = ""
         self.loadUI()
         self.initComponents()
 
@@ -42,6 +45,7 @@ class IterationDialog():
                     current_dir, "..", "ui_files", f"{self.name}.ui"
                 )
             )
+        print(f"{self.name}.ui")
         loader = QUiLoader()
         self.widget = loader.load(uifile)
     
