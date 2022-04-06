@@ -18,7 +18,6 @@ from PySide6.QtWidgets import (
     QToolButton
 )
 from PySide6.QtCharts import QChartView
-from src.gudrun_classes.composition import Composition
 from src.gudrun_classes.composition_iterator import CompositionIterator
 from src.gudrun_classes.density_iterator import DensityIterator
 from src.gudrun_classes.radius_iterator import RadiusIterator
@@ -28,12 +27,24 @@ from src.gudrun_classes.container import Container
 from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
-from src.gui.widgets.dialogs.iterate_composition_dialog import CompositionIterationDialog
-from src.gui.widgets.dialogs.iterate_density_dialog import DensityIterationDialog
-from src.gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import WavelengthInelasticitySubtractionsIterationDialog
-from src.gui.widgets.dialogs.iterate_radius_dialog import RadiusIterationDialog
-from src.gui.widgets.dialogs.iterate_thickness_dialog import ThicknessIterationDialog
-from src.gui.widgets.dialogs.iterate_tweak_factor_dialog import TweakFactorIterationDialog
+from src.gui.widgets.dialogs.iterate_composition_dialog import (
+    CompositionIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_density_dialog import (
+    DensityIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
+    WavelengthInelasticitySubtractionsIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_radius_dialog import (
+    RadiusIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_thickness_dialog import (
+    ThicknessIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_tweak_factor_dialog import (
+    TweakFactorIterationDialog
+)
 from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
 from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
@@ -194,7 +205,9 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ComponentsList)
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
-        loader.registerCustomWidget(WavelengthInelasticitySubtractionsIterationDialog)
+        loader.registerCustomWidget(
+            WavelengthInelasticitySubtractionsIterationDialog
+        )
         loader.registerCustomWidget(RadiusIterationDialog)
         loader.registerCustomWidget(ThicknessIterationDialog)
         loader.registerCustomWidget(TweakFactorIterationDialog)

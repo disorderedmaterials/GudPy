@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
+
 class IterationDialog(QDialog):
 
     def __init__(self, name, gudrunFile, parent):
@@ -47,13 +48,13 @@ class IterationDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
-    
+
     def iterate(self):
         pass
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
-    
+
     def enqueueTasks(self):
         self.queue = Queue()
         for _ in range(self.numberIterations):

@@ -3,7 +3,9 @@ from copy import deepcopy
 from PySide6.QtCore import Qt
 
 from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
-from src.gudrun_classes.composition_iterator import CompositionIterator, calculateTotalMolecules
+from src.gudrun_classes.composition_iterator import (
+    CompositionIterator, calculateTotalMolecules
+)
 from src.gudrun_classes import config
 
 
@@ -57,6 +59,7 @@ class CompositionIterationDialog(IterationDialog):
                 item.setFlags(
                     item.flags() | Qt.ItemIsEnabled
                 )
+
     def setItemDisabled(self, comboBox, item):
         self.enableItems(comboBox)
         if item:
