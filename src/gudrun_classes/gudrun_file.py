@@ -1480,8 +1480,7 @@ class GudrunFile:
             for sb in self.sampleBackgrounds:
                 for s in sb.samples:
                     if s.runThisSample:
-                        gf = GudrunFile()
-                        gf.__dict__ = deepcopy(self.__dict__)
+                        gf = deepcopy(self)
                         gf.sampleBackgrounds = [deepcopy(sb)]
                         gf.sampleBackgrounds[0].samples = [deepcopy(s)]
                         gf.write_out(
