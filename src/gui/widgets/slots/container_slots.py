@@ -652,7 +652,7 @@ class ContainerSlots():
         Fills the composition list.
         """
         self.widget.containerCompositionTable.makeModel(
-            self.container.composition.elements
+            self.container.composition.elements, self.container
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

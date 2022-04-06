@@ -10,7 +10,7 @@ class ComponentSlots():
     def __init__(self, widget, parent):
         self.widget = widget
         self.parent = parent
-
+        self.widgetsRefreshing = False
         self.setupComponentSlots()
         self.widget.useComponentsCheckBox.setChecked(config.GUI.useComponents)
 
@@ -19,6 +19,7 @@ class ComponentSlots():
         self.loadComponentsList()
 
     def setupComponentSlots(self):
+        self.widgetsRefreshing = True
         self.widget.addComponentButton.clicked.connect(
             self.widget.componentList.insertComponent
         )
@@ -40,6 +41,7 @@ class ComponentSlots():
         self.widget.duplicateButton.clicked.connect(
             self.duplicateComponent
         )
+        self.widgetsRefreshing = False
 
     def loadComponentsList(self):
         self.widget.componentList.makeModel(
@@ -64,6 +66,8 @@ class ComponentSlots():
                         row, 0
                     )
                 )
+            if not self.widgetsRefreshing:
+                self.parent.setModified()
         except ChemicalFormulaParserException as cfpm:
             QMessageBox.warning(
                 self.widget, "GudPy Warning",
@@ -74,18 +78,24 @@ class ComponentSlots():
         self.widget.componentCompositionTable.model().insertRow(
             Element("", 0, 0.), self.widget.componentList.currentIndex()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeComponent(self):
         self.widget.componentList.removeRow(
             self.widget.componentList
             .selectionModel().selectedRows()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeSubComponent(self):
         self.widget.componentCompositionTable.model().removeRow(
             self.widget.componentCompositionTable
             .currentIndex()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
@@ -96,3 +106,5 @@ class ComponentSlots():
 
     def duplicateComponent(self):
         self.widget.componentList.duplicate()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
