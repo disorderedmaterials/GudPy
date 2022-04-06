@@ -1216,6 +1216,7 @@ class GudPyMainWindow(QMainWindow):
                 " It's likely no Samples selected for analysis"
                 " use the Component(s) selected for iteration."
             )
+            self.setControlsEnabled(True)
         else:
             self.compositionMap = {}
             self.totalIterations = len(
