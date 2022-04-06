@@ -27,15 +27,32 @@ from src.gudrun_classes.container import Container
 from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gui.widgets.dialogs.export_dialog import ExportDialog
 
-from src.gui.widgets.dialogs.iteration_dialog import IterationDialog
+from src.gui.widgets.dialogs.iterate_composition_dialog import (
+    CompositionIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_density_dialog import (
+    DensityIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
+    WavelengthInelasticitySubtractionsIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_radius_dialog import (
+    RadiusIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_thickness_dialog import (
+    ThicknessIterationDialog
+)
+from src.gui.widgets.dialogs.iterate_tweak_factor_dialog import (
+    TweakFactorIterationDialog
+)
 from src.gui.widgets.dialogs.purge_dialog import PurgeDialog
 from src.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from src.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from src.gui.widgets.dialogs.composition_dialog import CompositionDialog
 from src.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from src.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
-from src.gui.widgets.dialogs.composition_iteration_dialog import (
-    CompositionIterationDialog
+from src.gui.widgets.dialogs.composition_acceptance_dialog import (
+    CompositionAcceptanceDialog
 )
 
 from src.gui.widgets.gudpy_tree import GudPyTreeView
@@ -186,14 +203,21 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
         loader.registerCustomWidget(ComponentsList)
-        loader.registerCustomWidget(IterationDialog)
+        loader.registerCustomWidget(CompositionIterationDialog)
+        loader.registerCustomWidget(DensityIterationDialog)
+        loader.registerCustomWidget(
+            WavelengthInelasticitySubtractionsIterationDialog
+        )
+        loader.registerCustomWidget(RadiusIterationDialog)
+        loader.registerCustomWidget(ThicknessIterationDialog)
+        loader.registerCustomWidget(TweakFactorIterationDialog)
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
         loader.registerCustomWidget(ViewOutputDialog)
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
-        loader.registerCustomWidget(CompositionIterationDialog)
+        loader.registerCustomWidget(CompositionAcceptanceDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -360,9 +384,49 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.triggered.connect(
             self.runGudrun_
         )
-        self.mainWidget.iterateGudrun.triggered.connect(
-            self.iterateGudrun_
+
+        self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
+            lambda: self.iterateGudrun(
+                WavelengthInelasticitySubtractionsIterationDialog,
+                "iterateInelasticitySubtractionsDialog"
+            )
         )
+
+        self.mainWidget.iterateTweakFactor.triggered.connect(
+            lambda: self.iterateGudrun(
+                TweakFactorIterationDialog,
+                "iterateTweakFactorDialog"
+            )
+        )
+
+        self.mainWidget.iterateDensity.triggered.connect(
+            lambda: self.iterateGudrun(
+                DensityIterationDialog,
+                "iterateDensityDialog"
+            )
+        )
+
+        self.mainWidget.iterateThickness.triggered.connect(
+            lambda: self.iterateGudrun(
+                ThicknessIterationDialog,
+                "iterateThicknessDialog"
+            )
+        )
+
+        self.mainWidget.iterateRadius.triggered.connect(
+            lambda: self.iterateGudrun(
+                RadiusIterationDialog,
+                "iterateRadiusDialog"
+            )
+        )
+
+        self.mainWidget.iterateComposition.triggered.connect(
+            lambda: self.iterateGudrun(
+                CompositionIterationDialog,
+                "iterateCompositionDialog"
+            )
+        )
+
         self.mainWidget.runContainersAsSamples.triggered.connect(
             self.runContainersAsSamples
         )
@@ -1068,9 +1132,9 @@ class GudPyMainWindow(QMainWindow):
             return
         self.queue.put((dcs, self.progressDCS, func, args))
 
-    def iterateGudrun_(self):
+    def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)
-        iterationDialog = IterationDialog(self.gudrunFile, self.mainWidget)
+        iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
         if iterationDialog.cancelled or not iterationDialog.iterator:
             self.setControlsEnabled(True)
@@ -1103,7 +1167,7 @@ class GudPyMainWindow(QMainWindow):
 
     def finishedCompositionIterations(self):
         for original, new in self.compositionMap.items():
-            dialog = CompositionIterationDialog(new, self.mainWidget)
+            dialog = CompositionAcceptanceDialog(new, self.mainWidget)
             result = dialog.widget.exec()
             if result:
                 original.composition = new.composition
@@ -1165,6 +1229,7 @@ class GudPyMainWindow(QMainWindow):
                 " It's likely no Samples selected for analysis"
                 " use the Component(s) selected for iteration."
             )
+            self.setControlsEnabled(True)
         else:
             self.compositionMap = {}
             self.totalIterations = len(

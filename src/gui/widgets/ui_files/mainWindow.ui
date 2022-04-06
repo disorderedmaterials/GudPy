@@ -2974,14 +2974,14 @@
                         <attribute name="verticalHeaderVisible">
                          <bool>false</bool>
                         </attribute>
-                        <attribute name="verticalHeaderMinimumSectionSize">
-                         <number>0</number>
-                        </attribute>
                         <attribute name="verticalHeaderDefaultSectionSize">
                          <number>30</number>
                         </attribute>
                         <attribute name="verticalHeaderHighlightSections">
                          <bool>false</bool>
+                        </attribute>
+                        <attribute name="verticalHeaderMinimumSectionSize">
+                         <number>0</number>
                         </attribute>
                        </widget>
                       </item>
@@ -5695,10 +5695,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>120</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>120</number>
                            </attribute>
                            <attribute name="verticalHeaderCascadingSectionResizes">
@@ -5798,10 +5798,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>128</number>
                            </attribute>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>128</number>
                            </attribute>
                            <attribute name="horizontalHeaderStretchLastSection">
@@ -7262,7 +7262,7 @@
      <x>0</x>
      <y>0</y>
      <width>1580</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -7288,6 +7288,17 @@
     <property name="title">
      <string>Run</string>
     </property>
+    <widget class="QMenu" name="iterateGudrun">
+     <property name="title">
+      <string>Iterate Gudrun</string>
+     </property>
+     <addaction name="iterateInelasticitySubtractions"/>
+     <addaction name="iterateTweakFactor"/>
+     <addaction name="iterateDensity"/>
+     <addaction name="iterateThickness"/>
+     <addaction name="iterateRadius"/>
+     <addaction name="iterateComposition"/>
+    </widget>
     <addaction name="runPurge"/>
     <addaction name="runGudrun"/>
     <addaction name="runContainersAsSamples"/>
@@ -7346,14 +7357,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
-   </property>
-  </action>
-  <action name="iterateGudrun">
-   <property name="text">
-    <string>Iterate Gudrun</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="viewLiveInputFile">
@@ -7473,6 +7476,36 @@
   <action name="insertDefaultContainer">
    <property name="text">
     <string>Default</string>
+   </property>
+  </action>
+  <action name="iterateInelasticitySubtractions">
+   <property name="text">
+    <string>Inelasticity Subtractions</string>
+   </property>
+  </action>
+  <action name="iterateTweakFactor">
+   <property name="text">
+    <string>By Tweak Factor</string>
+   </property>
+  </action>
+  <action name="iterateDensity">
+   <property name="text">
+    <string>By Density</string>
+   </property>
+  </action>
+  <action name="iterateThickness">
+   <property name="text">
+    <string>By Thickness</string>
+   </property>
+  </action>
+  <action name="iterateRadius">
+   <property name="text">
+    <string>By Radius</string>
+   </property>
+  </action>
+  <action name="iterateComposition">
+   <property name="text">
+    <string>By Composition</string>
    </property>
   </action>
  </widget>
