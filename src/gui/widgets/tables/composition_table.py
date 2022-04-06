@@ -246,9 +246,10 @@ class CompositionTable(QTableView):
         """
         self.parent = parent
         self.compositions = []
+        self.parentObject = None
         super(CompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data, farm=True):
+    def makeModel(self, data, parentObject, farm=True):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -262,6 +263,7 @@ class CompositionTable(QTableView):
                 data, ["Element", "Mass No", "Abundance"], self.parent
             )
         )
+        self.parentObject = parentObject
         self.setItemDelegate(CompositionDelegate())
         if farm:
             self.farmCompositions()
@@ -301,11 +303,13 @@ class CompositionTable(QTableView):
             ]
         for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
-                self.compositions.append((sample.name, sample.composition))
+                if sample != self.parentObject:
+                    self.compositions.append((sample.name, sample.composition))
                 for container in sample.containers:
-                    self.compositions.append(
-                        (container.name, container.composition)
-                    )
+                    if container != self.parentObject:
+                        self.compositions.append(
+                            (container.name, container.composition)
+                        )
 
     def copyFrom(self, composition):
         """
@@ -316,7 +320,7 @@ class CompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.makeModel(composition.elements)
+        self.makeModel(composition.elements, self.parentObject)
 
     def showContextMenu(self, event):
         """
@@ -336,7 +340,8 @@ class CompositionTable(QTableView):
             copyMenu.addAction(action)
             actionMap[action] = composition[1]
         action = self.menu.exec(QCursor.pos())
-        self.copyFrom(actionMap[action])
+        if action:
+            self.copyFrom(actionMap[action])
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:

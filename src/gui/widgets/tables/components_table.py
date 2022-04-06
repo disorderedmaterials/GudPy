@@ -411,8 +411,9 @@ class ComponentsList(QListView):
         Handles selection change in the model.
         """
         if self.selectionModel().hasSelection():
-            index = item.indexes()[0]
-            self.sibling.setRootIndex(index)
+            if len(item.indexes()):
+                index = item.indexes()[0]
+                self.sibling.setRootIndex(index)
 
     def insertComponent(self, component=None):
         """
