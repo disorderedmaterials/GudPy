@@ -5,10 +5,10 @@ from PySide6.QtUiTools import QUiLoader
 import os
 
 
-class CompositionIterationDialog(QDialog):
+class CompositionAcceptanceDialog(QDialog):
 
     def __init__(self, sample, parent):
-        super(CompositionIterationDialog, self).__init__(parent=parent)
+        super(CompositionAcceptanceDialog, self).__init__(parent=parent)
         self.sample = sample
         self.accepted_ = False
         self.initComponents()
@@ -19,13 +19,13 @@ class CompositionIterationDialog(QDialog):
 
     def initComponents(self):
         """
-        Loads the UI file for the MissingFilesDialog object.
+        Loads the UI file for the CompositionAcceptanceDialog object.
         """
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
                     sys._MEIPASS, "ui_files",
-                    "compositionIterationDialog.ui"
+                    "compositionAcceptanceDialog.ui"
                 )
             )
         else:
@@ -33,7 +33,7 @@ class CompositionIterationDialog(QDialog):
             uifile = QFile(
                 os.path.join(
                     current_dir, "..", "ui_files",
-                    "compositionIterationDialog.ui"
+                    "compositionAcceptanceDialog.ui"
                 )
             )
         loader = QUiLoader()
