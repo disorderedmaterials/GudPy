@@ -100,6 +100,7 @@ class CompositionIterationDialog(IterationDialog):
 
             self.loadFirstComponentsComboBox()
             self.loadSecondComponentsComboBox()
+            self.toggleUseSingleComponent(True)
         else:
             self.widget.iterateButton.setEnabled(False)
 
