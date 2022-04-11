@@ -1496,8 +1496,6 @@ class GudPyMainWindow(QMainWindow):
             self.error = ""
             self.queue = Queue()
         if not self.queue.empty():
-            self.makeProc(*self.queue.get())
-        else:
             if self.warning:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
@@ -1521,6 +1519,8 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+        if not self.queue.empty():
+            self.makeProc(*self.queue.get())
 
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
