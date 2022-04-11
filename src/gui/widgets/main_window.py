@@ -1111,8 +1111,8 @@ class GudPyMainWindow(QMainWindow):
                     self.mainWidget,
                     "GudPy Error", "Couldn't find purge_det binary."
                 )
-            self.setControlsEnabled(True)
-            return
+                self.setControlsEnabled(True)
+                return
         else:
             self.runPurge_()
         dcs = self.gudrunFile.dcs(
@@ -1129,6 +1129,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 "Couldn't find gudrun_dcs binary."
             )
+            self.setControlsEnabled(True)
             return
         self.queue.put((dcs, self.progressDCS, func, args))
 
@@ -1593,8 +1594,6 @@ class GudPyMainWindow(QMainWindow):
             self.error = ""
             self.queue = Queue()
         if not self.queue.empty():
-            self.makeProc(*self.queue.get())
-        else:
             if self.warning:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
@@ -1619,6 +1618,8 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
+        if not self.queue.empty():
+            self.makeProc(*self.queue.get())
 
     def stopProc(self):
         self.queue = Queue()
