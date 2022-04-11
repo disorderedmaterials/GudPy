@@ -90,7 +90,7 @@ class CompositionIterator():
         Performs n iterations using cost function f, args and bounds.
     """
     def __init__(self, gudrunFile):
-        self.gudrunFile = deepcopy(gudrunFile)
+        self.gudrunFile = gudrunFile
         self.components = []
         self.ratio = 0
 
@@ -133,8 +133,7 @@ class CompositionIterator():
         Target Sample Background.
     """
     def processSingleComponent(self, x, sampleBackground):
-        gudrunFile = deepcopy(self.gudrunFile)
-        gudrunFile.sampleBackgrounds = [sampleBackground]
+        self.gudrunFile.sampleBackgrounds = [sampleBackground]
 
         x = abs(x)
         weightedComponents = [
@@ -148,16 +147,16 @@ class CompositionIterator():
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        gudrunFile.process()
+        self.gudrunFile.process()
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
-                    gudrunFile.instrument.dataFileType,
+                    self.gudrunFile.instrument.dataFileType,
                     "gud"
                 )
         gudFile = GudFile(
             os.path.join(
-                gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
         )
 
@@ -179,8 +178,7 @@ class CompositionIterator():
         Sum of molecules of both components.
     """
     def processTwoComponents(self, x, sampleBackground, totalMolecules):
-        gudrunFile = deepcopy(self.gudrunFile)
-        gudrunFile.sampleBackgrounds = [sampleBackground]
+        self.gudrunFile.sampleBackgrounds = [sampleBackground]
         x = abs(x)
         wcA = wcB = None
         for weightedComponent in (
@@ -196,16 +194,16 @@ class CompositionIterator():
             wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
-        gudrunFile.process()
+        self.gudrunFile.process()
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
-                    gudrunFile.instrument.dataFileType,
+                    self.gudrunFile.instrument.dataFileType,
                     "gud"
                 )
         gudFile = GudFile(
             os.path.join(
-                gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
         )
 
@@ -232,7 +230,7 @@ class CompositionIterator():
     rtol : float
         Relative tolerance
     """
-    def iterate(self, n=10, rtol=10):
+    def iterate(self, n=10, rtol=10.):
         if not self.components or not self.ratio:
             return None
         # Only include samples that are marked for analysis.

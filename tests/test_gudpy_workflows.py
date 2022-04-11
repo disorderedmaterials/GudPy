@@ -1,13 +1,15 @@
+from copy import deepcopy
 import os
 from shutil import copyfile
 from unittest import TestCase
 import re
 import math
-
+from src.gudrun_classes.composition import Composition, Component
 from src.gudrun_classes.gudrun_file import GudrunFile
 from src.gudrun_classes.thickness_iterator import ThicknessIterator
 from src.gudrun_classes.density_iterator import DensityIterator
 from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.composition_iterator import CompositionIterator
 from src.gudrun_classes.gud_file import GudFile
 from src.gudrun_classes.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
@@ -330,6 +332,39 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf4.result)[0]
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
+
+    def testIterateByComposition(self):
+
+        g = deepcopy(self.g)
+        g.purge()
+
+        g.sampleBackgrounds[0].samples[0].runThisSample = False
+        g.sampleBackgrounds[0].samples[2].runThisSample = False
+        g.sampleBackgrounds[0].samples[3].runThisSample = False
+        sample = g.sampleBackgrounds[0].samples[1]
+
+        composition = Composition("Sample")
+
+        h2 = Component("H[2]")
+        h2.parse()
+        o = Component("O")
+        o.parse()
+
+        composition.addComponent(h2, 1)
+        composition.addComponent(o, 1)
+
+        sample.composition = composition
+
+        compositionIterator = CompositionIterator(g)
+        compositionIterator.setComponent(h2, 1)
+        compositionIterator.iterate(10, 3)
+        self.assertAlmostEqual(
+            sample.composition.weightedComponents[0].ratio, 2, 1
+        )
+
+        self.assertEqual(
+            sample.composition.weightedComponents[1].ratio, 1
+        )
 
     def testGudPyIterateBySubtractingWavelength(self):
 
