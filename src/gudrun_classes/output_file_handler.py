@@ -42,28 +42,27 @@ class OutputFileHandler():
 
     def getRunFiles(self):
         self.runFiles = [
-            *[
+            
                 os.path.splitext(s.dataFiles.dataFiles[0])[0]
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for s in sampleBackground.samples if s.runThisSample
                 and len(s.dataFiles.dataFiles)
-            ],
-            *[
-                os.path.splitext(s.pathName())[0] for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for s in sampleBackground.samples if s.runThisSample
-            ]
+            
+            # *[
+            #     os.path.splitext(s.pathName())[0] for sampleBackground in self.gudrunFile.sampleBackgrounds
+            #     for s in sampleBackground.samples if s.runThisSample
+            # ]
         ]
 
     def organiseSampleFiles(self, run, tree=""):
         dir = self.gudrunFile.instrument.GudrunInputFileDir
         if tree:
             outputDir = os.path.join(dir, tree, run)
-            if os.path.exists(os.path.join(dir, tree)):
-                    shutil.rmtree(os.path.join(dir, tree))
         else:
-            if os.path.exists(outputDir):
-                shutil.rmtree(outputDir)
             outputDir = os.path.join(dir, run)
+            shutil.rmtree(outputDir)
+        if not os.path.exists(outputDir):
+            os.makedirs(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
         os.makedirs(os.path.join(outputDir, "diagnostics"))
         for f in os.listdir(dir):
@@ -85,6 +84,12 @@ class OutputFileHandler():
             self.organiseSampleFiles(run)
     
     def iterativeOrganise(self, head):
+        path = os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                head
+                )
+        if os.path.exists(path):
+            shutil.rmtree(path)
         for run in self.runFiles:
             self.organiseSampleFiles(run, tree=head)
 
