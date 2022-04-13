@@ -1593,7 +1593,7 @@ class GudPyMainWindow(QMainWindow):
             )
             self.error = ""
             self.queue = Queue()
-        if not self.queue.empty():
+        if self.queue.empty():
             if self.warning:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
