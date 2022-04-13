@@ -1442,7 +1442,7 @@ class GudrunFile:
     def write_yaml(self, path):
         self.yaml.writeYAML(self, path)
 
-    def write_out(self, path='', overwrite=False, writeParameters=False):
+    def write_out(self, path='', overwrite=False, writeParameters=True):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1486,11 +1486,12 @@ class GudrunFile:
                         gf.write_out(
                             path=os.path.join(
                                 self.instrument.GudrunInputFileDir,
-                                s.pathName()
-                            )
+                                s.pathName(),
+                            ),
+                            writeParameters=False
                         )
 
-    def dcs(self, path='', headless=True):
+    def dcs(self, path='', headless=True, iterative=False, outputTree=""):
         """
         Call gudrun_dcs on the path supplied.
         If the path is its default value,
@@ -1522,6 +1523,9 @@ class GudrunFile:
             except FileNotFoundError:
                 os.chdir(cwd)
                 return False
+            if not iterative:
+                outputFileHandler = OutputFileHandler(self)
+                outputFileHandler.naiveOrganise()
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1543,8 +1547,7 @@ class GudrunFile:
                     self.write_out,
                     [
                         path,
-                        False,
-                        True
+                        False
                     ]
                 )
 
@@ -1607,8 +1610,3 @@ Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken
 Container.consumeUpToDelim = GudrunFile.consumeUpToDelim
 Container.consumeWhitespace = GudrunFile.consumeWhitespace
-
-if __name__ == "__main__":
-    g = GudrunFile(
-        path="/home/jared/GudPy/GudPy/test/TestData/NIMROD-water/water.txt"
-        )
