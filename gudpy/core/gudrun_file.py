@@ -3,10 +3,16 @@ import sys
 import os
 import subprocess
 import time
+<<<<<<< HEAD:gudpy/core/gudrun_file.py
 import re
 from copy import deepcopy
 
 from core.utils import (
+=======
+from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
+from src.gudrun_classes.wavelength_subtraction_iterator import WavelengthSubtractionIterator
+from src.scripts.utils import (
+>>>>>>> feat: organise output of TweakFactorIterator and WavelengthSubtractionIterator when running through GUI.:src/gudrun_classes/gudrun_file.py
         extract_nums_from_string,
         firstword, boolifyNum,
         extract_ints_from_string,
@@ -1491,7 +1497,7 @@ class GudrunFile:
                             writeParameters=False
                         )
 
-    def dcs(self, path='', headless=True, iterative=False, outputTree=""):
+    def dcs(self, path='', headless=True, iterative=False):
         """
         Call gudrun_dcs on the path supplied.
         If the path is its default value,
@@ -1550,7 +1556,7 @@ class GudrunFile:
                     ]
                 )
 
-    def process(self, headless=True):
+    def process(self, headless=True, iterative=False):
         """
         Write out the current state of the file,
         and then call gudrun_dcs on the file that
@@ -1568,7 +1574,7 @@ class GudrunFile:
         cwd = os.getcwd()
         os.chdir(self.instrument.GudrunInputFileDir)
         self.write_out()
-        dcs = self.dcs(path=self.outpath, headless=headless)
+        dcs = self.dcs(path=self.outpath, headless=headless, iterative=iterative)
         os.chdir(cwd)
         return dcs
 
@@ -1607,6 +1613,11 @@ class GudrunFile:
     def naiveOrganise(self):
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.naiveOrganise()
+
+    def iterativeOrganise(self, head):
+        outputFileHandler = OutputFileHandler(self)
+        outputFileHandler.iterativeOrganise(head)
+
 
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken

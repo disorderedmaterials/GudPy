@@ -1286,6 +1286,8 @@ class GudPyMainWindow(QMainWindow):
     def nextIteration(self):
         if self.error:
             self.proc.finished.connect(self.procFinished)
+        if isinstance(self.iterator, TweakFactorIterator):
+            self.gudrunFile.iterativeOrganise(f"IterateByTweakFactor_{self.currentIteration+1}")
         if isinstance(
             self.iterator, (
                 TweakFactorIterator, ThicknessIterator,
@@ -1301,12 +1303,14 @@ class GudPyMainWindow(QMainWindow):
             time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.QIteration(self.currentIteration)
+                self.gudrunFile.iterativeOrganise(f"QIteration_{self.currentIteration+1}")
             else:
                 self.iterator.wavelengthIteration(self.currentIteration)
                 if self.currentIteration == 0:
                     self.outputIterations[1] = self.output
                 else:
                     self.outputIterations[self.currentIteration] = self.output
+                self.gudrunFile.iterativeOrganise(f"WavelengthIteration_{self.currentIteration+1}")
             self.gudrunFile.write_out()
 
         if not self.queue.empty():

@@ -42,37 +42,49 @@ class OutputFileHandler():
 
     def getRunFiles(self):
         self.runFiles = [
-            os.path.splitext(s.dataFiles.dataFiles[0])[0]
-            for sampleBackground in self.gudrunFile.sampleBackgrounds
-            for s in sampleBackground.samples if s.runThisSample
-            and len(s.dataFiles.dataFiles)
+            *[
+                os.path.splitext(s.dataFiles.dataFiles[0])[0]
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for s in sampleBackground.samples if s.runThisSample
+                and len(s.dataFiles.dataFiles)
+            ],
+            *[
+                os.path.splitext(s.pathName())[0] for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for s in sampleBackground.samples if s.runThisSample
+            ]
         ]
 
     def organiseSampleFiles(self, run, tree=""):
         dir = self.gudrunFile.instrument.GudrunInputFileDir
-        if not tree:
-            tree = os.path.join(dir, run)
-        if os.path.exists(tree):
-            shutil.rmtree(tree)
-        os.makedirs(tree)
-        os.mkdir(os.path.join(tree, "outputs"))
-        os.mkdir(os.path.join(tree, "diagnostics"))
+        if tree:
+            outputDir = os.path.join(dir, tree, run)
+            if os.path.exists(os.path.join(dir, tree)):
+                    shutil.rmtree(os.path.join(dir, tree))
+        else:
+            if os.path.exists(outputDir):
+                shutil.rmtree(outputDir)
+            outputDir = os.path.join(dir, run)
+        os.makedirs(os.path.join(outputDir, "outputs"))
+        os.makedirs(os.path.join(outputDir, "diagnostics"))
         for f in os.listdir(dir):
             for suffix in self.outputs["sampleOutputs"]:
                 if f == f"{run}.{suffix}":
-                    print(os.path.join(dir, f), os.path.join(tree, "outputs", f))
-                    os.rename(
+                    shutil.copyfile(
                         os.path.join(dir, f),
-                        os.path.join(tree, "outputs", f)
+                        os.path.join(outputDir, "outputs", f)
                     )
             for suffix in self.outputs["sampleDiagnostics"]:
                 if f == f"{run}.{suffix}":
-                    os.rename(
+                    shutil.copyfile(
                         os.path.join(dir, f),
-                        os.path.join(tree, "diagnostics", f)
+                        os.path.join(outputDir, "diagnostics", f)
                     )
 
     def naiveOrganise(self):
         for run in self.runFiles:
-            print(run)
             self.organiseSampleFiles(run)
+    
+    def iterativeOrganise(self, head):
+        for run in self.runFiles:
+            self.organiseSampleFiles(run, tree=head)
+
