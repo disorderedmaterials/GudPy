@@ -1524,8 +1524,7 @@ class GudrunFile:
                 os.chdir(cwd)
                 return False
             if not iterative:
-                outputFileHandler = OutputFileHandler(self)
-                outputFileHandler.naiveOrganise()
+                self.naiveOrganise()
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1605,6 +1604,9 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
+    def naiveOrganise(self):
+        outputFileHandler = OutputFileHandler(self)
+        outputFileHandler.naiveOrganise()
 
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken
