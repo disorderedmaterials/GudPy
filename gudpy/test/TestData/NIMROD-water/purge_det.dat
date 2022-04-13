@@ -1,0 +1,17 @@
+'  '  '          '  '/'
+
+NIMROD          Instrument name
+/Users/jared/Desktop/STFC/GudPy/tests/TestData/NIMROD-water          Gudrun input file directory:
+/Users/jared/Desktop/STFC/GudPy/tests/TestData/NIMROD-water/raw/          Data file directory
+/Users/jared/Desktop/STFC/GudPy/bin/StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat          Detector calibration file name
+/Users/jared/Desktop/STFC/GudPy/bin/StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Groups.dat          Groups file name
+4 5          Spectrum number(s) for incident beam monitor
+0  0          Channel numbers for spike analysis
+5.0          Spike analysis acceptance factor
+10  10          Specify the number of standard deviations allowed above and below the mean ratio. Specify the range of std's allowed around the mean standard deviation.
+1          Ignore any existing bad spectrum and spike files (spec.bad, spike.dat)?
+NIMROD00016702_V.raw  1          
+NIMROD00016698_EmptyInst.raw  1          
+NIMROD00016703_EmptyInst.raw  1          
+NIMROD00016698_EmptyInst.raw  1          
+NIMROD00016703_EmptyInst.raw  1          

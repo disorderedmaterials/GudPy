@@ -1,0 +1,54 @@
+ NIMROD00016609_D2O_in_N10.gudw
+
+ D2O in 1mm TiZr Can N10 pos 10 Beam 30x30mm Mod 195.3x115mm HxV JC6Y -10
+
+ T. G. A. Youngs, D.
+
+ 23-OCT-2012 18:43:54
+
+ Number density of this sample (atoms/A**3) =  0.100000E+00
+ Corresponding density in g/cm**3 =    1.10854
+ Average scattering length of the sample (10**-12cm) =    0.63817
+ Average scattering length squared (barns) =  0.407257E+00
+ Average square of the scattering length (barns) =  0.408931E+00
+ Ratio of (coherent) single to interference =  0.100411E+01
+
+ Expected level of DCS [b/sr/atom] =    0.51757
+
+ Group number,  first Q,   last Q,   level [b/sr/atom],   gradient in Q (%)
+
+    1            0.0000    0.0000        0.00000              0.0000
+    2            0.0000    0.0000        0.00000              0.0000
+    3            0.0000    0.0000        0.00000              0.0000
+    4            0.0000    0.0000        0.00000              0.0000
+    5            0.0000    0.0000        0.00000              0.0000
+    6            0.0000    0.0000        0.00000              0.0000
+    7            0.0000    0.0000        0.00000              0.0000
+    8            0.0000    0.0000        0.00000              0.0000
+    9            0.0500   11.5647        1.43655            -19.3899
+   10            0.0500   11.8947        1.00362             10.2513
+   11            0.0500   11.9947        0.41914             -5.1413
+   12            0.0500   11.9947        0.38735              1.6797
+   13            0.0500   11.9947        0.48426              3.6704
+   14            0.0500   11.9947        0.55934              4.8272
+   15            0.0500   11.9947        0.56267              4.9018
+   16            0.0500   11.9947        0.58669              5.2988
+   17            0.0500   11.9947        0.57954              5.1597
+   18            0.0500   11.9947        0.58418              5.1290
+   19            0.0500   11.9947        0.56530              4.9453
+   20            0.0500   11.9947        0.58076              5.0325
+   21            0.0500   11.9947        0.55794              4.6018
+   22            0.0520   11.9947        0.53685              4.1891
+   23            0.0562   11.9947        0.52160              3.8099
+   24            0.0655   11.9947        0.50670              3.3538
+   25            0.0763   11.9947        0.48293              2.7046
+
+ No. of groups accepted for merge =   25
+
+ Average level of merged dcs is    0.51855 b/sr/atom;
+
+ Gradient of merged dcs:  3.7337% of average level.
+
+ This DCS level is  100.2% of expected level
+
+ Suggested tweak factor:    0.99812

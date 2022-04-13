@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>stop.png</file>
+    <file>duplicate.png</file>
+    <file>container.png</file>
+    <file>minus.png</file>
+    <file>plus.png</file>
+    <file>sample.png</file>
+  </qresource>
+</RCC>
