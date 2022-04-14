@@ -1239,7 +1239,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextCompositionIteration(self):
         args, kwargs, sample = self.queue.get()
-        self.worker = CompositionWorker(args, kwargs, sample)
+        self.worker = CompositionWorker(args, kwargs, sample, self.gudrunFile)
         self.worker.started.connect(self.startedCompositionIteration)
         self.workerThread = QThread()
         self.worker.moveToThread(self.workerThread)
