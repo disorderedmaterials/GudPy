@@ -1288,10 +1288,15 @@ class GudPyMainWindow(QMainWindow):
             self.proc.finished.connect(self.procFinished)
         if isinstance(self.iterator, TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(f"IterateByTweakFactor_{self.currentIteration+1}")
+        elif isinstance(self.iterator, ThicknessIterator):
+            self.gudrunFile.iterativeOrganise(f"IterateByThickness_{self.currentIteration+1}")
+        elif isinstance(self.iterator, RadiusIterator):
+            self.gudrunFile.iterativeOrganise(f"IterateByRadius_{self.currentIteration+1}")
+        elif isinstance(self.iterator, DensityIterator):
+            self.gudrunFile.iterativeOrganise(f"IterateByDensity_{self.currentIteration+1}")
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
+                TweakFactorIterator, SingleParamIterator
             )
         ):
             time.sleep(1)

@@ -3,16 +3,10 @@ import sys
 import os
 import subprocess
 import time
-<<<<<<< HEAD:gudpy/core/gudrun_file.py
 import re
 from copy import deepcopy
 
 from core.utils import (
-=======
-from src.gudrun_classes.tweak_factor_iterator import TweakFactorIterator
-from src.gudrun_classes.wavelength_subtraction_iterator import WavelengthSubtractionIterator
-from src.scripts.utils import (
->>>>>>> feat: organise output of TweakFactorIterator and WavelengthSubtractionIterator when running through GUI.:src/gudrun_classes/gudrun_file.py
         extract_nums_from_string,
         firstword, boolifyNum,
         extract_ints_from_string,
