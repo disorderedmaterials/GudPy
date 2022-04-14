@@ -55,7 +55,8 @@ class OutputFileHandler():
             outputDir = os.path.join(dir, tree, run)
         else:
             outputDir = os.path.join(dir, run)
-            shutil.rmtree(outputDir)
+            if os.path.exists(outputDir):
+                shutil.rmtree(outputDir)
         if not os.path.exists(outputDir):
             os.makedirs(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
