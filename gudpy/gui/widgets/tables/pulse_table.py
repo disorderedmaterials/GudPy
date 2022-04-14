@@ -91,7 +91,7 @@ class PulseTable(QTableView):
         self.parentObject = None
         super(PulseTable, self).__init__(parent=parent)
 
-    def makeModel(self, data, parentObject, farm=True):
+    def makeModel(self, data, parentObject):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
