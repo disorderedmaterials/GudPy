@@ -47,11 +47,6 @@ class OutputFileHandler():
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for s in sampleBackground.samples if s.runThisSample
                 and len(s.dataFiles.dataFiles)
-            
-            # *[
-            #     os.path.splitext(s.pathName())[0] for sampleBackground in self.gudrunFile.sampleBackgrounds
-            #     for s in sampleBackground.samples if s.runThisSample
-            # ]
         ]
 
     def organiseSampleFiles(self, run, tree=""):
