@@ -2,7 +2,7 @@ from abc import abstractmethod
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import QPoint, QPointF
 
-from gudpy.core.gud_file import GudFile
+from core.gud_file import GudFile
 
 
 class Point():

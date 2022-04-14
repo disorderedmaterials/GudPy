@@ -1,11 +1,11 @@
 import os
 from PySide6.QtWidgets import QFileDialog
 
-from gudpy.core import config
-from gudpy.core.enums import (
+from core import config
+from core.enums import (
     CrossSectionSource, FTModes, UnitsOfDensity, Geometry
 )
-from gudpy.core.utils import nthfloat
+from core.utils import nthfloat
 
 
 class ContainerSlots():

@@ -3,9 +3,9 @@ import sys
 import subprocess
 
 from PySide6.QtCore import QProcess
-from gudpy.core.enums import Instruments
-from gudpy.core.utils import resolve, spacify, numifyBool
-from gudpy.core import config
+from core.enums import Instruments
+from core.utils import resolve, spacify, numifyBool
+from core import config
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 

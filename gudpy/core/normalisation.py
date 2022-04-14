@@ -1,10 +1,10 @@
-from gudpy.core.utils import numifyBool
-from gudpy.core.data_files import DataFiles
-from gudpy.core.composition import Composition
-from gudpy.core.enums import (
+from core.utils import numifyBool
+from core.data_files import DataFiles
+from core.composition import Composition
+from core.enums import (
     CrossSectionSource, Geometry, UnitsOfDensity
 )
-from gudpy.core import config
+from core import config
 
 
 class Normalisation:

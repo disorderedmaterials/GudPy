@@ -1,6 +1,6 @@
-from gudpy.core.utils import spacify
-from gudpy.core.enums import Geometry
-from gudpy.core import config
+from core.utils import spacify
+from core.enums import Geometry
+from core import config
 
 class Beam:
     """

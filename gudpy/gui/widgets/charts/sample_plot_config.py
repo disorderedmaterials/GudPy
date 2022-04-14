@@ -1,11 +1,11 @@
 
 import os
 
-from gudpy.gui.widgets.charts.sample_plot_data import (
+from gui.widgets.charts.sample_plot_data import (
     DCSLevel, Mdcs01Plot,
     Mdor01Plot, Mgor01Plot, Mint01Plot
 )
-from gudpy.gui.widgets.charts.enums import PlotModes
+from gui.widgets.charts.enums import PlotModes
 
 
 class SamplePlotConfig():

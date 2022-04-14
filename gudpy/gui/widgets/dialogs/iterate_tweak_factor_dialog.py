@@ -1,5 +1,5 @@
-from gudpy.gui.widgets.dialogs.iteration_dialog import IterationDialog
-from gudpy.core.tweak_factor_iterator import TweakFactorIterator
+from gui.widgets.dialogs.iteration_dialog import IterationDialog
+from core.tweak_factor_iterator import TweakFactorIterator
 
 
 class TweakFactorIterationDialog(IterationDialog):

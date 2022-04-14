@@ -2,7 +2,7 @@ import os
 from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 
-from gudpy.core.enums import CrossSectionSource
+from core.enums import CrossSectionSource
 
 
 class GudPyFileLibrary():

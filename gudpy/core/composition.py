@@ -1,10 +1,10 @@
 import re
 import math
 
-from gudpy.core.element import Element
-from gudpy.core.isotopes import Sears91
-from gudpy.core.exception import ChemicalFormulaParserException
-from gudpy.core.mass_data import massData
+from core.element import Element
+from core.isotopes import Sears91
+from core.exception import ChemicalFormulaParserException
+from core.mass_data import massData
 
 
 class ChemicalFormulaParser():

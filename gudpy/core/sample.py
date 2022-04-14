@@ -1,11 +1,11 @@
-from gudpy.core.utils import bjoin, numifyBool
-from gudpy.core.data_files import DataFiles
-from gudpy.core.composition import Composition
-from gudpy.core.enums import (
+from core.utils import bjoin, numifyBool
+from core.data_files import DataFiles
+from core.composition import Composition
+from core.enums import (
     CrossSectionSource, FTModes, UnitsOfDensity,
     NormalisationType, OutputUnits, Geometry
 )
-from gudpy.core import config
+from core import config
 
 
 class Sample:

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from gudpy.core.gudrun_file import GudrunFile
+from core.gudrun_file import GudrunFile
 
 
 class TestYAML(TestCase):

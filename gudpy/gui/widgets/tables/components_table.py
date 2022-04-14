@@ -4,10 +4,10 @@ from PySide6.QtCore import (
 )
 from PySide6.QtWidgets import QListView
 
-from gudpy.core.mass_data import massData
-from gudpy.core.composition import Component
-from gudpy.core.element import Element
-from gudpy.gui.widgets.tables.composition_table import CompositionDelegate
+from core.mass_data import massData
+from core.composition import Component
+from core.element import Element
+from gui.widgets.tables.composition_table import CompositionDelegate
 
 
 class ComponentsModel(QAbstractItemModel):

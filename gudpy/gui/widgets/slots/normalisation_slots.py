@@ -1,10 +1,10 @@
 import os
 from PySide6.QtWidgets import QFileDialog
 
-from gudpy.core.enums import (
+from core.enums import (
     Geometry, CrossSectionSource, UnitsOfDensity, Instruments
 )
-from gudpy.core import config
+from core import config
 
 
 class NormalisationSlots():

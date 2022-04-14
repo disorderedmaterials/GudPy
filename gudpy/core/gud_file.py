@@ -4,7 +4,7 @@ import re
 from decimal import Decimal, getcontext
 getcontext().prec = 5
 
-from gudpy.core.exception import ParserException
+from core.exception import ParserException
 
 percentageRegex = r'\d*[.]?\d*%'
 floatRegex = r'\d*[.]?\d'

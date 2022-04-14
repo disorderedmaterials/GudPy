@@ -7,7 +7,7 @@ import time
 import re
 from copy import deepcopy
 
-from gudpy.core.utils import (
+from core.utils import (
         extract_nums_from_string,
         firstword, boolifyNum,
         extract_ints_from_string,
@@ -18,24 +18,24 @@ from gudpy.core.utils import (
         nthint,
         resolve
 )
-from gudpy.core.instrument import Instrument
-from gudpy.core.beam import Beam
-from gudpy.core.normalisation import Normalisation
-from gudpy.core.sample import Sample
-from gudpy.core.sample_background import SampleBackground
-from gudpy.core.container import Container
-from gudpy.core.composition import Component, Composition
-from gudpy.core.element import Element
-from gudpy.core.data_files import DataFiles
-from gudpy.core.purge_file import PurgeFile
-from gudpy.core.enums import (
+from core.instrument import Instrument
+from core.beam import Beam
+from core.normalisation import Normalisation
+from core.sample import Sample
+from core.sample_background import SampleBackground
+from core.container import Container
+from core.composition import Component, Composition
+from core.element import Element
+from core.data_files import DataFiles
+from core.purge_file import PurgeFile
+from core.enums import (
     CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
-from gudpy.core import config
-from gudpy.core.gudpy_yaml import YAML
-from gudpy.core.exception import ParserException
+from core import config
+from core.gudpy_yaml import YAML
+from core.exception import ParserException
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -141,7 +141,7 @@ class GudrunFile:
         self.path = path
         self.yaml = YAML()
         # Construct the outpath.
-        self.outpath = "gudpy.txt"
+        self.outpath = "txt"
 
         if isinstance(path, type(None)):
             self.instrument = Instrument()

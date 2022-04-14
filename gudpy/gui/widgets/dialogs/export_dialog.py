@@ -4,7 +4,7 @@ from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PySide6.QtUiTools import QUiLoader
 
-from gudpy.core.file_library import GudPyFileLibrary
+from core.file_library import GudPyFileLibrary
 
 
 class ExportDialog(QDialog):

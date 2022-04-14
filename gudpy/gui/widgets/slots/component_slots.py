@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QMessageBox
 
-from gudpy.gui.widgets.dialogs.composition_dialog import CompositionDialog
-from gudpy.core import config
-from gudpy.core.element import Element
-from gudpy.core.exception import ChemicalFormulaParserException
+from gui.widgets.dialogs.composition_dialog import CompositionDialog
+from core import config
+from core.element import Element
+from core.exception import ChemicalFormulaParserException
 
 
 class ComponentSlots():

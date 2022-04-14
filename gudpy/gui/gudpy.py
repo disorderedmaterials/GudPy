@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-from gudpy.gui.widgets.core.main_window import GudPyMainWindow
+from gui.widgets.core.main_window import GudPyMainWindow
 
 
 class GudPy(QApplication):

@@ -4,11 +4,11 @@ from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
 
-from gudpy.core import config
-from gudpy.core.mass_data import massData
-from gudpy.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
-from gudpy.gui.widgets.core.exponential_spinbox import ExponentialSpinBox
-from gudpy.core.element import Element
+from core import config
+from core.mass_data import massData
+from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
+from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
+from core.element import Element
 
 
 class CompositionModel(GudPyTableModel):

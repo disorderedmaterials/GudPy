@@ -3,11 +3,11 @@ from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPen
 from PySide6.QtWidgets import QGraphicsTextItem
 
-from gudpy.core.sample import Sample
-from gudpy.core.container import Container
-from gudpy.gui.widgets.charts.sample_plot_config import SamplePlotConfig
-from gudpy.gui.widgets.charts.enums import PlotModes, SeriesTypes
-from gudpy.gui.widgets.charts.enums import Axes
+from core.sample import Sample
+from core.container import Container
+from gui.widgets.charts.sample_plot_config import SamplePlotConfig
+from gui.widgets.charts.enums import PlotModes, SeriesTypes
+from gui.widgets.charts.enums import Axes
 
 
 class GudPyChart(QChart):

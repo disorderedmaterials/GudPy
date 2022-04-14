@@ -1,4 +1,4 @@
-from gudpy.core.single_param_iterator import SingleParamIterator
+from core.single_param_iterator import SingleParamIterator
 
 
 class ThicknessIterator(SingleParamIterator):

@@ -1,15 +1,15 @@
 from copy import deepcopy
 import os
 
-from gudpy.core.element import Element
-from gudpy.core.data_files import DataFiles
-from gudpy.core.composition import Composition
-from gudpy.core.enums import FTModes, Geometry, UnitsOfDensity
-from gudpy.core import config
-from gudpy.core.enums import CrossSectionSource
-from gudpy.core.sample import Sample
-from gudpy.core.exception import ParserException
-from gudpy.core.utils import firstword, nthfloat, nthint
+from core.element import Element
+from core.data_files import DataFiles
+from core.composition import Composition
+from core.enums import FTModes, Geometry, UnitsOfDensity
+from core import config
+from core.enums import CrossSectionSource
+from core.sample import Sample
+from core.exception import ParserException
+from core.utils import firstword, nthfloat, nthint
 
 
 class Container:

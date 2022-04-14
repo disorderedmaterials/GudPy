@@ -1,8 +1,8 @@
 from copy import deepcopy
 
-from gudpy.core.gudrun_file import GudrunFile
-from gudpy.core.purge_file import PurgeFile
-from gudpy.core.data_files import DataFiles
+from core.gudrun_file import GudrunFile
+from core.purge_file import PurgeFile
+from core.data_files import DataFiles
 
 
 class RunIndividualFiles():

@@ -1,8 +1,8 @@
 import re
 from PySide6.QtWidgets import QFileDialog
 
-from gudpy.core.enums import Geometry, Instruments
-from gudpy.core import config
+from core.enums import Geometry, Instruments
+from core import config
 
 class BeamSlots():
 

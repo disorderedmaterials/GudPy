@@ -2,7 +2,7 @@ from pathlib import Path
 import time
 from copy import deepcopy
 
-from gudpy.core.enums import Scales
+from core.enums import Scales
 
 
 class WavelengthSubtractionIterator():

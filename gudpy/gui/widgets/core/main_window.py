@@ -27,82 +27,82 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from gudpy.core.composition_iterator import CompositionIterator
-from gudpy.core.density_iterator import DensityIterator
-from gudpy.core.radius_iterator import RadiusIterator
-from gudpy.core.sample import Sample
-from gudpy.core.container import Container
-from gudpy.core.thickness_iterator import ThicknessIterator
-from gudpy.gui.widgets.dialogs.export_dialog import ExportDialog
-from gudpy.gui.widgets.dialogs.iterate_composition_dialog import (
+from core.composition_iterator import CompositionIterator
+from core.density_iterator import DensityIterator
+from core.radius_iterator import RadiusIterator
+from core.sample import Sample
+from core.container import Container
+from core.thickness_iterator import ThicknessIterator
+from gui.widgets.dialogs.export_dialog import ExportDialog
+from gui.widgets.dialogs.iterate_composition_dialog import (
     CompositionIterationDialog
 )
-from gudpy.gui.widgets.dialogs.iterate_density_dialog import (
+from gui.widgets.dialogs.iterate_density_dialog import (
     DensityIterationDialog
 )
-from gudpy.gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
+from gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
     WavelengthInelasticitySubtractionsIterationDialog
 )
-from gudpy.gui.widgets.dialogs.iterate_radius_dialog import (
+from gui.widgets.dialogs.iterate_radius_dialog import (
     RadiusIterationDialog
 )
-from gudpy.gui.widgets.dialogs.iterate_thickness_dialog import (
+from gui.widgets.dialogs.iterate_thickness_dialog import (
     ThicknessIterationDialog
 )
-from gudpy.gui.widgets.dialogs.iterate_tweak_factor_dialog import (
+from gui.widgets.dialogs.iterate_tweak_factor_dialog import (
     TweakFactorIterationDialog
 )
-from gudpy.gui.widgets.dialogs.purge_dialog import PurgeDialog
-from gudpy.gui.widgets.dialogs.view_input_dialog import ViewInputDialog
-from gudpy.gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
-from gudpy.gui.widgets.dialogs.composition_dialog import CompositionDialog
-from gudpy.gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
-from gudpy.gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
-from gudpy.gui.widgets.dialogs.composition_acceptance_dialog import (
+from gui.widgets.dialogs.purge_dialog import PurgeDialog
+from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
+from gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
+from gui.widgets.dialogs.composition_dialog import CompositionDialog
+from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
+from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
+from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
-from gudpy.gui.widgets.core.gudpy_tree import GudPyTreeView
-from gudpy.gui.widgets.core.output_tree import OutputTreeView
+from gui.widgets.core.gudpy_tree import GudPyTreeView
+from gui.widgets.core.output_tree import OutputTreeView
 
-from gudpy.gui.widgets.tables.composition_table import CompositionTable
-from gudpy.gui.widgets.tables.ratio_composition_table import (
+from gui.widgets.tables.composition_table import CompositionTable
+from gui.widgets.tables.ratio_composition_table import (
     RatioCompositionTable
 )
-from gudpy.gui.widgets.tables.beam_profile_table import BeamProfileTable
-from gudpy.gui.widgets.tables.grouping_parameter_table import (
+from gui.widgets.tables.beam_profile_table import BeamProfileTable
+from gui.widgets.tables.grouping_parameter_table import (
     GroupingParameterTable
 )
-from gudpy.gui.widgets.tables.exponential_table import ExponentialTable
-from gudpy.gui.widgets.tables.resonance_table import ResonanceTable
-from gudpy.gui.widgets.tables.components_table import ComponentsList
-from gudpy.gui.widgets.core.exponential_spinbox import ExponentialSpinBox
-from gudpy.gui.widgets.charts.chart import GudPyChart
-from gudpy.gui.widgets.charts.chartview import GudPyChartView
-from gudpy.gui.widgets.charts.beam_plot import BeamChart
-from gudpy.gui.widgets.charts.enums import PlotModes, SPLIT_PLOTS
+from gui.widgets.tables.exponential_table import ExponentialTable
+from gui.widgets.tables.resonance_table import ResonanceTable
+from gui.widgets.tables.components_table import ComponentsList
+from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
+from gui.widgets.charts.chart import GudPyChart
+from gui.widgets.charts.chartview import GudPyChartView
+from gui.widgets.charts.beam_plot import BeamChart
+from gui.widgets.charts.enums import PlotModes, SPLIT_PLOTS
 
-from gudpy.core.enums import Format, Geometry
-from gudpy.gui.widgets.slots.instrument_slots import InstrumentSlots
-from gudpy.gui.widgets.slots.beam_slots import BeamSlots
-from gudpy.gui.widgets.slots.component_slots import ComponentSlots
-from gudpy.gui.widgets.slots.normalisation_slots import NormalisationSlots
-from gudpy.gui.widgets.slots.container_slots import ContainerSlots
-from gudpy.gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
-from gudpy.gui.widgets.slots.sample_slots import SampleSlots
-from gudpy.gui.widgets.slots.output_slots import OutputSlots
-from gudpy.gui.widgets.resources import resources_rc  # noqa
-from gudpy.core.file_library import GudPyFileLibrary
-from gudpy.core.gudrun_file import GudrunFile
-from gudpy.core.exception import ParserException
-from gudpy.core import config
-from gudpy.core.tweak_factor_iterator import TweakFactorIterator
-from gudpy.core.wavelength_subtraction_iterator import (
+from core.enums import Format, Geometry
+from gui.widgets.slots.instrument_slots import InstrumentSlots
+from gui.widgets.slots.beam_slots import BeamSlots
+from gui.widgets.slots.component_slots import ComponentSlots
+from gui.widgets.slots.normalisation_slots import NormalisationSlots
+from gui.widgets.slots.container_slots import ContainerSlots
+from gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
+from gui.widgets.slots.sample_slots import SampleSlots
+from gui.widgets.slots.output_slots import OutputSlots
+from gui.widgets.resources import resources_rc  # noqa
+from core.file_library import GudPyFileLibrary
+from core.gudrun_file import GudrunFile
+from core.exception import ParserException
+from core import config
+from core.tweak_factor_iterator import TweakFactorIterator
+from core.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
-from gudpy.core.run_containers_as_samples import RunContainersAsSamples
-from gudpy.core.gud_file import GudFile
-from gudpy.core.utils import breplace, nthint
-from gudpy.gui.widgets.core.worker import CompositionWorker
+from core.run_containers_as_samples import RunContainersAsSamples
+from core.gud_file import GudFile
+from core.utils import breplace, nthint
+from gui.widgets.core.worker import CompositionWorker
 
 
 class GudPyMainWindow(QMainWindow):
@@ -136,7 +136,7 @@ class GudPyMainWindow(QMainWindow):
         Updates compositions across objects
         Deletes the current object.
     exit_()
-        Exits GudPy.
+        Exits 
     """
     def __init__(self):
         """
@@ -173,7 +173,7 @@ class GudPyMainWindow(QMainWindow):
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
-                    sys._MEIPASS, "ui_files", "mainWindow.ui"
+                    sys._MEIPASS, "../ui_files", "mainWindow.ui"
                 )
             )
             current_dir = os.path.sep
@@ -181,7 +181,7 @@ class GudPyMainWindow(QMainWindow):
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "ui_files", "mainWindow.ui"
+                    current_dir, "../ui_files", "mainWindow.ui"
                 )
             )
 
@@ -615,11 +615,11 @@ class GudPyMainWindow(QMainWindow):
             fmt = Format.TXT if ext == ".txt" else Format.YAML
             if filter and sys.platform.startswith("linux"):
                 filename += ext
-            if os.path.basename(filename) == "gudpy.txt":
+            if os.path.basename(filename) == "txt":
                 QMessageBox.warning(
                     self.mainWidget,
                     "GudPy Warning",
-                    f"Cannot save to {filename}, gudpy.txt is reserved."
+                    f"Cannot save to {filename}, txt is reserved."
                 )
                 return
             self.gudrunFile.instrument.GudrunInputFileDir = (

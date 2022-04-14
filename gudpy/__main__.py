@@ -1,4 +1,4 @@
-from gudpy.gui.gudpy import main
+from gui.gudpy import main
 
 if __name__ == '__main__':
     import sys

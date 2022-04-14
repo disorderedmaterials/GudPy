@@ -4,7 +4,7 @@ from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
 
-from gudpy.core import config
+from core import config
 
 
 class ConfigurationDialog(QDialog):

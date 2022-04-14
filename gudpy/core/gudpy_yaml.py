@@ -3,20 +3,20 @@ from enum import Enum
 from ruamel.yaml import YAML as yaml
 import os
 
-from gudpy.core.composition import (
+from core.composition import (
     Component, Components, Composition, WeightedComponent
 )
-from gudpy.core.data_files import DataFiles
-from gudpy.core.element import Element
-from gudpy.core.gui_config import GUIConfig
+from core.data_files import DataFiles
+from core.element import Element
+from core.gui_config import GUIConfig
 
-from gudpy.core.instrument import Instrument
-from gudpy.core.beam import Beam
-from gudpy.core.normalisation import Normalisation
-from gudpy.core.sample_background import SampleBackground
-from gudpy.core.sample import Sample
-from gudpy.core.container import Container
-from gudpy.core import config
+from core.instrument import Instrument
+from core.beam import Beam
+from core.normalisation import Normalisation
+from core.sample_background import SampleBackground
+from core.sample import Sample
+from core.container import Container
+from core import config
 
 
 class YAML:

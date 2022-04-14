@@ -2,11 +2,11 @@ from queue import Queue
 from copy import deepcopy
 from PySide6.QtCore import Qt
 
-from gudpy.gui.widgets.dialogs.iteration_dialog import IterationDialog
-from gudpy.core.composition_iterator import (
+from gui.widgets.dialogs.iteration_dialog import IterationDialog
+from core.composition_iterator import (
     CompositionIterator, calculateTotalMolecules
 )
-from gudpy.core import config
+from core import config
 
 
 class CompositionIterationDialog(IterationDialog):

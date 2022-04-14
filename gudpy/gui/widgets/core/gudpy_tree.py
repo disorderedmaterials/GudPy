@@ -8,15 +8,15 @@ from PySide6.QtCore import (
     Qt
 )
 
-from gudpy.core import config
-from gudpy.core.composition import Components
-from gudpy.core.instrument import Instrument
-from gudpy.core.beam import Beam
-from gudpy.core.normalisation import Normalisation
-from gudpy.core.sample import Sample
-from gudpy.core.sample_background import SampleBackground
-from gudpy.core.container import Container
-from gudpy.core.config import NUM_GUDPY_CORE_OBJECTS
+from core import config
+from core.composition import Components
+from core.instrument import Instrument
+from core.beam import Beam
+from core.normalisation import Normalisation
+from core.sample import Sample
+from core.sample_background import SampleBackground
+from core.container import Container
+from core.config import NUM_GUDPY_CORE_OBJECTS
 
 
 class GudPyTreeModel(QAbstractItemModel):

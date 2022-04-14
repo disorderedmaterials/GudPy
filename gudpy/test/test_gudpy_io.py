@@ -5,19 +5,19 @@ import random
 from copy import deepcopy
 from shutil import copyfile
 
-from gudpy.core.exception import ParserException
-from gudpy.core.utils import spacify, numifyBool
-from gudpy.core.gudrun_file import GudrunFile
-from gudpy.core.beam import Beam
-from gudpy.core.composition import Composition
-from gudpy.core.container import Container
-from gudpy.core.data_files import DataFiles
-from gudpy.core.element import Element
-from gudpy.core.instrument import Instrument
-from gudpy.core.normalisation import Normalisation
-from gudpy.core.sample_background import SampleBackground
-from gudpy.core.sample import Sample
-from gudpy.core.enums import (
+from core.exception import ParserException
+from core.utils import spacify, numifyBool
+from core.gudrun_file import GudrunFile
+from core.beam import Beam
+from core.composition import Composition
+from core.container import Container
+from core.data_files import DataFiles
+from core.element import Element
+from core.instrument import Instrument
+from core.normalisation import Normalisation
+from core.sample_background import SampleBackground
+from core.sample import Sample
+from core.enums import (
     CrossSectionSource, FTModes, Instruments, Scales, UnitsOfDensity,
     MergeWeights, NormalisationType, OutputUnits,
     Geometry

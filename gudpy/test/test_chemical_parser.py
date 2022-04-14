@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from gudpy.core.composition import Component
-from gudpy.core.exception import ChemicalFormulaParserException
+from core.composition import Component
+from core.exception import ChemicalFormulaParserException
 
 
 class TestChemicalParser(TestCase):

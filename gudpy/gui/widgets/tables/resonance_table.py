@@ -1,7 +1,7 @@
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDoubleSpinBox, QTableView
 
-from gudpy.gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
+from gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 
 
 class ResonanceModel(GudPyTableModel):

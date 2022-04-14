@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView, QDoubleSpinBox
 
-from gudpy.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
+from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 
 
 class BeamProfileModel(GudPyTableModel):

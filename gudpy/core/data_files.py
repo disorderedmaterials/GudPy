@@ -1,4 +1,4 @@
-from gudpy.core import config
+from core import config
 
 
 class DataFiles:

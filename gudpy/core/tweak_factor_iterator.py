@@ -1,7 +1,7 @@
 import os
 import time
 
-from gudpy.core.gud_file import GudFile
+from core.gud_file import GudFile
 
 
 class TweakFactorIterator():

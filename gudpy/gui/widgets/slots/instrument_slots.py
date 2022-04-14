@@ -4,8 +4,8 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import QFileDialog
 
-from gudpy.core.utils import spacify
-from gudpy.core.enums import Scales, MergeWeights, Instruments
+from core.utils import spacify
+from core.enums import Scales, MergeWeights, Instruments
 
 
 class InstrumentSlots():

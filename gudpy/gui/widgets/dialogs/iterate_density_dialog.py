@@ -1,5 +1,5 @@
-from gudpy.gui.widgets.dialogs.iteration_dialog import IterationDialog
-from gudpy.core.density_iterator import DensityIterator
+from gui.widgets.dialogs.iteration_dialog import IterationDialog
+from core.density_iterator import DensityIterator
 
 
 class DensityIterationDialog(IterationDialog):

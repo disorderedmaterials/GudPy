@@ -8,9 +8,9 @@ from PySide6.QtCore import (
     Qt
 )
 
-from gudpy.core.gudrun_file import GudrunFile
-from gudpy.core.instrument import Instrument
-from gudpy.core.sample import Sample
+from core.gudrun_file import GudrunFile
+from core.instrument import Instrument
+from core.sample import Sample
 
 
 class OutputTreeModel(QAbstractItemModel):

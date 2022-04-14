@@ -5,14 +5,14 @@ from unittest import TestCase
 import re
 import math
 
-from gudpy.core.composition import Composition, Component
-from gudpy.core.gudrun_file import GudrunFile
-from gudpy.core.thickness_iterator import ThicknessIterator
-from gudpy.core.density_iterator import DensityIterator
-from gudpy.core.tweak_factor_iterator import TweakFactorIterator
-from gudpy.core.composition_iterator import CompositionIterator
-from gudpy.core.gud_file import GudFile
-from gudpy.core.wavelength_subtraction_iterator import (
+from core.composition import Composition, Component
+from core.gudrun_file import GudrunFile
+from core.thickness_iterator import ThicknessIterator
+from core.density_iterator import DensityIterator
+from core.tweak_factor_iterator import TweakFactorIterator
+from core.composition_iterator import CompositionIterator
+from core.gud_file import GudFile
+from core.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 

@@ -7,11 +7,11 @@ from PySide6.QtWidgets import (
     QApplication, QMenu, QSizePolicy
 )
 
-from gudpy.core.container import Container
-from gudpy.core.sample import Sample
-from gudpy.gui.widgets.charts.chart import GudPyChart
-from gudpy.gui.widgets.charts.enums import PlotModes, SeriesTypes
-from gudpy.gui.widgets.charts.enums import Axes
+from core.container import Container
+from core.sample import Sample
+from gui.widgets.charts.chart import GudPyChart
+from gui.widgets.charts.enums import PlotModes, SeriesTypes
+from gui.widgets.charts.enums import Axes
 
 
 class GudPyChartView(QChartView):

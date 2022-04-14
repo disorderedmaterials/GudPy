@@ -1,12 +1,12 @@
 import os
 from PySide6.QtWidgets import QAbstractItemView, QFileDialog
 
-from gudpy.core.enums import (
+from core.enums import (
     CrossSectionSource, Geometry,
     NormalisationType, OutputUnits, FTModes, UnitsOfDensity
 )
-from gudpy.core import config
-from gudpy.core.utils import nthfloat
+from core import config
+from core.utils import nthfloat
 
 
 class SampleSlots():

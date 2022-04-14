@@ -1,9 +1,9 @@
 import os
 import sys
 
-from gudpy.core.composition import Components
-from gudpy.core.enums import Geometry
-from gudpy.core.gui_config import GUIConfig
+from core.composition import Components
+from core.enums import Geometry
+from core.gui_config import GUIConfig
 
 spc2 = "  "
 spc5 = "          "

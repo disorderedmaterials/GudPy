@@ -2,9 +2,9 @@ import os
 from copy import deepcopy
 from PySide6.QtCore import QObject, Signal, QThread
 
-from gudpy.core.gud_file import GudFile
-from gudpy.core.sample import Sample
-from gudpy.core.composition_iterator import gss
+from core.gud_file import GudFile
+from core.sample import Sample
+from core.composition_iterator import gss
 
 
 class CompositionWorker(QObject):
@@ -82,7 +82,7 @@ class CompositionWorker(QObject):
         # Set up process and execute.
         outpath = os.path.join(
             gf.instrument.GudrunInputFileDir,
-            "gudpy.txt"
+            "txt"
         )
         self.proc, func, args = gf.dcs(path=outpath, headless=False)
         func(*args)

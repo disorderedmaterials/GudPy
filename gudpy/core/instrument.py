@@ -1,9 +1,9 @@
 import os
 import sys
 
-from gudpy.core.utils import spacify, numifyBool, bjoin
-from gudpy.core.enums import MergeWeights, Scales, Instruments
-from gudpy.core import config
+from core.utils import spacify, numifyBool, bjoin
+from core.enums import MergeWeights, Scales, Instruments
+from core import config
 
 
 class Instrument:

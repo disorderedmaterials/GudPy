@@ -2,9 +2,9 @@ import os
 from shutil import copyfile
 from unittest import TestCase
 
-from gudpy.core.exception import ParserException
-from gudpy.core.gud_file import GudFile
-from gudpy.core.gudrun_file import GudrunFile
+from core.exception import ParserException
+from core.gud_file import GudFile
+from core.gudrun_file import GudrunFile
 
 
 class TestParseGudFile(TestCase):

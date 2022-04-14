@@ -1,4 +1,4 @@
-from gudpy.core.data_files import DataFiles
+from core.data_files import DataFiles
 
 
 class SampleBackground:

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 
-from gudpy.core.utils import (
+from core.utils import (
         iteristype,
         firstword, boolifyNum,
         numifyBool, spacify,

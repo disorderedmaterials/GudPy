@@ -1,7 +1,7 @@
-from gudpy.gui.widgets.dialogs.iteration_dialog import IterationDialog
-from gudpy.core.radius_iterator import RadiusIterator
-from gudpy.core.enums import Geometry
-from gudpy.core import config
+from gui.widgets.dialogs.iteration_dialog import IterationDialog
+from core.radius_iterator import RadiusIterator
+from core.enums import Geometry
+from core import config
 
 
 class RadiusIterationDialog(IterationDialog):
