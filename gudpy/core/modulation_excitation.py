@@ -2,9 +2,9 @@
 
 class Pulse():
 
-    def __init__(self, periodOffset, label, duration):
-        self.periodOffset = periodOffset
+    def __init__(self, label="", periodOffset=0.0, duration=0.0):
         self.label = label
+        self.periodOffset = periodOffset
         self.duration = duration
 
 class Period():
@@ -18,4 +18,3 @@ class ModulationExcitation():
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.period = Period()
-        
