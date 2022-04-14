@@ -42,14 +42,13 @@ class OutputFileHandler():
 
     def getRunFiles(self):
         self.runFiles = [
-            
-                os.path.splitext(s.dataFiles.dataFiles[0])[0]
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-                for s in sampleBackground.samples if s.runThisSample
-                and len(s.dataFiles.dataFiles)
+            [os.path.splitext(s.dataFiles.dataFiles[0])[0], s.pathName()]
+            for sampleBackground in self.gudrunFile.sampleBackgrounds
+            for s in sampleBackground.samples if s.runThisSample
+            and len(s.dataFiles.dataFiles)
         ]
 
-    def organiseSampleFiles(self, run, tree=""):
+    def organiseSampleFiles(self, run, sampleRunFile, tree=""):
         dir = self.gudrunFile.instrument.GudrunInputFileDir
         if tree:
             outputDir = os.path.join(dir, tree, run)
@@ -61,6 +60,10 @@ class OutputFileHandler():
             os.makedirs(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
         os.makedirs(os.path.join(outputDir, "diagnostics"))
+        shutil.move(
+            os.path.join(dir, sampleRunFile),
+            os.path.join(outputDir, "outputs", sampleRunFile)
+        )
         for f in os.listdir(dir):
             for suffix in self.outputs["sampleOutputs"]:
                 if f == f"{run}.{suffix}":
@@ -76,8 +79,8 @@ class OutputFileHandler():
                     )
 
     def naiveOrganise(self):
-        for run in self.runFiles:
-            self.organiseSampleFiles(run)
+        for run, runFile in self.runFiles:
+            self.organiseSampleFiles(run, runFile)
     
     def iterativeOrganise(self, head):
         path = os.path.join(
@@ -86,6 +89,5 @@ class OutputFileHandler():
                 )
         if os.path.exists(path):
             shutil.rmtree(path)
-        for run in self.runFiles:
-            self.organiseSampleFiles(run, tree=head)
-
+        for run, runFile in self.runFiles:
+            self.organiseSampleFiles(run, runFile, tree=head)
