@@ -27,6 +27,7 @@ from core.composition import Component, Composition
 from core.element import Element
 from core.data_files import DataFiles
 from core.purge_file import PurgeFile
+from core.output_file_handler import OutputFileHandler
 from core.enums import (
     CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
@@ -1568,7 +1569,11 @@ class GudrunFile:
         cwd = os.getcwd()
         os.chdir(self.instrument.GudrunInputFileDir)
         self.write_out()
-        dcs = self.dcs(path=self.outpath, headless=headless, iterative=iterative)
+        dcs = self.dcs(
+            path=self.outpath,
+            headless=headless,
+            iterative=iterative
+        )
         os.chdir(cwd)
         return dcs
 

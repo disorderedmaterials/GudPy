@@ -1,6 +1,7 @@
 import os
 import shutil
 
+
 class OutputFileHandler():
 
     def __init__(self, gudrunFile):
@@ -81,7 +82,7 @@ class OutputFileHandler():
     def naiveOrganise(self):
         for run, runFile in self.runFiles:
             self.organiseSampleFiles(run, runFile)
-    
+
     def iterativeOrganise(self, head):
         path = os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,

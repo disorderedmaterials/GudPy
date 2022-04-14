@@ -6,7 +6,10 @@ import time
 from core.gud_file import GudFile
 
 
-def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None, endIterFunc=None):
+def gss(
+    f, bounds, n, maxN, rtol, args=(),
+    startIterFunc=None, endIterFunc=None
+):
     if startIterFunc:
         startIterFunc(n)
     if n >= maxN:
