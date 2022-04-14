@@ -49,8 +49,10 @@ class PulseDelegate(GudPyDelegate):
             editor = QLineEdit(parent)
         elif col == 1:
             editor = ExponentialSpinBox(parent)
+            editor.setRange(0, 100000)
         else:
             editor = ExponentialSpinBox(parent)
+            editor.setRange(0, 100000)
         return editor
 
     def setEditorData(self, editor, index):
