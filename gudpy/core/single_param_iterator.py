@@ -88,7 +88,7 @@ class SingleParamIterator():
             Coefficient to use.
         """
         pass
-    
+
     def organiseOutput(self, n):
         """
         Stub method to be overriden by sub-classes.
@@ -100,7 +100,6 @@ class SingleParamIterator():
             Iteration no.
         """
         pass
-
 
     def iterate(self, n):
         """
