@@ -141,7 +141,7 @@ class GudrunFile:
         self.yaml = YAML()
         # Construct the outpath.
         self.outpath = "gudpy.txt"
-
+        self.modex = ModulationExcitation(self)
         if isinstance(path, type(None)):
             self.instrument = Instrument()
             self.beam = Beam()
