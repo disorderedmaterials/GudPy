@@ -194,6 +194,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(RatioCompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(PulseTable)
         loader.registerCustomWidget(ComponentsList)
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
@@ -210,6 +211,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(CompositionAcceptanceDialog)
+        loader.registerCustomWidget(PeriodDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -425,6 +427,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.checkFilesExist.triggered.connect(
             self.checkFilesExist_
+        )
+
+        self.mainWidget.runModex.triggered.connect(
+            self.modex
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -1124,6 +1130,10 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
             return
         self.queue.put((dcs, self.progressDCS, func, args))
+
+    def modex(self):
+        periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
+        periodDialog.widget.exec()
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)
