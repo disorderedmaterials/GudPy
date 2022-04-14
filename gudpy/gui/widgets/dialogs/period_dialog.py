@@ -19,7 +19,7 @@ class PeriodDialog(QDialog):
         self.widget.pulseTableView.makeModel(
             self.gudrunFile.modex.period.pulses, self.gudrunFile.modex
         )
-        self.widget.addPulseButton.triggered.connect(
+        self.widget.addPulseButton.clicked.connect(
             self.widget.pulseTableView.insertRow
         )
 
