@@ -61,10 +61,11 @@ class OutputFileHandler():
             os.makedirs(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
         os.makedirs(os.path.join(outputDir, "diagnostics"))
-        shutil.move(
-            os.path.join(dir, sampleRunFile),
-            os.path.join(outputDir, "outputs", sampleRunFile)
-        )
+        if os.path.exists(os.path.join(dir, sampleRunFile)):
+            shutil.copyfile(
+                os.path.join(dir, sampleRunFile),
+                os.path.join(outputDir, "outputs", sampleRunFile)
+            )
         for f in os.listdir(dir):
             for suffix in self.outputs["sampleOutputs"]:
                 if f == f"{run}.{suffix}":
