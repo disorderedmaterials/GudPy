@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTableView, QDoubleSpinBox
-from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
+from PySide6.QtWidgets import QTableView
+from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
 
 
 class EventModel(GudPyTableModel):
@@ -93,9 +93,9 @@ class EventModel(GudPyTableModel):
             return self._data[row]
 
 
-class SpectraTable(QTableView):
+class EventTable(QTableView):
     """
-    Class to represent a SpectraTable. Inherits QTableView.
+    Class to represent a EventTable. Inherits QTableView.
 
     ...
     Attributes
@@ -119,7 +119,7 @@ class SpectraTable(QTableView):
             Parent widget.
         """
         self.parent = parent
-        super(SpectraTable, self).__init__(parent=parent)
+        super(EventTable, self).__init__(parent=parent)
 
     def makeModel(self, data):
         """

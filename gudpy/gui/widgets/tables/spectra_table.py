@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTableView, QDoubleSpinBox
-from src.gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
+from PySide6.QtWidgets import QTableView
+from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
 
 
 class SpectraModel(GudPyTableModel):
