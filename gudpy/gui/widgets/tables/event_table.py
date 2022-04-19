@@ -1,3 +1,7 @@
+import os
+import sys
+import h5py as h5
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
@@ -20,18 +24,26 @@ class EventModel(GudPyTableModel):
     data(index, role)
         Returns data at a given index
     """
-    def __init__(self, data, headers, parent):
+    def __init__(self, h5path, spec, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
         Parameters
         ----------
-        data : list
-            Data for model to use.
+        h5path : str
+            Path to hdf5 file.
+        spec : str
+            Target spectrum
         headers: str[]
             Column headers for table.
         parent : QWidget
             Parent widget.
         """
+        with h5.File(h5path) as fp:
+            if spec in fp.keys():
+                data = fp[f"/{spec}"][()][:].tolist()
+                print(data)
+            else:
+                data = []
         super(EventModel, self).__init__(data, headers, parent)
 
     def columnCount(self, parent):
@@ -121,12 +133,12 @@ class EventTable(QTableView):
         self.parent = parent
         super(EventTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, h5path, spec):
         """
         Makes the model and the delegate based on the data.
         Parameters
         ----------
-        data : list
-            Data for model to use.
+        h5path : str
+            Path to hdf5 file.
         """
-        self.setModel(EventModel(data, ["Event"], self.parent))
+        self.setModel(EventModel(h5path, spec, ["Pulse"], self.parent))
