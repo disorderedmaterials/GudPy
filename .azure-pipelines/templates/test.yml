@@ -46,7 +46,7 @@ steps:
   - bash: |
       pip install nose2
       cd gudpy
-      nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml test
+      nose2 --with-coverage --coverage-report xml -i --plugin nose2.plugins.junitxml --junit-xml test
     displayName: 'Run tests'
   - task: PublishTestResults@2
     inputs:
