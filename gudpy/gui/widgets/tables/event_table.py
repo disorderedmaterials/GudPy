@@ -40,7 +40,7 @@ class EventModel(GudPyTableModel):
         """
         with h5.File(h5path) as fp:
             if spec in fp.keys():
-                data = fp[f"/{spec}"][()][:].tolist()
+                data = sorted(fp[f"/{spec}"][()][:].tolist())
                 print(data)
             else:
                 data = []
