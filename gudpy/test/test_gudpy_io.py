@@ -31,7 +31,7 @@ class TestGudPyIO(TestCase):
 
         if os.name == "nt":
             from pathlib import Path
-            dirpath = Path().resolve() / "tests/" / Path(path)
+            dirpath = Path().resolve() / "test/" / Path(path)
         else:
             dirpath = (
                 "/".join(os.path.realpath(__file__).split("/")[:-1])
@@ -79,7 +79,7 @@ class TestGudPyIO(TestCase):
                 "StartupFiles/NIMROD/sears91_gudrun.dat",
             "scaleSelection": Scales.Q,
             "subWavelengthBinnedData": 0,
-            "GudrunStartFolder": os.path.abspath("bin"),
+            "GudrunStartFolder": os.path.abspath("../bin"),
             "startupFileFolder": "StartupFiles",
             "logarithmicStepSize": 0.04,
             "hardGroupEdges": True,
@@ -658,17 +658,9 @@ class TestGudPyIO(TestCase):
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "tests/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt")
 
-        from pathlib import Path
-
-        parent = Path("tests").parent.absolute()
-        GudrunStartFolder = parent / "bin"
-        dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
-
-        g.instrument.GudrunStartFolder = GudrunStartFolder
-        g.instrument.dataFileDir = str(dataFileDir) + "/"
         g.write_out(overwrite=True)
         return super().setUp()
 
@@ -846,9 +838,9 @@ class TestGudPyIO(TestCase):
                             valueInLines(val, inlines)
                 else:
                     if (
-                        value == os.path.abspath("bin")
+                        value == os.path.abspath("../bin")
                         or value == os.path.sep
-                        or value == os.path.join("bin", "StartupFiles")
+                        or value == os.path.join("../bin", "StartupFiles")
                         or value == self.g.instrument.GudrunInputFileDir
                     ):
                         continue
@@ -1545,6 +1537,6 @@ class TestGudPyIO(TestCase):
 
     def testZeroExitGudrun(self):
 
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt")
         result = g.dcs()
         self.assertEqual(result.stderr, "")

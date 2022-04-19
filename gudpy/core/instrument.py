@@ -158,7 +158,10 @@ class Instrument:
                 "/opt/GudPy/bin"
             )
         else:
-            self.GudrunStartFolder = os.path.abspath('bin')
+            if os.path.exists(os.path.abspath('bin')):
+                self.GudrunStartFolder = os.path.abspath('bin')
+            elif os.path.exists(os.path.abspath('../bin')):
+                self.GudrunStartFolder = os.path.abspath('../bin')
         self.startupFileFolder = "StartupFiles"
         self.logarithmicStepSize = 0.0
         self.hardGroupEdges = False

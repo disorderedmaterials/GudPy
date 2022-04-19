@@ -20,28 +20,20 @@ from core.wavelength_subtraction_iterator import (
 class TestGudPyWorkflows(TestCase):
     def setUp(self) -> None:
 
-        path = os.path.abspath("tests/TestData/NIMROD-water/water.txt")
+        path = os.path.abspath("test/TestData/NIMROD-water/water.txt")
 
         self.g = GudrunFile(os.path.abspath(path))
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "tests/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
-            os.path.abspath("tests/TestData/NIMROD-water/good_water.txt")
+            os.path.abspath("test/TestData/NIMROD-water/good_water.txt")
         )
 
         from pathlib import Path
-
-        parent = Path("tests").parent.absolute()
-        GudrunStartFolder = parent / "bin"
-        dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
-
-        g.instrument.GudrunStartFolder = GudrunStartFolder
+        dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
         g.instrument.dataFileDir = str(dataFileDir) + "/"
-        g.instrument.groupFileName = (
-            GudrunStartFolder / g.instrument.groupFileName
-        )
 
         g.write_out(overwrite=True)
         self.g = g
@@ -107,7 +99,7 @@ class TestGudPyWorkflows(TestCase):
                 )
             )
 
-            actualMintFile = f'tests/TestData/water-ref/plain/{mintFilename}'
+            actualMintFile = f'test/TestData/water-ref/plain/{mintFilename}'
 
             actualData = open(
                 os.path.join(
@@ -388,7 +380,7 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualMintFile = (
-                    f'tests/TestData/water-ref/wavelength{i}/'
+                    f'test/TestData/water-ref/wavelength{i}/'
                     f'{mintFilename}'
                 )
 
@@ -424,7 +416,7 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualMsubFilename = (
-                    f'tests/TestData/water-ref/wavelength{i}/{msubFilename}'
+                    f'test/TestData/water-ref/wavelength{i}/{msubFilename}'
                 )
 
                 actualData = open(

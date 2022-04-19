@@ -6,9 +6,9 @@ from core.gudrun_file import GudrunFile
 class TestYAML(TestCase):
     def testYAML(self):
 
-        gf1 = GudrunFile("tests/TestData/NIMROD-water/water.txt")
-        gf1.write_yaml("tests/TestData/NIMROD-water/water.yaml")
-        gf2 = GudrunFile("tests/TestData/NIMROD-water/water.yaml")
+        gf1 = GudrunFile("test/TestData/NIMROD-water/water.txt")
+        gf1.write_yaml("test/TestData/NIMROD-water/water.yaml")
+        gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml")
 
         self.assertDictEqual(gf1.instrument.__dict__, gf2.instrument.__dict__)
         self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)

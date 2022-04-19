@@ -14,7 +14,7 @@ class TestPurgeFile(TestCase):
 
         if os.name == "nt":
             from pathlib import Path
-            dirpath = Path().resolve() / "tests/" / Path(path)
+            dirpath = Path().resolve() / "test/" / Path(path)
         else:
             dirpath = (
                 "/".join(os.path.realpath(__file__).split("/")[:-1])
@@ -25,14 +25,9 @@ class TestPurgeFile(TestCase):
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "tests/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("tests/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt")
 
-        from pathlib import Path
-
-        dataFileDir = Path("tests/TestData/NIMROD-water/raw").absolute()
-
-        g.instrument.dataFileDir = str(dataFileDir) + "/"
         g.write_out(overwrite=True)
         self.g = g
         samples = self.g.sampleBackgrounds[0].samples

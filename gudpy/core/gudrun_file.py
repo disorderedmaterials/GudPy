@@ -141,7 +141,7 @@ class GudrunFile:
         self.path = path
         self.yaml = YAML()
         # Construct the outpath.
-        self.outpath = "txt"
+        self.outpath = "gudpy.txt"
 
         if isinstance(path, type(None)):
             self.instrument = Instrument()
@@ -1291,10 +1291,10 @@ class GudrunFile:
             raise ParserException(
                 "Path not supplied. Cannot parse from an empty path!"
             )
-        if not isfile(self.path):
+        if not os.path.exists(self.path):
             raise ParserException(
                 "The path supplied is invalid.\
-                 Cannot parse from an invalid path"
+                 Cannot parse from an invalid path" + self.path
             )
 
         try:
@@ -1611,5 +1611,5 @@ Container.consumeWhitespace = GudrunFile.consumeWhitespace
 
 if __name__ == "__main__":
     g = GudrunFile(
-        path="/home/jared/GudPy/GudPy/tests/TestData/NIMROD-water/water.txt"
+        path="/home/jared/GudPy/GudPy/test/TestData/NIMROD-water/water.txt"
         )
