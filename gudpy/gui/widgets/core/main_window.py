@@ -1135,8 +1135,15 @@ class GudPyMainWindow(QMainWindow):
         self.queue.put((dcs, self.progressDCS, func, args))
 
     def modex(self):
+        self.setControlsEnabled(False)
         periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
         periodDialog.widget.exec()
+        if periodDialog.cancelled:
+            self.setControlsEnabled(True)
+        else:
+            modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
+            modexDialog.widget.exec()
+            self.setControlsEnabled(True)
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)

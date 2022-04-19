@@ -34,7 +34,7 @@ class SpectraModel(GudPyTableModel):
         """
         data = []
         with h5.File(h5path) as fp:
-            data = fp["/raw_data_1/detector_1/spectrum_index"][()][:]
+            data = fp["/raw_data_1/detector_1/spectrum_index"][()][:].tolist()
         super(SpectraModel, self).__init__(data, headers, parent)
 
     def columnCount(self, parent):
@@ -79,6 +79,8 @@ class SpectraModel(GudPyTableModel):
         if role == role & (Qt.DisplayRole | Qt.EditRole):
             return self._data[row]
 
+    def flags(self, parent):
+        return super().flags(parent) & ~Qt.ItemIsEditable
 
 class SpectraTable(QTableView):
     """

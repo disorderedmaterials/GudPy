@@ -12,6 +12,7 @@ class PeriodDialog(QDialog):
     def __init__(self, gudrunFile, parent):
         super(PeriodDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
+        self.cancelled = False
         self.loadUI()
         self.initComponents()
 
@@ -22,6 +23,10 @@ class PeriodDialog(QDialog):
         self.widget.addPulseButton.clicked.connect(
             self.widget.pulseTableView.insertRow
         )
+
+    def cancel(self):
+        self.cancelled = True
+        self.widget.close()
 
     def loadUI(self):
         """
@@ -42,3 +47,9 @@ class PeriodDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
+        self.widget.buttonBox.accepted.connect(
+            self.widget.close
+        )
+        self.widget.buttonBox.rejected.connect(
+            self.cancel
+        )
