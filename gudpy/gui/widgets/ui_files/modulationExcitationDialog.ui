@@ -39,7 +39,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Extrapolate</string>
+        <string>Extrapolate from current pulse</string>
        </property>
       </widget>
      </item>
