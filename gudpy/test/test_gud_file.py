@@ -235,8 +235,16 @@ class TestParseGudFile(TestCase):
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile(
+            os.path.abspath("test/TestData/NIMROD-water/good_water.txt")
+        )
 
+        from pathlib import Path
+        dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
+        g.instrument.dataFileDir = str(dataFileDir) + "/"
+
+        g.write_out(overwrite=True)
+        self.g = g
         g.write_out(overwrite=True)
         return super().setUp()
 
