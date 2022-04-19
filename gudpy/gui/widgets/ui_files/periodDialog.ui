@@ -57,7 +57,11 @@
       </widget>
      </item>
      <item>
-      <widget class="ExponentialSpinBox" name="doubleSpinBox"/>
+      <widget class="ExponentialSpinBox" name="doubleSpinBox">
+       <property name="maximum">
+        <double>10000000.000000000000000</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
