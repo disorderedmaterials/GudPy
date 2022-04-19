@@ -136,7 +136,7 @@ class GudPyMainWindow(QMainWindow):
         Updates compositions across objects
         Deletes the current object.
     exit_()
-        Exits 
+        Exits
     """
     def __init__(self):
         """

@@ -1,7 +1,6 @@
 from PySide6.QtCore import QProcess
 import sys
 import os
-from os.path import isfile
 import subprocess
 import time
 import re

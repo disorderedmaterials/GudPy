@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QFileDialog
 from core.enums import Geometry, Instruments
 from core import config
 
+
 class BeamSlots():
 
     def __init__(self, widget, parent):

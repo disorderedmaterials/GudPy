@@ -1,10 +1,10 @@
+from core.exception import ParserException
+
 import os
 from os.path import isfile
 import re
 from decimal import Decimal, getcontext
 getcontext().prec = 5
-
-from core.exception import ParserException
 
 percentageRegex = r'\d*[.]?\d*%'
 floatRegex = r'\d*[.]?\d'

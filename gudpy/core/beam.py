@@ -2,6 +2,7 @@ from core.utils import spacify
 from core.enums import Geometry
 from core import config
 
+
 class Beam:
     """
     Class to represent a Beam.
