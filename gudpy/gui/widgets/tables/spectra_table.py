@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView
 from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
-
+import h5py as h5
 
 class SpectraModel(GudPyTableModel):
     """
@@ -20,18 +20,21 @@ class SpectraModel(GudPyTableModel):
     data(index, role)
         Returns data at a given index
     """
-    def __init__(self, data, headers, parent):
+    def __init__(self, h5path, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
         Parameters
         ----------
-        data : list
-            Data for model to use.
+        h5path : str
+            Path to hdf5 file.
         headers: str[]
             Column headers for table.
         parent : QWidget
             Parent widget.
         """
+        data = []
+        with h5.File(h5path) as fp:
+            data = fp["/raw_data_1/detector_1/spectrum_index"][()][:]
         super(SpectraModel, self).__init__(data, headers, parent)
 
     def columnCount(self, parent):
@@ -57,22 +60,6 @@ class SpectraModel(GudPyTableModel):
         """
         pass
 
-    def setData(self, index, value, role):
-        """
-        Sets data in the model.
-        Parameters
-        ----------
-        index : QModelIndex
-            Index to set data at.
-        value : any
-            Value to set data to.
-        role : int
-            Role.
-        """
-        row = index.row()
-        if role == Qt.EditRole:
-            self._data[row] = value
-            self.dataChanged.emit(index, index)
 
     def data(self, index, role):
         """
@@ -121,12 +108,12 @@ class SpectraTable(QTableView):
         self.parent = parent
         super(SpectraTable, self).__init__(parent=parent)
 
-    def makeModel(self, data):
+    def makeModel(self, h5path):
         """
         Makes the model and the delegate based on the data.
         Parameters
         ----------
-        data : list
-            Data for model to use.
+        h5path : str
+            Path to hdf5 file.
         """
-        self.setModel(SpectraModel(data, ["Spectra"], self.parent))
+        self.setModel(SpectraModel(h5path, ["Spectra"], self.parent))

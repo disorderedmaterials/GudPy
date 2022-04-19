@@ -16,7 +16,12 @@ class ModexDialog(QDialog):
         self.initComponents()
 
     def initComponents(self):
-        pass
+        self.widget.spectraTableView.makeModel(
+            os.path.join(
+                self.gudrunFile.instrument.dataFileDir,
+                self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+            )
+        )
 
     def loadUI(self):
         """
