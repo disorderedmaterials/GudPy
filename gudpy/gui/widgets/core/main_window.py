@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
+from core.single_param_iterator import SingleParamIterator
 from core.composition_iterator import CompositionIterator
 from core.density_iterator import DensityIterator
 from core.radius_iterator import RadiusIterator
