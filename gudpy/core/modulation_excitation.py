@@ -60,7 +60,7 @@ class ModulationExcitation():
 
     def __str__(self):
         
-        dataFilesLines = '\n'.join([os.path.abspath(os.path.join(self.gudrunFile.dataFileDir, df)) for df in self.sample.dataFiles.dataFiles])
+        dataFilesLines = '\n'.join([os.path.abspath(os.path.join(self.gudrunFile.instrument.dataFileDir, df)) for df in self.sample.dataFiles.dataFiles])
 
         return (
             f"{os.path.abspath(self.gudrunFile.path)}\n"

@@ -19,6 +19,8 @@ class ModexDialog(QDialog):
     def __init__(self, gudrunFile, parent):
         super(ModexDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
+        self.gudrunFile.modex.sample = gudrunFile.sampleBackgrounds[0].samples[0]
+        self.cancelled = False
         self.loadUI()
         self.initComponents()
         if hasattr(sys, '_MEIPASS'):
@@ -83,6 +85,16 @@ class ModexDialog(QDialog):
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
         )
+        self.widget.buttonBox.accepted.connect(
+            self.widget.close
+        )
+        self.widget.buttonBox.rejected.connect(
+            self.cancel
+        )
+
+    def cancel(self):
+        self.cancelled = True
+        self.widget.close()
 
     def updateSpectra(self):
         self.setControlsEnabled(False)
@@ -123,7 +135,9 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
-        pass
+        with open("modex.txt", "w") as fp:
+            fp.write(str(self.gudrunFile.modex))
+
 
     def setControlsEnabled(state):
         pass

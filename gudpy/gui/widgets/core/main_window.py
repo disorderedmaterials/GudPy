@@ -1151,6 +1151,11 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(False)
         modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
         modexDialog.widget.exec()
+        if modexDialog.cancelled:
+            self.setControlsEnabled(True)
+        else:
+            modexDialog.run()
+            self.setControlsEnabled(True)
         # periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
         # periodDialog.widget.exec()
         # if periodDialog.cancelled:
