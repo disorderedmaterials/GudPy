@@ -51,7 +51,7 @@ steps:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: 'nose2-*.xml'
+      testResultsFiles: 'gudpy/nose2-*.xml'
       failTaskOnFailedTests: true
       testRunTitle: 'GudPy on Python ${{ parameters.version }} ${{ parameters.os }}'
     condition: succeededOrFailed()
