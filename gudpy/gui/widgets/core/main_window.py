@@ -1148,8 +1148,10 @@ class GudPyMainWindow(QMainWindow):
         if periodDialog.cancelled:
             self.setControlsEnabled(True)
         else:
-            modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
-            modexDialog.widget.exec()
+            spectraDialog = SpectraSelectionDialog(self.gudrunFile, self.mainWidget)
+            spectraDialog.widget.exec()
+            # modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
+            # modexDialog.widget.exec()
             self.setControlsEnabled(True)
 
     def iterateGudrun(self, dialog, name):
