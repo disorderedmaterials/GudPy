@@ -56,6 +56,7 @@ class ModulationExcitation():
         self.startPulse = None
         self.outputDir = None
         self.sample = None
+        self.useDefinedPulses = True
 
     def __str__(self):
         
