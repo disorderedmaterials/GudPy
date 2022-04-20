@@ -26,6 +26,18 @@ from PySide6.QtWidgets import (
     QToolButton
 )
 from PySide6.QtCharts import QChartView
+<<<<<<< HEAD:gudpy/gui/widgets/core/main_window.py
+=======
+from sympy import Mod
+from src.gudrun_classes.composition_iterator import CompositionIterator
+from src.gudrun_classes.density_iterator import DensityIterator
+from src.gudrun_classes.radius_iterator import RadiusIterator
+
+from src.gudrun_classes.sample import Sample
+from src.gudrun_classes.container import Container
+from src.gudrun_classes.thickness_iterator import ThicknessIterator
+from src.gui.widgets.dialogs.export_dialog import ExportDialog
+>>>>>>> 10d70f0 (feat: combine modex dialogs into single dialog.):src/gui/widgets/main_window.py
 
 from core.composition_iterator import CompositionIterator
 from core.density_iterator import DensityIterator
@@ -61,14 +73,8 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
-<<<<<<< HEAD:gudpy/gui/widgets/core/main_window.py
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
-=======
-from src.gui.widgets.dialogs.period_dialog import PeriodDialog
-from src.gui.widgets.dialogs.modex_dialog import ModexDialog
-from src.gui.widgets.dialogs.spectra_selection_dialog import SpectraSelectionDialog
->>>>>>> 15d2630 (feat: add spectra selection dialog.):src/gui/widgets/main_window.py
 
 from gui.widgets.tables.composition_table import CompositionTable
 from gui.widgets.tables.ratio_composition_table import (
@@ -1143,19 +1149,21 @@ class GudPyMainWindow(QMainWindow):
 
     def modex(self):
         self.setControlsEnabled(False)
-        periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
-        periodDialog.widget.exec()
-        if periodDialog.cancelled:
-            self.setControlsEnabled(True)
-        else:
-            spectraDialog = SpectraSelectionDialog(self.gudrunFile, self.mainWidget)
-            spectraDialog.widget.exec()
-            lowSpectra = spectraDialog.lowSpec
-            highSpectra = spectraDialog.highSpec
-            if spectraDialog.cancelled:
-                self.setControlsEnabled(True)
-            modexDialog = ModexDialog(self.gudrunFile, self.mainWidget, (lowSpectra, highSpectra))
-            modexDialog.widget.exec()
+        modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
+        modexDialog.widget.exec()
+        # periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
+        # periodDialog.widget.exec()
+        # if periodDialog.cancelled:
+        #     self.setControlsEnabled(True)
+        # else:
+        #     spectraDialog = SpectraSelectionDialog(self.gudrunFile, self.mainWidget)
+        #     spectraDialog.widget.exec()
+        #     lowSpectra = spectraDialog.lowSpec
+        #     highSpectra = spectraDialog.highSpec
+        #     if spectraDialog.cancelled:
+        #         self.setControlsEnabled(True)
+        #     modexDialog = ModexDialog(self.gudrunFile, self.mainWidget, (lowSpectra, highSpectra))
+        #     modexDialog.widget.exec()
 
 
     def iterateGudrun(self, dialog, name):
