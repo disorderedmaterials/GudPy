@@ -5,6 +5,7 @@ import subprocess
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile, Qt
 from PySide6.QtUiTools import QUiLoader
+from src.gudrun_classes.enums import ExtrapolationModes
 
 from src.scripts.utils import resolve
 from src.gudrun_classes import config
@@ -69,6 +70,9 @@ class ModexDialog(QDialog):
         )
         self.widget.useAllPulsesCheckBox.toggled.connect(self.toggleUseAllPulses)
 
+        for m in ExtrapolationModes:
+            self.widget.extrapolationModeComboBox.addItem(m.name, m)
+
     def loadEvents(self, item):
         if self.widget.spectraTableView.selectionModel().hasSelection():
             if len(item.indexes()):
@@ -77,10 +81,9 @@ class ModexDialog(QDialog):
                 self.widget.eventTableView.makeModel(
                     "output.nxs", str(spec)
                 )
-                # self.widget.spectraTableView.setCurrentIndex(0)
 
     def toggleUseAllPulses(self, state):
-        self.widget.extrapolationModeComboBox.setEnabled(state)
+        self.widget.extrapolationModeComboBox.setEnabled(not state)
 
     def run(self):
         pass

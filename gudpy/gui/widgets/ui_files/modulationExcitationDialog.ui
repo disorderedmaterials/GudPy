@@ -48,21 +48,6 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
-       <item>
-        <property name="text">
-         <string>Forwards</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Backwards</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Bi-Directional</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>
