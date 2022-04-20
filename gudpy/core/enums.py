@@ -86,3 +86,12 @@ FTModes = enumFromDict("FTModes", FT_MODES)
 class Format(Enum):
     TXT = 0
     YAML = 1
+
+EXTRAPOLATION_MODES = {
+    0: ["BACKWARDS"],
+    1: ["FORWARDS"],
+    2: ["BI-DIRECTIONAL"],
+    3: ["NONE"]
+}
+
+ExtrapolationModes = enumFromDict("ExtrapolationModes", EXTRAPOLATION_MODES)
