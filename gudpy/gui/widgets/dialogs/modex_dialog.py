@@ -79,6 +79,10 @@ class ModexDialog(QDialog):
 
         for m in ExtrapolationModes:
             self.widget.extrapolationModeComboBox.addItem(m.name, m)
+        
+        self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
+            self.extrapolationModeChanged
+        )
 
     def updateSpectra(self):
         self.setControlsEnabled(False)
@@ -112,6 +116,11 @@ class ModexDialog(QDialog):
 
     def toggleUseAllPulses(self, state):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
+        self.gudrunFile.modex.definedPulses = not state
+
+    def extrapolationModeChanged(self, index):
+        extrapolationMode = self.widget.extrapolationModeComboBox.itemData(index)
+        self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
         pass
