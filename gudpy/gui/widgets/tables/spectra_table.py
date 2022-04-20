@@ -20,21 +20,18 @@ class SpectraModel(GudPyTableModel):
     data(index, role)
         Returns data at a given index
     """
-    def __init__(self, h5path, headers, parent):
+    def __init__(self, data, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
         Parameters
         ----------
-        h5path : str
-            Path to hdf5 file.
+        data : int[]
+            Spectra
         headers: str[]
             Column headers for table.
         parent : QWidget
             Parent widget.
         """
-        data = []
-        with h5.File(h5path) as fp:
-            data = fp["/raw_data_1/detector_1/spectrum_index"][()][:].tolist()
         super(SpectraModel, self).__init__(data, headers, parent)
 
     def columnCount(self, parent):
@@ -110,12 +107,12 @@ class SpectraTable(QTableView):
         self.parent = parent
         super(SpectraTable, self).__init__(parent=parent)
 
-    def makeModel(self, h5path):
+    def makeModel(self, data):
         """
         Makes the model and the delegate based on the data.
         Parameters
         ----------
-        h5path : str
-            Path to hdf5 file.
+        data : int[]
+            Spectra
         """
-        self.setModel(SpectraModel(h5path, ["Spectra"], self.parent))
+        self.setModel(SpectraModel(data, ["Spectra"], self.parent))

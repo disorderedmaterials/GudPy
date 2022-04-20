@@ -14,35 +14,33 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 class ModexDialog(QDialog):
 
-    def __init__(self, gudrunFile, parent):
+    def __init__(self, gudrunFile, parent, spectraRange):
         super(ModexDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
+        self.spectraRange = spectraRange
         self.loadUI()
         self.initComponents()
-        if hasattr(sys, '_MEIPASS'):
-            partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
-        else:
-            partition_events = resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"partition_events{SUFFIX}"
-            )
-        subprocess.run(
-            [
-                partition_events,
-                os.path.join(
-                    self.gudrunFile.instrument.dataFileDir,
-                    self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
-                )
-            ]
-        )
+        # if hasattr(sys, '_MEIPASS'):
+        #     partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
+        # else:
+        #     partition_events = resolve(
+        #         os.path.join(
+        #             config.__rootdir__, "bin"
+        #         ), f"partition_events{SUFFIX}"
+        #     )
+        # subprocess.run(
+        #     [
+        #         partition_events,
+        #         os.path.join(
+        #             self.gudrunFile.instrument.dataFileDir,
+        #             self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+        #         )
+        #     ]
+        # )
 
     def initComponents(self):
         self.widget.spectraTableView.makeModel(
-            os.path.join(
-                self.gudrunFile.instrument.dataFileDir,
-                self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
-            )
+            range(self.spectraRange[0], self.spectraRange[1]+1)
         )
         self.widget.spectraTableView.selectionModel().selectionChanged.connect(
             self.loadEvents

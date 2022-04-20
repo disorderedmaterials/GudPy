@@ -1150,9 +1150,13 @@ class GudPyMainWindow(QMainWindow):
         else:
             spectraDialog = SpectraSelectionDialog(self.gudrunFile, self.mainWidget)
             spectraDialog.widget.exec()
-            # modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
-            # modexDialog.widget.exec()
-            self.setControlsEnabled(True)
+            lowSpectra = spectraDialog.lowSpec
+            highSpectra = spectraDialog.highSpec
+            if spectraDialog.cancelled:
+                self.setControlsEnabled(True)
+            modexDialog = ModexDialog(self.gudrunFile, self.mainWidget, (lowSpectra, highSpectra))
+            modexDialog.widget.exec()
+
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)

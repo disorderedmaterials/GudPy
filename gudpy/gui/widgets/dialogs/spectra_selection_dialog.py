@@ -30,6 +30,15 @@ class SpectraSelectionDialog(QDialog):
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setValue(max(spectra))
 
+        self.widget.lowerSpecSpinBox.valueChanged.connect(self.lowChanged)
+        self.widget.upperSpecSpinBox.valueChanged.connect(self.highChanged)
+
+    def lowChanged(self, value):
+        self.lowSpec = value
+
+    def highChanged(self, value):
+        self.highSpec = value
+
     def cancel(self):
         self.cancelled = True
         self.widget.close()
