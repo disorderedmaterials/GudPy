@@ -32,7 +32,7 @@ class PulseTableModel(GudPyTableModel):
         self.beginInsertRows(
             QModelIndex(), self.rowCount(self), self.rowCount(self)
         )
-        self._data.append(Pulse())
+        self._data.append(DefinedPulse())
         self.endInsertRows()
 
     def data(self, index, role):
