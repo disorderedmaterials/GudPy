@@ -61,8 +61,14 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
+<<<<<<< HEAD:gudpy/gui/widgets/core/main_window.py
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
+=======
+from src.gui.widgets.dialogs.period_dialog import PeriodDialog
+from src.gui.widgets.dialogs.modex_dialog import ModexDialog
+from src.gui.widgets.dialogs.spectra_selection_dialog import SpectraSelectionDialog
+>>>>>>> 15d2630 (feat: add spectra selection dialog.):src/gui/widgets/main_window.py
 
 from gui.widgets.tables.composition_table import CompositionTable
 from gui.widgets.tables.ratio_composition_table import (
@@ -215,6 +221,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionAcceptanceDialog)
         loader.registerCustomWidget(PeriodDialog)
         loader.registerCustomWidget(ModexDialog)
+        loader.registerCustomWidget(SpectraSelectionDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
