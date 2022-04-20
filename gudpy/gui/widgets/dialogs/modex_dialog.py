@@ -20,23 +20,25 @@ class ModexDialog(QDialog):
         self.spectraRange = spectraRange
         self.loadUI()
         self.initComponents()
-        # if hasattr(sys, '_MEIPASS'):
-        #     partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
-        # else:
-        #     partition_events = resolve(
-        #         os.path.join(
-        #             config.__rootdir__, "bin"
-        #         ), f"partition_events{SUFFIX}"
-        #     )
-        # subprocess.run(
-        #     [
-        #         partition_events,
-        #         os.path.join(
-        #             self.gudrunFile.instrument.dataFileDir,
-        #             self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
-        #         )
-        #     ]
-        # )
+        if hasattr(sys, '_MEIPASS'):
+            partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
+        else:
+            partition_events = resolve(
+                os.path.join(
+                    config.__rootdir__, "bin"
+                ), f"partition_events{SUFFIX}"
+            )
+        subprocess.run(
+            [
+                partition_events,
+                os.path.join(
+                    self.gudrunFile.instrument.dataFileDir,
+                    self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+                ),
+                str(spectraRange[0]),
+                str(spectraRange[1])
+            ]
+        )
 
     def initComponents(self):
         self.widget.spectraTableView.makeModel(
