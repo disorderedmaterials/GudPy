@@ -3,7 +3,7 @@ import sys
 import subprocess
 import h5py as h5
 
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QFileDialog
 from PySide6.QtCore import QFile, Qt
 from PySide6.QtUiTools import QUiLoader
 from src.gudrun_classes.enums import ExtrapolationModes
@@ -92,6 +92,10 @@ class ModexDialog(QDialog):
             self.cancel
         )
 
+        self.widget.browseOutputDirButton.clicked.connect(
+            self.browseSaveDirectory
+        )
+
     def cancel(self):
         self.cancelled = True
         self.widget.close()
@@ -138,6 +142,13 @@ class ModexDialog(QDialog):
         with open("modex.txt", "w") as fp:
             fp.write(str(self.gudrunFile.modex))
 
-
     def setControlsEnabled(state):
         pass
+
+    def browseSaveDirectory(self):
+        self.gudrunFile.modex.outputDir = (
+            QFileDialog.getExistingDirectory(
+                self.widget, "Ouput Directory", os.path.expanduser("~")
+            )
+        )
+        self.widget.outputDirLineEdit.setText(self.gudrunFile.modex.outputDir)
