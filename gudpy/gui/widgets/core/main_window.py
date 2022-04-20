@@ -1332,7 +1332,8 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIteration(self):
         if self.error:
-            self.proc.finished.connect(self.procFinished)
+            self.procFinished()
+            return
         if isinstance(self.iterator, TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByTweakFactor_{self.currentIteration+1}"
