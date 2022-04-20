@@ -45,12 +45,13 @@ steps:
 
   - bash: |
       pip install nose2
-      nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml tests
+      cd gudpy
+      nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml test
     displayName: 'Run tests'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: 'nose2-*.xml'
+      testResultsFiles: 'gudpy/nose2-*.xml'
       failTaskOnFailedTests: true
       testRunTitle: 'GudPy on Python ${{ parameters.version }} ${{ parameters.os }}'
     condition: succeededOrFailed()
@@ -58,4 +59,4 @@ steps:
   - task: PublishCodeCoverageResults@1
     inputs:
       codeCoverageTool: 'Cobertura'
-      summaryFileLocation: 'coverage.xml'
+      summaryFileLocation: 'gudpy/coverage.xml'

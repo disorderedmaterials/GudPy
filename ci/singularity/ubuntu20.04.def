@@ -27,19 +27,18 @@ From: ubuntu:20.04
 
 %files
 
-    ./src /opt/GudPy
+    ./gudpy /opt/GudPy
     ./bin /opt/GudPy
-    ./main.py /opt/GudPy
 
 %environment
     export SIF=1
 
 %runscript
     # If the container is executed, this line will be run.
-    python3.8 /opt/GudPy/main.py
+    python3.8 /opt/GudPy/gudpy
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
-    python3.8 /opt/GudPy/main.py
+    python3.8 /opt/GudPy/gudpy

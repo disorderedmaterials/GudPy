@@ -4,11 +4,13 @@ binaries = [(os.path.join("bin", f), '.') for f in os.listdir("bin") if not f ==
 block_cipher = None
 import sys
 
+main = os.path.join('gudpy', '__main__.py')
+print(main)
 if sys.platform == "darwin":
-    a = Analysis(['main.py'],
-                pathex=[os.path.dirname(os.path.abspath('main.py'))],
+    a = Analysis([main],
+                pathex=[main],
                 binaries=None,
-                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")], *binaries],
+                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("gudpy", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("gudpy", "gui", "widgets", "resources"), "resources")], *binaries],
                 hiddenimports=[],
                 hookspath=[],
                 hooksconfig={},
@@ -21,10 +23,10 @@ if sys.platform == "darwin":
     pyz = PYZ(a.pure, a.zipped_data,
                 cipher=block_cipher)
 else:
-    a = Analysis(['main.py'],
-                pathex=[os.path.dirname(os.path.abspath('main.py'))],
+    a = Analysis([main],
+                pathex=[main],
                 binaries=binaries,
-                datas=[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("src", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("src", "gui", "widgets", "resources"), "resources")],
+                datas=[*[("bin/StartupFiles", "bin/StartupFiles"), ("bin/configs", "bin/configs"), (os.path.join("gudpy", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("gudpy", "gui", "widgets", "resources"), "resources")], *binaries],
                 hiddenimports=[],
                 hookspath=[],
                 hooksconfig={},
