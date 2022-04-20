@@ -22,24 +22,13 @@ class ModexDialog(QDialog):
         self.loadUI()
         self.initComponents()
         if hasattr(sys, '_MEIPASS'):
-            partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
+            self.partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
         else:
-            partition_events = resolve(
+            self.partition_events = resolve(
                 os.path.join(
                     config.__rootdir__, "bin"
                 ), f"partition_events{SUFFIX}"
             )
-        # subprocess.run(
-        #     [
-        #         partition_events,
-        #         os.path.join(
-        #             self.gudrunFile.instrument.dataFileDir,
-        #             self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
-        #         ),
-        #         str(spectraRange[0]),
-        #         str(spectraRange[1])
-        #     ]
-        # )
 
     def loadUI(self):
         """
@@ -80,34 +69,37 @@ class ModexDialog(QDialog):
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
-        # self.widget.lowerSpecSpinBox.valueChanged.connect(self.lowChanged)
-        # self.widget.upperSpecSpinBox.valueChanged.connect(self.highChanged)
-
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
         self.widget.updateSpectraButton.clicked.connect(
             self.updateSpectra
         )
-
-        # self.widget.spectraTableView.makeModel(
-        #     list(range(self.spectraRange[0], self.spectraRange[1]+1))
-        # )
-        # self.widget.spectraTableView.selectionModel().selectionChanged.connect(
-        #     self.loadEvents
-        # )
         self.widget.useAllPulsesCheckBox.toggled.connect(self.toggleUseAllPulses)
 
         for m in ExtrapolationModes:
             self.widget.extrapolationModeComboBox.addItem(m.name, m)
 
     def updateSpectra(self):
+        self.setControlsEnabled(False)
+        subprocess.run(
+            [
+                self.partition_events,
+                os.path.join(
+                    self.gudrunFile.instrument.dataFileDir,
+                    self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+                ),
+                str(self.widget.lowerSpecSpinBox.value()),
+                str(self.widget.upperSpecSpinBox.value())
+            ]
+        )
         self.widget.spectraTableView.makeModel(
             list(range(self.widget.lowerSpecSpinBox.value(), self.widget.upperSpecSpinBox.value()+1))
         )
         self.widget.spectraTableView.selectionModel().selectionChanged.connect(
             self.loadEvents
         )
+        self.setControlsEnabled(True)
 
     def loadEvents(self, item):
         if self.widget.spectraTableView.selectionModel().hasSelection():
@@ -122,4 +114,7 @@ class ModexDialog(QDialog):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
 
     def run(self):
+        pass
+
+    def setControlsEnabled(state):
         pass
