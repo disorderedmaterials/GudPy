@@ -59,4 +59,4 @@ steps:
   - task: PublishCodeCoverageResults@1
     inputs:
       codeCoverageTool: 'Cobertura'
-      summaryFileLocation: 'coverage.xml'
+      summaryFileLocation: 'gudpy/coverage.xml'
