@@ -25,7 +25,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="useAllPulsesCheckBox">
      <property name="text">
       <string>Use all pulses?</string>
      </property>
@@ -44,7 +44,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="extrapolationModeComboBox">
        <property name="enabled">
         <bool>false</bool>
        </property>

@@ -40,23 +40,6 @@ class ModexDialog(QDialog):
             ]
         )
 
-    def initComponents(self):
-        self.widget.spectraTableView.makeModel(
-            list(range(self.spectraRange[0], self.spectraRange[1]+1))
-        )
-        self.widget.spectraTableView.selectionModel().selectionChanged.connect(
-            self.loadEvents
-        )
-
-    def loadEvents(self, item):
-        if self.widget.spectraTableView.selectionModel().hasSelection():
-            if len(item.indexes()):
-                index = item.indexes()[0]
-                spec = self.widget.spectraTableView.model().data(index, role=Qt.DisplayRole)
-                self.widget.eventTableView.makeModel(
-                    "output.nxs", str(spec)
-                )
-
     def loadUI(self):
         """
         Loads the UI file for the PeriodDialog object.
@@ -76,3 +59,28 @@ class ModexDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
+
+    def initComponents(self):
+        self.widget.spectraTableView.makeModel(
+            list(range(self.spectraRange[0], self.spectraRange[1]+1))
+        )
+        self.widget.spectraTableView.selectionModel().selectionChanged.connect(
+            self.loadEvents
+        )
+        self.widget.useAllPulsesCheckBox.toggled.connect(self.toggleUseAllPulses)
+
+    def loadEvents(self, item):
+        if self.widget.spectraTableView.selectionModel().hasSelection():
+            if len(item.indexes()):
+                index = item.indexes()[0]
+                spec = self.widget.spectraTableView.model().data(index, role=Qt.DisplayRole)
+                self.widget.eventTableView.makeModel(
+                    "output.nxs", str(spec)
+                )
+                # self.widget.spectraTableView.setCurrentIndex(0)
+
+    def toggleUseAllPulses(self, state):
+        self.widget.extrapolationModeComboBox.setEnabled(state)
+
+    def run(self):
+        pass
