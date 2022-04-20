@@ -40,7 +40,7 @@ class ModexDialog(QDialog):
 
     def initComponents(self):
         self.widget.spectraTableView.makeModel(
-            range(self.spectraRange[0], self.spectraRange[1]+1)
+            list(range(self.spectraRange[0], self.spectraRange[1]+1))
         )
         self.widget.spectraTableView.selectionModel().selectionChanged.connect(
             self.loadEvents

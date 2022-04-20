@@ -28,16 +28,20 @@ class SpectraSelectionDialog(QDialog):
             spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][:].tolist()
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
-            self.widget.upperSpecSpinBox.setValue(max(spectra))
 
         self.widget.lowerSpecSpinBox.valueChanged.connect(self.lowChanged)
         self.widget.upperSpecSpinBox.valueChanged.connect(self.highChanged)
 
+        self.widget.lowerSpecSpinBox.setValue(min(spectra))
+        self.widget.upperSpecSpinBox.setValue(max(spectra))
+
     def lowChanged(self, value):
         self.lowSpec = value
+        print(self.lowSpec)
 
     def highChanged(self, value):
         self.highSpec = value
+        print(self.highSpec)
 
     def cancel(self):
         self.cancelled = True
