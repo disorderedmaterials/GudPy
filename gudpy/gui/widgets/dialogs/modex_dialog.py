@@ -139,6 +139,13 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
+        if not self.gudrunFile.modex.definedPulses:
+            self.gudrunFile.modex.startPulse = (
+                self.widget.eventTableView.model().data(
+                    self.widget.eventTableView.selectionModel().selection().indexes()[0],
+                    role=Qt.DisplayRole
+                )
+            )
         with open("modex.txt", "w") as fp:
             fp.write(str(self.gudrunFile.modex))
 
