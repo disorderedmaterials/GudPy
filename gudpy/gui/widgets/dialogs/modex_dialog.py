@@ -4,7 +4,7 @@ import subprocess
 import h5py as h5
 
 from PySide6.QtWidgets import QDialog, QFileDialog
-from PySide6.QtCore import QFile, Qt
+from PySide6.QtCore import QFile, Qt, QProcess
 from PySide6.QtUiTools import QUiLoader
 from core.enums import ExtrapolationModes
 
@@ -24,6 +24,8 @@ class ModexDialog(QDialog):
             gudrunFile.sampleBackgrounds[0].samples[0]
         )
         self.cancelled = False
+        self.proc = None
+
         self.loadUI()
         self.initComponents()
         if hasattr(sys, '_MEIPASS'):
@@ -91,7 +93,7 @@ class ModexDialog(QDialog):
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
         self.widget.updateSpectraButton.clicked.connect(
-            self.updateSpectra
+            self.partitionEvents
         )
         self.widget.useAllPulsesCheckBox.toggled.connect(
             self.toggleUseAllPulses
@@ -103,9 +105,11 @@ class ModexDialog(QDialog):
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
         )
+
         self.widget.buttonBox.accepted.connect(
-            self.widget.close
+            self.run
         )
+
         self.widget.buttonBox.rejected.connect(
             self.cancel
         )
@@ -118,11 +122,12 @@ class ModexDialog(QDialog):
         self.cancelled = True
         self.widget.close()
 
-    def updateSpectra(self):
+    def partitionEvents(self):
         self.setControlsEnabled(False)
-        subprocess.run(
+        self.proc = QProcess()
+        self.proc.setProgram(self.partition_events)
+        self.proc.setArguments(
             [
-                self.partition_events,
                 os.path.join(
                     self.gudrunFile.instrument.dataFileDir,
                     self.gudrunFile.sampleBackgrounds[0]
@@ -132,6 +137,10 @@ class ModexDialog(QDialog):
                 str(self.widget.upperSpecSpinBox.value())
             ]
         )
+        self.proc.finished.connect(self.updateSpectra)
+        self.proc.start()
+
+    def updateSpectra(self):
         self.widget.spectraTableView.makeModel(
             list(
                 range(
@@ -143,6 +152,7 @@ class ModexDialog(QDialog):
         self.widget.spectraTableView.selectionModel().selectionChanged.connect(
             self.loadEvents
         )
+        self.proc = None
         self.setControlsEnabled(True)
 
     def loadEvents(self, item):
@@ -167,6 +177,7 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
+        self.setControlsEnabled(False)
         if not self.gudrunFile.modex.useDefinedPulses:
             self.gudrunFile.modex.startPulse = (
                 self.widget.eventTableView.model().data(
@@ -177,12 +188,11 @@ class ModexDialog(QDialog):
             )
         with open("modex.txt", "w") as fp:
             fp.write(str(self.gudrunFile.modex))
-        subprocess.run(
-            [
-                self.modex,
-                "modex.txt"
-            ]
-        )
+
+        self.proc = QProcess()
+        self.proc.setProgram(self.modex)
+        self.proc.setArguments(["modex.txt"])
+        self.proc.start()
 
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
