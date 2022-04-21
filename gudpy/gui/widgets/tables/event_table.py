@@ -1,10 +1,8 @@
-import os
-import sys
 import h5py as h5
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView
-from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
+from gui.widgets.tables.gudpy_tables import GudPyTableModel
 
 
 class EventModel(GudPyTableModel):

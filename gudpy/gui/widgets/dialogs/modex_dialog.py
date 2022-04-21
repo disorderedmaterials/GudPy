@@ -6,25 +6,30 @@ import h5py as h5
 from PySide6.QtWidgets import QDialog, QFileDialog
 from PySide6.QtCore import QFile, Qt
 from PySide6.QtUiTools import QUiLoader
-from src.gudrun_classes.enums import ExtrapolationModes
+from core.enums import ExtrapolationModes
 
-from src.scripts.utils import resolve
-from src.gudrun_classes import config
+from core.utils import resolve
+from core import config
 
 
 SUFFIX = ".exe" if os.name == "nt" else ""
+
 
 class ModexDialog(QDialog):
 
     def __init__(self, gudrunFile, parent):
         super(ModexDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
-        self.gudrunFile.modex.sample = gudrunFile.sampleBackgrounds[0].samples[0]
+        self.gudrunFile.modex.sample = (
+            gudrunFile.sampleBackgrounds[0].samples[0]
+        )
         self.cancelled = False
         self.loadUI()
         self.initComponents()
         if hasattr(sys, '_MEIPASS'):
-            self.partition_events = os.path.join(sys._MEIPASS, f"partition_events{SUFFIX}")
+            self.partition_events = os.path.join(
+                sys._MEIPASS, f"partition_events{SUFFIX}"
+            )
         else:
             self.partition_events = resolve(
                 os.path.join(
@@ -46,7 +51,8 @@ class ModexDialog(QDialog):
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "..", "ui_files", "modulationExcitationDialog.ui"
+                    current_dir, "..", "ui_files",
+                    "modulationExcitationDialog.ui"
                 )
             )
         loader = QUiLoader()
@@ -64,10 +70,13 @@ class ModexDialog(QDialog):
         with h5.File(
             os.path.join(
                 self.gudrunFile.instrument.dataFileDir,
-                self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+                self.gudrunFile.sampleBackgrounds[0].
+                samples[0].dataFiles.dataFiles[0]
             )
         ) as fp:
-            spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][:].tolist()
+            spectra = fp[
+                "/raw_data_1/detector_1/spectrum_index"
+                ][()][:].tolist()
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
@@ -77,11 +86,13 @@ class ModexDialog(QDialog):
         self.widget.updateSpectraButton.clicked.connect(
             self.updateSpectra
         )
-        self.widget.useAllPulsesCheckBox.toggled.connect(self.toggleUseAllPulses)
+        self.widget.useAllPulsesCheckBox.toggled.connect(
+            self.toggleUseAllPulses
+        )
 
         for m in ExtrapolationModes:
             self.widget.extrapolationModeComboBox.addItem(m.name, m)
-        
+
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
         )
@@ -107,14 +118,20 @@ class ModexDialog(QDialog):
                 self.partition_events,
                 os.path.join(
                     self.gudrunFile.instrument.dataFileDir,
-                    self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+                    self.gudrunFile.sampleBackgrounds[0]
+                    .samples[0].dataFiles.dataFiles[0]
                 ),
                 str(self.widget.lowerSpecSpinBox.value()),
                 str(self.widget.upperSpecSpinBox.value())
             ]
         )
         self.widget.spectraTableView.makeModel(
-            list(range(self.widget.lowerSpecSpinBox.value(), self.widget.upperSpecSpinBox.value()+1))
+            list(
+                range(
+                    self.widget.lowerSpecSpinBox.value(),
+                    self.widget.upperSpecSpinBox.value()+1
+                )
+            )
         )
         self.widget.spectraTableView.selectionModel().selectionChanged.connect(
             self.loadEvents
@@ -125,7 +142,9 @@ class ModexDialog(QDialog):
         if self.widget.spectraTableView.selectionModel().hasSelection():
             if len(item.indexes()):
                 index = item.indexes()[0]
-                spec = self.widget.spectraTableView.model().data(index, role=Qt.DisplayRole)
+                spec = self.widget.spectraTableView.model().data(
+                    index, role=Qt.DisplayRole
+                )
                 self.widget.eventTableView.makeModel(
                     "output.nxs", str(spec)
                 )
@@ -135,14 +154,17 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.definedPulses = not state
 
     def extrapolationModeChanged(self, index):
-        extrapolationMode = self.widget.extrapolationModeComboBox.itemData(index)
+        extrapolationMode = self.widget.extrapolationModeComboBox.itemData(
+            index
+        )
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
         if not self.gudrunFile.modex.definedPulses:
             self.gudrunFile.modex.startPulse = (
                 self.widget.eventTableView.model().data(
-                    self.widget.eventTableView.selectionModel().selection().indexes()[0],
+                    self.widget.eventTableView
+                    .selectionModel().selection().indexes()[0],
                     role=Qt.DisplayRole
                 )
             )

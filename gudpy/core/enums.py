@@ -87,6 +87,7 @@ class Format(Enum):
     TXT = 0
     YAML = 1
 
+
 EXTRAPOLATION_MODES = {
     0: ["BACKWARDS"],
     1: ["FORWARDS"],

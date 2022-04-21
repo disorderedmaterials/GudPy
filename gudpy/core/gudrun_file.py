@@ -35,6 +35,7 @@ from core.enums import (
 from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException
+from core.modulation_excitation import ModulationExcitation
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -139,9 +140,12 @@ class GudrunFile:
 
         self.path = path
         self.yaml = YAML()
+
         # Construct the outpath.
         self.outpath = "gudpy.txt"
+
         self.modex = ModulationExcitation(self)
+
         if isinstance(path, type(None)):
             self.instrument = Instrument()
             self.beam = Beam()

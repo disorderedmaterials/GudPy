@@ -1,12 +1,12 @@
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
-    QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
+    QLineEdit, QTableView
 )
 from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 
-from core.modulation_excitation import Period, Pulse
+from core.modulation_excitation import DefinedPulse
+
 
 class PulseTableModel(GudPyTableModel):
     def __init__(self, data, headers, parent):

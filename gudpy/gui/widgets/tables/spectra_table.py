@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView
-from src.gui.widgets.tables.gudpy_tables import GudPyTableModel
-import h5py as h5
+from gui.widgets.tables.gudpy_tables import GudPyTableModel
+
 
 class SpectraModel(GudPyTableModel):
     """
@@ -57,7 +57,6 @@ class SpectraModel(GudPyTableModel):
         """
         pass
 
-
     def data(self, index, role):
         """
         Returns the data at a given index.
@@ -78,6 +77,7 @@ class SpectraModel(GudPyTableModel):
 
     def flags(self, parent):
         return super().flags(parent) & ~Qt.ItemIsEditable
+
 
 class SpectraTable(QTableView):
     """

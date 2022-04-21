@@ -22,10 +22,13 @@ class SpectraSelectionDialog(QDialog):
         with h5.File(
             os.path.join(
                 self.gudrunFile.instrument.dataFileDir,
-                self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+                self.gudrunFile.sampleBackgrounds[0]
+                .samples[0].dataFiles.dataFiles[0]
             )
         ) as fp:
-            spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][:].tolist()
+            spectra = fp[
+                "/raw_data_1/detector_1/spectrum_index"
+                ][()][:].tolist()
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 

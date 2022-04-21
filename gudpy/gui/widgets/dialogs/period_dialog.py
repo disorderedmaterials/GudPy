@@ -1,5 +1,4 @@
 import os
-from queue import Queue
 import sys
 
 from PySide6.QtWidgets import QDialog

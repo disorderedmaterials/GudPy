@@ -61,6 +61,9 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
+from gui.widgets.dialogs.period_dialog import PeriodDialog
+from gui.widgets.dialogs.modex_dialog import ModexDialog
+from gui.widgets.dialogs.spectra_selection_dialog import SpectraSelectionDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
 
@@ -74,6 +77,9 @@ from gui.widgets.tables.grouping_parameter_table import (
 )
 from gui.widgets.tables.exponential_table import ExponentialTable
 from gui.widgets.tables.resonance_table import ResonanceTable
+from gui.widgets.tables.pulse_table import PulseTable
+from gui.widgets.tables.spectra_table import SpectraTable
+from gui.widgets.tables.event_table import EventTable
 from gui.widgets.tables.components_table import ComponentsList
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from gui.widgets.charts.chart import GudPyChart
@@ -1144,20 +1150,6 @@ class GudPyMainWindow(QMainWindow):
         else:
             modexDialog.run()
             self.setControlsEnabled(True)
-        # periodDialog = PeriodDialog(self.gudrunFile, self.mainWidget)
-        # periodDialog.widget.exec()
-        # if periodDialog.cancelled:
-        #     self.setControlsEnabled(True)
-        # else:
-        #     spectraDialog = SpectraSelectionDialog(self.gudrunFile, self.mainWidget)
-        #     spectraDialog.widget.exec()
-        #     lowSpectra = spectraDialog.lowSpec
-        #     highSpectra = spectraDialog.highSpec
-        #     if spectraDialog.cancelled:
-        #         self.setControlsEnabled(True)
-        #     modexDialog = ModexDialog(self.gudrunFile, self.mainWidget, (lowSpectra, highSpectra))
-        #     modexDialog.widget.exec()
-
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)

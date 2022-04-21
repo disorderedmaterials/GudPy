@@ -1,6 +1,7 @@
 import os
 
-from src.gudrun_classes.enums import ExtrapolationModes
+from core.enums import ExtrapolationModes
+
 
 class Pulse():
 
@@ -12,6 +13,7 @@ class Pulse():
     def __str__(self):
         return f"{self.label} {self.start} {self.end}"
 
+
 class DefinedPulse():
 
     def __init__(self, label="", periodOffset=0.0, duration=0.0):
@@ -21,6 +23,7 @@ class DefinedPulse():
 
     def __str__(self):
         return f"{self.label} {self.periodOffset} {self.duration}"
+
 
 class Period():
 
@@ -47,6 +50,7 @@ class Period():
                 f"{pulseLines}"
             )
 
+
 class ModulationExcitation():
 
     def __init__(self, gudrunFile):
@@ -59,12 +63,24 @@ class ModulationExcitation():
         self.useDefinedPulses = True
 
     def __str__(self):
-        
-        dataFilesLines = '\n'.join([os.path.abspath(os.path.join(self.gudrunFile.instrument.dataFileDir, df)) for df in self.sample.dataFiles.dataFiles])
+
+        dataFilesLines = '\n'.join(
+            [
+                os.path.abspath(
+                    os.path.join(self.gudrunFile.instrument.dataFileDir, df)
+                )
+                for df in self.sample.dataFiles.dataFiles
+            ]
+        )
+
+        purgeLine = os.path.join(
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            'purge_det.dat'
+        )
 
         return (
             f"{os.path.abspath(self.gudrunFile.path)}\n"
-            f"{os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, 'purge_det.dat')}\n"
+            f"{purgeLine}\n"
             f"{self.outputDir}\n"
             f"{len(self.sample.dataFiles.dataFiles)}\n"
             f"{dataFilesLines}\n"
