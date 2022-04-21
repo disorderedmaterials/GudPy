@@ -62,6 +62,10 @@ class ModulationExcitation():
         self.sample = None
         self.useDefinedPulses = True
 
+    def write_out(self):
+        with open('modex.txt', 'w') as fp:
+            fp.write(str(self))
+
     def __str__(self):
 
         dataFilesLines = '\n'.join(

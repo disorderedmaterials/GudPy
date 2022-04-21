@@ -1144,8 +1144,12 @@ class GudPyMainWindow(QMainWindow):
         if modexDialog.cancelled:
             self.setControlsEnabled(True)
         else:
-            modexDialog.run()
-            self.setControlsEnabled(True)
+            self.gudrunFile.modex.write_out()
+            self.proc = QProcess()
+            self.proc.setProgram(modexDialog.modex)
+            self.proc.setArguments(["modex.txt"])
+            self.proc.finished.connect(lambda: self.setControlsEnabled(True))
+            self.proc.start()
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)

@@ -107,7 +107,7 @@ class ModexDialog(QDialog):
         )
 
         self.widget.buttonBox.accepted.connect(
-            self.run
+            self.close
         )
 
         self.widget.buttonBox.rejected.connect(
@@ -165,6 +165,9 @@ class ModexDialog(QDialog):
                 self.widget.eventTableView.makeModel(
                     "output.nxs", str(spec)
                 )
+                self.widget.eventTableView.selectionModel().selectionChanged.connect(
+                    self.startPulseChanged
+                )
 
     def toggleUseAllPulses(self, state):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
@@ -176,23 +179,15 @@ class ModexDialog(QDialog):
         )
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
-    def run(self):
-        self.setControlsEnabled(False)
-        if not self.gudrunFile.modex.useDefinedPulses:
-            self.gudrunFile.modex.startPulse = (
-                self.widget.eventTableView.model().data(
-                    self.widget.eventTableView
-                    .selectionModel().selection().indexes()[0],
-                    role=Qt.DisplayRole
-                )
-            )
-        with open("modex.txt", "w") as fp:
-            fp.write(str(self.gudrunFile.modex))
 
-        self.proc = QProcess()
-        self.proc.setProgram(self.modex)
-        self.proc.setArguments(["modex.txt"])
-        self.proc.start()
+    def startPulseChanged(self, item):
+        if self.widget.eventTableView.selectionModel().hasSelection():
+            if len(item.indexes()):
+                index = item.indexes()[0]
+                startPulse = self.widget.eventTableView.model().data(
+                    index, role=Qt.DisplayRole
+                )
+                self.gudrunFile.modex.startPulse = startPulse
 
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
