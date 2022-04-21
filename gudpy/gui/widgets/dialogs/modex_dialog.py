@@ -46,7 +46,7 @@ class ModexDialog(QDialog):
             )
     def loadUI(self):
         """
-        Loads the UI file for the PeriodDialog object.
+        Loads the UI file for the ModexDialog object.
         """
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
