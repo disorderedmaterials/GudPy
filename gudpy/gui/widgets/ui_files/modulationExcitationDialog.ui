@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="periodGroupBox">
      <property name="title">
       <string>Period Definition</string>
      </property>
@@ -78,7 +78,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="spectraGroupBox">
      <property name="title">
       <string>Relevant Spectra Range</string>
      </property>
@@ -113,7 +113,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="runGroupBox">
      <property name="title">
       <string>Run</string>
      </property>

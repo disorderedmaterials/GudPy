@@ -158,7 +158,7 @@ class ModexDialog(QDialog):
 
     def toggleUseAllPulses(self, state):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
-        self.gudrunFile.modex.definedPulses = not state
+        self.gudrunFile.modex.useDefinedPulses = not state
 
     def extrapolationModeChanged(self, index):
         extrapolationMode = self.widget.extrapolationModeComboBox.itemData(
@@ -167,7 +167,7 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
     def run(self):
-        if not self.gudrunFile.modex.definedPulses:
+        if not self.gudrunFile.modex.useDefinedPulses:
             self.gudrunFile.modex.startPulse = (
                 self.widget.eventTableView.model().data(
                     self.widget.eventTableView
@@ -184,8 +184,10 @@ class ModexDialog(QDialog):
             ]
         )
 
-    def setControlsEnabled(state):
-        pass
+    def setControlsEnabled(self, state):
+        self.widget.periodGroupBox.setEnabled(state)
+        self.widget.spectraGroupBox.setEnabled(state)
+        self.widget.runGroupBox.setEnabled(state)
 
     def browseSaveDirectory(self):
         self.gudrunFile.modex.outputDir = (
