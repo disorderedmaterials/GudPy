@@ -30,13 +30,20 @@ class ModexDialog(QDialog):
             self.partition_events = os.path.join(
                 sys._MEIPASS, f"partition_events{SUFFIX}"
             )
+            self.modex = os.path.join(
+                sys._MEIPASS, f"modulation_excitation{SUFFIX}"
+            )
         else:
             self.partition_events = resolve(
                 os.path.join(
                     config.__rootdir__, "bin"
                 ), f"partition_events{SUFFIX}"
             )
-
+            self.modex = resolve(
+                os.path.join(
+                    config.__rootdir__, "bin"
+                ), f"modulation_excitation{SUFFIX}"
+            )
     def loadUI(self):
         """
         Loads the UI file for the PeriodDialog object.
@@ -170,6 +177,12 @@ class ModexDialog(QDialog):
             )
         with open("modex.txt", "w") as fp:
             fp.write(str(self.gudrunFile.modex))
+        subprocess.run(
+            [
+                self.modex,
+                "modex.txt"
+            ]
+        )
 
     def setControlsEnabled(state):
         pass
