@@ -26,18 +26,6 @@ from PySide6.QtWidgets import (
     QToolButton
 )
 from PySide6.QtCharts import QChartView
-<<<<<<< HEAD:gudpy/gui/widgets/core/main_window.py
-=======
-from sympy import Mod
-from src.gudrun_classes.composition_iterator import CompositionIterator
-from src.gudrun_classes.density_iterator import DensityIterator
-from src.gudrun_classes.radius_iterator import RadiusIterator
-
-from src.gudrun_classes.sample import Sample
-from src.gudrun_classes.container import Container
-from src.gudrun_classes.thickness_iterator import ThicknessIterator
-from src.gui.widgets.dialogs.export_dialog import ExportDialog
->>>>>>> 10d70f0 (feat: combine modex dialogs into single dialog.):src/gui/widgets/main_window.py
 
 from core.composition_iterator import CompositionIterator
 from core.density_iterator import DensityIterator
