@@ -1148,8 +1148,28 @@ class GudPyMainWindow(QMainWindow):
             self.proc = QProcess()
             self.proc.setProgram(modexDialog.modex)
             self.proc.setArguments(["modex.txt"])
-            self.proc.finished.connect(lambda: self.setControlsEnabled(True))
+            self.proc.started.connect(self.modexStarted)
+            self.proc.readyReadStandardOutput.connect(self.progressModex)
+            self.proc.finished.connect(self.modexFinished)
             self.proc.start()
+
+    def modexStarted(self):
+        self.text = "Modulation Excitation"
+        self.mainWidget.currentTaskLabel.setText(
+            self.text
+        )
+    
+    def progressModex(self):
+        data = self.proc.readAllStandardOutput()
+        stdout = bytes(data).decode("utf8")
+        progress = re.findall(r'\d*%', stdout)
+        if progress:
+            self.mainWidget.progressBar.setValue(int(progress[-1][:-1]))
+
+    def modexFinished(self):
+        self.setControlsEnabled(True)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.proc = None
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)
