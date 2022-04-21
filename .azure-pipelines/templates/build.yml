@@ -57,7 +57,7 @@ steps:
     displayName: 'Increase timeouts for OSX'
 
   - bash: |
-      pyside6-rcc src/gui/widgets/resources/resources.qrc -o src/gui/widgets/resources/resources_rc.py
+      pyside6-rcc gudpy/gui/widgets/resources/resources.qrc -o gudpy/gui/widgets/resources/resources_rc.py
       pyinstaller gudpy.spec
     displayName: 'Create executables.'
 
