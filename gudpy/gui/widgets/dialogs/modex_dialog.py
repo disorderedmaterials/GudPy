@@ -1,15 +1,17 @@
 import os
 import sys
-import subprocess
 import h5py as h5
 
 from PySide6.QtWidgets import QDialog, QFileDialog
 from PySide6.QtCore import QFile, Qt, QProcess
 from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCharts import QChartView
+from PySide6.QtGui import QPainter
 from core.enums import ExtrapolationModes
 
 from core.utils import resolve
 from core import config
+from gui.widgets.charts.spectra_plot import SpectraChart
 
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -86,6 +88,8 @@ class ModexDialog(QDialog):
             spectra = fp[
                 "/raw_data_1/detector_1/spectrum_index"
                 ][()][:].tolist()
+            start = 0
+            end = fp["/raw_data_1/duration"][()]
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
@@ -117,6 +121,19 @@ class ModexDialog(QDialog):
         self.widget.browseOutputDirButton.clicked.connect(
             self.browseSaveDirectory
         )
+
+
+        self.widget.spectraPlot = QChartView(
+            self.widget
+        )
+        self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
+        self.widget.pulsePlotLayout.addWidget(
+            self.widget.spectraPlot
+        )
+        self.widget.spectraChart = SpectraChart()
+        self.widget.spectraPlot.setChart(self.widget.spectraChart)
+        self.widget.spectraChart.setTimeBoundaries(start, end)
+
 
     def cancel(self):
         self.cancelled = True
@@ -168,6 +185,7 @@ class ModexDialog(QDialog):
                 self.widget.eventTableView.selectionModel().selectionChanged.connect(
                     self.startPulseChanged
                 )
+                self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
 
     def toggleUseAllPulses(self, state):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
