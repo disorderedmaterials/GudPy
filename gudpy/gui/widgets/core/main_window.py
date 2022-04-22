@@ -1418,6 +1418,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.delete_.setEnabled(state)
 
     def progressIncrementDCS(self):
+        if not self.proc:
+            return 0
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         self.output += stdout
@@ -1482,6 +1484,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def progressIncrementPurge(self):
+        if not self.proc:
+            return 0
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         self.output += stdout

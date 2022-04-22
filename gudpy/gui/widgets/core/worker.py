@@ -91,7 +91,10 @@ class CompositionWorker(QObject):
         # Block until process is finished.
         self.proc.waitForFinished(-1)
         # Read from stdout.
-        result = bytes(self.proc.readAllStandardOutput()).decode("utf8")
+        if not self.proc:
+            return None
+        data = self.proc.readAllStandardOutput()
+        result = bytes(data).decode("utf8")
 
         # Check for errors.
         ERROR_KWDS = [
