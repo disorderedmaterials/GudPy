@@ -86,10 +86,10 @@ class RunIndividualFiles():
             sampleBackgrounds[i].samples = []
 
             # Enumerate samples.
-            for j, sample in enumerate(samples):
+            for sample in samples:
                 if sample.runThisSample:
                     # Enumerate the datafiles belonging to the sample.
-                    for k, dataFile in enumerate(sample.dataFiles.dataFiles):
+                    for dataFile in sample.dataFiles.dataFiles:
 
                         # deepcopy the current sample
                         childSample = deepcopy(sample)
