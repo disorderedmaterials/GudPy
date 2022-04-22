@@ -100,7 +100,7 @@ from core.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 from core.run_containers_as_samples import RunContainersAsSamples
-from core.run_individual_files1 import RunIndividualFiles
+from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
 from core.utils import breplace, nthint
 from gui.widgets.core.worker import CompositionWorker
