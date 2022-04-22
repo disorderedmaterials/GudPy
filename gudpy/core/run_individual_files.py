@@ -22,6 +22,7 @@ class RunIndividualFiles():
 
     def __init__(self, gudrunFile):
         self.gudrunFile = deepcopy(gudrunFile)
+        self.partition()
 
     def partition(self):
 
@@ -54,9 +55,10 @@ class RunIndividualFiles():
                         childSample.dataFiles = (
                             DataFiles([dataFile], childSample.name)
                         )
+                        childSample.name = f"{childSample.name} [{dataFile}]"
 
                         # Append sample
                         sampleBackgrounds[i].samples.append(childSample)
-        # Update gudrunFile to use the newly constructed sample background.
 
+        # Update gudrunFile to use the newly constructed sample background.
         self.gudrunFile.sampleBackgrounds = sampleBackgrounds
