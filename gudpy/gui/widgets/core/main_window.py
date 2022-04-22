@@ -100,6 +100,7 @@ from core.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 from core.run_containers_as_samples import RunContainersAsSamples
+from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
 from core.utils import breplace, nthint
 from gui.widgets.core.worker import CompositionWorker
@@ -421,6 +422,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.runContainersAsSamples.triggered.connect(
             self.runContainersAsSamples
+        )
+
+        self.mainWidget.runFilesIndividually.triggered.connect(
+            self.runFilesIndividually
         )
 
         self.mainWidget.checkFilesExist.triggered.connect(
@@ -1026,6 +1031,43 @@ class GudPyMainWindow(QMainWindow):
     def runContainersAsSamples(self):
         self.setControlsEnabled(False)
         dcs = RunContainersAsSamples(self.gudrunFile).runContainersAsSamples(
+            path=os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.outpath
+            ),
+            headless=False
+        )
+        if isinstance(dcs, Sequence):
+            dcs, func, args = dcs
+        if isinstance(dcs, FileNotFoundError):
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                "Couldn't find gudrun_dcs binary."
+            )
+        elif (
+            not self.gudrunFile.purged
+            and os.path.exists(
+                os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    'purge_det.dat'
+                )
+            )
+        ):
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "purge_det.dat found, but wasn't run in this session. "
+                "Continue?"
+            )
+        elif not self.gudrunFile.purged:
+            self.purgeOptionsMessageBox(
+                dcs, func, args,
+                "It looks like you may not have purged detectors. Continue?"
+            )
+        else:
+            self.makeProc(dcs, self.progressDCS, func, args)
+
+    def runFilesIndividually(self):
+        dcs = RunIndividualFiles(self.gudrunFile).gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
