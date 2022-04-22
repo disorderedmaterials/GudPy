@@ -2,6 +2,7 @@ from copy import deepcopy
 
 from core.data_files import DataFiles
 
+
 class RunIndividualFiles():
     """
     Class for running data files individually for samples.
