@@ -253,8 +253,10 @@ class WavelengthSubtractionIterator():
         for i in range(n):
 
             self.wavelengthIteration(i)
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
+            self.gudrunFile.iterativeOrganise(f"WavelengthIteration_{i+1}")
             self.QIteration(i)
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
+            self.gudrunFile.iterativeOrganise(f"QIteration_{i+1}")

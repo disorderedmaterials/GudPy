@@ -87,6 +87,7 @@ class TweakFactorIterator():
 
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
             self.performIteration(i)
+            self.gudrunFile.iterativeOrganise(f"IterateByTweakFactor_{i+1}")

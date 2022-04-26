@@ -6,7 +6,10 @@ import time
 from core.gud_file import GudFile
 
 
-def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
+def gss(
+    f, bounds, n, maxN, rtol, args=(),
+    startIterFunc=None, endIterFunc=None
+):
     if startIterFunc:
         startIterFunc(n)
     if n >= maxN:
@@ -16,6 +19,8 @@ def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
         (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])]))
         < (rtol/100)**2
     ):
+        if endIterFunc:
+            endIterFunc(n)
         return (bounds[2] + bounds[1]) / 2
 
     # Calculate a potential centre = c + 2 - GR * (upper-c)
@@ -24,23 +29,31 @@ def gss(f, bounds, n, maxN, rtol, args=(), startIterFunc=None):
     # If the new centre evaluates to less than the current
     fd1 = f(d, *args)
     if fd1 is None:
+        if endIterFunc:
+            endIterFunc(n)
         return None
     fd2 = f(bounds[1], *args)
     if fd2 is None:
+        if endIterFunc:
+            endIterFunc(n)
         return None
     if fd1 < fd2:
         # Swap them, making the previous centre the new lower bound.
         bounds = [bounds[1], d, bounds[2]]
+        if endIterFunc:
+            endIterFunc(n)
         return gss(
             f, bounds, n+1, maxN, rtol,
-            args=args, startIterFunc=startIterFunc
+            args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
         )
     # Otherwise, swap and reverse.
     else:
         bounds = [d, bounds[1], bounds[0]]
+        if endIterFunc:
+            endIterFunc()
         return gss(
             f, bounds, n+1, maxN, rtol,
-            args=args, startIterFunc=startIterFunc
+            args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
         )
 
 

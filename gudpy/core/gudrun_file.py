@@ -27,6 +27,7 @@ from core.composition import Component, Composition
 from core.element import Element
 from core.data_files import DataFiles
 from core.purge_file import PurgeFile
+from core.output_file_handler import OutputFileHandler
 from core.enums import (
     CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
@@ -1442,7 +1443,7 @@ class GudrunFile:
     def write_yaml(self, path):
         self.yaml.writeYAML(self, path)
 
-    def write_out(self, path='', overwrite=False, writeParameters=False):
+    def write_out(self, path='', overwrite=False, writeParameters=True):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1486,11 +1487,12 @@ class GudrunFile:
                         gf.write_out(
                             path=os.path.join(
                                 self.instrument.GudrunInputFileDir,
-                                s.pathName()
-                            )
+                                s.pathName(),
+                            ),
+                            writeParameters=False
                         )
 
-    def dcs(self, path='', headless=True):
+    def dcs(self, path='', headless=True, iterative=False):
         """
         Call gudrun_dcs on the path supplied.
         If the path is its default value,
@@ -1522,6 +1524,8 @@ class GudrunFile:
             except FileNotFoundError:
                 os.chdir(cwd)
                 return False
+            if not iterative:
+                self.naiveOrganise()
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1543,12 +1547,11 @@ class GudrunFile:
                     self.write_out,
                     [
                         path,
-                        False,
-                        True
+                        False
                     ]
                 )
 
-    def process(self, headless=True):
+    def process(self, headless=True, iterative=False):
         """
         Write out the current state of the file,
         and then call gudrun_dcs on the file that
@@ -1566,7 +1569,11 @@ class GudrunFile:
         cwd = os.getcwd()
         os.chdir(self.instrument.GudrunInputFileDir)
         self.write_out()
-        dcs = self.dcs(path=self.outpath, headless=headless)
+        dcs = self.dcs(
+            path=self.outpath,
+            headless=headless,
+            iterative=iterative
+        )
         os.chdir(cwd)
         return dcs
 
@@ -1602,13 +1609,16 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
+    def naiveOrganise(self):
+        outputFileHandler = OutputFileHandler(self)
+        outputFileHandler.naiveOrganise()
+
+    def iterativeOrganise(self, head):
+        outputFileHandler = OutputFileHandler(self)
+        outputFileHandler.iterativeOrganise(head)
+
 
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken
 Container.consumeUpToDelim = GudrunFile.consumeUpToDelim
 Container.consumeWhitespace = GudrunFile.consumeWhitespace
-
-if __name__ == "__main__":
-    g = GudrunFile(
-        path="/home/jared/GudPy/GudPy/test/TestData/NIMROD-water/water.txt"
-        )
