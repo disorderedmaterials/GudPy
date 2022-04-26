@@ -1035,7 +1035,8 @@ class GudPyMainWindow(QMainWindow):
 
     def runContainersAsSamples(self):
         self.setControlsEnabled(False)
-        dcs = RunContainersAsSamples(self.gudrunFile).runContainersAsSamples(
+        runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
+        dcs = runContainersAsSamples.runContainersAsSamples(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
@@ -1059,19 +1060,19 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile), func, args,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile), func, args,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
             self.makeProc(
                 dcs, self.progressDCS,
-                self.runGudrunFinished,
+                lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile),
                 func=func, args=args
             )
 
