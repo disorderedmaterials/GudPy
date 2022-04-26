@@ -1043,6 +1043,12 @@ class GudPyMainWindow(QMainWindow):
             ),
             headless=False
         )
+
+        def finished():
+            self.runGudrunFinished(
+                runContainersAsSamples.gudrunFile
+            )
+
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
@@ -1060,19 +1066,19 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile), func, args,
+                dcs, finished, func, args,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile), func, args,
+                dcs, finished, func, args,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
             self.makeProc(
                 dcs, self.progressDCS,
-                lambda: self.runGudrunFinished(runContainersAsSamples.gudrunFile),
+                finished=finished,
                 func=func, args=args
             )
 
@@ -1083,8 +1089,14 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
             ),
-            headless=False  
+            headless=False
         )
+
+        def finished():
+            self.runGudrunFinished(
+                runIndividualFiles.gudrunFile
+            )
+
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
@@ -1102,17 +1114,20 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, lambda: self.runGudrunFinished(runIndividualFiles.gudrunFile), func, args,
+                dcs, finished, func, args,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, lambda: self.runGudrunFinished(runIndividualFiles.gudrunFile), func, args,
+                dcs, finished, func, args,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
-            self.makeProc(dcs, self.progressDCS, finished=lambda self: self.runGudrunFinished(runIndividualFiles.gudrunFile), func=func, args=args)
+            self.makeProc(
+                dcs, self.progressDCS,
+                finished=finished, func=func, args=args
+            )
 
     def purgeOptionsMessageBox(self, dcs, finished, func, args, text):
         messageBox = QMessageBox(self.mainWidget)
