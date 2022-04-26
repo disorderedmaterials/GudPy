@@ -1017,13 +1017,13 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, self.runGudrunFinished, func, args,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, self.runGudrunFinished, func, args,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
@@ -1076,12 +1076,13 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runFilesIndividually(self):
-        dcs = RunIndividualFiles(self.gudrunFile).gudrunFile.dcs(
+        runIndividualFiles = RunIndividualFiles(self.gudrunFile)
+        dcs = runIndividualFiles.gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
                 self.gudrunFile.outpath
             ),
-            headless=False
+            headless=False  
         )
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
@@ -1100,19 +1101,19 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, lambda: self.runGudrunFinished(runIndividualFiles.gudrunFile), func, args,
                 "purge_det.dat found, but wasn't run in this session. "
                 "Continue?"
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, func, args,
+                dcs, lambda: self.runGudrunFinished(runIndividualFiles.gudrunFile), func, args,
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
-            self.makeProc(dcs, self.progressDCS, func, args)
+            self.makeProc(dcs, self.progressDCS, finished=lambda self: self.runGudrunFinished(runIndividualFiles.gudrunFile), func=func, args=args)
 
-    def purgeOptionsMessageBox(self, dcs, func, args, text):
+    def purgeOptionsMessageBox(self, dcs, finished, func, args, text):
         messageBox = QMessageBox(self.mainWidget)
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
@@ -1137,7 +1138,7 @@ class GudPyMainWindow(QMainWindow):
         elif result == messageBox.Yes:
             self.makeProc(
                 dcs, self.progressDCS,
-                self.runGudrunFinished,
+                finished=finished,
                 func=func, args=args
             )
         else:
@@ -1649,8 +1650,11 @@ class GudPyMainWindow(QMainWindow):
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
-    def runGudrunFinished(self):
-        self.gudrunFile.naiveOrganise()
+    def runGudrunFinished(self, gudrunFile=None):
+        if gudrunFile:
+            gudrunFile.naiveOrganise()
+        else:
+            self.gudrunFile.naiveOrganise()
         self.procFinished()
 
     def procFinished(self):
