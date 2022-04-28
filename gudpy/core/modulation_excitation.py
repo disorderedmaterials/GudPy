@@ -1,10 +1,13 @@
-from asyncio import subprocess
 import os
+import subprocess
 
 from core.enums import ExtrapolationModes
 from core.utils import resolve
 from copy import deepcopy
 import tempfile
+import shutil
+
+from core.file_library import GudPyFileLibrary
 
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -65,6 +68,7 @@ class ModulationExcitation():
         self.period = Period()
         self.extrapolationMode = ExtrapolationModes.NONE
         self.startPulse = None
+        self.auxDir = None
         self.outputDir = None
         self.sample = None
         self.useDefinedPulses = True
@@ -73,19 +77,48 @@ class ModulationExcitation():
         with open('modex.cfg', 'w') as fp:
             fp.write(str(self))
 
-    def run(self, headless=True):
+    def run(self, useTempDir=False, headless=True):
 
         if headless:
-            self.write_out()
+            gf = deepcopy(self.gudrunFile)
             modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
+            if useTempDir:
+                self.auxDir = tempfile.TemporaryDirectory().name
+                for dataFile in self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
+                    shutil.copyfile(
+                        os.path.join(
+                            self.gudrunFile.instrument.dataFileDir,
+                            dataFile
+                        ),
+                        os.path.join(
+                            self.auxDir,
+                            dataFile
+                        )
+                    )
+                    self.gudrunFile.instrument.dataFileDir = self.auxDir
+            else:
+                self.auxDir = self.gudrunFile.instrument.dataFileDir
+            self.write_out()
+            files = os.listdir(self.auxDir)
             result = subprocess.run(
                 [modulation_excitation, "modex.cfg"], capture_output=True, text=True
             )
-            print(result)
-            gf = deepcopy(self.gudrunFile)
-            for df in os.listdir(self.outputDir):
-                pass
-
+            files = [f for f in os.listdir(self.auxDir) if not f in files]
+            print(result.stdout)
+            print (GudPyFileLibrary(self.gudrunFile).files)
+            with tempfile.TemporaryDirectory() as t:
+                for f in files:
+                    gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [f]                    
+                    gf.instrument.GudrunInputFileDir = t
+                    gf.path = os.path.join(gf.instrument.GudrunInputFileDir, os.path.basename(gf.path))
+                    gf.path
+                    gf.process()
+                    base = os.path.splitext(f)[0]
+                    shutil.copyfile(os.path.join(t, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
+                        # for f in os.listdir(t):
+                        #     if f.endswith("mint01"):
+                        #         print(os.path.join(t,f))
+                        #         shutil.copyfile(os.path.join(t, f), os.path.join(self.outputDir, f))
 
     def __str__(self):
 
@@ -94,13 +127,14 @@ class ModulationExcitation():
                 os.path.abspath(
                     os.path.join(self.gudrunFile.instrument.dataFileDir, df)
                 )
-                for df in self.sample.dataFiles.dataFiles
+                for df in self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles
             ]
         )
 
         return (
-            f"{self.outputDir}\n"
-            f"{len(self.sample.dataFiles.dataFiles)}\n"
+            f"{self.auxDir}\n"
+            f"{os.path.join(self.gudrunFile.instrument.GudrunStartFolder, self.gudrunFile.instrument.nxsDefinitionFile)}\n"
+            f"{len(self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles)}\n"
             f"{dataFilesLines}\n"
             f"{ExtrapolationModes(self.extrapolationMode.value).name}\n"
             f"{str(self.period)}"
