@@ -81,7 +81,7 @@ class ModulationExcitation():
         with open(self.path, 'w') as fp:
             fp.write(str(self))
 
-    def modex(self, useTempDir=False, headless=False):
+    def preprocess(self, useTempDir=False, headless=True):
         if headless:
             modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
             if useTempDir:
@@ -116,61 +116,29 @@ class ModulationExcitation():
             proc.setArguments([self.path])
             return proc
 
-
-    def run(self, useTempDir=False, headless=True):
-
+    def process(self, files, dir=None, headless=True):
+        if not dir:
+            dir = tempfile.TemporaryDirectory()
         if headless:
-            gf = deepcopy(self.gudrunFile)
-            modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
-            if useTempDir:
-                self.auxDir = tempfile.TemporaryDirectory().name
-                for dataFile in self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
-                    shutil.copyfile(
-                        os.path.join(
-                            self.gudrunFile.instrument.dataFileDir,
-                            dataFile
-                        ),
-                        os.path.join(
-                            self.auxDir,
-                            dataFile
-                        )
-                    )
-                    self.gudrunFile.instrument.dataFileDir = self.auxDir
-            else:
-                self.auxDir = self.gudrunFile.instrument.dataFileDir
-            self.write_out()
-            files = os.listdir(self.auxDir)
-            result = subprocess.run(
-                [modulation_excitation, "modex.cfg"], capture_output=True, text=True
-            )
-            files = [f for f in os.listdir(self.auxDir) if not f in files]
-            with tempfile.TemporaryDirectory() as t:
                 for f in files:
+                    gf = deepcopy(self.gudrunFile)
                     gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [f]                    
-                    gf.instrument.GudrunInputFileDir = t
+                    gf.instrument.GudrunInputFileDir = dir
                     gf.path = os.path.join(gf.instrument.GudrunInputFileDir, os.path.basename(gf.path))
-                    gf.path
                     gf.process()
                     base = os.path.splitext(f)[0]
-                    shutil.copyfile(os.path.join(t, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
+                    shutil.copyfile(os.path.join(dir, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
         else:
-            gf = deepcopy(self.gudrunFile)
-            if hasattr(sys, '_MEIPASS'):
-                modulation_excitation = os.path.join(sys._MEIPASS, f"modulation_excitation{SUFFIX}")
-            else:
-                tasks = []
-                modulation_excitation = resolve(
-                    os.path.join(
-                        config.__rootdir__, "bin"
-                    ), f"modulation_excitation{SUFFIX}"
-                )
-                proc = QProcess()
-                proc.setProgram(modulation_excitation)
-                proc.setArguments([self.path])
-                tasks.append([proc, self.write_out, []])
-
-                
-            
+            tasks = []
+            for f in files:
+                gf = deepcopy(self.gudrunFile)
+                gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [f]                    
+                gf.path = os.path.join(gf.instrument.GudrunInputFileDir, os.path.basename(gf.path))
+                base = os.path.splitext(f)[0]
+                tasks.append(gf.dcs(headless=False))
+                tasks.append(shutil.copyfile, os.path.join(dir, base+".mint01"), os.path.join(self.outputDir, base+".mint011"))
+            tasks.append(dir.cleanup)
+            return tasks
 
     def __str__(self):
 
