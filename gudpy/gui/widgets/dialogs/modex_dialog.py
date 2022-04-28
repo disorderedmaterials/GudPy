@@ -105,7 +105,7 @@ class ModexDialog(QDialog):
         )
 
         self.widget.buttonBox.accepted.connect(
-            self.close
+            self.run
         )
 
         self.widget.buttonBox.rejected.connect(
@@ -122,10 +122,6 @@ class ModexDialog(QDialog):
 
         self.widget.useDataFileDirButton.toggled.connect(
             self.useDataFileDirToggled
-        )
-
-        self.widget.useDefinedDirButton.toggled.connect(
-            self.useDefinedDirectoryToggled
         )
 
         self.widget.browseOutputDirGroupBox.setVisible(False)
@@ -145,6 +141,9 @@ class ModexDialog(QDialog):
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
         self.widget.spectraChart.setTimeBoundaries(start, end)
 
+    def run(self):
+        self.gudrunFile.modex.run(useTempDir=self.useTempDir, headless=False)
+        self.widget.close()
 
     def cancel(self):
         self.cancelled = True
@@ -236,7 +235,3 @@ class ModexDialog(QDialog):
     
     def useDataFileDirToggled(self, state):
         self.useDataFileDir = state
-    
-    def useDefinedDirectoryToggled(self, state):
-        self.useDefinedDirectory = state
-        self.widget.browseOutputDirGroupBox.setVisible(state)
