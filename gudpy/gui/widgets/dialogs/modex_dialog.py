@@ -27,6 +27,7 @@ class ModexDialog(QDialog):
         )
         self.cancelled = False
         self.proc = None
+        self.useTempDir = True
 
         self.loadUI()
         self.initComponents()
@@ -34,20 +35,13 @@ class ModexDialog(QDialog):
             self.partition_events = os.path.join(
                 sys._MEIPASS, f"partition_events{SUFFIX}"
             )
-            self.modex = os.path.join(
-                sys._MEIPASS, f"modulation_excitation{SUFFIX}"
-            )
         else:
             self.partition_events = resolve(
                 os.path.join(
                     config.__rootdir__, "bin"
                 ), f"partition_events{SUFFIX}"
             )
-            self.modex = resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"modulation_excitation{SUFFIX}"
-            )
+
     def loadUI(self):
         """
         Loads the UI file for the ModexDialog object.
@@ -122,6 +116,23 @@ class ModexDialog(QDialog):
             self.browseSaveDirectory
         )
 
+        self.widget.useTempDirButton.toggled.connect(
+            self.useTempDirToggled
+        )
+
+        self.widget.useDataFileDirButton.toggled.connect(
+            self.useDataFileDirToggled
+        )
+
+        self.widget.useDefinedDirButton.toggled.connect(
+            self.useDefinedDirectoryToggled
+        )
+
+        self.widget.browseOutputDirGroupBox.setVisible(False)
+
+        self.widget.useDataFileDirButton.setEnabled(
+            os.access(self.gudrunFile.instrument.dataFileDir, os.W_OK)
+        )
 
         self.widget.spectraPlot = QChartView(
             self.widget
@@ -219,3 +230,13 @@ class ModexDialog(QDialog):
             )
         )
         self.widget.outputDirLineEdit.setText(self.gudrunFile.modex.outputDir)
+
+    def useTempDirToggled(self, state):
+        self.useTempDir = state
+    
+    def useDataFileDirToggled(self, state):
+        self.useDataFileDir = state
+    
+    def useDefinedDirectoryToggled(self, state):
+        self.useDefinedDirectory = state
+        self.widget.browseOutputDirGroupBox.setVisible(state)
