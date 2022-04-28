@@ -1,13 +1,15 @@
+from email.charset import QP
+from PySide6.QtCore import QProcess
 import os
 import subprocess
+import sys
 
 from core.enums import ExtrapolationModes
 from core.utils import resolve
+from core import config
 from copy import deepcopy
 import tempfile
 import shutil
-
-from core.file_library import GudPyFileLibrary
 
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -64,7 +66,8 @@ class Period():
 class ModulationExcitation():
 
     def __init__(self, gudrunFile):
-        self.gudrunFile = gudrunFile
+        self.ref = gudrunFile
+        self.gudrunFile = deepcopy(self.gudrunFile)
         self.period = Period()
         self.extrapolationMode = ExtrapolationModes.NONE
         self.startPulse = None
@@ -72,10 +75,47 @@ class ModulationExcitation():
         self.outputDir = None
         self.sample = None
         self.useDefinedPulses = True
+        self.path = "modex.cfg"
 
     def write_out(self):
-        with open('modex.cfg', 'w') as fp:
+        with open(self.path, 'w') as fp:
             fp.write(str(self))
+
+    def modex(self, useTempDir=False, headless=False):
+        if headless:
+            modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
+            if useTempDir:
+                self.auxDir = tempfile.TemporaryDirectory().name
+                for dataFile in self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
+                    shutil.copyfile(
+                        os.path.join(
+                            self.ref.instrument.dataFileDir,
+                            dataFile
+                        ),
+                        os.path.join(
+                            self.auxDir,
+                            dataFile
+                        )
+                    )
+                    self.gudrunFile.instrument.dataFileDir = self.auxDir
+            else:
+                self.auxDir = self.gudrunFile.instrument.dataFileDir
+            self.write_out()
+            result = subprocess.run(
+                [modulation_excitation, "modex.cfg"], capture_output=True, text=True
+            )
+            return result
+        else:
+            modulation_excitation = resolve(
+                os.path.join(
+                    config.__rootdir__, "bin"
+                ), f"modulation_excitation{SUFFIX}"
+            )
+            proc = QProcess()
+            proc.setProgram(modulation_excitation)
+            proc.setArguments([self.path])
+            return proc
+
 
     def run(self, useTempDir=False, headless=True):
 
@@ -104,8 +144,6 @@ class ModulationExcitation():
                 [modulation_excitation, "modex.cfg"], capture_output=True, text=True
             )
             files = [f for f in os.listdir(self.auxDir) if not f in files]
-            print(result.stdout)
-            print (GudPyFileLibrary(self.gudrunFile).files)
             with tempfile.TemporaryDirectory() as t:
                 for f in files:
                     gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [f]                    
@@ -115,10 +153,24 @@ class ModulationExcitation():
                     gf.process()
                     base = os.path.splitext(f)[0]
                     shutil.copyfile(os.path.join(t, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
-                        # for f in os.listdir(t):
-                        #     if f.endswith("mint01"):
-                        #         print(os.path.join(t,f))
-                        #         shutil.copyfile(os.path.join(t, f), os.path.join(self.outputDir, f))
+        else:
+            gf = deepcopy(self.gudrunFile)
+            if hasattr(sys, '_MEIPASS'):
+                modulation_excitation = os.path.join(sys._MEIPASS, f"modulation_excitation{SUFFIX}")
+            else:
+                tasks = []
+                modulation_excitation = resolve(
+                    os.path.join(
+                        config.__rootdir__, "bin"
+                    ), f"modulation_excitation{SUFFIX}"
+                )
+                proc = QProcess()
+                proc.setProgram(modulation_excitation)
+                proc.setArguments([self.path])
+                tasks.append([proc, self.write_out, []])
+
+                
+            
 
     def __str__(self):
 
