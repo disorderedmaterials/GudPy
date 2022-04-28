@@ -1,6 +1,11 @@
+from asyncio import subprocess
 import os
 
 from core.enums import ExtrapolationModes
+from gudpy.core.utils import resolve
+from copy import deepcopy
+
+SUFFIX = ".exe" if os.name == "nt" else ""
 
 
 class Pulse():
@@ -63,8 +68,22 @@ class ModulationExcitation():
         self.useDefinedPulses = True
 
     def write_out(self):
-        with open('modex.txt', 'w') as fp:
+        with open('modex.cfg', 'w') as fp:
             fp.write(str(self))
+
+    def run(self, headless=True):
+
+        if headless:
+            self.write_out()
+            modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
+            result = subprocess.run(
+                [modulation_excitation, "modex.cfg"], capture_output=True, text=True
+            )
+            print(result)
+            gf = deepcopy(self.gudrunFile)
+            for df in os.listdir(self.outputDir):
+
+
 
     def __str__(self):
 
