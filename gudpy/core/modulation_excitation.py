@@ -77,14 +77,7 @@ class ModulationExcitation():
             ]
         )
 
-        purgeLine = os.path.join(
-            self.gudrunFile.instrument.GudrunInputFileDir,
-            'purge_det.dat'
-        )
-
         return (
-            f"{os.path.abspath(self.gudrunFile.path)}\n"
-            f"{purgeLine}\n"
             f"{self.outputDir}\n"
             f"{len(self.sample.dataFiles.dataFiles)}\n"
             f"{dataFilesLines}\n"
