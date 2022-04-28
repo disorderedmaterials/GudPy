@@ -2,8 +2,10 @@ from asyncio import subprocess
 import os
 
 from core.enums import ExtrapolationModes
-from gudpy.core.utils import resolve
+from core.utils import resolve
 from copy import deepcopy
+import tempfile
+
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -82,7 +84,7 @@ class ModulationExcitation():
             print(result)
             gf = deepcopy(self.gudrunFile)
             for df in os.listdir(self.outputDir):
-
+                pass
 
 
     def __str__(self):
