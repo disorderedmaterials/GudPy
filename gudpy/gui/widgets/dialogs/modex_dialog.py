@@ -92,6 +92,10 @@ class ModexDialog(QDialog):
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
+        self.widget.periodDurationSpinBox.valueChanged.connect(
+            self.periodDurationChanged
+        )
+
         self.widget.updateSpectraButton.clicked.connect(
             self.partitionEvents
         )
@@ -216,6 +220,9 @@ class ModexDialog(QDialog):
         )
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
+    def periodDurationChanged(self, value):
+        self.gudrunFile.modex.period.duration = value
+
     def startPulseChanged(self, item):
         if self.widget.eventTableView.selectionModel().hasSelection():
             if len(item.indexes()):
@@ -223,7 +230,7 @@ class ModexDialog(QDialog):
                 startPulse = self.widget.eventTableView.model().data(
                     index, role=Qt.DisplayRole
                 )
-                self.gudrunFile.modex.startPulse = startPulse
+                self.gudrunFile.modex.period.startPulse = startPulse
 
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
