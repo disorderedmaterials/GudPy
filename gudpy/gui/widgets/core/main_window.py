@@ -105,7 +105,7 @@ from core.wavelength_subtraction_iterator import (
 )
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.gud_file import GudFile
-from core.utils import breplace, nthint
+from core.utils import breplace, isin, nthint
 from gui.widgets.core.worker import CompositionWorker
 
 
@@ -962,11 +962,15 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
-    def makeProc(self, cmd, slot, func=None, args=None):
+    def makeProc(self, cmd, slot, func=None, args=None, started=None, finished=None):
+        if not started:
+            started = self.procStarted
+        if not finished:
+            finished = self.procFinished
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
-        self.proc.started.connect(self.procStarted)
-        self.proc.finished.connect(self.procFinished)
+        self.proc.started.connect(started)
+        self.proc.finished.connect(finished)
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
@@ -1144,29 +1148,77 @@ class GudPyMainWindow(QMainWindow):
         if modexDialog.cancelled:
             self.setControlsEnabled(True)
         else:
-            self.gudrunFile.modex.write_out()
-            self.proc = QProcess()
-            self.proc.setProgram(modexDialog.modex)
-            self.proc.setArguments(["modex.txt"])
+            tasks = modexDialog.preprocess
+            for t in tasks[:-2]:
+                func, args = t
+                func(*args)
+            self.proc = tasks[-2]
             self.proc.started.connect(self.modexStarted)
-            self.proc.readyReadStandardOutput.connect(self.progressModex)
-            self.proc.finished.connect(self.modexFinished)
+            self.proc.readyReadStandardOutput.connect(self.progressModexPreprocess)
+            self.proc.finished.connect(self.preprocessModexFinished)
+            # func()
             self.proc.start()
 
     def modexStarted(self):
+        print("Modulation excitation started.")
         self.text = "Modulation Excitation"
         self.mainWidget.currentTaskLabel.setText(
             self.text
         )
     
-    def progressModex(self):
+    def progressModexPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        progress = re.findall(r'\d*%', stdout)
-        if progress:
-            self.mainWidget.progressBar.setValue(int(progress[-1][:-1]))
+        print(stdout)
+        # progress = re.findall(r'\d*%', stdout)
+        # if progress:
+        #     self.mainWidget.progressBar.setValue(int(progress[-1][:-1]))
+
+    def progressModexProcess(self):
+        return
+
+    def preprocessModexFinished(self):
+        # Get the files
+        print("Modex preprocessing finished.")
+        files = [
+            '/home/jared/STFC/GudPy/test/1584158600.mint01',
+            '/home/jared/STFC/GudPy/test/1584159090.mint01',
+            '/home/jared/STFC/GudPy/test/1584157620.mint01',
+            '/home/jared/STFC/GudPy/test/1584158110.mint01',
+            '/home/jared/STFC/GudPy/test/1584159580.mint01',
+            '/home/jared/STFC/GudPy/test/1584157130.mint01'
+        ]
+        tasks = self.gudrunFile.modex.process(files, headless=False)
+        self.queue = Queue()
+        for t in tasks:
+            self.queue.put(t)
+        print("Queue of tasks created.")
+        self.processPulse()
+    
+    def processPulse(self):
+        task = self.queue.get()
+        if isinstance(task[0], QProcess):
+            print("Processing pulse.")
+            dcs, func, args = task
+            self.makeProc(dcs, self.progressModexProcess, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
+        else:
+            func, args = task
+            func(*args)
+            self.modexFinished()
+
+    def processPulseStarted(self):
+        return
+
+    def processPulseFinished(self):
+        func, args = self.queue.get()
+        func(*args)
+        if not self.queue.empty():
+            self.processPulse()
+        else:
+            self.modexFinished()
 
     def modexFinished(self):
+        print("Modex finished.")
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.proc = None

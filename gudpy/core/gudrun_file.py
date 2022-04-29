@@ -144,7 +144,6 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-        self.modex = ModulationExcitation(self)
 
         if isinstance(path, type(None)):
             self.instrument = Instrument()
@@ -162,6 +161,7 @@ class GudrunFile:
         # Parse the GudrunFile.
         self.stream = None
         self.purgeFile = PurgeFile(self)
+        self.modex = ModulationExcitation(self)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)

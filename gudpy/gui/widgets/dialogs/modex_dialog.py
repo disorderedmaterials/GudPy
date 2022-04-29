@@ -1,4 +1,5 @@
 import os
+from queue import Queue
 import sys
 import h5py as h5
 
@@ -27,6 +28,7 @@ class ModexDialog(QDialog):
         )
         self.cancelled = False
         self.proc = None
+        self.queue = None
         self.useTempDir = True
 
         self.loadUI()
@@ -112,6 +114,10 @@ class ModexDialog(QDialog):
             self.cancel
         )
 
+        self.widget.periodGroupBox.toggled.connect(
+            self.useDefinedPulsesToggled
+        )
+
         self.widget.browseOutputDirButton.clicked.connect(
             self.browseSaveDirectory
         )
@@ -124,7 +130,6 @@ class ModexDialog(QDialog):
             self.useDataFileDirToggled
         )
 
-        self.widget.browseOutputDirGroupBox.setVisible(False)
 
         self.widget.useDataFileDirButton.setEnabled(
             os.access(self.gudrunFile.instrument.dataFileDir, os.W_OK)
@@ -141,8 +146,12 @@ class ModexDialog(QDialog):
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
         self.widget.spectraChart.setTimeBoundaries(start, end)
 
+
+    def process(self, files):
+        pass
+        
     def run(self):
-        self.gudrunFile.modex.run(useTempDir=self.useTempDir, headless=False)
+        self.preprocess = self.gudrunFile.modex.preprocess(useTempDir=self.useTempDir, headless=False)
         self.widget.close()
 
     def cancel(self):
@@ -207,7 +216,6 @@ class ModexDialog(QDialog):
         )
         self.gudrunFile.modex.extrapolationMode = extrapolationMode
 
-
     def startPulseChanged(self, item):
         if self.widget.eventTableView.selectionModel().hasSelection():
             if len(item.indexes()):
@@ -235,3 +243,6 @@ class ModexDialog(QDialog):
     
     def useDataFileDirToggled(self, state):
         self.useDataFileDir = state
+
+    def useDefinedPulsesToggled(self, state):
+        self.gudrunFile.modex.definedPulses = state
