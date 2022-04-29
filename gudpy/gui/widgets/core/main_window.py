@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import os
 import sys
+from this import d
 import time
 import math
 import traceback
@@ -962,17 +963,19 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
-    def makeProc(self, cmd, slot, func=None, args=None, started=None, finished=None):
+    def makeProc(self, cmd, slot, dir=None, func=None, args=None, started=None, finished=None):
         if not started:
             started = self.procStarted
         if not finished:
             finished = self.procFinished
+        if not dir:
+            dir = self.gudrunFile.instrument.GudrunInputFileDir
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(started)
         self.proc.finished.connect(finished)
         self.proc.setWorkingDirectory(
-            self.gudrunFile.instrument.GudrunInputFileDir
+            dir
         )
         if func:
             func(*args)
@@ -1148,19 +1151,29 @@ class GudPyMainWindow(QMainWindow):
         if modexDialog.cancelled:
             self.setControlsEnabled(True)
         else:
+            # tasks = modexDialog.preprocess
+            # # for t in tasks[:-2]:
+            # #     func, args = t
+            # #     func(*args)
+            # # self.proc = tasks[-2]
+            # self.proc, func, args = modexDialog.preprocess
+            # func(*args)
             tasks = modexDialog.preprocess
-            for t in tasks[:-2]:
-                func, args = t
+            for task in tasks[:-1]:
+                func, args = task
                 func(*args)
-            self.proc = tasks[-2]
+            # self.proc, func, args = tasks[-1]
+            # func(*args)
+            self.proc = tasks[-1]
             self.proc.started.connect(self.modexStarted)
             self.proc.readyReadStandardOutput.connect(self.progressModexPreprocess)
+            self.proc.readyReadStandardError.connect(self.progressModexPreprocess)
             self.proc.finished.connect(self.preprocessModexFinished)
-            # func()
             self.proc.start()
 
     def modexStarted(self):
         print("Modulation excitation started.")
+        self.modexFiles = set()
         self.text = "Modulation Excitation"
         self.mainWidget.currentTaskLabel.setText(
             self.text
@@ -1169,26 +1182,30 @@ class GudPyMainWindow(QMainWindow):
     def progressModexPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
+        # print(stdout)
+        # print("new:" + stdout)
+        _, _, data = stdout.partition("Finished processing: ")
+        if data:
+            self.modexFiles.add(data.split()[0])
+        data = self.proc.readAllStandardError()
+        if data:
+            stderr = bytes(data).decode("utf8")
+        # if "Finished processing: " in stdout:
+
+
         # progress = re.findall(r'\d*%', stdout)
         # if progress:
         #     self.mainWidget.progressBar.setValue(int(progress[-1][:-1]))
 
     def progressModexProcess(self):
-        return
+        data = self.proc.readAllStandardOutput()
+        stdout = bytes(data).decode("utf8")
+        # print(stdout)
 
     def preprocessModexFinished(self):
         # Get the files
         print("Modex preprocessing finished.")
-        files = [
-            '/home/jared/STFC/GudPy/test/1584158600.mint01',
-            '/home/jared/STFC/GudPy/test/1584159090.mint01',
-            '/home/jared/STFC/GudPy/test/1584157620.mint01',
-            '/home/jared/STFC/GudPy/test/1584158110.mint01',
-            '/home/jared/STFC/GudPy/test/1584159580.mint01',
-            '/home/jared/STFC/GudPy/test/1584157130.mint01'
-        ]
-        tasks = self.gudrunFile.modex.process(files, headless=False)
+        tasks = self.gudrunFile.modex.process(list(self.modexFiles), headless=False)
         self.queue = Queue()
         for t in tasks:
             self.queue.put(t)
@@ -1199,8 +1216,8 @@ class GudPyMainWindow(QMainWindow):
         task = self.queue.get()
         if isinstance(task[0], QProcess):
             print("Processing pulse.")
-            dcs, func, args = task
-            self.makeProc(dcs, self.progressModexProcess, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
+            dcs, func, args, dir = task
+            self.makeProc(dcs, self.progressModexProcess, dir=dir, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
         else:
             func, args = task
             func(*args)
