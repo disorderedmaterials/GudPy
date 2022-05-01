@@ -174,7 +174,8 @@ class ModexDialog(QDialog):
                     .samples[0].dataFiles.dataFiles[0]
                 ),
                 str(self.widget.lowerSpecSpinBox.value()),
-                str(self.widget.upperSpecSpinBox.value())
+                str(self.widget.upperSpecSpinBox.value()),
+                "output.nxs"
             ]
         )
         self.proc.finished.connect(self.updateSpectra)
