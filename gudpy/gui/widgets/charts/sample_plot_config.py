@@ -20,7 +20,7 @@ class SamplePlotConfig():
         if len(self.sample.dataFiles.dataFiles):
 
             baseFile = self.sample.dataFiles.dataFiles[0]
-            ext = os.path.splitext(self.sample.dataFiles.dataFiles[0])[1]
+            ext = os.path.splitext(self.sample.dataFiles.dataFiles[0])[-1]
 
             # mint01 dataset.
             mintPath = baseFile.replace(ext, ".mint01")
