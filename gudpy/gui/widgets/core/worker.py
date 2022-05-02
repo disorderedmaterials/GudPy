@@ -84,7 +84,7 @@ class CompositionWorker(QObject):
         # Set up process and execute.
         outpath = os.path.join(
             gf.instrument.GudrunInputFileDir,
-            "txt"
+            "gudpy.txt"
         )
         self.proc, func, args = gf.dcs(path=outpath, headless=False)
         func(*args)
