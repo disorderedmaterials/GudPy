@@ -515,8 +515,8 @@ class GudPyMainWindow(QMainWindow):
         self.setWindowModified(False)
 
     def tryLoadAutosaved(self, path):
-        dir = os.path.dirname(path)
-        for f in os.listdir(dir):
+        dir_ = os.path.dirname(path)
+        for f in os.listdir(dir_):
             if os.path.abspath(f) == path + ".autosave":
 
                 if str(GudrunFile(path))[:-5] == str(GudrunFile(f))[:-5]:
@@ -963,20 +963,21 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
-    def makeProc(self, cmd, slot, dir=None, func=None, args=None, started=None, finished=None):
+    def makeProc(self, cmd, slot, dir_=None, func=None, args=None, started=None, finished=None):
         if not started:
             started = self.procStarted
         if not finished:
             finished = self.procFinished
-        if not dir:
-            dir = self.gudrunFile.instrument.GudrunInputFileDir
+        if not dir_:
+            dir_ = self.gudrunFile.instrument.GudrunInputFileDir
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(started)
         self.proc.finished.connect(finished)
         self.proc.setWorkingDirectory(
-            dir
+            dir_
         )
+        print(f"Working dir is {dir_}")
         if func:
             func(*args)
         self.proc.start()
@@ -1164,6 +1165,7 @@ class GudPyMainWindow(QMainWindow):
                 func(*args)
             # self.proc, func, args = tasks[-1]
             # func(*args)
+            print(tasks[-1])
             self.proc = tasks[-1]
             self.proc.started.connect(self.modexStarted)
             self.proc.readyReadStandardOutput.connect(self.progressModexPreprocess)
@@ -1200,7 +1202,7 @@ class GudPyMainWindow(QMainWindow):
     def progressModexProcess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        # print(stdout)
+        print(stdout)
 
     def preprocessModexFinished(self):
         # Get the files
@@ -1214,10 +1216,13 @@ class GudPyMainWindow(QMainWindow):
     
     def processPulse(self):
         task = self.queue.get()
+        print(task)
+        print(task[0])
         if isinstance(task[0], QProcess):
             print("Processing pulse.")
-            dcs, func, args, dir = task
-            self.makeProc(dcs, self.progressModexProcess, dir=dir, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
+            dcs, func, args, dir_ = task
+            print(dir_)
+            self.makeProc(dcs, self.progressModexProcess, dir_=dir_, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
         else:
             func, args = task
             func(*args)

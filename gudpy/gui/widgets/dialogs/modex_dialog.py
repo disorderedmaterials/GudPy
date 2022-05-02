@@ -43,6 +43,7 @@ class ModexDialog(QDialog):
                     config.__rootdir__, "bin"
                 ), f"partition_events{SUFFIX}"
             )
+        self.run()
 
     def loadUI(self):
         """
@@ -146,10 +147,10 @@ class ModexDialog(QDialog):
         self.widget.pulsePlotLayout.addWidget(
             self.widget.spectraPlot
         )
-        self.widget.spectraChart = SpectraChart()
+        self.widget.spectraChart = SpectraChart(self.widget)
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
         self.widget.spectraChart.setTimeBoundaries(start, end)
-
+        self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
 
     def process(self, files):
         pass

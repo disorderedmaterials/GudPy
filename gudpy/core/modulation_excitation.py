@@ -106,9 +106,13 @@ class ModulationExcitation():
                         )
                     )
             else:
+                for dataFile in self.ref.normalisation.dataFiles.dataFiles:
+                    tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
                 for dataFile in self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
                     tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
-
+                for container in self.ref.sampleBackgrounds[0].samples[0].containers:
+                    for dataFile in container.dataFiles.dataFiles:
+                        tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
         if headless:
             self.write_out()
             result = subprocess.run(
@@ -136,11 +140,21 @@ class ModulationExcitation():
             gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [base]
             gf.instrument.GudrunInputFileDir = self.tmp.name
             base = os.path.split(f)[0]
+            print("BASE: " + base)
             if headless:
                 gf.process()
                 shutil.copyfile(os.path.join(self.tmp.name, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
             else:
-                tasks.append((gf.dcs(path=os.path.join(self.tmp.name, "gudpy.txt"), headless=False), self.tmp.name))
+                dcs, func, args = gf.dcs(
+                    path = os.path.join(
+                        self.tmp.name,
+                        "gudpy.txt"
+                    ),
+                    headless=False
+                )
+                task = (dcs, func, args, self.tmp.name)
+                tasks.append(task)
+                # tasks.append(gf.dcs(path=os.path.join(self.tmp.name, "gudpy.txt"), headless=False),  + (self.tmp.name))
                 src = os.path.join(self.tmp.name, base+".mint01")
                 dest = os.path.join(self.outputDir, base+".mint01")
                 tasks.append((self.copyfile, [src, dest]))
