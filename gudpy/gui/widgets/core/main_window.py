@@ -1,7 +1,6 @@
 from abc import abstractmethod
 import os
 import sys
-from this import d
 import time
 import math
 import traceback
