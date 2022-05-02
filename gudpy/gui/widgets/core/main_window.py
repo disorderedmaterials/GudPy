@@ -1151,20 +1151,11 @@ class GudPyMainWindow(QMainWindow):
         if modexDialog.cancelled:
             self.setControlsEnabled(True)
         else:
-            # tasks = modexDialog.preprocess
-            # # for t in tasks[:-2]:
-            # #     func, args = t
-            # #     func(*args)
-            # # self.proc = tasks[-2]
-            # self.proc, func, args = modexDialog.preprocess
-            # func(*args)
             tasks = modexDialog.preprocess
             for task in tasks[:-1]:
                 func, args = task
                 func(*args)
-            # self.proc, func, args = tasks[-1]
-            # func(*args)
-            print(tasks[-1])
+
             self.proc = tasks[-1]
             self.proc.started.connect(self.modexStarted)
             self.proc.readyReadStandardOutput.connect(self.progressModexPreprocess)
