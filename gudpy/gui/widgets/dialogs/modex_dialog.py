@@ -27,8 +27,7 @@ class ModexDialog(QDialog):
             gudrunFile.sampleBackgrounds[0].samples[0]
         )
         self.cancelled = False
-        self.proc = None
-        self.queue = None
+        self.preprocess = None
         self.useTempDir = True
 
         self.loadUI()

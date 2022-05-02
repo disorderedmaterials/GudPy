@@ -1148,7 +1148,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(False)
         modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
         modexDialog.widget.exec()
-        if modexDialog.cancelled:
+        if modexDialog.cancelled or not modexDialog.preprocess:
             self.setControlsEnabled(True)
         else:
             tasks = modexDialog.preprocess
