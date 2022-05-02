@@ -1183,11 +1183,13 @@ class GudPyMainWindow(QMainWindow):
     def progressModexPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
+        print(stdout)
         # print(stdout)
         # print("new:" + stdout)
         _, _, data = stdout.partition("Finished processing: ")
         if data:
             self.modexFiles.add(data.split()[0])
+            print(data.split()[0])
         data = self.proc.readAllStandardError()
         if data:
             stderr = bytes(data).decode("utf8")
@@ -1206,7 +1208,9 @@ class GudPyMainWindow(QMainWindow):
     def preprocessModexFinished(self):
         # Get the files
         print("Modex preprocessing finished.")
+        print(self.modexFiles)
         tasks = self.gudrunFile.modex.process(list(self.modexFiles), headless=False)
+        print(tasks)
         self.queue = Queue()
         for t in tasks:
             self.queue.put(t)
