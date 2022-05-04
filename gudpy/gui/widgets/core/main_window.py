@@ -1184,6 +1184,7 @@ class GudPyMainWindow(QMainWindow):
         data = self.proc.readAllStandardError()
         if data:
             stderr = bytes(data).decode("utf8")
+            print(stderr)
         # if "Finished processing: " in stdout:
 
 
@@ -1194,7 +1195,7 @@ class GudPyMainWindow(QMainWindow):
     def progressModexProcess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
+        # print(stdout)
 
     def preprocessModexFinished(self):
         # Get the files
@@ -1210,8 +1211,6 @@ class GudPyMainWindow(QMainWindow):
     
     def processPulse(self):
         task = self.queue.get()
-        print(task)
-        print(task[0])
         if isinstance(task[0], QProcess):
             print("Processing pulse.")
             dcs, func, args, dir_ = task
@@ -1219,6 +1218,7 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(dcs, self.progressModexProcess, dir_=dir_, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
         else:
             func, args = task
+            print(f"Args are {args}")
             func(*args)
             self.modexFinished()
 

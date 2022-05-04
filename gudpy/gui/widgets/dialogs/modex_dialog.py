@@ -26,6 +26,7 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.sample = (
             gudrunFile.sampleBackgrounds[0].samples[0]
         )
+        self.gudrunFile.modex.period.startPulse = 12129.
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
@@ -146,10 +147,10 @@ class ModexDialog(QDialog):
         self.widget.pulsePlotLayout.addWidget(
             self.widget.spectraPlot
         )
-        self.widget.spectraChart = SpectraChart(self.widget)
-        self.widget.spectraPlot.setChart(self.widget.spectraChart)
-        self.widget.spectraChart.setTimeBoundaries(start, end)
-        self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
+        # self.widget.spectraChart = SpectraChart(self.widget)
+        # self.widget.spectraPlot.setChart(self.widget.spectraChart)
+        # self.widget.spectraChart.setTimeBoundaries(start, end)
+        # self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
 
     def process(self, files):
         pass
@@ -209,7 +210,7 @@ class ModexDialog(QDialog):
                 self.widget.eventTableView.selectionModel().selectionChanged.connect(
                     self.startPulseChanged
                 )
-                self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
+                # self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
 
     def toggleUseAllPulses(self, state):
         self.widget.extrapolationModeComboBox.setEnabled(not state)
