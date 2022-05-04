@@ -59,7 +59,7 @@ class SampleBackgroundSlots():
         if not value:
             self.sampleBackground.dataFiles.dataFiles.remove(index)
         else:
-            self.sampleBackground.dataFiles.dataFiles[index] = value
+            self.sampleBackground.dataFiles[index] = value
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -73,7 +73,7 @@ class SampleBackgroundSlots():
     def updateDataFilesList(self):
         self.widget.sampleBackgroundDataFilesList.clear()
         self.widget.sampleBackgroundDataFilesList.addItems(
-            [df for df in self.sampleBackground.dataFiles.dataFiles]
+            [df for df in self.sampleBackground.dataFiles]
         )
 
     def addFiles(self, target, title, regex):

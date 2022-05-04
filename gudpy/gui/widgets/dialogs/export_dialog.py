@@ -80,9 +80,9 @@ class ExportDialog(QDialog):
         for sample in [
             s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples
         ]:
-            if len(sample.dataFiles.dataFiles):
+            if len(sample.dataFiles):
                 mintFile = (
-                    sample.dataFiles.dataFiles[0]
+                    sample.dataFiles[0]
                     .replace(
                         self.gudrunFile.instrument.dataFileType,
                         "mint01"

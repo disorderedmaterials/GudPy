@@ -47,7 +47,7 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyDCS(self):
 
         self.g.dcs()
-        gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf1 = GudFile(
             os.path.join(
@@ -69,7 +69,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[2].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf3 = GudFile(
             os.path.join(
@@ -94,7 +94,7 @@ class TestGudPyWorkflows(TestCase):
         for sample in self.g.sampleBackgrounds[0].samples:
 
             mintFilename = (
-                sample.dataFiles.dataFiles[0].replace(
+                sample.dataFiles[0].replace(
                     self.g.instrument.dataFileType, "mint01"
                 )
             )
@@ -143,7 +143,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf2 = GudFile(
             os.path.join(
@@ -165,7 +165,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf4 = GudFile(
             os.path.join(
@@ -193,7 +193,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf2 = GudFile(
             os.path.join(
@@ -215,7 +215,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf4 = GudFile(
             os.path.join(
@@ -243,7 +243,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf2 = GudFile(
             os.path.join(
@@ -265,7 +265,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf4 = GudFile(
             os.path.join(
@@ -293,7 +293,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[1].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf2 = GudFile(
             os.path.join(
@@ -315,7 +315,7 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 100.0, 0)
 
-        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles.dataFiles[0]
+        gfPath = self.g.sampleBackgrounds[0].samples[3].dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
         gf4 = GudFile(
             os.path.join(
@@ -374,7 +374,7 @@ class TestGudPyWorkflows(TestCase):
                     if x.runThisSample
                     ]:
                 mintFilename = (
-                    sample.dataFiles.dataFiles[0].replace(
+                    sample.dataFiles[0].replace(
                         self.g.instrument.dataFileType, "mint01"
                     )
                 )
@@ -410,7 +410,7 @@ class TestGudPyWorkflows(TestCase):
                 self.assertTrue((close/total) >= 0.95)
 
                 msubFilename = (
-                    sample.dataFiles.dataFiles[0].replace(
+                    sample.dataFiles[0].replace(
                         self.g.instrument.dataFileType, "msubw01"
                     )
                 )

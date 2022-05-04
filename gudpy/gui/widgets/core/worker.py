@@ -109,7 +109,7 @@ class CompositionWorker(QObject):
             self.errored = True
             return None
 
-        gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
+        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
             gudrunFile.instrument.dataFileType,
             "gud"
         )

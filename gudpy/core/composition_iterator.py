@@ -164,7 +164,7 @@ class CompositionIterator():
         self.gudrunFile.process()
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
+        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
                     self.gudrunFile.instrument.dataFileType,
                     "gud"
                 )
@@ -211,7 +211,7 @@ class CompositionIterator():
         self.gudrunFile.process()
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
+        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
                     self.gudrunFile.instrument.dataFileType,
                     "gud"
                 )

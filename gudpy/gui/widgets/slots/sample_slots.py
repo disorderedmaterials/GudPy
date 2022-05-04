@@ -831,7 +831,7 @@ class SampleSlots():
         if not value:
             self.sample.dataFiles.dataFiles.remove(index)
         else:
-            self.sample.dataFiles.dataFiles[index] = value
+            self.sample.dataFiles[index] = value
         self.updatesampleDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -860,7 +860,7 @@ class SampleSlots():
         """
         self.widget.sampleDataFilesList.clear()
         self.widget.sampleDataFilesList.addItems(
-            [df for df in self.sample.dataFiles.dataFiles]
+            [df for df in self.sample.dataFiles]
         )
 
     def addFiles(self, target, title, regex):

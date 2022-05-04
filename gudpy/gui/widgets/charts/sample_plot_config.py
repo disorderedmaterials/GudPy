@@ -17,10 +17,10 @@ class SamplePlotConfig():
         self.constructDataSets()
 
     def constructDataSets(self):
-        if len(self.sample.dataFiles.dataFiles):
+        if len(self.sample.dataFiles):
 
-            baseFile = self.sample.dataFiles.dataFiles[0]
-            ext = os.path.splitext(self.sample.dataFiles.dataFiles[0])[-1]
+            baseFile = self.sample.dataFiles[0]
+            ext = os.path.splitext(self.sample.dataFiles[0])[-1]
 
             # mint01 dataset.
             mintPath = baseFile.replace(ext, ".mint01")
@@ -138,7 +138,7 @@ class SamplePlotConfig():
         ]
 
     def plotData(self, plotMode):
-        if len(self.sample.dataFiles.dataFiles):
+        if len(self.sample.dataFiles):
             return {
                 PlotModes.SF: self.SF,
                 PlotModes.SF_MINT01: self.SF_MINT01,

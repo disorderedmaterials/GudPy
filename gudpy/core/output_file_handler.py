@@ -43,10 +43,10 @@ class OutputFileHandler():
 
     def getRunFiles(self):
         self.runFiles = [
-            [os.path.splitext(s.dataFiles.dataFiles[0])[0], s.pathName()]
+            [os.path.splitext(s.dataFiles[0])[0], s.pathName()]
             for sampleBackground in self.gudrunFile.sampleBackgrounds
             for s in sampleBackground.samples if s.runThisSample
-            and len(s.dataFiles.dataFiles)
+            and len(s.dataFiles)
         ]
 
     def organiseSampleFiles(self, run, sampleRunFile, tree=""):

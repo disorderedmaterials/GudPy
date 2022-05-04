@@ -123,7 +123,7 @@ class GudPyChart(QChart):
                     if not series.points():
                         series.hide()
             if (
-                len(sample.dataFiles.dataFiles)
+                len(sample.dataFiles)
                 and plotsDCS and
                 plotConfig.mdcs01Series
             ):
