@@ -1077,9 +1077,12 @@ class SampleSlots():
             )
         if self.widget.dcsLabel.text() != "DCS Level":
             actualDcsLevel = nthfloat(self.widget.dcsLabel.text(), 2)
-            error = round(
-                    ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
-            )
+            try:
+                error = round(
+                        ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
+                )
+            except ZeroDivisionError:
+                error = 100.
             self.widget.resultLabel.setText(f"{error}%")
             if abs(error) > 10:
                 self.widget.resultLabel.setStyleSheet(
