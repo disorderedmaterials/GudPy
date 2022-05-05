@@ -206,6 +206,14 @@ class PurgeFile():
         HEADER = f"'  '  '          '  '{os.path.sep}'\n\n"
         TAB = "          "
 
+        nxsDefinitionsLine = (
+            f"{os.path.join(self.gudrunFile.instrument.GudrunStartFolder, self.gudrunFile.instrument.nxsDefinitionFile)}{TAB}"
+            f"NeXus definition file\n"
+            if self.gudrunFile.instrument.dataFileType.lower() == "nxs"
+            else
+            ""
+        )
+
         # Collect data files as strings of the format:
         # {name} {period number}
         # do this for normalisation, normalisation background,
@@ -289,6 +297,7 @@ class PurgeFile():
             f'Channel numbers for spike analysis\n'
             f'{self.acceptanceFactor}{TAB}'
             f'Spike analysis acceptance factor\n'
+            f'{nxsDefinitionsLine}'
             f'{spacify(self.standardDeviation, num_spaces=2)}{TAB}'
             f'Specify the number of standard deviations allowed'
             f' above and below the mean ratio.'
