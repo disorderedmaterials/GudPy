@@ -12,6 +12,7 @@ from core.enums import ExtrapolationModes
 
 from core.utils import resolve
 from core import config
+from gui.widgets.core.pulse_combo_box import PulseComboBoxModel
 from gui.widgets.charts.spectra_plot import SpectraChart
 
 
@@ -43,7 +44,6 @@ class ModexDialog(QDialog):
                     config.__rootdir__, "bin"
                 ), f"partition_events{SUFFIX}"
             )
-        self.run()
 
     def loadUI(self):
         """
@@ -100,12 +100,11 @@ class ModexDialog(QDialog):
         self.widget.updateSpectraButton.clicked.connect(
             self.partitionEvents
         )
-        self.widget.useAllPulsesCheckBox.toggled.connect(
-            self.toggleUseAllPulses
-        )
 
         for m in ExtrapolationModes:
-            self.widget.extrapolationModeComboBox.addItem(m.name, m)
+            self.widget.extrapolationModeComboBox.addItem(
+                m.name, m 
+            )
 
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
@@ -135,7 +134,6 @@ class ModexDialog(QDialog):
             self.useDataFileDirToggled
         )
 
-
         self.widget.useDataFileDirButton.setEnabled(
             os.access(self.gudrunFile.instrument.dataFileDir, os.W_OK)
         )
@@ -147,6 +145,11 @@ class ModexDialog(QDialog):
         self.widget.pulsePlotLayout.addWidget(
             self.widget.spectraPlot
         )
+
+
+        self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.pulses, self.widget)
+        self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
+        self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
         # self.widget.spectraChart = SpectraChart(self.widget)
         # self.widget.spectraPlot.setChart(self.widget.spectraChart)
         # self.widget.spectraChart.setTimeBoundaries(start, end)
@@ -156,7 +159,7 @@ class ModexDialog(QDialog):
         pass
         
     def run(self):
-        self.preprocess = self.gudrunFile.modex.preprocess(useTempDir=self.useTempDir, headless=False)
+        self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
         self.widget.close()
 
     def cancel(self):
@@ -212,10 +215,6 @@ class ModexDialog(QDialog):
                 )
                 # self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
 
-    def toggleUseAllPulses(self, state):
-        self.widget.extrapolationModeComboBox.setEnabled(not state)
-        self.gudrunFile.modex.useDefinedPulses = not state
-
     def extrapolationModeChanged(self, index):
         extrapolationMode = self.widget.extrapolationModeComboBox.itemData(
             index
@@ -234,10 +233,15 @@ class ModexDialog(QDialog):
                 )
                 self.gudrunFile.modex.period.startPulse = startPulse
 
+    def startPulseLabelChanged(self, text):
+        self.gudrunFile.modex.period.determineStartTime(text)
+        print(self.gudrunFile.modex.period.periodBegin)
+
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
         self.widget.spectraGroupBox.setEnabled(state)
         self.widget.runGroupBox.setEnabled(state)
+        self.widget.buttonBox.setEnabled(state)
 
     def browseSaveDirectory(self):
         self.gudrunFile.modex.outputDir = (
@@ -252,6 +256,8 @@ class ModexDialog(QDialog):
     
     def useDataFileDirToggled(self, state):
         self.useDataFileDir = state
+        if state:
+            self.gudrunFile.modex.dataFileDir = self.gudrunFile.instrument.dataFileDir
 
     def useDefinedPulsesToggled(self, state):
         self.gudrunFile.modex.definedPulses = state
