@@ -6,7 +6,8 @@ from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 
 from core.modulation_excitation import DefinedPulse
-
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 
 class PulseTableModel(GudPyTableModel):
     def __init__(self, data, headers, parent):
@@ -32,7 +33,12 @@ class PulseTableModel(GudPyTableModel):
         self.beginInsertRows(
             QModelIndex(), self.rowCount(self), self.rowCount(self)
         )
-        self._data.append(DefinedPulse())
+        name = "DEFINED_PULSE"
+        i = 0
+        while name in [p.label for p in self._data]:
+            i +=1
+            name = f"DEFINED_PULSE_{i}"
+        self._data.append(DefinedPulse(label=name))
         self.endInsertRows()
 
     def data(self, index, role):
@@ -47,6 +53,10 @@ class PulseDelegate(GudPyDelegate):
         col = index.column()
         if col == 0:
             editor = QLineEdit(parent)
+            regexp = QRegularExpression(r'^[A-Za-z0-9_]*$')
+            validator = QRegularExpressionValidator(editor)
+            validator.setRegularExpression(regexp)
+            editor.setValidator(validator)
         elif col == 1:
             editor = ExponentialSpinBox(parent)
             editor.setRange(0, 100000)
