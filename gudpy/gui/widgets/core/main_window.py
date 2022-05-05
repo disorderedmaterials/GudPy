@@ -7,7 +7,7 @@ import traceback
 from queue import Queue
 from collections.abc import Sequence
 import re
-from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread, QProcess
+from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread, QProcess, QElapsedTimer, QCoreApplication
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -1002,7 +1002,8 @@ class GudPyMainWindow(QMainWindow):
         else:
             os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
             self.gudrunFile.purgeFile.write_out()
-            self.makeProc(purge, self.progressPurge, func, args)
+            # self.makeProc(purge, self.progressPurge, func, args)
+            self.makeProc(purge, self.progressPurge, func=func, args=args)
 
     def runGudrun_(self):
         self.setControlsEnabled(False)
@@ -1040,7 +1041,7 @@ class GudPyMainWindow(QMainWindow):
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
-            self.makeProc(dcs, self.progressDCS, func, args)
+            self.makeProc(dcs, self.progressDCS, func=func, args=args)
 
     def runContainersAsSamples(self):
         self.setControlsEnabled(False)
@@ -1078,7 +1079,7 @@ class GudPyMainWindow(QMainWindow):
                 "It looks like you may not have purged detectors. Continue?"
             )
         else:
-            self.makeProc(dcs, self.progressDCS, func, args)
+            self.makeProc(dcs, self.progressDCS, func=func, args=args)
 
     def purgeOptionsMessageBox(self, dcs, func, args, text):
         messageBox = QMessageBox(self.mainWidget)
@@ -1103,7 +1104,7 @@ class GudPyMainWindow(QMainWindow):
         elif messageBox.clickedButton() == purgeDefault:
             self.purgeBeforeRunning()
         elif result == messageBox.Yes:
-            self.makeProc(dcs, self.progressDCS, func, args)
+            self.makeProc(dcs, self.progressDCS, func=func, args=args)
         else:
             messageBox.close()
             self.setControlsEnabled(True)
@@ -1116,7 +1117,7 @@ class GudPyMainWindow(QMainWindow):
             )
             if isinstance(purge_det, Sequence):
                 purge, func, args = purge_det
-                self.makeProc(purge, self.progressPurge, func, args)
+                self.makeProc(purge, self.progressPurge, func=func, args=args)
             elif isinstance(purge_det, FileNotFoundError):
                 QMessageBox.critical(
                     self.mainWidget,
@@ -1142,7 +1143,8 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
             return
-        self.queue.put((dcs, self.progressDCS, func, args))
+        self.queue.put(((dcs, self.progressDCS), {"func":func, "args":args}))
+        # self.queue.put((dcs, self.progressDCS, func, args))
 
     def modex(self):
         self.setControlsEnabled(False)
@@ -1195,7 +1197,7 @@ class GudPyMainWindow(QMainWindow):
     def progressModexProcess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        # print(stdout)
+        print(stdout)
 
     def preprocessModexFinished(self):
         # Get the files
@@ -1226,6 +1228,10 @@ class GudPyMainWindow(QMainWindow):
         return
 
     def processPulseFinished(self):
+        timer = QElapsedTimer()
+        timer.start()
+        while (timer.elapsed() < 5000):
+            QCoreApplication.processEvents()
         func, args = self.queue.get()
         func(*args)
         if not self.queue.empty():
@@ -1725,7 +1731,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         if not self.queue.empty():
-            self.makeProc(*self.queue.get())
+            args, kwargs = self.queue.get()
+            self.makeProc(*args, **kwargs)
+            # self.makeProc(*self.queue.get())
 
     def stopProc(self):
         self.queue = Queue()

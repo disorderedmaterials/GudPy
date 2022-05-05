@@ -94,13 +94,13 @@ class ModulationExcitation():
                 ), f"modulation_excitation{SUFFIX}"
             )
         if useTempDir:
-            spec_bad = os.path.join(
-                self.ref.instrument.GudrunInputFileDir,
-                "spec.bad"
-            )
+            # spec_bad = os.path.join(
+            #     self.ref.instrument.GudrunInputFileDir,
+            #     "spec.bad"
+            # )
             if headless:
                 for dataFile in self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
-                    shutil.copyfile(
+                    self.copyfile(
                         os.path.join(
                             self.ref.instrument.dataFileDir,
                             dataFile
@@ -110,22 +110,27 @@ class ModulationExcitation():
                             dataFile
                         )
                     )
-                    shutil.copyfile(
-                        spec_bad,
-                        os.path.join(
-                            self.tmp.name,
-                            "spec.bad"
-                        )
-                    )
+                    # self.copyfile(
+                    #     spec_bad,
+                    #     os.path.join(
+                    #         self.tmp.name,
+                    #         "spec.bad"
+                    #     )
+                    # )
             else:
+                tasks.append((os.makedirs, [os.path.join(self.tmp.name, "data"),]))
                 for dataFile in self.ref.normalisation.dataFiles.dataFiles:
-                    tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
+                    tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
+                for dataFile in self.ref.normalisation.dataFilesBg.dataFiles:
+                    tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
+                for dataFile in self.ref.sampleBackgrounds[0].dataFiles.dataFiles:
+                    tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
                 for dataFile in self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles:
-                    tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
+                    tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
                 for container in self.ref.sampleBackgrounds[0].samples[0].containers:
                     for dataFile in container.dataFiles.dataFiles:
-                        tasks.append((shutil.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, dataFile)]))
-                tasks.append((shutil.copyfile, [spec_bad, os.path.join(self.tmp.name, "spec.bad")]))
+                        tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
+                # tasks.append((self.copyfile, [spec_bad, os.path.join(self.tmp.name, "spec.bad")]))
         if headless:
             self.write_out()
             result = subprocess.run(
@@ -143,7 +148,10 @@ class ModulationExcitation():
     def copyfile(self, src, dest):
         print(f"Copying {src} to {dest}")
         if os.path.exists(src):
-            shutil.copyfile(src, dest)
+            try:
+                shutil.copyfile(src, dest)
+            except shutil.SameFileError:
+                print(f"{src}=={dest}")
         else:
             print(f"{src} doesn't exist.")
 
@@ -152,10 +160,10 @@ class ModulationExcitation():
         for f in files:
             gf = deepcopy(self.gudrunFile)
             base = os.path.basename(f)
-            gf.instrument.dataFileDir = self.tmp.name + "/"
+            gf.instrument.dataFileDir = os.path.join(self.tmp.name, "data") + os.path.sep
             gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [base]
             gf.instrument.GudrunInputFileDir = self.tmp.name
-            base = os.path.splitext(f)[0]
+            base = os.path.splitext(base)[0]
             print("BASE: " + base)
             if headless:
                 gf.process()
@@ -176,25 +184,6 @@ class ModulationExcitation():
                 tasks.append((self.copyfile, [src, dest,]))
         if not headless:
             return tasks
-        # for f in files:
-        #     gf = deepcopy(self.gudrunFile)
-        #     base = os.path.basename(f)
-        #     print(base)
-        #     gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [base]
-        #     # gf.instrument.GudrunInputFileDir = self.tmp.name
-        #     gf.instrument.dataFileDir = self.tmp.name
-        #     # gf.path = os.path.join(self.tmp.name, os.path.basename(gf.path))
-        #     base = os.path.splitext(f)[0]
-        #     if headless:
-        #         gf.process()
-        #         shutil.copyfile(os.path.join(self.tmp.name, base+".mint01"), os.path.join(self.outputDir, base+".mint01"))
-        #     else:
-        #         tasks.append(gf.dcs(path=os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, "gudpy.txt"),headless=False))
-        #         src = os.path.join(self.gudrunFile.instrument.GudrunInputFileDir, base+".mint01")
-        #         dest = os.path.join(self.outputDir, base+".mint01")
-        #         tasks.append((self.copyfile, [src, dest]))
-        # if not headless:
-        #     return tasks
 
     def __str__(self):
         dataFilesLines = '\n'.join(
@@ -207,7 +196,7 @@ class ModulationExcitation():
         )
 
         return (
-            f"{self.tmp.name}\n"
+            f"{os.path.join(self.tmp.name, 'data')}\n"
             f"{os.path.join(self.ref.instrument.GudrunStartFolder, self.ref.instrument.nxsDefinitionFile)}\n"
             f"{len(self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles)}\n"
             f"{dataFilesLines}\n"
