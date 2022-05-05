@@ -68,7 +68,7 @@ class DataFiles:
             Number of data files,
         """
         return len(self.dataFiles)
-    
+
     def __getitem__(self, n):
         return self.dataFiles[n]
 

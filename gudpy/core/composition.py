@@ -134,9 +134,10 @@ class Components():
         return "\n".join(
             [str(x) for x in self.components]
         )
-    
+
     def count(self):
         return len(self.components)
+
 
 class WeightedComponent():
 

@@ -121,7 +121,7 @@ class ComponentSlots():
         self.widget.addSubcomponentButton.setEnabled(enabled)
         self.widget.removeSubcomponentButton.setEnabled(enabled)
         self.widget.componentCompositionTable.setEnabled(enabled)
-    
+
     def setComponentsActionsEnabled(self, enabled):
         self.widget.removeComponentButton.setEnabled(enabled)
         self.widget.duplicateButton.setEnabled(enabled)
