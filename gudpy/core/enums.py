@@ -91,7 +91,7 @@ class Format(Enum):
 EXTRAPOLATION_MODES = {
     0: ["BACKWARDS"],
     1: ["FORWARDS"],
-    2: ["BI-DIRECTIONAL"],
+    2: ["BI_DIRECTIONAL"],
     3: ["NONE"]
 }
 
