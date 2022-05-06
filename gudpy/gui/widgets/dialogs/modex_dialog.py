@@ -4,9 +4,9 @@ import sys
 import h5py as h5
 
 from PySide6.QtWidgets import QDialog, QFileDialog
-from PySide6.QtCore import QFile, Qt, QProcess
+from PySide6.QtCore import QFile, Qt, QProcess, QPointF
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCharts import QChartView
+from PySide6.QtCharts import QChartView, QChart, QLineSeries, QValueAxis
 from PySide6.QtGui import QPainter
 from core.enums import ExtrapolationModes
 
@@ -149,14 +149,21 @@ class ModexDialog(QDialog):
             self.widget.spectraPlot
         )
 
+        self.widget.spectraChart = QChart()
+        self.widget.spectraChart.legend().setVisible(False)
+        self.widget.spectraChart.axisX_ = QValueAxis(self.widget.spectraChart)
+        self.widget.spectraChart.axisX_.setRange(start, end)
+        self.widget.spectraChart.axisX_.setTitleText("Pulse time")
+        self.widget.spectraChart.axisY_ = QValueAxis(self.widget.spectraChart)
+        self.widget.spectraChart.axisY_.setRange(0, 1)
+        self.widget.spectraChart.addAxis(self.widget.spectraChart.axisY_, Qt.AlignLeft)
+        self.widget.spectraChart.addAxis(self.widget.spectraChart.axisX_, Qt.AlignBottom)
+        self.widget.spectraPlot.setChart(self.widget.spectraChart)
 
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.pulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
         self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
-        # self.widget.spectraChart = SpectraChart(self.widget)
-        # self.widget.spectraPlot.setChart(self.widget.spectraChart)
-        # self.widget.spectraChart.setTimeBoundaries(start, end)
-        # self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
+
 
     def process(self, files):
         pass
@@ -216,7 +223,18 @@ class ModexDialog(QDialog):
                 self.widget.eventTableView.selectionModel().selectionChanged.connect(
                     self.startPulseChanged
                 )
-                # self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
+                self.widget.spectraChart.removeAllSeries()
+                for pulse in self.widget.eventTableView.model()._data:
+                    series = QLineSeries(self.widget.spectraChart)
+                    series.append(QPointF(int(pulse), 0.))
+                    series.append(QPointF(int(pulse), 0.25))
+                    series.append(QPointF(int(pulse), 0.5))
+                    series.append(QPointF(int(pulse), 0.75))
+                    series.append(QPointF(int(pulse), 1.0))
+
+                    self.widget.spectraChart.addSeries(series)
+                    series.attachAxis(self.widget.spectraChart.axisX())
+                    series.attachAxis(self.widget.spectraChart.axisY())
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
