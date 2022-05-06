@@ -47,7 +47,7 @@ class RunIndividualFiles():
             for sample in samples:
                 if sample.runThisSample:
                     # Enumerate the datafiles belonging to the sample.
-                    for dataFile in sample.dataFiles.dataFiles:
+                    for dataFile in sample.dataFiles:
 
                         # deepcopy the current sample
                         childSample = deepcopy(sample)

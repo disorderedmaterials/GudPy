@@ -68,3 +68,14 @@ class DataFiles:
             Number of data files,
         """
         return len(self.dataFiles)
+
+    def __getitem__(self, n):
+        return self.dataFiles[n]
+
+    def __setitem__(self, n, item):
+        if n >= len(self):
+            self.dataFiles.extend(n+1)
+        self.dataFiles[n] = item
+
+    def __iter__(self):
+        return iter(self.dataFiles)

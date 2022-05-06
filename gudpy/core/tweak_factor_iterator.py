@@ -54,7 +54,7 @@ class TweakFactorIterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample
             ]:
-                gudPath = sample.dataFiles.dataFiles[0].replace(
+                gudPath = sample.dataFiles[0].replace(
                             self.gudrunFile.instrument.dataFileType,
                             "gud"
                         )

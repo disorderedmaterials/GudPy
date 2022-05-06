@@ -875,9 +875,9 @@ class GudPyMainWindow(QMainWindow):
             else:
                 topChart.plot(plotMode)
             path = None
-            if len(sample.dataFiles.dataFiles):
+            if len(sample.dataFiles):
                 path = breplace(
-                    sample.dataFiles.dataFiles[0],
+                    sample.dataFiles[0],
                     self.gudrunFile.instrument.dataFileType,
                     "gud"
                 )

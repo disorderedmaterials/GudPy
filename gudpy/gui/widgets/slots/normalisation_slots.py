@@ -638,7 +638,7 @@ class NormalisationSlots():
         if not value:
             self.normalisation.dataFiles.dataFiles.remove(index)
         else:
-            self.normalisation.dataFiles.dataFiles[index] = value
+            self.normalisation.dataFiles[index] = value
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -667,7 +667,7 @@ class NormalisationSlots():
         """
         self.widget.dataFilesList.clear()
         self.widget.dataFilesList.addItems(
-            [df for df in self.normalisation.dataFiles.dataFiles]
+            [df for df in self.normalisation.dataFiles]
         )
 
     def handleBgDataFilesAltered(self, item):
