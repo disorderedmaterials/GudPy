@@ -107,7 +107,7 @@ class GudPyFileLibrary():
                 for dir_ in self.dirs
             ],
             *[
-                (os.path.isfile(file) | os.path.isfile(os.path.join(self.fileDir, file)), file)
+                (os.path.isfile(file) | os.path.isfile(os.path.join(self.fileDir, file) | file == "*"), file)
                 for file in self.files
             ],
             *[
