@@ -969,6 +969,8 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def runPurge_(self):
+        if not self.checkFilesExist_():
+            return
         self.setControlsEnabled(False)
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         result = purgeDialog.widget.exec_()
@@ -992,6 +994,8 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(purge, self.progressPurge, func=func, args=args)
 
     def runGudrun_(self):
+        if not self.checkFilesExist_():
+            return
         self.setControlsEnabled(False)
         dcs = self.gudrunFile.dcs(
             path=os.path.join(
@@ -1034,6 +1038,8 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runContainersAsSamples(self):
+        if not self.checkFilesExist_():
+            return
         self.setControlsEnabled(False)
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
         dcs = runContainersAsSamples.runContainersAsSamples(
@@ -1083,6 +1089,9 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runFilesIndividually(self):
+        if not self.checkFilesExist_():
+            return
+        self.setControlsEnabled(False)
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
         dcs = runIndividualFiles.gudrunFile.dcs(
             path=os.path.join(
@@ -1204,6 +1213,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def iterateGudrun(self, dialog, name):
+        if not self.checkFilesExist_():
+            return
         self.setControlsEnabled(False)
         iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
@@ -1437,6 +1448,8 @@ class GudPyMainWindow(QMainWindow):
                 unresolved, self.mainWidget
             )
             missingFilesDialog.widget.exec_()
+            return False
+        return True
 
     def autosave(self):
         if self.gudrunFile.path:
