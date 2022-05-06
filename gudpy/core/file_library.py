@@ -103,15 +103,31 @@ class GudPyFileLibrary():
         """
         return [
             *[
-                (os.path.isdir(dir_) | os.path.isdir(os.path.join(self.fileDir, dir_)), dir_)
+                (
+                    (
+                        os.path.isdir(dir_)
+                        | os.path.isdir(os.path.join(self.fileDir, dir_)),
+                    ),
+                    dir_
+                )
                 for dir_ in self.dirs
             ],
             *[
-                (os.path.isfile(file) | os.path.isfile(os.path.join(self.fileDir, file) | file == "*"), file)
+                (
+                    (
+                        os.path.isfile(file)
+                        | os.path.isfile(os.path.join(self.fileDir, file))
+                        | file == "*"
+                    ),
+                    file
+                )
                 for file in self.files
             ],
             *[
-                (os.path.isfile(os.path.join(self.dataFileDir, dataFile)), dataFile)
+                (
+                    os.path.isfile(os.path.join(self.dataFileDir, dataFile)),
+                    dataFile
+                )
                 for dataFile in self.dataFiles
             ]
         ]
