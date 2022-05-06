@@ -72,7 +72,10 @@ class ModexDialog(QDialog):
             self.gudrunFile.modex.period.pulses, self.gudrunFile.modex
         )
         self.widget.addPulseButton.clicked.connect(
-            self.widget.pulseTableView.insertRow
+            self.addPulse
+        )
+        self.widget.removePulseButton.clicked.connect(
+            self.removePulse
         )
 
         with h5.File(
@@ -214,6 +217,22 @@ class ModexDialog(QDialog):
                     self.startPulseChanged
                 )
                 # self.widget.spectraChart.setSpectra(spec, self.widget.eventTableView.model()._data)
+
+    def addPulse(self):
+        self.widget.pulseTableView.insertRow()
+        if self.widget.pulseTableView.model().rowCount() == 1:
+            self.widget.pulseLabelComboBox.setCurrentIndex(0)
+
+    def removePulse(self):
+        if (
+            self.widget.pulseTableView.currentIndex().row()
+            == self.widget.pulseLabelComboBox.currentIndex()
+        ):
+            if self.widget.pulseLabelComboBox.model().rowCount() > 0:
+                self.widget.pulseLabelComboBox.setCurrentIndex(0)
+            else:
+                self.widget.pulseLabelComboBox.setCurrentIndex(-1)
+        self.widget.pulseTableView.removePulse()
 
     def extrapolationModeChanged(self, index):
         extrapolationMode = self.widget.extrapolationModeComboBox.itemData(

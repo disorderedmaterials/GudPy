@@ -25,4 +25,5 @@ class PulseComboBoxModel(QAbstractItemModel):
     
     def data(self, index, role):
         if role == Qt.DisplayRole:
-            return self.pulses[index.row()].label
+            if len(self.pulses):
+                return self.pulses[index.row()].label
