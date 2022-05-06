@@ -760,8 +760,6 @@ class GudrunFile:
             )
 
             if match:
-                self.normalisation
-
                 (
                     self.normalisation.
                     normalisationDifferentialCrossSectionFile
