@@ -28,7 +28,6 @@ class ModexDialog(QDialog):
         self.gudrunFile.modex.sample = (
             gudrunFile.sampleBackgrounds[0].samples[0]
         )
-        self.gudrunFile.modex.period.startPulse = 12129.
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
