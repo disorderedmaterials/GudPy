@@ -79,24 +79,6 @@
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Extrapolate from current pulse</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="extrapolationModeComboBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
      </layout>
     </widget>
    </item>
@@ -205,6 +187,24 @@
              </item>
              <item>
               <widget class="QComboBox" name="pulseLabelComboBox"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Extrapolate from current pulse</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="extrapolationModeComboBox">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
