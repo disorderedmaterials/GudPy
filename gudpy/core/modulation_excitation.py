@@ -47,6 +47,7 @@ class Period():
         if not self.definedPulses:
             self.periodBegin = self.startPulse
         for pulse in self.definedPulses:
+            print(pulse.label, pulseLabel)
             if pulse.label == pulseLabel:
                 self.periodBegin = self.startPulse - pulse.periodOffset
                 return
@@ -79,7 +80,7 @@ class ModulationExcitation():
         self.ref = gudrunFile
         self.gudrunFile = deepcopy(gudrunFile)
         self.period = Period()
-        self.extrapolationMode = ExtrapolationModes.NONE
+        self.extrapolationMode = ExtrapolationModes.FORWARDS
         self.startLabel = ""
         self.dataFileDir = self.gudrunFile.instrument.dataFileDir
         self.outputDir = ""
@@ -105,10 +106,10 @@ class ModulationExcitation():
             if len(self.period.definedPulses) == 0:
                 return False, "No Pulses were defined."
             for p in self.period.definedPulses:
-                if p.start > self.period.duration:
+                if p.periodOffset > self.period.duration:
                     return False, f"Pulse {p.label} start {p.start} is beyond period duration {self.period.duration}."
-                if p.end > self.period.duration:
-                    return False, f"Pulse {p.label} end {p.end} is beyond period duration {self.period.duration}."
+                if p.periodOffset + p.duration > self.period.duration:
+                    return False, f"Pulse {p.label} end {p.periodOffset + p.duration} is beyond period duration {self.period.duration}."
         else:
             if len(self.period.rawPulses) == 0:
                 return False, "No raw pulses were supplied."
@@ -258,7 +259,7 @@ class ModulationExcitation():
                 for df in self.gudrunFile.sampleBackgrounds[0].samples[0].dataFiles.dataFiles
             ]
         )
-
+        self.period.determineStartTime(self.startLabel)
         return (
             f"{self.dataFileDir}\n"
             f"{os.path.join(self.ref.instrument.GudrunStartFolder, self.ref.instrument.nxsDefinitionFile)}\n"

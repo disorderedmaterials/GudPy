@@ -31,6 +31,7 @@ class ModexDialog(QDialog):
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
+        # self.gudrunFile.modex.period.periodBegin = 12129
 
         self.loadUI()
         self.initComponents()
@@ -170,9 +171,10 @@ class ModexDialog(QDialog):
 
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.definedPulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
-        self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
+        # self.widget.pulseLabelComboBox.currentTextChanged.connect(self.startPulseLabelChanged)
         
     def run(self):
+        self.gudrunFile.modex.startLabel = self.widget.pulseLabelComboBox.currentText()
         valid, err = self.gudrunFile.modex.isConfigurationValid()
         if valid:
             self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
@@ -295,7 +297,7 @@ class ModexDialog(QDialog):
                 self.widget.spectraChart.focusPulse(index.row())
 
     def startPulseLabelChanged(self, text):
-        self.gudrunFile.modex.period.determineStartTime(text)
+        self.gudrunFile.modex.startLabel = text
 
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
