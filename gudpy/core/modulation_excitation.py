@@ -54,11 +54,11 @@ class Period():
                 return
 
     def setRawPulses(self, pulses):
-        self.rawPulses = [RawPulse(p, p+self.duration) for p in pulses]
+        self.rawPulses = pulses
         print(self.rawPulses)
 
     def __str__(self):
-
+        print(self.useDefinedPulses)
         if self.useDefinedPulses:
             pulseLines = "\n".join([str(p) for p in self.definedPulses])
             return (
@@ -68,9 +68,11 @@ class Period():
                 f"{pulseLines}"
             )
         else:
-            pulseLines = "\n".join([str(p) for p in self.rawPulses])
+            rawPulses = [RawPulse(p, p+self.duration) for p in self.rawPulses]
+            pulseLines = "\n".join([str(p) for p in rawPulses])
             return (
-                f"{len(self.rawPulses)}\n"
+                f"{self.startPulse}\n"
+                f"{len(rawPulses)}\n"
                 f"{pulseLines}"
             )
 
