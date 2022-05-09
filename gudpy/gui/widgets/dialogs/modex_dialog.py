@@ -70,7 +70,7 @@ class ModexDialog(QDialog):
     def initComponents(self):
 
         self.widget.pulseTableView.makeModel(
-            self.gudrunFile.modex.period.pulses, self.gudrunFile.modex
+            self.gudrunFile.modex.period.definedPulses, self.gudrunFile.modex
         )
         self.widget.addPulseButton.clicked.connect(
             self.addPulse
@@ -114,10 +114,17 @@ class ModexDialog(QDialog):
             self.partitionEvents
         )
 
-        for m in ExtrapolationModes:
-            self.widget.extrapolationModeComboBox.addItem(
-                m.name, m 
-            )
+        self.widget.extrapolationModeComboBox.addItem(
+            ExtrapolationModes.FORWARDS.name, ExtrapolationModes.FORWARDS
+        )
+        self.widget.extrapolationModeComboBox.addItem(
+            ExtrapolationModes.BACKWARDS.name, ExtrapolationModes.BACKWARDS
+
+        )
+        self.widget.extrapolationModeComboBox.addItem(
+            ExtrapolationModes.BI_DIRECTIONAL.name, ExtrapolationModes.BI_DIRECTIONAL
+
+        )
 
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
@@ -131,7 +138,11 @@ class ModexDialog(QDialog):
             self.cancel
         )
 
-        self.widget.periodGroupBox.toggled.connect(
+        # self.widget.periodGroupBox.toggled.connect(
+        #     self.useDefinedPulsesToggled
+        # )
+
+        self.widget.usePeriodDefinitionsButton.toggled.connect(
             self.useDefinedPulsesToggled
         )
 
@@ -162,7 +173,7 @@ class ModexDialog(QDialog):
         self.widget.spectraChart.setTimeBoundaries(self.start, self.end)
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
 
-        self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.pulses, self.widget)
+        self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.definedPulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
         self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
 
@@ -229,6 +240,7 @@ class ModexDialog(QDialog):
                 )
                 self.widget.spectraChart.removeAllSeries()
                 self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)  
+                self.gudrunFile.modex.period.setRawPulses(self.widget.eventTableView.model()._data)
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
@@ -292,4 +304,5 @@ class ModexDialog(QDialog):
             self.gudrunFile.modex.dataFileDir = self.gudrunFile.instrument.dataFileDir
 
     def useDefinedPulsesToggled(self, state):
-        self.gudrunFile.modex.definedPulses = state
+        self.gudrunFile.modex.useDefinedPulses = state
+        self.widget.periodDefinitionGroupBox.setEnabled(state)
