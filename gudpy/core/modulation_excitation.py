@@ -44,7 +44,6 @@ class Period():
         self.useDefinedPulses = True
 
     def determineStartTime(self, pulseLabel):
-        print(pulseLabel, self.definedPulses)
         if not self.definedPulses:
             self.periodBegin = self.startPulse
         for pulse in self.definedPulses:
@@ -54,10 +53,8 @@ class Period():
 
     def setRawPulses(self, pulses):
         self.rawPulses = pulses
-        print(self.rawPulses)
 
     def __str__(self):
-        print(self.useDefinedPulses)
         if self.useDefinedPulses:
             pulseLines = "\n".join([str(p) for p in self.definedPulses])
             return (
@@ -84,8 +81,8 @@ class ModulationExcitation():
         self.period = Period()
         self.extrapolationMode = ExtrapolationModes.NONE
         self.startLabel = ""
-        self.dataFileDir = None
-        self.outputDir = None
+        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
+        self.outputDir = ""
         self.sample = None
         self.useTempDataFileDir = False
         self.tmp = tempfile.TemporaryDirectory()
@@ -94,6 +91,28 @@ class ModulationExcitation():
     def write_out(self):
         with open(self.path, 'w') as fp:
             fp.write(str(self))
+
+    def isConfigurationValid(self):
+        if not self.outputDir:
+            return False, "Output Directory not specified"
+        if not os.path.exists(self.outputDir):
+            return False, f"Output Directory ({self.outputDir}) does not exist."
+        if not self.dataFileDir:
+            return False, "Data File Directory not specified"
+        if not os.path.exists(self.dataFileDir):
+            return False, f"Output Directory ({self.dataFileDir}) does not exist."
+        if self.period.useDefinedPulses:
+            if len(self.period.definedPulses) == 0:
+                return False, "No Pulses were defined."
+            for p in self.period.definedPulses:
+                if p.start > self.period.duration:
+                    return False, f"Pulse {p.label} start {p.start} is beyond period duration {self.period.duration}."
+                if p.end > self.period.duration:
+                    return False, f"Pulse {p.label} end {p.end} is beyond period duration {self.period.duration}."
+        else:
+            if len(self.period.rawPulses) == 0:
+                return False, "No raw pulses were supplied."
+        return True, ""
 
     def preprocess(self, useTempDataFileDir=False, headless=True):
         self.useTempDataFileDir = useTempDataFileDir
@@ -188,14 +207,11 @@ class ModulationExcitation():
             return tasks
 
     def copyfile(self, src, dest):
-        print(f"Copying {src} to {dest}")
         if os.path.exists(src):
             try:
                 shutil.copyfile(src, dest)
             except shutil.SameFileError:
-                print(f"{src}=={dest}")
-        else:
-            print(f"{src} doesn't exist.")
+                pass
 
     def process(self, files, headless=True):
         tasks = []

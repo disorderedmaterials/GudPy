@@ -4,7 +4,7 @@ import sys
 import h5py as h5
 from datetime import datetime
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PySide6.QtCore import QFile, Qt, QProcess, QPointF, QDateTime
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCharts import QChartView, QChart, QLineSeries, QValueAxis, QDateTimeAxis
@@ -172,13 +172,18 @@ class ModexDialog(QDialog):
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.definedPulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
         self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
-
-    def process(self, files):
-        pass
         
     def run(self):
-        self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
-        self.widget.close()
+        valid, err = self.gudrunFile.modex.isConfigurationValid()
+        if valid:
+            self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
+            self.widget.close()
+        else:
+            QMessageBox.warning(
+                self.widget,
+                "GudPy Warning",
+                err
+            )
 
     def cancel(self):
         self.cancelled = True
