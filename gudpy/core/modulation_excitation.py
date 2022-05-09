@@ -337,7 +337,8 @@ class ModulationExcitation:
             [
                 os.path.join(
                     self.outputDir,
-                    os.path.basename(f).replace(os.path.splitext(f)[-1], ".mint01")
+                    os.path.basename(f)
+                    .replace(os.path.splitext(f)[-1], ".mint01")
                 )
                 for f in files
             ]
@@ -364,7 +365,13 @@ class ModulationExcitation:
                     dcs.append(float(y))
             DCS.append(dcs)
 
-        with open(os.path.join(self.outputDir, "interpolated.data"), "w", encoding='utf-8') as fp:
+        with open(
+            os.path.join(
+                self.outputDir,
+                "interpolated.data"
+            ),
+            "w", encoding='utf-8'
+        ) as fp:
             for i in range(len(Q)):
                 dcs = [x[i] for x in DCS]
                 fp.write(f"  {Q[i]}  {'  '.join([str(x) for x in dcs])}\n")

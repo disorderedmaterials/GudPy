@@ -1238,7 +1238,10 @@ class GudPyMainWindow(QMainWindow):
         self.queue.put(
             (
                 (dcs, self.progressDCS),
-                {"func": func, "args": args, "finished": self.runGudrunFinished}
+                {
+                    "func": func, "args": args,
+                    "finished": self.runGudrunFinished
+                }
             )
         )
 
