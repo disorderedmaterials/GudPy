@@ -158,19 +158,8 @@ class ModexDialog(QDialog):
         self.widget.pulsePlotLayout.addWidget(
             self.widget.spectraPlot
         )
-
-        self.widget.spectraChart = QChart()
-        self.widget.spectraChart.legend().setVisible(False)
-        self.widget.spectraChart.axisX_ = QDateTimeAxis(self.widget.spectraChart)
-        self.widget.spectraChart.axisX_.setTitleText("Pulse Time")
-        self.widget.spectraChart.axisX_.setRange(self.start, self.end)
-        # self.widget.spectraChart.axisX_ = QValueAxis(self.widget.spectraChart)
-        # self.widget.spectraChart.axisX_.setRange(self.start, self.end)
-        # self.widget.spectraChart.axisX_.setTitleText("Pulse time")
-        self.widget.spectraChart.axisY_ = QValueAxis(self.widget.spectraChart)
-        self.widget.spectraChart.axisY_.setRange(0, 1)
-        self.widget.spectraChart.addAxis(self.widget.spectraChart.axisY_, Qt.AlignLeft)
-        self.widget.spectraChart.addAxis(self.widget.spectraChart.axisX_, Qt.AlignBottom)
+        self.widget.spectraChart = SpectraChart()
+        self.widget.spectraChart.setTimeBoundaries(self.start, self.end)
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
 
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.pulses, self.widget)
@@ -236,41 +225,7 @@ class ModexDialog(QDialog):
                     self.startPulseChanged
                 )
                 self.widget.spectraChart.removeAllSeries()
-                for pulse in self.widget.eventTableView.model()._data:
-                    pulse = int(pulse)*1000
-                    series = QLineSeries(self.widget.spectraChart)
-                    print(self.start.toMSecsSinceEpoch())
-                    print(self.start.toMSecsSinceEpoch() + pulse)
-                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.)
-                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.25)
-                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.5)
-                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.75)
-                    series.append(self.start.toMSecsSinceEpoch() + pulse, 1.0)
-
-                    # series.append(QPointF(int(pulse), 0.))
-                    # series.append(QPointF(int(pulse), 0.25))
-                    # series.append(QPointF(int(pulse), 0.5))
-                    # series.append(QPointF(int(pulse), 0.75))
-                    # series.append(QPointF(int(pulse), 1.0))
-                    self.widget.spectraChart.addSeries(series)
-                    series.attachAxis(self.widget.spectraChart.axisX())
-                    series.attachAxis(self.widget.spectraChart.axisY())
-                # self.widget.spectraChart.createDefaultAxes()
-                # self.widget.spectraChart.axisX().setTitleText("Pulse Time")
-                # self.widget.spectraChart.axisX().setMin(self.start)
-                # print(self.start, self.end)
-                # self.widget.spectraChart.axisX().setMax(self.end)
-
-
-
-                    # series.attachAxis(self.widget.spectraChart.axisX_)
-                    # series.attachAxis(self.widget.spectraChart.axisY_)
-
-                    # self.widget.spectraChart.addSeries(series)
-                    # self.widget.spectraChart.createDefaultAxes()
-                    # self.widget.spectraChart.axisX().setRange(self.start, self.end)
-                    # self.widget.spectraChart.axisX().setTitleText("Pulse Time")
-                    # self.widget.spectraChart.axisY().setRange(0, 1)
+                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()

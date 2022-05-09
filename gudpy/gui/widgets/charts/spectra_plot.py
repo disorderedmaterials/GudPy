@@ -1,5 +1,5 @@
-from PySide6.QtCharts import QChart, QLineSeries
-from PySide6.QtCore import QPointF
+from PySide6.QtCharts import QChart, QLineSeries, QDateTimeAxis, QValueAxis
+from PySide6.QtCore import QPointF, Qt
 
 
 class SpectraChart(QChart):
@@ -7,24 +7,30 @@ class SpectraChart(QChart):
     def __init__(self):
         super().__init__()
         self.legend().setVisible(False)
+        
+        self.axisX_ = QDateTimeAxis(self)
+        self.axisX_.setTitleText("Pulse Time")
+        self.addAxis(self.axisX_, Qt.AlignBottom)
 
+        self.axisY_ = QValueAxis(self)
+        self.axisY_.setRange(0, 1)
+        self.addAxis(self.axisY_, Qt.AlignLeft)
+    
     def setTimeBoundaries(self, start, end):
         self.start = start
         self.end = end
 
-    def setSpectra(self, spec, pulses):
-        self.spec = spec
-        self.pulses = pulses
-        self.plot()
+        self.axisX().setRange(start, end)
+    
+    def plot(self, pulses):
 
-    def plot(self):
-        for pulse in self.pulses:
-            print(pulse)
+        for pulse in pulses:
             series = QLineSeries(self)
-            series.append(QPointF(pulse, 1.0))
+            series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.)
+            series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.25)
+            series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.50)
+            series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.75)
+            series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 1.0)
             self.addSeries(series)
-
-        self.createDefaultAxes()
-        self.axisY().setRange(0, 1)
-        self.axisX().setRange(self.start, self.end)
-        self.axisX().setTitleText("Pulse time")
+            series.attachAxis(self.axisX())
+            series.attachAxis(self.axisY())
