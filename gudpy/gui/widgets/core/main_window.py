@@ -1191,15 +1191,13 @@ class GudPyMainWindow(QMainWindow):
     def progressModexPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        print(stdout)
         _, _, data = stdout.partition("Finished processing: ")
         if data:
             self.modexFiles.add(data.split()[0])
 
-        progress = re.findall(r'\d+\.\d+%', stdout)
+        progress = re.findall(r'(\d+(?:\.\d+)?)%', stdout)
         if progress:
-            print(progress[-1][:-1])
-            self.mainWidget.progressBar.setValue(int(float(progress[-1][:-1])))
+            self.mainWidget.progressBar.setValue(int(float(progress[-1])))
 
     def errorModexPreprocess(self):
         data = self.proc.readAllStandardError()
@@ -1225,6 +1223,7 @@ class GudPyMainWindow(QMainWindow):
     def preprocessModexFinished(self):
         self.modexFiles = list(self.modexFiles)
         self.nPulses = len(self.modexFiles)
+        self.mainWidget.progressBar.setValue(0)
         if self.nPulses > 0:
             tasks = self.gudrunFile.modex.process(
                 self.modexFiles, headless=False
