@@ -20,7 +20,6 @@ class OutputTreeModel(QAbstractItemModel):
         if isinstance(output, str):
             output = {1: output}
         self.keyMap = keyMap
-        print(self.keyMap)
         self.output = output
         self.gudrunFile = gudrunFile
         self.map = {}
@@ -30,7 +29,6 @@ class OutputTreeModel(QAbstractItemModel):
                 {i: [] for i in output.keys()}.items()
             )
         )
-        print(self.data_.keys())
         self.persistentIndexes = {}
         self.setupData()
 
