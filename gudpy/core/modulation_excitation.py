@@ -10,7 +10,6 @@ from core import config
 from copy import deepcopy
 import tempfile
 import shutil
-from watchpoints import watch
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -87,7 +86,6 @@ class ModulationExcitation():
         self.startLabel = ""
         self.dataFileDir = None
         self.outputDir = None
-        watch(self.outputDir)
         self.sample = None
         self.useTempDataFileDir = False
         self.tmp = tempfile.TemporaryDirectory()
