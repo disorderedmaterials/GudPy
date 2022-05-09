@@ -15,6 +15,7 @@ class SpectraChart(QChart):
         self.axisY_ = QValueAxis(self)
         self.axisY_.setRange(0, 1)
         self.addAxis(self.axisY_, Qt.AlignLeft)
+        self.focus = None
     
     def setTimeBoundaries(self, start, end):
         self.start = start
@@ -26,6 +27,9 @@ class SpectraChart(QChart):
 
         for pulse in pulses:
             series = QLineSeries(self)
+            series.setName(str(pulse))
+            series.setOpacity(0.5)
+            series.clicked.connect(lambda: self.focusChanged(series))
             series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.)
             series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.25)
             series.append(self.start.toMSecsSinceEpoch() + pulse*1000, 0.50)
@@ -34,3 +38,17 @@ class SpectraChart(QChart):
             self.addSeries(series)
             series.attachAxis(self.axisX())
             series.attachAxis(self.axisY())
+        self.focusPulse(0)
+    
+    def focusChanged(self, focus):
+        self.focus = focus
+    
+    def focusPulse(self, n):
+        self.focus = self.series()[n]
+        
+        for series in self.series():
+            series.setOpacity(0.2)
+
+        self.focus.setOpacity(1)
+
+        

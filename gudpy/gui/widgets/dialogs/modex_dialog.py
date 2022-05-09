@@ -210,6 +210,9 @@ class ModexDialog(QDialog):
         )
         self.proc = None
         self.setControlsEnabled(True)
+        self.widget.spectraTableView.setCurrentIndex(
+            self.widget.spectraTableView.model().index(0, 0)
+        )
 
     def loadEvents(self, item):
         if self.widget.spectraTableView.selectionModel().hasSelection():
@@ -225,7 +228,7 @@ class ModexDialog(QDialog):
                     self.startPulseChanged
                 )
                 self.widget.spectraChart.removeAllSeries()
-                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)
+                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)  
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
@@ -260,6 +263,7 @@ class ModexDialog(QDialog):
                     index, role=Qt.DisplayRole
                 )
                 self.gudrunFile.modex.period.startPulse = startPulse
+                self.widget.spectraChart.focusPulse(index.row())
 
     def startPulseLabelChanged(self, text):
         self.gudrunFile.modex.period.determineStartTime(text)
