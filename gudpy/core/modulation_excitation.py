@@ -14,17 +14,14 @@ from watchpoints import watch
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
+class RawPulse():
 
-class Pulse():
-
-    def __init__(self, label="", start=0.0, end=0.0):
-        self.label = label
+    def __init__(self, start, end):
         self.start = start
         self.end = end
-
+    
     def __str__(self):
-        return f"{self.label} {self.start} {self.end}"
-
+        return f"{self.start} {self.end}"
 
 class DefinedPulse():
 
@@ -43,8 +40,9 @@ class Period():
         self.duration = 0.
         self.periodBegin = 0.
         self.startPulse = 0.
-        self.pulses = []
-        self.definedPulses = True
+        self.definedPulses = []
+        self.rawPulses = []
+        self.useDefinedPulses = True
 
     def determineStartTime(self, pulseLabel):
         print(pulseLabel, self.definedPulses)
@@ -55,21 +53,24 @@ class Period():
                 self.periodBegin = self.startPulse - pulse.periodOffset
                 return
 
+    def setRawPulses(self, pulses):
+        self.rawPulses = [RawPulse(p, p+self.duration) for p in pulses]
+        print(self.rawPulses)
 
     def __str__(self):
 
-        pulseLines = "\n".join([str(p) for p in self.pulses])
-
-        if self.definedPulses:
+        if self.useDefinedPulses:
+            pulseLines = "\n".join([str(p) for p in self.definedPulses])
             return (
                 f"{self.duration}\n"
                 f"{self.periodBegin}\n"
-                f"{len(self.pulses)}\n"
+                f"{len(self.definedPulses)}\n"
                 f"{pulseLines}"
             )
         else:
+            pulseLines = "\n".join([str(p) for p in self.rawPulses])
             return (
-                f"{len(self.pulses)}\n"
+                f"{len(self.rawPulses)}\n"
                 f"{pulseLines}"
             )
 
