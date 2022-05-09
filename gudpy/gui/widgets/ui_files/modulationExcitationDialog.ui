@@ -129,14 +129,28 @@
       <property name="title">
        <string>Run</string>
       </property>
-      <layout class="QVBoxLayout" name="pulsePlotLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="pulsePlotLayout">
          <item>
-          <widget class="SpectraTable" name="spectraTableView"/>
+          <widget class="SpectraTable" name="spectraTableView">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="EventTable" name="eventTableView"/>
+          <widget class="EventTable" name="eventTableView">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -2,11 +2,12 @@ import os
 from queue import Queue
 import sys
 import h5py as h5
+from datetime import datetime
 
 from PySide6.QtWidgets import QDialog, QFileDialog
-from PySide6.QtCore import QFile, Qt, QProcess, QPointF
+from PySide6.QtCore import QFile, Qt, QProcess, QPointF, QDateTime
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCharts import QChartView, QChart, QLineSeries, QValueAxis
+from PySide6.QtCharts import QChartView, QChart, QLineSeries, QValueAxis, QDateTimeAxis
 from PySide6.QtGui import QPainter
 from core.enums import ExtrapolationModes
 
@@ -85,13 +86,22 @@ class ModexDialog(QDialog):
                 samples[0].dataFiles.dataFiles[0]
             )
         ) as fp:
+
             spectra = fp[
                 "/raw_data_1/detector_1/spectrum_index"
                 ][()][:].tolist()
-            start = 0
-            end = fp["/raw_data_1/duration"][()]
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
+
+            epoch = datetime(1970, 1, 1)
+            start = fp["/raw_data_1/start_time"][()][0].decode('utf8')
+            end = fp["/raw_data_1/end_time"][()][0].decode('utf8')
+            start = (datetime.strptime(start, "%Y-%m-%dT%H:%M:%S") - epoch).total_seconds()
+            end = (datetime.strptime(end, "%Y-%m-%dT%H:%M:%S") - epoch).total_seconds()
+            self.start = QDateTime()
+            self.start.setSecsSinceEpoch(start)
+            self.end = QDateTime()
+            self.end.setSecsSinceEpoch(end)
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
@@ -151,9 +161,12 @@ class ModexDialog(QDialog):
 
         self.widget.spectraChart = QChart()
         self.widget.spectraChart.legend().setVisible(False)
-        self.widget.spectraChart.axisX_ = QValueAxis(self.widget.spectraChart)
-        self.widget.spectraChart.axisX_.setRange(start, end)
-        self.widget.spectraChart.axisX_.setTitleText("Pulse time")
+        self.widget.spectraChart.axisX_ = QDateTimeAxis(self.widget.spectraChart)
+        self.widget.spectraChart.axisX_.setTitleText("Pulse Time")
+        self.widget.spectraChart.axisX_.setRange(self.start, self.end)
+        # self.widget.spectraChart.axisX_ = QValueAxis(self.widget.spectraChart)
+        # self.widget.spectraChart.axisX_.setRange(self.start, self.end)
+        # self.widget.spectraChart.axisX_.setTitleText("Pulse time")
         self.widget.spectraChart.axisY_ = QValueAxis(self.widget.spectraChart)
         self.widget.spectraChart.axisY_.setRange(0, 1)
         self.widget.spectraChart.addAxis(self.widget.spectraChart.axisY_, Qt.AlignLeft)
@@ -163,7 +176,6 @@ class ModexDialog(QDialog):
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.pulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
         self.widget.pulseLabelComboBox.currentIndexChanged.connect(self.startPulseLabelChanged)
-
 
     def process(self, files):
         pass
@@ -225,16 +237,40 @@ class ModexDialog(QDialog):
                 )
                 self.widget.spectraChart.removeAllSeries()
                 for pulse in self.widget.eventTableView.model()._data:
+                    pulse = int(pulse)*1000
                     series = QLineSeries(self.widget.spectraChart)
-                    series.append(QPointF(int(pulse), 0.))
-                    series.append(QPointF(int(pulse), 0.25))
-                    series.append(QPointF(int(pulse), 0.5))
-                    series.append(QPointF(int(pulse), 0.75))
-                    series.append(QPointF(int(pulse), 1.0))
+                    print(self.start.toMSecsSinceEpoch())
+                    print(self.start.toMSecsSinceEpoch() + pulse)
+                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.)
+                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.25)
+                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.5)
+                    series.append(self.start.toMSecsSinceEpoch() + pulse, 0.75)
+                    series.append(self.start.toMSecsSinceEpoch() + pulse, 1.0)
 
+                    # series.append(QPointF(int(pulse), 0.))
+                    # series.append(QPointF(int(pulse), 0.25))
+                    # series.append(QPointF(int(pulse), 0.5))
+                    # series.append(QPointF(int(pulse), 0.75))
+                    # series.append(QPointF(int(pulse), 1.0))
                     self.widget.spectraChart.addSeries(series)
                     series.attachAxis(self.widget.spectraChart.axisX())
                     series.attachAxis(self.widget.spectraChart.axisY())
+                # self.widget.spectraChart.createDefaultAxes()
+                # self.widget.spectraChart.axisX().setTitleText("Pulse Time")
+                # self.widget.spectraChart.axisX().setMin(self.start)
+                # print(self.start, self.end)
+                # self.widget.spectraChart.axisX().setMax(self.end)
+
+
+
+                    # series.attachAxis(self.widget.spectraChart.axisX_)
+                    # series.attachAxis(self.widget.spectraChart.axisY_)
+
+                    # self.widget.spectraChart.addSeries(series)
+                    # self.widget.spectraChart.createDefaultAxes()
+                    # self.widget.spectraChart.axisX().setRange(self.start, self.end)
+                    # self.widget.spectraChart.axisX().setTitleText("Pulse Time")
+                    # self.widget.spectraChart.axisY().setRange(0, 1)
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
