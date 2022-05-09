@@ -7302,6 +7302,7 @@
     <addaction name="runPurge"/>
     <addaction name="runGudrun"/>
     <addaction name="runContainersAsSamples"/>
+    <addaction name="runFilesIndividually"/>
     <addaction name="iterateGudrun"/>
     <addaction name="runModex"/>
     <addaction name="checkFilesExist"/>
@@ -7513,6 +7514,9 @@
   <action name="runModex">
    <property name="text">
     <string>Modulation Excitation</string>
+  <action name="runFilesIndividually">
+   <property name="text">
+    <string>Run Files Individually</string>
    </property>
   </action>
  </widget>

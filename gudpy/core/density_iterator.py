@@ -15,6 +15,8 @@ class DensityIterator(SingleParamIterator):
     ----------
     applyCoefficientToAttribute
         Multiplies a sample's density by a given coefficient.
+    organiseOutput
+        Organises the output of the iteration.
     """
     def applyCoefficientToAttribute(self, object, coefficient):
         """
@@ -30,3 +32,6 @@ class DensityIterator(SingleParamIterator):
         """
         # Apply the coefficient to the density.
         object.density *= coefficient
+
+    def organiseOutput(self, n):
+        self.gudrunFile.iterativeOrganise(f"IterateByDensity_{n}")

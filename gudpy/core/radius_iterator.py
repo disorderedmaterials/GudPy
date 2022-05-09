@@ -18,6 +18,8 @@ class RadiusIterator(SingleParamIterator):
         Multiplies a sample's inner/outer radii by a given coefficient.
     setTargetRadius
         Sets the target radius attribute.
+    organiseOutput
+        Organises the output of the iteration.
     """
     def applyCoefficientToAttribute(self, object, coefficient):
         if self.targetRadius == "inner":
@@ -27,3 +29,6 @@ class RadiusIterator(SingleParamIterator):
 
     def setTargetRadius(self, targetRadius):
         self.targetRadius = targetRadius
+
+    def organiseOutput(self, n):
+        self.gudrunFile.iterativeOrganise(f"IterateByRadius_{n}")

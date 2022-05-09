@@ -22,10 +22,10 @@ class ComponentSlots():
     def setupComponentSlots(self):
         self.widgetsRefreshing = True
         self.widget.addComponentButton.clicked.connect(
-            self.widget.componentList.insertComponent
+            self.insertComponent
         )
         self.widget.removeComponentButton.clicked.connect(
-            self.widget.componentList.removeComponent
+            self.removeComponent
         )
         self.widget.addSubcomponentButton.clicked.connect(
             self.addSubComponent
@@ -51,6 +51,9 @@ class ComponentSlots():
         self.widget.componentList.model().dataChanged.connect(
             self.handleDataChanged
         )
+
+        self.setComponentsActionsEnabled(self.components.count())
+        self.setSubComponentsEnabled(self.components.count())
 
     def handleDataChanged(self, index, _):
         component = index.internalPointer()
@@ -82,13 +85,17 @@ class ComponentSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
+    def insertComponent(self):
+        self.widget.componentList.insertComponent()
+        self.setSubComponentsEnabled(self.components.count())
+        self.setComponentsActionsEnabled(self.components.count())
+
     def removeComponent(self):
-        self.widget.componentList.removeRow(
-            self.widget.componentList
-            .selectionModel().selectedRows()
-        )
+        self.widget.componentList.removeComponent()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+        self.setSubComponentsEnabled(self.components.count())
+        self.setComponentsActionsEnabled(self.components.count())
 
     def removeSubComponent(self):
         self.widget.componentCompositionTable.model().removeRow(
@@ -109,3 +116,12 @@ class ComponentSlots():
         self.widget.componentList.duplicate()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def setSubComponentsEnabled(self, enabled):
+        self.widget.addSubcomponentButton.setEnabled(enabled)
+        self.widget.removeSubcomponentButton.setEnabled(enabled)
+        self.widget.componentCompositionTable.setEnabled(enabled)
+
+    def setComponentsActionsEnabled(self, enabled):
+        self.widget.removeComponentButton.setEnabled(enabled)
+        self.widget.duplicateButton.setEnabled(enabled)

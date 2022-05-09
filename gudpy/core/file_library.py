@@ -34,40 +34,29 @@ class GudPyFileLibrary():
             Input file to create file system from.
         """
         self.gudrunFile = gudrunFile
+        self.dataFileDir = gudrunFile.instrument.dataFileDir
+        self.fileDir = gudrunFile.instrument.GudrunStartFolder
         dataFileType = gudrunFile.instrument.dataFileType
-        dataFileDir = gudrunFile.instrument.dataFileDir
 
-        # Collect directories.
+        # Collect directories
         self.dirs = [
             gudrunFile.instrument.GudrunInputFileDir,
             gudrunFile.instrument.dataFileDir,
             gudrunFile.instrument.GudrunStartFolder,
-            gudrunFile.instrument.startupFileFolder,
+            gudrunFile.instrument.startupFileFolder
         ]
 
-        prefix = gudrunFile.instrument.GudrunStartFolder
-
-        # Collect files of static objects.
+        # Collect files of static objects
         self.files = [
-            gudrunFile.instrument.detectorCalibrationFileName,
-            os.path.join(prefix, gudrunFile.instrument.groupFileName),
-            os.path.join(
-                prefix, gudrunFile.instrument.deadtimeConstantsFileName
-            ),
-            os.path.join(
-                prefix, gudrunFile.instrument.neutronScatteringParametersFile
-            ),
-            os.path.join(
-                prefix, gudrunFile.beam.filenameIncidentBeamSpectrumParams
-            ),
-            *[
-                os.path.join(dataFileDir, df)
-                for df in gudrunFile.normalisation.dataFiles.dataFiles
-            ],
-            *[
-                os.path.join(dataFileDir, df)
-                for df in gudrunFile.normalisation.dataFilesBg.dataFiles
-            ]
+            gudrunFile.instrument.groupFileName,
+            gudrunFile.instrument.deadtimeConstantsFileName,
+            gudrunFile.instrument.neutronScatteringParametersFile,
+            gudrunFile.beam.filenameIncidentBeamSpectrumParams,
+        ]
+
+        self.dataFiles = [
+            *gudrunFile.normalisation.dataFiles.dataFiles,
+            *gudrunFile.normalisation.dataFilesBg.dataFiles
         ]
 
         # If NXS files are being used
@@ -86,34 +75,17 @@ class GudPyFileLibrary():
         # collecting their data files and if they are using
         # a file for the Total Cross Section Source, then collect
         # that file too.
+
         for sampleBackground in gudrunFile.sampleBackgrounds:
-            self.files = [
-                *self.files,
-                *[
-                    os.path.join(dataFileDir, df)
-                    for df in sampleBackground.dataFiles.dataFiles
-                ]
-            ]
+            self.dataFiles.extend(sampleBackground.dataFiles.dataFiles)
 
             for sample in sampleBackground.samples:
-                self.files = [
-                    *self.files,
-                    *[
-                        os.path.join(dataFileDir, df)
-                        for df in sample.dataFiles.dataFiles
-                    ]
-                ]
+                self.dataFiles.extend(sample.dataFiles.dataFiles)
                 if sample.totalCrossSectionSource == CrossSectionSource.FILE:
                     self.files.append(sample.crossSectionFilename)
 
                 for container in sample.containers:
-                    self.files = [
-                        *self.files,
-                        *[
-                            os.path.join(dataFileDir, df)
-                            for df in container.dataFiles.dataFiles
-                        ]
-                    ]
+                    self.dataFiles.extend(container.dataFiles.dataFiles)
                     if container.totalCrossSectionSource == (
                         CrossSectionSource.FILE
                     ):
@@ -129,14 +101,36 @@ class GudPyFileLibrary():
             List of tuples of boolean values and paths,
             indicating if the given path exists.
         """
-        cwd = os.getcwd()
-        os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-        ret = [
-            (os.path.isfile(path) | os.path.isdir(path), path)
-            for path in self.files
+        return [
+            *[
+                (
+                    (
+                        os.path.isdir(dir_)
+                        | os.path.isdir(os.path.join(self.fileDir, dir_)),
+                    ),
+                    dir_
+                )
+                for dir_ in self.dirs
+            ],
+            *[
+                (
+                    (
+                        os.path.isfile(file)
+                        | os.path.isfile(os.path.join(self.fileDir, file))
+                        | file == "*"
+                    ),
+                    file
+                )
+                for file in self.files
+            ],
+            *[
+                (
+                    os.path.isfile(os.path.join(self.dataFileDir, dataFile)),
+                    dataFile
+                )
+                for dataFile in self.dataFiles
+            ]
         ]
-        os.chdir(cwd)
-        return ret
 
     def exportMintData(
         self, samples, renameDataFiles=False,

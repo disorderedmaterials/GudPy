@@ -572,7 +572,7 @@ class ContainerSlots():
         if not value:
             self.container.dataFiles.dataFiles.remove(index)
         else:
-            self.container.dataFiles.dataFiles[index] = value
+            self.container.dataFiles[index] = value
         self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -601,7 +601,7 @@ class ContainerSlots():
         """
         self.widget.containerDataFilesList.clear()
         self.widget.containerDataFilesList.addItems(
-            [df for df in self.container.dataFiles.dataFiles]
+            [df for df in self.container.dataFiles]
         )
 
     def addFiles(self, target, title, regex):

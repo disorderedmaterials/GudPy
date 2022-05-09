@@ -175,7 +175,7 @@ class Sample:
 
         dataFilesLine = (
             f'{str(self.dataFiles)}\n'
-            if len(self.dataFiles.dataFiles) > 0
+            if len(self.dataFiles) > 0
             else
             ''
         )

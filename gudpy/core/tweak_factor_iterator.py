@@ -54,7 +54,7 @@ class TweakFactorIterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample
             ]:
-                gudPath = sample.dataFiles.dataFiles[0].replace(
+                gudPath = sample.dataFiles[0].replace(
                             self.gudrunFile.instrument.dataFileType,
                             "gud"
                         )
@@ -87,6 +87,7 @@ class TweakFactorIterator():
 
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
             self.performIteration(i)
+            self.gudrunFile.iterativeOrganise(f"IterateByTweakFactor_{i+1}")

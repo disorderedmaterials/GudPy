@@ -179,7 +179,7 @@ class WavelengthSubtractionIterator():
             for j, sample in enumerate(sampleBackground.samples):
                 if sample.runThisSample:
                     target = self.gudrunFile.sampleBackgrounds[i].samples[j]
-                    filename = target.dataFiles.dataFiles[0]
+                    filename = target.dataFiles[0]
                     target.fileSelfScattering = (
                         str(Path(filename).stem) + '.' + suffix
                     )
@@ -253,8 +253,10 @@ class WavelengthSubtractionIterator():
         for i in range(n):
 
             self.wavelengthIteration(i)
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
+            self.gudrunFile.iterativeOrganise(f"WavelengthIteration_{i+1}")
             self.QIteration(i)
-            self.gudrunFile.process()
+            self.gudrunFile.process(iterative=True)
             time.sleep(1)
+            self.gudrunFile.iterativeOrganise(f"QIteration_{i+1}")

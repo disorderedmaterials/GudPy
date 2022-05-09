@@ -13,13 +13,14 @@ class CompositionWorker(QObject):
     nextIteration = Signal(int)
     errorOccured = Signal(str)
 
-    def __init__(self, args, kwargs, sample):
+    def __init__(self, args, kwargs, sample, gudrunFile):
         self.args = args
         self.kwargs = kwargs
         self.sample = sample
         self.updatedSample = None
         self.errored = False
         self.currentIteration = 0
+        self.gudrunFile = gudrunFile
         super(CompositionWorker, self).__init__()
 
     def work(self):
@@ -29,7 +30,8 @@ class CompositionWorker(QObject):
             self.costup,
             *self.args,
             **self.kwargs,
-            startIterFunc=self.nextIteration.emit
+            startIterFunc=self.nextIteration.emit,
+            endIterFunc=self.organiseOutput
         )
         if not self.errored:
             # If an error occurs emit appropiate signal.
@@ -82,7 +84,7 @@ class CompositionWorker(QObject):
         # Set up process and execute.
         outpath = os.path.join(
             gf.instrument.GudrunInputFileDir,
-            "txt"
+            "gudpy.txt"
         )
         self.proc, func, args = gf.dcs(path=outpath, headless=False)
         func(*args)
@@ -91,7 +93,10 @@ class CompositionWorker(QObject):
         # Block until process is finished.
         self.proc.waitForFinished(-1)
         # Read from stdout.
-        result = bytes(self.proc.readAllStandardOutput()).decode("utf8")
+        if not self.proc:
+            return None
+        data = self.proc.readAllStandardOutput()
+        result = bytes(data).decode("utf8")
 
         # Check for errors.
         ERROR_KWDS = [
@@ -104,7 +109,7 @@ class CompositionWorker(QObject):
             self.errored = True
             return None
 
-        gudPath = sampleBackground.samples[0].dataFiles.dataFiles[0].replace(
+        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
             gudrunFile.instrument.dataFileType,
             "gud"
         )
@@ -120,3 +125,6 @@ class CompositionWorker(QObject):
             return 0
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+
+    def organiseOutput(self, n):
+        self.gudrunFile.iterativeOrganise(f"IterateByComposition_{n}")
