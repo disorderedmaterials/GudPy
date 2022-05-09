@@ -15,10 +15,12 @@ from core.sample import Sample
 
 class OutputTreeModel(QAbstractItemModel):
 
-    def __init__(self, output, gudrunFile, parent=None):
+    def __init__(self, output, gudrunFile, keyMap=None, parent=None):
         super().__init__(parent)
         if isinstance(output, str):
             output = {1: output}
+        self.keyMap = keyMap
+        print(self.keyMap)
         self.output = output
         self.gudrunFile = gudrunFile
         self.map = {}
@@ -28,6 +30,7 @@ class OutputTreeModel(QAbstractItemModel):
                 {i: [] for i in output.keys()}.items()
             )
         )
+        print(self.data_.keys())
         self.persistentIndexes = {}
         self.setupData()
 
@@ -152,7 +155,11 @@ class OutputTreeModel(QAbstractItemModel):
                 return 0
         parentObj = parent.internalPointer()
         if isinstance(parentObj, GudrunFile):
+            
+            # try:
             return len(self.data_[self.refs.index(parent.internalPointer())+1])
+            # except KeyError:
+            #     return len(self.data_[self.refs.index(parent.internalPointer())+1])
         else:
             return 0
 
@@ -165,7 +172,10 @@ class OutputTreeModel(QAbstractItemModel):
         if role == Qt.DisplayRole or role == Qt.EditRole:
             obj = index.internalPointer()
             if isinstance(obj, GudrunFile):
-                return obj.iteration
+                if self.keyMap:
+                    return self.keyMap[obj.iteration]
+                else:
+                    return obj.iteration
             elif isinstance(obj, (Instrument, Sample)):
                 return obj.name
         else:
@@ -177,17 +187,18 @@ class OutputTreeView(QTreeView):
     def __init__(self, parent):
         super(OutputTreeView, self).__init__(parent)
 
-    def buildTree(self, gudrunFile, output, parent):
+    def buildTree(self, gudrunFile, output, parent, keyMap=None):
         self.gudrunFile = gudrunFile
         self.output = output
         self.parent = parent
+        self.keyMap = keyMap
         self.makeModel()
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
         self.expandAll()
 
     def makeModel(self):
-        self.model_ = OutputTreeModel(self.output, self.gudrunFile, self)
+        self.model_ = OutputTreeModel(self.output, self.gudrunFile, keyMap=self.keyMap, parent=self)
         self.setModel(self.model_)
 
     def currentChanged(self, current, previous):

@@ -7,6 +7,9 @@ class PulseComboBoxModel(QAbstractItemModel):
         super(PulseComboBoxModel, self).__init__(parent=parent)
         self.pulses = pulses
     
+    def setPulses(self, pulses):
+        self.pulses = pulses
+
     def index(self, row, column, parent=QModelIndex()):
 
         if not self.hasIndex(row, column, parent):

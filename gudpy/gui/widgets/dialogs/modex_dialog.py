@@ -31,7 +31,7 @@ class ModexDialog(QDialog):
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
-        # self.gudrunFile.modex.period.periodBegin = 12129
+        self.gudrunFile.modex.period.periodBegin = 12129
 
         self.loadUI()
         self.initComponents()
@@ -171,7 +171,11 @@ class ModexDialog(QDialog):
 
         self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.definedPulses, self.widget)
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
-        # self.widget.pulseLabelComboBox.currentTextChanged.connect(self.startPulseLabelChanged)
+
+        self.widget.pulseTableView.model().dataChanged.connect(
+            self.pulsesChanged
+            # self.widget.pulseComboBoxModel.model().update
+        )
         
     def run(self):
         self.gudrunFile.modex.startLabel = self.widget.pulseLabelComboBox.currentText()
@@ -276,6 +280,9 @@ class ModexDialog(QDialog):
             else:
                 self.widget.pulseLabelComboBox.setCurrentIndex(-1)
         self.widget.pulseTableView.removePulse()
+
+    def pulsesChanged(self, *args):
+        self.widget.pulseComboBoxModel.dataChanged.emit(*args)
 
     def extrapolationModeChanged(self, index):
         extrapolationMode = self.widget.extrapolationModeComboBox.itemData(
