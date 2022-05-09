@@ -264,6 +264,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="interpolateCheckBox">
+        <property name="text">
+         <string>Interpolate final data?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QLabel" name="label_3">

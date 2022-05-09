@@ -163,7 +163,10 @@ class ModexDialog(QDialog):
 
         self.widget.pulseTableView.model().dataChanged.connect(
             self.pulsesChanged
-            # self.widget.pulseComboBoxModel.model().update
+        )
+
+        self.widget.interpolateCheckBox.stateChanged.connect(
+            self.interpolateToggled
         )
 
     def run(self):
@@ -326,3 +329,6 @@ class ModexDialog(QDialog):
     def useDefinedPulsesToggled(self, state):
         self.gudrunFile.modex.period.useDefinedPulses = state
         self.widget.periodDefinitionGroupBox.setEnabled(state)
+
+    def interpolateToggled(self, state):
+        self.gudrunFile.modex.interpolate = state

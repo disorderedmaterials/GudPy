@@ -45,7 +45,6 @@ class Period:
         if not self.definedPulses:
             self.periodBegin = self.startPulse
         for pulse in self.definedPulses:
-            print(pulse.label, pulseLabel)
             if pulse.label == pulseLabel:
                 self.periodBegin = self.startPulse - pulse.periodOffset
                 return
@@ -81,6 +80,7 @@ class ModulationExcitation:
         self.outputDir = ""
         self.sample = None
         self.useTempDataFileDir = False
+        self.interpolate = False
         self.tmp = tempfile.TemporaryDirectory()
         self.path = "modex.cfg"
 
@@ -327,12 +327,47 @@ class ModulationExcitation:
                 )
                 dest = os.path.join(self.outputDir, base + ".mint01")
                 tasks.append((self.copyfile, [src, dest]))
-
+        if self.interpolate:
+            tasks.append((self.interpolateData, [files]))
         if not headless:
             return tasks
 
-    def interpolate(self, files):
-        pass
+    def interpolateData(self, files):
+        files = sorted(
+            [
+                os.path.join(
+                    self.outputDir,
+                    os.path.basename(f).replace(os.path.splitext(f)[-1], ".mint01")
+                )
+                for f in files
+            ]
+        )
+        Q = []
+        DCS = []
+        readQ = False
+
+        for file in files:
+            dcs = []
+            with open(file, "r", encoding='utf-8') as fp:
+                if not readQ:
+                    for line in fp.readlines():
+                        if line.startswith('#'):
+                            continue
+                        x, _, _ = line.split()
+                        Q.append(float(x))
+                    readQ = True
+                    fp.seek(0)
+                for line in fp.readlines():
+                    if line.startswith('#'):
+                        continue
+                    _, y, _ = line.split()
+                    dcs.append(float(y))
+            DCS.append(dcs)
+
+        with open(os.path.join(self.outputDir, "interpolated.data"), "w", encoding='utf-8') as fp:
+            for i in range(len(Q)):
+                dcs = [x[i] for x in DCS]
+                fp.write(f"  {Q[i]}  {'  '.join([str(x) for x in dcs])}\n")
 
     def __str__(self):
         dataFilesLines = "\n".join(
