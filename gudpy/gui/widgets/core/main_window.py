@@ -1063,7 +1063,7 @@ class GudPyMainWindow(QMainWindow):
         else:
             self.makeProc(
               dcs, self.progressDCS,
-              func=func, args=args
+              func=func, args=args,
               finished=self.runGudrunFinished
             )
 

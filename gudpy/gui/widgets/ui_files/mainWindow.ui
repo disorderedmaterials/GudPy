@@ -7514,6 +7514,8 @@
   <action name="runModex">
    <property name="text">
     <string>Modulation Excitation</string>
+   </property>
+  </action>
   <action name="runFilesIndividually">
    <property name="text">
     <string>Run Files Individually</string>
