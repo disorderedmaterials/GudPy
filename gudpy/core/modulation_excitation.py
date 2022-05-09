@@ -47,7 +47,7 @@ class Period():
         print(pulseLabel, self.definedPulses)
         if not self.definedPulses:
             self.periodBegin = self.startPulse
-        for pulse in self.pulses:
+        for pulse in self.definedPulses:
             if pulse.label == pulseLabel:
                 self.periodBegin = self.startPulse - pulse.periodOffset
                 return
