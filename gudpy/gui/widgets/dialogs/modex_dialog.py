@@ -138,10 +138,6 @@ class ModexDialog(QDialog):
             self.cancel
         )
 
-        # self.widget.periodGroupBox.toggled.connect(
-        #     self.useDefinedPulsesToggled
-        # )
-
         self.widget.usePeriodDefinitionsButton.toggled.connect(
             self.useDefinedPulsesToggled
         )
@@ -239,8 +235,11 @@ class ModexDialog(QDialog):
                     self.startPulseChanged
                 )
                 self.widget.spectraChart.removeAllSeries()
-                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)  
+                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)
                 self.gudrunFile.modex.period.setRawPulses(self.widget.eventTableView.model()._data)
+                self.widget.eventTableView.setCurrentIndex(
+                    self.widget.eventTableView.model().index(0, 0)
+                )
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
@@ -279,7 +278,6 @@ class ModexDialog(QDialog):
 
     def startPulseLabelChanged(self, text):
         self.gudrunFile.modex.period.determineStartTime(text)
-        print(self.gudrunFile.modex.period.periodBegin)
 
     def setControlsEnabled(self, state):
         self.widget.periodGroupBox.setEnabled(state)
@@ -304,5 +302,5 @@ class ModexDialog(QDialog):
             self.gudrunFile.modex.dataFileDir = self.gudrunFile.instrument.dataFileDir
 
     def useDefinedPulsesToggled(self, state):
-        self.gudrunFile.modex.useDefinedPulses = state
+        self.gudrunFile.modex.period.useDefinedPulses = state
         self.widget.periodDefinitionGroupBox.setEnabled(state)
