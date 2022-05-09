@@ -1,12 +1,12 @@
-
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
 
+
 class PulseComboBoxModel(QAbstractItemModel):
-    
+
     def __init__(self, pulses, parent):
         super(PulseComboBoxModel, self).__init__(parent=parent)
         self.pulses = pulses
-    
+
     def setPulses(self, pulses):
         self.pulses = pulses
 
@@ -19,13 +19,13 @@ class PulseComboBoxModel(QAbstractItemModel):
 
     def parent(self, index):
         return QModelIndex()
-    
+
     def rowCount(self, parent=QModelIndex()):
         return len(self.pulses)
-    
+
     def columnCount(self, parent=QModelIndex()):
         return 1
-    
+
     def data(self, index, role):
         if role == Qt.DisplayRole:
             if len(self.pulses):

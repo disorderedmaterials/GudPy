@@ -9,4 +9,6 @@ class OutputSlots():
             gudrunFile = self.parent.gudrunFile
         self.output = output
         self.task = task
-        self.widget.outputTree.buildTree(gudrunFile, output, self, keyMap=keyMap)
+        self.widget.outputTree.buildTree(
+            gudrunFile, output, self, keyMap=keyMap
+        )

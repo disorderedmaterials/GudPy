@@ -1,13 +1,12 @@
 import os
-from queue import Queue
 import sys
 import h5py as h5
 from datetime import datetime
 
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
-from PySide6.QtCore import QFile, Qt, QProcess, QPointF, QDateTime
+from PySide6.QtCore import QFile, Qt, QProcess, QDateTime
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCharts import QChartView, QChart, QLineSeries, QValueAxis, QDateTimeAxis
+from PySide6.QtCharts import QChartView
 from PySide6.QtGui import QPainter
 from core.enums import ExtrapolationModes
 
@@ -21,13 +20,12 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 
 class ModexDialog(QDialog):
-
     def __init__(self, gudrunFile, parent):
         super(ModexDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
-        self.gudrunFile.modex.sample = (
-            gudrunFile.sampleBackgrounds[0].samples[0]
-        )
+        self.gudrunFile.modex.sample = gudrunFile.sampleBackgrounds[0].samples[
+            0
+        ]
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
@@ -35,22 +33,21 @@ class ModexDialog(QDialog):
 
         self.loadUI()
         self.initComponents()
-        if hasattr(sys, '_MEIPASS'):
+        if hasattr(sys, "_MEIPASS"):
             self.partition_events = os.path.join(
                 sys._MEIPASS, f"partition_events{SUFFIX}"
             )
         else:
             self.partition_events = resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"partition_events{SUFFIX}"
+                os.path.join(config.__rootdir__, "bin"),
+                f"partition_events{SUFFIX}",
             )
 
     def loadUI(self):
         """
         Loads the UI file for the ModexDialog object.
         """
-        if hasattr(sys, '_MEIPASS'):
+        if hasattr(sys, "_MEIPASS"):
             uifile = QFile(
                 os.path.join(
                     sys._MEIPASS, "ui_files", "modulationExcitationDialog.ui"
@@ -60,8 +57,10 @@ class ModexDialog(QDialog):
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "..", "ui_files",
-                    "modulationExcitationDialog.ui"
+                    current_dir,
+                    "..",
+                    "ui_files",
+                    "modulationExcitationDialog.ui",
                 )
             )
         loader = QUiLoader()
@@ -72,32 +71,33 @@ class ModexDialog(QDialog):
         self.widget.pulseTableView.makeModel(
             self.gudrunFile.modex.period.definedPulses, self.gudrunFile.modex
         )
-        self.widget.addPulseButton.clicked.connect(
-            self.addPulse
-        )
-        self.widget.removePulseButton.clicked.connect(
-            self.removePulse
-        )
+        self.widget.addPulseButton.clicked.connect(self.addPulse)
+        self.widget.removePulseButton.clicked.connect(self.removePulse)
 
         with h5.File(
             os.path.join(
                 self.gudrunFile.instrument.dataFileDir,
-                self.gudrunFile.sampleBackgrounds[0].
-                samples[0].dataFiles.dataFiles[0]
+                self.gudrunFile.sampleBackgrounds[0]
+                .samples[0]
+                .dataFiles.dataFiles[0],
             )
         ) as fp:
 
-            spectra = fp[
-                "/raw_data_1/detector_1/spectrum_index"
-                ][()][:].tolist()
+            spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
+                :
+            ].tolist()
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
             epoch = datetime(1970, 1, 1)
-            start = fp["/raw_data_1/start_time"][()][0].decode('utf8')
-            end = fp["/raw_data_1/end_time"][()][0].decode('utf8')
-            start = (datetime.strptime(start, "%Y-%m-%dT%H:%M:%S") - epoch).total_seconds()
-            end = (datetime.strptime(end, "%Y-%m-%dT%H:%M:%S") - epoch).total_seconds()
+            start = fp["/raw_data_1/start_time"][()][0].decode("utf8")
+            end = fp["/raw_data_1/end_time"][()][0].decode("utf8")
+            start = (
+                datetime.strptime(start, "%Y-%m-%dT%H:%M:%S") - epoch
+            ).total_seconds()
+            end = (
+                datetime.strptime(end, "%Y-%m-%dT%H:%M:%S") - epoch
+            ).total_seconds()
             self.start = QDateTime()
             self.start.setSecsSinceEpoch(start)
             self.end = QDateTime()
@@ -110,33 +110,26 @@ class ModexDialog(QDialog):
             self.periodDurationChanged
         )
 
-        self.widget.updateSpectraButton.clicked.connect(
-            self.partitionEvents
-        )
+        self.widget.updateSpectraButton.clicked.connect(self.partitionEvents)
 
         self.widget.extrapolationModeComboBox.addItem(
             ExtrapolationModes.FORWARDS.name, ExtrapolationModes.FORWARDS
         )
         self.widget.extrapolationModeComboBox.addItem(
             ExtrapolationModes.BACKWARDS.name, ExtrapolationModes.BACKWARDS
-
         )
         self.widget.extrapolationModeComboBox.addItem(
-            ExtrapolationModes.BI_DIRECTIONAL.name, ExtrapolationModes.BI_DIRECTIONAL
-
+            ExtrapolationModes.BI_DIRECTIONAL.name,
+            ExtrapolationModes.BI_DIRECTIONAL,
         )
 
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
         )
 
-        self.widget.buttonBox.accepted.connect(
-            self.run
-        )
+        self.widget.buttonBox.accepted.connect(self.run)
 
-        self.widget.buttonBox.rejected.connect(
-            self.cancel
-        )
+        self.widget.buttonBox.rejected.connect(self.cancel)
 
         self.widget.usePeriodDefinitionsButton.toggled.connect(
             self.useDefinedPulsesToggled
@@ -146,9 +139,7 @@ class ModexDialog(QDialog):
             self.browseSaveDirectory
         )
 
-        self.widget.useTempDirButton.toggled.connect(
-            self.useTempDirToggled
-        )
+        self.widget.useTempDirButton.toggled.connect(self.useTempDirToggled)
 
         self.widget.useDataFileDirButton.toggled.connect(
             self.useDataFileDirToggled
@@ -158,44 +149,42 @@ class ModexDialog(QDialog):
             os.access(self.gudrunFile.instrument.dataFileDir, os.W_OK)
         )
 
-        self.widget.spectraPlot = QChartView(
-            self.widget
-        )
+        self.widget.spectraPlot = QChartView(self.widget)
         self.widget.spectraPlot.setRenderHint(QPainter.Antialiasing)
-        self.widget.pulsePlotLayout.addWidget(
-            self.widget.spectraPlot
-        )
+        self.widget.pulsePlotLayout.addWidget(self.widget.spectraPlot)
         self.widget.spectraChart = SpectraChart()
         self.widget.spectraChart.setTimeBoundaries(self.start, self.end)
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
 
-        self.widget.pulseComboBoxModel = PulseComboBoxModel(self.gudrunFile.modex.period.definedPulses, self.widget)
+        self.widget.pulseComboBoxModel = PulseComboBoxModel(
+            self.gudrunFile.modex.period.definedPulses, self.widget
+        )
         self.widget.pulseLabelComboBox.setModel(self.widget.pulseComboBoxModel)
 
         self.widget.pulseTableView.model().dataChanged.connect(
             self.pulsesChanged
             # self.widget.pulseComboBoxModel.model().update
         )
-        
+
     def run(self):
-        self.gudrunFile.modex.startLabel = self.widget.pulseLabelComboBox.currentText()
+        self.gudrunFile.modex.startLabel = (
+            self.widget.pulseLabelComboBox.currentText()
+        )
         valid, err = self.gudrunFile.modex.isConfigurationValid()
         if valid:
-            self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
-            if isinstance (self.preprocess, FileNotFoundError):
+            self.preprocess = self.gudrunFile.modex.preprocess(
+                useTempDataFileDir=self.useTempDir, headless=False
+            )
+            if isinstance(self.preprocess, FileNotFoundError):
                 QMessageBox.critical(
                     self.widget,
                     "GudPy Error",
-                    "Couldn't find modulation_excitation binary."
+                    "Couldn't find modulation_excitation binary.",
                 )
             else:
                 self.widget.close()
         else:
-            QMessageBox.warning(
-                self.widget,
-                "GudPy Warning",
-                err
-            )
+            QMessageBox.warning(self.widget, "GudPy Warning", err)
 
     def cancel(self):
         self.cancelled = True
@@ -206,7 +195,7 @@ class ModexDialog(QDialog):
             QMessageBox.critical(
                 self.widget,
                 "GudPy Error",
-                "Couldn't find partition_events binary."
+                "Couldn't find partition_events binary.",
             )
             return
         self.setControlsEnabled(False)
@@ -217,11 +206,12 @@ class ModexDialog(QDialog):
                 os.path.join(
                     self.gudrunFile.instrument.dataFileDir,
                     self.gudrunFile.sampleBackgrounds[0]
-                    .samples[0].dataFiles.dataFiles[0]
+                    .samples[0]
+                    .dataFiles.dataFiles[0],
                 ),
                 str(self.widget.lowerSpecSpinBox.value()),
                 str(self.widget.upperSpecSpinBox.value()),
-                "output.nxs"
+                "output.nxs",
             ]
         )
         self.proc.finished.connect(self.updateSpectra)
@@ -232,7 +222,7 @@ class ModexDialog(QDialog):
             list(
                 range(
                     self.widget.lowerSpecSpinBox.value(),
-                    self.widget.upperSpecSpinBox.value()+1
+                    self.widget.upperSpecSpinBox.value() + 1,
                 )
             )
         )
@@ -252,15 +242,20 @@ class ModexDialog(QDialog):
                 spec = self.widget.spectraTableView.model().data(
                     index, role=Qt.DisplayRole
                 )
-                self.widget.eventTableView.makeModel(
-                    "output.nxs", str(spec)
-                )
-                self.widget.eventTableView.selectionModel().selectionChanged.connect(
-                    self.startPulseChanged
+                self.widget.eventTableView.makeModel("output.nxs", str(spec))
+                (
+                    self.widget.eventTableView.selectionModel()
+                    .selectionChanged.connect(
+                        self.startPulseChanged
+                    )
                 )
                 self.widget.spectraChart.removeAllSeries()
-                self.widget.spectraChart.plot(self.widget.eventTableView.model()._data)
-                self.gudrunFile.modex.period.setRawPulses(self.widget.eventTableView.model()._data)
+                self.widget.spectraChart.plot(
+                    self.widget.eventTableView.model()._data
+                )
+                self.gudrunFile.modex.period.setRawPulses(
+                    self.widget.eventTableView.model()._data
+                )
                 self.widget.eventTableView.setCurrentIndex(
                     self.widget.eventTableView.model().index(0, 0)
                 )
@@ -313,20 +308,20 @@ class ModexDialog(QDialog):
         self.widget.buttonBox.setEnabled(state)
 
     def browseSaveDirectory(self):
-        self.gudrunFile.modex.outputDir = (
-            QFileDialog.getExistingDirectory(
-                self.widget, "Ouput Directory", os.path.expanduser("~")
-            )
+        self.gudrunFile.modex.outputDir = QFileDialog.getExistingDirectory(
+            self.widget, "Ouput Directory", os.path.expanduser("~")
         )
         self.widget.outputDirLineEdit.setText(self.gudrunFile.modex.outputDir)
 
     def useTempDirToggled(self, state):
         self.useTempDir = state
-    
+
     def useDataFileDirToggled(self, state):
         self.useDataFileDir = state
         if state:
-            self.gudrunFile.modex.dataFileDir = self.gudrunFile.instrument.dataFileDir
+            self.gudrunFile.modex.dataFileDir = (
+                self.gudrunFile.instrument.dataFileDir
+            )
 
     def useDefinedPulsesToggled(self, state):
         self.gudrunFile.modex.period.useDefinedPulses = state

@@ -7,7 +7,15 @@ import traceback
 from queue import Queue
 from collections.abc import Sequence
 import re
-from PySide6.QtCore import QFile, QFileInfo, QTimer, QThread, QProcess, QElapsedTimer, QCoreApplication
+from PySide6.QtCore import (
+    QFile,
+    QFileInfo,
+    QTimer,
+    QThread,
+    QProcess,
+    QElapsedTimer,
+    QCoreApplication
+)
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -105,7 +113,7 @@ from core.wavelength_subtraction_iterator import (
 )
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.gud_file import GudFile
-from core.utils import breplace, isin, nthint
+from core.utils import breplace, nthint
 from gui.widgets.core.worker import CompositionWorker
 
 
@@ -963,7 +971,10 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
-    def makeProc(self, cmd, slot, dir_=None, func=None, args=None, started=None, finished=None):
+    def makeProc(
+        self, cmd, slot, dir_=None, func=None,
+        args=None, started=None, finished=None
+    ):
         if not started:
             started = self.procStarted
         if not finished:
@@ -1142,7 +1153,12 @@ class GudPyMainWindow(QMainWindow):
             )
             self.setControlsEnabled(True)
             return
-        self.queue.put(((dcs, self.progressDCS), {"func":func, "args":args}))
+        self.queue.put(
+            (
+                (dcs, self.progressDCS),
+                {"func": func, "args": args}
+            )
+        )
 
     def modex(self):
         self.setControlsEnabled(False)
@@ -1158,7 +1174,9 @@ class GudPyMainWindow(QMainWindow):
 
             self.proc = tasks[-1]
             self.proc.started.connect(self.modexStarted)
-            self.proc.readyReadStandardOutput.connect(self.progressModexPreprocess)
+            self.proc.readyReadStandardOutput.connect(
+                self.progressModexPreprocess
+            )
             self.proc.readyReadStandardError.connect(self.errorModexPreprocess)
             self.proc.finished.connect(self.preprocessModexFinished)
             self.proc.start()
@@ -1169,7 +1187,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(
             self.text
         )
-    
+
     def progressModexPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
@@ -1177,7 +1195,7 @@ class GudPyMainWindow(QMainWindow):
         _, _, data = stdout.partition("Finished processing: ")
         if data:
             self.modexFiles.add(data.split()[0])
-        
+
         progress = re.findall(r'\d+\.\d+%', stdout)
         if progress:
             print(progress[-1][:-1])
@@ -1208,7 +1226,9 @@ class GudPyMainWindow(QMainWindow):
         self.modexFiles = list(self.modexFiles)
         self.nPulses = len(self.modexFiles)
         if self.nPulses > 0:
-            tasks = self.gudrunFile.modex.process(self.modexFiles, headless=False)
+            tasks = self.gudrunFile.modex.process(
+                self.modexFiles, headless=False
+            )
             self.text = "Modulation Excitation"
             self.mainWidget.currentTaskLabel.setText(
                 self.text
@@ -1218,19 +1238,24 @@ class GudPyMainWindow(QMainWindow):
                 self.queue.put(t)
             self.currentFile = 0
             self.keyMap = {
-                n+1 : os.path.splitext(os.path.basename(self.modexFiles[n]))[0]
+                n+1: os.path.splitext(os.path.basename(self.modexFiles[n]))[0]
                 for n in range(len(self.modexFiles))
             }
             self.processPulse()
         else:
             self.setControlsEnabled(True)
             self.mainWidget.currentTaskLabel.setText("No task running.")
-    
+
     def processPulse(self):
         task = self.queue.get()
         if isinstance(task[0], QProcess):
             dcs, func, args, dir_ = task
-            self.makeProc(dcs, self.progressModexProcess, dir_=dir_, func=func, args=args, started=self.processPulseStarted, finished=self.processPulseFinished)
+            self.makeProc(
+                dcs, self.progressModexProcess,
+                dir_=dir_, func=func, args=args,
+                started=self.processPulseStarted,
+                finished=self.processPulseFinished
+            )
         else:
             func, args = task
             func(*args)
@@ -1259,7 +1284,10 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         self.proc = None
-        self.outputSlots.setOutput(self.modexOutput, "gudrun_dcs", gudrunFile=self.gudrunFile.modex.gudrunFile, keyMap=self.keyMap)
+        self.outputSlots.setOutput(
+            self.modexOutput, "gudrun_dcs",
+            gudrunFile=self.gudrunFile.modex.gudrunFile, keyMap=self.keyMap
+        )
 
     def iterateGudrun(self, dialog, name):
         self.setControlsEnabled(False)

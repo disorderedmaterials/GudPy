@@ -206,8 +206,12 @@ class PurgeFile():
         HEADER = f"'  '  '          '  '{os.path.sep}'\n\n"
         TAB = "          "
 
+        nxsDefinitionsPath = os.path.join(
+            self.gudrunFile.instrument.GudrunStartFolder,
+            self.gudrunFile.instrument.nxsDefinitionFile
+        )
         nxsDefinitionsLine = (
-            f"{os.path.join(self.gudrunFile.instrument.GudrunStartFolder, self.gudrunFile.instrument.nxsDefinitionFile)}{TAB}"
+            f"{nxsDefinitionsPath}{TAB}"
             f"NeXus definition file\n"
             if self.gudrunFile.instrument.dataFileType.lower() == "nxs"
             else

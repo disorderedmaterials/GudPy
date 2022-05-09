@@ -153,11 +153,9 @@ class OutputTreeModel(QAbstractItemModel):
                 return 0
         parentObj = parent.internalPointer()
         if isinstance(parentObj, GudrunFile):
-            
-            # try:
-            return len(self.data_[self.refs.index(parent.internalPointer())+1])
-            # except KeyError:
-            #     return len(self.data_[self.refs.index(parent.internalPointer())+1])
+            return len(
+                self.data_[self.refs.index(parent.internalPointer())+1]
+            )
         else:
             return 0
 
@@ -196,7 +194,10 @@ class OutputTreeView(QTreeView):
         self.expandAll()
 
     def makeModel(self):
-        self.model_ = OutputTreeModel(self.output, self.gudrunFile, keyMap=self.keyMap, parent=self)
+        self.model_ = OutputTreeModel(
+            self.output, self.gudrunFile,
+            keyMap=self.keyMap, parent=self
+        )
         self.setModel(self.model_)
 
     def currentChanged(self, current, previous):

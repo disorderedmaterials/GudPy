@@ -144,7 +144,6 @@ class GudrunFile:
         # Construct the outpath.
         self.outpath = "gudpy.txt"
 
-
         if isinstance(path, type(None)):
             self.instrument = Instrument()
             self.beam = Beam()

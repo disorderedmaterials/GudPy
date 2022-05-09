@@ -9,6 +9,7 @@ from core.modulation_excitation import DefinedPulse
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
+
 class PulseTableModel(GudPyTableModel):
     def __init__(self, data, headers, parent):
         super(PulseTableModel, self).__init__(data, headers, parent)
@@ -36,7 +37,7 @@ class PulseTableModel(GudPyTableModel):
         name = "DEFINED_PULSE"
         i = 0
         while name in [p.label for p in self._data]:
-            i +=1
+            i += 1
             name = f"DEFINED_PULSE_{i}"
         self._data.append(DefinedPulse(label=name))
         self.endInsertRows()
