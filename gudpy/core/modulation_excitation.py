@@ -120,11 +120,18 @@ class ModulationExcitation():
         if headless:
             modulation_excitation = resolve("bin", f"modulation_excitation{SUFFIX}")
         else:
-            modulation_excitation = resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"modulation_excitation{SUFFIX}"
-            )
+            if hasattr(sys, '_MEIPASS'):
+                modulation_excitation = os.path.join(
+                    sys._MEIPASS, f"modulation_excitation{SUFFIX}"
+                )
+            else:
+                modulation_excitation = resolve(
+                    os.path.join(
+                        config.__rootdir__, "bin"
+                    ), f"modulation_excitation{SUFFIX}"
+                )
+        if not os.path.exists(modulation_excitation):
+            return FileNotFoundError
         spec_bad = os.path.join(
             self.ref.instrument.GudrunInputFileDir,
             "spec.bad"

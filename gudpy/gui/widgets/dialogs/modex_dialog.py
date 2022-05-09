@@ -176,7 +176,14 @@ class ModexDialog(QDialog):
         valid, err = self.gudrunFile.modex.isConfigurationValid()
         if valid:
             self.preprocess = self.gudrunFile.modex.preprocess(useTempDataFileDir=self.useTempDir, headless=False)
-            self.widget.close()
+            if isinstance (self.preprocess, FileNotFoundError):
+                QMessageBox.critical(
+                    self.widget,
+                    "GudPy Error",
+                    "Couldn't find modulation_excitation binary."
+                )
+            else:
+                self.widget.close()
         else:
             QMessageBox.warning(
                 self.widget,
@@ -189,6 +196,13 @@ class ModexDialog(QDialog):
         self.widget.close()
 
     def partitionEvents(self):
+        if not os.path.exists(self.partition_events):
+            QMessageBox.critical(
+                self.widget,
+                "GudPy Error",
+                "Couldn't find partition_events binary."
+            )
+            return
         self.setControlsEnabled(False)
         self.proc = QProcess()
         self.proc.setProgram(self.partition_events)
