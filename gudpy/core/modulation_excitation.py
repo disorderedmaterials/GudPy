@@ -68,7 +68,6 @@ class Period():
             rawPulses = [RawPulse(p, p+self.duration) for p in self.rawPulses]
             pulseLines = "\n".join([str(p) for p in rawPulses])
             return (
-                f"{self.startPulse}\n"
                 f"{len(rawPulses)}\n"
                 f"{pulseLines}"
             )
@@ -188,6 +187,8 @@ class ModulationExcitation():
                         )
                     )
             else:
+                if os.path.exists(os.path.join(self.tmp.name, "data")):
+                    tasks.append((shutil.rmtree, [os.path.join(self.tmp.name, "data")]))
                 tasks.append((os.makedirs, [os.path.join(self.tmp.name, "data"),]))
                 for dataFile in self.ref.normalisation.dataFiles.dataFiles:
                     tasks.append((self.copyfile, [os.path.join(self.ref.instrument.dataFileDir, dataFile), os.path.join(self.tmp.name, "data", dataFile)]))
@@ -247,8 +248,15 @@ class ModulationExcitation():
                 src = os.path.join(gf.instrument.GudrunInputFileDir, base+".mint01")
                 dest = os.path.join(self.outputDir, base+".mint01")
                 tasks.append((self.copyfile, [src, dest,]))
+        # if self.useTempDataFileDir:
+        #     tasks.append((shutil.rmtree, [gf.instrument.dataFileDir]))
+        # tasks.append(shutil.rmtree())
         if not headless:
             return tasks
+
+    def interpolate(self, files):
+        pass
+        
 
     def __str__(self):
         dataFilesLines = '\n'.join(
@@ -260,11 +268,15 @@ class ModulationExcitation():
             ]
         )
         self.period.determineStartTime(self.startLabel)
+        if not self.period.useDefinedPulses:
+            extrapolationMode = ExtrapolationModes.NONE.name
+        else:
+            extrapolationMode = ExtrapolationModes(self.extrapolationMode.value).name
         return (
             f"{self.dataFileDir}\n"
             f"{os.path.join(self.ref.instrument.GudrunStartFolder, self.ref.instrument.nxsDefinitionFile)}\n"
             f"{len(self.ref.sampleBackgrounds[0].samples[0].dataFiles.dataFiles)}\n"
             f"{dataFilesLines}\n"
-            f"{ExtrapolationModes(self.extrapolationMode.value).name}\n"
+            f"{extrapolationMode}\n"
             f"{str(self.period)}"
         )
