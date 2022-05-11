@@ -117,7 +117,7 @@ class GudPyFileLibrary():
                     (
                         os.path.isfile(file)
                         | os.path.isfile(os.path.join(self.fileDir, file))
-                        | file == "*"
+                        | (file == "*")
                     ),
                     file
                 )
