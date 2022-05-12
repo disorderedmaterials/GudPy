@@ -38,13 +38,17 @@ steps:
     displayName: "Install OpenGL for linux"
 
   - bash: |
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
-      unzip binaries.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > gudrun-binaries.zip
+      unzip gudrun-binaries.zip
       mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}/* bin
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin/StartupFiles
-      
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/ModEx-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
+      unzip modex-binaries.zip
+      mv ModEx-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
+    displayName: Acquire binaries and startup files.
+
   - script: |
       pip install pyinstaller
       
