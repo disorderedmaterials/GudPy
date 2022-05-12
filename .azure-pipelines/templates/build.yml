@@ -44,9 +44,9 @@ steps:
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin/StartupFiles
-      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/ModEx-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/binaries-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
       unzip modex-binaries.zip
-      mv ModEx-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
+      mv binaries-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
     displayName: Acquire binaries and startup files.
 
   - script: |
