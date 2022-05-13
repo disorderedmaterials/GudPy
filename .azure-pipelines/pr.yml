@@ -70,6 +70,7 @@ stages:
           os: '$(imageName)'
           osName: '$(osName)'
           gudrunTag: '$(gudrunTag)'
+          modexTag: '$(modexTag)'
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -91,6 +92,7 @@ stages:
             os: '$(imageName)'
             osName: '$(osName)'
             gudrunTag: '$(gudrunTag)'
+            modexTag: '$(modexTag)'
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"
