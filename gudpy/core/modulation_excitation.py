@@ -231,7 +231,8 @@ class ModulationExcitation:
     """
     def __init__(self, gudrunFile):
         """
-        Constructs all the necessary attributes for the ModulationExcitation object.
+        Constructs all the necessary attributes for the
+        ModulationExcitation object.
 
         Parameters
         ----------
@@ -339,7 +340,7 @@ class ModulationExcitation:
         # Error if binary is missing.
         if not os.path.exists(modulation_excitation):
             return FileNotFoundError
-        
+
         # Purge outputs.
         spec_bad = os.path.join(
             self.ref.instrument.GudrunInputFileDir, "spec.bad"
@@ -515,7 +516,8 @@ class ModulationExcitation:
                             )
                         )
         if headless:
-            # Write out the configuration file and perform modulation_excitation.
+            # Write out the configuration file and
+            # perform modulation_excitation.
             self.write_out()
             result = subprocess.run(
                 [modulation_excitation, "modex.cfg"],
@@ -537,7 +539,7 @@ class ModulationExcitation:
         """
         Helper for copying files.
         Fails quietly if the files are the same.
-        
+
         Parameters
         ----------
         src : str
@@ -577,7 +579,7 @@ class ModulationExcitation:
                 gf.instrument.dataFileDir = self.dataFileDir + os.path.sep
             # gudrun_dcs will be run inside the temp directory.
             gf.instrument.GudrunInputFileDir = self.tmp.name
-            # Ensure that only this file will be processed.
+            # Ensure that only this file will be processed.
             gf.sampleBackgrounds[0].samples[0].dataFiles.dataFiles = [base]
 
             # This is the base name of the file, without extensions.
@@ -608,7 +610,7 @@ class ModulationExcitation:
                 )
                 dest = os.path.join(self.outputDir, base + ".mint01")
                 tasks.append((self.copyfile, [src, dest]))
-        
+
         if headless and self.interpolate:
             # Call interpolation method on outputted files.
             self.interpolateData(files)
@@ -627,13 +629,13 @@ class ModulationExcitation:
         where the first column represents the Q value,
         and the following len(files) columns represent the DCS values
         of each individual mint01 file (organise by start time).
-        
+
         Parameters
         ----------
         files : str[]
             List of files to interpolate.
         """
-        
+
         # Sort the files beforehand,
         # so they should be in ascending order by start time.
         files = sorted(
