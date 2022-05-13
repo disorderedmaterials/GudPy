@@ -45,7 +45,9 @@ steps:
       unzip startupFiles.zip
       mv StartupFiles bin/StartupFiles
       curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/binaries-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
+      ls
       unzip modex-binaries.zip
+      ls
       mv binaries-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
     displayName: Acquire binaries and startup files.
 
