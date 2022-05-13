@@ -13,6 +13,8 @@ parameters:
   type: string
 - name: gudrunTag
   default: ''
+- name: modexTag
+  default: ''
   type: string
 - name: publishImage
   default: 'false'
