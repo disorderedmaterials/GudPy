@@ -378,6 +378,32 @@ class ModulationExcitation:
             self.dataFileDir = os.path.join(self.tmp.name, "data")
             # If headless, copy all the data files into this new directory.
             if headless:
+                if os.path.exists(self.dataFileDir):
+                    shutil.rmtree(self.dataFileDir)
+                os.makedirs(self.dataFileDir)
+                for dataFile in self.ref.normalisation.dataFiles.dataFiles:
+                    self.copyfile(
+                        os.path.join(
+                            self.ref.instrument.dataFileDir, dataFile
+                        ),
+                        os.path.join(self.dataFileDir, dataFile),
+                    )
+                for dataFile in self.ref.normalisation.dataFilesBg.dataFiles:
+                    self.copyfile(
+                        os.path.join(
+                            self.ref.instrument.dataFileDir, dataFile
+                        ),
+                        os.path.join(self.dataFileDir, dataFile),
+                    )
+                for dataFile in self.ref.sampleBackgrounds[
+                    0
+                ].dataFiles.dataFiles:
+                    self.copyfile(
+                        os.path.join(
+                            self.ref.instrument.dataFileDir, dataFile
+                        ),
+                        os.path.join(self.dataFileDir, dataFile),
+                    )
                 for dataFile in (
                     self.ref.sampleBackgrounds[0]
                     .samples[0]
@@ -387,19 +413,32 @@ class ModulationExcitation:
                         os.path.join(
                             self.ref.instrument.dataFileDir, dataFile
                         ),
-                        os.path.join(self.tmp.name, dataFile),
+                        os.path.join(self.dataFileDir, dataFile),
                     )
+                for container in (
+                    self.ref.sampleBackgrounds[0].samples[0].containers
+                ):
+                    for dataFile in container.dataFiles.dataFiles:
+                        self.copyfile(
+                            os.path.join(
+                                self.ref.instrument.dataFileDir,
+                                dataFile,
+                            ),
+                            os.path.join(
+                                self.dataFileDir, dataFile
+                            ),
+                        )
             # Otherwise, append the copies as tasks.
             else:
-                if os.path.exists(os.path.join(self.tmp.name, "data")):
+                if os.path.exists(os.path.join(self.dataFileDir)):
                     tasks.append(
-                        (shutil.rmtree, [os.path.join(self.tmp.name, "data")])
+                        (shutil.rmtree, [os.path.join(self.dataFileDir)])
                     )
                 tasks.append(
                     (
                         os.makedirs,
                         [
-                            os.path.join(self.tmp.name, "data"),
+                            os.path.join(self.dataFileDir),
                         ],
                     )
                 )
@@ -411,7 +450,7 @@ class ModulationExcitation:
                                 os.path.join(
                                     self.ref.instrument.dataFileDir, dataFile
                                 ),
-                                os.path.join(self.tmp.name, "data", dataFile),
+                                os.path.join(self.dataFileDir, dataFile),
                             ],
                         )
                     )
@@ -423,7 +462,7 @@ class ModulationExcitation:
                                 os.path.join(
                                     self.ref.instrument.dataFileDir, dataFile
                                 ),
-                                os.path.join(self.tmp.name, "data", dataFile),
+                                os.path.join(self.dataFileDir, dataFile),
                             ],
                         )
                     )
@@ -437,7 +476,7 @@ class ModulationExcitation:
                                 os.path.join(
                                     self.ref.instrument.dataFileDir, dataFile
                                 ),
-                                os.path.join(self.tmp.name, "data", dataFile),
+                                os.path.join(self.dataFileDir, dataFile),
                             ],
                         )
                     )
@@ -453,7 +492,7 @@ class ModulationExcitation:
                                 os.path.join(
                                     self.ref.instrument.dataFileDir, dataFile
                                 ),
-                                os.path.join(self.tmp.name, "data", dataFile),
+                                os.path.join(self.dataFileDir, dataFile),
                             ],
                         )
                     )
@@ -470,7 +509,7 @@ class ModulationExcitation:
                                         dataFile,
                                     ),
                                     os.path.join(
-                                        self.tmp.name, "data", dataFile
+                                        self.dataFileDir, dataFile
                                     ),
                                 ],
                             )
