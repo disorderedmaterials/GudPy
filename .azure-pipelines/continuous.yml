@@ -17,6 +17,7 @@ pr: none
 
 variables:
   gudrunTag: 2022.2
+  modexTag: 0.1.0
   publishImage: 'true'
   targets: >
     {
