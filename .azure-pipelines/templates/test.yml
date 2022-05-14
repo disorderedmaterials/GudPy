@@ -15,7 +15,7 @@ parameters:
   default: ''
   type: string
 - name: modexTag
-  default ''
+  default: ''
   type: string
 steps:
   - task: UsePythonVersion@0
