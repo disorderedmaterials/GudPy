@@ -693,9 +693,9 @@ class ModulationExcitation:
         dataFilesLines = "\n".join(
             [
                 os.path.abspath(
-                    os.path.join(self.gudrunFile.instrument.dataFileDir, df)
+                    os.path.join(self.ref.instrument.dataFileDir, df)
                 )
-                for df in self.gudrunFile.sampleBackgrounds[0]
+                for df in self.ref.sampleBackgrounds[0]
                 .samples[0]
                 .dataFiles.dataFiles
             ]
