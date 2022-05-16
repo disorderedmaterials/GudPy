@@ -132,9 +132,9 @@ class RatioCompositionDelegate(GudPyDelegate):
         Sets data at a specific index inside the model.
     """
 
-    def __init__(self):
+    def __init__(self, gudrunFile):
         super(RatioCompositionDelegate, self).__init__()
-        self.components = config.components
+        self.components = gudrunFile.components
 
     def createEditor(self, parent, option, index):
         """
@@ -242,7 +242,7 @@ class RatioCompositionTable(QTableView):
         self.compositions = []
         super(RatioCompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data, parentObject):
+    def makeModel(self, gudrunFile, data, parentObject):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -251,13 +251,14 @@ class RatioCompositionTable(QTableView):
         data : list
             Data for model to use.
         """
+        self.gudrunFile = gudrunFile
         self.setModel(
             RatioCompositionModel(
                 data, ["Component", "Ratio"], self.parent
             )
         )
         self.setItemDelegate(
-            RatioCompositionDelegate()
+            RatioCompositionDelegate(self.gudrunFile)
         )
         self.farmCompositions()
         self.parentObject = parentObject
@@ -266,9 +267,9 @@ class RatioCompositionTable(QTableView):
         """
         Inserts a row into the model.
         """
-        if len(config.components.components):
+        if len(self.gudrunFile.components.components):
             self.model().insertRow(
-                WeightedComponent(config.components.components[0], 1.)
+                WeightedComponent(self.gudrunFile.components.components[0], 1.)
             )
 
     def removeRow(self, rows):

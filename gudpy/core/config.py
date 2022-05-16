@@ -12,7 +12,6 @@ geometry = Geometry.FLATPLATE
 NUM_GUDPY_CORE_OBJECTS = 4
 USE_USER_DEFINED_COMPONENTS = False
 NORMALISE_COMPOSITIONS = False
-components = Components()
 
 __rootdir__ = os.path.dirname(os.path.abspath(sys.argv[0]))
 
