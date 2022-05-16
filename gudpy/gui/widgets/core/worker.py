@@ -30,8 +30,7 @@ class CompositionWorker(QObject):
             self.costup,
             *self.args,
             **self.kwargs,
-            startIterFunc=self.nextIteration.emit,
-            endIterFunc=self.organiseOutput
+            startIterFunc=self.nextIteration.emit
         )
         if not self.errored:
             # If an error occurs emit appropiate signal.
@@ -126,5 +125,3 @@ class CompositionWorker(QObject):
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
-    def organiseOutput(self, n):
-        self.gudrunFile.iterativeOrganise(f"IterateByComposition_{n}")
