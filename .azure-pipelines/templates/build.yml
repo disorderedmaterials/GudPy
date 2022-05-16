@@ -53,7 +53,7 @@ steps:
       unzip modex-binaries.zip
       mv binaries-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
     displayName: Acquire Modulation Excitation binaries for OSX/linux.
-    condition: or(eq(variables.osName, 'linux'), eq(variables.osName, 'osx')
+    condition: or(eq(variables.osName, 'linux'), eq(variables.osName, 'osx'))
 
   - script: |
       pip install pyinstaller
