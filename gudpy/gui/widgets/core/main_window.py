@@ -512,7 +512,11 @@ class GudPyMainWindow(QMainWindow):
         for f in os.listdir(dir):
             if os.path.abspath(f) == path + ".autosave":
 
-                if str(GudrunFile(path))[:-5] == str(GudrunFile(f))[:-5]:
+                with open(path, "r", encoding="utf-8") as fp:
+                    original = fp.readlines()
+                with open(f, "r", encoding="utf-8") as fp:
+                    auto = fp.readlines()
+                if original[:-5] == auto[:-5]:
                     return path
 
                 autoFileInfo = QFileInfo(f)
@@ -549,7 +553,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
-        self.componentSlots.setComponents(config.components)
+        self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
 
         if len(self.gudrunFile.sampleBackgrounds):

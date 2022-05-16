@@ -1,7 +1,6 @@
 import os
 import sys
 
-from core.composition import Components
 from core.enums import Geometry
 from core.gui_config import GUIConfig
 
@@ -12,7 +11,6 @@ geometry = Geometry.FLATPLATE
 NUM_GUDPY_CORE_OBJECTS = 4
 USE_USER_DEFINED_COMPONENTS = False
 NORMALISE_COMPOSITIONS = False
-components = Components()
 
 __rootdir__ = os.path.dirname(os.path.abspath(sys.argv[0]))
 

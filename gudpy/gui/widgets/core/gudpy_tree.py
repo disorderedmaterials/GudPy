@@ -116,7 +116,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # Invalid parent means we are at the top level.
             rows = {
                 0: self.gudrunFile.instrument, 1: self.gudrunFile.beam,
-                2: config.components, 3: self.gudrunFile.normalisation
+                2: self.gudrunFile.components, 3: self.gudrunFile.normalisation
             }
             # Instrument | Beam | Normalisation
             if row in rows.keys():

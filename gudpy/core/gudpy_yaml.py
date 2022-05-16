@@ -150,7 +150,7 @@ class YAML:
             outyaml = {
                 "Instrument": base.instrument,
                 "Beam": base.beam,
-                "Components": config.components.components,
+                "Components": base.components.components,
                 "Normalisation": base.normalisation,
                 "SampleBackgrounds": base.sampleBackgrounds,
                 "GUI": config.GUI
