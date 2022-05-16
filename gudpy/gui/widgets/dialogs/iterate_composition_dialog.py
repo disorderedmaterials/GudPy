@@ -6,7 +6,6 @@ from gui.widgets.dialogs.iteration_dialog import IterationDialog
 from core.composition_iterator import (
     CompositionIterator, calculateTotalMolecules
 )
-from core import config
 
 
 class CompositionIterationDialog(IterationDialog):

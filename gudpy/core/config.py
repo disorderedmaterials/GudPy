@@ -1,7 +1,6 @@
 import os
 import sys
 
-from core.composition import Components
 from core.enums import Geometry
 from core.gui_config import GUIConfig
 

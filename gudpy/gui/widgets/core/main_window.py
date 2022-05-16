@@ -512,9 +512,12 @@ class GudPyMainWindow(QMainWindow):
         for f in os.listdir(dir):
             if os.path.abspath(f) == path + ".autosave":
 
-                with open(path, "r", encoding="utf-8") as fp1, open(f, "r", encoding="utf-8") as fp2:
-                    if fp1.readlines()[:-5] == fp2.readlines()[:-5]:
-                        return path
+                with open(path, "r", encoding="utf-8") as fp:
+                    original = fp.readlines()
+                with open(f, "r", encoding="utf-8") as fp:
+                    auto = fp.readlines()
+                if original[:-5] == auto[:-5]:
+                    return path
 
                 autoFileInfo = QFileInfo(f)
                 autoLastModified = autoFileInfo.lastModified()
