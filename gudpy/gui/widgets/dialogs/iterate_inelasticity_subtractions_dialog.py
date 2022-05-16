@@ -11,7 +11,7 @@ class WavelengthInelasticitySubtractionsIterationDialog(IterationDialog):
         self.iterator = WavelengthSubtractionIterator(self.gudrunFile)
 
     def iterate(self):
-        self.enqueueTasks()
+        self.numberIterations*=2
         self.enqueueTasks()
         self.text = "Inelasticity subtractions"
         self.widget.close()
