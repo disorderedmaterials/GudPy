@@ -124,4 +124,3 @@ class CompositionWorker(QObject):
             return 0
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
-

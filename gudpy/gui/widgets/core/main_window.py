@@ -1358,15 +1358,18 @@ class GudPyMainWindow(QMainWindow):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
-            self.outputIterations[self.currentIteration+1] = self.output
+            self.outputIterations[self.currentIteration + 1] = self.output
             self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            if (self.currentIteration+1) %2 == 0:
-                self.iterator.gudrunFile.iterativeOrganise(f"QIteration_{(self.currentIteration//2)+1}")
-                self.outputIterations[self.currentIteration+1] = self.output
+            if (self.currentIteration + 1) % 2 == 0:
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"QIteration_{(self.currentIteration // 2) + 1}"
+                )
+                self.outputIterations[self.currentIteration + 1] = self.output
             else:
-                self.iterator.gudrunFile.iterativeOrganise(f"WavelengthIteration_{(self.currentIteration//2)+1}")
-                self.outputIterations[self.currentIteration+1] = self.output
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}")
+                self.outputIterations[self.currentIteration + 1] = self.output
         if not self.queue.empty():
             self.currentIteration += 1
             self.nextIterableProc()
