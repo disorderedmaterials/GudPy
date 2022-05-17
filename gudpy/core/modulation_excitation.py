@@ -648,6 +648,26 @@ class ModulationExcitation:
                 for f in files
             ]
         )
+        goodfiles = []
+        badfiles = []
+        if self.period.useDefinedPulses:
+            i = 0
+            while i < len(files):
+                good = True
+                stop = 0
+                for j, (file, pulse) in enumerate(zip(files[i:i+len(self.period.definedPulses)], self.period.definedPulses)):
+                    if not file.endswith(f"{pulse.label}.mint01"):
+                        good = False
+                        stop = j
+                        break
+                if good:
+                    goodfiles.extend(files[i:i+3])
+                    i+=len(self.period.definedPulses)
+                else:
+                    badfiles.extend(files[i:i+3])
+                    i+=stop
+        print(goodfiles)
+        print(badfiles)
         Q = []
         DCS = []
         readQ = False
@@ -679,6 +699,17 @@ class ModulationExcitation:
                     dcs.append(float(y))
             DCS.append(dcs)
 
+        goodDCS = []
+        if self.period.useDefinedPulses:                        
+            j = 0
+            while j < len(DCS):
+                good = True
+                for k in range(j, j+len(self.period.definedPulses)):
+                    if list(set(DCS[k])) == [0.0]:
+                        good = False
+                        print("Discarding " + k + " to " + k + self.period.definedPulses)
+                if good:
+                    goodDCS.extend(DCS[j:j+len(self.period.definedPulses)])
         with open(
             os.path.join(
                 self.outputDir,
@@ -689,7 +720,7 @@ class ModulationExcitation:
             for i in range(len(Q)):
                 # Write out the i'th Q value followed by the i'th
                 # DCS value of each mint01 file.
-                dcs = [x[i] for x in DCS]
+                dcs = [x[i] for x in goodDCS]
                 fp.write(f"  {Q[i]}  {'  '.join([str(x) for x in dcs])}\n")
 
     def __str__(self):
