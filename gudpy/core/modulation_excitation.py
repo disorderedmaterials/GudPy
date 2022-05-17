@@ -655,6 +655,9 @@ class ModulationExcitation:
         # Iterate files.
         for file in files:
             dcs = []
+            if not os.path.exists(file):
+                # Ignore period?
+                continue
             with open(file, "r", encoding='utf-8') as fp:
                 # Only read Q values from the first file.
                 if not readQ:
@@ -679,7 +682,7 @@ class ModulationExcitation:
         with open(
             os.path.join(
                 self.outputDir,
-                "interpolated.data"
+                "interpolated.dat"
             ),
             "w", encoding='utf-8'
         ) as fp:
