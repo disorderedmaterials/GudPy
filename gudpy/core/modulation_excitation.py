@@ -707,9 +707,9 @@ class ModulationExcitation:
                 for k in range(j, j+len(self.period.definedPulses)):
                     if list(set(DCS[k])) == [0.0]:
                         good = False
-                        print("Discarding " + k + " to " + k + self.period.definedPulses)
                 if good:
                     goodDCS.extend(DCS[j:j+len(self.period.definedPulses)])
+                j+=len(self.period.definedPulses)
         with open(
             os.path.join(
                 self.outputDir,
