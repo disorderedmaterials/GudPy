@@ -1648,6 +1648,15 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
+        self.mainWidget.runModex.setEnabled(
+            state &
+            (
+                self.gudrunFile.instrument.dataFileType == "nxs"
+                or self.gudrunFile.instrument.dataFileType == "NXS"
+            )
+            if self.gudrunFile
+            else False
+        )
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1661,6 +1670,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.new_.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
 
     def setActionsEnabled(self, state):
@@ -1670,7 +1680,17 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
+        self.mainWidget.runModex.setEnabled(
+            state &
+            (
+                self.gudrunFile.instrument.dataFileType == "nxs"
+                or self.gudrunFile.instrument.dataFileType == "NXS"
+            )
+            if self.gudrunFile
+            else False
+        )
         self.mainWidget.checkFilesExist.setEnabled(state)
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
 
         self.mainWidget.viewLiveInputFile.setEnabled(state)
