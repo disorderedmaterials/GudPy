@@ -6,6 +6,11 @@ from core import config
 
 class RadiusIterationDialog(IterationDialog):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.iterator = RadiusIterator(self.gudrunFile)
+        self.iterator.setTargetRadius("inner")
+
     def initComponents(self):
         super().initComponents()
         self.widget.iterateButton.setEnabled(
@@ -13,7 +18,6 @@ class RadiusIterationDialog(IterationDialog):
         )
 
     def iterate(self):
-        self.iterator = RadiusIterator(self.gudrunFile)
         self.enqueueTasks()
         self.text = "Iterate by Radius"
         self.widget.close()

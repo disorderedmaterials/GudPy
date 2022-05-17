@@ -1336,7 +1336,8 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIteration(self):
         if self.error:
-            self.proc.finished.connect(self.procFinished)
+            self.procFinished()
+            return
         if isinstance(self.iterator, TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByTweakFactor_{self.currentIteration+1}"
@@ -1361,29 +1362,21 @@ class GudPyMainWindow(QMainWindow):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
-            self.outputIterations[self.currentIteration+1] = self.output
+            self.outputIterations[self.currentIteration + 1] = self.output
             self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
-                self.iterator.QIteration(self.currentIteration)
-                self.gudrunFile.iterativeOrganise(
-                    f"QIteration_{self.currentIteration+1}"
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"QIteration_{(self.currentIteration // 2) + 1}"
                 )
+                self.outputIterations[self.currentIteration + 1] = self.output
             else:
-                self.iterator.wavelengthIteration(self.currentIteration)
-                if self.currentIteration == 0:
-                    self.outputIterations[1] = self.output
-                else:
-                    self.outputIterations[self.currentIteration] = self.output
-                self.gudrunFile.iterativeOrganise(
-                    f"WavelengthIteration_{self.currentIteration+1}"
-                )
-            self.gudrunFile.write_out()
-
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}")
+                self.outputIterations[self.currentIteration + 1] = self.output
         if not self.queue.empty():
-            self.nextIterableProc()
             self.currentIteration += 1
+            self.nextIterableProc()
         else:
             self.procFinished()
         self.output = ""
@@ -1399,6 +1392,11 @@ class GudPyMainWindow(QMainWindow):
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
+        if isinstance(self.iterator, WavelengthSubtractionIterator):
+            if (self.currentIteration+1) % 2 == 0:
+                self.iterator.QIteration(self.currentIteration)
+            else:
+                self.iterator.wavelengthIteration(self.currentIteration)
         if func:
             func(*args)
         self.proc.start()
@@ -1418,7 +1416,7 @@ class GudPyMainWindow(QMainWindow):
             iteration = math.ceil((self.currentIteration+1)/2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
-                f" {iteration}/{self.numberIterations}"
+                f" {iteration}/{int(self.numberIterations/2)}"
             )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1456,7 +1454,7 @@ class GudPyMainWindow(QMainWindow):
         return True
 
     def autosave(self):
-        if self.gudrunFile.path:
+        if self.gudrunFile.path and not self.proc and not self.workerThread:
             autosavePath = self.gudrunFile.path + ".autosave"
             self.gudrunFile.write_out(path=autosavePath)
 

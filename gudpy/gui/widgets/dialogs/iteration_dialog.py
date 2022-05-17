@@ -61,6 +61,6 @@ class IterationDialog(QDialog):
                 self.gudrunFile.dcs(
                     path=os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,
-                        "txt"
+                        "gudpy.txt"
                     ), headless=False)
             )
