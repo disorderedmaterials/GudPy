@@ -14,9 +14,6 @@ parameters:
 - name: gudrunTag
   default: ''
   type: string
-- name: modexTag
-  default: ''
-  type: string
 - name: publishImage
   default: 'false'
   type: string
