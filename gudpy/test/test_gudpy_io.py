@@ -771,7 +771,9 @@ class TestGudPyIO(TestCase):
             ),
             encoding="utf-8"
         ).readlines()[:-5])
-        self.assertEqual(outlines, "\n".join(str(self.g).splitlines()[:-5]))
+        self.assertEqual(
+            outlines, "\n".join(str(self.g).splitlines(keepends=True)[:-5])
+        )
 
         def valueInLines(value, lines):
             if isinstance(value, str):
@@ -865,7 +867,7 @@ class TestGudPyIO(TestCase):
                 ),
                 encoding="utf-8"
             ).readlines()[:-5]),
-            "\n".join(str(self.g).splitlines()[:-5])
+            "\n".join(str(self.g).splitlines(keepends=True)[:-5])
         )
 
         self.assertEqual(
@@ -876,7 +878,7 @@ class TestGudPyIO(TestCase):
                 ),
                 encoding="utf-8"
             ).readlines()[:-5]),
-            "\n".join(str(g1).splitlines()[:-5])
+            "\n".join(str(g1).splitlines(keepends=True)[:-5])
         )
 
         self.assertEqual(
@@ -910,8 +912,8 @@ class TestGudPyIO(TestCase):
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(
-            "\n".join(str(g1).splitlines()[:-5]),
-            "\n".join(str(self.g).splitlines()[:-5])
+            "\n".join(str(g1).splitlines(keepends=True)[:-5]),
+            "\n".join(str(self.g).splitlines(keepends=True)[:-5])
         )
 
     def testLoadEmptyGudrunFile(self):
