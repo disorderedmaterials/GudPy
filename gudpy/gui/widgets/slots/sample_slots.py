@@ -105,7 +105,9 @@ class SampleSlots():
 
         # Populate the packing fraction (reciprocal of tweak factor).
         if self.sample.sampleTweakFactor > 0.0:
-            self.widget.packingFractionSpinBox.setValue(1.0 / self.sample.sampleTweakFactor)
+            self.widget.packingFractionSpinBox.setValue(
+                1.0 / self.sample.sampleTweakFactor
+            )
         else:
             self.widget.packingFractionSpinBox.setValue(0.0)
 

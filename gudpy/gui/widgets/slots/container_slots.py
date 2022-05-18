@@ -90,15 +90,18 @@ class ContainerSlots():
         self.widget.containerCrossSectionFileWidget.setVisible(
             self.container.totalCrossSectionSource == CrossSectionSource.FILE
         )
-        # Set the tweak factor and packing fraction (reciprocal of tweak factor).
+        # Set the tweak factor and packing fraction
+        # (reciprocal of tweak factor).
         self.widget.containerTweakFactorSpinBox.setValue(
             self.container.tweakFactor
         )
         if self.container.tweakFactor > 0.0:
-            self.widget.containerPackingFractionSpinBox.setValue(1.0 / self.container.tweakFactor)
+            self.widget.containerPackingFractionSpinBox.setValue(
+                1.0 / self.container.tweakFactor
+            )
         else:
             self.widget.containerPackingFractionSpinBox.setValue(0.0)
-        
+
         self.packingFractionChanging = False
 
         self.widget.containerScatteringFractionSpinBox.setValue(
