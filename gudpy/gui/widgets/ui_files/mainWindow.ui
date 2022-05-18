@@ -4866,6 +4866,20 @@
                             </property>
                            </widget>
                           </item>
+                          <item>
+                           <widget class="QLabel" name="label_7">
+                            <property name="text">
+                             <string>Packing Fraction</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="ExponentialSpinBox" name="packingFractionSpinBox">
+                            <property name="maximum">
+                             <double>1000.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
                          </layout>
                         </item>
                         <item>
@@ -5914,7 +5928,6 @@
                         <widget class="QLabel" name="expectedDcsLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5933,7 +5946,6 @@
                         <widget class="QLabel" name="dcsLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5952,7 +5964,6 @@
                         <widget class="QLabel" name="resultLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -5973,7 +5984,6 @@
                       <widget class="QLabel" name="suggestedTweakFactorLabel">
                        <property name="font">
                         <font>
-                         <weight>75</weight>
                          <bold>true</bold>
                         </font>
                        </property>
@@ -7035,7 +7045,6 @@
                         <widget class="QLabel" name="containerExpectedDcsLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -7054,7 +7063,6 @@
                         <widget class="QLabel" name="containerDcsLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -7073,7 +7081,6 @@
                         <widget class="QLabel" name="containerResultLabel">
                          <property name="font">
                           <font>
-                           <weight>75</weight>
                            <bold>true</bold>
                           </font>
                          </property>
@@ -7094,7 +7101,6 @@
                       <widget class="QLabel" name="containerSuggestedTweakFactorLabel">
                        <property name="font">
                         <font>
-                         <weight>75</weight>
                          <bold>true</bold>
                         </font>
                        </property>

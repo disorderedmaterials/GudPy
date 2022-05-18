@@ -103,6 +103,14 @@ class SampleSlots():
         # Populate the tweak factor.
         self.widget.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
 
+        # Populate the packing fraction.
+        if self.sample.sampleTweakFactor > 0.0:
+            self.widget.packingFractionSpinBox.setValue(1.0 / self.sample.sampleTweakFactor)
+        else:
+            self.widget.packingFractionSpinBox.setValue(0.0)
+
+        self.packingFractionChanging = False
+
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
 
@@ -273,6 +281,11 @@ class SampleSlots():
         # Setup slot for tweak factor.
         self.widget.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
+        )
+
+        # Setup slot for packing fraction
+        self.widget.packingFractionSpinBox.valueChanged.connect(
+            self.handlePackingFractionChanged
         )
 
         # Setup slots for Fourier Transform parameters.
@@ -558,14 +571,39 @@ class SampleSlots():
         Called when a valueChanged signal is emitted,
         from the the tweakFactorSpinBox.
         Alters the sample's tweak factor as such.
+        Also updates the packing fraction.
         Parameters
         ----------
         value : float
             The new current value of the tweakFactorSpinBox.
         """
         self.sample.sampleTweakFactor = value
+        self.packingFractionChanging = True
+        if value > 0.0:
+            self.widget.packingFractionSpinBox.setValue(1.0 / value)
+        else:
+            self.widget.packingFractionSpinBox.setValue(0.0)
+        self.packingFractionChanging = False
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handlePackingFractionChanged(self, value):
+        """
+        Slot for handling change in the sample packing fraction.
+        Called when a valueChanged signal is emitted,
+        from the the packingFractionSpinBox.
+        Updates the sample's tweak factor to reflect
+        the new packing fraction.
+        Parameters
+        ----------
+        value : float
+            The new current value of the packingFractionSpinBox.
+        """
+        if not self.packingFractionChanging:
+            if value > 0.0:
+                self.widget.tweakFactorSpinBox.setValue(1.0 / value)
+            else:
+                self.widget.tweakFactorSpinBox.setValue(0.0)
 
     def handleTopHatWidthChanged(self, value):
         """
