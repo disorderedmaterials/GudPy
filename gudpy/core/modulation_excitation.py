@@ -655,17 +655,24 @@ class ModulationExcitation:
             while i < len(files):
                 good = True
                 stop = 0
-                for j, (file, pulse) in enumerate(zip(files[i:i+len(self.period.definedPulses)], self.period.definedPulses)):
+                for j, (file, pulse) in enumerate(
+                    zip(
+                        files[
+                            i:i+len(self.period.definedPulses)
+                        ],
+                        self.period.definedPulses
+                    )
+                ):
                     if not file.endswith(f"{pulse.label}.mint01"):
                         good = False
                         stop = j
                         break
                 if good:
                     goodfiles.extend(files[i:i+3])
-                    i+=len(self.period.definedPulses)
+                    i += len(self.period.definedPulses)
                 else:
                     badfiles.extend(files[i:i+3])
-                    i+=stop
+                    i += stop
         print(goodfiles)
         print(badfiles)
         Q = []
@@ -700,7 +707,7 @@ class ModulationExcitation:
             DCS.append(dcs)
 
         goodDCS = []
-        if self.period.useDefinedPulses:                        
+        if self.period.useDefinedPulses:
             j = 0
             while j < len(DCS):
                 good = True
@@ -709,7 +716,7 @@ class ModulationExcitation:
                         good = False
                 if good:
                     goodDCS.extend(DCS[j:j+len(self.period.definedPulses)])
-                j+=len(self.period.definedPulses)
+                j += len(self.period.definedPulses)
         with open(
             os.path.join(
                 self.outputDir,
