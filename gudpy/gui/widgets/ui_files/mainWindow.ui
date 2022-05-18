@@ -6579,17 +6579,24 @@
                           </widget>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_35">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
+                          <widget class="QLabel" name="label_8">
+                           <property name="text">
+                            <string>Packing Fraction</string>
                            </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>40</width>
-                             <height>20</height>
-                            </size>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="ExponentialSpinBox" name="containerPackingFractionSpinBox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
                            </property>
-                          </spacer>
+                           <property name="maximum">
+                            <double>1000.000000000000000</double>
+                           </property>
+                          </widget>
                          </item>
                         </layout>
                        </item>

@@ -90,9 +90,16 @@ class ContainerSlots():
         self.widget.containerCrossSectionFileWidget.setVisible(
             self.container.totalCrossSectionSource == CrossSectionSource.FILE
         )
+        # Set the tweak factor and packing fraction (reciprocal of tweak factor).
         self.widget.containerTweakFactorSpinBox.setValue(
             self.container.tweakFactor
         )
+        if self.container.tweakFactor > 0.0:
+            self.widget.containerPackingFractionSpinBox.setValue(1.0 / self.container.tweakFactor)
+        else:
+            self.widget.containerPackingFractionSpinBox.setValue(0.0)
+        
+        self.packingFractionChanging = False
 
         self.widget.containerScatteringFractionSpinBox.setValue(
             self.container.scatteringFraction
@@ -234,6 +241,11 @@ class ContainerSlots():
         self.widget.containerTweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
+
+        self.widget.containerPackingFractionSpinBox.valueChanged.connect(
+            self.handlePackingFractionChanged
+        )
+
         self.widget.containerScatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
         )
@@ -456,15 +468,39 @@ class ContainerSlots():
         Slot for handling change in the sample tweak factor.
         Called when a valueChanged signal is emitted,
         from the containerTweakFactorSpinBox.
-        Alters the container's density as such.
+        Alters the container's tweak factor as such.
         Parameters
         ----------
         value : float
             The new value of the containerTweakFactorSpinBox.
         """
         self.container.tweakFactor = value
+        self.packingFractionChanging = True
+        if value > 0.0:
+            self.widget.containerPackingFractionSpinBox.setValue(1.0 / value)
+        else:
+            self.widget.containerPackingFractionSpinBox.setValue(0.0)
+        self.packingFractionChanging = False
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handlePackingFractionChanged(self, value):
+        """
+        Slot for handling change in the packing fraction.
+        Called when a valueChanged signal is emitted,
+        from the the containerPackingFractionSpinBox.
+        Updates the containers's tweak factor to reflect
+        the new packing fraction.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerPackingFractionSpinBox.
+        """
+        if not self.packingFractionChanging:
+            if value > 0.0:
+                self.widget.containerTweakFactorSpinBox.setValue(1.0 / value)
+            else:
+                self.widget.containerTweakFactorSpinBox.setValue(0.0)
 
     def handleAngleOfRotationChanged(self, value):
         """
