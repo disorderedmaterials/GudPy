@@ -319,6 +319,15 @@ class ModulationExcitation:
         headless : bool, optional
             Should processing be headless?
         """
+
+        # Cleanup temp directory.
+        for f in os.listdir(self.tmp.name):
+            fp = os.path.join(self.tmp.name, f)
+            if os.path.isfile(fp):
+                os.remove(fp)
+            elif os.path.isdir(fp):
+                shutil.rmtree(fp)
+
         self.useTempDataFileDir = useTempDataFileDir
         # List to hold tasks, in the case of headful preprocessing.
         tasks = []
@@ -648,79 +657,87 @@ class ModulationExcitation:
                 for f in files
             ]
         )
-        goodfiles = []
-        badfiles = []
-        if self.period.useDefinedPulses:
-            i = 0
-            while i < len(files):
-                good = True
-                stop = 0
-                for j, (file, pulse) in enumerate(zip(files[i:i+len(self.period.definedPulses)], self.period.definedPulses)):
-                    if not file.endswith(f"{pulse.label}.mint01"):
-                        good = False
-                        stop = j
-                        break
-                if good:
-                    goodfiles.extend(files[i:i+3])
-                    i+=len(self.period.definedPulses)
-                else:
-                    badfiles.extend(files[i:i+3])
-                    i+=stop
-        print(goodfiles)
-        print(badfiles)
+
+        # Simple helper function.
+        # Given a list of lines in column format, return the nth column.
+        def parseColumn(n, lines):
+            col = []
+            for line in lines:
+                if line.startswith('#'):
+                    continue
+                tokens = line.split()
+                col.append(float(tokens[n]))
+            return col
+
+        # For storing final output.
         Q = []
         DCS = []
+
+        # Flag for determining if the Q (x) column has been read yet.
+        # We only need to read it once.
         readQ = False
 
-        # Iterate files.
-        for file in files:
-            dcs = []
-            if not os.path.exists(file):
-                # Ignore period?
-                continue
-            with open(file, "r", encoding='utf-8') as fp:
-                # Only read Q values from the first file.
-                if not readQ:
-                    for line in fp.readlines():
-                        if line.startswith('#'):
-                            continue
-                        # Extract Q value.
-                        x, _, _ = line.split()
-                        Q.append(float(x))
-                    readQ = True
-                    # Move the file pointer back to the start of the file,
-                    # so we can continue reading.
-                    fp.seek(0)
-                for line in fp.readlines():
-                    if line.startswith('#'):
-                        continue
-                    # extract the DCS value.
-                    _, y, _ = line.split()
-                    dcs.append(float(y))
-            DCS.append(dcs)
+        periods = []
 
-        goodDCS = []
-        if self.period.useDefinedPulses:                        
-            j = 0
-            while j < len(DCS):
-                good = True
-                for k in range(j, j+len(self.period.definedPulses)):
-                    if list(set(DCS[k])) == [0.0]:
-                        good = False
-                if good:
-                    goodDCS.extend(DCS[j:j+len(self.period.definedPulses)])
-                j+=len(self.period.definedPulses)
+        # If using all pulses, then step is 1.
+        step = (
+            len(self.period.definedPulses)
+            if self.period.useDefinedPulses
+            else 1
+        )
+
+        # Iterate files, stepping by step.
+        for i in range(0, len(files), step):
+            period = {}
+            # Iterate files in period.
+            for j in range(i, i+step):
+                # If the file doesn't exist, then there are no DCS values.
+                if not os.path.exists(files[j]):
+                    period[files[j]] = []
+                else:
+                    # Otherwise, read in the DCS values.
+                    with open(files[j], "r", encoding='utf-8') as fp:
+                        # Read Q, if it has not been read.
+                        if not readQ:
+                            lines = fp.readlines()
+                            # Retrieve Q.
+                            Q = parseColumn(0, lines)
+                            readQ = True
+                        # Retrieve DCS values.
+                        period[files[j]] = parseColumn(1, lines)
+            periods.append(period)
+
+        # Write out the date in the interpolated format.
         with open(
             os.path.join(
                 self.outputDir,
                 "interpolated.dat"
             ),
-            "w", encoding='utf-8'
+            "w", encoding="utf-8"
         ) as fp:
+            goodPeriods = []
+            # Iterate through the periods, to determine which ones are good.
+            for period in periods:
+                # If the number of DCS values does not match
+                # the number of Q values, then discard.
+                # This also handles the files which don't exist.
+                if any([len(p) != len(Q) for p in period.values()]):
+                    continue
+                # If the DCS values are all zero, then discard.
+                elif any([list(set(p)) == [0.0] for p in period.values()]):
+                    continue
+                else:
+                    goodPeriods.append(period)
+
+            # Construct the final DCS data.
+            DCS = [
+                pulse for period in goodPeriods
+                for pulse in period.values()
+            ]
             for i in range(len(Q)):
-                # Write out the i'th Q value followed by the i'th
-                # DCS value of each mint01 file.
-                dcs = [x[i] for x in goodDCS]
+                # Take i'th DCS level of each pulse.
+                dcs = [x[i] for x in DCS]
+                # Write the i'th Q value along with the relevant DCS levels.
                 fp.write(f"  {Q[i]}  {'  '.join([str(x) for x in dcs])}\n")
 
     def __str__(self):
