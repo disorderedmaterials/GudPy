@@ -1054,9 +1054,9 @@ class GudPyMainWindow(QMainWindow):
             headless=False
         )
 
-        def finished():
+        def finished(ec, es):
             self.runGudrunFinished(
-                runContainersAsSamples.gudrunFile
+                gudrunFile=runContainersAsSamples.gudrunFile
             )
 
         if isinstance(dcs, Sequence):
@@ -1105,9 +1105,9 @@ class GudPyMainWindow(QMainWindow):
             headless=False
         )
 
-        def finished():
+        def finished(ec, es):
             self.runGudrunFinished(
-                runIndividualFiles.gudrunFile
+                gudrunFile=runIndividualFiles.gudrunFile
             )
 
         if isinstance(dcs, Sequence):
@@ -1336,7 +1336,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIteration(self):
         if self.error:
-            self.procFinished()
+            self.procFinished(9, QProcess.NormalExit)
             return
         if isinstance(self.iterator, TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(
@@ -1378,7 +1378,7 @@ class GudPyMainWindow(QMainWindow):
             self.currentIteration += 1
             self.nextIterableProc()
         else:
-            self.procFinished()
+            self.procFinished(0, QProcess.NormalExit)
         self.output = ""
 
     def nextIterableProc(self):
@@ -1681,14 +1681,14 @@ class GudPyMainWindow(QMainWindow):
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
-    def runGudrunFinished(self, gudrunFile=None):
+    def runGudrunFinished(self, ec, es, gudrunFile=None):
         if gudrunFile:
             gudrunFile.naiveOrganise()
         else:
             self.gudrunFile.naiveOrganise()
-        self.procFinished()
+        self.procFinished(ec, es)
 
-    def procFinished(self):
+    def procFinished(self, ec, es):
         self.proc = None
         output = self.output
         if isinstance(
@@ -1743,7 +1743,6 @@ class GudPyMainWindow(QMainWindow):
         if self.proc:
             if self.proc.state() == QProcess.Running:
                 self.proc.kill()
-                self.procFinished()
         if self.workerThread:
             self.workerThread.requestInterruption()
 
@@ -1833,3 +1832,7 @@ class GudPyMainWindow(QMainWindow):
     def export(self):
         exportDialog = ExportDialog(self.gudrunFile, self)
         exportDialog.widget.exec()
+
+    def cleanup(self):
+        self.stopProc()
+        self.autosave()
