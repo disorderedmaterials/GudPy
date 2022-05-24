@@ -11,7 +11,7 @@ pr:
 
 variables:
   gudrunTag: 2022.2
-  modexTag: 0.1.1
+  modexTag: 0.1.2
   targets: >
     {
       linuxPy39:
