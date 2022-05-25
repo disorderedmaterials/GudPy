@@ -697,16 +697,15 @@ class ModulationExcitation:
                 else:
                     # Otherwise, read in the DCS values.
                     with open(files[j], "r", encoding='utf-8') as fp:
+                        lines = fp.readlines()
                         # Read Q, if it has not been read.
                         if not readQ:
-                            lines = fp.readlines()
                             # Retrieve Q.
                             Q = parseColumn(0, lines)
                             readQ = True
                         # Retrieve DCS values.
                         period[files[j]] = parseColumn(1, lines)
             periods.append(period)
-
         # Write out the date in the interpolated format.
         with open(
             os.path.join(
@@ -728,7 +727,6 @@ class ModulationExcitation:
                     continue
                 else:
                     goodPeriods.append(period)
-
             # Construct the final DCS data.
             DCS = [
                 pulse for period in goodPeriods
