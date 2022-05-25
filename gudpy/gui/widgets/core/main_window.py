@@ -1649,7 +1649,7 @@ class GudPyMainWindow(QMainWindow):
         if (
             "Error" in stdout
             or "error" in stdout
-            or "not found"
+            or "not found" in stdout
             or "does not exist" in stdout
         ):
             self.error = stdout
