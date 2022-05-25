@@ -22,54 +22,14 @@ class PurgeFile():
         Parent GudrunFile that we are creating the PurgeFile from.
     excludeSampleAndCan : bool
         Exclude sample and container data files?
-    instrumentName : str
-        Name of the instrument.
-    inputFileDir : str
-        Input file directory for Gudrun.
-    dataFileDir : str
-        Data file directory.
-    dataFileType : str
-        Type of files stored in dataFileDir.
-    detCalibFile : str
-        Filename used for detector calibration.
-    groupsFile : str
-        Name of detector groups file to read from.
-    spectrumNumbers : int[]
-        Number of spectra of incident beam monitor.
-    channelNumbers : tuple(int, int)
-        First and last channel numbers to check for spikes.
-        0 0 signals to use all channels.
-    acceptanceFactor : int
-        Acceptance factor for spike analysis.
     standardDeviation : tuple(int, int)
          Stores the number of std deviations allowed above and below
          the mean ratio and the range of std's allowed around the mean
          standard deviation.
     ignoreBad : bool
         Ignore any existing bad spectrum files (spec.bad, spec.dat)?
-    normalisationPeriodNo : int
-        Period number for normalisation data files.
-    normalisationPeriodNoBg : int
-        Period number for normalisation background data files.
-    normalisationDataFiles : str
-        String representation of all normalisation data files,
-        and their period numbers.
-    normalisationBackgroundDataFiles : str
-        String representation of all background normalisation data files,
-        and their period numbers.
-    sampleBackgroundDataFiles : str
-        String representation of all sample background data files,
-        and their period numbers.
-    sampleDataFiles : str
-        String representation of all sample data files,
-        and their period numbers.
-    containerDataFiles : str
-        String representation of all containers data files,
-        and their period numbers.
     Methods
     -------
-    collectGudrunFileAttributes()
-        Collects the attributes needed for the purge file.
     write_out()
         Writes out the string representation of the PurgeFile to purge_det.dat
     purge()
@@ -91,8 +51,6 @@ class PurgeFile():
         self.excludeSampleAndCan = True
         self.standardDeviation = (10, 10)
         self.ignoreBad = True
-
-        self.collectGudrunFileAttributes()
 
     def write_out(self, path=""):
         """
@@ -116,80 +74,6 @@ class PurgeFile():
             f.write(str(self))
         f.close()
 
-    def collectGudrunFileAttributes(self):
-        """
-        Collects the attributes needed for the purge file, from the
-        GudrunFile object.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
-        """
-
-        # Extract relevant attributes from the GudrunFile object.
-        self.instrumentName = self.gudrunFile.instrument.name
-        self.inputFileDir = self.gudrunFile.instrument.GudrunInputFileDir
-        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
-        self.detCalibFile = (
-            os.path.join(
-                self.gudrunFile.instrument.GudrunStartFolder,
-                self.gudrunFile.instrument.detectorCalibrationFileName
-            )
-        )
-        self.groupsFile = (
-            os.path.join(
-                self.gudrunFile.instrument.GudrunStartFolder,
-                self.gudrunFile.instrument.groupFileName
-            )
-        )
-        self.spectrumNumbers = (
-            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
-        )
-        self.channelNumbers = (
-            self.gudrunFile.instrument.channelNosSpikeAnalysis
-        )
-        self.acceptanceFactor = (
-            self.gudrunFile.instrument.spikeAnalysisAcceptanceFactor
-        )
-        self.normalisationPeriodNo = (
-            self.gudrunFile.normalisation.periodNumber
-        )
-        self.normalisationPeriodNoBg = (
-            self.gudrunFile.normalisation.periodNumberBg
-        )
-
-        self.normalisationDataFiles = (
-            self.gudrunFile.normalisation.dataFiles.dataFiles,
-            self.gudrunFile.normalisation.periodNumber
-        )
-        self.normalisationBackgroundDataFiles = (
-            self.gudrunFile.normalisation.dataFilesBg.dataFiles,
-            self.gudrunFile.normalisation.periodNumberBg
-        )
-
-        # Iterate through sample backgrounds, samples and containers
-        # data files, building a list of data files and period numbers.
-        # only append samples and their containers, if
-        # the sample is set to run.
-        self.sampleBackgroundDataFiles = [
-            (sb.dataFiles.dataFiles, sb.periodNumber)
-            for sb in self.gudrunFile.sampleBackgrounds
-        ]
-        self.sampleDataFiles = [
-            (s.dataFiles.dataFiles, s.periodNumber)
-            for sb in self.gudrunFile.sampleBackgrounds
-            for s in sb.samples if s.runThisSample
-        ]
-        self.containerDataFiles = [
-            (c.dataFiles.dataFiles, c.periodNumber)
-            for sb in self.gudrunFile.sampleBackgrounds
-            for s in sb.samples if s.runThisSample
-            for c in s.containers
-        ]
-
     def __str__(self):
         """
         Returns the string representation of the PurgeFile object.
@@ -204,100 +88,129 @@ class PurgeFile():
             String representation of PurgeFile.
         """
         HEADER = f"'  '  '          '  '{os.path.sep}'\n\n"
-        TAB = "          "
 
-        # Collect data files as strings of the format:
-        # {name} {period number}
-        # do this for normalisation, normalisation background,
-        # sample background, sample and container data files.
-        # insert eight space 'tab' after each period number,
-        # for consistency with original Gudrun code.
+        baseDirectory = self.gudrunFile.instrument.GudrunStartFolder
 
-        TAB = "          "
-        self.normalisationDataFilesString = ""
-        self.normalisationBackgroundDataFilesString = ""
+        instrumentLine = Instruments(
+            self.gudrunFile.instrument.name.value
+        ).name
 
-        # Iterate through normalisation and normalisation background
-        # data files, appending their string representation with
-        # period number to the relevant string.
-        for dataFile in self.normalisationDataFiles[0]:
-            self.normalisationDataFilesString += (
-                f"{dataFile}  {str(self.normalisationPeriodNo)}{TAB}\n"
-            )
-        for dataFile in self.normalisationBackgroundDataFiles[0]:
-            self.normalisationBackgroundDataFilesString += (
-                f"{dataFile}  {str(self.normalisationPeriodNoBg)}{TAB}\n"
-
-            )
-        self.sampleBackgroundDataFilesString = ""
-        self.sampleDataFilesString = ""
-        self.containerDataFilesString = ""
-
-        # Iterate through sample background
-        # data files, appending their string representation with
-        # period number to the relevant string.
-        for dataFiles, periodNumber in self.sampleBackgroundDataFiles:
-            for dataFile in dataFiles:
-                self.sampleBackgroundDataFilesString += (
-                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
-                )
-        # Iterate through sample data files,
-        # appending their string representation with
-        # period number to the relevant string.
-        for dataFiles, periodNumber in self.sampleDataFiles:
-            for dataFile in dataFiles:
-                self.sampleDataFilesString += (
-                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
-                )
-
-        # Iterate through container data files,
-        # appending their string representation with
-        # period number to the relevant string.
-        for dataFiles, periodNumber in self.containerDataFiles:
-            for dataFile in dataFiles:
-                self.containerDataFilesString += (
-                    f"{dataFile}  {str(periodNumber)}{TAB}\n"
-                )
-
-        dataFileLines = (
-            f'{self.normalisationDataFilesString}'
-            f'{self.normalisationBackgroundDataFilesString}'
-            f'{self.sampleBackgroundDataFilesString}'
-            f'{self.sampleDataFilesString}'
-            f'{self.containerDataFilesString}'
-            if not self.excludeSampleAndCan
-            else
-            f'{self.normalisationDataFilesString}'
-            f'{self.normalisationBackgroundDataFilesString}'
-            f'{self.sampleBackgroundDataFilesString}'
+        detCalibrationFileLine = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.detectorCalibrationFileName
         )
+
+        groupFileLine = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.groupFileName
+        )
+
+        spectrumNumbersLine = spacify(
+            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
+        )
+
+        channelNosLine = spacify(
+            self.gudrunFile.instrument.channelNosSpikeAnalysis, num_spaces=2
+        )
+
+        groupsAcceptanceFactorLine = (
+            self.gudrunFile.instrument.groupsAcceptanceFactor
+        )
+
+        nxsDefinitionFilePath = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.nxsDefinitionFile
+        )
+
+        nxsDefinitionFileLine = (
+            f"{nxsDefinitionFilePath}{config.spc5}"
+            f"NeXus definition file\n"
+            if self.gudrunFile.instrument.dataFileType in ["nxs", "NXS"]
+            else
+            ""
+        )
+
+        normalisationDataFiles = [
+            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumber}"
+            f"{config.spc5}"
+            for df in self.gudrunFile.normalisation.dataFiles
+        ]
+
+        normalisationDataFilesBg = [
+            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumberBg}"
+            f"{config.spc5}"
+            for df in self.gudrunFile.normalisation.dataFilesBg
+        ]
+
+        sampleBackgroundDataFiles = [
+            f"{df}{config.spc2}{sampleBackground.periodNumber}"
+            for sampleBackground in self.gudrunFile.sampleBackgrounds
+            for df in sampleBackground.dataFiles
+        ]
+
+        if self.excludeSampleAndCan:
+            sampleDataFiles = []
+        else:
+            sampleDataFiles = [
+                f"{df}{config.spc2}{sample.periodNo}"
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sample in sampleBackground.samples
+                for df in sample.dataFiles
+                if sample.runThisSample
+            ]
+
+        if self.excludeSampleAndCan:
+            containerDataFiles = []
+        else:
+            containerDataFiles = [
+                f"{df}{config.spc2}{container.periodNo}"
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sample in sampleBackground.samples
+                for container in sample.containers
+                for df in container.dataFiles
+                if sample.runThisSample
+            ]
+
+        dataFilesLines = (
+            f"{chr(10).join(normalisationDataFiles)}"
+            f"{chr(10) if len(normalisationDataFiles) else ''}"
+            f"{chr(10).join(normalisationDataFilesBg)}"
+            f"{chr(10) if len(normalisationDataFilesBg) else ''}"
+            f"{chr(10).join(sampleBackgroundDataFiles)}"
+            f"{chr(10) if len(sampleBackgroundDataFiles) else ''}"
+            f"{chr(10).join(sampleDataFiles)}"
+            f"{chr(10) if len(sampleDataFiles) else ''}"
+            f"{chr(10).join(containerDataFiles)}"
+        )
+
         return (
             f'{HEADER}'
-            f'{Instruments(self.instrumentName.value).name}{TAB}'
+            f'{instrumentLine}{config.spc5}'
             f'Instrument name\n'
-            f'{self.inputFileDir}{TAB}'
+            f'{self.gudrunFile.instrument.GudrunInputFileDir}{config.spc5}'
             f'Gudrun input file directory:\n'
-            f'{self.dataFileDir}{TAB}'
+            f'{self.gudrunFile.instrument.dataFileDir}{config.spc5}'
             f'Data file directory\n'
-            f'{self.detCalibFile}{TAB}'
+            f'{detCalibrationFileLine}{config.spc5}'
             f'Detector calibration file name\n'
-            f'{self.groupsFile}{TAB}'
+            f'{groupFileLine}{config.spc5}'
             f'Groups file name\n'
-            f'{spacify(self.spectrumNumbers)}{TAB}'
+            f'{spectrumNumbersLine}{config.spc5}'
             f'Spectrum number(s) for incident beam monitor\n'
-            f'{spacify(self.channelNumbers, num_spaces=2)}{TAB}'
+            f'{channelNosLine}{config.spc5}'
             f'Channel numbers for spike analysis\n'
-            f'{self.acceptanceFactor}{TAB}'
+            f'{groupsAcceptanceFactorLine}{config.spc5}'
             f'Spike analysis acceptance factor\n'
-            f'{spacify(self.standardDeviation, num_spaces=2)}{TAB}'
+            f'{nxsDefinitionFileLine}'
+            f'{spacify(self.standardDeviation, num_spaces=2)}{config.spc5}'
             f'Specify the number of standard deviations allowed'
             f' above and below the mean ratio.'
             f' Specify the range of std\'s allowed'
             f' around the mean standard deviation.\n'
-            f'{numifyBool(self.ignoreBad)}{TAB}'
+            f'{numifyBool(self.ignoreBad)}{config.spc5}'
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
-            f'{dataFileLines}'
+            f'{dataFilesLines}'
         )
 
     def purge(

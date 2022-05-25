@@ -1611,24 +1611,47 @@ class GudPyMainWindow(QMainWindow):
                     self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
-        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles[0])
+        appendDfs(self.gudrunFile.normalisation.dataFiles[0])
+        appendDfs(self.gudrunFile.normalisation.dataFilesBg[0])
         appendDfs(
-            self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0]
+            [
+                df
+                for sb in self.gudrunFile.sampleBackgrounds
+                for df in sb.dataFiles
+            ]
         )
-        for dfs, _ in self.gudrunFile.purgeFile.sampleBackgroundDataFiles:
-            appendDfs(dfs)
-        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
-            for dfs, _ in self.gudrunFile.purgeFile.sampleDataFiles:
-                appendDfs(dfs)
-            for dfs, _ in self.gudrunFile.purgeFile.containerDataFiles:
-                appendDfs(dfs)
+        if self.gudrunFile.purgeFile.excludeSampleAndCan:
+            appendDfs(
+                [
+                    df
+                    for sb in self.gudrunFile.sampleBackgrounds
+                    for s in sb.samples
+                    for df in s.dataFiles
+                    if s.runThisSample
+                ]
+            )
+            appendDfs(
+                [
+                    df
+                    for sb in self.gudrunFile.sampleBackgrounds
+                    for s in sb.samples
+                    for c in s.containers
+                    for df in c.dataFiles
+                    if s.runThisSample
+                ]
+            )
 
         stepSize = math.ceil(100/len(dataFiles))
         progress = 0
         for df in dataFiles:
             if df in stdout:
                 progress += stepSize
-        if "Error" in stdout or "error" in stdout or "not found" in stdout:
+        if (
+            "Error" in stdout
+            or "error" in stdout
+            or "not found"
+            or "does not exist" in stdout
+        ):
             self.error = stdout
             return -1, False, -1
         elif dataFiles[-1] in stdout:
