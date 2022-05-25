@@ -30,59 +30,10 @@ class TestPurgeFile(TestCase):
 
         g.write_out(overwrite=True)
         self.g = g
-        samples = self.g.sampleBackgrounds[0].samples
         self.expectedPurgeFile = {
-            "instrumentName": self.g.instrument.name,
-            "inputFileDir": self.g.instrument.GudrunInputFileDir,
-            "dataFileDir": self.g.instrument.dataFileDir,
-            "detCalibFile": os.path.join(
-                self.g.instrument.GudrunStartFolder,
-                self.g.instrument.detectorCalibrationFileName
-            ),
-            "groupsFile": os.path.join(
-                self.g.instrument.GudrunStartFolder,
-                self.g.instrument.groupFileName,
-            ),
-            "spectrumNumbers": (
-                self.g.instrument.spectrumNumbersForIncidentBeamMonitor
-            ),
-            "channelNumbers": (
-                self.g.instrument.channelNosSpikeAnalysis
-            ),
-            "acceptanceFactor": (
-                self.g.instrument.spikeAnalysisAcceptanceFactor
-                ),
             "standardDeviation": (10, 10),
             "ignoreBad": True,
             "excludeSampleAndCan": True,
-            "normalisationPeriodNo": (
-                self.g.normalisation.periodNumber
-                ),
-            "normalisationPeriodNoBg": (
-                self.g.normalisation.periodNumberBg
-            ),
-            "normalisationDataFiles": (
-                self.g.normalisation.dataFiles.dataFiles,  1
-            ),
-            "normalisationBackgroundDataFiles": (
-                self.g.normalisation.dataFilesBg.dataFiles, 1
-            ),
-            "sampleBackgroundDataFiles": [
-                (self.g.sampleBackgrounds[0].dataFiles.dataFiles, 1)
-            ],
-            "sampleDataFiles": [
-                (samples[0].dataFiles.dataFiles, 1),
-                (samples[1].dataFiles.dataFiles, 1),
-                (samples[2].dataFiles.dataFiles, 1),
-                (samples[3].dataFiles.dataFiles, 1)
-            ],
-            "containerDataFiles": [
-                (samples[0].containers[0].dataFiles.dataFiles, 1),
-                (samples[1].containers[0].dataFiles.dataFiles, 1),
-                (samples[2].containers[0].dataFiles.dataFiles, 1),
-                (samples[3].containers[0].dataFiles.dataFiles, 1)
-            ]
-
         }
 
         return super().setUp()
