@@ -1611,7 +1611,6 @@ class GudPyMainWindow(QMainWindow):
                     self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
-
         appendDfs(self.gudrunFile.normalisation.dataFiles[0])
         appendDfs(self.gudrunFile.normalisation.dataFilesBg[0])
         appendDfs(

@@ -91,7 +91,37 @@ class PurgeFile():
 
         baseDirectory = self.gudrunFile.instrument.GudrunStartFolder
 
-        nxsDefinitionFilePath = os.path.join(baseDirectory, self.gudrunFile.instrument.nxsDefinitionFile)
+        instrumentLine = Instruments(
+            self.gudrunFile.instrument.name.value
+        ).name
+
+        detCalibrationFileLine = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.detectorCalibrationFileName
+        )
+
+        groupFileLine = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.groupFileName
+        )
+
+        spectrumNumbersLine = spacify(
+            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
+        )
+
+        channelNosLine = spacify(
+            self.gudrunFile.instrument.channelNosSpikeAnalysis, num_spaces=2
+        )
+
+        groupsAcceptanceFactorLine = (
+            self.gudrunFile.instrument.groupsAcceptanceFactor
+        )
+
+        nxsDefinitionFilePath = os.path.join(
+            baseDirectory,
+            self.gudrunFile.instrument.nxsDefinitionFile
+        )
+
         nxsDefinitionFileLine = (
             f"{nxsDefinitionFilePath}{config.spc5}"
             f"NeXus definition file\n"
@@ -101,12 +131,14 @@ class PurgeFile():
         )
 
         normalisationDataFiles = [
-            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumber}{config.spc5}"
+            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumber}"
+            f"{config.spc5}"
             for df in self.gudrunFile.normalisation.dataFiles
         ]
 
         normalisationDataFilesBg = [
-            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumberBg}{config.spc5}"
+            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumberBg}"
+            f"{config.spc5}"
             for df in self.gudrunFile.normalisation.dataFilesBg
         ]
 
@@ -143,7 +175,7 @@ class PurgeFile():
             f"{chr(10).join(normalisationDataFiles)}"
             f"{chr(10) if len(normalisationDataFiles) else ''}"
             f"{chr(10).join(normalisationDataFilesBg)}"
-            f"{chr(10) if len(normalisationDataFilesBg) else ''}"  
+            f"{chr(10) if len(normalisationDataFilesBg) else ''}"
             f"{chr(10).join(sampleBackgroundDataFiles)}"
             f"{chr(10) if len(sampleBackgroundDataFiles) else ''}"
             f"{chr(10).join(sampleDataFiles)}"
@@ -153,21 +185,21 @@ class PurgeFile():
 
         return (
             f'{HEADER}'
-            f'{Instruments(self.gudrunFile.instrument.name.value).name}{config.spc5}'
+            f'{instrumentLine}{config.spc5}'
             f'Instrument name\n'
             f'{self.gudrunFile.instrument.GudrunInputFileDir}{config.spc5}'
             f'Gudrun input file directory:\n'
             f'{self.gudrunFile.instrument.dataFileDir}{config.spc5}'
             f'Data file directory\n'
-            f'{os.path.join(baseDirectory, self.gudrunFile.instrument.detectorCalibrationFileName)}{config.spc5}'
+            f'{detCalibrationFileLine}{config.spc5}'
             f'Detector calibration file name\n'
-            f'{os.path.join(baseDirectory, self.gudrunFile.instrument.groupFileName)}{config.spc5}'
+            f'{groupFileLine}{config.spc5}'
             f'Groups file name\n'
-            f'{spacify(self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor)}{config.spc5}'
+            f'{spectrumNumbersLine}{config.spc5}'
             f'Spectrum number(s) for incident beam monitor\n'
-            f'{spacify(self.gudrunFile.instrument.channelNosSpikeAnalysis, num_spaces=2)}{config.spc5}'
+            f'{channelNosLine}{config.spc5}'
             f'Channel numbers for spike analysis\n'
-            f'{self.gudrunFile.instrument.groupsAcceptanceFactor}{config.spc5}'
+            f'{groupsAcceptanceFactorLine}{config.spc5}'
             f'Spike analysis acceptance factor\n'
             f'{nxsDefinitionFileLine}'
             f'{spacify(self.standardDeviation, num_spaces=2)}{config.spc5}'
