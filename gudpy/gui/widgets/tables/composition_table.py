@@ -9,7 +9,7 @@ from core.mass_data import massData
 from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from core.element import Element
-
+from copy import deepcopy
 
 class CompositionModel(GudPyTableModel):
     """
@@ -299,7 +299,7 @@ class CompositionTable(QTableView):
         self.compositions = [
                 (
                     "Normalisation",
-                    ancestor.gudrunFile.normalisation.composition
+                    deepcopy(ancestor.gudrunFile.normalisation.composition)
                 )
             ]
         for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
@@ -321,6 +321,7 @@ class CompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
+        self.parentObject.composition = composition
         self.makeModel(composition.elements, self.parentObject)
 
     def showContextMenu(self, event):
@@ -342,7 +343,7 @@ class CompositionTable(QTableView):
             actionMap[action] = composition[1]
         action = self.menu.exec(QCursor.pos())
         if action:
-            self.copyFrom(actionMap[action])
+            self.copyFrom(deepcopy(actionMap[action]))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
