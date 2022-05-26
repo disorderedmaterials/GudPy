@@ -239,6 +239,8 @@ class Composition():
     @staticmethod
     def calculateExpectedDCSLevel(elements):
         totalAbundance = sum([el.abundance for el in elements])
+        if totalAbundance == 0:
+            return 0.0
         s91 = Sears91()
         if len(elements):
             return round(sum(
