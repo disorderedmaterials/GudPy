@@ -3,12 +3,14 @@ from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
+from PySide6.QtCore import Signal
 
 from core import config
 from core.mass_data import massData
 from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from core.element import Element
+from copy import deepcopy
 
 
 class CompositionModel(GudPyTableModel):
@@ -235,6 +237,9 @@ class CompositionTable(QTableView):
     mousePressEvent(event)
         Handles mouse presses.
     """
+
+    modelChanged = Signal()
+
     def __init__(self, parent):
         """
         Constructs all the necessary attributes
@@ -250,7 +255,7 @@ class CompositionTable(QTableView):
         self.parentObject = None
         super(CompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, data, parentObject, farm=True):
+    def makeModel(self, data, parentObject, contextMenu=True):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -259,6 +264,7 @@ class CompositionTable(QTableView):
         data : list
             Data for model to use.
         """
+        self.contextMenu = contextMenu
         self.setModel(
             CompositionModel(
                 data, ["Element", "Mass No", "Abundance"], self.parent
@@ -266,8 +272,7 @@ class CompositionTable(QTableView):
         )
         self.parentObject = parentObject
         self.setItemDelegate(CompositionDelegate())
-        if farm:
-            self.farmCompositions()
+        self.modelChanged.emit()
 
     def insertRow(self):
         """
@@ -299,7 +304,7 @@ class CompositionTable(QTableView):
         self.compositions = [
                 (
                     "Normalisation",
-                    ancestor.gudrunFile.normalisation.composition
+                    deepcopy(ancestor.gudrunFile.normalisation.composition)
                 )
             ]
         for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
@@ -321,6 +326,7 @@ class CompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
+        self.parentObject.composition.elements = composition
         self.makeModel(composition.elements, self.parentObject)
 
     def showContextMenu(self, event):
@@ -332,17 +338,19 @@ class CompositionTable(QTableView):
         event : QMouseEvent
             The event that triggers the context menu.
         """
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.menu = QMenu(self)
-        copyMenu = self.menu.addMenu("Copy from")
-        actionMap = {}
-        for composition in self.compositions:
-            action = QAction(f"{composition[0]}", copyMenu)
-            copyMenu.addAction(action)
-            actionMap[action] = composition[1]
-        action = self.menu.exec(QCursor.pos())
-        if action:
-            self.copyFrom(actionMap[action])
+        if self.contextMenu:
+            self.farmCompositions()
+            self.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.menu = QMenu(self)
+            copyMenu = self.menu.addMenu("Copy from")
+            actionMap = {}
+            for composition in self.compositions:
+                action = QAction(f"{composition[0]}", copyMenu)
+                copyMenu.addAction(action)
+                actionMap[action] = composition[1]
+            action = self.menu.exec(QCursor.pos())
+            if action:
+                self.copyFrom(deepcopy(actionMap[action]))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:
