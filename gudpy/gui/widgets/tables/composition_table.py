@@ -84,11 +84,22 @@ class CompositionModel(GudPyTableModel):
                     return True
                 elif value not in massData.keys():
                     return False
-                if not sears91.isIsotope(value, self._data[row].__dict__[self.attrs[1]]):
+                if not sears91.isIsotope(
+                    value, self._data[row].__dict__[self.attrs[1]]
+                ):
                     self._data[row].__dict__[self.attrs[1]] = 0
-                    self.dataChanged.emit(self.index(row, 1, QModelIndex()), self.index(row, 1, QModelIndex()))
+                    self.dataChanged.emit(
+                        self.index(row, 1, QModelIndex()),
+                        self.index(row, 1, QModelIndex())
+                    )
             if col == 1:
-                if self._data[row].__dict__[self.attrs[0]] and not sears91.isIsotope(self._data[row].__dict__[self.attrs[0]], value):
+                if (
+                    self._data[row].__dict__[self.attrs[0]]
+                    and not sears91.isIsotope(
+                        self._data[row].__dict__[self.attrs[0]],
+                        value
+                    )
+                ):
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
             self.dataChanged.emit(index, index)
