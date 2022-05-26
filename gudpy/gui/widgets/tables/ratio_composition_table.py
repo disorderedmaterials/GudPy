@@ -1,11 +1,11 @@
-from PySide6.QtCore import QModelIndex, Qt
+from PySide6.QtCore import QModelIndex, Qt, Signal
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QComboBox, QMainWindow, QMenu, QTableView
 
 from core.composition import WeightedComponent
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
-
+from copy import deepcopy
 
 class RatioCompositionModel(GudPyTableModel):
     """
@@ -226,6 +226,9 @@ class RatioCompositionTable(QTableView):
     mousePressEvent(event)
         Handles mouse presses.
     """
+
+    modelChanged = Signal()
+
     def __init__(self, parent):
         """
         Constructs all the necessary attributes
@@ -259,8 +262,8 @@ class RatioCompositionTable(QTableView):
         self.setItemDelegate(
             RatioCompositionDelegate(self.gudrunFile)
         )
-        self.farmCompositions()
         self.parentObject = parentObject
+        self.modelChanged.emit()
 
     def insertRow(self):
         """
@@ -293,23 +296,12 @@ class RatioCompositionTable(QTableView):
                 if callable(ancestor):
                     ancestor = ancestor()
             self.compositions.clear()
-            self.compositions = [
-                    (
-                        "Normalisation",
-                        ancestor.gudrunFile.normalisation.composition
-                    )
-                ]
             for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
                 for sample in sampleBackground.samples:
                     if sample != self.parentObject:
                         self.compositions.append(
                             (sample.name, sample.composition)
                         )
-                    for container in sample.containers:
-                        if container != self.parentObject:
-                            self.compositions.append(
-                                (container.name, container.composition)
-                            )
         except AttributeError:
             pass
 
@@ -322,7 +314,8 @@ class RatioCompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.makeModel(composition.weightedComponents, self.parentObject)
+        self.parentObject.composition.weightedComponents = composition.weightedComponents
+        self.makeModel(self.gudrunFile, composition.weightedComponents, self.parentObject)
 
     def showContextMenu(self, event):
         """
@@ -333,6 +326,7 @@ class RatioCompositionTable(QTableView):
         event : QMouseEvent
             The event that triggers the context menu.
         """
+        self.farmCompositions()
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.menu = QMenu(self)
         copyMenu = self.menu.addMenu("Copy from")
@@ -341,9 +335,10 @@ class RatioCompositionTable(QTableView):
             action = QAction(f"{composition[0]}", copyMenu)
             copyMenu.addAction(action)
             actionMap[action] = composition[1]
-        action = self.menu.exec(QCursor.pos())
-        if action:
-            self.copyFrom(actionMap[action])
+        if len(actionMap.keys()):
+            action = self.menu.exec(QCursor.pos())
+            if action:
+                self.copyFrom(deepcopy(actionMap[action]))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.RightButton:

@@ -56,5 +56,5 @@ class CompositionDialog(QDialog):
         )
 
         self.widget.compositionLookAheadTable.makeModel(
-            self.component.parse(persistent=False), self.component, farm=False
+            self.component.parse(persistent=False), self.component, contextMenu=False
         )

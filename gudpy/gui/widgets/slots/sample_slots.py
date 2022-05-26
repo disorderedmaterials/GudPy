@@ -164,6 +164,9 @@ class SampleSlots():
         self.widget.sampleCompositionTable.modelChanged.connect(
             self.connectToModelSignals
         )
+        self.widget.sampleRatioCompositionTable.modelChanged.connect(
+            self.translateAndUpdate
+        )
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -341,6 +344,10 @@ class SampleSlots():
 
         self.widget.removeSampleComponentButton.clicked.connect(
             self.handleRemoveComponent
+        )
+
+        self.widget.sampleRatioCompositionTable.modelLoaded.connect(
+            self.updateExactCompositions
         )
 
         # Setup slots for exponential values.
