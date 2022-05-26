@@ -346,10 +346,6 @@ class SampleSlots():
             self.handleRemoveComponent
         )
 
-        self.widget.sampleRatioCompositionTable.modelLoaded.connect(
-            self.updateExactCompositions
-        )
-
         # Setup slots for exponential values.
         self.widget.insertExponentialButton.clicked.connect(
             self.handleInsertExponentialValue
@@ -997,8 +993,9 @@ class SampleSlots():
         )
 
     def translateAndUpdate(self):
-        self.sample.composition.translate()
-        self.updateExactCompositions()
+        if config.USE_USER_DEFINED_COMPONENTS:
+            self.sample.composition.translate()
+            self.updateExactCompositions()
 
     def updateExactCompositions(self):
         self.widget.sampleCompositionTable.makeModel(
