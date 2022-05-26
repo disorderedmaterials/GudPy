@@ -77,6 +77,7 @@ from gui.widgets.tables.exponential_table import ExponentialTable
 from gui.widgets.tables.resonance_table import ResonanceTable
 from gui.widgets.tables.components_table import ComponentsList
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
+from gui.widgets.tables.data_file_list import DataFilesList
 from gui.widgets.charts.chart import GudPyChart
 from gui.widgets.charts.chartview import GudPyChartView
 from gui.widgets.charts.beam_plot import BeamChart
@@ -196,6 +197,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(RatioCompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
+        loader.registerCustomWidget(DataFilesList)
         loader.registerCustomWidget(ComponentsList)
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
@@ -676,7 +678,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
-            self.widgetsRefreshing = False
+            self.normalisationSlots.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
         ):
