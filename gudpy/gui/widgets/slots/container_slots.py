@@ -25,10 +25,16 @@ class ContainerSlots():
         )
 
         # Populate the data files list.
-        self.widget.containerDataFilesList.makeModel(self.container.dataFiles.dataFiles)
+        self.widget.containerDataFilesList.makeModel(
+            self.container.dataFiles.dataFiles
+        )
 
-        self.widget.containerDataFilesList.model().dataChanged.connect(self.handleDataFilesAltered)
-        self.widget.containerDataFilesList.model().rowsRemoved.connect(self.handleDataFilesAltered)
+        self.widget.containerDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.containerDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
         # Populate geometry data.
         self.widget.containerGeometryComboBox.setCurrentIndex(
@@ -606,7 +612,9 @@ class ContainerSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.container.dataFiles.dataFiles = self.widget.containerDataFilesList.model().stringList()
+            self.container.dataFiles.dataFiles = (
+                self.widget.containerDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """

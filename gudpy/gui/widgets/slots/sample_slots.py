@@ -26,10 +26,16 @@ class SampleSlots():
         self.widget.samplePeriodNoSpinBox.setValue(self.sample.periodNumber)
 
         # Populate the data files list.
-        self.widget.sampleDataFilesList.makeModel(self.sample.dataFiles.dataFiles)
+        self.widget.sampleDataFilesList.makeModel(
+            self.sample.dataFiles.dataFiles
+        )
 
-        self.widget.sampleDataFilesList.model().dataChanged.connect(self.handleDataFilesAltered)
-        self.widget.sampleDataFilesList.model().rowsRemoved.connect(self.handleDataFilesAltered)
+        self.widget.sampleDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.sampleDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
         # Populate the run controls.
         self.widget.sampleForceCorrectionsCheckBox.setChecked(
@@ -866,8 +872,9 @@ class SampleSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.sample.dataFiles.dataFiles = self.widget.sampleDataFilesList.model().stringList()
-
+            self.sample.dataFiles.dataFiles = (
+                self.widget.sampleDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """

@@ -6,6 +6,7 @@ from core.enums import (
 )
 from core import config
 
+
 class NormalisationSlots():
 
     def __init__(self, widget, parent):
@@ -17,14 +18,26 @@ class NormalisationSlots():
         self.normalisation = normalisation
         self.widgetsRefreshing = True
 
-        self.widget.dataFilesList.makeModel(self.normalisation.dataFiles.dataFiles)
-        self.widget.backgroundDataFilesList.makeModel(self.normalisation.dataFilesBg.dataFiles)
+        self.widget.dataFilesList.makeModel(
+            self.normalisation.dataFiles.dataFiles
+        )
+        self.widget.backgroundDataFilesList.makeModel(
+            self.normalisation.dataFilesBg.dataFiles
+        )
 
-        self.widget.dataFilesList.model().dataChanged.connect(self.handleDataFilesAltered)
-        self.widget.dataFilesList.model().rowsRemoved.connect(self.handleDataFilesAltered)
+        self.widget.dataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.dataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
-        self.widget.backgroundDataFilesList.model().dataChanged.connect(self.handleDataFilesBgAltered)
-        self.widget.backgroundDataFilesList.model().rowsRemoved.connect(self.handleDataFilesBgAltered)
+        self.widget.backgroundDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesBgAltered
+        )
+        self.widget.backgroundDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesBgAltered
+        )
 
         self.widget.periodNoSpinBox.setValue(self.normalisation.periodNumber)
         self.widget.backgroundPeriodNoSpinBox.setValue(
@@ -636,7 +649,9 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.normalisation.dataFiles.dataFiles = self.widget.dataFilesList.model().stringList()
+            self.normalisation.dataFiles.dataFiles = (
+                self.widget.dataFilesList.model().stringList()
+            )
 
     def handleDataFilesBgAltered(self):
         """
@@ -652,7 +667,9 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.normalisation.dataFilesBg.dataFiles = self.widget.backgroundDataFilesList.model().stringList()
+            self.normalisation.dataFilesBg.dataFiles = (
+                self.widget.backgroundDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """

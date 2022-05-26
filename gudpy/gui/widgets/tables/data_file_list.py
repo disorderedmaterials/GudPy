@@ -1,7 +1,6 @@
-from PySide6.QtCore import Qt, QModelIndex, QAbstractItemModel, QStringListModel
-from PySide6.QtWidgets import QTableView, QDoubleSpinBox, QListView
-import os
-from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
+from PySide6.QtCore import QModelIndex, QStringListModel
+from PySide6.QtWidgets import QListView
+
 
 class DataFilesList(QListView):
 
@@ -28,7 +27,9 @@ class DataFilesList(QListView):
             self.model().index(self.model().rowCount(QModelIndex()) - 1),
             item
         )
-        self.setCurrentIndex(self.model().index(self.model().rowCount(QModelIndex())-1, 0))
+        self.setCurrentIndex(
+            self.model().index(self.model().rowCount(QModelIndex())-1, 0)
+        )
 
     def duplicate(self):
         if self.currentIndex().isValid():

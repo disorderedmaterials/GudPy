@@ -20,10 +20,16 @@ class SampleBackgroundSlots():
         )
 
         # Populate data files list.
-        self.widget.sampleBackgroundDataFilesList.makeModel(self.sampleBackground.dataFiles.dataFiles)
+        self.widget.sampleBackgroundDataFilesList.makeModel(
+            self.sampleBackground.dataFiles.dataFiles
+        )
 
-        self.widget.sampleBackgroundDataFilesList.model().dataChanged.connect(self.handleDataFilesAltered)
-        self.widget.sampleBackgroundDataFilesList.model().rowsRemoved.connect(self.handleDataFilesAltered)
+        self.widget.sampleBackgroundDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.sampleBackgroundDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -57,7 +63,9 @@ class SampleBackgroundSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.sampleBackground.dataFiles.dataFiles = self.widget.sampleBackgroundDataFilesList.model().stringList()
+            self.sampleBackground.dataFiles.dataFiles = (
+                self.widget.sampleBackgroundDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         files, _ = QFileDialog.getOpenFileNames(
