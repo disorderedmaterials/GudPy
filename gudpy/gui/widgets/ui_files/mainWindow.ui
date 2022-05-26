@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>5</number>
+             <number>6</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -6079,7 +6079,7 @@
                          <item>
                           <layout class="QVBoxLayout" name="verticalLayout_44">
                            <item>
-                            <widget class="QListWidget" name="containerDataFilesList">
+                            <widget class="DataFilesList" name="containerDataFilesList">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                                <horstretch>0</horstretch>
