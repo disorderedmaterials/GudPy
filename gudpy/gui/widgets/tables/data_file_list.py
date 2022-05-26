@@ -28,10 +28,15 @@ class DataFilesList(QListView):
             self.model().index(self.model().rowCount(QModelIndex()) - 1),
             item
         )
+        self.setCurrentIndex(self.model().index(self.model().rowCount(QModelIndex())-1, 0))
 
+    def duplicate(self):
+        if self.currentIndex().isValid():
+            self.insertRow(self.model().data(self.currentIndex()))
 
     def removeItem(self):
         """
         Removes rows from the model.
         """
-        self.model().removeRow(self.currentIndex().row())
+        if self.currentIndex().isValid():
+            self.model().removeRow(self.currentIndex().row())

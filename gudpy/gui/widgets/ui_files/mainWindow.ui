@@ -3365,6 +3365,17 @@
                       </widget>
                      </item>
                      <item>
+                      <widget class="QToolButton" name="duplicateDataFileButton">
+                       <property name="text">
+                        <string>...</string>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <spacer name="verticalSpacer_7">
                        <property name="orientation">
                         <enum>Qt::Vertical</enum>
@@ -3502,6 +3513,17 @@
                        <property name="icon">
                         <iconset resource="../resources/resources.qrc">
                          <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="duplicateBackgroundDataFileButton">
+                       <property name="text">
+                        <string>...</string>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -4335,7 +4357,7 @@
                 <property name="title">
                  <string>Data Files</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_22">
+                <layout class="QVBoxLayout" name="verticalLayout_23">
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_49">
                    <item>
@@ -4349,7 +4371,7 @@
                     </widget>
                    </item>
                    <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_23">
+                    <layout class="QVBoxLayout" name="verticalLayout_22">
                      <item>
                       <widget class="QToolButton" name="addSampleBackgroundDataFileButton">
                        <property name="sizePolicy">
@@ -4381,6 +4403,17 @@
                        <property name="icon">
                         <iconset resource="../resources/resources.qrc">
                          <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="duplicateSampleBackgroundDataFileButton">
+                       <property name="text">
+                        <string>...</string>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../resources/resources.qrc">
+                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -4528,6 +4561,17 @@
                             <property name="icon">
                              <iconset resource="../resources/resources.qrc">
                               <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="duplicateSampleDataFileButton">
+                            <property name="text">
+                             <string>...</string>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="../resources/resources.qrc">
+                              <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                             </property>
                            </widget>
                           </item>
@@ -6172,6 +6216,17 @@
                              <property name="icon">
                               <iconset resource="../resources/resources.qrc">
                                <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QToolButton" name="duplicateContainerDataFileButton">
+                             <property name="text">
+                              <string>...</string>
+                             </property>
+                             <property name="icon">
+                              <iconset resource="../resources/resources.qrc">
+                               <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                              </property>
                             </widget>
                            </item>

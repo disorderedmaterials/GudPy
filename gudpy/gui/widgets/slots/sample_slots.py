@@ -194,6 +194,10 @@ class SampleSlots():
             )
         )
 
+        self.widget.duplicateSampleDataFileButton.clicked.connect(
+            self.widget.sampleDataFilesList.duplicate
+        )
+
         # Setup slots for run controls.
         self.widget.sampleForceCorrectionsCheckBox.stateChanged.connect(
             self.handleForceCorrectionsSwitched

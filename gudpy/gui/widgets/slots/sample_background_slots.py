@@ -49,6 +49,10 @@ class SampleBackgroundSlots():
             )
         )
 
+        self.widget.duplicateSampleBackgroundDataFileButton.clicked.connect(
+            self.widget.sampleBackgroundDataFilesList.duplicate
+        )
+
     def handleDataFilesAltered(self):
         if not self.widgetsRefreshing:
             self.parent.setModified()

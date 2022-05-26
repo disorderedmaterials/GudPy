@@ -173,6 +173,10 @@ class ContainerSlots():
             )
         )
 
+        self.widget.duplicateContainerDataFileButton.clicked.connect(
+            self.widget.containerDataFilesList.duplicate
+        )
+
         # Populate geometry combo box.
         for g in Geometry:
             self.widget.containerGeometryComboBox.addItem(g.name, g)
