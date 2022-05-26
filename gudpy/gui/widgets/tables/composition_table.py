@@ -12,6 +12,7 @@ from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from core.element import Element
 from copy import deepcopy
 
+
 class CompositionModel(GudPyTableModel):
     """
     Class to represent a CompositionModel. Inherits GudPyTableModel.

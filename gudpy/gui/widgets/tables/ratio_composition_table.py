@@ -7,6 +7,7 @@ from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 from copy import deepcopy
 
+
 class RatioCompositionModel(GudPyTableModel):
     """
     Class to represent a RatioCompositionModel. Inherits GudPyTableModel.
@@ -314,8 +315,14 @@ class RatioCompositionTable(QTableView):
         composition : Composition
             Composition object to copy elements from.
         """
-        self.parentObject.composition.weightedComponents = composition.weightedComponents
-        self.makeModel(self.gudrunFile, composition.weightedComponents, self.parentObject)
+        self.parentObject.composition.weightedComponents = (
+            composition.weightedComponents
+        )
+        self.makeModel(
+            self.gudrunFile,
+            composition.weightedComponents,
+            self.parentObject
+        )
 
     def showContextMenu(self, event):
         """
