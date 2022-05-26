@@ -7,6 +7,7 @@ from PySide6.QtCore import Signal
 
 from core import config
 from core.mass_data import massData
+from core.isotopes import Sears91
 from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from core.element import Element
@@ -75,12 +76,19 @@ class CompositionModel(GudPyTableModel):
         row = index.row()
         col = index.column()
         if role == Qt.EditRole:
+            sears91 = Sears91()
             if col == 0:
                 if value == "D":
                     self._data[row].atomicSymbol = "H"
                     self._data[row].massNo = 2
                     return True
                 elif value not in massData.keys():
+                    return False
+                if not sears91.isIsotope(value, self._data[row].__dict__[self.attrs[1]]):
+                    self._data[row].__dict__[self.attrs[1]] = 0
+                    self.dataChanged.emit(self.index(row, 1, QModelIndex()), self.index(row, 1, QModelIndex()))
+            if col == 1:
+                if self._data[row].__dict__[self.attrs[0]] and not sears91.isIsotope(self._data[row].__dict__[self.attrs[0]], value):
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
             self.dataChanged.emit(index, index)
@@ -183,7 +191,9 @@ class CompositionDelegate(GudPyDelegate):
             if index.column() != 0:
                 editor.setValue(value)
             else:
-                editor.setText(value)
+                sears91 = Sears91()
+                if sears91.isIsotope(value, 0):
+                    editor.setText(value)
 
     def setModelData(self, editor, model, index):
         """
