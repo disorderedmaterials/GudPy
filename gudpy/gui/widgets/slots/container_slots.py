@@ -122,8 +122,9 @@ class ContainerSlots():
         # Calculate the expected DCS level.
         self.updateExpectedDCSLevel()
 
-        self.widget.containerCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
+        self.connectToModelSignals()
+        self.widget.containerCompositionTable.modelChanged.connect(
+            self.connectToModelSignals
         )
 
         # Populate Fourier Transform parameters.
@@ -721,6 +722,15 @@ class ContainerSlots():
         self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def connectToModelSignals(self):
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.updateExpectedDCSLevel()
 
     def updateExpectedDCSLevel(self, _=None, __=None):
         """

@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
     QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
 )
+from PySide6.QtCore import Signal
 
 from core import config
 from core.mass_data import massData
@@ -235,6 +236,9 @@ class CompositionTable(QTableView):
     mousePressEvent(event)
         Handles mouse presses.
     """
+
+    modelChanged = Signal()
+
     def __init__(self, parent):
         """
         Constructs all the necessary attributes
@@ -268,6 +272,7 @@ class CompositionTable(QTableView):
         self.setItemDelegate(CompositionDelegate())
         if farm:
             self.farmCompositions()
+        self.modelChanged.emit()
 
     def insertRow(self):
         """

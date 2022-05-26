@@ -160,11 +160,9 @@ class SampleSlots():
         # Calculate the expected DCS level.
         self.updateExpectedDCSLevel()
 
-        self.widget.sampleCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
-        )
-        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
+        self.connectToModelSignals()
+        self.widget.sampleCompositionTable.modelChanged.connect(
+            self.connectToModelSignals
         )
 
         # Release the lock
@@ -1037,6 +1035,15 @@ class SampleSlots():
         self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def connectToModelSignals(self):
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.updateExpectedDCSLevel()
 
     def updateExponentialTable(self):
         """
