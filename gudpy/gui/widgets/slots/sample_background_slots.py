@@ -20,7 +20,10 @@ class SampleBackgroundSlots():
         )
 
         # Populate data files list.
-        self.updateDataFilesList()
+        self.widget.sampleBackgroundDataFilesList.makeModel(self.sampleBackground.dataFiles.dataFiles)
+
+        self.widget.sampleBackgroundDataFilesList.model().dataChanged.connect(self.handleDataFilesAltered)
+        self.widget.sampleBackgroundDataFilesList.model().rowsRemoved.connect(self.handleDataFilesAltered)
 
         # Release the lock
         self.widgetsRefreshing = False
@@ -32,12 +35,6 @@ class SampleBackgroundSlots():
         )
 
         # Setup slots for data files.
-        self.widget.sampleBackgroundDataFilesList.itemChanged.connect(
-            self.handleDataFilesAltered
-        )
-        self.widget.sampleBackgroundDataFilesList.itemEntered.connect(
-            self.handleDataFileInserted
-        )
         self.widget.addSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.sampleBackgroundDataFilesList,
@@ -48,33 +45,15 @@ class SampleBackgroundSlots():
         )
         self.widget.removeSampleBackgroundDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.widget.sampleBackgroundDataFilesList,
-                self.sampleBackground.dataFiles
+                self.widget.sampleBackgroundDataFilesList
             )
         )
 
-    def handleDataFilesAltered(self, item):
-        index = item.row()
-        value = item.text()
-        if not value:
-            self.sampleBackground.dataFiles.dataFiles.remove(index)
-        else:
-            self.sampleBackground.dataFiles[index] = value
-        self.updateDataFilesList()
+    def handleDataFilesAltered(self):
         if not self.widgetsRefreshing:
             self.parent.setModified()
-
-    def handleDataFileInserted(self, item):
-        value = item.text()
-        self.sampleBackground.dataFiles.dataFiles.append(value)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-
-    def updateDataFilesList(self):
-        self.widget.sampleBackgroundDataFilesList.clear()
-        self.widget.sampleBackgroundDataFilesList.addItems(
-            [df for df in self.sampleBackground.dataFiles]
-        )
+            self.parent.gudrunFile.purged = False
+            self.sampleBackground.dataFiles.dataFiles = self.widget.sampleBackgroundDataFilesList.model().stringList()
 
     def addFiles(self, target, title, regex):
         files, _ = QFileDialog.getOpenFileNames(
@@ -83,17 +62,10 @@ class SampleBackgroundSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split(os.path.sep)[-1])
-                self.handleDataFileInserted(target.item(target.count() - 1))
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
+                target.insertRow(file.split(os.path.sep)[-1])
 
-    def removeFile(self, target, dataFiles):
-        if target.currentIndex().isValid():
-            remove = target.takeItem(target.currentRow()).text()
-            dataFiles.dataFiles.remove(remove)
-            if not self.widgetsRefreshing:
-                self.parent.setModified()
+    def removeFile(self, target):
+        target.removeItem()
 
     def handlePeriodNoChanged(self, value):
         self.sampleBackground.periodNumber = value
