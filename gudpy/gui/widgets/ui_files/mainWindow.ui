@@ -52,7 +52,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>5</number>
             </property>
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -4493,7 +4493,7 @@
                        </property>
                        <layout class="QHBoxLayout" name="horizontalLayout_53">
                         <item>
-                         <widget class="QListWidget" name="sampleDataFilesList"/>
+                         <widget class="DataFilesList" name="sampleDataFilesList"/>
                         </item>
                         <item>
                          <layout class="QVBoxLayout" name="verticalLayout_25">
