@@ -7379,6 +7379,7 @@
     <addaction name="runGudrun"/>
     <addaction name="runContainersAsSamples"/>
     <addaction name="runFilesIndividually"/>
+    <addaction name="batchProcessing"/>
     <addaction name="iterateGudrun"/>
     <addaction name="checkFilesExist"/>
    </widget>
@@ -7591,6 +7592,11 @@
    </property>
    <property name="text">
     <string>Run Files Individually</string>
+   </property>
+  </action>
+  <action name="batchProcessing">
+   <property name="text">
+    <string>Batch Processing</string>
    </property>
   </action>
  </widget>
