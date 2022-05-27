@@ -586,7 +586,7 @@ class GudPyMainWindow(QMainWindow):
         Opens a QFileDialog to load an input file.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self,
+            self.mainWidget,
             "Select Input file for GudPy",
             ".",
             "YAML (*.yaml);;Gudrun Compatible "
