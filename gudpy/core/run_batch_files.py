@@ -1,15 +1,6 @@
 from abc import abstractclassmethod
 from copy import deepcopy
 from enum import Enum
-import os
-
-class IterationModes(Enum):
-    NONE = 0
-    TWEAK_FACTOR = 1
-    THICKNESS = 2
-    INNER_RADII = 3
-    OUTER_RADII = 4
-    DENSITY = 5
 
 class BatchProcessor():
 

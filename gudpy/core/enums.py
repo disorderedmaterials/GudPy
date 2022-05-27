@@ -86,3 +86,14 @@ FTModes = enumFromDict("FTModes", FT_MODES)
 class Format(Enum):
     TXT = 0
     YAML = 1
+
+ITERATION_MODES = {
+    0: ["None", "NONE"],
+    1: ["Tweak Factor", "TWEAK_FACTOR"],
+    2: ["Thickness", "THICKNESS"],
+    3: ["Inner Radius", "INNER_RADIUS"],
+    4: ["Outer Radius", "OUTER_RADIUS"],
+    5: ["Density", "DENSITY"]
+}
+
+IterationModes = enumFromDict("IterationModes", ITERATION_MODES)
