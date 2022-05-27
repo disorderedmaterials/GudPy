@@ -1,5 +1,5 @@
-from src.gudrun_classes.purge_file import PurgeFile
-from src.gudrun_classes.data_files import DataFiles
+from core.purge_file import PurgeFile
+from core.data_files import DataFiles
 from copy import deepcopy
 import multiprocessing
 
