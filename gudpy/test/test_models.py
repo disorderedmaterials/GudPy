@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from PySide6.QtCore import QModelIndex, Qt
 from gudpy.core.element import Element
+from gudpy.core.isotopes import Sears91
 
 from gui.widgets.tables.gudpy_tables import GudPyTableModel
 from gui.widgets.tables.beam_profile_table import BeamProfileModel
@@ -14,6 +15,11 @@ from gui.widgets.tables.resonance_table import ResonanceModel
 
 
 class TestModels(TestCase):
+
+    def setUp(self):
+        self.sears91 = Sears91()
+        return super().setUp()
+
     def testGudPyTableModel(self):
 
         model = GudPyTableModel([["test"]], ["test"], None)
@@ -154,7 +160,8 @@ class TestModels(TestCase):
             model.data(model.index(0, 0, QModelIndex()), Qt.EditRole), "V"
         )
         self.assertEqual(
-            model.data(model.index(0, 1, QModelIndex()), Qt.EditRole), 0
+            model.data(model.index(0, 1, QModelIndex()), Qt.EditRole),
+            self.sears91.mass(self.sears91.isotope("V"))
         )
         self.assertEqual(
             model.data(model.index(0, 2, QModelIndex()), Qt.EditRole), 1.0
@@ -188,7 +195,8 @@ class TestModels(TestCase):
             model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), "Ti"
         )
         self.assertEqual(
-            model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0
+            model.data(model.index(1, 1, QModelIndex()), Qt.EditRole),
+            self.sears91.mass(self.sears91.isotope("Ti"))
         )
         self.assertEqual(
             model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 7.16
