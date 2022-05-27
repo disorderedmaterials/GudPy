@@ -62,6 +62,7 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
+from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
 
@@ -214,6 +215,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(CompositionAcceptanceDialog)
+        loader.registerCustomWidget(BatchProcessingDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -429,6 +431,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.runFilesIndividually.triggered.connect(
             self.runFilesIndividually
+        )
+
+        self.mainWidget.batchProcessing.triggered.connect(
+            self.batchProcessing
         )
 
         self.mainWidget.checkFilesExist.triggered.connect(
@@ -1239,6 +1245,14 @@ class GudPyMainWindow(QMainWindow):
                 self.nextIterableProc()
             self.mainWidget.stopTaskButton.setEnabled(True)
 
+    def batchProcessing(self):
+        if not self.checkFilesExist_():
+            return
+        self.setControlsEnabled(False)
+        batchProcessingDialog = BatchProcessingDialog(self.gudrunFile, self.mainWidget)
+        batchProcessingDialog.widget.exec()
+        self.setControlsEnabled(True)
+
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
         self.mainWidget.progressBar.setValue(
@@ -1492,6 +1506,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.runFilesIndividually.setEnabled(state)
+        self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1517,7 +1532,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
-
+        self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
