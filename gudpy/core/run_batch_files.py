@@ -1,12 +1,22 @@
+from abc import abstractclassmethod
 from copy import deepcopy
+from enum import Enum
 import os
+
+class IterationModes(Enum):
+    NONE = 0
+    TWEAK_FACTOR = 1
+    THICKNESS = 2
+    INNER_RADII = 3
+    OUTER_RADII = 4
+    DENSITY = 5
 
 class BatchProcessor():
 
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
     
-    def batch(self, batchSize=1):
+    def batch(self, batchSize):
         batches = []
         
         for i, sampleBackground in enumerate(self.gudrunFile.sampleBackgrounds):
@@ -23,31 +33,15 @@ class BatchProcessor():
         
         return gudrunFile
 
-    def process(self, batchSize=1, headless=True):
+    @abstractclassmethod
+    def createTasks(self, batchSize, headless, iterationMode)
+
+    def process(self, maintainAverage=False, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=10.0):
         batches = self.batch(batchSize=batchSize)
-        if headless:
-            for i, batch in enumerate(batches):
-                batch.process()
-                batch.iterativeOrganise(f"Batch_{i*batchSize}-{(i+1)*batchSize}")
-        else:
-            tasks = []
-            for i, batch in enumerate(batches):
-                tasks.append(
-                    [
-                        batch.dcs(
-                            path=os.path.join(
-                                batch.instrument.GudrunInputFileDirectory,
-                                "gudpy.txt"
-                            ),
-                            headless=False
-                        ),
-                        [
-                            batch.iterativeOrganise,
-                            [
-                                f"Batch_{i*batchSize}-{(i+1)*batchSize}",
-                            ]
-                        ]
-                        
-                    ]
-                )
-            return tasks
+        tasks = []
+        """
+        Run Gudrun on batchSize files at a time.
+        If an iteration mode is specified, then iterate using that mode until convergence (do this at each batch).
+        Otherwise, a single run of gudrun is sufficient.
+        Start out by targeting a single sample (the first one)
+        """
