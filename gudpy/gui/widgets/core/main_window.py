@@ -89,6 +89,7 @@ from gui.widgets.tables.spectra_table import SpectraTable
 from gui.widgets.tables.event_table import EventTable
 from gui.widgets.tables.components_table import ComponentsList
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
+from gui.widgets.tables.data_file_list import DataFilesList
 from gui.widgets.charts.chart import GudPyChart
 from gui.widgets.charts.chartview import GudPyChartView
 from gui.widgets.charts.beam_plot import BeamChart
@@ -212,6 +213,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(PulseTable)
         loader.registerCustomWidget(SpectraTable)
         loader.registerCustomWidget(EventTable)
+        loader.registerCustomWidget(DataFilesList)
         loader.registerCustomWidget(ComponentsList)
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
@@ -533,7 +535,11 @@ class GudPyMainWindow(QMainWindow):
         for f in os.listdir(dir_):
             if os.path.abspath(f) == path + ".autosave":
 
-                if str(GudrunFile(path))[:-5] == str(GudrunFile(f))[:-5]:
+                with open(path, "r", encoding="utf-8") as fp:
+                    original = fp.readlines()
+                with open(f, "r", encoding="utf-8") as fp:
+                    auto = fp.readlines()
+                if original[:-5] == auto[:-5]:
                     return path
 
                 autoFileInfo = QFileInfo(f)
@@ -570,7 +576,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
-        self.componentSlots.setComponents(config.components)
+        self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
 
         if len(self.gudrunFile.sampleBackgrounds):
@@ -601,7 +607,7 @@ class GudPyMainWindow(QMainWindow):
         Opens a QFileDialog to load an input file.
         """
         filename, _ = QFileDialog.getOpenFileName(
-            self,
+            self.mainWidget,
             "Select Input file for GudPy",
             ".",
             "YAML (*.yaml);;Gudrun Compatible "
@@ -693,7 +699,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
-            self.widgetsRefreshing = False
+            self.normalisationSlots.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
         ):
@@ -1080,9 +1086,9 @@ class GudPyMainWindow(QMainWindow):
             headless=False
         )
 
-        def finished():
+        def finished(ec, es):
             self.runGudrunFinished(
-                runContainersAsSamples.gudrunFile
+                gudrunFile=runContainersAsSamples.gudrunFile
             )
 
         if isinstance(dcs, Sequence):
@@ -1131,9 +1137,9 @@ class GudPyMainWindow(QMainWindow):
             headless=False
         )
 
-        def finished():
+        def finished(ec, es):
             self.runGudrunFinished(
-                runIndividualFiles.gudrunFile
+                gudrunFile=runIndividualFiles.gudrunFile
             )
 
         if isinstance(dcs, Sequence):
@@ -1493,7 +1499,8 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIteration(self):
         if self.error:
-            self.proc.finished.connect(self.procFinished)
+            self.procFinished(9, QProcess.NormalExit)
+            return
         if isinstance(self.iterator, TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByTweakFactor_{self.currentIteration+1}"
@@ -1518,31 +1525,23 @@ class GudPyMainWindow(QMainWindow):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
-            self.outputIterations[self.currentIteration+1] = self.output
+            self.outputIterations[self.currentIteration + 1] = self.output
             self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            time.sleep(1)
             if (self.currentIteration + 1) % 2 == 0:
-                self.iterator.QIteration(self.currentIteration)
-                self.gudrunFile.iterativeOrganise(
-                    f"QIteration_{self.currentIteration+1}"
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"QIteration_{(self.currentIteration // 2) + 1}"
                 )
+                self.outputIterations[self.currentIteration + 1] = self.output
             else:
-                self.iterator.wavelengthIteration(self.currentIteration)
-                if self.currentIteration == 0:
-                    self.outputIterations[1] = self.output
-                else:
-                    self.outputIterations[self.currentIteration] = self.output
-                self.gudrunFile.iterativeOrganise(
-                    f"WavelengthIteration_{self.currentIteration+1}"
-                )
-            self.gudrunFile.write_out()
-
+                self.iterator.gudrunFile.iterativeOrganise(
+                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}")
+                self.outputIterations[self.currentIteration + 1] = self.output
         if not self.queue.empty():
-            self.nextIterableProc()
             self.currentIteration += 1
+            self.nextIterableProc()
         else:
-            self.procFinished()
+            self.procFinished(0, QProcess.NormalExit)
         self.output = ""
 
     def nextIterableProc(self):
@@ -1556,6 +1555,11 @@ class GudPyMainWindow(QMainWindow):
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
+        if isinstance(self.iterator, WavelengthSubtractionIterator):
+            if (self.currentIteration+1) % 2 == 0:
+                self.iterator.QIteration(self.currentIteration)
+            else:
+                self.iterator.wavelengthIteration(self.currentIteration)
         if func:
             func(*args)
         self.proc.start()
@@ -1575,7 +1579,7 @@ class GudPyMainWindow(QMainWindow):
             iteration = math.ceil((self.currentIteration+1)/2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
-                f" {iteration}/{self.numberIterations}"
+                f" {iteration}/{int(self.numberIterations/2)}"
             )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1613,7 +1617,7 @@ class GudPyMainWindow(QMainWindow):
         return True
 
     def autosave(self):
-        if self.gudrunFile.path:
+        if self.gudrunFile.path and not self.proc and not self.workerThread:
             autosavePath = self.gudrunFile.path + ".autosave"
             self.gudrunFile.write_out(path=autosavePath)
 
@@ -1657,6 +1661,7 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile
             else False
         )
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1689,6 +1694,7 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile
             else False
         )
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
@@ -1792,24 +1798,47 @@ class GudPyMainWindow(QMainWindow):
                     self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
-        appendDfs(self.gudrunFile.purgeFile.normalisationDataFiles[0])
+        appendDfs(self.gudrunFile.normalisation.dataFiles[0])
+        appendDfs(self.gudrunFile.normalisation.dataFilesBg[0])
         appendDfs(
-            self.gudrunFile.purgeFile.normalisationBackgroundDataFiles[0]
+            [
+                df
+                for sb in self.gudrunFile.sampleBackgrounds
+                for df in sb.dataFiles
+            ]
         )
-        for dfs, _ in self.gudrunFile.purgeFile.sampleBackgroundDataFiles:
-            appendDfs(dfs)
-        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
-            for dfs, _ in self.gudrunFile.purgeFile.sampleDataFiles:
-                appendDfs(dfs)
-            for dfs, _ in self.gudrunFile.purgeFile.containerDataFiles:
-                appendDfs(dfs)
+        if self.gudrunFile.purgeFile.excludeSampleAndCan:
+            appendDfs(
+                [
+                    df
+                    for sb in self.gudrunFile.sampleBackgrounds
+                    for s in sb.samples
+                    for df in s.dataFiles
+                    if s.runThisSample
+                ]
+            )
+            appendDfs(
+                [
+                    df
+                    for sb in self.gudrunFile.sampleBackgrounds
+                    for s in sb.samples
+                    for c in s.containers
+                    for df in c.dataFiles
+                    if s.runThisSample
+                ]
+            )
 
         stepSize = math.ceil(100/len(dataFiles))
         progress = 0
         for df in dataFiles:
             if df in stdout:
                 progress += stepSize
-        if "Error" in stdout or "error" in stdout or "not found" in stdout:
+        if (
+            "Error" in stdout
+            or "error" in stdout
+            or "not found" in stdout
+            or "does not exist" in stdout
+        ):
             self.error = stdout
             return -1, False, -1
         elif dataFiles[-1] in stdout:
@@ -1862,14 +1891,14 @@ class GudPyMainWindow(QMainWindow):
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
-    def runGudrunFinished(self, gudrunFile=None):
+    def runGudrunFinished(self, ec, es, gudrunFile=None):
         if gudrunFile:
             gudrunFile.naiveOrganise()
         else:
             self.gudrunFile.naiveOrganise()
-        self.procFinished()
+        self.procFinished(ec, es)
 
-    def procFinished(self):
+    def procFinished(self, ec, es):
         self.proc = None
         output = self.output
         if isinstance(
@@ -1926,7 +1955,6 @@ class GudPyMainWindow(QMainWindow):
         if self.proc:
             if self.proc.state() == QProcess.Running:
                 self.proc.kill()
-                self.procFinished()
         if self.workerThread:
             self.workerThread.requestInterruption()
 
@@ -2016,3 +2044,7 @@ class GudPyMainWindow(QMainWindow):
     def export(self):
         exportDialog = ExportDialog(self.gudrunFile, self)
         exportDialog.widget.exec()
+
+    def cleanup(self):
+        self.stopProc()
+        self.autosave()

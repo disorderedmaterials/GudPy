@@ -764,14 +764,16 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         self.g.write_out()
-        outlines = open(
+        outlines = "\n".join(open(
             os.path.join(
                 self.g.instrument.GudrunInputFileDir,
                 self.g.outpath
             ),
             encoding="utf-8"
-        ).read()
-        self.assertEqual(outlines, str(self.g))
+        ).readlines()[:-5])
+        self.assertEqual(
+            outlines, "\n".join(str(self.g).splitlines(keepends=True)[:-5])
+        )
 
         def valueInLines(value, lines):
             if isinstance(value, str):
@@ -858,41 +860,46 @@ class TestGudPyIO(TestCase):
         g1.write_out()
 
         self.assertEqual(
-            open(
+            "\n".join(open(
                 os.path.join(
                     g1.instrument.GudrunInputFileDir,
                     g1.outpath
                 ),
                 encoding="utf-8"
-            ).read()[:-5],
-            str(self.g)[:-5]
+            ).readlines()[:-5]),
+            "\n".join(str(self.g).splitlines(keepends=True)[:-5])
         )
 
         self.assertEqual(
-            open(
+            "\n".join(open(
                 os.path.join(
                     g1.instrument.GudrunInputFileDir,
                     g1.outpath
                 ),
                 encoding="utf-8"
-            ).read()[:-5],
-            str(g1)[:-5]
+            ).readlines()[:-5]),
+            "\n".join(str(g1).splitlines(keepends=True)[:-5])
         )
 
         self.assertEqual(
-            open(
-                os.path.join(
-                    g1.instrument.GudrunInputFileDir,
-                    g1.outpath
-                ),
-                encoding="utf-8"
-            ).read()[:-5],
-            open(os.path.join(
-                    self.g.instrument.GudrunInputFileDir,
-                    self.g.outpath
-                ),
-                encoding="utf-8"
-            ).read()[:-5],
+            "\n".join(
+                open(
+                    os.path.join(
+                        g1.instrument.GudrunInputFileDir,
+                        g1.outpath
+                    ),
+                    encoding="utf-8"
+                ).readlines()[:-5]
+            ),
+            "\n".join(
+                open(
+                    os.path.join(
+                        self.g.instrument.GudrunInputFileDir,
+                        self.g.outpath
+                    ),
+                    encoding="utf-8"
+                ).readlines()[:-5]
+            )
         )
 
     def testReloadGudrunFile(self):
@@ -904,7 +911,10 @@ class TestGudPyIO(TestCase):
             )
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
-        self.assertEqual(str(g1), str(self.g))
+        self.assertEqual(
+            "\n".join(str(g1).splitlines(keepends=True)[:-5]),
+            "\n".join(str(self.g).splitlines(keepends=True)[:-5])
+        )
 
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w", encoding="utf-8")

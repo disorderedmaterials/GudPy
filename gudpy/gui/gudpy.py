@@ -10,6 +10,7 @@ class GudPy(QApplication):
         super(GudPy, self).__init__(args)
         self.initComponents()
         self.gudrunFile = None
+        self.aboutToQuit.connect(self.mainWindow.cleanup)
         sys.exit(self.exec_())
 
     def initComponents(self):

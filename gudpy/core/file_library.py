@@ -117,7 +117,7 @@ class GudPyFileLibrary():
                     (
                         os.path.isfile(file)
                         | os.path.isfile(os.path.join(self.fileDir, file))
-                        | file == "*"
+                        | (file == "*")
                     ),
                     file
                 )
@@ -157,10 +157,11 @@ class GudPyFileLibrary():
                     {ord(x): '' for x in r'/\!*~,&|[]'}
                 )
                 if os.path.exists(path):
+                    outpath = path
                     if renameDataFiles:
                         newName = safeSampleName + ".mint01"
-                        path = newName
-                    zipFile.write(path, arcname=os.path.basename(path))
+                        outpath = newName
+                    zipFile.write(path, arcname=os.path.basename(outpath))
                     if includeParams:
                         path = os.path.join(
                             self.gudrunFile.instrument.GudrunInputFileDir,

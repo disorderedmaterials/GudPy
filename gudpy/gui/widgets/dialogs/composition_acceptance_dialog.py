@@ -43,6 +43,8 @@ class CompositionAcceptanceDialog(QDialog):
             f"New composition for {self.sample.name}. Accept?"
         )
         self.widget.newRatioCompositionTable.makeModel(
-            self.sample.composition.weightedComponents, self.sample
+            self.gudrunFile,
+            self.sample.composition.weightedComponents,
+            self.sample
         )
         self.widget.buttonBox.accepted.connect(self.accepted)

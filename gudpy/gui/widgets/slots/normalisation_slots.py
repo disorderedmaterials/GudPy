@@ -16,12 +16,28 @@ class NormalisationSlots():
 
     def setNormalisation(self, normalisation):
         self.normalisation = normalisation
-
         self.widgetsRefreshing = True
 
-        self.updateDataFilesList()
+        self.widget.dataFilesList.makeModel(
+            self.normalisation.dataFiles.dataFiles
+        )
+        self.widget.backgroundDataFilesList.makeModel(
+            self.normalisation.dataFilesBg.dataFiles
+        )
 
-        self.updateBgDataFilesList()
+        self.widget.dataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.dataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
+
+        self.widget.backgroundDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesBgAltered
+        )
+        self.widget.backgroundDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesBgAltered
+        )
 
         self.widget.periodNoSpinBox.setValue(self.normalisation.periodNumber)
         self.widget.backgroundPeriodNoSpinBox.setValue(
@@ -107,13 +123,6 @@ class NormalisationSlots():
         self.widgetsRefreshing = False
 
     def setupNormalisationSlots(self):
-        self.widget.dataFilesList.itemChanged.connect(
-            self.handleDataFilesAltered
-        )
-        self.widget.dataFilesList.itemEntered.connect(
-            self.handleDataFileInserted
-        )
-
         self.widget.addDataFileButton.clicked.connect(
             lambda: self.addDataFiles(
                 self.widget.dataFilesList,
@@ -125,30 +134,34 @@ class NormalisationSlots():
 
         self.widget.removeDataFileButton.clicked.connect(
             lambda: self.removeDataFile(
-                self.widget.dataFilesList, self.normalisation.dataFiles
+                self.widget.dataFilesList
             )
         )
 
-        self.widget.backgroundDataFilesList.itemChanged.connect(
-            self.handleBgDataFilesAltered
-        )
-        self.widget.backgroundDataFilesList.itemEntered.connect(
-            self.handleBgDataFileInserted
+        self.widget.duplicateDataFileButton.clicked.connect(
+            lambda: self.duplicateDataFile(
+                self.widget.dataFilesList
+            )
         )
 
         self.widget.addBackgroundDataFileButton.clicked.connect(
-            lambda: self.addBgDataFiles(
+            lambda: self.addDataFiles(
                 self.widget.backgroundDataFilesList,
-                "Add background data files",
+                "Add data files",
                 f"{self.parent.gudrunFile.instrument.dataFileType}"
                 f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
             )
         )
 
         self.widget.removeBackgroundDataFileButton.clicked.connect(
-            lambda: self.removeBgDataFile(
-                self.widget.backgroundDataFilesList,
-                self.normalisation.dataFilesBg
+            lambda: self.removeDataFile(
+                self.widget.backgroundDataFilesList
+            )
+        )
+
+        self.widget.duplicateBackgroundDataFileButton.clicked.connect(
+            lambda: self.duplicateDataFile(
+                self.widget.backgroundDataFilesList
             )
         )
 
@@ -622,7 +635,7 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def handleDataFilesAltered(self, item):
+    def handleDataFilesAltered(self):
         """
         Slot for handling an item in the data files list being changed.
         Called when an itemChanged signal is emitted,
@@ -633,89 +646,30 @@ class NormalisationSlots():
         item : QListWidgetItem
             The item altered.
         """
-        index = item.row()
-        value = item.text()
-        if not value:
-            self.normalisation.dataFiles.dataFiles.remove(index)
-        else:
-            self.normalisation.dataFiles[index] = value
-        self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
+            self.normalisation.dataFiles.dataFiles = (
+                self.widget.dataFilesList.model().stringList()
+            )
 
-    def handleDataFileInserted(self, item):
+    def handleDataFilesBgAltered(self):
         """
-        Slot for handling an item in the data files list being entered.
-        Called when an itemEntered signal is emitted,
+        Slot for handling an item in the data files list being changed.
+        Called when an itemChanged signal is emitted,
         from the dataFilesList.
         Alters the normalisation's data files as such.
         Parameters
         ----------
         item : QListWidgetItem
-            The item entered.
+            The item altered.
         """
-        value = item.text()
-        self.normalisation.dataFiles.dataFiles.append(value)
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-
-    def updateDataFilesList(self):
-        """
-        Fills the data files list.
-        """
-        self.widget.dataFilesList.clear()
-        self.widget.dataFilesList.addItems(
-            [df for df in self.normalisation.dataFiles]
-        )
-
-    def handleBgDataFilesAltered(self, item):
-        """
-        Slot for handling an item in the background data files
-        list being entered.
-        Called when an itemEntered signal is emitted,
-        from the backgroundDataFilesList.
-        Alters the normalisation's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item entered.
-        """
-        index = item.row()
-        value = item.text()
-        if not value:
-            self.normalisation.dataFilesBg.dataFiles.remove(index)
-        else:
-            self.normalisation.dataFilesBg.dataFiles[index] = value
-        self.updateBgDataFilesList()
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-            self.parent.gudrunFile.purged = False
-
-    def handleBgDataFileInserted(self, item):
-        """
-        Slot for handling an item in the background data files
-        list being inserted.
-        Called when an itemEntered signal is emitted,
-        from the backgroundDataFilesList.
-        Alters the normalisation's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item entered.
-        """
-        value = item.text()
-        self.normalisation.dataFilesBg.dataFiles.append(value)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-            self.parent.gudrunFile.purged = False
-
-    def updateBgDataFilesList(self):
-        self.widget.backgroundDataFilesList.clear()
-        self.widget.backgroundDataFilesList.addItems(
-            [df for df in self.normalisation.dataFilesBg.dataFiles]
-        )
+            self.normalisation.dataFilesBg.dataFiles = (
+                self.widget.backgroundDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """
@@ -735,7 +689,7 @@ class NormalisationSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split(os.path.sep)[-1])
+                target.insertRow(file.split(os.path.sep)[-1])
 
     def addDataFiles(self, target, title, regex):
         """
@@ -752,7 +706,6 @@ class NormalisationSlots():
             Regex-like expression to use for specifying file types.
         """
         self.addFiles(target, title, regex)
-        self.handleDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -771,27 +724,14 @@ class NormalisationSlots():
             Regex-like expression to use for specifying file types.
         """
         self.addFiles(target, title, regex)
-        self.handleBgDataFileInserted(target.item(target.count() - 1))
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def removeFile(self, target, dataFiles):
-        """
-        Slot for removing files from the data files list.
-        Called when a clicked signal is emitted,
-        from the removeDataFileButton.
-        """
-        if target.currentIndex().isValid():
-            remove = target.takeItem(target.currentRow()).text()
-            dataFiles.dataFiles.remove(remove)
-            if not self.widgetsRefreshing:
-                self.parent.setModified()
+    def removeDataFile(self, target):
+        target.removeItem()
 
-    def removeDataFile(self, target, dataFiles):
-        self.removeFile(target, dataFiles)
-
-    def removeBgDataFile(self, target, dataFiles):
-        self.removeFile(target, dataFiles)
+    def duplicateDataFile(self, target):
+        target.duplicate()
 
     def updateCompositionTable(self):
         """

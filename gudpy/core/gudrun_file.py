@@ -23,7 +23,7 @@ from core.normalisation import Normalisation
 from core.sample import Sample
 from core.sample_background import SampleBackground
 from core.container import Container
-from core.composition import Component, Composition
+from core.composition import Component, Components, Composition
 from core.element import Element
 from core.data_files import DataFiles
 from core.purge_file import PurgeFile
@@ -144,6 +144,7 @@ class GudrunFile:
 
         # Construct the outpath.
         self.outpath = "gudpy.txt"
+        self.components = Components(components=[])
 
         if isinstance(path, type(None)):
             self.instrument = Instrument()
@@ -1175,7 +1176,7 @@ class GudrunFile:
             while self.stream:
                 component = self.parseComponent()
                 if component:
-                    config.components.addComponent(component)
+                    self.components.addComponent(component)
         except Exception as e:
             raise ParserException(
                 "Whilst parsing Components, an exception occured."
@@ -1302,7 +1303,7 @@ class GudrunFile:
             (
                 self.instrument,
                 self.beam,
-                config.components,
+                self.components,
                 self.normalisation,
                 self.sampleBackgrounds,
                 config.GUI
@@ -1413,8 +1414,8 @@ class GudrunFile:
         )
 
         components = (
-            f"\n\nCOMPONENTS:\n{str(config.components)}"
-            if len(config.components.components)
+            f"\n\nCOMPONENTS:\n{str(self.components)}"
+            if len(self.components.components)
             else ""
         )
 

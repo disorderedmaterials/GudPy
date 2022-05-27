@@ -26,7 +26,16 @@ class SampleSlots():
         self.widget.samplePeriodNoSpinBox.setValue(self.sample.periodNumber)
 
         # Populate the data files list.
-        self.updatesampleDataFilesList()
+        self.widget.sampleDataFilesList.makeModel(
+            self.sample.dataFiles.dataFiles
+        )
+
+        self.widget.sampleDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.sampleDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
         # Populate the run controls.
         self.widget.sampleForceCorrectionsCheckBox.setChecked(
@@ -103,6 +112,16 @@ class SampleSlots():
         # Populate the tweak factor.
         self.widget.tweakFactorSpinBox.setValue(self.sample.sampleTweakFactor)
 
+        # Populate the packing fraction (reciprocal of tweak factor).
+        if self.sample.sampleTweakFactor > 0.0:
+            self.widget.packingFractionSpinBox.setValue(
+                1.0 / self.sample.sampleTweakFactor
+            )
+        else:
+            self.widget.packingFractionSpinBox.setValue(0.0)
+
+        self.packingFractionChanging = False
+
         # Populate Fourier Transform parameters.
         self.widget.topHatWidthSpinBox.setValue(self.sample.topHatW)
 
@@ -150,11 +169,12 @@ class SampleSlots():
         # Calculate the expected DCS level.
         self.updateExpectedDCSLevel()
 
-        self.widget.sampleCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
+        self.connectToModelSignals()
+        self.widget.sampleCompositionTable.modelChanged.connect(
+            self.connectToModelSignals
         )
-        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
+        self.widget.sampleRatioCompositionTable.modelChanged.connect(
+            self.translateAndUpdate
         )
 
         # Release the lock
@@ -167,12 +187,6 @@ class SampleSlots():
         )
 
         # Setup slots for data files.
-        self.widget.sampleDataFilesList.itemChanged.connect(
-            self.handleDataFilesAltered
-        )
-        self.widget.sampleDataFilesList.itemEntered.connect(
-            self.handleDataFileInserted
-        )
         self.widget.addSampleDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.sampleDataFilesList,
@@ -183,8 +197,12 @@ class SampleSlots():
         )
         self.widget.removeSampleDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.widget.sampleDataFilesList, self.sample.dataFiles
+                self.widget.sampleDataFilesList
             )
+        )
+
+        self.widget.duplicateSampleDataFileButton.clicked.connect(
+            self.widget.sampleDataFilesList.duplicate
         )
 
         # Setup slots for run controls.
@@ -273,6 +291,11 @@ class SampleSlots():
         # Setup slot for tweak factor.
         self.widget.tweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
+        )
+
+        # Setup slot for packing fraction
+        self.widget.packingFractionSpinBox.valueChanged.connect(
+            self.handlePackingFractionChanged
         )
 
         # Setup slots for Fourier Transform parameters.
@@ -558,14 +581,39 @@ class SampleSlots():
         Called when a valueChanged signal is emitted,
         from the the tweakFactorSpinBox.
         Alters the sample's tweak factor as such.
+        Also updates the packing fraction.
         Parameters
         ----------
         value : float
             The new current value of the tweakFactorSpinBox.
         """
         self.sample.sampleTweakFactor = value
+        self.packingFractionChanging = True
+        if value > 0.0:
+            self.widget.packingFractionSpinBox.setValue(1.0 / value)
+        else:
+            self.widget.packingFractionSpinBox.setValue(0.0)
+        self.packingFractionChanging = False
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handlePackingFractionChanged(self, value):
+        """
+        Slot for handling change in the sample packing fraction.
+        Called when a valueChanged signal is emitted,
+        from the the packingFractionSpinBox.
+        Updates the sample's tweak factor to reflect
+        the new packing fraction.
+        Parameters
+        ----------
+        value : float
+            The new current value of the packingFractionSpinBox.
+        """
+        if not self.packingFractionChanging:
+            if value > 0.0:
+                self.widget.tweakFactorSpinBox.setValue(1.0 / value)
+            else:
+                self.widget.tweakFactorSpinBox.setValue(0.0)
 
     def handleTopHatWidthChanged(self, value):
         """
@@ -815,53 +863,19 @@ class SampleSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
-    def handleDataFilesAltered(self, item):
+    def handleDataFilesAltered(self):
         """
         Slot for handling an item in the data files list being changed.
         Called when an itemChanged signal is emitted,
         from the sampleDataFilesList.
         Alters the sample's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item altered.
         """
-        index = item.row()
-        value = item.text()
-        if not value:
-            self.sample.dataFiles.dataFiles.remove(index)
-        else:
-            self.sample.dataFiles[index] = value
-        self.updatesampleDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-
-    def handleDataFileInserted(self, item):
-        """
-        Slot for handling an item in the data files list being entered.
-        Called when an itemEntered signal is emitted,
-        from the sampleDataFilesList.
-        Alters the sample's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item entered.
-        """
-        value = item.text()
-        self.sample.dataFiles.dataFiles.append(value)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-            self.parent.gudrunFile.purged = False
-
-    def updatesampleDataFilesList(self):
-        """
-        Fills the data files list.
-        """
-        self.widget.sampleDataFilesList.clear()
-        self.widget.sampleDataFilesList.addItems(
-            [df for df in self.sample.dataFiles]
-        )
+            self.sample.dataFiles.dataFiles = (
+                self.widget.sampleDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """
@@ -883,12 +897,9 @@ class SampleSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split(os.path.sep)[-1])
-                self.handleDataFileInserted(target.item(target.count() - 1))
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
+                target.insertRow(file.split(os.path.sep)[-1])
 
-    def removeFile(self, target, dataFiles):
+    def removeFile(self, target):
         """
         Slot for removing files from the data files list.
         Called when a clicked signal is emitted,
@@ -897,15 +908,8 @@ class SampleSlots():
         ----------
         target : QListWidget
             Target widget to add to.
-        dataFiles : list
-            dataFiles attribute belonging to DataFiles object.
         """
-        if target.currentIndex().isValid():
-            remove = target.takeItem(target.currentRow()).text()
-            dataFiles.dataFiles.remove(remove)
-            if not self.widgetsRefreshing:
-                self.parent.setModified()
-                self.parent.gudrunFile.purged = False
+        target.removeItem()
 
     def updateCompositionTable(self):
         """
@@ -946,12 +950,15 @@ class SampleSlots():
 
     def updateRatioCompositions(self):
         self.widget.sampleRatioCompositionTable.makeModel(
-            self.sample.composition.weightedComponents, self.sample
+            self.parent.gudrunFile,
+            self.sample.composition.weightedComponents,
+            self.sample
         )
 
     def translateAndUpdate(self):
-        self.sample.composition.translate()
-        self.updateExactCompositions()
+        if config.USE_USER_DEFINED_COMPONENTS:
+            self.sample.composition.translate()
+            self.updateExactCompositions()
 
     def updateExactCompositions(self):
         self.widget.sampleCompositionTable.makeModel(
@@ -995,6 +1002,15 @@ class SampleSlots():
         self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def connectToModelSignals(self):
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.updateExpectedDCSLevel()
 
     def updateExponentialTable(self):
         """

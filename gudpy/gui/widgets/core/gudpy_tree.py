@@ -116,7 +116,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # Invalid parent means we are at the top level.
             rows = {
                 0: self.gudrunFile.instrument, 1: self.gudrunFile.beam,
-                2: config.components, 3: self.gudrunFile.normalisation
+                2: self.gudrunFile.components, 3: self.gudrunFile.normalisation
             }
             # Instrument | Beam | Normalisation
             if row in rows.keys():
@@ -641,10 +641,8 @@ class GudPyTreeView(QTreeView):
         Duplicates the current Sample.
     duplicateOnlySample()
         Duplicates the current Sample without any containers.
-    selectAllSamples()
-        Selects all samples belonging to a SampleBackground.
-    deselectAllSamples()
-        Deselects all samples belonging to a SampleBackground.
+    setSamplesSelectected(selected)
+        Sets sample states to selected.
     selectOnlyThisSample()
         Selects only the current sample, and deselects all others.
     setContextEnabled(state)
@@ -852,13 +850,13 @@ class GudPyTreeView(QTreeView):
         # Selection actions
         selectAllSamples = QAction("Select All Samples", self.menu)
         selectAllSamples.triggered.connect(
-            self.selectAllSamples
+            lambda: self.setSamplesSelected(True)
         )
         selectAllSamples.setDisabled(True)
         self.menu.addAction(selectAllSamples)
         deselectAllSamples = QAction("Deselect All Samples", self.menu)
         deselectAllSamples.triggered.connect(
-            self.deselectAllSamples
+            lambda: self.setSamplesSelected(False)
         )
         deselectAllSamples.setDisabled(True)
         self.menu.addAction(deselectAllSamples)
@@ -905,8 +903,11 @@ class GudPyTreeView(QTreeView):
 
         if self.contextMenuEnabled:
             # If the model has been instantiated,
-            # allow insertion of sample backgrounds.
             if self.model():
+                # Enable selecting/deselecting all samples
+                selectAllSamples.setEnabled(True)
+                deselectAllSamples.setEnabled(True)
+                # allow insertion of sample backgrounds.
                 if isinstance(self.currentObject(), (Sample, Container)):
                     insertSampleBackground.setText("Append Sample Background")
                 insertSampleBackground.setEnabled(True)
@@ -941,13 +942,6 @@ class GudPyTreeView(QTreeView):
                 and self.clipboard
             ):
                 paste.setEnabled(True)
-
-            # Enable selecting/deselecting all samples
-            if isinstance(self.currentObject(), (
-                SampleBackground, Sample, Container)
-            ):
-                selectAllSamples.setEnabled(True)
-                deselectAllSamples.setEnabled(True)
 
             # Enable insertion of samples and containers.
             if isinstance(self.currentObject(), (SampleBackground, Sample)):
@@ -1061,59 +1055,20 @@ class GudPyTreeView(QTreeView):
         self.clipboard.containers = []
         self.paste()
 
-    def selectAllSamples(self):
+    def setSamplesSelected(self, selected):
         """
-        Selects all samples belonging to a SampleBackground.
+        Sets all samples status to 'selected'.
+        Used for selecting / deselecting all samples
         """
-        if isinstance(self.currentObject(), (SampleBackground)):
-            # Select all children.
-            for i in range(len(self.currentObject().samples)):
-                self.currentObject().samples[i].runThisSample = True
-        elif isinstance(self.currentObject(), Sample):
-            # Select all siblings.
-            parent = self.model().findParent(self.currentObject())
-            for i in range(len(parent.samples)):
-                parent.samples[i].runThisSample = True
-        elif isinstance(self.currentObject(), Container):
-            # Select parent and all it's siblings.
-            grandparent = (
-                    self.model().findParent(
-                        self.model().findParent(
-                            self.currentObject())
-                    )
-            )
-            for i in range(len(grandparent.samples)):
-                grandparent.samples[i].runThisSample = True
-
-    def deselectAllSamples(self):
-        """
-        Deselects all samples belonging to a SampleBackground.
-        """
-        if isinstance(self.currentObject(), (SampleBackground)):
-            # Deselect all children.
-            for i in range(len(self.currentObject().samples)):
-                self.currentObject().samples[i].runThisSample = False
-        elif isinstance(self.currentObject(), Sample):
-            # Deselect all siblings.
-            parent = self.model().findParent(self.currentObject())
-            for i in range(len(parent.samples)):
-                parent.samples[i].runThisSample = False
-        elif isinstance(self.currentObject(), Container):
-            # Deselect parent and all it's siblings.
-            grandparent = (
-                    self.model().findParent(
-                        self.model().findParent(
-                            self.currentObject())
-                    )
-            )
-            for i in range(len(grandparent.samples)):
-                grandparent.samples[i].runThisSample = False
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                sample.runThisSample = selected
 
     def selectOnlyThisSample(self):
         """
         Selects only the current sample, and deselects all others.
         """
-        self.deselectAllSamples()
+        self.setSamplesSelected(False)
         if isinstance(self.currentObject(), Sample):
             self.currentObject().runThisSample = True
         if isinstance(self.currentObject(), Container):

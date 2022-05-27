@@ -24,8 +24,17 @@ class ContainerSlots():
             self.container.periodNumber
         )
 
-        # Populate data files.
-        self.updateDataFilesList()
+        # Populate the data files list.
+        self.widget.containerDataFilesList.makeModel(
+            self.container.dataFiles.dataFiles
+        )
+
+        self.widget.containerDataFilesList.model().dataChanged.connect(
+            self.handleDataFilesAltered
+        )
+        self.widget.containerDataFilesList.model().rowsRemoved.connect(
+            self.handleDataFilesAltered
+        )
 
         # Populate geometry data.
         self.widget.containerGeometryComboBox.setCurrentIndex(
@@ -90,9 +99,19 @@ class ContainerSlots():
         self.widget.containerCrossSectionFileWidget.setVisible(
             self.container.totalCrossSectionSource == CrossSectionSource.FILE
         )
+        # Set the tweak factor and packing fraction
+        # (reciprocal of tweak factor).
         self.widget.containerTweakFactorSpinBox.setValue(
             self.container.tweakFactor
         )
+        if self.container.tweakFactor > 0.0:
+            self.widget.containerPackingFractionSpinBox.setValue(
+                1.0 / self.container.tweakFactor
+            )
+        else:
+            self.widget.containerPackingFractionSpinBox.setValue(0.0)
+
+        self.packingFractionChanging = False
 
         self.widget.containerScatteringFractionSpinBox.setValue(
             self.container.scatteringFraction
@@ -112,8 +131,9 @@ class ContainerSlots():
         # Calculate the expected DCS level.
         self.updateExpectedDCSLevel()
 
-        self.widget.containerCompositionTable.model().dataChanged.connect(
-            self.updateExpectedDCSLevel
+        self.connectToModelSignals()
+        self.widget.containerCompositionTable.modelChanged.connect(
+            self.connectToModelSignals
         )
 
         # Populate Fourier Transform parameters.
@@ -146,12 +166,6 @@ class ContainerSlots():
         )
 
         # Setup slots for data files.
-        self.widget.containerDataFilesList.itemChanged.connect(
-            self.handleDataFilesAltered
-        )
-        self.widget.containerDataFilesList.itemEntered.connect(
-            self.handleDataFileInserted
-        )
         self.widget.addContainerDataFileButton.clicked.connect(
             lambda: self.addFiles(
                 self.widget.containerDataFilesList,
@@ -162,8 +176,12 @@ class ContainerSlots():
         )
         self.widget.removeContainerDataFileButton.clicked.connect(
             lambda: self.removeFile(
-                self.widget.containerDataFilesList, self.container.dataFiles
+                self.widget.containerDataFilesList
             )
+        )
+
+        self.widget.duplicateContainerDataFileButton.clicked.connect(
+            self.widget.containerDataFilesList.duplicate
         )
 
         # Populate geometry combo box.
@@ -234,6 +252,11 @@ class ContainerSlots():
         self.widget.containerTweakFactorSpinBox.valueChanged.connect(
             self.handleTweakFactorChanged
         )
+
+        self.widget.containerPackingFractionSpinBox.valueChanged.connect(
+            self.handlePackingFractionChanged
+        )
+
         self.widget.containerScatteringFractionSpinBox.valueChanged.connect(
             self.handleScatteringFractionChanged
         )
@@ -456,15 +479,39 @@ class ContainerSlots():
         Slot for handling change in the sample tweak factor.
         Called when a valueChanged signal is emitted,
         from the containerTweakFactorSpinBox.
-        Alters the container's density as such.
+        Alters the container's tweak factor as such.
         Parameters
         ----------
         value : float
             The new value of the containerTweakFactorSpinBox.
         """
         self.container.tweakFactor = value
+        self.packingFractionChanging = True
+        if value > 0.0:
+            self.widget.containerPackingFractionSpinBox.setValue(1.0 / value)
+        else:
+            self.widget.containerPackingFractionSpinBox.setValue(0.0)
+        self.packingFractionChanging = False
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handlePackingFractionChanged(self, value):
+        """
+        Slot for handling change in the packing fraction.
+        Called when a valueChanged signal is emitted,
+        from the the containerPackingFractionSpinBox.
+        Updates the containers's tweak factor to reflect
+        the new packing fraction.
+        Parameters
+        ----------
+        value : float
+            The new current value of the containerPackingFractionSpinBox.
+        """
+        if not self.packingFractionChanging:
+            if value > 0.0:
+                self.widget.containerTweakFactorSpinBox.setValue(1.0 / value)
+            else:
+                self.widget.containerTweakFactorSpinBox.setValue(0.0)
 
     def handleAngleOfRotationChanged(self, value):
         """
@@ -556,53 +603,19 @@ class ContainerSlots():
         """
         self.container.runAsSample = bool(state)
 
-    def handleDataFilesAltered(self, item):
+    def handleDataFilesAltered(self):
         """
         Slot for handling an item in the data files list being changed.
         Called when an itemChanged signal is emitted,
         from the dataFilesList.
         Alters the container's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item altered.
         """
-        index = item.row()
-        value = item.text()
-        if not value:
-            self.container.dataFiles.dataFiles.remove(index)
-        else:
-            self.container.dataFiles[index] = value
-        self.updateDataFilesList()
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-
-    def handleDataFileInserted(self, item):
-        """
-        Slot for handling an item in the data files list being entered.
-        Called when an itemEntered signal is emitted,
-        from the dataFilesList.
-        Alters the container's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item entered.
-        """
-        value = item.text()
-        self.container.dataFiles.dataFiles.append(value)
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
-            self.parent.gudrunFile.purged = False
-
-    def updateDataFilesList(self):
-        """
-        Fills the data files list.
-        """
-        self.widget.containerDataFilesList.clear()
-        self.widget.containerDataFilesList.addItems(
-            [df for df in self.container.dataFiles]
-        )
+            self.container.dataFiles.dataFiles = (
+                self.widget.containerDataFilesList.model().stringList()
+            )
 
     def addFiles(self, target, title, regex):
         """
@@ -624,29 +637,19 @@ class ContainerSlots():
         )
         for file in files:
             if file:
-                target.addItem(file.split(os.path.sep)[-1])
-                self.handleDataFileInserted(target.item(target.count() - 1))
-        if not self.widgetsRefreshing:
-            self.parent.setModified()
+                target.insertRow(file.split(os.path.sep)[-1])
 
-    def removeFile(self, target, dataFiles):
+    def removeFile(self, target):
         """
         Slot for removing files from the data files list.
         Called when a clicked signal is emitted,
-        from the removeContainerDataFileButton.
+        from the removeSampleDataFileButton.
         Parameters
         ----------
         target : QListWidget
             Target widget to add to.
-        dataFiles : list
-            dataFiles attribute belonging to DataFiles object.
         """
-        if target.currentIndex().isValid():
-            remove = target.takeItem(target.currentRow()).text()
-            dataFiles.dataFiles.remove(remove)
-            if not self.widgetsRefreshing:
-                self.parent.setModified()
-                self.parent.gudrunFile.purged = False
+        target.removeItem()
 
     def updateCompositionTable(self):
         """
@@ -682,6 +685,15 @@ class ContainerSlots():
         self.updateExpectedDCSLevel()
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def connectToModelSignals(self):
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.widget.sampleRatioCompositionTable.model().dataChanged.connect(
+            self.updateExpectedDCSLevel
+        )
+        self.updateExpectedDCSLevel()
 
     def updateExpectedDCSLevel(self, _=None, __=None):
         """

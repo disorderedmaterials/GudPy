@@ -6,7 +6,6 @@ from gui.widgets.dialogs.iteration_dialog import IterationDialog
 from core.composition_iterator import (
     CompositionIterator, calculateTotalMolecules
 )
-from core import config
 
 
 class CompositionIterationDialog(IterationDialog):
@@ -18,15 +17,15 @@ class CompositionIterationDialog(IterationDialog):
 
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
-        for component in config.components.components:
+        for component in self.gudrunFile.components.components:
             self.widget.firstComponentComboBox.addItem(
                 component.name, component
             )
-        self.components[0] = config.components.components[0]
+        self.components[0] = self.gudrunFile.components.components[0]
 
     def loadSecondComponentsComboBox(self):
         self.widget.secondComponentComboBox.clear()
-        for component in config.components.components:
+        for component in self.gudrunFile.components.components:
             self.widget.secondComponentComboBox.addItem(
                 component.name, component
             )
@@ -53,7 +52,7 @@ class CompositionIterationDialog(IterationDialog):
         self.rtol = value
 
     def enableItems(self, comboBox):
-        for i in range(len(config.components.components)):
+        for i in range(len(self.gudrunFile.components.components)):
             item = comboBox.model().item(i)
             if item:
                 item.setFlags(
@@ -96,7 +95,7 @@ class CompositionIterationDialog(IterationDialog):
         self.widget.singleComponentCheckBox.toggled.connect(
             self.toggleUseSingleComponent
         )
-        if len(config.components.components):
+        if len(self.gudrunFile.components.components):
 
             self.loadFirstComponentsComboBox()
             self.loadSecondComponentsComboBox()
