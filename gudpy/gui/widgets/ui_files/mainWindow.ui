@@ -7587,7 +7587,7 @@
   </action>
   <action name="runFilesIndividually">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Run Files Individually</string>

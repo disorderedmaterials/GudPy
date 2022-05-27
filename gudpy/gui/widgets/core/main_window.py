@@ -1491,6 +1491,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1513,6 +1514,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
+        self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
 
