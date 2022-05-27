@@ -43,10 +43,19 @@ class CompositionDelegate(GudPyDelegate):
         elif col == 1:
             editor = QComboBox(parent)
             sears91 = Sears91()
-            element = index.model().data(index.model().index(index.row(), 0, index.parent()), Qt.EditRole)
-            isotope = index.model().data(index.model().index(index.row(), 1, index.parent()), Qt.EditRole)
+            element = index.model().data(
+                index.model().index(index.row(), 0, index.parent()),
+                Qt.EditRole
+            )
+            isotope = index.model().data(
+                index.model().index(index.row(), 1, index.parent()),
+                Qt.EditRole
+            )
             for isotope_ in sears91.isotopes(element):
-                editor.addItem(sears91.isotope(isotope_), sears91.mass(isotope_))
+                editor.addItem(
+                    sears91.isotope(isotope_),
+                    sears91.mass(isotope_)
+                )
             editor.setCurrentText(isotope)
         else:
             editor = ExponentialSpinBox(parent)

@@ -8,7 +8,6 @@ from core.mass_data import massData
 from core.composition import Component
 from core.element import Element
 from core.isotopes import Sears91
-from gui.widgets.tables.composition_table import CompositionDelegate
 from gui.widgets.tables.composition_delegate import CompositionDelegate
 
 

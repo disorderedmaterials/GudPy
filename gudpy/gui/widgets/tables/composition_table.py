@@ -100,7 +100,7 @@ class CompositionModel(GudPyTableModel):
                         self._data[row].__dict__[self.attrs[0]],
                         value
                     )
-                ): 
+                ):
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
             self.dataChanged.emit(index, index)
@@ -152,6 +152,7 @@ class CompositionModel(GudPyTableModel):
                 )
                 return sears91.isotope(isotope)
             return self._data[row].__dict__[self.attrs[col]]
+
 
 class CompositionTable(QTableView):
     """
