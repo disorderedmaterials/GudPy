@@ -1,7 +1,7 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import (
-    QLineEdit, QMainWindow, QMenu, QSpinBox, QTableView
+    QLineEdit, QMainWindow, QMenu, QComboBox, QTableView
 )
 from PySide6.QtCore import Signal
 
@@ -100,7 +100,7 @@ class CompositionModel(GudPyTableModel):
                         self._data[row].__dict__[self.attrs[0]],
                         value
                     )
-                ):
+                ): 
                     return False
             self._data[row].__dict__[self.attrs[col]] = value
             self.dataChanged.emit(index, index)
@@ -144,6 +144,13 @@ class CompositionModel(GudPyTableModel):
                     self._data[row].abundance /
                     sum([el.abundance for el in self._data])
                 )
+            if col == 1:
+                sears91 = Sears91()
+                isotope = sears91.findIsotope(
+                    self.data(self.index(row, 0), Qt.EditRole),
+                    self._data[row].__dict__[self.attrs[1]]
+                )
+                return sears91.isotope(isotope)
             return self._data[row].__dict__[self.attrs[col]]
 
 
@@ -183,7 +190,14 @@ class CompositionDelegate(GudPyDelegate):
         if col == 0:
             editor = QLineEdit(parent)
         elif col == 1:
-            editor = QSpinBox(parent)
+            editor = QComboBox(parent)
+            sears91 = Sears91()
+            element = index.model().data(index.model().index(index.row(), 0), Qt.EditRole)
+            isotope = index.model().data(index.model().index(index.row(), 1), Qt.EditRole)
+            for isotope_ in sears91.isotopes(element):
+                editor.addItem(sears91.isotope(isotope_), sears91.mass(isotope_))
+            editor.setCurrentText(isotope)
+
         else:
             editor = ExponentialSpinBox(parent)
         return editor
@@ -199,13 +213,12 @@ class CompositionDelegate(GudPyDelegate):
             Index in the model to set data at.
         """
         value = index.model().data(index, Qt.EditRole)
-        if value:
-            if index.column() != 0:
-                editor.setValue(value)
-            else:
-                sears91 = Sears91()
-                if sears91.isIsotope(value, 0):
-                    editor.setText(value)
+        if index.column() == 0:
+            sears91 = Sears91()
+            if sears91.isIsotope(value, 0):
+                editor.setText(value)
+        elif index.column() == 2:
+            editor.setValue(value)
 
     def setModelData(self, editor, model, index):
         """
@@ -219,17 +232,17 @@ class CompositionDelegate(GudPyDelegate):
         index : QModelIndex
             Index in the model to set data at.
         """
-        if index.column() != 0:
-            editor.interpretText()
-            try:
-                value = editor.value()
-                model.setData(index, value, Qt.EditRole)
-            except Exception:
-                model.setData(index, 0, Qt.EditRole)
-        else:
+        if index.column() == 0:
             value = editor.text()
-            model.setData(index, value, Qt.EditRole)
-
+        elif index.column() == 1:
+            value = editor.currentData()
+        elif index.column() == 2:
+            try:
+                editor.interpretText()
+                value = editor.value()
+            except Exception:
+                value = 0
+        model.setData(index, value, Qt.EditRole)
 
 class CompositionTable(QTableView):
     """
@@ -289,7 +302,7 @@ class CompositionTable(QTableView):
         self.contextMenu = contextMenu
         self.setModel(
             CompositionModel(
-                data, ["Element", "Mass No", "Abundance"], self.parent
+                data, ["Element", "Isotope", "Abundance"], self.parent
             )
         )
         self.parentObject = parentObject
