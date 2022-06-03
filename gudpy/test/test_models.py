@@ -178,16 +178,6 @@ class TestModels(TestCase):
         )
 
         model.insertRow()
-        self.assertEqual(
-            model.data(model.index(1, 0, QModelIndex()), Qt.EditRole), ""
-        )
-        self.assertEqual(
-            model.data(model.index(1, 1, QModelIndex()), Qt.EditRole), 0
-        )
-        self.assertEqual(
-            model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 0.0
-        )
-
         model.setData(model.index(1, 0, QModelIndex()), "Ti", Qt.EditRole)
         model.setData(model.index(1, 1, QModelIndex()), 0, Qt.EditRole)
         model.setData(model.index(1, 2, QModelIndex()), 7.16, Qt.EditRole)
