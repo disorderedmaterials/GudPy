@@ -161,7 +161,7 @@ class TestModels(TestCase):
         )
         self.assertEqual(
             model.data(model.index(0, 1, QModelIndex()), Qt.EditRole),
-            self.sears91.mass(self.sears91.findIsotope("V", 0))
+            self.sears91.isotope(self.sears91.findIsotope("V", 0))
         )
         self.assertEqual(
             model.data(model.index(0, 2, QModelIndex()), Qt.EditRole), 1.0
@@ -196,7 +196,7 @@ class TestModels(TestCase):
         )
         self.assertEqual(
             model.data(model.index(1, 1, QModelIndex()), Qt.EditRole),
-            self.sears91.mass(self.sears91.findIsotope("Ti", 0))
+            self.sears91.isotope(self.sears91.findIsotope("Ti", 0))
         )
         self.assertEqual(
             model.data(model.index(1, 2, QModelIndex()), Qt.EditRole), 7.16
