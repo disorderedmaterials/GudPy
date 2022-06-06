@@ -67,13 +67,13 @@ class BatchProcessor():
         print(f"BATCH_PROCESSING: Iteration mode is {iterationMode.name}")
         print(f"BATCH_PROCESSING: max iterations is {maxIterations}")
         print(f"BATCH_PROCESSING: rtol for convergence is {rtol}")
-
+        tasks = []
         for sample in batch.sampleBackgrounds[0].samples:
             print(f"BATCH_PROCESSING: starting tweak factor: {sample.sampleTweakFactor}")
         if headless:
-            n = 0
-            while n < maxIterations:
-                print(f"BATCH_PROCESSING: iteration {n}")
+            if iterationMode == IterationModes.NONE:
+                batch.process(headless=headless)
+            else:            
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
                 elif iterationMode == IterationModes.THICKNESS:
@@ -86,12 +86,36 @@ class BatchProcessor():
                     iterator.setTargetRadius("outer")
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
-                iterator.performIteration(n)
-                batch.process(headless=headless)
-                n+=1
-                if self.canConverge(batch, rtol):
-                    print("BATCH_PROCESSING: convergence tolerance reached.")
-                    break
+                for i in range(maxIterations):
+                    print(f"BATCH_PROCESSING: iteration {i}")
+                    batch.process(headless=headless)
+                    iterator.performIteration(i)
+                    if self.canConverge(batch, rtol):
+                        print("BATCH_PROCESSING: convergence tolerance reached.")
+                        break
             batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}")
-        for sample in batch.sampleBackgrounds[0].samples:
-            print(f"BATCH_PROCESSING: ending tweak factor: {sample.sampleTweakFactor}")
+            for sample in batch.sampleBackgrounds[0].samples:
+                print(f"BATCH_PROCESSING: ending tweak factor: {sample.sampleTweakFactor}")
+        else:
+            print("BATCH_PROCESSING: headful mode.")
+            if iterationMode == IterationModes.NONE:
+                tasks.append(batch.dcs(headless=headless))
+            else:            
+                if iterationMode == IterationModes.TWEAK_FACTOR:
+                    iterator = TweakFactorIterator(batch)
+                elif iterationMode == IterationModes.THICKNESS:
+                    iterator = ThicknessIterator(batch)
+                elif iterationMode == IterationModes.INNER_RADIUS:
+                    iterator = RadiusIterator(batch)
+                    iterator.setTargetRadius("inner")
+                elif iterationMode == IterationModes.OUTER_RADIUS:
+                    iterator = RadiusIterator(batch)
+                    iterator.setTargetRadius("outer")
+                elif iterationMode == IterationModes.DENSITY:
+                    iterator = DensityIterator(batch)
+                for i in range(maxIterations):
+                    tasks.append(batch.dcs(headless=headless))
+                    tasks.append(iterator.performIteration)
+            tasks.append(batch.iterativeOrganise, [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"])
+        if not headless:
+            return tasks
