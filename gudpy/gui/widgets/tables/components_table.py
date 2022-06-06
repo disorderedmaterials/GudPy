@@ -7,7 +7,8 @@ from PySide6.QtWidgets import QListView
 from core.mass_data import massData
 from core.composition import Component
 from core.element import Element
-from gui.widgets.tables.composition_table import CompositionDelegate
+from core.isotopes import Sears91
+from gui.widgets.tables.composition_delegate import CompositionDelegate
 
 
 class ComponentsModel(QAbstractItemModel):
@@ -218,7 +219,12 @@ class ComponentsModel(QAbstractItemModel):
                 if index.column() == 0:
                     return obj.atomicSymbol
                 elif index.column() == 1:
-                    return obj.massNo
+                    sears91 = Sears91()
+                    isotope = sears91.findIsotope(
+                        obj.atomicSymbol,
+                        obj.massNo
+                    )
+                    return sears91.isotope(isotope)
                 elif index.column() == 2:
                     return obj.abundance
         else:
@@ -351,7 +357,7 @@ class ComponentsModel(QAbstractItemModel):
             column header | empty QVariant.
         """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return ["Atomic Symbol", "Mass No.", "Abundance"][section]
+            return ["Atomic Symbol", "Isotope", "Abundance"][section]
 
 
 class ComponentsList(QListView):

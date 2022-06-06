@@ -424,6 +424,11 @@ class Sears91():
             if self.element(isotope) == element
         ]
 
+    def findIsotope(self, element, mass):
+        for isotope in self.isotopes(element):
+            if self.mass(isotope) == mass:
+                return isotope
+
     def isIsotope(self, element, mass):
         isotopes = self.isotopes(element)
         for isotope in isotopes:
