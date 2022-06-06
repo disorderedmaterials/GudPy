@@ -3,6 +3,9 @@ from copy import deepcopy
 import os
 from core.enums import IterationModes
 from core.tweak_factor_iterator import TweakFactorIterator
+from core.thickness_iterator import ThicknessIterator
+from core.radius_iterator import RadiusIterator
+from core.density_iterator import DensityIterator
 from gudpy.core.gud_file import GudFile
 import numpy as np
 
@@ -30,7 +33,7 @@ class BatchProcessor():
                 batchedSample.dataFiles.dataFiles = batch
                 batchedSampleBackground.samples.append(batchedSample)
                 samples[sample].append(batchedSample)
-            gudrunFile.append(batchedSampleBackground)
+            gudrunFile.sampleBackgrounds.append(batchedSampleBackground)
             batches.append(gudrunFile)
         
         return samples, batches
@@ -43,8 +46,18 @@ class BatchProcessor():
                 for ref in remappings.keys():
                     if ref == sample:
                         ref.tweakFactor = sample.tweakFactor
+                        ref.upstreamThickness = sample.upstreamThickness
+                        ref.downstreamThickness = sample.downstreamThickness
+                        ref.innerRadius = sample.innerRadius
+                        ref.outerRadius = sample.outerRadius
+                        ref.density = sample.density
                     for child in remappings[ref]:
                         child.tweakFactor = sample.tweakFactor
+                        child.upstreamThickness = sample.upstreamThickness
+                        child.downstreamThickness = sample.downstreamThickness
+                        child.innerRadius = sample.innerRadius
+                        child.outerRadius = sample.outerRadius
+                        child.density = sample.density
 
     def canConverge(self, remappings, rtol):
         if rtol == 0.0:
@@ -77,10 +90,21 @@ class BatchProcessor():
             if headless and not self.canConverge(remappings, rtol):
                 if iterationMode == IterationModes.NONE:
                     batch.process(headless=headless)
-                elif iterationMode == IterationModes.TWEAK_FACTOR:
+                else:
                     n = 0
                     while n < maxIterations:
-                        iterator = TweakFactorIterator(batch)
+                        if iterationMode == IterationModes.TWEAK_FACTOR:
+                            iterator = TweakFactorIterator(batch)
+                        elif iterationMode == IterationModes.THICKNESS:
+                            iterator = ThicknessIterator(batch)
+                        elif iterationMode == IterationModes.INNER_RADIUS:
+                            iterator = RadiusIterator(batch)
+                            iterator.setTargetRadius("inner")
+                        elif iterationMode == IterationModes.OUTER_RADIUS:
+                            iterator = RadiusIterator(batch)
+                            iterator.setTargetRadius("outer")
+                        elif iterationMode == IterationModes.DENSITY:
+                            iterator = DensityIterator(batch)
                         iterator.performIteration(n)
                         n+=1
                         if self.canConverge(remappings, batch, rtol):
