@@ -36,6 +36,7 @@ from core.enums import (
 from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException
+from core.gud_file import GudFile
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -1616,9 +1617,29 @@ class GudrunFile:
         outputFileHandler.naiveOrganise()
 
     def iterativeOrganise(self, head):
+        print(head)
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.iterativeOrganise(head)
 
+    def determineError(self, sample):
+        gudPath = sample.dataFiles[0].replace(
+                    self.instrument.dataFileType,
+                    "gud"
+                )
+        gudFile = GudFile(
+            os.path.join(
+                self.instrument.GudrunInputFileDir, gudPath
+            )
+        )
+        error = round(
+            (
+                (
+                    gudFile.averageLevelMergedDCS - gudFile.expectedDCS
+                ) 
+                / gudFile.averageLevelMergedDCS
+            )*100, 1
+        )
+        return abs(error)
 
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken

@@ -59,6 +59,7 @@ class OutputFileHandler():
                 shutil.rmtree(outputDir)
         if not os.path.exists(outputDir):
             os.makedirs(outputDir)
+        print(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
         os.makedirs(os.path.join(outputDir, "diagnostics"))
         if os.path.exists(os.path.join(dir, sampleRunFile)):
@@ -86,9 +87,9 @@ class OutputFileHandler():
 
     def iterativeOrganise(self, head):
         path = os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                head
-                )
+            self.gudrunFile.instrument.GudrunInputFileDir,
+            head
+        )
         if os.path.exists(path):
             shutil.rmtree(path)
         for run, runFile in self.runFiles:

@@ -41,24 +41,7 @@ class BatchProcessor():
             return False
         for sampleBackground in batch.sampleBackgrounds:
             for sample in sampleBackground.samples:
-                gudPath = sample.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "gud"
-                        )
-                gudFile = GudFile(
-                    os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir, gudPath
-                    )
-                )
-                error = round(
-                    (
-                        (
-                            gudFile.averageLevelMergedDCS - gudFile.expectedDCS
-                        ) 
-                        / gudFile.averageLevelMergedDCS
-                    )*100, 1
-                )
-                if abs(error) > rtol:
+                if batch.determineError(sample) > rtol:
                     return False
         return True
 
@@ -90,16 +73,31 @@ class BatchProcessor():
                     print(f"BATCH_PROCESSING: iteration {i}")
                     batch.process(headless=headless)
                     iterator.performIteration(i)
+                    batch.iterativeOrganise(
+                        os.path.join(
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            f"IterateByTweakFactor{i+1}"
+                        )
+                    )
+                    # batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}/")
                     if self.canConverge(batch, rtol):
                         print("BATCH_PROCESSING: convergence tolerance reached.")
                         break
-            batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}")
+            # batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}")
             for sample in batch.sampleBackgrounds[0].samples:
                 print(f"BATCH_PROCESSING: ending tweak factor: {sample.sampleTweakFactor}")
         else:
             print("BATCH_PROCESSING: headful mode.")
             if iterationMode == IterationModes.NONE:
-                tasks.append(batch.dcs(headless=headless))
+                tasks.append(
+                    batch.dcs(
+                        headless=headless,
+                        path=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            "gudpy.txt"
+                        )
+                    )
+                )
             else:            
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
@@ -123,7 +121,23 @@ class BatchProcessor():
                             )
                         )
                     )
-                    tasks.append(iterator.performIteration)
-            tasks.append([batch.iterativeOrganise, [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"]])
+                    tasks.append([iterator.performIteration, [i]])
+                    tasks.append(
+                        [
+                            batch.iterativeOrganise,
+                            [
+                                os.path.join(
+                                    f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                                    f"IterateByTweakFactor_{i+1}"
+                                )
+                            ]
+                        ]
+                    )
+                    tasks.append(
+                        [
+                            self.canConverge,
+                            [batch, rtol]
+                        ]
+                    )
         if not headless:
             return tasks
