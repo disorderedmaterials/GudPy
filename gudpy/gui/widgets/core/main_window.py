@@ -1255,8 +1255,37 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
         else:
             self.queue = batchProcessingDialog.queue
-            
+            self.outputBatches = {}
+            self.text = batchProcessingDialog.text
+            self.mainWidget.currentTaskLabel.setText(self.text)
+            self.mainWidget.stopTaskButton.setEnabled(True)
+            self.nextBatchProcess()
 
+    def nextBatchProcess(self):
+        if self.queue.not_empty:
+            task = self.queue.get()
+            if isinstance(task[0], QProcess):
+                proc, func, args = task
+                self.makeProc(proc, self.progressBatchProcess, finished=self.nextBatchProcess, func=func, args=args)
+            else:
+                func, args = task
+                ret = func(*args)
+                print(ret)
+                if ret:
+                    self.batchProcessingFinished()
+                else:
+                    self.nextBatchProcess()
+        else:
+            self.setControlsEnabled(True)
+
+    def progressBatchProcess(self):
+        pass
+
+    def batchProcessingFinished(self):
+        self.setControlsEnabled(True)
+        self.queue = Queue()
+        self.proc = None
+        self.text = "No task running."
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
