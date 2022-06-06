@@ -67,7 +67,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="convergenceToleranceCheckBox">
           <property name="text">
            <string>Use convergence tolerance</string>
           </property>

@@ -17,7 +17,7 @@ class BatchProcessingDialog(QDialog):
         self.batchSize = 1
         self.iterate = False
         self.iterateBy = IterationModes.NONE
-        self.useRtol = True
+        self.useRtol = False
         self.rtol = 10.0
         self.numberIterations = 1
         self.queue = Queue()
@@ -25,13 +25,6 @@ class BatchProcessingDialog(QDialog):
         self.initComponents()
 
     def initComponents(self):
-        
-        self.widget.batchSizeSpinBox.valueChanged.connect(self.batchSizeChanged)
-        self.widget.iterateGroupBox.toggled.connect(self.iterateToggled)
-        self.widget.iterateByComboBox.currentIndexChanged.connect(self.iterateByChanged)
-        self.widget.convergenceToleranceSpinBox.valueChanged.connect(self.convergenceToleranceChanged)
-        self.widget.maxIterationsSpinBox.valueChanged.connect(self.numberIterationsChanged)
-
         self.widget.iterateByComboBox.addItem(
             IterationModes.TWEAK_FACTOR.name, IterationModes.TWEAK_FACTOR
         )
@@ -46,6 +39,25 @@ class BatchProcessingDialog(QDialog):
         )
         self.widget.iterateByComboBox.addItem(
             IterationModes.DENSITY.name, IterationModes.DENSITY
+        )
+
+        self.widget.batchSizeSpinBox.valueChanged.connect(
+            self.batchSizeChanged
+        )
+        self.widget.iterateGroupBox.toggled.connect(
+            self.iterateToggled
+        )
+        self.widget.iterateByComboBox.currentIndexChanged.connect(
+            self.iterateByChanged
+        )
+        self.widget.convergenceToleranceCheckBox.toggled.connect(
+            self.useConvergenceToleranceToggled
+        )
+        self.widget.convergenceToleranceSpinBox.valueChanged.connect(
+            self.convergenceToleranceChanged
+        )
+        self.widget.maxIterationsSpinBox.valueChanged.connect(
+            self.numberIterationsChanged
         )
         self.widget.processButton.clicked.connect(
             self.process
@@ -76,6 +88,7 @@ class BatchProcessingDialog(QDialog):
     
     def iterateToggled(self, state):
         self.iterateBy = self.widget.iterateByComboBox.currentData() if state else IterationModes.NONE
+        self.widget.convergenceToleranceSpinBox.setEnabled(self.useRtol)
     
     def iterateByChanged(self, index):
         self.iterateBy = self.widget.iterateByComboBox.itemData(index)
@@ -95,8 +108,9 @@ class BatchProcessingDialog(QDialog):
         self.batchProcessor = BatchProcessor(self.gudrunFile)
         for task in self.batchProcessor.process(
             batchSize=self.batchSize, headless=False,
-            iterationMode=self.iterateBy, rtol=self.rtol,
-            maxIterations=self.numberIterations1
+            iterationMode=self.iterateBy,
+            rtol=self.rtol if self.useRtol else 0.0,
+            maxIterations=self.numberIterations
         ):
             self.queue.put(task)
             self.text = f"Batch Processing (IterationMode={self.iterateBy.name} BatchSize={self.batchSize})"

@@ -114,8 +114,16 @@ class BatchProcessor():
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
                 for i in range(maxIterations):
-                    tasks.append(batch.dcs(headless=headless))
+                    tasks.append(
+                        batch.dcs(
+                            headless=headless,
+                            path=os.path.join(
+                                self.gudrunFile.instrument.GudrunInputFileDir,
+                                "gudpy.txt"
+                            )
+                        )
+                    )
                     tasks.append(iterator.performIteration)
-            tasks.append(batch.iterativeOrganise, [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"])
+            tasks.append([batch.iterativeOrganise, [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"]])
         if not headless:
             return tasks
