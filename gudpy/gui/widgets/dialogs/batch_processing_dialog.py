@@ -1,9 +1,11 @@
 import os
+from queue import Queue
 import sys
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
+from core.run_batch_files import BatchProcessor
 from core.enums import IterationModes
 
 class BatchProcessingDialog(QDialog):
@@ -11,12 +13,14 @@ class BatchProcessingDialog(QDialog):
     def __init__(self, gudrunFile, parent):
         super(BatchProcessingDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
+        self.batchProcessor = None
         self.batchSize = 1
         self.iterate = False
         self.iterateBy = IterationModes.NONE
         self.useRtol = True
         self.rtol = 10.0
         self.numberIterations = 1
+        self.queue = Queue()
         self.loadUI()
         self.initComponents()
 
@@ -42,6 +46,9 @@ class BatchProcessingDialog(QDialog):
         )
         self.widget.iterateByComboBox.addItem(
             IterationModes.DENSITY.name, IterationModes.DENSITY
+        )
+        self.widget.processButton.clicked.connect(
+            self.process
         )
 
     def loadUI(self):
@@ -82,3 +89,15 @@ class BatchProcessingDialog(QDialog):
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
+
+    def process(self):
+        self.queue = Queue()
+        self.batchProcessor = BatchProcessor(self.gudrunFile)
+        for task in self.batchProcessor.process(
+            batchSize=self.batchSize, headless=False,
+            iterationMode=self.iterateBy, rtol=self.rtol,
+            maxIterations=self.numberIterations1
+        ):
+            self.queue.put(task)
+            self.text = f"Batch Processing (IterationMode={self.iterateBy.name} BatchSize={self.batchSize})"
+            self.widget.close()

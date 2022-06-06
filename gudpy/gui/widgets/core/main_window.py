@@ -1251,7 +1251,12 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(False)
         batchProcessingDialog = BatchProcessingDialog(self.gudrunFile, self.mainWidget)
         batchProcessingDialog.widget.exec()
-        self.setControlsEnabled(True)
+        if not batchProcessingDialog.batchProcessor:
+            self.setControlsEnabled(True)
+        else:
+            self.queue = batchProcessingDialog.queue
+            
+
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
