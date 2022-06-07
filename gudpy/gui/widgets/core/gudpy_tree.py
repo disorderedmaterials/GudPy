@@ -960,7 +960,9 @@ class GudPyTreeView(QTreeView):
         action = self.menu.exec(QCursor.pos())
 
         if action in actionMap.keys():
-            self.insertContainer(container=Container(config_=actionMap[action]))
+            self.insertContainer(
+                container=Container(config_=actionMap[action])
+            )
 
     def insertSampleBackground(self, sampleBackground=None):
         """
