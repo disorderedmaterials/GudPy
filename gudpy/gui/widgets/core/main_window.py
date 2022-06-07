@@ -1624,7 +1624,7 @@ class GudPyMainWindow(QMainWindow):
             return -1
         # Number of GudPy objects.
         markers = (
-            config.NUM_GUDPY_CORE_OBJECTS
+            config.NUM_GUDPY_CORE_OBJECTS - 1
             + len(gudrunFile.sampleBackgrounds)
             + sum(
                 [
