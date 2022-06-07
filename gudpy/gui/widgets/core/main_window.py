@@ -1286,6 +1286,8 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.proc = None
         self.text = "No task running."
+        self.mainWidget.stopTaskButton.setEnabled(False)
+        self.mainWidget
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
