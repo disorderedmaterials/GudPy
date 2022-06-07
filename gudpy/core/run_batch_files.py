@@ -12,7 +12,7 @@ class BatchProcessor:
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
 
-    def batch(self, batchSize, maintainAverage=False):
+    def batch(self, batchSize, stepSize):
 
         batch = deepcopy(self.gudrunFile)
         batch.sampleBackgrounds = []
@@ -20,32 +20,19 @@ class BatchProcessor:
             batchedSampleBackground = deepcopy(sampleBackground)
             batchedSampleBackground.samples = []
             maxDataFiles = max(
-                [len(sample.dataFiles) for sample in sampleBackground.samples]
+                [
+                    len(sample.dataFiles)
+                    for sample in sampleBackground.samples
+                ]
             )
             for sample in sampleBackground.samples:
-                if len(sample.dataFiles) % batchSize == 0:
-                    nBatches = len(sample.dataFiles) // batchSize
-                else:
-                    nBatches = (
-                        len(sample.dataFiles)
-                        + (len(sample.dataFiles) % batchSize)
-                    ) // batchSize
-                if maintainAverage:
-                    for i in range(maxDataFiles - batchSize):
-                        batchedSample = deepcopy(sample)
-                        batchedDataFiles = sample.dataFiles[i: i + batchSize]
-                        batchedSample.dataFiles.dataFiles = batchedDataFiles
-                        batchedSample.name += f"_batch{i}"
-                        batchedSampleBackground.samples.append(batchedSample)
-                else:
-                    for i in range(nBatches):
-                        batchedSample = deepcopy(sample)
-                        batchedDataFiles = sample.dataFiles[
-                            i * batchSize: (i + 1) * batchSize
-                        ]
-                        batchedSample.dataFiles.dataFiles = batchedDataFiles
-                        batchedSample.name += f"_batch{i}"
-                        batchedSampleBackground.samples.append(batchedSample)
+                for i in range(0, maxDataFiles, stepSize):
+                    batchedSample = deepcopy(sample)
+                    batchedSample.dataFiles.dataFiles = sample.dataFiles[
+                        i: i + batchSize
+                    ]
+                    batchedSample.name += f"_batch{i}"
+                    batchedSampleBackground.samples.append(batchedSample)
             batch.sampleBackgrounds.append(batchedSampleBackground)
 
         return batch
@@ -84,15 +71,13 @@ class BatchProcessor:
     def process(
         self,
         batchSize=1,
+        stepSize=1,
         headless=True,
         iterationMode=IterationModes.NONE,
         rtol=0.0,
-        maxIterations=1,
-        maintainAverage=False,
+        maxIterations=1
     ):
-        self.batchedGudrunFile = self.batch(
-            batchSize=batchSize, maintainAverage=maintainAverage
-        )
+        self.batchedGudrunFile = self.batch(batchSize, stepSize)
         tasks = []
         if headless:
             if iterationMode == IterationModes.NONE:

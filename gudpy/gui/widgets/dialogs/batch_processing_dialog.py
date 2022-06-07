@@ -9,6 +9,7 @@ from core.run_batch_files import BatchProcessor
 from core.enums import Geometry, IterationModes
 from core import config
 
+
 class BatchProcessingDialog(QDialog):
 
     def __init__(self, gudrunFile, parent):
@@ -16,7 +17,8 @@ class BatchProcessingDialog(QDialog):
         self.gudrunFile = gudrunFile
         self.batchProcessor = None
         self.batchSize = 1
-        self.maintainAverage = False
+        self.stepSize = 1
+        self.useSameStep = True
         self.iterate = False
         self.iterateBy = IterationModes.NONE
         self.useRtol = False
@@ -48,8 +50,11 @@ class BatchProcessingDialog(QDialog):
         self.widget.batchSizeSpinBox.valueChanged.connect(
             self.batchSizeChanged
         )
-        self.widget.maintainAverageCheckBox.toggled.connect(
-            self.maintainAverageToggled
+        self.widget.useSameStepCheckBox.toggled.connect(
+            self.useSameStepToggled
+        )
+        self.widget.stepSizeSpinBox.valueChanged.connect(
+            self.stepSizeChanged
         )
         self.widget.iterateGroupBox.toggled.connect(
             self.iterateToggled
@@ -92,9 +97,20 @@ class BatchProcessingDialog(QDialog):
 
     def batchSizeChanged(self, value):
         self.batchSize = value
+        self.widget.stepSizeSpinBox.setMaximum(value)
+        if self.useSameStep:
+            self.widget.stepSizeSpinBox.setValue(value)
 
-    def maintainAverageToggled(self, state):
-        self.maintainAverage = state
+    def useSameStepToggled(self, state):
+        self.useSameStep = state
+        print(not state)
+        self.widget.stepSizeSpinBox.setReadOnly(self.useSameStep)
+        print(self.widget.stepSizeSpinBox.isReadOnly())
+        if self.useSameStep:
+            self.widget.stepSizeSpinBox.setValue(self.batchSize)
+
+    def stepSizeChanged(self, value):
+        self.stepSize = value
 
     def iterateToggled(self, state):
         self.iterateBy = (
@@ -121,16 +137,18 @@ class BatchProcessingDialog(QDialog):
         self.queue = Queue()
         self.batchProcessor = BatchProcessor(self.gudrunFile)
         for task in self.batchProcessor.process(
-            batchSize=self.batchSize, headless=False,
+            batchSize=self.batchSize,
+            stepSize=self.stepSize,
+            headless=False,
             iterationMode=self.iterateBy,
             rtol=self.rtol if self.useRtol else 0.0,
-            maxIterations=self.numberIterations,
-            maintainAverage=self.maintainAverage
+            maxIterations=self.numberIterations
         ):
             self.queue.put(task)
             self.text = (
                 f"Batch Processing "
                 f"(IterationMode={self.iterateBy.name} "
-                f"BatchSize={self.batchSize})"
+                f"BatchSize={self.batchSize} "
+                f"StepSize={self.stepSize})"
             )
             self.widget.close()

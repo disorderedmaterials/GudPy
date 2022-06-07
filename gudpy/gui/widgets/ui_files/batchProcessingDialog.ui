@@ -36,11 +36,41 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="maintainAverageCheckBox">
+    <widget class="QCheckBox" name="useSameStepCheckBox">
      <property name="text">
-      <string>Maintain Average?</string>
+      <string>Use same step?</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Step size</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="stepSizeSpinBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QGroupBox" name="iterateGroupBox">
