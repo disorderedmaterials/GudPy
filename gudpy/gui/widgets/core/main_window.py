@@ -1249,7 +1249,9 @@ class GudPyMainWindow(QMainWindow):
         if not self.checkFilesExist_():
             return
         self.setControlsEnabled(False)
-        batchProcessingDialog = BatchProcessingDialog(self.gudrunFile, self.mainWidget)
+        batchProcessingDialog = BatchProcessingDialog(
+            self.gudrunFile, self.mainWidget
+        )
         batchProcessingDialog.widget.exec()
         if not batchProcessingDialog.batchProcessor:
             self.setControlsEnabled(True)
@@ -1266,7 +1268,10 @@ class GudPyMainWindow(QMainWindow):
             task = self.queue.get()
             if isinstance(task[0], QProcess):
                 proc, func, args = task
-                self.makeProc(proc, self.progressBatchProcess, finished=self.nextBatchProcess, func=func, args=args)
+                self.makeProc(
+                    proc, self.progressBatchProcess,
+                    finished=self.nextBatchProcess, func=func, args=args
+                )
             else:
                 func, args = task
                 ret = func(*args)

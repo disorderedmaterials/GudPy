@@ -7,8 +7,8 @@ from core.thickness_iterator import ThicknessIterator
 from core.radius_iterator import RadiusIterator
 from core.density_iterator import DensityIterator
 
-class BatchProcessor():
 
+class BatchProcessor:
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
 
@@ -19,23 +19,30 @@ class BatchProcessor():
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             batchedSampleBackground = deepcopy(sampleBackground)
             batchedSampleBackground.samples = []
-            maxDataFiles = max([len(sample.dataFiles) for sample in sampleBackground.samples])
+            maxDataFiles = max(
+                [len(sample.dataFiles) for sample in sampleBackground.samples]
+            )
             for sample in sampleBackground.samples:
                 if len(sample.dataFiles) % batchSize == 0:
                     nBatches = len(sample.dataFiles) // batchSize
                 else:
-                    nBatches = (len(sample.dataFiles) + (len(sample.dataFiles) % batchSize)) // batchSize
+                    nBatches = (
+                        len(sample.dataFiles)
+                        + (len(sample.dataFiles) % batchSize)
+                    ) // batchSize
                 if maintainAverage:
-                    for i in range(maxDataFiles-batchSize):
+                    for i in range(maxDataFiles - batchSize):
                         batchedSample = deepcopy(sample)
-                        batchedDataFiles = sample.dataFiles[i:i+batchSize]
+                        batchedDataFiles = sample.dataFiles[i: i + batchSize]
                         batchedSample.dataFiles.dataFiles = batchedDataFiles
                         batchedSample.name += f"_batch{i}"
                         batchedSampleBackground.samples.append(batchedSample)
                 else:
                     for i in range(nBatches):
                         batchedSample = deepcopy(sample)
-                        batchedDataFiles = sample.dataFiles[i*batchSize:(i+1)*batchSize]
+                        batchedDataFiles = sample.dataFiles[
+                            i * batchSize: (i + 1) * batchSize
+                        ]
                         batchedSample.dataFiles.dataFiles = batchedDataFiles
                         batchedSample.name += f"_batch{i}"
                         batchedSampleBackground.samples.append(batchedSample)
@@ -63,7 +70,11 @@ class BatchProcessor():
                     if iterationMode == IterationModes.TWEAK_FACTOR:
                         fp.write(f"Tweak Factor: {sample.sampleTweakFactor}\n")
                     elif iterationMode == IterationModes.THICKNESS:
-                        fp.write(f"Upstream / Downstream Thickness: {sample.upstreamThickness} {sample.downstreamThickness}\n")
+                        fp.write(
+                            f"Upstream / Downstream Thickness: "
+                            f"{sample.upstreamThickness} "
+                            f"{sample.downstreamThickness}\n"
+                        )
                     elif iterationMode == IterationModes.INNER_RADIUS:
                         fp.write(f"Inner Radius: {sample.innerRadius}\n")
                     elif iterationMode == IterationModes.OUTER_RADIUS:
@@ -71,52 +82,62 @@ class BatchProcessor():
                     elif iterationMode == IterationModes.DENSITY:
                         fp.write(f"Density: {sample.density}")
 
-    def process(self, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=0.0, maxIterations=1, maintainAverage=False):
-        batch = self.batch(batchSize=batchSize, maintainAverage=maintainAverage)
+    def process(
+        self,
+        batchSize=1,
+        headless=True,
+        iterationMode=IterationModes.NONE,
+        rtol=0.0,
+        maxIterations=1,
+        maintainAverage=False,
+    ):
+        batch = self.batch(
+            batchSize=batchSize, maintainAverage=maintainAverage
+        )
         tasks = []
         if headless:
             if iterationMode == IterationModes.NONE:
                 batch.process(headless=headless)
-            else:            
+            else:
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
-                    dirText = f"IterateByTweakFactor"
+                    dirText = "IterateByTweakFactor"
                 elif iterationMode == IterationModes.THICKNESS:
                     iterator = ThicknessIterator(batch)
-                    dirText = f"IterateByThickness"
+                    dirText = "IterateByThickness"
                 elif iterationMode == IterationModes.INNER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("inner")
                     iterator = ThicknessIterator(batch)
-                    dirText = f"IterateByInnerRadius"
+                    dirText = "IterateByInnerRadius"
                 elif iterationMode == IterationModes.OUTER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("outer")
-                    dirText = f"IterateByOuterRadius"
+                    dirText = "IterateByOuterRadius"
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
-                    dirText = f"IterateByDensity"
+                    dirText = "IterateByDensity"
                 for i in range(maxIterations):
                     batch.process(headless=headless)
                     iterator.performIteration(i)
                     batch.iterativeOrganise(
                         os.path.join(
                             f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
-                            f"{dirText}_{i+1}"
+                            f"{dirText}_{i+1}",
                         )
                     )
                     self.writeDiagnosticsFile(
                         os.path.join(
                             batch.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
-                            "batch_processing_diagnostics.txt"
+                            "batch_processing_diagnostics.txt",
                         ),
                         batch,
-                        iterationMode
+                        iterationMode,
                     )
                     if self.canConverge(batch, rtol):
                         break
-                
+
         else:
             if iterationMode == IterationModes.NONE:
                 tasks.append(
@@ -124,44 +145,42 @@ class BatchProcessor():
                         headless=headless,
                         path=os.path.join(
                             self.gudrunFile.instrument.GudrunInputFileDir,
-                            "gudpy.txt"
-                        )
+                            "gudpy.txt",
+                        ),
                     )
                 )
                 tasks.append(
                     [
                         batch.iterativeOrganise,
-                        [
-                            f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"
-                        ]
+                        [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
                     ]
                 )
-            else:            
+            else:
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
-                    dirText = f"IterateByTweakFactor"
+                    dirText = "IterateByTweakFactor"
                 elif iterationMode == IterationModes.THICKNESS:
                     iterator = ThicknessIterator(batch)
-                    dirText = f"IterateByThickness"
+                    dirText = "IterateByThickness"
                 elif iterationMode == IterationModes.INNER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("inner")
-                    dirText = f"IterateByInnerRadius"
+                    dirText = "IterateByInnerRadius"
                 elif iterationMode == IterationModes.OUTER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("outer")
-                    dirText = f"IterateByOuterRadius"
+                    dirText = "IterateByOuterRadius"
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
-                    dirText = f"IterateByDensity"
+                    dirText = "IterateByDensity"
                 for i in range(maxIterations):
                     tasks.append(
                         batch.dcs(
                             headless=headless,
                             path=os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
-                                "gudpy.txt"
-                            )
+                                "gudpy.txt",
+                            ),
                         )
                     )
                     tasks.append([iterator.performIteration, [i]])
@@ -171,30 +190,24 @@ class BatchProcessor():
                             [
                                 os.path.join(
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
-                                    f"{dirText}_{i+1}"
+                                    f"{dirText}_{i+1}",
                                 )
-                            ]
+                            ],
                         ]
                     )
                     tasks.append(
                         [
-                            self.writeDiagnosticsFile
-                            [
+                            self.writeDiagnosticsFile[
                                 os.path.join(
                                     batch.instrument.GudrunInputFileDir,
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
-                                    "batch_processing_diagnostics.txt"
+                                    "batch_processing_diagnostics.txt",
                                 ),
                                 batch,
-                                iterationMode
+                                iterationMode,
                             ]
                         ]
                     )
-                    tasks.append(
-                        [
-                            self.canConverge,
-                            [batch, rtol]
-                        ]
-                    )
+                    tasks.append([self.canConverge, [batch, rtol]])
         if not headless:
             return tasks

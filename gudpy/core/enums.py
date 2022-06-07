@@ -87,6 +87,7 @@ class Format(Enum):
     TXT = 0
     YAML = 1
 
+
 ITERATION_MODES = {
     0: ["None", "NONE"],
     1: ["Tweak Factor", "TWEAK_FACTOR"],

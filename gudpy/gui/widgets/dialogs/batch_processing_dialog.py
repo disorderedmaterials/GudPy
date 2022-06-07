@@ -8,6 +8,7 @@ from PySide6.QtUiTools import QUiLoader
 from core.run_batch_files import BatchProcessor
 from core.enums import IterationModes
 
+
 class BatchProcessingDialog(QDialog):
 
     def __init__(self, gudrunFile, parent):
@@ -74,14 +75,14 @@ class BatchProcessingDialog(QDialog):
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
-                    sys._MEIPASS, "ui_files", f"batchProcessingDialog.ui"
+                    sys._MEIPASS, "ui_files", "batchProcessingDialog.ui"
                 )
             )
         else:
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
                 os.path.join(
-                    current_dir, "..", "ui_files", f"batchProcessingDialog.ui"
+                    current_dir, "..", "ui_files", "batchProcessingDialog.ui"
                 )
             )
         loader = QUiLoader()
@@ -89,21 +90,25 @@ class BatchProcessingDialog(QDialog):
 
     def batchSizeChanged(self, value):
         self.batchSize = value
-    
+
     def maintainAverageToggled(self, state):
         self.maintainAverage = state
 
     def iterateToggled(self, state):
-        self.iterateBy = self.widget.iterateByComboBox.currentData() if state else IterationModes.NONE
+        self.iterateBy = (
+            self.widget.iterateByComboBox.currentData()
+            if state
+            else IterationModes.NONE
+        )
         self.widget.convergenceToleranceSpinBox.setEnabled(self.useRtol)
-    
+
     def iterateByChanged(self, index):
         self.iterateBy = self.widget.iterateByComboBox.itemData(index)
-    
+
     def useConvergenceToleranceToggled(self, state):
         self.useRtol = state
         self.widget.convergenceToleranceSpinBox.setEnabled(state)
-    
+
     def convergenceToleranceChanged(self, value):
         self.rtol = value
 
@@ -121,5 +126,9 @@ class BatchProcessingDialog(QDialog):
             maintainAverage=self.maintainAverage
         ):
             self.queue.put(task)
-            self.text = f"Batch Processing (IterationMode={self.iterateBy.name} BatchSize={self.batchSize})"
+            self.text = (
+                f"Batch Processing "
+                f"(IterationMode={self.iterateBy.name} "
+                f"BatchSize={self.batchSize})"
+            )
             self.widget.close()

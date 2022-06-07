@@ -1634,11 +1634,12 @@ class GudrunFile:
             (
                 (
                     gudFile.averageLevelMergedDCS - gudFile.expectedDCS
-                ) 
+                )
                 / gudFile.averageLevelMergedDCS
             )*100, 1
         )
         return abs(error)
+
 
 Container.getNextToken = GudrunFile.getNextToken
 Container.peekNextToken = GudrunFile.peekNextToken
