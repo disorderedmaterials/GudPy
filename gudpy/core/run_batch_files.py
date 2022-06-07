@@ -1,37 +1,46 @@
-from abc import abstractclassmethod
 from copy import deepcopy
 import os
+
 from core.enums import IterationModes
 from core.tweak_factor_iterator import TweakFactorIterator
 from core.thickness_iterator import ThicknessIterator
 from core.radius_iterator import RadiusIterator
 from core.density_iterator import DensityIterator
-from core.gud_file import GudFile
-import numpy as np
 
 class BatchProcessor():
 
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
 
-    def batch(self, batchSize):
+    def batch(self, batchSize, maintainAverage=False):
 
         batch = deepcopy(self.gudrunFile)
         batch.sampleBackgrounds = []
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             batchedSampleBackground = deepcopy(sampleBackground)
             batchedSampleBackground.samples = []
+            maxDataFiles = max([len(sample.dataFiles) for sample in sampleBackground.samples])
+            print(maxDataFiles)
             for sample in sampleBackground.samples:
                 if len(sample.dataFiles) % batchSize == 0:
                     nBatches = len(sample.dataFiles) // batchSize
                 else:
                     nBatches = (len(sample.dataFiles) + (len(sample.dataFiles) % batchSize)) // batchSize
-                for i in range(nBatches):
-                    batchedSample = deepcopy(sample)
-                    batchedDataFiles = sample.dataFiles[i*batchSize:(i+1)*batchSize]
-                    batchedSample.dataFiles.dataFiles = batchedDataFiles
-                    batchedSample.name += f"_batch{i}"
-                    batchedSampleBackground.samples.append(batchedSample)
+                if maintainAverage:
+                    for i in range(maxDataFiles-batchSize):
+                        batchedSample = deepcopy(sample)
+                        print(f"{i+1}-{i+1+batchSize}")
+                        batchedDataFiles = sample.dataFiles[i:i+batchSize]
+                        batchedSample.dataFiles.dataFiles = batchedDataFiles
+                        batchedSample.name += f"_batch{i}"
+                        batchedSampleBackground.samples.append(batchedSample)
+                else:
+                    for i in range(nBatches):
+                        batchedSample = deepcopy(sample)
+                        batchedDataFiles = sample.dataFiles[i*batchSize:(i+1)*batchSize]
+                        batchedSample.dataFiles.dataFiles = batchedDataFiles
+                        batchedSample.name += f"_batch{i}"
+                        batchedSampleBackground.samples.append(batchedSample)
             batch.sampleBackgrounds.append(batchedSampleBackground)
 
         return batch
@@ -45,8 +54,8 @@ class BatchProcessor():
                     return False
         return True
 
-    def process(self, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=0.0, maxIterations=1):
-        batch = self.batch(batchSize=batchSize)
+    def process(self, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=0.0, maxIterations=1, maintainAverage=False):
+        batch = self.batch(batchSize=batchSize, maintainAverage=maintainAverage)
         print(f"BATCH_PROCESSING: Iteration mode is {iterationMode.name}")
         print(f"BATCH_PROCESSING: max iterations is {maxIterations}")
         print(f"BATCH_PROCESSING: rtol for convergence is {rtol}")
@@ -59,16 +68,22 @@ class BatchProcessor():
             else:            
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
+                    dirText = f"IterateByTweakFactor"
                 elif iterationMode == IterationModes.THICKNESS:
                     iterator = ThicknessIterator(batch)
+                    dirText = f"IterateByThickness"
                 elif iterationMode == IterationModes.INNER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("inner")
+                    iterator = ThicknessIterator(batch)
+                    dirText = f"IterateByInnerRadius"
                 elif iterationMode == IterationModes.OUTER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("outer")
+                    dirText = f"IterateByOuterRadius"
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
+                    dirText = f"IterateByDensity"
                 for i in range(maxIterations):
                     print(f"BATCH_PROCESSING: iteration {i}")
                     batch.process(headless=headless)
@@ -76,16 +91,12 @@ class BatchProcessor():
                     batch.iterativeOrganise(
                         os.path.join(
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                            f"IterateByTweakFactor{i+1}"
+                            f"{dirText}_{i+1}"
                         )
                     )
-                    # batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}/")
                     if self.canConverge(batch, rtol):
                         print("BATCH_PROCESSING: convergence tolerance reached.")
                         break
-            # batch.iterativeOrganise(f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}")
-            for sample in batch.sampleBackgrounds[0].samples:
-                print(f"BATCH_PROCESSING: ending tweak factor: {sample.sampleTweakFactor}")
         else:
             print("BATCH_PROCESSING: headful mode.")
             if iterationMode == IterationModes.NONE:
@@ -98,19 +109,32 @@ class BatchProcessor():
                         )
                     )
                 )
+                tasks.append(
+                    [
+                        batch.iterativeOrganise,
+                        [
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
+                        ]
+                    ]
+                )
             else:            
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(batch)
+                    dirText = f"IterateByTweakFactor"
                 elif iterationMode == IterationModes.THICKNESS:
                     iterator = ThicknessIterator(batch)
+                    dirText = f"IterateByThickness"
                 elif iterationMode == IterationModes.INNER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("inner")
+                    dirText = f"IterateByInnerRadius"
                 elif iterationMode == IterationModes.OUTER_RADIUS:
                     iterator = RadiusIterator(batch)
                     iterator.setTargetRadius("outer")
+                    dirText = f"IterateByOuterRadius"
                 elif iterationMode == IterationModes.DENSITY:
                     iterator = DensityIterator(batch)
+                    dirText = f"IterateByDensity"
                 for i in range(maxIterations):
                     tasks.append(
                         batch.dcs(
@@ -128,7 +152,7 @@ class BatchProcessor():
                             [
                                 os.path.join(
                                     f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                                    f"IterateByTweakFactor_{i+1}"
+                                    f"{dirText}_{i+1}"
                                 )
                             ]
                         ]
