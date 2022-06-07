@@ -460,7 +460,7 @@ class GudPyMainWindow(QMainWindow):
             lambda:
             self.mainWidget.objectTree.insertContainer(
                 container=Container(
-                    config=path
+                    config_=path
                 )
             )
             for name, path in config.containerConfigurations.items()
@@ -649,7 +649,7 @@ class GudPyMainWindow(QMainWindow):
         result = configurationDialog.widget.exec()
         if not configurationDialog.cancelled and result:
             self.gudrunFile.instrument = GudrunFile(
-                configurationDialog.configuration, config=True
+                configurationDialog.configuration, config_=True
             ).instrument
             self.updateWidgets()
 

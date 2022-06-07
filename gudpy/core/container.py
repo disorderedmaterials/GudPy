@@ -60,7 +60,7 @@ class Container:
     Methods
     -------
     """
-    def __init__(self, config=None):
+    def __init__(self, config_=None):
         """
         Constructs all the necessary attributes for the Container object.
 
@@ -110,8 +110,8 @@ class Container:
             "yamlignore"
         }
 
-        if config:
-            self.parseFromConfig(config)
+        if config_:
+            self.parseFromConfig(config_)
 
     def __str__(self):
         """
