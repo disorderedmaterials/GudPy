@@ -1632,13 +1632,10 @@ class GudrunFile:
         )
         error = round(
             (
-                (
-                    gudFile.averageLevelMergedDCS - gudFile.expectedDCS
-                )
-                / gudFile.averageLevelMergedDCS
-            )*100, 1
+                1.0 - (gudFile.averageLevelMergedDCS / gudFile.expectedDCS)
+            ) * 100, 1
         )
-        return abs(error)
+        return error
 
 
 Container.getNextToken = GudrunFile.getNextToken
