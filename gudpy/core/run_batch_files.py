@@ -97,6 +97,15 @@ class BatchProcessor:
         if headless:
             if iterationMode == IterationModes.NONE:
                 self.batchedGudrunFile.process(headless=headless)
+                self.writeDiagnosticsFile(
+                    os.path.join(
+                        self.batchedGudrunFile.instrument.GudrunInputFileDir,
+                        f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                        "batch_processing_diagnostics.txt",
+                    ),
+                    self.batchedGudrunFile,
+                    iterationMode,
+                )
             else:
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     iterator = TweakFactorIterator(self.batchedGudrunFile)
@@ -152,6 +161,20 @@ class BatchProcessor:
                     [
                         self.batchedGudrunFile.iterativeOrganise,
                         [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
+                    ]
+                )
+                tasks.append(
+                    [
+                        self.writeDiagnosticsFile,
+                        [
+                            os.path.join(
+                                self.batchedGudrunFile.instrument.GudrunInputFileDir,
+                                f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                                "batch_processing_diagnostics.txt",
+                            ),
+                            self.batchedGudrunFile,
+                            iterationMode
+                        ]
                     ]
                 )
             else:
