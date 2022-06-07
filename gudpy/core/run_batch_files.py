@@ -20,7 +20,6 @@ class BatchProcessor():
             batchedSampleBackground = deepcopy(sampleBackground)
             batchedSampleBackground.samples = []
             maxDataFiles = max([len(sample.dataFiles) for sample in sampleBackground.samples])
-            print(maxDataFiles)
             for sample in sampleBackground.samples:
                 if len(sample.dataFiles) % batchSize == 0:
                     nBatches = len(sample.dataFiles) // batchSize
@@ -29,7 +28,6 @@ class BatchProcessor():
                 if maintainAverage:
                     for i in range(maxDataFiles-batchSize):
                         batchedSample = deepcopy(sample)
-                        print(f"{i+1}-{i+1+batchSize}")
                         batchedDataFiles = sample.dataFiles[i:i+batchSize]
                         batchedSample.dataFiles.dataFiles = batchedDataFiles
                         batchedSample.name += f"_batch{i}"
@@ -56,12 +54,7 @@ class BatchProcessor():
 
     def process(self, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=0.0, maxIterations=1, maintainAverage=False):
         batch = self.batch(batchSize=batchSize, maintainAverage=maintainAverage)
-        print(f"BATCH_PROCESSING: Iteration mode is {iterationMode.name}")
-        print(f"BATCH_PROCESSING: max iterations is {maxIterations}")
-        print(f"BATCH_PROCESSING: rtol for convergence is {rtol}")
         tasks = []
-        for sample in batch.sampleBackgrounds[0].samples:
-            print(f"BATCH_PROCESSING: starting tweak factor: {sample.sampleTweakFactor}")
         if headless:
             if iterationMode == IterationModes.NONE:
                 batch.process(headless=headless)
@@ -85,7 +78,6 @@ class BatchProcessor():
                     iterator = DensityIterator(batch)
                     dirText = f"IterateByDensity"
                 for i in range(maxIterations):
-                    print(f"BATCH_PROCESSING: iteration {i}")
                     batch.process(headless=headless)
                     iterator.performIteration(i)
                     batch.iterativeOrganise(
@@ -95,10 +87,8 @@ class BatchProcessor():
                         )
                     )
                     if self.canConverge(batch, rtol):
-                        print("BATCH_PROCESSING: convergence tolerance reached.")
                         break
         else:
-            print("BATCH_PROCESSING: headful mode.")
             if iterationMode == IterationModes.NONE:
                 tasks.append(
                     batch.dcs(
