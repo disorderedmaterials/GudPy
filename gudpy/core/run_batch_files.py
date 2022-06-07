@@ -52,6 +52,25 @@ class BatchProcessor():
                     return False
         return True
 
+    def writeDiagnosticsFile(self, path, batch, iterationMode):
+        print(path)
+        with open(path, "w", encoding="utf-8") as fp:
+            for sampleBackground in batch.sampleBackgrounds:
+                for i, sample in enumerate(sampleBackground.samples):
+                    fp.write(f"Batch {i} {sample.name}\n")
+                    fp.write(f"{str(sample.dataFiles)}\n")
+                    fp.write(f"Error: {batch.determineError(sample)}\n")
+                    if iterationMode == IterationModes.TWEAK_FACTOR:
+                        fp.write(f"Tweak Factor: {sample.sampleTweakFactor}\n")
+                    elif iterationMode == IterationModes.THICKNESS:
+                        fp.write(f"Upstream / Downstream Thickness: {sample.upstreamThickness} {sample.downstreamThickness}\n")
+                    elif iterationMode == IterationModes.INNER_RADIUS:
+                        fp.write(f"Inner Radius: {sample.innerRadius}\n")
+                    elif iterationMode == IterationModes.OUTER_RADIUS:
+                        fp.write(f"Outer Radius: {sample.outerRadius}\n")
+                    elif iterationMode == IterationModes.DENSITY:
+                        fp.write(f"Density: {sample.density}")
+
     def process(self, batchSize=1, headless=True, iterationMode=IterationModes.NONE, rtol=0.0, maxIterations=1, maintainAverage=False):
         batch = self.batch(batchSize=batchSize, maintainAverage=maintainAverage)
         tasks = []
@@ -82,12 +101,22 @@ class BatchProcessor():
                     iterator.performIteration(i)
                     batch.iterativeOrganise(
                         os.path.join(
-                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                             f"{dirText}_{i+1}"
                         )
                     )
+                    self.writeDiagnosticsFile(
+                        os.path.join(
+                            batch.instrument.GudrunInputFileDir,
+                            f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                            "batch_processing_diagnostics.txt"
+                        ),
+                        batch,
+                        iterationMode
+                    )
                     if self.canConverge(batch, rtol):
                         break
+                
         else:
             if iterationMode == IterationModes.NONE:
                 tasks.append(
@@ -103,7 +132,7 @@ class BatchProcessor():
                     [
                         batch.iterativeOrganise,
                         [
-                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
+                            f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"
                         ]
                     ]
                 )
@@ -141,9 +170,23 @@ class BatchProcessor():
                             batch.iterativeOrganise,
                             [
                                 os.path.join(
-                                    f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                                    f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                     f"{dirText}_{i+1}"
                                 )
+                            ]
+                        ]
+                    )
+                    tasks.append(
+                        [
+                            self.writeDiagnosticsFile
+                            [
+                                os.path.join(
+                                    batch.instrument.GudrunInputFileDir,
+                                    f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                                    "batch_processing_diagnostics.txt"
+                                ),
+                                batch,
+                                iterationMode
                             ]
                         ]
                     )
