@@ -136,7 +136,7 @@ class BatchProcessor:
                     )
                     self.writeDiagnosticsFile(
                         os.path.join(
-                            self.batchedGudrunFile.instrument.GudrunInputFileDir,
+                            self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                             "batch_processing_diagnostics.txt",
                         ),
@@ -168,7 +168,7 @@ class BatchProcessor:
                         self.writeDiagnosticsFile,
                         [
                             os.path.join(
-                                self.batchedGudrunFile.instrument.GudrunInputFileDir,
+                                self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                 "batch_processing_diagnostics.txt",
                             ),
@@ -222,7 +222,10 @@ class BatchProcessor:
                             self.writeDiagnosticsFile,
                             [
                                 os.path.join(
-                                    self.batchedGudrunFile.instrument.GudrunInputFileDir,
+                                    (
+                                        self.gudrunFile.instrument.
+                                        GudrunInputFileDir
+                                    ),
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                     "batch_processing_diagnostics.txt",
                                 ),
@@ -231,6 +234,13 @@ class BatchProcessor:
                             ]
                         ]
                     )
-                    tasks.append([self.canConverge, [self.batchedGudrunFile, rtol]])
+                    tasks.append(
+                        [
+                            self.canConverge,
+                            [
+                                self.batchedGudrunFile, rtol
+                            ]
+                        ]
+                    )
         if not headless:
             return tasks
