@@ -6,8 +6,8 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
 from core.run_batch_files import BatchProcessor
-from core.enums import IterationModes
-
+from core.enums import Geometry, IterationModes
+from core import config
 
 class BatchProcessingDialog(QDialog):
 
@@ -30,15 +30,17 @@ class BatchProcessingDialog(QDialog):
         self.widget.iterateByComboBox.addItem(
             IterationModes.TWEAK_FACTOR.name, IterationModes.TWEAK_FACTOR
         )
-        self.widget.iterateByComboBox.addItem(
-            IterationModes.THICKNESS.name, IterationModes.THICKNESS
-        )
-        self.widget.iterateByComboBox.addItem(
-            IterationModes.INNER_RADIUS.name, IterationModes.INNER_RADIUS
-        )
-        self.widget.iterateByComboBox.addItem(
-            IterationModes.OUTER_RADIUS.name, IterationModes.OUTER_RADIUS
-        )
+        if config.geometry == Geometry.FLATPLATE:
+            self.widget.iterateByComboBox.addItem(
+                IterationModes.THICKNESS.name, IterationModes.THICKNESS
+            )
+        elif config.geometry == Geometry.CYLINDRICAL:
+            self.widget.iterateByComboBox.addItem(
+                IterationModes.INNER_RADIUS.name, IterationModes.INNER_RADIUS
+            )
+            self.widget.iterateByComboBox.addItem(
+                IterationModes.OUTER_RADIUS.name, IterationModes.OUTER_RADIUS
+            )
         self.widget.iterateByComboBox.addItem(
             IterationModes.DENSITY.name, IterationModes.DENSITY
         )
