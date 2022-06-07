@@ -1617,7 +1617,6 @@ class GudrunFile:
         outputFileHandler.naiveOrganise()
 
     def iterativeOrganise(self, head):
-        print(head)
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.iterativeOrganise(head)
 
