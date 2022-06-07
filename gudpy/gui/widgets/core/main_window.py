@@ -1270,7 +1270,9 @@ class GudPyMainWindow(QMainWindow):
             task = self.queue.get()
             if isinstance(task[0], QProcess):
                 self.proc, func, args = task
-                self.proc.readyReadStandardOutput.connect(self.progressBatchProcess)
+                self.proc.readyReadStandardOutput.connect(
+                    self.progressBatchProcess
+                )
                 self.proc.finished.connect(self.nextBatchProcess)
                 self.proc.setWorkingDirectory(
                     self.gudrunFile.instrument.GudrunInputFileDir
@@ -1289,7 +1291,9 @@ class GudPyMainWindow(QMainWindow):
             self.batchProcessingFinished()
 
     def progressBatchProcess(self):
-        progress = self.progressIncrementDCS(self.batchProcessor.batchedGudrunFile)
+        progress = self.progressIncrementDCS(
+            self.batchProcessor.batchedGudrunFile
+        )
         if progress == -1:
             self.error = (
                 f"An error occurred. See the following traceback"
