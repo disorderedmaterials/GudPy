@@ -1528,7 +1528,10 @@ class GudPyMainWindow(QMainWindow):
         return True
 
     def autosave(self):
-        if self.gudrunFile.path and not self.proc and not self.workerThread:
+        if (
+            self.gudrunFile and self.gudrunFile.path
+            and not self.proc and not self.workerThread
+        ):
             autosavePath = self.gudrunFile.path + ".autosave"
             self.gudrunFile.write_out(path=autosavePath)
 
