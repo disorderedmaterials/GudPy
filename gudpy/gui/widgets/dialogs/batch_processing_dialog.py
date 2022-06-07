@@ -15,6 +15,7 @@ class BatchProcessingDialog(QDialog):
         self.gudrunFile = gudrunFile
         self.batchProcessor = None
         self.batchSize = 1
+        self.maintainAverage = False
         self.iterate = False
         self.iterateBy = IterationModes.NONE
         self.useRtol = False
@@ -43,6 +44,9 @@ class BatchProcessingDialog(QDialog):
 
         self.widget.batchSizeSpinBox.valueChanged.connect(
             self.batchSizeChanged
+        )
+        self.widget.maintainAverageCheckBox.toggled.connect(
+            self.maintainAverageToggled
         )
         self.widget.iterateGroupBox.toggled.connect(
             self.iterateToggled
@@ -86,6 +90,9 @@ class BatchProcessingDialog(QDialog):
     def batchSizeChanged(self, value):
         self.batchSize = value
     
+    def maintainAverageToggled(self, state):
+        self.maintainAverage = state
+
     def iterateToggled(self, state):
         self.iterateBy = self.widget.iterateByComboBox.currentData() if state else IterationModes.NONE
         self.widget.convergenceToleranceSpinBox.setEnabled(self.useRtol)
@@ -110,7 +117,8 @@ class BatchProcessingDialog(QDialog):
             batchSize=self.batchSize, headless=False,
             iterationMode=self.iterateBy,
             rtol=self.rtol if self.useRtol else 0.0,
-            maxIterations=self.numberIterations
+            maxIterations=self.numberIterations,
+            maintainAverage=self.maintainAverage
         ):
             self.queue.put(task)
             self.text = f"Batch Processing (IterationMode={self.iterateBy.name} BatchSize={self.batchSize})"
