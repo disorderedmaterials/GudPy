@@ -67,3 +67,14 @@ More advanced iteration workflows
  - In the case of a single component it balances the ratio of that component against the others in the composition.
  - For two components, it balances the ratios of the two against eachother, without altering the total number of molecules in the composition.
  - Since this can be a particularly slow workflow, a convergence tolerance can be defined.
+### Batch Processing
+GudPy includes a Batch Processing pipeline, that is flexible and can interface with basic iteration workflows.
+Outputs a diagnostics file which provides information into batch sizes, contents and final values (when iterating).
+#### Basic
+ - Process samples using a defined `batch size` and `step size`.
+ - Datafiles are split into batches of size `batch size`.
+ - The next batch begins a `step size` after the beginning of the first batch.
+### Iterative
+ - Process samples as in the basic case, but perform iterations.
+ - Can iterate by tweak factor, thickness, inner/outer radius and density.
+ - Iterate for `n` iterations, or until the error is within the optional convergence tolerance. 
