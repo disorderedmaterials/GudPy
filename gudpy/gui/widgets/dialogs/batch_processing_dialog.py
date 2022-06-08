@@ -103,9 +103,7 @@ class BatchProcessingDialog(QDialog):
 
     def useSameStepToggled(self, state):
         self.useSameStep = state
-        print(not state)
         self.widget.stepSizeSpinBox.setReadOnly(self.useSameStep)
-        print(self.widget.stepSizeSpinBox.isReadOnly())
         if self.useSameStep:
             self.widget.stepSizeSpinBox.setValue(self.batchSize)
 
