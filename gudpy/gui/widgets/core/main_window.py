@@ -1260,10 +1260,17 @@ class GudPyMainWindow(QMainWindow):
             self.outputBatches = {}
             self.text = batchProcessingDialog.text
             self.numberIterations = batchProcessingDialog.numberIterations
+            self.currentIteration = 0
             self.batchProcessor = batchProcessingDialog.batchProcessor
             self.mainWidget.currentTaskLabel.setText(self.text)
             self.mainWidget.stopTaskButton.setEnabled(True)
             self.nextBatchProcess()
+
+    def batchProcessFinished(self, ec, es):
+        self.outputBatches[self.currentIteration+1] = self.output
+        self.output = ""
+        self.currentIteration+=1
+        self.nextBatchProcess()
 
     def nextBatchProcess(self):
         if not self.queue.empty():
@@ -1273,7 +1280,7 @@ class GudPyMainWindow(QMainWindow):
                 self.proc.readyReadStandardOutput.connect(
                     self.progressBatchProcess
                 )
-                self.proc.finished.connect(self.nextBatchProcess)
+                self.proc.finished.connect(self.batchProcessFinished)
                 self.proc.setWorkingDirectory(
                     self.gudrunFile.instrument.GudrunInputFileDir
                 )
@@ -1314,6 +1321,13 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(self.text)
         self.mainWidget.progressBar.setValue(0)
         self.mainWidget.stopTaskButton.setEnabled(False)
+        self.outputSlots.setOutput(
+            self.batchProcessor.batchedGudrunFile,
+            self.outputBatches,
+            "gudrun_dcs"
+        )
+        self.outputBatches = {}
+        self.output = ""
 
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
@@ -1357,7 +1371,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.outputSlots.setOutput(output, "gudrun_dcs")
+        self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
         self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
@@ -1441,7 +1455,7 @@ class GudPyMainWindow(QMainWindow):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration + 1] = self.output
-            self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
+            self.outputSlots.setOutput(self.gudrunFile, self.outputIterations, "gudrun_dcs")
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
@@ -1835,9 +1849,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(output, "gudrun_dcs")
+            self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
         else:
-            self.outputSlots.setOutput(output, "purge_det")
+            self.outputSlots.setOutput(self.gudrunFile, output, "purge_det")
         self.outputIterations = {}
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
