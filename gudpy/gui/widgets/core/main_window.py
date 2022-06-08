@@ -1269,7 +1269,7 @@ class GudPyMainWindow(QMainWindow):
     def batchProcessFinished(self, ec, es):
         self.outputBatches[self.currentIteration+1] = self.output
         self.output = ""
-        self.currentIteration+=1
+        self.currentIteration += 1
         self.nextBatchProcess()
 
     def nextBatchProcess(self):
@@ -1455,7 +1455,11 @@ class GudPyMainWindow(QMainWindow):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration + 1] = self.output
-            self.outputSlots.setOutput(self.gudrunFile, self.outputIterations, "gudrun_dcs")
+            self.outputSlots.setOutput(
+                self.gudrunFile,
+                self.outputIterations,
+                "gudrun_dcs"
+            )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
