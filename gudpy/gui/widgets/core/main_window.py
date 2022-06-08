@@ -176,7 +176,7 @@ class GudPyMainWindow(QMainWindow):
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
-                    sys._MEIPASS, "../ui_files", "mainWindow.ui"
+                    sys._MEIPASS, "ui_files", "mainWindow.ui"
                 )
             )
             current_dir = os.path.sep
