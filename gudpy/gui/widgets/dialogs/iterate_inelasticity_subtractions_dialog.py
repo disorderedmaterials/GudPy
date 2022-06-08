@@ -6,11 +6,8 @@ from core.wavelength_subtraction_iterator import (
 
 class WavelengthInelasticitySubtractionsIterationDialog(IterationDialog):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.iterator = WavelengthSubtractionIterator(self.gudrunFile)
-
     def iterate(self):
+        self.iterator = WavelengthSubtractionIterator(self.gudrunFile)
         self.numberIterations *= 2
         self.enqueueTasks()
         self.text = "Inelasticity subtractions"
