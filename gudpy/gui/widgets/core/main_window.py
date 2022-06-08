@@ -1224,7 +1224,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(False)
         iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
-        if iterationDialog.cancelled or not iterationDialog.iterator:
+        if not iterationDialog.iterator:
             self.setControlsEnabled(True)
         else:
             self.queue = iterationDialog.queue

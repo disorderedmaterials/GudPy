@@ -13,7 +13,6 @@ class IterationDialog(QDialog):
         self.gudrunFile = gudrunFile
         self.name = name
         self.numberIterations = 1
-        self.cancelled = False
         self.iterator = None
         self.text = ""
         self.loadUI()

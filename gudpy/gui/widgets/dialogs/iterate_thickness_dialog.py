@@ -6,10 +6,6 @@ from core import config
 
 class ThicknessIterationDialog(IterationDialog):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.iterator = ThicknessIterator(self.gudrunFile)
-
     def initComponents(self):
         super().initComponents()
         self.widget.iterateButton.setEnabled(
@@ -17,6 +13,7 @@ class ThicknessIterationDialog(IterationDialog):
         )
 
     def iterate(self):
+        self.iterator = ThicknessIterator(self.gudrunFile)
         self.enqueueTasks()
         self.text = "Iterate by Thickness"
         self.widget.close()
