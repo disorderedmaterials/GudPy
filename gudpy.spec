@@ -13,7 +13,7 @@ datas = [*data, *ui]
 if sys.platform == "darwin":
     a = Analysis([main],
                 pathex=pathex,
-                binaries=binaries,
+                binaries=None,
                 datas=datas,
                 hiddenimports=[],
                 hookspath=[],
