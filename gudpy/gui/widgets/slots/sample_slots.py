@@ -327,6 +327,9 @@ class SampleSlots():
         self.widget.scatteringFileLineEdit.textChanged.connect(
             self.handleSelfScatteringFileChanged
         )
+        self.widget.browseScatteringFileButton.clicked.connect(
+            self.handleBrowseScatteringFile
+        )
         self.widget.correctionFactorSpinBox.valueChanged.connect(
             self.handleCorrectionFactorChanged
         )
@@ -738,6 +741,19 @@ class SampleSlots():
         self.sample.fileSelfScattering = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleBrowseScatteringFile(self):
+        """
+        Slot for browsing for a self scattering file.
+        Called when a clicked signal is emitted,
+        from the browseScatteringFileButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self.widget, "Scattering File", "")
+        if filename:
+            self.widget.scatteringFileLineEdit.setText(filename)
 
     def handleNormaliseToChanged(self, index):
         """
