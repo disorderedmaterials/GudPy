@@ -201,7 +201,7 @@ class TestGudPyIO(TestCase):
                 "maxRadFT",
                 "grBroadening",
                 "powerForBroadening",
-                "stepSize"
+                "stepSize",
                 "yamlignore"
             }
         }
