@@ -5024,7 +5024,7 @@
                             <widget class="QLineEdit" name="sampleCrossSectionFileLineEdit"/>
                            </item>
                            <item>
-                            <widget class="QPushButton" name="browseSampleCrossSectionFileButto">
+                            <widget class="QPushButton" name="browseSampleCrossSectionFileButton">
                              <property name="text">
                               <string>Browse</string>
                              </property>

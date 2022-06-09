@@ -268,7 +268,7 @@ class SampleSlots():
         self.widget.sampleCrossSectionFileLineEdit.textChanged.connect(
             self.handleCrossSectionFileChanged
         )
-        self.widget.browseSampleCrossSectionFileButto.clicked.connect(
+        self.widget.browseSampleCrossSectionFileButton.clicked.connect(
             self.handleBrowseCrossSectionFile
         )
 
@@ -566,7 +566,7 @@ class SampleSlots():
         """
         Slot for browsing for a cross section source file.
         Called when a clicked signal is emitted,
-        from the browseSampleCrossSectionFileButto.
+        from the browseSampleCrossSectionFileButton.
         Alters the corresponding line edit as such.
         as such.
         """
