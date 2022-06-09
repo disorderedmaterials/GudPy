@@ -380,7 +380,7 @@ class SampleSlots():
         value : float
             The new value of the samplePeriodNoSpinBox.
         """
-        self.sample.periodNo = value
+        self.sample.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
             if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
