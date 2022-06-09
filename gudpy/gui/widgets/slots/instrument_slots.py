@@ -421,6 +421,10 @@ class InstrumentSlots():
             self.handleIncidentFlightPathChanged
         )
 
+        self.widget.outputDiagSpectrumSpinBox.valueChanged.connect(
+            self.handleSpectrumNumberForOutputDiagChanged
+        )
+
         self.widget.neutronScatteringParamsFileLineEdit.textChanged.connect(
             self.handleNeutronScatteringParamsFileChanged
         )
