@@ -46,10 +46,14 @@ class GudPyPlot():
     def toQPointFList(self):
         return [x.toQPointF() for x in self.dataSet] if self.dataSet else None
 
-    def toLineSeries(self, parent):
+    def toLineSeries(self, parent, offsetX, offsetY):
         self.series = QLineSeries(parent)
         points = self.toQPointFList()
         if points:
+            points = [
+                QPointF(p.x() + offsetX, p.y() + offsetY)
+                for p in points
+            ]
             self.series.append(points)
         return self.series
 
