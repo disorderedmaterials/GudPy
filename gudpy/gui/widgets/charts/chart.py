@@ -109,11 +109,39 @@ class GudPyChart(QChart):
             PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
         ]
         for sample in self.samples:
-            if sample in self.configs.keys():
-                plotConfig = self.configs[sample]
+            if self.series():
+                minX = min(
+                    [
+                        p.x()
+                        for series in self.series()
+                        for p in series.points()
+                    ]
+                )
+                minY = min(
+                    [
+                        p.y()
+                        for series in self.series()
+                        for p in series.points()
+                    ]
+                )
             else:
-                plotConfig = SamplePlotConfig(sample, self.inputDir, self)
-                self.configs[sample] = plotConfig
+                minX = 0
+                minY = 0
+            if self.logarithmicX or self.logarithmicA:
+                offsetX = 1 + minX
+            else:
+                offsetX = 0
+            if self.logarithmicY or self.logarithmicA:
+                offsetY = 1 + minY
+            else:
+                offsetY = 0
+            plotConfig = SamplePlotConfig(
+                sample, self.inputDir,
+                offsetX,
+                offsetY,
+                self
+            )
+            self.configs[sample] = plotConfig
             for series in plotConfig.plotData(self.plotMode):
                 if series:
                     if isinstance(sample, Sample) and plotsSamples:
