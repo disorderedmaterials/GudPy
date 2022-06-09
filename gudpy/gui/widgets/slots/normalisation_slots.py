@@ -222,6 +222,10 @@ class NormalisationSlots():
         self.widget.totalCrossSectionComboBox.currentIndexChanged.connect(
             self.handleTotalCrossSectionChanged
         )
+
+        self.widget.crossSectionFileLineEdit.textChanged.connect(
+            self.handleCrossSectionFileChanged
+        )
         self.widget.browseCrossSectionFileButton.clicked.connect(
             self.handleBrowseCrossSectionFile
         )
