@@ -313,7 +313,7 @@ class ContainerSlots():
         value : float
             The new value of the containerPeriodNoSpinBox.
         """
-        self.container.periodNo = value
+        self.container.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
             if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
