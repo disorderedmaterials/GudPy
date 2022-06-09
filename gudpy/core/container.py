@@ -227,6 +227,7 @@ class Container:
         sample.densityUnits = self.densityUnits
         sample.totalCrossSectionSource = self.totalCrossSectionSource
         sample.sampleTweakFactor = self.tweakFactor
+        sample.topHatW = self.topHatW
         sample.FTMode = self.FTMode
         sample.grBroadening = self.grBroadening
         sample.exponentialValues = [(0.0, 1.0)]

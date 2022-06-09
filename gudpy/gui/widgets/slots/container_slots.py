@@ -282,6 +282,10 @@ class ContainerSlots():
             self.handleRemoveElement
         )
 
+        self.widget.containerTopHatWidthSpinBox.valueChanged.connect(
+            self.handleTopHatWidthChanged
+        )
+
         # Fill top hat width combo box.
         for tp in FTModes:
             self.widget.containerFTModeComboBox.addItem(tp.name, tp)
