@@ -268,7 +268,7 @@ class SampleSlots():
         self.widget.sampleCrossSectionFileLineEdit.textChanged.connect(
             self.handleCrossSectionFileChanged
         )
-        self.widget.browseSampleCrossSectionFileButto.clicked.connect(
+        self.widget.browseSampleCrossSectionFileButton.clicked.connect(
             self.handleBrowseCrossSectionFile
         )
 
@@ -327,6 +327,9 @@ class SampleSlots():
         self.widget.scatteringFileLineEdit.textChanged.connect(
             self.handleSelfScatteringFileChanged
         )
+        self.widget.browseScatteringFileButton.clicked.connect(
+            self.handleBrowseScatteringFile
+        )
         self.widget.correctionFactorSpinBox.valueChanged.connect(
             self.handleCorrectionFactorChanged
         )
@@ -380,7 +383,7 @@ class SampleSlots():
         value : float
             The new value of the samplePeriodNoSpinBox.
         """
-        self.sample.periodNo = value
+        self.sample.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
             if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
@@ -566,7 +569,7 @@ class SampleSlots():
         """
         Slot for browsing for a cross section source file.
         Called when a clicked signal is emitted,
-        from the browseSampleCrossSectionFileButto.
+        from the browseSampleCrossSectionFileButton.
         Alters the corresponding line edit as such.
         as such.
         """
@@ -642,7 +645,7 @@ class SampleSlots():
             The new current index of the
             FTModeComboBox.
         """
-        self.sample.singleAtomBackgroundScatteringSubtractionMode = (
+        self.sample.FTMode = (
             self.widget.FTModeComboBox.itemData(index)
         )
 
@@ -738,6 +741,19 @@ class SampleSlots():
         self.sample.fileSelfScattering = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
+
+    def handleBrowseScatteringFile(self):
+        """
+        Slot for browsing for a self scattering file.
+        Called when a clicked signal is emitted,
+        from the browseScatteringFileButton.
+        Alters the corresponding line edit as such.
+        as such.
+        """
+        filename, _ = QFileDialog.getOpenFileName(
+            self.widget, "Scattering File", "")
+        if filename:
+            self.widget.scatteringFileLineEdit.setText(filename)
 
     def handleNormaliseToChanged(self, index):
         """

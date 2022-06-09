@@ -4618,22 +4618,6 @@
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                         </property>
                         <item row="0" column="0">
-                         <widget class="QCheckBox" name="runSeparatelyCheckBox">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="layoutDirection">
-                           <enum>Qt::RightToLeft</enum>
-                          </property>
-                          <property name="text">
-                           <string>Run files separately</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="0">
                          <widget class="QCheckBox" name="sampleForceCorrectionsCheckBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -4652,7 +4636,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="0">
+                        <item row="1" column="0">
                          <widget class="QLabel" name="normaliseToLabel">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -4665,7 +4649,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="1">
+                        <item row="1" column="1">
                          <widget class="QComboBox" name="normaliseToComboBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -4681,7 +4665,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="3" column="0">
+                        <item row="2" column="0">
                          <widget class="QLabel" name="outputUnitsLabel">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -4694,7 +4678,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="3" column="1">
+                        <item row="2" column="1">
                          <widget class="QComboBox" name="outputUnitsComboBox">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -5024,7 +5008,7 @@
                             <widget class="QLineEdit" name="sampleCrossSectionFileLineEdit"/>
                            </item>
                            <item>
-                            <widget class="QPushButton" name="browseSampleCrossSectionFileButto">
+                            <widget class="QPushButton" name="browseSampleCrossSectionFileButton">
                              <property name="text">
                               <string>Browse</string>
                              </property>
