@@ -201,8 +201,7 @@ class TestGudPyIO(TestCase):
                 "maxRadFT",
                 "grBroadening",
                 "powerForBroadening",
-                "stepSize",
-                "singleAtomBackgroundScatteringSubtractionMode",
+                "stepSize"
                 "yamlignore"
             }
         }
@@ -258,7 +257,6 @@ class TestGudPyIO(TestCase):
                 "grBroadening",
                 "powerForBroadening",
                 "stepSize",
-                "singleAtomBackgroundScatteringSubtractionMode",
                 "yamlignore"
             }
         }
@@ -309,7 +307,6 @@ class TestGudPyIO(TestCase):
                 "grBroadening",
                 "powerForBroadening",
                 "stepSize",
-                "singleAtomBackgroundScatteringSubtractionMode",
                 "yamlignore"
             }
         }
@@ -360,7 +357,6 @@ class TestGudPyIO(TestCase):
                 "grBroadening",
                 "powerForBroadening",
                 "stepSize",
-                "singleAtomBackgroundScatteringSubtractionMode",
                 "yamlignore"
             }
         }
@@ -417,7 +413,6 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerA],
             "yamlignore": {
                 "yamlignore",
-                "singleAtomBackgroundScatteringSubtractionMode"
             }
         }
 
@@ -472,8 +467,7 @@ class TestGudPyIO(TestCase):
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerB],
             "yamlignore": {
-                "yamlignore",
-                "singleAtomBackgroundScatteringSubtractionMode"
+                "yamlignore"
             }
         }
 
@@ -528,8 +522,7 @@ class TestGudPyIO(TestCase):
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerC],
             "yamlignore": {
-                "yamlignore",
-                "singleAtomBackgroundScatteringSubtractionMode"
+                "yamlignore"
             }
         }
 
@@ -585,8 +578,7 @@ class TestGudPyIO(TestCase):
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerD],
             "yamlignore": {
-                "yamlignore",
-                "singleAtomBackgroundScatteringSubtractionMode"
+                "yamlignore"
             }
         }
 

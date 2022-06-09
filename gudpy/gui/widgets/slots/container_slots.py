@@ -765,7 +765,7 @@ class ContainerSlots():
             The new current index of the
             containerFTModeComboBox.
         """
-        self.container.singleAtomBackgroundScatteringSubtractionMode = (
+        self.container.FTMode = (
             self.widget.FTModeComboBox.itemData(index)
         )
 

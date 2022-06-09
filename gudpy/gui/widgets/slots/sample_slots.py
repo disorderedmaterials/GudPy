@@ -642,7 +642,7 @@ class SampleSlots():
             The new current index of the
             FTModeComboBox.
         """
-        self.sample.singleAtomBackgroundScatteringSubtractionMode = (
+        self.sample.FTMode = (
             self.widget.FTModeComboBox.itemData(index)
         )
 

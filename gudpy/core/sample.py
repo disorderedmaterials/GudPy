@@ -143,8 +143,7 @@ class Sample:
         self.containers = []
 
         self.yamlignore = {
-            "yamlignore",
-            "singleAtomBackgroundScatteringSubtractionMode"
+            "yamlignore"
         }
 
     def pathName(self):
