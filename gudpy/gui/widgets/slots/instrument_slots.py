@@ -957,7 +957,7 @@ class InstrumentSlots():
         ]
         if state:
             if not self.widgetsRefreshing:
-                self.instrument.scale = Scales.Q
+                self.instrument.scaleSelection = Scales.Q
                 values = [
                     widget.value() for widget in self.scales[Scales.Q][1:]
                 ]
@@ -991,7 +991,7 @@ class InstrumentSlots():
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
-            self.instrument.scale = Scales.D_SPACING
+            self.instrument.scaleSelection = Scales.D_SPACING
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
@@ -1018,7 +1018,7 @@ class InstrumentSlots():
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
-            self.instrument.scale = Scales.WAVELENGTH
+            self.instrument.scaleSelection = Scales.WAVELENGTH
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
@@ -1042,7 +1042,7 @@ class InstrumentSlots():
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
-            self.instrument.scale = Scales.ENERGY
+            self.instrument.scaleSelection = Scales.ENERGY
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
@@ -1064,7 +1064,7 @@ class InstrumentSlots():
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
-            self.instrument.scale = Scales.TOF
+            self.instrument.scaleSelection = Scales.TOF
             if not self.widgetsRefreshing:
                 self.parent.setModified()
 
