@@ -230,6 +230,10 @@ class ContainerSlots():
         for du in UnitsOfDensity:
             self.widget.containerDensityUnitsComboBox.addItem(du.name, du)
 
+        self.widget.containerDensityUnitsComboBox.currentIndexChanged.connect(
+            self.handleDensityUnitsChanged
+        )
+
         # Setup slots for other container configuration data.
         # Populate cross section source combo box.
         for c in CrossSectionSource:
@@ -423,6 +427,23 @@ class ContainerSlots():
             The new value of the containerDensitySpinBox.
         """
         self.container.density = value
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleDensityUnitsChanged(self, index):
+        """
+        Slot for handling change in density units.
+        Called when a currentIndexChanged signal is emitted,
+        from the containerDensityUnitsComboBox.
+        Alters the container density units as such.
+        Parameters
+        ----------
+        index : int
+            The new current index of the containerDensityUnitsComboBox.
+        """
+        self.container.densityUnits = (
+            self.widget.containerDensityUnitsComboBox.itemData(index)
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
