@@ -230,7 +230,7 @@ class Sample:
         resonanceLines = (
             bjoin(
                 self.resonanceValues,
-                '{config.spc5}Min. and max resonance wavelength [\u212b]\n',
+                f'{config.spc5}Min. and max resonance wavelength [\u212b]\n',
                 sameseps=True
             )
         )
