@@ -528,7 +528,7 @@ class InstrumentSlots():
         """
         match = re.search(self.pathRegex, text)
         if match:
-            self.instrumentdetectorCalibrationFileName = match.group()
+            self.instrument.detectorCalibrationFileName = match.group(0)
         else:
             self.instrument.detectorCalibrationFileName = text
         if not self.widgetsRefreshing:
