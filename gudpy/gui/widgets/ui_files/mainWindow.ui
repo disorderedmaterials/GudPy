@@ -5171,7 +5171,7 @@
                                  </sizepolicy>
                                 </property>
                                 <property name="suffix">
-                                 <string> cm</string>
+                                 <string> °</string>
                                 </property>
                                </widget>
                               </item>
@@ -6911,7 +6911,7 @@
                                 </sizepolicy>
                                </property>
                                <property name="suffix">
-                                <string>cm</string>
+                                <string> °</string>
                                </property>
                               </widget>
                              </item>
