@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
+from ruamel.yaml import scalarfloat as yamlfloat
 import os
 
 from core.composition import (
@@ -162,7 +163,9 @@ class YAML:
 
     @abstractmethod
     def toYaml(self, var):
-        if var.__class__.__module__ == "builtins":
+        if var.__class__.__module__ == "ruamel.yaml.scalarfloat":
+            return float(var)
+        if var.__class__.__module__ == "builtins":  
             if isinstance(var, (list, tuple)):
                 return type(var)([self.toYaml(v) for v in var])
             else:
