@@ -1,5 +1,5 @@
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QDoubleSpinBox, QTableView
+from PySide6.QtWidgets import QTableView
 
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel

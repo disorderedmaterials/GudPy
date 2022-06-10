@@ -61,7 +61,9 @@ class ComponentSlots():
             component = index.internalPointer()
             try:
                 if component.parse(persistent=False):
-                    compositionDialog = CompositionDialog(self.widget, component)
+                    compositionDialog = CompositionDialog(
+                        self.widget, component
+                    )
                     result = compositionDialog.widget.exec()
                     if result:
                         component.parse()
