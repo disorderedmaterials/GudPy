@@ -1070,6 +1070,8 @@ class GudPyTreeView(QTreeView):
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 sample.runThisSample = selected
+        if not self.parent.widgetsRefreshing:
+            self.parent.setModified()
 
     def selectOnlyThisSample(self):
         """
@@ -1080,6 +1082,8 @@ class GudPyTreeView(QTreeView):
             self.currentObject().runThisSample = True
         if isinstance(self.currentObject(), Container):
             self.model().findParent(self.currentObject()).runThisSample = True
+        if not self.parent.widgetsRefreshing:
+            self.parent.setModified()
 
     def setContextEnabled(self, state):
         """
