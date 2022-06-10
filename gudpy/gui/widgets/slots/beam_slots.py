@@ -488,7 +488,7 @@ class BeamSlots():
             self.beam.beamProfileValues
         )
         self.widget.beamProfileValuesTable.model().dataChanged.connect(
-            self.widget.beamChart.plot
+            self.handleBeamProfileValueChanged
         )
 
     def handleAddBeamProfileValue(self):
@@ -511,6 +511,16 @@ class BeamSlots():
         self.widget.beamProfileValuesTable.removeRow(
             self.widget.beamProfileValuesTable.selectionModel().selectedRows()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+        self.widget.beamChart.plot()
+
+    def handleBeamProfileValueChanged(self):
+        """
+        Slot for modifying the current beam profile value in the table.
+        Called when a dataChagned signal is emitted
+        from the beamProfileValuesTable.
+        """
         if not self.widgetsRefreshing:
             self.parent.setModified()
         self.widget.beamChart.plot()
