@@ -135,7 +135,7 @@ class YAML:
                     self.maskYAMLDicttoClass(container, contyaml)
                     cls.containers.append(container)
             else:
-                setattr(cls, k, type(cls.__dict__[k])(v))
+                setattr(cls, k, type(cls.__dict__[k])(self.toBuiltin(v)))
 
     def maskYAMLSeqtoClss(self, cls, yamlseq):
         if isinstance(cls, Components):
@@ -182,3 +182,12 @@ class YAML:
                 for k, v in var.__dict__.items()
                 if k not in var.yamlignore
             }
+
+    @abstractmethod
+    def toBuiltin(self, yamlvar):
+        if isinstance(yamlvar, (list, tuple)):
+            return [self.toBuiltin(v) for v in yamlvar]
+        elif yamlvar.__class__.__module__ == "builtins":
+            return yamlvar
+        elif yamlvar.__class__.__module__ == "ruamel.yaml.scalarfloat":
+            return float(yamlvar)
