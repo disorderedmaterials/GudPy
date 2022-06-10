@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QMessageBox
 
 from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from core import config
+from core.composition import Component
 from core.element import Element
 from core.exception import ChemicalFormulaParserException
 
@@ -56,32 +57,40 @@ class ComponentSlots():
         self.setSubComponentsEnabled(self.components.count())
 
     def handleDataChanged(self, index, _):
-        component = index.internalPointer()
-        try:
-            if component.parse(persistent=False):
-                compositionDialog = CompositionDialog(self.widget, component)
-                result = compositionDialog.widget.exec()
-                if result:
-                    component.parse()
-                row = index.row()
-                self.loadComponentsList()
-                self.widget.componentList.setCurrentIndex(
-                    self.widget.componentList.model().index(
-                        row, 0
+        if isinstance(index.internalPointer(), Component):
+            component = index.internalPointer()
+            try:
+                if component.parse(persistent=False):
+                    compositionDialog = CompositionDialog(
+                        self.widget, component
                     )
+                    result = compositionDialog.widget.exec()
+                    if result:
+                        component.parse()
+                    row = index.row()
+                    self.loadComponentsList()
+                    self.widget.componentList.setCurrentIndex(
+                        self.widget.componentList.model().index(
+                            row, 0
+                        )
+                    )
+                if not self.widgetsRefreshing:
+                    self.parent.setModified()
+            except ChemicalFormulaParserException as cfpm:
+                QMessageBox.warning(
+                    self.widget, "GudPy Warning",
+                    str(cfpm)
                 )
-            if not self.widgetsRefreshing:
-                self.parent.setModified()
-        except ChemicalFormulaParserException as cfpm:
-            QMessageBox.warning(
-                self.widget, "GudPy Warning",
-                str(cfpm)
-            )
+        self.handleComponentsChanged()
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(
-            Element("", 0, 0.), self.widget.componentList.currentIndex()
+            Element("H", 0, 0.), self.widget.componentList.currentIndex()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleComponentsChanged(self):
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -89,6 +98,8 @@ class ComponentSlots():
         self.widget.componentList.insertComponent()
         self.setSubComponentsEnabled(self.components.count())
         self.setComponentsActionsEnabled(self.components.count())
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeComponent(self):
         self.widget.componentList.removeComponent()
@@ -96,6 +107,8 @@ class ComponentSlots():
             self.parent.setModified()
         self.setSubComponentsEnabled(self.components.count())
         self.setComponentsActionsEnabled(self.components.count())
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def removeSubComponent(self):
         self.widget.componentCompositionTable.model().removeRow(
@@ -108,9 +121,13 @@ class ComponentSlots():
     def setUseComponentDefinitions(self, state):
         config.USE_USER_DEFINED_COMPONENTS = bool(state)
         self.widget.normaliseCompositionsCheckBox.setEnabled(bool(state))
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def toggleNormaliseCompositions(self, state):
         config.NORMALISE_COMPOSITIONS = bool(state)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def duplicateComponent(self):
         self.widget.componentList.duplicate()

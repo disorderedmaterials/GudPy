@@ -624,9 +624,11 @@ class ContainerSlots():
         Parameters
         ----------
         state : int
-            The new state of the runAsSampleGroupBox check bolx.
+            The new state of the runAsSampleGroupBox check box.
         """
         self.container.runAsSample = bool(state)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleDataFilesAltered(self):
         """
@@ -683,6 +685,9 @@ class ContainerSlots():
         self.widget.containerCompositionTable.makeModel(
             self.container.composition.elements, self.container
         )
+        self.widget.containerCompositionTable.model().dataChanged.connect(
+            self.handleElementChanged
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -708,6 +713,15 @@ class ContainerSlots():
             .selectionModel().selectedRows()
         )
         self.updateExpectedDCSLevel()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleElementChanged(self):
+        """
+        Slot for handling modifications to elements in the composition
+        table. Called when a dataChanged signal is emitted,
+        from the containerCompositionTable.
+        """
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

@@ -549,6 +549,7 @@ class GudPyMainWindow(QMainWindow):
         return path
 
     def updateWidgets(self, fromFile=False):
+        self.widgetsRefreshing = True
         if fromFile:
             self.gudrunFile = GudrunFile(path=self.gudrunFile.path)
         self.mainWidget.gudrunFile = self.gudrunFile
@@ -579,7 +580,15 @@ class GudPyMainWindow(QMainWindow):
                     )
         self.setActionsEnabled(True)
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
+        self.mainWidget.objectTree.model().dataChanged.connect(
+            self.handleObjectsChanged
+        )
         self.updateResults()
+        self.widgetsRefreshing = False
+
+    def handleObjectsChanged(self):
+        if not self.widgetsRefreshing:
+            self.setModified()
 
     def loadInputFile_(self):
         """
@@ -627,11 +636,11 @@ class GudPyMainWindow(QMainWindow):
             fmt = Format.TXT if ext == ".txt" else Format.YAML
             if filter and sys.platform.startswith("linux"):
                 filename += ext
-            if os.path.basename(filename) == "txt":
+            if os.path.basename(filename) == "gudpy.txt":
                 QMessageBox.warning(
                     self.mainWidget,
                     "GudPy Warning",
-                    f"Cannot save to {filename}, txt is reserved."
+                    f"Cannot save to {filename}, gudpy.txt is reserved."
                 )
                 return
             self.gudrunFile.instrument.GudrunInputFileDir = (
@@ -900,34 +909,19 @@ class GudPyMainWindow(QMainWindow):
             *self.mainWidget.objectTree.getSamples(),
             *self.mainWidget.objectTree.getContainers()
         ]
-        if len(self.allPlots):
-            allTopChart = GudPyChart(
-                self.gudrunFile
+        allTopChart = GudPyChart(
+            self.gudrunFile
+        )
+        allTopChart.addSamples(samples)
+        allTopChart.plot(
+            self.mainWidget.allPlotComboBox.itemData(
+                self.mainWidget.allPlotComboBox.currentIndex()
             )
-            allTopChart.addSamples(samples)
-            allTopChart.plot(
-                self.mainWidget.allPlotComboBox.itemData(
-                    self.mainWidget.allPlotComboBox.currentIndex()
-                )
-            )
-            allBottomChart = GudPyChart(
-                self.gudrunFile
-            )
-            allBottomChart.addSamples(samples)
-        else:
-            allTopChart = GudPyChart(
-                self.gudrunFile
-            )
-            allTopChart.addSamples(samples)
-            allTopChart.plot(
-                self.mainWidget.allPlotComboBox.itemData(
-                    self.mainWidget.allPlotComboBox.currentIndex()
-                )
-            )
-            allBottomChart = GudPyChart(
-                self.gudrunFile
-            )
-            allBottomChart.addSamples(samples)
+        )
+        allBottomChart = GudPyChart(
+            self.gudrunFile
+        )
+        allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)

@@ -173,6 +173,7 @@ class ComponentsModel(QAbstractItemModel):
                         self.components.components[
                             index.parent().row()
                         ].elements[index.row()].atomicSymbol = value
+                        self.dataChanged.emit(index, index)
                     elif value == "D":
                         self.components.components[
                             index.parent().row()
@@ -180,14 +181,17 @@ class ComponentsModel(QAbstractItemModel):
                         self.components.components[
                             index.parent().row()
                         ].elements[index.row()].massNo = 2
+                        self.dataChanged.emit(index, index)
                 elif index.column() == 1:
                     self.components.components[
                         index.parent().row()
                     ].elements[index.row()].massNo = value
+                    self.dataChanged.emit(index, index)
                 elif index.column() == 2:
                     self.components.components[
                         index.parent().row()
                     ].elements[index.row()].abundance = value
+                    self.dataChanged.emit(index, index)
             return True
 
     def data(self, index, role):
@@ -224,7 +228,8 @@ class ComponentsModel(QAbstractItemModel):
                         obj.atomicSymbol,
                         obj.massNo
                     )
-                    return sears91.isotope(isotope)
+                    if isotope:
+                        return sears91.isotope(isotope)
                 elif index.column() == 2:
                     return obj.abundance
         else:

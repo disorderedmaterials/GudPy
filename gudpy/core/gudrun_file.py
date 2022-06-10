@@ -1305,8 +1305,9 @@ class GudrunFile:
                 self.sampleBackgrounds,
                 config.GUI
             ) = self.yaml.parseYaml(self.path)
+            self.format = Format.YAML
         except Exception:
-
+            self.format = Format.TXT
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
@@ -1429,11 +1430,13 @@ class GudrunFile:
             + components
         )
 
-    def save(self, path='', format=Format.TXT):
+    def save(self, path='', format=None):
 
         if not path:
             path = self.path
 
+        if not format:
+            format = self.format
         if format == Format.TXT:
             self.write_out(path=path.replace(path.split(".")[-1], "txt"))
         elif format == Format.YAML:

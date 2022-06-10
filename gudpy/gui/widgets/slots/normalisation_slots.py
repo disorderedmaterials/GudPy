@@ -193,7 +193,7 @@ class NormalisationSlots():
         self.widget.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.widget.upstreamSpinBox.valueChanged.connect(
+        self.widget.downstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
 
@@ -744,6 +744,9 @@ class NormalisationSlots():
         self.widget.normalisationCompositionTable.makeModel(
             self.normalisation.composition.elements, self.normalisation
         )
+        self.widget.normalisationCompositionTable.model().dataChanged.connect(
+            self.handleElementChanged
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
@@ -767,5 +770,14 @@ class NormalisationSlots():
             self.widget.normalisationCompositionTable
             .selectionModel().selectedRows()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleElementChanged(self):
+        """
+        Slot for handling modifications to elements in the composition
+        table. Called when a dataChanged signal is emitted,
+        from the normalisationCompositionTable.
+        """
         if not self.widgetsRefreshing:
             self.parent.setModified()
