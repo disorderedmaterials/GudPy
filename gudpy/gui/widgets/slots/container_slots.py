@@ -624,9 +624,11 @@ class ContainerSlots():
         Parameters
         ----------
         state : int
-            The new state of the runAsSampleGroupBox check bolx.
+            The new state of the runAsSampleGroupBox check box.
         """
         self.container.runAsSample = bool(state)
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleDataFilesAltered(self):
         """
