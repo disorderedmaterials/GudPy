@@ -980,6 +980,11 @@ class SampleSlots():
         self.widget.sampleCompositionTable.makeModel(
             self.sample.composition.elements, self.sample
         )
+        self.widget.sampleCompositionTable.model().dataChanged.connect(
+            self.handleElementChanged
+        )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
 
     def handleInsertElement(self):
         """
@@ -1001,6 +1006,15 @@ class SampleSlots():
             self.widget.sampleCompositionTable.selectionModel().selectedRows()
         )
         self.updateExpectedDCSLevel()
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleElementChanged(self):
+        """
+        Slot for handling modifications to elements in the composition
+        table. Called when a dataChanged signal is emitted,
+        from the sampleCompositionTable.
+        """
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
