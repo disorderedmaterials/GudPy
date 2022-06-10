@@ -636,11 +636,11 @@ class GudPyMainWindow(QMainWindow):
             fmt = Format.TXT if ext == ".txt" else Format.YAML
             if filter and sys.platform.startswith("linux"):
                 filename += ext
-            if os.path.basename(filename) == "txt":
+            if os.path.basename(filename) == "gudpy.txt":
                 QMessageBox.warning(
                     self.mainWidget,
                     "GudPy Warning",
-                    f"Cannot save to {filename}, txt is reserved."
+                    f"Cannot save to {filename}, gudpy.txt is reserved."
                 )
                 return
             self.gudrunFile.instrument.GudrunInputFileDir = (
