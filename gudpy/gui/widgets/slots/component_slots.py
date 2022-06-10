@@ -85,7 +85,7 @@ class ComponentSlots():
 
     def addSubComponent(self):
         self.widget.componentCompositionTable.model().insertRow(
-            Element("", 0, 0.), self.widget.componentList.currentIndex()
+            Element("H", 0, 0.), self.widget.componentList.currentIndex()
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()

@@ -114,7 +114,7 @@ class CompositionModel(GudPyTableModel):
         self.beginInsertRows(
             QModelIndex(), self.rowCount(self), self.rowCount(self)
         )
-        self._data.append(Element("", 0, 0))
+        self._data.append(Element("H", 0, 0))
         self.endInsertRows()
 
     def data(self, index, role):
