@@ -1049,12 +1049,18 @@ class SampleSlots():
         self.widget.exponentialValuesTable.makeModel(
             self.sample.exponentialValues
         )
+        self.widget.exponentialValuesTable.model().dataChanged.connect(
+            self.handleExponentialValueChanged
+        )
 
     def updateResonanceTable(self):
         """
         Fills the resonance table.
         """
         self.widget.resonanceValuesTable.makeModel(self.sample.resonanceValues)
+        self.widget.resonanceValuesTable.model().dataChanged.connect(
+            self.handleResonanceValueChanged
+        )
 
     def handleInsertExponentialValue(self):
         """
@@ -1078,6 +1084,15 @@ class SampleSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
 
+    def handleExponentialValueChanged(self):
+        """
+        Slot for handling modification to an exponential value.
+        Called when a dataChanged signal is emitted,
+        from the exponentialValuesTable.
+        """
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
     def handleInsertResonanceValue(self):
         """
         Slot for handling insertion to the resonance table.
@@ -1097,6 +1112,15 @@ class SampleSlots():
         self.widget.resonanceValuesTable.removeRow(
             self.widget.resonanceValuesTable.selectionModel().selectedRows()
         )
+        if not self.widgetsRefreshing:
+            self.parent.setModified()
+
+    def handleResonanceValueChanged(self):
+        """
+        Slot for handling modification to a resonance value.
+        Called when a dataChanged signal is emitted,
+        from the resonanceValuesTable.
+        """
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

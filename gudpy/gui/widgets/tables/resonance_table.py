@@ -66,6 +66,7 @@ class ResonanceModel(GudPyTableModel):
         mutable[col] = value
         if role == Qt.EditRole:
             self._data[row] = tuple(mutable)
+            self.dataChanged.emit(index, index)
 
     def insertRow(self):
         """
