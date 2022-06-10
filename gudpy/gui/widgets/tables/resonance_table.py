@@ -1,6 +1,7 @@
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDoubleSpinBox, QTableView
 
+from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 from gui.widgets.tables.gudpy_tables import GudPyDelegate, GudPyTableModel
 
 
@@ -92,7 +93,7 @@ class ResonanceDelegate(GudPyDelegate):
     """
     def createEditor(self, parent, option, index):
         """
-        Creates an editor, which is a QDoubleSpinBox.
+        Creates an editor, which is a ExponentialSpinBox.
         Parameters
         ----------
         parent : QWidget
@@ -103,12 +104,12 @@ class ResonanceDelegate(GudPyDelegate):
             Index in to create editor at.
         Returns
         -------
-        QDoubleSpinBox
+        ExponentialSpinBox
             The created editor.
         """
-        editor = QDoubleSpinBox(parent)
-        editor.setMinimum(0)
-        editor.setMaximum(100)
+        editor = ExponentialSpinBox(parent)
+        editor.setMinimum(0.0)
+        editor.setMaximum(100.)
         return editor
 
 
