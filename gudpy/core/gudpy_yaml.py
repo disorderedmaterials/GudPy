@@ -68,7 +68,6 @@ class YAML:
         GUI = GUIConfig()
         self.maskYAMLDicttoClass(GUI, yamldict["GUI"])
 
-
         return (
             instrument, beam, components,
             normalisation, sampleBackgrounds, GUI
