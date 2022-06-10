@@ -68,6 +68,7 @@ class YAML:
         GUI = GUIConfig()
         self.maskYAMLDicttoClass(GUI, yamldict["GUI"])
 
+
         return (
             instrument, beam, components,
             normalisation, sampleBackgrounds, GUI
@@ -190,3 +191,5 @@ class YAML:
             return yamlvar
         elif yamlvar.__class__.__module__ == "ruamel.yaml.scalarfloat":
             return float(yamlvar)
+        elif yamlvar.__class__.__module__ == "ruamel.yaml.scalarstring":
+            return str(yamlvar)
