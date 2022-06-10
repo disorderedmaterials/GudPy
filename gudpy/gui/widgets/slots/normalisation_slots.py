@@ -193,7 +193,7 @@ class NormalisationSlots():
         self.widget.upstreamSpinBox.valueChanged.connect(
             self.handleUpstreamThicknessChanged
         )
-        self.widget.upstreamSpinBox.valueChanged.connect(
+        self.widget.downstreamSpinBox.valueChanged.connect(
             self.handleDownstreamThicknessChanged
         )
 
