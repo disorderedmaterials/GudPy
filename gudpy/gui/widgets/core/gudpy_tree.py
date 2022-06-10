@@ -491,6 +491,7 @@ class GudPyTreeModel(QAbstractItemModel):
             setter(obj)
             # End inserting rows.
             self.endInsertRows()
+            self.dataChanged.emit(self.index(start, end, parent), self.index(start, end, parent))
         elif validSiblings[type(obj)]:
             # We are inserting.
             if isinstance(obj, SampleBackground):
@@ -529,6 +530,7 @@ class GudPyTreeModel(QAbstractItemModel):
             setter(index+1, obj)
             # End inserting rows.
             self.endInsertRows()
+            self.dataChanged.emit(self.index(start, end, parent), self.index(start, end, parent))
 
     def removeRow(self, index):
         """
@@ -586,6 +588,7 @@ class GudPyTreeModel(QAbstractItemModel):
         remove(obj)
         # End inserting rows.
         self.endRemoveRows()
+        self.dataChanged.emit(self.index(start, end, parent), self.index(start, end, parent))
 
 
 class GudPyTreeView(QTreeView):
