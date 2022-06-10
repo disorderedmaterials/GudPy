@@ -224,7 +224,8 @@ class ComponentsModel(QAbstractItemModel):
                         obj.atomicSymbol,
                         obj.massNo
                     )
-                    return sears91.isotope(isotope)
+                    if isotope:
+                        return sears91.isotope(isotope)
                 elif index.column() == 2:
                     return obj.abundance
         else:
