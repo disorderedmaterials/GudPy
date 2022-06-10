@@ -110,20 +110,18 @@ class GudPyChart(QChart):
         ]
         for sample in self.samples:
             if self.series():
-                minX = min(
-                    [
-                        p.x()
-                        for series in self.series()
-                        for p in series.points()
-                    ]
-                )
-                minY = min(
-                    [
-                        p.y()
-                        for series in self.series()
-                        for p in series.points()
-                    ]
-                )
+                pointsX = [
+                    p.x()
+                    for series in self.series()
+                    for p in series.points()
+                ]
+                minX = 0 if sum(pointsX) == 0 else min(pointsX)
+                pointsY = [
+                    p.y()
+                    for series in self.series()
+                    for p in series.points()
+                ]
+                minY = 0 if sum(pointsY) == 0 else min(pointsY)
             else:
                 minX = 0
                 minY = 0
