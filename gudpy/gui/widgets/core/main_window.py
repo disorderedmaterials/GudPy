@@ -62,6 +62,7 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
+from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
 
@@ -214,6 +215,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(CompositionAcceptanceDialog)
+        loader.registerCustomWidget(BatchProcessingDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
@@ -429,6 +431,10 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.runFilesIndividually.triggered.connect(
             self.runFilesIndividually
+        )
+
+        self.mainWidget.batchProcessing.triggered.connect(
+            self.batchProcessing
         )
 
         self.mainWidget.checkFilesExist.triggered.connect(
@@ -1233,6 +1239,90 @@ class GudPyMainWindow(QMainWindow):
                 self.nextIterableProc()
             self.mainWidget.stopTaskButton.setEnabled(True)
 
+    def batchProcessing(self):
+        if not self.checkFilesExist_():
+            return
+        self.setControlsEnabled(False)
+        batchProcessingDialog = BatchProcessingDialog(
+            self.gudrunFile, self.mainWidget
+        )
+        batchProcessingDialog.widget.exec()
+        if not batchProcessingDialog.batchProcessor:
+            self.setControlsEnabled(True)
+        else:
+            self.queue = batchProcessingDialog.queue
+            self.outputBatches = {}
+            self.text = batchProcessingDialog.text
+            self.numberIterations = batchProcessingDialog.numberIterations
+            self.currentIteration = 0
+            self.batchProcessor = batchProcessingDialog.batchProcessor
+            self.mainWidget.currentTaskLabel.setText(self.text)
+            self.mainWidget.stopTaskButton.setEnabled(True)
+            self.nextBatchProcess()
+
+    def batchProcessFinished(self, ec, es):
+        self.outputBatches[self.currentIteration+1] = self.output
+        self.output = ""
+        self.currentIteration += 1
+        self.nextBatchProcess()
+
+    def nextBatchProcess(self):
+        if not self.queue.empty():
+            task = self.queue.get()
+            if isinstance(task[0], QProcess):
+                self.proc, func, args = task
+                self.proc.readyReadStandardOutput.connect(
+                    self.progressBatchProcess
+                )
+                self.proc.finished.connect(self.batchProcessFinished)
+                self.proc.setWorkingDirectory(
+                    self.gudrunFile.instrument.GudrunInputFileDir
+                )
+                func(*args)
+                self.proc.start()
+            else:
+                func, args = task
+                ret = func(*args)
+                if ret:
+                    self.batchProcessingFinished()
+                else:
+                    self.nextBatchProcess()
+        else:
+            self.setControlsEnabled(True)
+            self.batchProcessingFinished()
+
+    def progressBatchProcess(self):
+        progress = self.progressIncrementDCS(
+            self.batchProcessor.batchedGudrunFile
+        )
+        if progress == -1:
+            self.error = (
+                f"An error occurred. See the following traceback"
+                f" from gudrun_dcs\n{self.error}"
+            )
+            return
+        progress /= self.numberIterations
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+
+    def batchProcessingFinished(self):
+        self.setControlsEnabled(True)
+        self.queue = Queue()
+        self.proc = None
+        self.text = "No task running."
+        self.mainWidget.currentTaskLabel.setText(self.text)
+        self.mainWidget.progressBar.setValue(0)
+        self.mainWidget.stopTaskButton.setEnabled(False)
+        self.outputSlots.setOutput(
+            self.batchProcessor.batchedGudrunFile,
+            self.outputBatches,
+            "gudrun_dcs"
+        )
+        self.outputBatches = {}
+        self.output = ""
+
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
         self.mainWidget.progressBar.setValue(
@@ -1275,7 +1365,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.outputSlots.setOutput(output, "gudrun_dcs")
+        self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
         self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
@@ -1359,7 +1449,11 @@ class GudPyMainWindow(QMainWindow):
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration + 1] = self.output
-            self.outputSlots.setOutput(self.outputIterations, "gudrun_dcs")
+            self.outputSlots.setOutput(
+                self.gudrunFile,
+                self.outputIterations,
+                "gudrun_dcs"
+            )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
@@ -1417,7 +1511,7 @@ class GudPyMainWindow(QMainWindow):
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
     def progressIteration(self):
-        progress = self.progressIncrementDCS()
+        progress = self.progressIncrementDCS(self.gudrunFile)
         if progress == -1:
             self.error = (
                 f"An error occurred. See the following traceback"
@@ -1450,7 +1544,10 @@ class GudPyMainWindow(QMainWindow):
         return True
 
     def autosave(self):
-        if self.gudrunFile.path and not self.proc and not self.workerThread:
+        if (
+            self.gudrunFile and self.gudrunFile.path
+            and not self.proc and not self.workerThread
+        ):
             autosavePath = self.gudrunFile.path + ".autosave"
             self.gudrunFile.write_out(path=autosavePath)
 
@@ -1486,6 +1583,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
         self.mainWidget.runFilesIndividually.setEnabled(state)
+        self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1511,7 +1609,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
-
+        self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
             state &
@@ -1529,7 +1627,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.paste.setEnabled(state)
         self.mainWidget.delete_.setEnabled(state)
 
-    def progressIncrementDCS(self):
+    def progressIncrementDCS(self, gudrunFile):
         if not self.proc:
             return 0
         data = self.proc.readAllStandardOutput()
@@ -1545,8 +1643,8 @@ class GudPyMainWindow(QMainWindow):
             return -1
         # Number of GudPy objects.
         markers = (
-            config.NUM_GUDPY_CORE_OBJECTS
-            + len(self.gudrunFile.sampleBackgrounds)
+            config.NUM_GUDPY_CORE_OBJECTS - 1
+            + len(gudrunFile.sampleBackgrounds)
             + sum(
                 [
                     sum(
@@ -1564,7 +1662,7 @@ class GudPyMainWindow(QMainWindow):
                                 if sample.runThisSample
                             ]
                         ]
-                    ) for sampleBackground in self.gudrunFile.sampleBackgrounds
+                    ) for sampleBackground in gudrunFile.sampleBackgrounds
                 ]
             )
         )
@@ -1582,7 +1680,7 @@ class GudPyMainWindow(QMainWindow):
         return progress
 
     def progressDCS(self):
-        progress = self.progressIncrementDCS()
+        progress = self.progressIncrementDCS(self.gudrunFile)
         if progress == -1:
             self.queue = Queue()
             self.error = (
@@ -1749,9 +1847,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(output, "gudrun_dcs")
+            self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
         else:
-            self.outputSlots.setOutput(output, "purge_det")
+            self.outputSlots.setOutput(self.gudrunFile, output, "purge_det")
         self.outputIterations = {}
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
