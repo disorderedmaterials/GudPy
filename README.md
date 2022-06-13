@@ -4,6 +4,17 @@ Python-based Batch Processing and Alternative GUI for the Gudrun software by A. 
 
 GudPy offers a range of additional functionality unavailable in the Gudrun Java GUI, whilst also making some existing functionality/workflows easier to perform/carry-out. For further reference, you can visit the Gudrun manual.
 
+## Running GudPy
+### IDAaaS
+The continuous build is released on IDAaaS on a nightly basis, this is where you can find the most cutting-edge (yet experimental) version of GudPy.
+### Stable Release
+Stable releases are available on the [release page](https://github.com/disorderedmaterials/GudPy/releases).
+### From Source
+Requires `python>=3.8` and `pip`.
+1. Clone the repository.
+2. Download the latest [Gudrun binaries and startup files](https://github.com/disorderedmaterials/Gudrun/releases), and unzip/untar into the `bin` directory.
+3. `python3 -m pip install -r requirements.txt`
+4. `python3 gudpy`
 ## Additional functionality
 ### Components
 - `Components` can be defined within the "Components" tab.
