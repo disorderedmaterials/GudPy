@@ -13,8 +13,8 @@ class DataFiles:
         List of filenames belonging to the object.
     name : str
         Name of the parent of the data files, e.g. Sample Background
-    Methods
-    -------
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.   
     """
     def __init__(self, dataFiles, name):
         """
@@ -39,14 +39,9 @@ class DataFiles:
         """
         Returns the string representation of the DataFiles object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of DataFiles.
+            str : String representation of DataFiles.
         """
         self.str = [
             df + config.spc5 + self.name + " data files"
@@ -58,24 +53,47 @@ class DataFiles:
         """
         Returns the length of the dataFiles list member.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        int
-            Number of data files,
+            int : Number of data files,
         """
         return len(self.dataFiles)
 
     def __getitem__(self, n):
+        """
+        Gets the dataFile at index `n`.
+
+        Parameters
+        ----------
+        n : int
+            Index to retrieve from.
+        Returns
+        -------
+            str : selected data file.
+        """
         return self.dataFiles[n]
 
     def __setitem__(self, n, item):
+        """
+        Sets the dataFile at index `n` to `item`.
+
+        Parameters
+        ----------
+        n : int
+            Index to set at.
+        item : str
+            Item to set value at index to.
+        """
         if n >= len(self):
             self.dataFiles.extend(n+1)
         self.dataFiles[n] = item
 
     def __iter__(self):
+        """
+        Wrapper for iterating the internal list of data files.
+
+        Returns
+        -------
+            Iterator : iterator on `dataFiles`.
+        """
         return iter(self.dataFiles)
