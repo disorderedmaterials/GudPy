@@ -1716,7 +1716,7 @@ class GudPyMainWindow(QMainWindow):
                 for df in sb.dataFiles
             ]
         )
-        if self.gudrunFile.purgeFile.excludeSampleAndCan:
+        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
             appendDfs(
                 [
                     df
