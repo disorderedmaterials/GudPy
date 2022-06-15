@@ -24,6 +24,7 @@ class BatchProcessingDialog(QDialog):
         self.useRtol = False
         self.rtol = 10.0
         self.numberIterations = 1
+        self.continuePreviousIterations = False
         self.queue = Queue()
         self.loadUI()
         self.initComponents()
@@ -70,6 +71,9 @@ class BatchProcessingDialog(QDialog):
         )
         self.widget.maxIterationsSpinBox.valueChanged.connect(
             self.numberIterationsChanged
+        )
+        self.widget.continuePreviousIterationsCheckBox.toggled.connect(
+            self.continuePreviousIterationsToggled
         )
         self.widget.processButton.clicked.connect(
             self.process
@@ -130,6 +134,9 @@ class BatchProcessingDialog(QDialog):
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
+
+    def continuePreviousIterationsToggled(self, state):
+        self.continuePreviousIterations = state
 
     def process(self):
         self.queue = Queue()

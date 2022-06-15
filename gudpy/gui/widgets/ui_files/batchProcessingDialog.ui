@@ -137,6 +137,13 @@
         </item>
        </layout>
       </item>
+      <item>
+       <widget class="QCheckBox" name="continuePreviousIterationsCheckBox">
+        <property name="text">
+         <string>Continue previous iterations?</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
