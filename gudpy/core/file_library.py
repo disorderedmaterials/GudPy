@@ -160,7 +160,6 @@ class GudPyFileLibrary():
             Export target.
         includeParams : bool, optional
             Should a sample parameters file be produced for each sample?
-        
 
         Returns
         -------
