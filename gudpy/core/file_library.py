@@ -13,14 +13,25 @@ class GudPyFileLibrary():
 
     Attributes
     ----------
+    gudrunFile : GudrunFile
+        Reference GudrunFile object.
+    dataFileDir : str
+        Data file directory.
+    fileDir : str
+        Gudrun input filele directory.
     dirs : str[]
         List of directories.
     files: str[]
         List of files
+    dataFiles : str[]
+        List of data files.
+
     Methods
     -------
     checkFilesExist()
         Checks if the files and directories exist, in the current file system.
+    exportMintData(samples, renameDataFiles=False, exportTo=None, includeParams=False)
+        Exports mint data.
     """
 
     def __init__(self, gudrunFile):
@@ -97,7 +108,7 @@ class GudPyFileLibrary():
 
         Returns
         -------
-        (bool, str)[]
+        (bool, str)[] : 
             List of tuples of boolean values and paths,
             indicating if the given path exists.
         """
@@ -136,6 +147,25 @@ class GudPyFileLibrary():
         self, samples, renameDataFiles=False,
         exportTo=None, includeParams=False
     ):
+        """
+        Exports mint01 files outputted from given `samples`.
+
+        Parameters
+        ----------
+        samples : Sample[]
+            List of Sample objects to export.
+        renameDataFiles : bool, optional
+            Should mint01 files be renamed to sample?
+        exportTo : NoneType | str, optional
+            Export target.
+        includeParams : bool, optional
+            Should a sample parameters file be produced for each sample?
+        
+
+        Returns
+        -------
+        str : path to produced zip file.
+        """
         if not exportTo:
             exportTo = (
                 os.path.join(
