@@ -297,6 +297,11 @@ class Component():
         """
         Checks for equality between `obj` and the current object.
 
+        Parameters
+        ----------
+        obj : Component
+            Object to compare against.
+
         Returns
         -------
         bool : self == obj

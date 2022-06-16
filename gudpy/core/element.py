@@ -12,8 +12,11 @@ class Element:
         The atomic number belonging to the element (total number of nucleons).
     abundance : float
         Abundance of the element.
+
     Methods
     -------
+    eq(obj)
+        Checks for equality between elements.
     """
     def __init__(self, atomicSymbol, massNo, abundance):
         """
@@ -41,10 +44,6 @@ class Element:
         """
         Returns the string representation of the Element object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         string : str
@@ -62,10 +61,6 @@ class Element:
         """
         Returns the string representation of the Element object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         string : str
@@ -74,6 +69,18 @@ class Element:
         return str(self)
 
     def eq(self, obj):
+        """
+        Checks for equality between `obj` and the current object.
+
+        Parameters
+        ----------
+        obj : Element
+            Object to compare against.
+
+        Returns
+        -------
+        bool : self == obj
+        """
         if (
             hasattr(obj, 'atomicSymbol')
             and hasattr(obj, 'massNo')
