@@ -43,9 +43,9 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 class GudrunFile:
     """
-    Class to represent a GudFile (files with .gud extension).
-    .gud files are outputted by gudrun_dcs, via merge_routines
-    each .gud file belongs to an individual sample.
+    Class to represent a GudrunFile.
+    This is the core class of GudPy, and provides and interface
+    between GudPy and Gudrun.
 
     ...
 
@@ -53,8 +53,12 @@ class GudrunFile:
     ----------
     path : str
         Path to the file.
+    yaml : YAML
+        YAML wrapper for performing YAML serialisation/de-serialisation.
     outpath : str
         Path to write to, when not overwriting the initial file.
+    components : Components
+        Global Components.
     instrument : Instrument
         Instrument object extracted from the input file.
     beam : Beam
@@ -68,6 +72,8 @@ class GudrunFile:
     stream : str[]
         List of strings, where each item represents a line
         in the input stream.
+    purgeFile : PurgeFile
+        Interface for purging detectors.
     Methods
     -------
     getNextToken():
@@ -106,6 +112,12 @@ class GudrunFile:
         Initialises a Container object.
         Parses the attributes of the Container from the input stream.
         Returns the Container object.
+    parseComponents()
+        Parses components and appeds them to Components.
+    parseComponent()
+        Initialises a Component object.
+        Parses the attributes of the Component from the input stream.
+        Returns the component object.
     makeParse(key):
         Uses the key to call a parsing function from a dictionary
         of parsing functions.
@@ -113,16 +125,28 @@ class GudrunFile:
     sampleBackgroundHelper():
         Parses the SampleBackground, its Samples and their Containers.
         Returns the SampleBackground object.
-    parse():
+    parse(config_=False):
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
-    write_out(overwrite=False)
+    save(path='', format=None)
+        Saves the GudrunFile to the given path in the given format.
+    write_yaml(path)
+        Writes the GudrunFile as YAML to the given path.
+    write_out(path='', overwrite=False, writeParameters=True)
         Writes out the string representation of the GudrunFile to a file.
-    dcs(path='', purge=True):
+    dcs(path='', headless=True, iterative=False):
         Call gudrun_dcs on the path supplied. If the path is its
         default value, then use the path attribute as the path.
-    process():
+    process(headless=True, iterative=False):
         Write out the GudrunFile, and call gudrun_dcs on the outputted file.
+    convertToSample(container, persist=False)
+        Converts a given container to a Sample object.
+    naiveOrganise()
+        Performs naive organisation of output files.
+    iterativeOrganise(head)
+        Performs iterative organisation using `head`.
+    determineError(sample)
+        Determines error in results.
     purge():
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
@@ -176,9 +200,6 @@ class GudrunFile:
         Pops the 'next token' from the stream and returns it.
         Essentially removes the first line in the stream and returns it.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
         str | None
@@ -189,9 +210,6 @@ class GudrunFile:
         """
         Returns the next token in the input stream, without removing it.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
         str | None
@@ -204,10 +222,8 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
-        Returns
-        -------
-        None
+        n : int
+            Number of tokens to consume.
         """
         for _ in range(n):
             self.getNextToken()
@@ -218,10 +234,8 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
-        Returns
-        -------
-        None
+        delim : str
+            Delimiter to seek until.
         """
         line = self.getNextToken()
         while line[0] != delim:
@@ -230,13 +244,6 @@ class GudrunFile:
     def consumeWhitespace(self):
         """
         Consume tokens iteratively, while they are whitespace.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
         """
         line = self.peekNextToken()
         if line and line.isspace():
@@ -249,14 +256,6 @@ class GudrunFile:
         instrument attribute.
         Parses the attributes of the Instrument from the input stream.
         Raises a ParserException if any mandatory attributes are missing.
-
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
         """
         try:
             # Initialise instrument attribute to a new instance of Instrument.
@@ -477,14 +476,6 @@ class GudrunFile:
         beam attribute.
         Parses the attributes of the Beam from the input stream.
         Raises a ParserException if any mandatory attributes are missing.
-
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
         """
 
         try:
@@ -581,14 +572,6 @@ class GudrunFile:
         normalisation attribute.
         Parses the attributes of the Normalisation from the input stream.
         Raises a ParserException if any mandatory attributes are missing.
-
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
         """
 
         try:
@@ -781,9 +764,6 @@ class GudrunFile:
         Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
         sampleBackground : SampleBackground
@@ -825,9 +805,6 @@ class GudrunFile:
         Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
         sample : Sample
@@ -1031,9 +1008,6 @@ class GudrunFile:
         Raises a ParserException if any mandatory attributes are missing.
         Returns the parsed object.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
         container : Container
@@ -1170,6 +1144,11 @@ class GudrunFile:
             ) from e
 
     def parseComponents(self):
+        """
+        Parses components and appends them to the Components.
+        Raises a ParserException if manditory attributes are missing,
+        or if components are incorrectly defined.
+        """
         try:
             while self.stream:
                 component = self.parseComponent()
@@ -1182,6 +1161,14 @@ class GudrunFile:
             ) from e
 
     def parseComponent(self):
+        """
+        Initialises a Component object, and parses attributes
+        from the stream into this object.
+
+        Returns
+        -------
+        Component | None : parsed component, if success.
+        """
         name = self.getNextToken().rstrip()
         component = Component(name)
         line = self.peekNextToken()
@@ -1209,6 +1196,7 @@ class GudrunFile:
         key : str
             Parsing function to call
             (INSTRUMENT/BEAM/NORMALISATION/SAMPLE BACKGROUND/SAMPLE/CONTAINER)
+
         Returns
         -------
         NoneType
@@ -1240,13 +1228,10 @@ class GudrunFile:
         Helper method for parsing Sample Background and its
         Samples and their Containers.
         Returns the SampleBackground object.
-        Parameters
-        ----------
-        None
+
         Returns
         -------
-        SampleBackground
-            The SampleBackground parsed from the lines.
+        SampleBackground : The SampleBackground parsed from the lines.
         """
 
         # Parse sample background.
@@ -1280,10 +1265,8 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
-        Returns
-        -------
-        None
+        config_ : bool
+            Is this an Instrument configuration?
         """
         self.config = config_
         # Ensure only valid files are given.
@@ -1374,14 +1357,9 @@ class GudrunFile:
         """
         Returns the string representation of the GudrunFile object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of GudrunFile.
+        str : String representation of GudrunFile.
         """
 
         LINEBREAK = "\n\n"
@@ -1432,7 +1410,16 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
+        """
+        Saves the GudrunFile object to `path` in `format`.
 
+        Parameters
+        ----------
+        path : str
+            Path to write to.
+        format : None | Format, optional
+            Format to use when writing.
+        """
         if not path:
             path = self.path
 
@@ -1444,23 +1431,30 @@ class GudrunFile:
             self.write_yaml(path=path.replace(path.split(".")[-1], "yaml"))
 
     def write_yaml(self, path):
+        """
+        Serialises GudrunFile object to YAML and writes to `path`.
+
+        Parameters
+        ----------
+        path : str
+            Path to write to.
+        """
         self.yaml.writeYAML(self, path)
 
     def write_out(self, path='', overwrite=False, writeParameters=True):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.txt'.
+        Otherwise, it is written to `outpath`.
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
         path : str, optional
             Path to write to.
-        Returns
-        -------
-        None
+        overwrite : bool, optional
+            Overwrite the initial file? (default is False).
+        writeParameters : bool, optional
+            Should a sample parameters file be written?
         """
         if path:
             f = open(
@@ -1503,22 +1497,24 @@ class GudrunFile:
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
         path : str, optional
-            Path to parse from (default is empty, which indicates self.path).
-        purge : bool, optional
-            Should detectors be purged?
+            Path to write to before calling Gudrun.
+        headless : bool, optional
+            Is this a headless process?
+        iterative : bool, optional
+            Is this part of an iterative workflow?
+
         Returns
         -------
-        subprocess.CompletedProcess
-            The result of calling gudrun_dcs using subprocess.run.
-            Can access stdout/stderr from this.
+        subprocess.CompletedProcess | (QProcess, self.write_out, [path, False])
+            The result of calling gudrun_dcs using subprocess.run, if headless.
+            Otherwise, a QProcess, and intermediate function to call with arguments.        
         """
         if not path:
             path = os.path.basename(self.path)
         if headless:
             try:
+                # Find Gudrun binary, and call it
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
                 cwd = os.getcwd()
                 os.chdir(self.instrument.GudrunInputFileDir)
@@ -1529,10 +1525,13 @@ class GudrunFile:
             except FileNotFoundError:
                 os.chdir(cwd)
                 return False
+            # Only perform a naive organise if this is not part of an iterative workflow.
             if not iterative:
                 self.naiveOrganise()
             return result
         else:
+            # `_MEIPASS` indicates that this is being run from a PyInstaller binary.
+            # Find Gudrun binary.
             if hasattr(sys, '_MEIPASS'):
                 gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
             else:
@@ -1544,6 +1543,7 @@ class GudrunFile:
             if not os.path.exists(gudrun_dcs):
                 return FileNotFoundError()
             else:
+                # Create a QProcess which calls Gudrun.
                 proc = QProcess()
                 proc.setProgram(gudrun_dcs)
                 proc.setArguments([path])
@@ -1564,13 +1564,16 @@ class GudrunFile:
 
         Parameters
         ----------
-        purge : bool, optional
-            Should detectors be purged?
+        headless : bool, optional
+            Is this a headless process?
+        iterative : bool, optional
+            Is this part of an iterative workflow?
+
         Returns
         -------
-        subprocess.CompletedProcess
-            The result of calling gudrun_dcs using subprocess.run.
-            Can access stdout/stderr from this.
+        subprocess.CompletedProcess | (QProcess, self.write_out, [path, False])
+            The result of calling gudrun_dcs using subprocess.run, if headless.
+            Otherwise, a QProcess, and intermediate function to call with arguments.        
         """
         cwd = os.getcwd()
         os.chdir(self.instrument.GudrunInputFileDir)
@@ -1589,12 +1592,16 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
+        args : Sequence
+            Sequence of arguments
+        args : dict
+            Dictionary of keyword arguments.
+
         Returns
         -------
-        subprocess.CompletedProcess
-            The result of calling purge_det using subprocess.run.
-            Can access stdout/stderr from this.
+        subprocess.CompletedProcess | (QProcess, self.write_out, [path, False])
+            The result of calling purge_det using subprocess.run, if headless.
+            Otherwise, a QProcess, and intermediate function to call with arguments.        
         """
         self.purgeFile = PurgeFile(self)
         result = self.purgeFile.purge(*args, **kwargs)
@@ -1603,7 +1610,20 @@ class GudrunFile:
         return result
 
     def convertToSample(self, container, persist=False):
+        """
+        Converts a given container to a Sample object.
 
+        Parameters
+        ----------
+        container : Container
+            Container object to convert.
+        persist : bool, optional
+            Should this conversion persist in the GudrunFile?
+        
+        Returns
+        -------
+        Sample : converted container.
+        """
         sample = container.convertToSample()
 
         if persist:
@@ -1616,14 +1636,39 @@ class GudrunFile:
         return sample
 
     def naiveOrganise(self):
+        """
+        Uses the OutputFileHandler, to perform naive
+        organisation of the output.
+        """
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.naiveOrganise()
 
     def iterativeOrganise(self, head):
+        """
+        Uses the OutputFileHandler, to perform an iterative
+        organisation of the output.
+
+        Parameters
+        ----------
+        head : str
+            Directory to pipe organised files into.
+        """
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.iterativeOrganise(head)
 
     def determineError(self, sample):
+        """
+        Determines error in results, relevant to `sample`.
+
+        Parameters
+        ----------
+        sample : Sample
+            Target sample.
+        
+        Returns
+        -------
+        float : computed error.
+        """
         gudPath = sample.dataFiles[0].replace(
                     self.instrument.dataFileType,
                     "gud"
