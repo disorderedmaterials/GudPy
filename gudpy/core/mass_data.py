@@ -1,3 +1,6 @@
+"""
+Mass Data for natural isotopes.
+"""
 massData = {
     "H": 1.00798175,  # Uncertainty = (1): VSMOW
     "He": 4.002602,  # Uncertainty = (2)
