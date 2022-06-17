@@ -1,4 +1,47 @@
 class Sears91():
+    """
+    Wrapper class for Sears91 isotope data.
+
+    ...
+
+    Attributes
+    ----------
+    sears91Data : tuple[]
+        Isotope data.
+    
+    Methods
+    -------
+    isotopeData(element, mass)
+        Returns the isotope data for a given element, mass combination.
+    isotope(isotope_)
+        Returns the isotope name.
+    element(isotope)
+        Returns the isotope element.
+    mass(isotope)
+        Returns the isotope mass.
+    spin(isotope)
+        Returns the isotope spin.
+    atwt(isotope)
+        Returns the isotope atwt.
+    boundCoherent(isotope)
+        Returns the isotope bound coherent.
+    boundIncoherent(isotope)
+        Returns the isotope bound incoherent.
+    boundCoherentXS(isotope)
+        Returns the isotope bound coherent cross section.
+    boundIncoherentXS(isotope)
+        Returns the istope bound incoherent cross section.
+    totalXS(isotope)
+        Returns the isotope total cross section.
+    absorptionXS(isotope)
+        Returns the isotope absorption cross section.
+    isotopes(element)
+        Returns all isotopes of a given element.
+    findIsotope(element, mass)
+        Returns isotope of element with given mass.
+    isIsotope(element, mass)
+        Determines if the given element, mass combination refers to a valid isotope.
+    """
 
     sears91Data = [
         ("Unknown", "Unknown", 0, "", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
@@ -370,54 +413,212 @@ class Sears91():
     ]
 
     def isotopeData(self, element, mass):
+        """
+        Returns the isotope data for a given element, mass combination.
+
+        Parameters
+        ----------
+        element : str
+            Target element.
+        mass : float
+            Target mass.
+        
+        Returns
+        -------
+        isotopes : found isotope.
+        """
         if self.isIsotope(element, mass):
             return [isotope for isotope in self.sears91Data if self.element(isotope) == element and self.mass(isotope) == mass][0]
 
     @staticmethod
     def isotope(isotope_):
+        """
+        Returns the isotope name.
+
+        Parameters
+        ----------
+        isotope_ : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        str : isotope name.
+        """
         return isotope_[0]
 
     @staticmethod
     def element(isotope):
+        """
+        Returns the isotope element.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        str : isotope element.
+        """
         return isotope[1]
 
     @staticmethod
     def mass(isotope):
+        """
+        Returns the isotope mass.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope mass.
+        """
         return isotope[2]
 
     @staticmethod
     def spin(isotope):
+        """
+        Returns the isotope spin.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope spin.
+        """
         return isotope[3]
 
     @staticmethod
     def atwt(isotope):
+        """
+        Returns the isotope atwt.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope atwt.
+        """
         return isotope[4]
 
     @staticmethod
     def boundCoherent(isotope):
+        """
+        Returns the isotope bound coherent.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope bound coherent.
+        """
         return isotope[5]
 
     @staticmethod
     def boundIncoherent(isotope):
+        """
+        Returns the isotope bound incoherent.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope bound incoherent.
+        """
         return isotope[6]
 
     @staticmethod
     def boundCoherentXS(isotope):
+        """
+        Returns the isotope bound coherent cross section.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope bound coherent cross section.
+        """
         return isotope[7]
 
     @staticmethod
     def boundIncoherentXS(isotope):
+        """
+        Returns the isotope bound incoherent cross section.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope bound incoherent cross section.
+        """
         return isotope[8]
 
     @staticmethod
     def totalXS(isotope):
+        """
+        Returns the isotope total cross section.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope total cross section.
+        """
         return isotope[9]
 
     @staticmethod
     def absorptionXS(isotope):
+        """
+        Returns the isotope absorption total cross section.
+
+        Parameters
+        ----------
+        isotope : tuple
+            Isotope data.
+        
+        Returns
+        -------
+        float : isotope absorption total cross section.
+        """
         return isotope[10]
 
     def isotopes(self, element):
+        """
+        Returns all isotopes of a given element.
+
+        Parameters
+        ----------
+        element : str
+            Target element.
+        
+        Returns
+        -------
+        tuple[] : list of found isotopes
+        """
         return [
             isotope
             for isotope in self.sears91Data
@@ -425,11 +626,39 @@ class Sears91():
         ]
 
     def findIsotope(self, element, mass):
+        """
+        Finds an isotope of `element` with a given `mass`.
+
+        Parameters
+        ----------
+        element : str
+            Target element.
+        mass : float
+            Target mass.
+        
+        Returns
+        -------
+        tuple : isotope data.
+        """
         for isotope in self.isotopes(element):
             if self.mass(isotope) == mass:
                 return isotope
 
     def isIsotope(self, element, mass):
+        """
+        Determines if the given element, mass combination refers to a valid isotope.
+
+        Parameters
+        ----------
+        element : str
+            Target element.
+        mass : float
+            Target mass.
+        
+        Returns
+        -------
+        bool : is isotope valid?
+        """
         isotopes = self.isotopes(element)
         for isotope in isotopes:
             if self.mass(isotope) == mass:
