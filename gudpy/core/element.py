@@ -12,6 +12,8 @@ class Element:
         The atomic number belonging to the element (total number of nucleons).
     abundance : float
         Abundance of the element.
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.
 
     Methods
     -------
