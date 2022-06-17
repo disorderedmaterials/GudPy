@@ -20,11 +20,52 @@ from core import config
 
 
 class YAML:
+    """
+    Class for performing YAML serialisation / deserialisation.
 
+    ...
+
+    Methods
+    -------
+    getYamlModule()
+        Returns object wrapping YAML module.
+    parseYaml(path)
+        Parses YAML.
+    yamlToDict(path)
+        Deserialises YAML into dict.
+    constructClasses(yamldict)
+        Converts YAML dictionary into GudPy objects.
+    maskYAMLDicttoClass(cls, yamldict)
+        Converts YAML dictionary into type `cls`.
+    maskYAMLSeqtoClass(cls, yamlseq)
+        Converts YAML sequence into type `cls`.
+    writeYAML(base, path)
+        Writes YAML to `path` by serialising `base`.
+    toYaml(var)
+        Converts given variable to YAML.
+    toBuiltin(yamlvar)
+        Converts given YAML variable to builtin types.
+    
+    Attributes
+    ----------
+    yaml : ruamel.yaml.YAML
+        YAML module wrapper.
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the YAML class.
+        """
         self.yaml = self.getYamlModule()
 
     def getYamlModule(self):
+        """
+        Creates a wrapper for the ruamel.yaml.YAML module.
+        Also configures said module.
+
+        Returns
+        -------
+        ruamel.yaml.YAML : module wrapper
+        """
         yaml_ = yaml()
         yaml_.preserve_quotes = True
         yaml_.default_flow_style = None
@@ -32,10 +73,34 @@ class YAML:
         return yaml_
 
     def parseYaml(self, path):
+        """
+        Parses YAML from `path`.
+
+        Parameters
+        ----------
+        path : str
+            Path to YAML file.
+        
+        Returns
+        -------
+        (Instrument, Beam, Components, Normalisation, SampleBackground, GUIConfig) : Constructed classes.
+        """
         self.path = path
         return self.constructClasses(self.yamlToDict(path))
 
     def yamlToDict(self, path):
+        """
+        Loads YAML from `path` into a dictionary.
+
+        Parameters
+        ----------
+        path : str
+            Path to parse YAL from.
+        
+        Returns
+        -------
+        dict : Dictionary of YAML.
+        """
         # Decide the encoding
         import chardet
         with open(path, 'rb') as fp:
@@ -46,6 +111,18 @@ class YAML:
             return self.yaml.load(fp)
 
     def constructClasses(self, yamldict):
+        """
+        Converts a dictionary of YAML into GudPy objects.
+
+        Parameters
+        ----------
+        yamldict : dict
+            Dictionary to create objects from.
+        
+        Returns
+        -------
+        (Instrument, Beam, Components, Normalisation, SampleBackground, GUIConfig) : Constructed classes.
+        """
         instrument = Instrument()
         self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
         instrument.GudrunInputFileDir = os.path.dirname(
@@ -56,7 +133,7 @@ class YAML:
         beam = Beam()
         self.maskYAMLDicttoClass(beam, yamldict["Beam"])
         components = Components()
-        self.maskYAMLSeqtoClss(components, yamldict["Components"])
+        self.maskYAMLSeqtoClass(components, yamldict["Components"])
         normalisation = Normalisation()
         self.maskYAMLDicttoClass(normalisation, yamldict["Normalisation"])
         sampleBackgrounds = []
@@ -75,6 +152,20 @@ class YAML:
 
     @abstractmethod
     def maskYAMLDicttoClass(self, cls, yamldict):
+        """
+        Converts YAML dictionary into type `cls`.
+
+        Parameters
+        ----------
+        cls : any
+            Target class.
+        yamldict : dict
+            Dictionary of YAML.
+        
+        Returns
+        -------
+        any : Created object.
+        """
         for k, v in yamldict.items():
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
@@ -136,7 +227,17 @@ class YAML:
             else:
                 setattr(cls, k, type(cls.__dict__[k])(self.toBuiltin(v)))
 
-    def maskYAMLSeqtoClss(self, cls, yamlseq):
+    def maskYAMLSeqtoClass(self, cls, yamlseq):
+        """
+        Converts YAML dequence into type `cls`.
+
+        Parameters
+        ----------
+        cls : any
+            Target class
+        yamlseq : any[]
+            Sequence of YAML.
+        """
         if isinstance(cls, Components):
             components = []
             for component in yamlseq:
@@ -146,6 +247,16 @@ class YAML:
             setattr(cls, "components", components)
 
     def writeYAML(self, base, path):
+        """
+        Serialises and writes `base` to YAML.
+
+        Parameters
+        ----------
+        base : GudrunFile
+            Base class to serialise.
+        path : str
+            Path to write to.
+        """
         with open(path, "wb") as fp:
             outyaml = {
                 "Instrument": base.instrument,
@@ -162,6 +273,18 @@ class YAML:
 
     @abstractmethod
     def toYaml(self, var):
+        """
+        Converts a given variable to YAML.
+
+        Parameters
+        ----------
+        var : any
+            Target variable.
+        
+        Returns
+        -------
+        any : YAML serialised variable.
+        """
         if var.__class__.__module__ == "ruamel.yaml.scalarfloat":
             return float(var)
         if var.__class__.__module__ == "builtins":
@@ -184,6 +307,15 @@ class YAML:
 
     @abstractmethod
     def toBuiltin(self, yamlvar):
+        """
+        Converts `yamlvar` to builtin type.
+
+        Parameters
+        ----------
+        yamlvar : any
+            Target YAML variable.
+        any : variable casted to builtin.
+        """
         if isinstance(yamlvar, (list, tuple)):
             return [self.toBuiltin(v) for v in yamlvar]
         elif yamlvar.__class__.__module__ == "builtins":
