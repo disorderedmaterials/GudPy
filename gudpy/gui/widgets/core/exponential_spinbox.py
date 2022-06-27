@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt
 class ExponentialValidator(QValidator):
     """
     Class to represent an ExponentialValidator. Inherits QValidator.
+
     ...
 
     Attributes
@@ -15,6 +16,7 @@ class ExponentialValidator(QValidator):
         Regular expression pattern to validate against.
     symbols : str[]
         List of symbols.
+
     Methods
     -------
     valid(string):
@@ -25,6 +27,9 @@ class ExponentialValidator(QValidator):
         Searches the string using the regular expression.
     """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the ExponentialValidator object.
+        """
         super(ExponentialValidator, self).__init__()
         # Regular expression that matches scientific notation.
         self.regex = re.compile(r"(([+-]?\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)")
@@ -39,6 +44,10 @@ class ExponentialValidator(QValidator):
         ----------
         string : str
             String to be checked.
+        
+        Returns
+        -------
+        bool : Is string valid?
         """
         match = self.regex.search(string)
         return match.group(0) == string if match else ""
@@ -53,6 +62,10 @@ class ExponentialValidator(QValidator):
             String to be checked.
         position : int
             Position in string to validate at.
+        
+        Returns
+        -------
+        QValidator.State : state of string at position.
         """
         if self.valid(string):
             return QValidator.State.Acceptable
@@ -81,9 +94,10 @@ class ExponentialValidator(QValidator):
         ----------
         string : str
             String to be checked.
+
         Returns
         -------
-        Match
+        Match : regex match.
         """
         return self.regex.search(string)
 
@@ -91,6 +105,7 @@ class ExponentialValidator(QValidator):
 class ExponentialSpinBox(QDoubleSpinBox):
     """
     Class to represent an ExponentialSpinBox. Inherits QDoubleSpinBox.
+
     ...
 
     Attributes
@@ -111,10 +126,29 @@ class ExponentialSpinBox(QDoubleSpinBox):
         Searches the string using the validator.
     stepBy(steps):
         Steps the value in the spin box.
+    keyPressEvent(event)
+        Event handler for key presses.
+    removeSuffix()
+        Removes the current suffix.
+    appendSuffix()
+        Appends a previously removed suffix.
+    focusInEvent(event)
+        Event handler for the spin box gaining focus.
+    focusOutEvent(event)
+        Event handler for the spin box losing focus.
     """
     def __init__(self, parent):
+        """
+        Constructs all the necessary attributes for the ExponentialValidator object.
+        
+        Parameters
+        ----------
+        parent : Any
+            Parent object.
+        """
         super(ExponentialSpinBox, self).__init__(parent=parent)
         self.validator = ExponentialValidator()
+        # Set precision.
         self.setDecimals(16)
         self.editingFinished.connect(self.appendSuffix)
 
@@ -128,9 +162,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
             String to validate.
         position : int
             Position to validate at.
+
         Returns
         -------
-        QValidator.State
+        QValidator.State : state of string at position
         """
         return self.validator.validate(text, position)
 
@@ -142,9 +177,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
         ----------
         text: str
             String to fixup.
+
         Returns
         -------
-        str
+        str: 'fixed-up' string.
         """
         match = self.validator.regex.search(text)
         return match.groups()[0] if match else ""
@@ -157,9 +193,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
         ----------
         text: str
             String to convert to float.
+
         Returns
         -------
-        float
+        float : text casted to float.
         """
         return float(text)
 
@@ -171,9 +208,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
         ----------
         value: float
             Float to convert to string.
+
         Returns
         -------
-        str
+        str : float casted to string.
         """
         return str(value)
 
@@ -185,9 +223,10 @@ class ExponentialSpinBox(QDoubleSpinBox):
         ----------
         string : str
             String to search.
+
         Returns
         -------
-        Match
+        Match : regex match.
         """
         return self.validator.search(string)
 
@@ -218,22 +257,56 @@ class ExponentialSpinBox(QDoubleSpinBox):
         self.lineEdit().setText(string)
 
     def keyPressEvent(self, event):
+        """
+        Event handler for key presses.
+        Used for ensuring focus in the spin box.
+
+        Parameters
+        ----------
+        event : KeyPressEvent
+            Event that triggered the function.
+        """
         if event.key() == Qt.MouseButton.LeftButton:
             self.focusInEvent(event)
         return super().keyPressEvent(event)
 
     def removeSuffix(self):
+        """
+        Removes the current suffix, storing it to an auxilliary variable.
+        """
         self.prevSuffix = self.suffix()
         self.setSuffix("")
 
     def appendSuffix(self):
+        """
+        Sets the suffix from an auxilliary variable,
+        a previously removed suffix.
+        """
         self.setSuffix(self.prevSuffix)
         self.clearFocus()
 
     def focusInEvent(self, event):
+        """
+        Event handler for the spin box gaining focus.
+        Removes the current suffix.
+
+        Parameters
+        ----------
+        event : QFocusEvent
+            Event that triggered the function,
+        """
         self.removeSuffix()
         return super().focusInEvent(event)
 
     def focusOutEvent(self, event):
+        """
+        Event handler for the spin box losing focus.
+        Appends the suffix that was removed on gaining focus.
+
+        Parameters
+        ----------
+        event : QFocusEvent
+            Event that triggered the function,
+        """
         self.appendSuffix()
         return super().focusOutEvent(event)
