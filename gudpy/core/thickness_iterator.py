@@ -14,12 +14,23 @@ class ThicknessIterator(SingleParamIterator):
 
     Methods
     ----------
-    applyCoefficientToAttribute
+    applyCoefficientToAttribute(object, coefficient)
         Multiplies a sample's thicknesses by a given coefficient.
-    organiseOutput
+    organiseOutput(n)
         Organises the output of the iteration.
     """
     def applyCoefficientToAttribute(self, object, coefficient):
+        """
+        Updates the upstream and downstream thickness of the target object
+        by applying the given coefficient.
+
+        Parameters
+        ----------
+        object : Sample
+            Target object.
+        coefficient : float
+            Coefficient to use.
+        """
         # Determine a new total thickness.
         totalThickness = object.upstreamThickness + object.downstreamThickness
         totalThickness *= coefficient
@@ -28,4 +39,12 @@ class ThicknessIterator(SingleParamIterator):
         object.upstreamThickness = totalThickness / 2
 
     def organiseOutput(self, n):
+        """
+        Organises the output for the current iteration (n).
+
+        Parameters
+        ----------
+        n : int
+            Iteration number.
+        """
         self.gudrunFile.iterativeOrganise(f"IterateByThickness_{n}")
