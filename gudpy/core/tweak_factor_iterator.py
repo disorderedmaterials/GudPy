@@ -19,6 +19,7 @@ class TweakFactorIterator():
     ----------
     gudrunFile : GudrunFile
         Input GudrunFile that we will be using for iterating.
+
     Methods
     ----------
     performIteration(_n)
