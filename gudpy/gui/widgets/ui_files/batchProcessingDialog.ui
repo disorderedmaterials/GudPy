@@ -138,9 +138,9 @@
        </layout>
       </item>
       <item>
-       <widget class="QCheckBox" name="continuePreviousIterationsCheckBox">
+       <widget class="QCheckBox" name="propogateFirstBatchCheckBox">
         <property name="text">
-         <string>Continue previous iterations?</string>
+         <string>Propogate first batch?</string>
         </property>
        </widget>
       </item>
