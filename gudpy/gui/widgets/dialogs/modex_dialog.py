@@ -29,7 +29,8 @@ class ModexDialog(QDialog):
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
-        self.gudrunFile.modex.period.periodBegin = 12129
+        self.goodFrameThreshold = 0
+
 
         self.loadUI()
         self.initComponents()
@@ -167,6 +168,10 @@ class ModexDialog(QDialog):
 
         self.widget.interpolateCheckBox.stateChanged.connect(
             self.interpolateToggled
+        )
+
+        self.widget.goodFrameThresholdSpinBox.valueChanged.connect(
+            self.goodFrameThresholdChanged
         )
 
     def run(self):
@@ -332,3 +337,6 @@ class ModexDialog(QDialog):
 
     def interpolateToggled(self, state):
         self.gudrunFile.modex.interpolate = state
+
+    def goodFrameThresholdChanged(self, value):
+        self.gudrunFile.modex.goodFrameThreshold = value

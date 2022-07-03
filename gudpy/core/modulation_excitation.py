@@ -213,6 +213,8 @@ class ModulationExcitation:
         Temporary directory.
     path : str
         Path to write configuration file.
+    goodFrameThreshold : int
+        Threshold for filtering pulses by good frames below.
 
     Methods
     -------
@@ -251,6 +253,7 @@ class ModulationExcitation:
         self.interpolate = False
         self.tmp = tempfile.TemporaryDirectory()
         self.path = "modex.cfg"
+        self.goodFrameThreshold = 0
 
     def write_out(self):
         """
@@ -644,7 +647,7 @@ class ModulationExcitation:
         files : str[]
             List of files to interpolate.
         """
-
+        print("Using good frame threshold: ", str(self.goodFrameThreshold))
         # Sort the files beforehand,
         # so they should be in ascending order by start time.
         files = sorted(
@@ -656,7 +659,10 @@ class ModulationExcitation:
                 )
                 for f in files
             ]
-        )
+        )   
+
+        with open("modex.diagnostics") as fp:
+            diagnostics = fp.readlines()
 
         # Simple helper function.
         # Given a list of lines in column format, return the nth column.
@@ -694,6 +700,8 @@ class ModulationExcitation:
                 # If the file doesn't exist, then there are no DCS values.
                 if not os.path.exists(files[j]):
                     period[files[j]] = []
+                elif int(diagnostics[j].split()[1]) < self.goodFrameThreshold:
+                    print(f"Ignoring {files[j]}, since {int(diagnostics[j].split()[1])} < {self.goodFrameThreshold}")
                 else:
                     # Otherwise, read in the DCS values.
                     with open(files[j], "r", encoding='utf-8') as fp:
