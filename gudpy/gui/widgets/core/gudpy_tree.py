@@ -278,12 +278,14 @@ class GudPyTreeModel(QAbstractItemModel):
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
+            self.dataChanged.emit(index, index)
             return True
         elif (
             role == Qt.EditRole
             and (self.isSample(index) or self.isContainer(index))
         ):
             index.internalPointer().name = value
+            self.dataChanged.emit(index, index)
             return True
         else:
             return False
@@ -491,6 +493,10 @@ class GudPyTreeModel(QAbstractItemModel):
             setter(obj)
             # End inserting rows.
             self.endInsertRows()
+            self.dataChanged.emit(
+                self.index(start, end, parent),
+                self.index(start, end, parent)
+            )
         elif validSiblings[type(obj)]:
             # We are inserting.
             if isinstance(obj, SampleBackground):
@@ -529,6 +535,10 @@ class GudPyTreeModel(QAbstractItemModel):
             setter(index+1, obj)
             # End inserting rows.
             self.endInsertRows()
+            self.dataChanged.emit(
+                self.index(start, end, parent),
+                self.index(start, end, parent)
+            )
 
     def removeRow(self, index):
         """
@@ -586,6 +596,10 @@ class GudPyTreeModel(QAbstractItemModel):
         remove(obj)
         # End inserting rows.
         self.endRemoveRows()
+        self.dataChanged.emit(
+            self.index(start, end, parent),
+            self.index(start, end, parent)
+        )
 
 
 class GudPyTreeView(QTreeView):
@@ -960,7 +974,9 @@ class GudPyTreeView(QTreeView):
         action = self.menu.exec(QCursor.pos())
 
         if action in actionMap.keys():
-            self.insertContainer(container=Container(config=actionMap[action]))
+            self.insertContainer(
+                container=Container(config_=actionMap[action])
+            )
 
     def insertSampleBackground(self, sampleBackground=None):
         """
@@ -1063,6 +1079,8 @@ class GudPyTreeView(QTreeView):
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 sample.runThisSample = selected
+        if not self.parent.widgetsRefreshing:
+            self.parent.setModified()
 
     def selectOnlyThisSample(self):
         """
@@ -1073,6 +1091,8 @@ class GudPyTreeView(QTreeView):
             self.currentObject().runThisSample = True
         if isinstance(self.currentObject(), Container):
             self.model().findParent(self.currentObject()).runThisSample = True
+        if not self.parent.widgetsRefreshing:
+            self.parent.setModified()
 
     def setContextEnabled(self, state):
         """

@@ -4,6 +4,17 @@ Python-based Batch Processing and Alternative GUI for the Gudrun software by A. 
 
 GudPy offers a range of additional functionality unavailable in the Gudrun Java GUI, whilst also making some existing functionality/workflows easier to perform/carry-out. For further reference, you can visit the Gudrun manual.
 
+## Running GudPy
+### IDAaaS
+The continuous build is released on IDAaaS on a nightly basis, this is where you can find the most cutting-edge (yet experimental) version of GudPy.
+### Stable Release
+Stable releases are available on the [release page](https://github.com/disorderedmaterials/GudPy/releases).
+### From Source
+Requires `python>=3.8` and `pip`.
+1. Clone the repository.
+2. Download the latest [Gudrun binaries and startup files](https://github.com/disorderedmaterials/Gudrun/releases), and unzip/untar into the `bin` directory.
+3. `python3 -m pip install -r requirements.txt`
+4. `python3 gudpy`
 ## Additional functionality
 ### Components
 - `Components` can be defined within the "Components" tab.
@@ -67,3 +78,14 @@ More advanced iteration workflows
  - In the case of a single component it balances the ratio of that component against the others in the composition.
  - For two components, it balances the ratios of the two against eachother, without altering the total number of molecules in the composition.
  - Since this can be a particularly slow workflow, a convergence tolerance can be defined.
+### Batch Processing
+GudPy includes a Batch Processing pipeline, that is flexible and can interface with basic iteration workflows.
+Outputs a diagnostics file which provides information into batch sizes, contents and final values (when iterating).
+#### Basic
+ - Process samples using a defined `batch size` and `step size`.
+ - Datafiles are split into batches of size `batch size`.
+ - The next batch begins a `step size` after the beginning of the first batch.
+### Iterative
+ - Process samples as in the basic case, but perform iterations.
+ - Can iterate by tweak factor, thickness, inner/outer radius and density.
+ - Iterate for `n` iterations, or until the error is within the optional convergence tolerance. 

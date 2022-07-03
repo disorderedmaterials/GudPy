@@ -25,7 +25,7 @@ class RadiusIterator(SingleParamIterator):
         if self.targetRadius == "inner":
             object.innerRadius *= coefficient
         elif self.targetRadius == "outer":
-            object.innerRadius *= coefficient
+            object.outerRadius *= coefficient
 
     def setTargetRadius(self, targetRadius):
         self.targetRadius = targetRadius

@@ -10,13 +10,13 @@ from gui.widgets.charts.enums import PlotModes
 
 class SamplePlotConfig():
 
-    def __init__(self, sample, inputDir, parent):
+    def __init__(self, sample, inputDir, offsetX, offsetY, parent):
         self.sample = sample
         self.inputDir = inputDir
         self.parent = parent
-        self.constructDataSets()
+        self.constructDataSets(offsetX, offsetY)
 
-    def constructDataSets(self):
+    def constructDataSets(self, offsetX, offsetY):
         if len(self.sample.dataFiles):
 
             baseFile = self.sample.dataFiles[0]
@@ -33,7 +33,9 @@ class SamplePlotConfig():
                 hasMintData = True
 
             self.mint01DataSet = Mint01Plot(mintPath, hasMintData)
-            self.mint01Series = self.mint01DataSet.toLineSeries(self.parent)
+            self.mint01Series = self.mint01DataSet.toLineSeries(
+                self.parent, offsetX, offsetY
+            )
             if self.mint01Series:
                 self.mint01Series.setName(f"{self.sample.name} mint01")
 
@@ -48,7 +50,9 @@ class SamplePlotConfig():
                 hasMdcsData = True
 
             self.mdcs01DataSet = Mdcs01Plot(mdcsPath, hasMdcsData)
-            self.mdcs01Series = self.mdcs01DataSet.toLineSeries(self.parent)
+            self.mdcs01Series = self.mdcs01DataSet.toLineSeries(
+                self.parent, offsetX, offsetY
+            )
             if self.mdcs01Series:
                 self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
 
@@ -84,7 +88,9 @@ class SamplePlotConfig():
                 hasMdorData = True
 
             self.mdor01DataSet = Mdor01Plot(mdorPath, hasMdorData)
-            self.mdor01Series = self.mdor01DataSet.toLineSeries(self.parent)
+            self.mdor01Series = self.mdor01DataSet.toLineSeries(
+                self.parent, offsetX, offsetY
+            )
             if self.mdor01Series:
                 self.mdor01Series.setName(f"{self.sample.name} mdor01")
 
@@ -99,7 +105,9 @@ class SamplePlotConfig():
                 hasMgorData = True
 
             self.mgor01DataSet = Mgor01Plot(mgorPath, hasMgorData)
-            self.mgor01Series = self.mgor01DataSet.toLineSeries(self.parent)
+            self.mgor01Series = self.mgor01DataSet.toLineSeries(
+                self.parent, offsetX, offsetY
+            )
             if self.mgor01Series:
                 self.mgor01Series.setName(f"{self.sample.name} mgor01")
 

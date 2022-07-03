@@ -37,6 +37,7 @@ from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException
 from core.modulation_excitation import ModulationExcitation
+from core.gud_file import GudFile
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -118,7 +119,7 @@ class GudrunFile:
         Assign objects from the file to the attributes of the class.
     write_out(overwrite=False)
         Writes out the string representation of the GudrunFile to a file.
-    dcs(path=''):
+    dcs(path='', purge=True):
         Call gudrun_dcs on the path supplied. If the path is its
         default value, then use the path attribute as the path.
     process():
@@ -1308,8 +1309,9 @@ class GudrunFile:
                 self.sampleBackgrounds,
                 config.GUI
             ) = self.yaml.parseYaml(self.path)
+            self.format = Format.YAML
         except Exception:
-
+            self.format = Format.TXT
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
@@ -1432,11 +1434,13 @@ class GudrunFile:
             + components
         )
 
-    def save(self, path='', format=Format.TXT):
+    def save(self, path='', format=None):
 
         if not path:
             path = self.path
 
+        if not format:
+            format = self.format
         if format == Format.TXT:
             self.write_out(path=path.replace(path.split(".")[-1], "txt"))
         elif format == Format.YAML:
@@ -1506,6 +1510,8 @@ class GudrunFile:
             Overwrite the initial file? (default is False).
         path : str, optional
             Path to parse from (default is empty, which indicates self.path).
+        purge : bool, optional
+            Should detectors be purged?
         Returns
         -------
         subprocess.CompletedProcess
@@ -1561,7 +1567,8 @@ class GudrunFile:
 
         Parameters
         ----------
-        None
+        purge : bool, optional
+            Should detectors be purged?
         Returns
         -------
         subprocess.CompletedProcess
@@ -1618,6 +1625,23 @@ class GudrunFile:
     def iterativeOrganise(self, head):
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.iterativeOrganise(head)
+
+    def determineError(self, sample):
+        gudPath = sample.dataFiles[0].replace(
+                    self.instrument.dataFileType,
+                    "gud"
+                )
+        gudFile = GudFile(
+            os.path.join(
+                self.instrument.GudrunInputFileDir, gudPath
+            )
+        )
+        error = round(
+            (
+                1.0 - (gudFile.averageLevelMergedDCS / gudFile.expectedDCS)
+            ) * 100, 1
+        )
+        return error
 
 
 Container.getNextToken = GudrunFile.getNextToken

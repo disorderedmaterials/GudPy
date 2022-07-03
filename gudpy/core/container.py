@@ -60,7 +60,7 @@ class Container:
     Methods
     -------
     """
-    def __init__(self, config=None):
+    def __init__(self, config_=None):
         """
         Constructs all the necessary attributes for the Container object.
 
@@ -106,12 +106,11 @@ class Container:
             "grBroadening",
             "powerForBroadening",
             "stepSize",
-            "singleAtomBackgroundScatteringSubtractionMode",
             "yamlignore"
         }
 
-        if config:
-            self.parseFromConfig(config)
+        if config_:
+            self.parseFromConfig(config_)
 
     def __str__(self):
         """
@@ -228,6 +227,7 @@ class Container:
         sample.densityUnits = self.densityUnits
         sample.totalCrossSectionSource = self.totalCrossSectionSource
         sample.sampleTweakFactor = self.tweakFactor
+        sample.topHatW = self.topHatW
         sample.FTMode = self.FTMode
         sample.grBroadening = self.grBroadening
         sample.exponentialValues = [(0.0, 1.0)]
