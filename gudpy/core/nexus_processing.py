@@ -659,7 +659,7 @@ class NexusProcessing:
                 )
                 for f in files
             ]
-        )   
+        )
 
         with open("modex.diagnostics") as fp:
             diagnostics = fp.readlines()
@@ -701,7 +701,7 @@ class NexusProcessing:
                 if not os.path.exists(files[j]):
                     period[files[j]] = []
                 elif int(diagnostics[j].split()[1]) < self.goodFrameThreshold:
-                    print(f"Ignoring {files[j]}, since {int(diagnostics[j].split()[1])} < {self.goodFrameThreshold}")
+                    print(f"Ignoring {files[j]}")
                 else:
                     # Otherwise, read in the DCS values.
                     with open(files[j], "r", encoding='utf-8') as fp:

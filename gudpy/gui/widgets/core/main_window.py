@@ -1254,9 +1254,14 @@ class GudPyMainWindow(QMainWindow):
 
     def nexusProcessing(self):
         self.setControlsEnabled(False)
-        nexusProcessingDialog = NexusProcessingDialog(self.gudrunFile, self.mainWidget)
+        nexusProcessingDialog = NexusProcessingDialog(
+            self.gudrunFile, self.mainWidget
+        )
         nexusProcessingDialog.widget.exec()
-        if nexusProcessingDialog.cancelled or not nexusProcessingDialog.preprocess:
+        if (
+            nexusProcessingDialog.cancelled or
+            not nexusProcessingDialog.preprocess
+        ):
             self.setControlsEnabled(True)
         else:
             tasks = nexusProcessingDialog.preprocess
@@ -1305,7 +1310,9 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def progressNexusProcess(self):
-        progress = self.progressIncrementDCS(self.gudrunFile.nexus_processing.gudrunFile)
+        progress = self.progressIncrementDCS(
+            self.gudrunFile.nexus_processing.gudrunFile
+        )
         progress /= self.nPulses
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -1329,7 +1336,11 @@ class GudPyMainWindow(QMainWindow):
                 self.queue.put(t)
             self.currentFile = 0
             self.keyMap = {
-                n+1: os.path.splitext(os.path.basename(self.nexusProcessingFiles[n]))[0]
+                n+1: os.path.splitext(
+                    os.path.basename(
+                        self.nexusProcessingFiles[n]
+                    )
+                )[0]
                 for n in range(len(self.nexusProcessingFiles))
             }
             self.processPulse()
@@ -1377,7 +1388,8 @@ class GudPyMainWindow(QMainWindow):
         self.proc = None
         self.outputSlots.setOutput(
             self.nexusProcessingOutput, "gudrun_dcs",
-            gudrunFile=self.gudrunFile.batch_processing.gudrunFile, keyMap=self.keyMap
+            gudrunFile=self.gudrunFile.batch_processing.gudrunFile,
+            keyMap=self.keyMap
         )
 
     def iterateGudrun(self, dialog, name):
