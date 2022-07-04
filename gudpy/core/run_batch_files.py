@@ -43,10 +43,15 @@ class BatchProcessor:
                 batchedSampleBackground.samples = []
                 for sample in sampleBackground.samples:
                     batchedSample = deepcopy(sample)
-                    batchedSample.dataFiles.dataFiles = sample.dataFiles[:batchSize]
+                    batchedSample.dataFiles.dataFiles = (
+                        sample.dataFiles[:batchSize]
+                    )
                     batchedSampleBackground.samples.append(batchedSample)
                 first.sampleBackgrounds.append(batchedSampleBackground)
-            return first, self.batch(batchSize, stepSize, False, offset=stepSize)
+            return (
+                first,
+                self.batch(batchSize, stepSize, False, offset=stepSize)
+            )
 
     def canConverge(self, batch, rtol):
         if rtol == 0.0:
@@ -86,8 +91,12 @@ class BatchProcessor:
                         fp.write(f"Density: {sample.density}\n")
 
     def propogateResults(self, current, next, iterationMode):
-        for sampleBackgroundA, sampleBackgroundB in zip(current.sampleBackgrounds, next.sampleBackgrounds):
-            for sampleA, sampleB in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
+        for (
+            sampleBackgroundA, sampleBackgroundB
+         ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
+            for (
+                sampleA, sampleB
+             ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     sampleB.sampleTweakFactor = sampleA.sampleTweakFactor
                 elif iterationMode == IterationModes.THICKNESS:
@@ -111,10 +120,14 @@ class BatchProcessor:
         propogateFirstBatch=False
     ):
         if propogateFirstBatch:
-            initial, self.batchedGudrunFile = self.batch(batchSize, stepSize, propogateFirstBatch)
+            initial, self.batchedGudrunFile = self.batch(
+                batchSize, stepSize, propogateFirstBatch
+            )
         else:
-            self.batchedGudrunFile = self.batch(batchSize, stepSize, propogateFirstBatch)
-        
+            self.batchedGudrunFile = self.batch(
+                batchSize, stepSize, propogateFirstBatch
+            )
+
         tasks = []
 
         if iterationMode == IterationModes.TWEAK_FACTOR:
@@ -149,9 +162,9 @@ class BatchProcessor:
                 )
             else:
                 if propogateFirstBatch:
+                    iterator = iteratorType(initial)
                     if isinstance(iterator, RadiusIterator):
                         iterator.setTargetRadius(targetRadius)
-                    iterator = iteratorType(initial)
                     for i in range(maxIterations):
                         initial.process(headless=headless)
                         iterator.performIteration(i)
@@ -173,34 +186,35 @@ class BatchProcessor:
                         )
                         if self.canConverge(initial, rtol):
                             break
-                    
-                    self.propogateResults(initial, self.batchedGudrunFile, iterationMode)
 
+                    self.propogateResults(
+                        initial, self.batchedGudrunFile, iterationMode
+                    )
                 iterator = iteratorType(self.batchedGudrunFile)
                 if isinstance(iterator, RadiusIterator):
                     iterator.setTargetRadius(targetRadius)
-                
+
                 for i in range(maxIterations):
-                        self.batchedGudrunFile.process(headless=headless)
-                        iterator.performIteration(i)
-                        self.batchedGudrunFile.iterativeOrganise(
-                            os.path.join(
-                                self.gudrunFile.instrument.GudrunInputFileDir,
-                                f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                                "REST",
-                                f"{dirText}_{i+1}"
-                            )
+                    self.batchedGudrunFile.process(headless=headless)
+                    iterator.performIteration(i)
+                    self.batchedGudrunFile.iterativeOrganise(
+                        os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            "REST",
+                            f"{dirText}_{i+1}"
                         )
-                        self.writeDiagnosticsFile(
-                            os.path.join(
-                                self.gudrunFile.instrument.GudrunInputFileDir,
-                                f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                                "REST",
-                                "batch_processing_diagnostics.txt"
-                            )
+                    )
+                    self.writeDiagnosticsFile(
+                        os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            "REST",
+                            "batch_processing_diagnostics.txt"
                         )
-                        if self.canConverge(self.batchedGudrunFile, rtol):
-                            break
+                    )
+                    if self.canConverge(self.batchedGudrunFile, rtol):
+                        break
         else:
             if iterationMode == IterationModes.NONE:
                 tasks.append(
@@ -240,7 +254,7 @@ class BatchProcessor:
                             initial.dcs(
                                 headless=headless,
                                 path=os.path.join(
-                                    self.gudrunFile.instrument.GudrunInputFileDir,
+                                    initial.instrument.GudrunInputFileDir,
                                     "gudpy.txt",
                                 )
                             )
@@ -251,8 +265,9 @@ class BatchProcessor:
                                 initial.iterativeOrganise,
                                 [
                                     os.path.join(
-                                        self.gudrunFile.instrument.GudrunInputFileDir,
-                                        f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                                        initial.GudrunInputFileDir,
+                                        f"BATCH_PROCESSING_BATCH_SIZE"
+                                        f"_{batchSize}",
                                         "FIRST_BATCH",
                                         f"{dirText}_{i+1}"
                                     )
@@ -264,8 +279,9 @@ class BatchProcessor:
                                 self.writeDiagnosticsFile,
                                 [
                                     os.path.join(
-                                        self.gudrunFile.instrument.GudrunInputFileDir,
-                                        f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
+                                        initial.GudrunInputFileDir,
+                                        f"BATCH_PROCESSING_BATCH_SIZE"
+                                        f"_{batchSize}",
                                         "FIRST_BATCH",
                                         "batch_processing_diagnostics.txt"
                                     ),
