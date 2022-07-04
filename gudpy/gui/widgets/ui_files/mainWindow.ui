@@ -2974,14 +2974,14 @@
                         <attribute name="verticalHeaderVisible">
                          <bool>false</bool>
                         </attribute>
+                        <attribute name="verticalHeaderMinimumSectionSize">
+                         <number>0</number>
+                        </attribute>
                         <attribute name="verticalHeaderDefaultSectionSize">
                          <number>30</number>
                         </attribute>
                         <attribute name="verticalHeaderHighlightSections">
                          <bool>false</bool>
-                        </attribute>
-                        <attribute name="verticalHeaderMinimumSectionSize">
-                         <number>0</number>
                         </attribute>
                        </widget>
                       </item>
@@ -5737,10 +5737,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>120</number>
                            </attribute>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>120</number>
                            </attribute>
                            <attribute name="verticalHeaderCascadingSectionResizes">
@@ -5840,10 +5840,10 @@
                            <property name="selectionBehavior">
                             <enum>QAbstractItemView::SelectRows</enum>
                            </property>
-                           <attribute name="horizontalHeaderDefaultSectionSize">
+                           <attribute name="horizontalHeaderMinimumSectionSize">
                             <number>128</number>
                            </attribute>
-                           <attribute name="horizontalHeaderMinimumSectionSize">
+                           <attribute name="horizontalHeaderDefaultSectionSize">
                             <number>128</number>
                            </attribute>
                            <attribute name="horizontalHeaderStretchLastSection">
@@ -7322,7 +7322,7 @@
      <x>0</x>
      <y>0</y>
      <width>1580</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -7366,6 +7366,8 @@
     <addaction name="batchProcessing"/>
     <addaction name="iterateGudrun"/>
     <addaction name="checkFilesExist"/>
+    <addaction name="separator"/>
+    <addaction name="runNexusProcessing"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -7411,6 +7413,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="runGudrun">
@@ -7581,6 +7586,32 @@
   <action name="batchProcessing">
    <property name="text">
     <string>Batch Processing</string>
+   </property>
+  </action>
+  <action name="runNexusProcessing">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>NeXus Processing</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

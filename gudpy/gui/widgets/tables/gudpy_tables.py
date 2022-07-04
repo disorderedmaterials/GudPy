@@ -51,7 +51,7 @@ class GudPyTableModel(QAbstractTableModel):
         self._data = data
         self.headers = headers
 
-    def rowCount(self, parent):
+    def rowCount(self, parent=QModelIndex()):
         """
         Returns the number of rows in the model.
         Parameters
@@ -65,7 +65,7 @@ class GudPyTableModel(QAbstractTableModel):
         """
         return len(self._data) if self._data else 0
 
-    def columnCount(self, parent):
+    def columnCount(self, parent=QModelIndex()):
         """
         Returns the number of columns in the model.
         Parameters
@@ -163,7 +163,7 @@ class GudPyTableModel(QAbstractTableModel):
         self._data.pop(index)
         self.endRemoveRows()
 
-    def flags(self, parent):
+    def flags(self, parent=QModelIndex()):
         """
         Returns flags of model.
         Parameters

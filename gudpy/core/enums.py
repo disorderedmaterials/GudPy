@@ -88,6 +88,15 @@ class Format(Enum):
     YAML = 1
 
 
+EXTRAPOLATION_MODES = {
+    0: ["BACKWARDS"],
+    1: ["FORWARDS"],
+    2: ["BI_DIRECTIONAL"],
+    3: ["NONE"]
+}
+
+ExtrapolationModes = enumFromDict("ExtrapolationModes", EXTRAPOLATION_MODES)
+
 ITERATION_MODES = {
     0: ["None", "NONE"],
     1: ["Tweak Factor", "TWEAK_FACTOR"],
