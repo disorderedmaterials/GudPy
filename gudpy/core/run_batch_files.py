@@ -1,17 +1,10 @@
-from cmath import e
 from copy import deepcopy
-from mimetypes import init
 import os
-from numpy import maximum
-
-from requests import head
-
 from core.enums import IterationModes
 from core.tweak_factor_iterator import TweakFactorIterator
 from core.thickness_iterator import ThicknessIterator
 from core.radius_iterator import RadiusIterator
 from core.density_iterator import DensityIterator
-from gudpy.core.enums import ITERATION_MODES
 
 
 class BatchProcessor:
@@ -44,20 +37,15 @@ class BatchProcessor:
             return batch
         else:
             first = deepcopy(self.gudrunFile)
-            first.sampleBackground = []
+            first.sampleBackgrounds = []
             for sampleBackground in self.gudrunFile.sampleBackgrounds:
                 batchedSampleBackground = deepcopy(sampleBackground)
                 batchedSampleBackground.samples = []
-                maxDataFiles = max(
-                    [
-                        len(sample.dataFiles)
-                        for sample in sampleBackground.samples
-                    ]
-                )
                 for sample in sampleBackground.samples:
                     batchedSample = deepcopy(sample)
-                    batchedSample.dataFiles.dataFiles = sample.dataFiles[0 : batchSize]
+                    batchedSample.dataFiles.dataFiles = sample.dataFiles[:batchSize]
                     batchedSampleBackground.samples.append(batchedSample)
+                first.sampleBackgrounds.append(batchedSampleBackground)
             return first, self.batch(batchSize, stepSize, False, offset=stepSize)
 
     def canConverge(self, batch, rtol):
@@ -72,8 +60,8 @@ class BatchProcessor:
     def checkConvergenceAndPropogate(self, current, next, rtol, iterationMode):
         if self.canConverge(current, rtol):
             self.propogateResults(current, next, iterationMode)
-            return True
-        return False
+            return True, True
+        return False, True
 
     def writeDiagnosticsFile(self, path, batch, iterationMode):
         with open(path, "w", encoding="utf-8") as fp:
@@ -98,7 +86,6 @@ class BatchProcessor:
                         fp.write(f"Density: {sample.density}\n")
 
     def propogateResults(self, current, next, iterationMode):
-
         for sampleBackgroundA, sampleBackgroundB in zip(current.sampleBackgrounds, next.sampleBackgrounds):
             for sampleA, sampleB in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
                 if iterationMode == IterationModes.TWEAK_FACTOR:
@@ -265,7 +252,7 @@ class BatchProcessor:
                                 [
                                     os.path.join(
                                         self.gudrunFile.instrument.GudrunInputFileDir,
-                                        f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                                        f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                         "FIRST_BATCH",
                                         f"{dirText}_{i+1}"
                                     )
@@ -278,7 +265,7 @@ class BatchProcessor:
                                 [
                                     os.path.join(
                                         self.gudrunFile.instrument.GudrunInputFileDir,
-                                        f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                                        f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                         "FIRST_BATCH",
                                         "batch_processing_diagnostics.txt"
                                     ),
@@ -298,6 +285,8 @@ class BatchProcessor:
                                 ]
                             ]
                         )
+                    tasks.append(None)
+                iterator = iteratorType(self.batchedGudrunFile)
                 for i in range(maxIterations):
                     tasks.append(
                         self.batchedGudrunFile.dcs(

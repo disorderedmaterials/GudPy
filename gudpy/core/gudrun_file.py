@@ -1492,6 +1492,7 @@ class GudrunFile:
                                 self.instrument.GudrunInputFileDir,
                                 s.pathName(),
                             ),
+                            overwrite=True,
                             writeParameters=False
                         )
 

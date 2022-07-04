@@ -1283,8 +1283,15 @@ class GudPyMainWindow(QMainWindow):
             else:
                 func, args = task
                 ret = func(*args)
-                if ret:
+                if isinstance(ret, bool) and ret:
                     self.batchProcessingFinished()
+                elif isinstance(ret, tuple) and ret[0]:
+                    with self.queue.mutex:
+                        remaining = list(self.queue.queue)
+                    n = remaining.index(None)
+                    for _ in range(n+1):
+                        self.queue.get()
+                    self.nextBatchProcess()
                 else:
                     self.nextBatchProcess()
         else:
