@@ -107,7 +107,7 @@ class BatchProcessor:
                 elif iterationMode == IterationModes.OUTER_RADIUS:
                     sampleB.outerRadius = sampleA.outerRadius
                 elif iterationMode == IterationModes.DENSITY:
-                    sampleB.desity = sampleA.density
+                    sampleB.density = sampleA.density
 
     def process(
         self,
