@@ -179,9 +179,9 @@ class Period:
             return f"{len(rawPulses)}\n" f"{pulseLines}"
 
 
-class ModulationExcitation:
+class NexusProcessing:
     """
-    Class to represent the ModulationExcitation data processing pipeline.
+    Class to represent the NeXuS data processing pipeline.
     This class is used for interfacing with ModEx for data preparation,
     and then subsequently processing the extracted data using Gudrun.
 
@@ -234,7 +234,7 @@ class ModulationExcitation:
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
-        ModulationExcitation object.
+        NexusProcessing object.
 
         Parameters
         ----------
@@ -336,21 +336,21 @@ class ModulationExcitation:
         tasks = []
         # Resolve path to modulation_excitation binary.
         if headless:
-            modulation_excitation = resolve(
+            nexus_processing = resolve(
                 "bin", f"modulation_excitation{SUFFIX}"
             )
         else:
             if hasattr(sys, "_MEIPASS"):
-                modulation_excitation = os.path.join(
+                nexus_processing = os.path.join(
                     sys._MEIPASS, f"modulation_excitation{SUFFIX}"
                 )
             else:
-                modulation_excitation = resolve(
+                nexus_processing = resolve(
                     os.path.join(config.__rootdir__, "bin"),
                     f"modulation_excitation{SUFFIX}",
                 )
         # Error if binary is missing.
-        if not os.path.exists(modulation_excitation):
+        if not os.path.exists(nexus_processing):
             return FileNotFoundError
 
         # Purge outputs.
@@ -529,20 +529,20 @@ class ModulationExcitation:
                         )
         if headless:
             # Write out the configuration file and
-            # perform modulation_excitation.
+            # perform nexus processing.
             self.write_out()
             result = subprocess.run(
-                [modulation_excitation, "modex.cfg"],
+                [nexus_processing, "modex.cfg"],
                 capture_output=True,
                 text=True,
             )
             return result
         else:
             # Append the write_out call, and a QProcess to run
-            # modulation_excitation to the tasks.
+            # nexus processing to the tasks.
             tasks.append((self.write_out, []))
             proc = QProcess()
-            proc.setProgram(modulation_excitation)
+            proc.setProgram(nexus_processing)
             proc.setArguments([self.path])
             tasks.append(proc)
             return tasks

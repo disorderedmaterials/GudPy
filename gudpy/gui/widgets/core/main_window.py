@@ -70,7 +70,7 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog
 )
-from gui.widgets.dialogs.modex_dialog import ModexDialog
+from gui.widgets.dialogs.nexus_processing_dialog import NexusProcessingDialog
 from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
@@ -170,7 +170,7 @@ class GudPyMainWindow(QMainWindow):
         self.plotModes = {}
         self.proc = None
         self.output = ""
-        self.modexOutput = {}
+        self.nexusProcessingOutput = {}
         self.outputIterations = {}
         self.previousProcTitle = ""
         self.error = ""
@@ -231,7 +231,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(CompositionAcceptanceDialog)
-        loader.registerCustomWidget(ModexDialog)
+        loader.registerCustomWidget(NexusProcessingDialog)
         loader.registerCustomWidget(BatchProcessingDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
@@ -458,10 +458,6 @@ class GudPyMainWindow(QMainWindow):
             self.checkFilesExist_
         )
 
-        self.mainWidget.runModex.triggered.connect(
-            self.modex
-        )
-
         self.mainWidget.save.triggered.connect(self.saveInputFile)
 
         self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
@@ -535,6 +531,11 @@ class GudPyMainWindow(QMainWindow):
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
         self.setWindowModified(False)
+
+        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
+            self.mainWidget.runNexusProcessing.setVisible(
+                True
+            )
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
@@ -1251,46 +1252,46 @@ class GudPyMainWindow(QMainWindow):
             )
         )
 
-    def modex(self):
+    def nexusProcessing(self):
         self.setControlsEnabled(False)
-        modexDialog = ModexDialog(self.gudrunFile, self.mainWidget)
-        modexDialog.widget.exec()
-        if modexDialog.cancelled or not modexDialog.preprocess:
+        nexusProcessingDialog = NexusProcessingDialog(self.gudrunFile, self.mainWidget)
+        nexusProcessingDialog.widget.exec()
+        if nexusProcessingDialog.cancelled or not nexusProcessingDialog.preprocess:
             self.setControlsEnabled(True)
         else:
-            tasks = modexDialog.preprocess
+            tasks = nexusProcessingDialog.preprocess
             for task in tasks[:-1]:
                 func, args = task
                 func(*args)
 
             self.proc = tasks[-1]
-            self.proc.started.connect(self.modexStarted)
+            self.proc.started.connect(self.nexusProcessingStarted)
             self.proc.readyReadStandardOutput.connect(
-                self.progressModexPreprocess
+                self.progressNexusPreprocess
             )
-            self.proc.readyReadStandardError.connect(self.errorModexPreprocess)
-            self.proc.finished.connect(self.preprocessModexFinished)
+            self.proc.readyReadStandardError.connect(self.errorNexusPreprocess)
+            self.proc.finished.connect(self.preprocessNexusFinished)
             self.proc.start()
 
-    def modexStarted(self):
-        self.modexFiles = set()
-        self.text = "Modulation Excitation Pre-processing"
+    def nexusProcessingStarted(self):
+        self.nexusProcessingFiles = set()
+        self.text = "NeXuS Pre-processing"
         self.mainWidget.currentTaskLabel.setText(
             self.text
         )
 
-    def progressModexPreprocess(self):
+    def progressNexusPreprocess(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         _, _, data = stdout.partition("Finished processing: ")
         if data:
-            self.modexFiles.add(data.split()[0])
+            self.nexusProcessingFiles.add(data.split()[0])
 
         progress = re.findall(r'(\d+(?:\.\d+)?)%', stdout)
         if progress:
             self.mainWidget.progressBar.setValue(int(float(progress[-1])))
 
-    def errorModexPreprocess(self):
+    def errorNexusPreprocess(self):
         data = self.proc.readAllStandardError()
         stderr = bytes(data).decode("utf8")
         if stderr:
@@ -1303,23 +1304,23 @@ class GudPyMainWindow(QMainWindow):
                 self.error
             )
 
-    def progressModexProcess(self):
-        progress = self.progressIncrementDCS(self.gudrunFile.modex.gudrunFile)
+    def progressNexusProcess(self):
+        progress = self.progressIncrementDCS(self.gudrunFile.nexus_processing.gudrunFile)
         progress /= self.nPulses
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
 
-    def preprocessModexFinished(self):
-        self.modexFiles = list(self.modexFiles)
-        self.nPulses = len(self.modexFiles)
+    def preprocessNexusFinished(self):
+        self.nexusProcessingFiles = list(self.nexusProcessingFiles)
+        self.nPulses = len(self.nexusProcessingFiles)
         self.mainWidget.progressBar.setValue(0)
         if self.nPulses > 0:
-            tasks = self.gudrunFile.modex.process(
-                self.modexFiles, headless=False
+            tasks = self.gudrunFile.nexus_processing.process(
+                self.nexusProcessingFiles, headless=False
             )
-            self.text = "Modulation Excitation"
+            self.text = "NeXuS Processing"
             self.mainWidget.currentTaskLabel.setText(
                 self.text
             )
@@ -1328,8 +1329,8 @@ class GudPyMainWindow(QMainWindow):
                 self.queue.put(t)
             self.currentFile = 0
             self.keyMap = {
-                n+1: os.path.splitext(os.path.basename(self.modexFiles[n]))[0]
-                for n in range(len(self.modexFiles))
+                n+1: os.path.splitext(os.path.basename(self.nexusProcessingFiles[n]))[0]
+                for n in range(len(self.nexusProcessingFiles))
             }
             self.processPulse()
         else:
@@ -1341,7 +1342,7 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(task[0], QProcess):
             dcs, func, args, dir_ = task
             self.makeProc(
-                dcs, self.progressModexProcess,
+                dcs, self.progressNexusProcess,
                 dir_=dir_, func=func, args=args,
                 started=self.processPulseStarted,
                 finished=self.processPulseFinished
@@ -1349,7 +1350,7 @@ class GudPyMainWindow(QMainWindow):
         else:
             func, args = task
             func(*args)
-            self.modexFinished()
+            self.nexusProcessingFinished()
 
     def processPulseStarted(self):
         return
@@ -1359,7 +1360,7 @@ class GudPyMainWindow(QMainWindow):
         timer.start()
         while (timer.elapsed() < 5000):
             QCoreApplication.processEvents()
-        self.modexOutput[self.currentFile+1] = self.output
+        self.nexusProcessingOutput[self.currentFile+1] = self.output
         self.currentFile += 1
         self.output = ""
         func, args = self.queue.get()
@@ -1367,16 +1368,16 @@ class GudPyMainWindow(QMainWindow):
         if not self.queue.empty():
             self.processPulse()
         else:
-            self.modexFinished()
+            self.nexusProcessingFinished()
 
-    def modexFinished(self):
+    def nexusProcessingFinished(self):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         self.proc = None
         self.outputSlots.setOutput(
-            self.modexOutput, "gudrun_dcs",
-            gudrunFile=self.gudrunFile.modex.gudrunFile, keyMap=self.keyMap
+            self.nexusProcessingOutput, "gudrun_dcs",
+            gudrunFile=self.gudrunFile.batch_processing.gudrunFile, keyMap=self.keyMap
         )
 
     def iterateGudrun(self, dialog, name):
@@ -1743,15 +1744,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
-        self.mainWidget.runModex.setEnabled(
-            state &
-            (
-                self.gudrunFile.instrument.dataFileType == "nxs"
-                or self.gudrunFile.instrument.dataFileType == "NXS"
-            )
-            if self.gudrunFile
-            else False
-        )
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
@@ -1770,6 +1762,17 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
 
+        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
+            self.mainWidget.runNexusProcessing.setEnabled(
+                state &
+                (
+                    self.gudrunFile.instrument.dataFileType == "nxs"
+                    or self.gudrunFile.instrument.dataFileType == "NXS"
+                )
+                if self.gudrunFile
+                else False
+            )
+
     def setActionsEnabled(self, state):
 
         self.setTreeActionsEnabled(state)
@@ -1777,15 +1780,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runPurge.setEnabled(state)
         self.mainWidget.runGudrun.setEnabled(state)
         self.mainWidget.iterateGudrun.setEnabled(state)
-        self.mainWidget.runModex.setEnabled(
-            state &
-            (
-                self.gudrunFile.instrument.dataFileType == "nxs"
-                or self.gudrunFile.instrument.dataFileType == "NXS"
-            )
-            if self.gudrunFile
-            else False
-        )
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
         self.mainWidget.runFilesIndividually.setEnabled(state)
@@ -1798,6 +1792,17 @@ class GudPyMainWindow(QMainWindow):
         )
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
+
+        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
+            self.mainWidget.runNexusProcessing.setEnabled(
+                state &
+                (
+                    self.gudrunFile.instrument.dataFileType == "nxs"
+                    or self.gudrunFile.instrument.dataFileType == "NXS"
+                )
+                if self.gudrunFile
+                else False
+            )
 
     def setTreeActionsEnabled(self, state):
         self.mainWidget.insertSampleBackground.setEnabled(state)

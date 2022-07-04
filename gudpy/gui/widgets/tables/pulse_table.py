@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
 from gui.widgets.tables.gudpy_tables import GudPyTableModel, GudPyDelegate
 from gui.widgets.core.exponential_spinbox import ExponentialSpinBox
 
-from core.modulation_excitation import DefinedPulse
+from core.nexus_processing import DefinedPulse
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
