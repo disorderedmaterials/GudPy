@@ -49,7 +49,7 @@ class NexusProcessingDialog(QDialog):
         if hasattr(sys, "_MEIPASS"):
             uifile = QFile(
                 os.path.join(
-                    sys._MEIPASS, "ui_files", "modulationExcitationDialog.ui"
+                    sys._MEIPASS, "ui_files", "nexusProcessingDialog.ui"
                 )
             )
         else:
@@ -59,7 +59,7 @@ class NexusProcessingDialog(QDialog):
                     current_dir,
                     "..",
                     "ui_files",
-                    "modulationExcitationDialog.ui",
+                    "nexusProcessingDialog.ui",
                 )
             )
         loader = QUiLoader()
