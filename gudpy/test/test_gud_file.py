@@ -25,7 +25,8 @@ class TestParseGudFile(TestCase):
             "averageSquareOfScatteringLength": 0.205450E+00,
             "coherentRatio": 0.659052E+02,
             "expectedDCS": 4.46355,
-            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
+            "groupsTable": """
+    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -79,7 +80,8 @@ class TestParseGudFile(TestCase):
             "averageSquareOfScatteringLength": 0.408931E+00,
             "coherentRatio": 0.100411E+01,
             "expectedDCS": 0.51757,
-            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
+            "groupsTable": """
+    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -128,7 +130,8 @@ class TestParseGudFile(TestCase):
             "averageSquareOfScatteringLength": 0.307191E+00,
             "coherentRatio": 0.362347E+01,
             "expectedDCS": 2.49056,
-            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
+            "groupsTable": """
+    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
@@ -177,7 +180,8 @@ class TestParseGudFile(TestCase):
             "averageSquareOfScatteringLength": 0.278574E+00,
             "coherentRatio": 0.743389E+01,
             "expectedDCS": 3.04538,
-            "groupsTable": """    1            0.0000    0.0000        0.00000              0.0000
+            "groupsTable": """
+    1            0.0000    0.0000        0.00000              0.0000
     2            0.0000    0.0000        0.00000              0.0000
     3            0.0000    0.0000        0.00000              0.0000
     4            0.0000    0.0000        0.00000              0.0000
