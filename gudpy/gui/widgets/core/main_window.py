@@ -1501,9 +1501,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(0)
         self.mainWidget.stopTaskButton.setEnabled(False)
         self.outputSlots.setOutput(
-            self.batchProcessor.batchedGudrunFile,
             self.outputBatches,
-            "gudrun_dcs"
+            "gudrun_dcs",
+            gudrunFile=self.batchProcessor.batchedGudrunFile,
         )
         self.outputBatches = {}
         self.output = ""
@@ -1550,7 +1550,7 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
+        self.outputSlots.setOutput(output, "gudrun_dcs", gudrunFile=self.gudrunFile)
         self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
@@ -1635,9 +1635,9 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration + 1] = self.output
             self.outputSlots.setOutput(
-                self.gudrunFile,
                 self.outputIterations,
-                "gudrun_dcs"
+                "gudrun_dcs",
+                gudrunFile=self.gudrunFile
             )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if (self.currentIteration + 1) % 2 == 0:
@@ -2058,9 +2058,9 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(self.gudrunFile, output, "gudrun_dcs")
+            self.outputSlots.setOutput(output, "gudrun_dcs", gudrunFile=self.gudrunFile)
         else:
-            self.outputSlots.setOutput(self.gudrunFile, output, "purge_det")
+            self.outputSlots.setOutput(output, "purge_det", gudrunFile=self.gudrunFile)
         self.outputIterations = {}
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
