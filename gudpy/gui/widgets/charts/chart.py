@@ -139,6 +139,10 @@ class GudPyChart(QChart):
                 offsetY,
                 self
             )
+            visible = True
+            if sample in self.configs.keys():
+                if not any([series.isVisible() for series in self.configs[sample].series()]):
+                    visible = False
             self.configs[sample] = plotConfig
             for series in plotConfig.plotData(self.plotMode):
                 if series:
@@ -146,7 +150,7 @@ class GudPyChart(QChart):
                         self.addSeries(series)
                     elif isinstance(sample, Container) and plotsContainers:
                         self.addSeries(series)
-                    if not series.points():
+                    if not series.points() or not visible:
                         series.hide()
             if (
                 len(sample.dataFiles)
