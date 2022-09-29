@@ -1550,7 +1550,11 @@ class GudPyMainWindow(QMainWindow):
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
-        self.outputSlots.setOutput(output, "gudrun_dcs", gudrunFile=self.gudrunFile)
+        self.outputSlots.setOutput(
+            output,
+            "gudrun_dcs",
+            gudrunFile=self.gudrunFile
+        )
         self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
@@ -2058,9 +2062,13 @@ class GudPyMainWindow(QMainWindow):
                     "The process did not entirely finish,"
                     " please check your parameters."
                 )
-            self.outputSlots.setOutput(output, "gudrun_dcs", gudrunFile=self.gudrunFile)
+            self.outputSlots.setOutput(
+                output, "gudrun_dcs", gudrunFile=self.gudrunFile
+            )
         else:
-            self.outputSlots.setOutput(output, "purge_det", gudrunFile=self.gudrunFile)
+            self.outputSlots.setOutput(
+                output, "purge_det", gudrunFile=self.gudrunFile
+            )
         self.outputIterations = {}
         self.output = ""
         self.mainWidget.currentTaskLabel.setText("No task running.")
