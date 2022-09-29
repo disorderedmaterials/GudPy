@@ -141,7 +141,12 @@ class GudPyChart(QChart):
             )
             visible = True
             if sample in self.configs.keys():
-                if not any([series.isVisible() for series in self.configs[sample].series()]):
+                if not any(
+                    [
+                        series.isVisible()
+                        for series in self.configs[sample].series()
+                    ]
+                ):
                     visible = False
             self.configs[sample] = plotConfig
             for series in plotConfig.plotData(self.plotMode):
