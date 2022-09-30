@@ -516,6 +516,9 @@ class InstrumentSlots():
         self.widget.browseNexusDefinitionButton.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
+        self.widget.runNexusProcessing.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
         if not self.widgetsRefreshing:
             self.parent.setModified()
 

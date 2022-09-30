@@ -537,6 +537,10 @@ class GudPyMainWindow(QMainWindow):
                 True
             )
 
+        self.mainWidget.runNexusProcessing.triggered.connect(
+            self.nexusProcessing
+        )
+
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
         for f in os.listdir(dir_):
