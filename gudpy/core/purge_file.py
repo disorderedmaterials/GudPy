@@ -152,7 +152,7 @@ class PurgeFile():
             sampleDataFiles = []
         else:
             sampleDataFiles = [
-                f"{df}{config.spc2}{sample.periodNo}"
+                f"{df}{config.spc2}{sample.periodNumber}"
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
                 for df in sample.dataFiles
@@ -163,7 +163,7 @@ class PurgeFile():
             containerDataFiles = []
         else:
             containerDataFiles = [
-                f"{df}{config.spc2}{container.periodNo}"
+                f"{df}{config.spc2}{container.periodNumber}"
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
                 for sample in sampleBackground.samples
                 for container in sample.containers
