@@ -164,7 +164,6 @@ class GudPyChartView(QChartView):
                 event.accept()
                 self.setRubberBand(QChartView.RectangleRubberBand)
         return super(GudPyChartView, self).mouseReleaseEvent(event)
-            
 
     def keyPressEvent(self, event):
         """
