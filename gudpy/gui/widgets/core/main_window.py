@@ -536,8 +536,10 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.runNexusProcessing.setVisible(
                 True
             )
-        
-        self.mainWidget.runNexusProcessing.triggered.connect(self.nexusProcessing)
+
+        self.mainWidget.runNexusProcessing.triggered.connect(
+            self.nexusProcessing
+        )
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
