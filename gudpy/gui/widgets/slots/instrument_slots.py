@@ -962,8 +962,8 @@ class InstrumentSlots():
         [
             widget.setEnabled(state) for widget in self.scales[Scales.Q][1:]
         ]
-        if state:
-            if not self.widgetsRefreshing:
+        if not self.widgetsRefreshing:
+            if state:
                 self.instrument.scaleSelection = Scales.Q
                 values = [
                     widget.value() for widget in self.scales[Scales.Q][1:]
@@ -989,17 +989,17 @@ class InstrumentSlots():
             widget.setEnabled(state)
             for widget in self.scales[Scales.D_SPACING][1:]
         ]
-        if state:
-            values = [
-                widget.value() for widget in self.scales[Scales.D_SPACING][1:]
-            ]
-            (
-                self.instrument.XMin,
-                self.instrument.XMax,
-                self.instrument.XStep
-            ) = values
-            self.instrument.scaleSelection = Scales.D_SPACING
-            if not self.widgetsRefreshing:
+        if not self.widgetsRefreshing:
+            if state:
+                values = [
+                    widget.value() for widget in self.scales[Scales.D_SPACING][1:]
+                ]
+                (
+                    self.instrument.XMin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ) = values
+                self.instrument.scaleSelection = Scales.D_SPACING
                 self.parent.setModified()
 
     def handleDSpacingMinChanged(self, value):
@@ -1016,17 +1016,17 @@ class InstrumentSlots():
             widget.setEnabled(state)
             for widget in self.scales[Scales.WAVELENGTH][1:]
         ]
-        if state:
-            values = [
-                widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]
-            ]
-            (
-                self.instrument.XMin,
-                self.instrument.XMax,
-                self.instrument.XStep
-            ) = values
-            self.instrument.scaleSelection = Scales.WAVELENGTH
-            if not self.widgetsRefreshing:
+        if not self.widgetsRefreshing:
+            if state:
+                values = [
+                    widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]
+                ]
+                (
+                    self.instrument.XMin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ) = values
+                self.instrument.scaleSelection = Scales.WAVELENGTH
                 self.parent.setModified()
 
     def handleWavelengthMinChanged(self, value):
@@ -1040,17 +1040,17 @@ class InstrumentSlots():
 
     def handleEnergyToggled(self, state):
         [widget.setEnabled(state) for widget in self.scales[Scales.ENERGY][1:]]
-        if state:
-            values = [
-                widget.value() for widget in self.scales[Scales.ENERGY][1:]
-            ]
-            (
-                self.instrument.XMin,
-                self.instrument.XMax,
-                self.instrument.XStep
-            ) = values
-            self.instrument.scaleSelection = Scales.ENERGY
-            if not self.widgetsRefreshing:
+        if not self.widgetsRefreshing:
+            if state:
+                values = [
+                    widget.value() for widget in self.scales[Scales.ENERGY][1:]
+                ]
+                (
+                    self.instrument.XMin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ) = values
+                self.instrument.scaleSelection = Scales.ENERGY
                 self.parent.setModified()
 
     def handleEnergyMinChanged(self, value):
@@ -1064,15 +1064,15 @@ class InstrumentSlots():
 
     def handleTOFToggled(self, state):
         [widget.setEnabled(state) for widget in self.scales[Scales.TOF][1:]]
-        if state:
-            values = [widget.value() for widget in self.scales[Scales.TOF][1:]]
-            (
-                self.instrument.XMin,
-                self.instrument.XMax,
-                self.instrument.XStep
-            ) = values
-            self.instrument.scaleSelection = Scales.TOF
-            if not self.widgetsRefreshing:
+        if not self.widgetsRefreshing:
+            if state:
+                values = [widget.value() for widget in self.scales[Scales.TOF][1:]]
+                (
+                    self.instrument.XMin,
+                    self.instrument.XMax,
+                    self.instrument.XStep
+                ) = values
+                self.instrument.scaleSelection = Scales.TOF
                 self.parent.setModified()
 
     def handleTOFMinChanged(self, value):
