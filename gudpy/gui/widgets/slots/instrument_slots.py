@@ -969,7 +969,7 @@ class InstrumentSlots():
                     widget.value() for widget in self.scales[Scales.Q][1:]
                 ]
                 (
-                    self.instrument.Xmin,
+                    self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
@@ -994,7 +994,7 @@ class InstrumentSlots():
                 widget.value() for widget in self.scales[Scales.D_SPACING][1:]
             ]
             (
-                self.instrument.Xmin,
+                self.instrument.XMin,
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
@@ -1021,7 +1021,7 @@ class InstrumentSlots():
                 widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]
             ]
             (
-                self.instrument.Xmin,
+                self.instrument.XMin,
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
@@ -1045,7 +1045,7 @@ class InstrumentSlots():
                 widget.value() for widget in self.scales[Scales.ENERGY][1:]
             ]
             (
-                self.instrument.Xmin,
+                self.instrument.XMin,
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
@@ -1067,7 +1067,7 @@ class InstrumentSlots():
         if state:
             values = [widget.value() for widget in self.scales[Scales.TOF][1:]]
             (
-                self.instrument.Xmin,
+                self.instrument.XMin,
                 self.instrument.XMax,
                 self.instrument.XStep
             ) = values
