@@ -1392,7 +1392,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc = None
         self.outputSlots.setOutput(
             self.nexusProcessingOutput, "gudrun_dcs",
-            gudrunFile=self.gudrunFile.batch_processing.gudrunFile,
+            gudrunFile=self.gudrunFile.nexus_processing.gudrunFile,
             keyMap=self.keyMap
         )
 
