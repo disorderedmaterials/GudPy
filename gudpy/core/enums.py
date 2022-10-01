@@ -130,6 +130,18 @@ class Format(Enum):
     YAML = 1
 
 """
+Enumerates extrapolation modes.
+"""
+EXTRAPOLATION_MODES = {
+    0: ["BACKWARDS"],
+    1: ["FORWARDS"],
+    2: ["BI_DIRECTIONAL"],
+    3: ["NONE"]
+}
+
+ExtrapolationModes = enumFromDict("ExtrapolationModes", EXTRAPOLATION_MODES)
+
+"""
 Enumerates iteration modes.
 """
 ITERATION_MODES = {

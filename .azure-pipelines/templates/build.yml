@@ -13,6 +13,8 @@ parameters:
   type: string
 - name: gudrunTag
   default: ''
+- name: modexTag
+  default: ''
   type: string
 - name: publishImage
   default: 'false'
@@ -38,13 +40,21 @@ steps:
     displayName: "Install OpenGL for linux"
 
   - bash: |
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > binaries.zip
-      unzip binaries.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}.zip > gudrun-binaries.zip
+      unzip gudrun-binaries.zip
       mv binaries-${{ parameters.gudrunTag }}-${{ parameters.osName }}/* bin
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ parameters.gudrunTag }}/startupFiles-${{ parameters.gudrunTag }}.zip > startupFiles.zip
       unzip startupFiles.zip
       mv StartupFiles bin/StartupFiles
-      
+    displayName: Acquire Gudrun binaries and startup files.
+
+  - bash: |
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/binaries-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
+      unzip modex-binaries.zip
+      mv binaries-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
+    displayName: Acquire Modulation Excitation binaries for OSX/linux.
+    condition: or(eq(variables.osName, 'linux'), eq(variables.osName, 'osx'))
+
   - script: |
       pip install pyinstaller
       

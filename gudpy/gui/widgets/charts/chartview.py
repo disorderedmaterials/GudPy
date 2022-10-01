@@ -185,7 +185,7 @@ class GudPyChartView(QChartView):
                 self.rubberBandOrigin = event.pos()
 
             event.accept()
-            return super().mousePressEvent(event)
+        return super().mousePressEvent(event)
 
     def copyPlot(self):
         """
@@ -234,8 +234,7 @@ class GudPyChartView(QChartView):
                 self.setRubberBand(QChartView.NoRubberBand)
                 event.accept()
                 self.setRubberBand(QChartView.RectangleRubberBand)
-            else:
-                return super(GudPyChartView, self).mouseReleaseEvent(event)
+        return super(GudPyChartView, self).mouseReleaseEvent(event)
 
     def keyPressEvent(self, event):
         """

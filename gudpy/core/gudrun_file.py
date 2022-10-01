@@ -36,6 +36,7 @@ from core.enums import (
 from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException
+from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -165,6 +166,7 @@ class GudrunFile:
 
         self.path = path
         self.yaml = YAML()
+
         # Construct the outpath.
         self.outpath = "gudpy.txt"
         self.components = Components(components=[])
@@ -185,6 +187,7 @@ class GudrunFile:
         # Parse the GudrunFile.
         self.stream = None
         self.purgeFile = PurgeFile(self)
+        self.nexus_processing = NexusProcessing(self)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
@@ -1486,6 +1489,7 @@ class GudrunFile:
                                 self.instrument.GudrunInputFileDir,
                                 s.pathName(),
                             ),
+                            overwrite=True,
                             writeParameters=False
                         )
 

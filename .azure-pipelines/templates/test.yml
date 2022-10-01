@@ -14,6 +14,9 @@ parameters:
 - name: gudrunTag
   default: ''
   type: string
+- name: modexTag
+  default: ''
+  type: string
 steps:
   - task: UsePythonVersion@0
     displayName: "Use Python Version ${{ parameters.version }}"
@@ -42,6 +45,13 @@ steps:
       unzip startupFiles.zip
       mv StartupFiles bin
     displayName: "Collect binaries and startup files"
+
+  - bash: |
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ parameters.modexTag }}/binaries-${{ parameters.modexTag }}-${{ parameters.osName }}.zip > modex-binaries.zip
+      unzip modex-binaries.zip
+      mv binaries-${{ parameters.modexTag }}-${{ parameters.osName }}/* bin
+    displayName: Acquire Modulation Excitation binaries for OSX/linux.
+    condition: or(eq(variables.osName, 'linux'), eq(variables.osName, 'osx'))
 
   - bash: |
       pip install nose2

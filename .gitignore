@@ -8,7 +8,6 @@ dist/
 .coverage
 *.gud
 *.txt
-nexus_*
 *.DS_STORE
 resources_rc.py
 *.mint01

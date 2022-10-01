@@ -24,6 +24,7 @@ class BatchProcessingDialog(QDialog):
         self.useRtol = False
         self.rtol = 10.0
         self.numberIterations = 1
+        self.propogateFirstBatch = False
         self.queue = Queue()
         self.loadUI()
         self.initComponents()
@@ -70,6 +71,9 @@ class BatchProcessingDialog(QDialog):
         )
         self.widget.maxIterationsSpinBox.valueChanged.connect(
             self.numberIterationsChanged
+        )
+        self.widget.propogateFirstBatchCheckBox.toggled.connect(
+            self.propogateFirstBatchToggled
         )
         self.widget.processButton.clicked.connect(
             self.process
@@ -131,6 +135,9 @@ class BatchProcessingDialog(QDialog):
     def numberIterationsChanged(self, value):
         self.numberIterations = value
 
+    def propogateFirstBatchToggled(self, state):
+        self.propogateFirstBatch = state
+
     def process(self):
         self.queue = Queue()
         self.batchProcessor = BatchProcessor(self.gudrunFile)
@@ -140,7 +147,8 @@ class BatchProcessingDialog(QDialog):
             headless=False,
             iterationMode=self.iterateBy,
             rtol=self.rtol if self.useRtol else 0.0,
-            maxIterations=self.numberIterations
+            maxIterations=self.numberIterations,
+            propogateFirstBatch=self.propogateFirstBatch
         ):
             self.queue.put(task)
             self.text = (

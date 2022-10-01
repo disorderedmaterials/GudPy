@@ -7,6 +7,7 @@ pr: none
 
 variables:
   gudrunTag: 2022.2
+  modexTag: 0.1.2
   targets: >
     {
       linuxPy39:
@@ -65,6 +66,7 @@ stages:
           os: '$(imageName)'
           osName: '$(osName)'
           gudrunTag: '$(gudrunTag)'
+          modexTag: '$(modexTag)'
 
 - stage: 'build'
   displayName: 'Build GudPy exe'
@@ -86,6 +88,7 @@ stages:
             os: '$(imageName)'
             osName: '$(osName)'
             gudrunTag: '$(gudrunTag)'
+            modexTag: '$(modexTag)'
         - task: PublishBuildArtifacts@1
           inputs:
             PathToPublish: "dist/"

@@ -275,6 +275,18 @@ class GudPyChart(QChart):
                 offsetY,
                 self
             )
+
+            # Maintain series visibility.
+            visible = True
+            if sample in self.configs.keys():
+                if not any(
+                    [
+                        series.isVisible()
+                        for series in self.configs[sample].series()
+                    ]
+                ):
+                    visible = False
+
             # Add it to the map of configurations.
             self.configs[sample] = plotConfig
 
@@ -286,8 +298,9 @@ class GudPyChart(QChart):
                         self.addSeries(series)
                     elif isinstance(sample, Container) and plotsContainers:
                         self.addSeries(series)
-                    # If the series is empty, hide it.
-                    if not series.points():
+
+                    # If the series is empty or was not visible before, hide it.
+                    if not series.points() or not visible:
                         series.hide()
             # Plot DCS level if necessary.
             if (

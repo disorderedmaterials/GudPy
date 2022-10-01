@@ -4,7 +4,11 @@ class OutputSlots():
         self.widget = widget
         self.parent = parent
 
-    def setOutput(self, output, gudrunFile, task):
+    def setOutput(self, output, task, gudrunFile=None, keyMap=None):
+        if not gudrunFile:
+            gudrunFile = self.parent.gudrunFile
         self.output = output
         self.task = task
-        self.widget.outputTree.buildTree(output, gudrunFile, self)
+        self.widget.outputTree.buildTree(
+            gudrunFile, output, self, keyMap=keyMap
+        )
