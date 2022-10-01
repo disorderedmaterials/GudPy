@@ -992,13 +992,16 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             if state:
                 values = [
-                    widget.value() for widget in self.scales[Scales.D_SPACING][1:]
+                    widget.value()
+                    for widget in self.scales[Scales.D_SPACING][1:]
                 ]
+
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
+
                 self.instrument.scaleSelection = Scales.D_SPACING
                 self.parent.setModified()
 
@@ -1019,13 +1022,16 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             if state:
                 values = [
-                    widget.value() for widget in self.scales[Scales.WAVELENGTH][1:]
+                    widget.value()
+                    for widget in self.scales[Scales.WAVELENGTH][1:]
                 ]
+
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
+
                 self.instrument.scaleSelection = Scales.WAVELENGTH
                 self.parent.setModified()
 
@@ -1043,13 +1049,16 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             if state:
                 values = [
-                    widget.value() for widget in self.scales[Scales.ENERGY][1:]
+                    widget.value()
+                    for widget in self.scales[Scales.ENERGY][1:]
                 ]
+
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
+
                 self.instrument.scaleSelection = Scales.ENERGY
                 self.parent.setModified()
 
@@ -1066,12 +1075,17 @@ class InstrumentSlots():
         [widget.setEnabled(state) for widget in self.scales[Scales.TOF][1:]]
         if not self.widgetsRefreshing:
             if state:
-                values = [widget.value() for widget in self.scales[Scales.TOF][1:]]
+                values = [
+                    widget.value()
+                    for widget in self.scales[Scales.TOF][1:]
+                ]
+
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
+
                 self.instrument.scaleSelection = Scales.TOF
                 self.parent.setModified()
 
