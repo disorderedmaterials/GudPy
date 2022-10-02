@@ -10,7 +10,7 @@ pr:
       - .azure-pipelines/continuous.yml
 
 variables:
-  gudrunTag: 2022.2
+  gudrunTag: 2022.4
   modexTag: 0.1.2
   targets: >
     {
