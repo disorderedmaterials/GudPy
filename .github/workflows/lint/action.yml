@@ -1,20 +1,16 @@
 name: Lint
 
-inputs:
-  pythonVersion:
-    required: true
-
 runs:
   using: "composite"
   steps:
   - name: Setup Python
     uses: actions/setup-python@v4
     with:
-      python-version: ${{ inputs.pythonVersion }}
+      python-version: ${{ env.pythonVersion }}
   - name: Install Dependencies
     shell: bash
     run: |
-      pip install --upgrade pip
+      python -m pip install --upgrade pip
       pip install -r requirements.txt
       pip install flake8
   - name: Lint with Flake8

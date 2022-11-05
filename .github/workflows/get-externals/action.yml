@@ -1,0 +1,44 @@
+name: Get Externals
+
+inputs:
+  targetDir:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+  - name: Retrieve Externalsn (Linux)
+    shell: bash
+    if: runner.os == 'Linux'
+    run: |
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-linux.zip > gudrun-binaries.zip
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-linux.zip > modex-binaries.zip
+  - name: Retrieve Externals (OSX)
+    shell: bash
+    if: runner.os == 'MacOS'
+    run: |
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx.zip > gudrun-binaries.zip
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-osx.zip > modex-binaries.zip
+  - name: Retrieve Externals (Windows)
+    shell: bash
+    if: runner.os == 'Windows'
+    run: |
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-windows.zip > gudrun-binaries.zip
+      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-windows.zip > modex-binaries.zip
+  - name: Retrieve StartupFiles
+    shell: bash
+    run: |
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/startupFiles-${{ env.gudrunTag }}.zip > startupFiles.zip
+  - name: Assemble Directory
+    shell: bash
+    run: |
+      rm -rf ${{ inputs.targetDir }}
+      mkdir ${{ inputs.targetDir }}
+      unzip gudrun-binaries.zip
+      mv binaries-${{ env.gudrunTag }}-*/* bin
+
+      unzip modex-binaries.zip
+      mv binaries-${{ parameters.modexTag }}-*/* bin
+
+      unzip startupFiles.zip
+      mv StartupFiles ${{ inputs.targetDir }}
