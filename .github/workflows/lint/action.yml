@@ -1,0 +1,27 @@
+name: Lint
+
+inputs:
+  pythonVersion:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+  - name: Setup Python
+    uses: actions/setup-python@v4
+    with:
+      python-version: ${{ inputs.pythonVersion }}
+  - name: Install Dependencies
+    shell: bash
+    run: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install flake8
+  - name: Lint with Flake8
+    shell: bash
+    run: |
+      python -m flake8 --exclude gudpy/core/isotopes.py,gudpy/test/test_gud_file.py . | tee flake8.err.log
+  - uses: actions/upload-artifact@v3
+    with:
+      name: Flake8-ErrorLog
+      path: ./flake8.err.log
