@@ -1,0 +1,41 @@
+name: Package
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Create DMG (OSX)
+    shell: bash
+    if: runner.os == 'MacOS'
+    run: |
+      pip install dmgbuild
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
+      dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
+
+  - name: Create Zip (Windows)
+    shell: bash
+    if: runner.os == 'Windows'
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
+
+  - name: Compile Singularity (Linux)
+    shell: bash
+    if: runner.os == 'Linux'
+    run: |
+      sudo apt-get update
+      sudo apt-get install -y build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
+      git clone https://github.com/hpcng/singularity.git $HOME/go/singularity
+      cd $HOME/go/singularity
+      git fetch && git checkout v3.7.2
+      ./mconfig && make -C ./builddir && sudo make -C ./builddir install
+
+  - name: Create Singularity (Linux)
+    shell: bash
+    if: runner.os == 'Linux'
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+
+
