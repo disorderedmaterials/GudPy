@@ -1644,14 +1644,15 @@ class GudPyMainWindow(QMainWindow):
                 gudrunFile=self.gudrunFile
             )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            if (self.currentIteration + 1) % 2 == 0:
+            if self.currentIteration % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
-                    f"QIteration_{(self.currentIteration // 2) + 1}"
+                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}"
                 )
                 self.outputIterations[self.currentIteration + 1] = self.output
             else:
                 self.iterator.gudrunFile.iterativeOrganise(
-                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}")
+                    f"QIteration_{(self.currentIteration // 2) + 1}"
+                    )
                 self.outputIterations[self.currentIteration + 1] = self.output
         if not self.queue.empty():
             self.currentIteration += 1
@@ -1672,10 +1673,10 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument.GudrunInputFileDir
         )
         if isinstance(self.iterator, WavelengthSubtractionIterator):
-            if (self.currentIteration+1) % 2 == 0:
-                self.iterator.QIteration(self.currentIteration)
-            else:
+            if self.currentIteration % 2 == 0:
                 self.iterator.wavelengthIteration(self.currentIteration)
+            else:
+                self.iterator.QIteration(self.currentIteration)
         if func:
             func(*args)
         self.proc.start()
