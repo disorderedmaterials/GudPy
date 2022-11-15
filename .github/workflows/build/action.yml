@@ -28,8 +28,8 @@ runs:
     with:
       targetDir: ./bin
 
-    name: Create Executable
+  - name: Create Executable
     shell: bash
-  - run: |
+    run: |
       pyside6-rcc gudpy/gui/widgets/resources/resources.qrc -o gudpy/gui/widgets/resources/resources_rc.py
       pyinstaller gudpy.spec
