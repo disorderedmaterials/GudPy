@@ -1,0 +1,56 @@
+name: Build
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Setup Python
+    uses: actions/setup-python@v4
+    with:
+      python-version: ${{ env.pythonVersion }}
+
+  - name: Install Dependencies
+    shell: bash
+    run: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install pyinstaller
+
+  - name: Install Dependencies (Linux)
+    if: runner.os == 'Linux'
+    shell: bash
+    run: |
+      sudo apt-get update
+      sudo apt-get install libopengl0 libegl1-mesa -y 
+
+  - name: Get External Dependencies
+    uses: "./.github/workflows/get-externals"
+    with:
+      targetDir: ./bin
+
+  - name: Create Executable
+    shell: bash
+    run: |
+      pyside6-rcc gudpy/gui/widgets/resources/resources.qrc -o gudpy/gui/widgets/resources/resources_rc.py
+      pyinstaller gudpy.spec
+
+  - name: Rename Executable (Linux)
+    if: runner.os == 'Linux'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION} dist/GudPy-${VERSION}-Linux
+
+  - name: Rename Executable (OSX)
+    if: runner.os == 'MacOS'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION} dist/GudPy-${VERSION}-OSX
+
+  - name: Rename Executable (Windows)
+    if: runner.os == 'Windows'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION}.exe dist/GudPy-${VERSION}-Windows.exe
