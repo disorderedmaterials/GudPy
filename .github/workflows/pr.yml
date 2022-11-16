@@ -34,7 +34,7 @@ jobs:
     - name: "Test (${{ matrix.os }})"
       uses: "./.github/workflows/test"
 
-  Build_Package:
+  BuildPackage:
     needs: Test
     strategy:
       fail-fast: false

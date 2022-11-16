@@ -5,24 +5,38 @@ runs:
   steps:
 
   - name: Create DMG (OSX)
-    shell: bash
     if: runner.os == 'MacOS'
+    shell: bash
     run: |
       pip install dmgbuild
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
       dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
 
+  - name: Upload Artifact (OSX)
+    if: runner.os == 'MacOS'
+    uses: actions/upload-artifact@v3
+    with:
+      name: MacOS Dmg Installer
+      path: dist/GudPy-*.dmg
+
   - name: Create Zip (Windows)
-    shell: bash
     if: runner.os == 'Windows'
+    shell: bash
     run: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
 
+  - name: Upload Artifact (Windows)
+    if: runner.os == 'Windows'
+    uses: actions/upload-artifact@v3
+    with:
+      name: Windows Zip Package
+      path: dist/GudPy-*.-windows.zip
+
   - name: Compile Singularity (Linux)
-    shell: bash
     if: runner.os == 'Linux'
+    shell: bash
     run: |
       sudo apt-get update
       sudo apt-get install -y build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
@@ -30,12 +44,12 @@ runs:
       cd $HOME/go/singularity
       git fetch && git checkout v3.7.2
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
-
-  - name: Create Singularity (Linux)
-    shell: bash
-    if: runner.os == 'Linux'
-    run: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
 
-
+  - name: Upload Artifact (Linux)
+    if: runner.os == 'Linux'
+    uses: actions/upload-artifact@v3
+    with:
+      name: Linux Singularity Image
+      path: dist/GudPy-*.sif
