@@ -48,6 +48,11 @@ runs:
       cd $HOME/go/singularity
       git fetch && git checkout v3.7.2
       ./mconfig && make -C ./builddir && sudo make -C ./builddir install
+
+  - name: Create Singularity Image (Linux)
+    if: runner.os == 'Linux'
+    shell: bash
+    run: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
 
