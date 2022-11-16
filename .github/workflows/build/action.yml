@@ -33,3 +33,24 @@ runs:
     run: |
       pyside6-rcc gudpy/gui/widgets/resources/resources.qrc -o gudpy/gui/widgets/resources/resources_rc.py
       pyinstaller gudpy.spec
+
+  - name: Rename Executable (Linux)
+    if: runner.os == 'Linux'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION} dist/GudPy-${VERSION}-Linux
+
+  - name: Rename Executable (OSX)
+    if: runner.os == 'MacOS'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION} dist/GudPy-${VERSION}-OSX
+
+  - name: Rename Executable (Windows)
+    if: runner.os == 'Windows'
+    shell: bash
+    run: |
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      mv dist/GudPy-${VERSION}.exe dist/GudPy-${VERSION}-Windows.exe

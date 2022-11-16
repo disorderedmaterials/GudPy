@@ -13,26 +13,30 @@ runs:
       sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
       dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
 
-  - name: Upload Artifact (OSX)
+  - name: Upload Artifacts (OSX)
     if: runner.os == 'MacOS'
     uses: actions/upload-artifact@v3
     with:
       name: Packages
-      path: dist/GudPy-*.dmg
+      path: |
+        dist/GudPy-*.dmg
+        dist/GudPy-*-OSX
 
   - name: Create Zip (Windows)
     if: runner.os == 'Windows'
     shell: bash
     run: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      7z a dist/GudPy-$VERSION-windows.zip dist/GudPy-$VERSION/
+      7z a dist/GudPy-$VERSION-Windows.zip dist/GudPy-$VERSION/
 
-  - name: Upload Artifact (Windows)
+  - name: Upload Artifacts (Windows)
     if: runner.os == 'Windows'
     uses: actions/upload-artifact@v3
     with:
       name: Packages
-      path: dist/GudPy-*.-windows.zip
+      path: |
+        dist/GudPy-*.-Windows.zip
+        dist/GudPy-*.-Windows.exe
 
   - name: Compile Singularity (Linux)
     if: runner.os == 'Linux'
@@ -47,9 +51,11 @@ runs:
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
       sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
 
-  - name: Upload Artifact (Linux)
+  - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
     uses: actions/upload-artifact@v3
     with:
       name: Packages
-      path: dist/GudPy-*.sif
+      path: |
+        dist/GudPy-*.sif
+        dist/GudPy-*-Linux
