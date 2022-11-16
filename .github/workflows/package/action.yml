@@ -35,8 +35,8 @@ runs:
     with:
       name: Packages
       path: |
-        dist/GudPy-*.-Windows.zip
-        dist/GudPy-*.-Windows.exe
+        dist/GudPy-*-Windows.zip
+        dist/GudPy-*-Windows.exe
 
   - name: Compile Singularity (Linux)
     if: runner.os == 'Linux'
