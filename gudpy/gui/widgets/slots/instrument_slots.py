@@ -997,7 +997,7 @@ class InstrumentSlots():
                 ]
 
                 (
-                    self.instrument.Xmin,
+                    self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                  ) = values
@@ -1027,7 +1027,7 @@ class InstrumentSlots():
                 ]
 
                 (
-                    self.instrument.Xmin,
+                    self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
@@ -1054,7 +1054,7 @@ class InstrumentSlots():
                 ]
 
                 (
-                    self.instrument.Xmin,
+                    self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
@@ -1081,7 +1081,7 @@ class InstrumentSlots():
                 ]
 
                 (
-                    self.instrument.Xmin,
+                    self.instrument.XMin,
                     self.instrument.XMax,
                     self.instrument.XStep
                 ) = values
