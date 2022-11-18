@@ -8,7 +8,7 @@ binaries = [
 block_cipher = None
 import sys
 
-main = 'gudpy/__main__.py'
+main = os.path.join('gudpy', '/__main__.py')
 pathex = [main, 'gudpy']
 data = [(os.path.join("bin", "StartupFiles"), os.path.join("bin", "StartupFiles")), (os.path.join("bin", "configs"), os.path.join("bin", "configs"))]
 ui = [(os.path.join("gudpy", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("gudpy", "gui", "widgets", "resources"), "resources")]
