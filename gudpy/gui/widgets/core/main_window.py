@@ -2040,7 +2040,7 @@ class GudPyMainWindow(QMainWindow):
         if self.error:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error",
-                self.error
+                repr(self.error)
             )
             self.error = ""
             self.queue = Queue()
@@ -2048,7 +2048,7 @@ class GudPyMainWindow(QMainWindow):
             if self.warning:
                 QMessageBox.warning(
                     self.mainWidget, "GudPy Warning",
-                    self.warning
+                    repr(self.warning)
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
