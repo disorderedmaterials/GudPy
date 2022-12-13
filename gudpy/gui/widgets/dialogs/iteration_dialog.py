@@ -57,7 +57,7 @@ class IterationDialog(QDialog):
         self.queue = Queue()
         for _ in range(self.numberIterations):
             self.queue.put(
-                self.gudrunFile.dcs(
+                self.iterator.gudrunFile.dcs(
                     path=os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,
                         "gudpy.txt"
