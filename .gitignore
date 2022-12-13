@@ -44,3 +44,5 @@ resources_rc.py
 *.transnofit01
 *.rebinq01
 *.vanrat
+/.vs
+/env/Scripts
