@@ -4,6 +4,11 @@ runs:
   using: "composite"
   steps:
 
+  - name: Install singularity
+    uses: eWaterCycle/setup-singularity@v7
+    with:
+      singularity-version: 3.8.3
+
   - name: Create DMG (OSX)
     if: runner.os == 'MacOS'
     shell: bash
@@ -38,23 +43,12 @@ runs:
         dist/GudPy-*-Windows.zip
         dist/GudPy-*-Windows.exe
 
-  - name: Compile Singularity (Linux)
-    if: runner.os == 'Linux'
-    shell: bash
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
-      git clone https://github.com/hpcng/singularity.git $HOME/go/singularity
-      cd $HOME/go/singularity
-      git fetch && git checkout v3.7.2
-      ./mconfig && make -C ./builddir && sudo make -C ./builddir install
-
   - name: Create Singularity Image (Linux)
     if: runner.os == 'Linux'
     shell: bash
     run: |
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
 
   - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
