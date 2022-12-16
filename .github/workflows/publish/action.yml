@@ -1,0 +1,29 @@
+name: Publish
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Download Artifacts
+    uses: actions/download-artifact@v3
+    with:
+      name: Packages
+      path: ${{ github.workspace }}
+
+  - name: Download Prerequisites
+    shell: bash
+    run: |
+      wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
+      chmod u+x ./update-release
+
+  - name: Test
+    shell: bash
+    run: |
+      ls -R ./
+
+      # Get Code Version
+      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+
+      # Update / create release
+      GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      ./update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md Packages/*
