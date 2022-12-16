@@ -25,25 +25,14 @@ runs:
       wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
       chmod u+x ./update-release
 
-  - name: Get Code Version
-    shell: bash
-    run: |
-      set -ex
-      GUDPY_VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      echo "GudPy code version is ${GUDPY_VERSION}"
-      echo "gudpyVersion=${GUDPY_VERSION}" >> ${GITHUB_ENV}
-
   - name: Publish on GitHub
     shell: bash
     run: |
       ls -R ./
 
-      # Get Code Version
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-
       # Update / create release
       GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudpyVersion }} -n "${{ env.gudpyVersion }}" -f ReleaseNotes.md Packages/*
+      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudpyVersion }} -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md Packages/*
 
   - name: Publish on Harbor
     shell: bash
@@ -52,4 +41,4 @@ runs:
       HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
     run: |
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      ${SINGULARITY_ROOT}/bin/singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}
+      ${SINGULARITY_ROOT}/bin/singularity push dist/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}

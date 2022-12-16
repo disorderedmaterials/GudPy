@@ -14,9 +14,8 @@ runs:
     shell: bash
     run: |
       pip install dmgbuild
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sed -i "s/GudPy-.*.app/${VERSION}/g" ci/settings.py
-      dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
+      sed -i "s/GudPy-.*.app/${{ env.gudPyVersion }}/g" ci/settings.py
+      dmgbuild -s ci/settings.py "GudPy-${{ env.gudPyVersion }}" dist/GudPy-${{ env.gudPyVersion }}.dmg
 
   - name: Upload Artifacts (OSX)
     if: runner.os == 'MacOS'
@@ -31,8 +30,7 @@ runs:
     if: runner.os == 'Windows'
     shell: bash
     run: |
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      7z a dist/GudPy-$VERSION-Windows.zip dist/GudPy-$VERSION/
+      7z a dist/GudPy-${{ env.gudPyVersion }}-Windows.zip dist/GudPy-${{ env.gudPyVersion }}/
 
   - name: Upload Artifacts (Windows)
     if: runner.os == 'Windows'
@@ -47,8 +45,7 @@ runs:
     if: runner.os == 'Linux'
     shell: bash
     run: |
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-${{ env.gudPyVersion }}.sif ci/singularity/ubuntu20.04.def
 
   - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
