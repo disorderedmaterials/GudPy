@@ -1,8 +1,17 @@
 name: Publish
 
+inputs:
+  harborTag:
+    default: latest
+
 runs:
   using: "composite"
   steps:
+
+  - name: Install singularity
+    uses: eWaterCycle/setup-singularity@v7
+    with:
+      singularity-version: 3.8.3
 
   - name: Download Artifacts
     uses: actions/download-artifact@v3
@@ -16,7 +25,15 @@ runs:
       wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
       chmod u+x ./update-release
 
-  - name: Test
+  - name: Get Code Version
+    shell: bash
+    run: |
+      set -ex
+      GUDPY_VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      echo "GudPy code version is ${GUDPY_VERSION}"
+      echo "gudpyVersion=${GUDPY_VERSION}" >> ${GITHUB_ENV}
+
+  - name: Publish on GitHub
     shell: bash
     run: |
       ls -R ./
@@ -26,4 +43,13 @@ runs:
 
       # Update / create release
       GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-      ./update-release -r disorderedmaterials/gudpy -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md Packages/*
+      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudpyVersion }} -n "${{ env.gudpyVersion }}" -f ReleaseNotes.md Packages/*
+
+  - name: Publish on Harbor
+    shell: bash
+    env:
+      HARBOR_USER: ${{ secrets.HARBOR_USER }}
+      HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
+    run: |
+      singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
+      ${SINGULARITY_ROOT}/bin/singularity push dist/GudPy-$VERSION.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}

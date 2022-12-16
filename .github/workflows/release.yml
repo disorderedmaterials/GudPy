@@ -57,3 +57,5 @@ jobs:
       uses: actions/checkout@v1
     - name: "Publish"
       uses: "./.github/workflows/publish"
+      with:
+        harborTag: "current"
