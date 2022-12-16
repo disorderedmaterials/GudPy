@@ -15,7 +15,7 @@ runs:
     run: |
       pip install dmgbuild
       VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
+      sed -i "s/GudPy-.*.app/${VERSION}/g" ci/settings.py
       dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
 
   - name: Upload Artifacts (OSX)
