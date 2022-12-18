@@ -4,11 +4,6 @@ runs:
   using: "composite"
   steps:
 
-  - name: Install singularity
-    uses: eWaterCycle/setup-singularity@v7
-    with:
-      singularity-version: 3.8.3
-
   - name: Create DMG (OSX)
     if: runner.os == 'MacOS'
     shell: bash
@@ -40,6 +35,12 @@ runs:
       path: |
         dist/GudPy-*-Windows.zip
         dist/GudPy-*-Windows.exe
+
+  - name: Install singularity
+    if: runner.os == 'Linux'
+    uses: eWaterCycle/setup-singularity@v7
+    with:
+      singularity-version: 3.8.3
 
   - name: Create Singularity Image (Linux)
     if: runner.os == 'Linux'
