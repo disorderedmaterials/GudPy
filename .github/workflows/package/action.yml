@@ -9,7 +9,7 @@ runs:
     shell: bash
     run: |
       pip install dmgbuild
-      sed -i "s/GudPy-.*.app/${{ env.gudPyVersion }}/g" ci/settings.py
+      sed -i -e "s/GudPy-.*.app/GudPy-${{ env.gudPyVersion }}.app/g" ci/settings.py
       dmgbuild -s ci/settings.py "GudPy-${{ env.gudPyVersion }}" dist/GudPy-${{ env.gudPyVersion }}.dmg
 
   - name: Upload Artifacts (OSX)
