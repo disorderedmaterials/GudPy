@@ -28,10 +28,7 @@ runs:
   - name: Publish on GitHub
     shell: bash
     run: |
-      ls -R ./
-
-      # Update / create release
-      GITHUB_TOKEN=${{ github.token }}
+      export GITHUB_TOKEN=${{ github.token }}
       ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudPyVersion }} -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md packages/*
 
   - name: Publish on Harbor
