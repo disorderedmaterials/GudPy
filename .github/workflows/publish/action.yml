@@ -35,4 +35,4 @@ runs:
     shell: bash
     run: |
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      ${SINGULARITY_ROOT}/bin/singularity push dist/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}
