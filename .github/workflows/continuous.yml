@@ -44,6 +44,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+    - name: Get Code Version
+      uses: "./.github/workflows/get-version"
     - name: "Build (${{ matrix.os }})"
       uses: "./.github/workflows/build"
     - name: "Package (${{ matrix.os }})"
