@@ -31,14 +31,11 @@ runs:
       ls -R ./
 
       # Update / create release
-      GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN=${{ github.token }}
       ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudpyVersion }} -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md Packages/*
 
   - name: Publish on Harbor
     shell: bash
-    env:
-      HARBOR_USER: ${{ secrets.HARBOR_USER }}
-      HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
     run: |
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
       ${SINGULARITY_ROOT}/bin/singularity push dist/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}

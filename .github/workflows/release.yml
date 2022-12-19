@@ -63,3 +63,6 @@ jobs:
       uses: "./.github/workflows/publish"
       with:
         harborTag: "current"
+      env:
+        HARBOR_USER: ${{ secrets.HARBOR_USER }}
+        HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
