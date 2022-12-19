@@ -1,0 +1,38 @@
+name: Publish
+
+inputs:
+  harborTag:
+    default: latest
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Install singularity
+    uses: eWaterCycle/setup-singularity@v7
+    with:
+      singularity-version: 3.8.3
+
+  - name: Download Artifacts
+    uses: actions/download-artifact@v3
+    with:
+      name: Packages
+      path: ${{ github.workspace }}/packages
+
+  - name: Download Prerequisites
+    shell: bash
+    run: |
+      wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
+      chmod u+x ./update-release
+
+  - name: Publish on GitHub
+    shell: bash
+    run: |
+      export GITHUB_TOKEN=${{ github.token }}
+      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudPyVersion }} -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md packages/*
+
+  - name: Publish on Harbor
+    shell: bash
+    run: |
+      singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}

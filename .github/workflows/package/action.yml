@@ -9,9 +9,8 @@ runs:
     shell: bash
     run: |
       pip install dmgbuild
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sed -i '' -e 's/VERSION/$VERSION/g' ci/settings.py
-      dmgbuild -s ci/settings.py "GudPy-$VERSION" dist/GudPy-$VERSION.dmg
+      sed -i -e "s/GudPy-.*.app/GudPy-${{ env.gudPyVersion }}.app/g" ci/settings.py
+      dmgbuild -s ci/settings.py "GudPy-${{ env.gudPyVersion }}" dist/GudPy-${{ env.gudPyVersion }}.dmg
 
   - name: Upload Artifacts (OSX)
     if: runner.os == 'MacOS'
@@ -26,8 +25,7 @@ runs:
     if: runner.os == 'Windows'
     shell: bash
     run: |
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      7z a dist/GudPy-$VERSION-Windows.zip dist/GudPy-$VERSION/
+      7z a dist/GudPy-${{ env.gudPyVersion }}-Windows.zip dist/GudPy-${{ env.gudPyVersion }}/
 
   - name: Upload Artifacts (Windows)
     if: runner.os == 'Windows'
@@ -38,23 +36,17 @@ runs:
         dist/GudPy-*-Windows.zip
         dist/GudPy-*-Windows.exe
 
-  - name: Compile Singularity (Linux)
+  - name: Install singularity
     if: runner.os == 'Linux'
-    shell: bash
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
-      git clone https://github.com/hpcng/singularity.git $HOME/go/singularity
-      cd $HOME/go/singularity
-      git fetch && git checkout v3.7.2
-      ./mconfig && make -C ./builddir && sudo make -C ./builddir install
+    uses: eWaterCycle/setup-singularity@v7
+    with:
+      singularity-version: 3.8.3
 
   - name: Create Singularity Image (Linux)
     if: runner.os == 'Linux'
     shell: bash
     run: |
-      VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
-      sudo singularity build dist/GudPy-$VERSION.sif ci/singularity/ubuntu20.04.def
+      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-${{ env.gudPyVersion }}.sif ci/singularity/ubuntu20.04.def
 
   - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
