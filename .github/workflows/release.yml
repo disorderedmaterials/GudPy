@@ -62,7 +62,7 @@ jobs:
     - name: "Publish"
       uses: "./.github/workflows/publish"
       with:
-        harborTag: "latest"
+        isRelease: true
       env:
         HARBOR_USER: ${{ secrets.HARBOR_USER }}
         HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
