@@ -4,6 +4,9 @@ inputs:
   isRelease:
     type: boolean
     default: false
+  publish:
+    type: boolean
+    default: true
 
 runs:
   using: "composite"
@@ -43,6 +46,7 @@ runs:
       echo "harborReleaseTag=continuous" >> ${GITHUB_ENV}
 
   - name: Publish on GitHub
+    if: inputs.publish == true
     shell: bash
     run: |
       echo "Release tag will be: ${{ env.gitHubReleaseTag }}"
@@ -51,6 +55,7 @@ runs:
       ./update-release -r disorderedmaterials/gudpy -t ${{ env.gitHubReleaseTag }} -n "${{ env.gitHubReleaseName }}" -f ReleaseNotes.md packages/*
 
   - name: Publish on Harbor
+    if: inputs.publish == true
     shell: bash
     run: |
       echo "Release tag will be: ${{ env.harborReleaseTag }}"
