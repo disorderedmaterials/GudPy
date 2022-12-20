@@ -1,8 +1,12 @@
 name: Publish
 
 inputs:
-  harborTag:
-    default: latest
+  isRelease:
+    type: boolean
+    default: false
+  publish:
+    type: boolean
+    default: true
 
 runs:
   using: "composite"
@@ -25,14 +29,36 @@ runs:
       wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
       chmod u+x ./update-release
 
-  - name: Publish on GitHub
+  - name: Publish on GitHub (Release)
+    if: inputs.publish == true && inputs.isRelease == true
     shell: bash
     run: |
+      echo "Release tag will be: ${{ env.gudPyVersion }}"
+      echo "Release name will be: ${{ env.gudPyVersion }}"
       export GITHUB_TOKEN=${{ github.token }}
       ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudPyVersion }} -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md packages/*
 
-  - name: Publish on Harbor
+  - name: Publish on Harbor (Release)
+    if: inputs.publish == true && inputs.isRelease == true
     shell: bash
     run: |
+      echo "Release tag will be: latest"
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:${{ inputs.harborTag }}
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:latest
+
+  - name: Publish on GitHub (Continuous)
+    if: inputs.publish == true && inputs.isRelease == false
+    shell: bash
+    run: |
+      echo "Release tag will be: continuous"
+      echo "Release name will be: 'Continuous (${{ env.gudPyVersion }})'"
+      export GITHUB_TOKEN=${{ github.token }}
+      ./update-release -r disorderedmaterials/gudpy -t continuous -n "Continuous (${{ env.gudPyVersion }})" -b "Continuous release from \`main\` branch. Built $(date)." packages/*
+
+  - name: Publish on Harbor (Continuous)
+    if: inputs.publish == true && inputs.isRelease == false
+    shell: bash
+    run: |
+      echo "Release tag will be: continuous"
+      singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:continuous
