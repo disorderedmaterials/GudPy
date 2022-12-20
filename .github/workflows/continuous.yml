@@ -44,7 +44,25 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+    - name: Get Code Version
+      uses: "./.github/workflows/get-version"
     - name: "Build (${{ matrix.os }})"
       uses: "./.github/workflows/build"
     - name: "Package (${{ matrix.os }})"
       uses: "./.github/workflows/package"
+
+  Publish:
+    needs: BuildPackage
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Get Code Version
+      uses: "./.github/workflows/get-version"
+    - name: "Publish"
+      uses: "./.github/workflows/publish"
+      with:
+        harborTag: "latest"
+      env:
+        HARBOR_USER: ${{ secrets.HARBOR_USER }}
+        HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
