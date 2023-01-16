@@ -5,7 +5,7 @@ runs:
   steps:
 
   - name: Download Test Results
-    uses: actions/download-artifact@v2
+    uses: actions/download-artifact@v3
     with:
       name: testResults
       path: results
