@@ -1,0 +1,16 @@
+name: TestResults
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Download Test Results
+    uses: actions/download-artifact@v2
+    with:
+      name: testResults
+      path: results
+
+  - name: Publish Test Results
+    uses: EnricoMi/publish-unit-test-result-action/composite@v2
+    with:
+      junit_files: results/nose2-*.xml

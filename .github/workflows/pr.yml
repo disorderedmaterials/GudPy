@@ -34,6 +34,14 @@ jobs:
     - name: "Test (${{ matrix.os }})"
       uses: "./.github/workflows/test"
 
+  TestResults:
+    needs: Test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Publish Test Results
+      uses: "./.github/workflows/testresults"
+
   BuildPackage:
     needs: Test
     strategy:
