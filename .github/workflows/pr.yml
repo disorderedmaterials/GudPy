@@ -39,6 +39,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: Publish Test Results
       uses: "./.github/workflows/testresults"
 
