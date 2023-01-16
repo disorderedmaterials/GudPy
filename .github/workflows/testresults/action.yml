@@ -13,4 +13,4 @@ runs:
   - name: Publish Test Results
     uses: EnricoMi/publish-unit-test-result-action/composite@v2
     with:
-      junit_files: results/nose2-*.xml
+      junit_files: results/nose2-junit-*.xml
