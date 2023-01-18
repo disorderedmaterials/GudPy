@@ -34,17 +34,15 @@ runs:
       cd gudpy
       nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml test
 
-  - name: Publish Test Results
-    if: always() && runner.os == 'Linux'
-    uses: EnricoMi/publish-unit-test-result-action@v2
-    with:
-      junit_files: 'gudpy/nose2-*.xml'
+      mkdir ../results
+      mv nose2-junit.xml ../results/nose2-junit-${{ runner.os }}.xml
 
-  - name: Publish Test Results
-    if: always() && runner.os != 'Linux'
-    uses: EnricoMi/publish-unit-test-result-action/composite@v2
+  - name: Upload Test Results
+    if: always()
+    uses: actions/upload-artifact@v3
     with:
-      junit_files: 'gudpy/nose2-*.xml'
+      name: testResults
+      path: results
 
   - name: Publish Code Coverage
     if: always() && runner.os == 'Linux'
