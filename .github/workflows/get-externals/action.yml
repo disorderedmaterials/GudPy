@@ -42,7 +42,6 @@ runs:
     shell: bash
     if: runner.os == 'MacOS'
     run: |
-      # curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx.zip > gudrun-binaries.zip
       curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-osx.zip > modex-binaries.zip
   - name: Retrieve Externals (Windows)
     shell: bash
