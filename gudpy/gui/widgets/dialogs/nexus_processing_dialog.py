@@ -97,8 +97,12 @@ class NexusProcessingDialog(QDialog):
             end = (
                 datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
             )
-            self.start = QDateTime.fromString(start.isoformat(), Qt.ISODateWithMs);
-            self.end = QDateTime.fromString(end.isoformat(), Qt.ISODateWithMs);
+            self.start = QDateTime.fromString(
+                start.isoformat(), Qt.ISODateWithMs
+            )
+            self.end = QDateTime.fromString(
+                end.isoformat(), Qt.ISODateWithMs
+            )
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
