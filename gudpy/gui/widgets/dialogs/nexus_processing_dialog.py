@@ -89,19 +89,16 @@ class NexusProcessingDialog(QDialog):
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
-            epoch = datetime(1970, 1, 1)
             start = fp["/raw_data_1/start_time"][()][0].decode("utf8")
             end = fp["/raw_data_1/end_time"][()][0].decode("utf8")
             start = (
-                datetime.strptime(start, "%Y-%m-%dT%H:%M:%S") - epoch
-            ).total_seconds()
+                datetime.strptime(start, "%Y-%m-%dT%H:%M:%S")
+            )
             end = (
-                datetime.strptime(end, "%Y-%m-%dT%H:%M:%S") - epoch
-            ).total_seconds()
-            self.start = QDateTime()
-            self.start.setSecsSinceEpoch(start)
-            self.end = QDateTime()
-            self.end.setSecsSinceEpoch(end)
+                datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
+            )
+            self.start = QDateTime.fromString(start.isoformat(), Qt.ISODateWithMs);
+            self.end = QDateTime.fromString(end.isoformat(), Qt.ISODateWithMs);
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
