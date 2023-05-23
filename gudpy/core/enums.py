@@ -92,7 +92,8 @@ EXTRAPOLATION_MODES = {
     0: ["BACKWARDS"],
     1: ["FORWARDS"],
     2: ["BI_DIRECTIONAL"],
-    3: ["NONE"]
+    3: ["FORWARDS_SUMMED"],
+    4: ["NONE"]
 }
 
 ExtrapolationModes = enumFromDict("ExtrapolationModes", EXTRAPOLATION_MODES)
