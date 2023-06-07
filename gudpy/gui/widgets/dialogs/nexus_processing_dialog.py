@@ -132,6 +132,10 @@ class NexusProcessingDialog(QDialog):
             self.extrapolationModeChanged
         )
 
+        self.widget.slicingSpinBox.valueChanged.connect(
+            self.nSlicesChanged
+        )
+
         self.widget.buttonBox.accepted.connect(self.run)
 
         self.widget.buttonBox.rejected.connect(self.cancel)
@@ -296,6 +300,9 @@ class NexusProcessingDialog(QDialog):
             index
         )
         self.gudrunFile.nexus_processing.extrapolationMode = extrapolationMode
+
+    def nSlicesChanged(self, value):
+        self.gudrunFile.nexus_processing.period.nSlices = value
 
     def periodDurationChanged(self, value):
         self.gudrunFile.nexus_processing.period.duration = value

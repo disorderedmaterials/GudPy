@@ -126,6 +126,7 @@ class Period:
         self.startPulse = 0.0
         self.definedPulses = []
         self.rawPulses = []
+        self.nSlices = 1
         self.useDefinedPulses = True
 
     def determineStartTime(self, pulseLabel):
@@ -165,7 +166,7 @@ class Period:
             return (
                 f"{self.duration}\n"
                 f"{self.periodBegin}\n"
-                f"{len(self.definedPulses)}\n"
+                f"{len(self.definedPulses)} {int(self.nSlices)}\n"
                 f"{pulseLines}"
             )
         # Otherwise, just the raw pulses.
@@ -176,7 +177,7 @@ class Period:
                 RawPulse(p, p + self.duration) for p in self.rawPulses
             ]
             pulseLines = "\n".join([str(p) for p in rawPulses])
-            return f"{len(rawPulses)}\n" f"{pulseLines}"
+            return f"{len(rawPulses)} {int(self.nSlices)}\n" f"{pulseLines}"
 
 
 class NexusProcessing:
