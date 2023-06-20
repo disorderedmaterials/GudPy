@@ -1,0 +1,41 @@
+name: Setup
+
+inputs:
+  pythonVersion:
+    type: string
+    default: 3.9
+  gudrunTag:
+    type: string
+    default: 2022.4
+  modexTag:
+    type: string
+    default: 0.1.2
+  hdf5tag:
+    type: string
+    default: hdf5-1_10_7
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Set Environment
+    shell: bash
+    run: |
+      set -ex
+      echo "pythonVersion=${{ inputs.pythonVersion }}" >> ${GITHUB_ENV}
+      echo "gudrunTag=${{ inputs.gudrunTag }}" >> ${GITHUB_ENV}
+      echo "modexTag=${{ inputs.modexTag }}" >> ${GITHUB_ENV}
+      echo "hdf5tag=${{ inputs.hdf5tag }}" >> ${GITHUB_ENV}
+
+  - name: Get GudPy Version
+    shell: bash
+    run: |
+      set -ex
+      GUDPY_VERSION=$(grep "VERSION =" gudpy.spec | sed "s/.*\"\(.*\)\"/\1/g")
+      echo "GudPy code version is ${GUDPY_VERSION}"
+      echo "gudPyVersion=${GUDPY_VERSION}" >> ${GITHUB_ENV}
+
+
+
+
+

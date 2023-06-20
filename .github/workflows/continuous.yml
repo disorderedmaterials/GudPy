@@ -5,12 +5,6 @@ on:
     branches:
     - 'main'
 
-env:
-  pythonVersion: 3.9
-  gudrunTag: 2022.4
-  modexTag: 0.1.2
-  hdf5tag: hdf5-1_10_7
-
 jobs:
 
   Lint:
@@ -18,6 +12,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Setup
+      uses: "./.github/workflows/setup"
     - name: Lint
       uses: "./.github/workflows/lint"
 
@@ -31,6 +27,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Setup
+      uses: "./.github/workflows/setup"
     - name: "Test (${{ matrix.os }})"
       uses: "./.github/workflows/test"
 
@@ -44,8 +42,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Get Code Version
-      uses: "./.github/workflows/get-version"
+    - name: Setup
+      uses: "./.github/workflows/setup"
     - name: "Build (${{ matrix.os }})"
       uses: "./.github/workflows/build"
     - name: "Package (${{ matrix.os }})"
@@ -57,8 +55,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Get Code Version
-      uses: "./.github/workflows/get-version"
+    - name: Setup
+      uses: "./.github/workflows/setup"
     - name: "Publish"
       uses: "./.github/workflows/publish"
       with:
