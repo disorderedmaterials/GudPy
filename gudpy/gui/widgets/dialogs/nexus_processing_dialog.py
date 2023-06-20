@@ -121,11 +121,19 @@ class NexusProcessingDialog(QDialog):
         )
         self.widget.extrapolationModeComboBox.addItem(
             ExtrapolationModes.BI_DIRECTIONAL.name,
-            ExtrapolationModes.BI_DIRECTIONAL,
+            ExtrapolationModes.BI_DIRECTIONAL
+        )
+        self.widget.extrapolationModeComboBox.addItem(
+            ExtrapolationModes.FORWARDS_SUMMED.name,
+            ExtrapolationModes.FORWARDS_SUMMED
         )
 
         self.widget.extrapolationModeComboBox.currentIndexChanged.connect(
             self.extrapolationModeChanged
+        )
+
+        self.widget.slicingSpinBox.valueChanged.connect(
+            self.nSlicesChanged
         )
 
         self.widget.buttonBox.accepted.connect(self.run)
@@ -292,6 +300,9 @@ class NexusProcessingDialog(QDialog):
             index
         )
         self.gudrunFile.nexus_processing.extrapolationMode = extrapolationMode
+
+    def nSlicesChanged(self, value):
+        self.gudrunFile.nexus_processing.period.nSlices = value
 
     def periodDurationChanged(self, value):
         self.gudrunFile.nexus_processing.period.duration = value
