@@ -46,7 +46,7 @@ runs:
     if: runner.os == 'Linux'
     shell: bash
     run: |
-      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-${{ env.gudPyVersion }}.sif ci/singularity/ubuntu20.04.def
+      sudo ${SINGULARITY_ROOT}/bin/singularity build dist/GudPy-${{ env.gudPyVersion }}.sif ci/singularity/ubuntu22.04.def
 
   - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
