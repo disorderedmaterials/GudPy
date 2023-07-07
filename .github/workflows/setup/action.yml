@@ -6,7 +6,7 @@ inputs:
     default: 3.9
   gudrunTag:
     type: string
-    default: 2022.4
+    default: 2023.1
   modexTag:
     type: string
     default: 0.1.4
