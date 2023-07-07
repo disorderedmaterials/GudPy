@@ -1,0 +1,48 @@
+Bootstrap: library
+From: ubuntu:22.04
+
+%files
+
+    ./requirements.txt requirements.txt
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install python3.10 python3-distutils curl build-essential libx11-xcb-dev libglu1-mesa-dev libxkbcommon0 libglx0 libfontconfig libglib2.0-0 libdbus-1-3 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 libgfortran5 libegl-dev libegl-mesa0 -y && rm -rf /var/lib/apt/lists/*
+    curl https://bootstrap.pypa.io/get-pip.py | python3
+    python3 -m pip install -r requirements.txt
+    rm requirements.txt
+    cd /usr/local/lib/python3.10/dist-packages/PySide6
+    ls | grep .so | grep -v -e "QtCore.*" -e "QtGui.*" -e "QtCharts.*" -e "QtWidgets.*" -e "libpyside6" -e "libshiboken6" -e "QtUiTools" | xargs rm
+    cd Qt/lib
+    strip --remove-section=.note.ABI-tag libQt6Core.so.6 # Needed for CentOS 7
+    cd
+    python3 -m pip uninstall pip -y
+    apt-get remove curl -y
+    unset DEBIAN_FRONTEND
+    
+
+%help
+
+    A singularity container for GudPy.
+
+%setup
+    mkdir ${SINGULARITY_ROOTFS}/opt/GudPy
+
+%files
+
+    ./gudpy /opt/GudPy
+    ./bin /opt/GudPy
+
+%environment
+    export SIF=1
+
+%runscript
+    # If the container is executed, this line will be run.
+    python3.10 /opt/GudPy/gudpy
+
+%apphelp GudPy
+    GudPy GUI version.
+
+%apprun GudPy
+    python3 /opt/GudPy/gudpy
