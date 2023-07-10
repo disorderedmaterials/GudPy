@@ -9,16 +9,83 @@ from gui.widgets.charts.enums import PlotModes
 
 
 class SamplePlotConfig():
+    """
+    Class for managing configurations of sample plots.
+    This is used to determine which datasets etc, pertaining to a specific sample,
+    should be shown.
+
+    ...
+
+    Attributes
+    ----------
+    sample : Sample
+        Reference Sample object.
+    inputDir : str
+        Input file directory.
+    parent : Any
+        Parent object.
+    
+    Methods
+    -------
+    constructDataSets(offsetX, offsetY)
+        Loads datasets and constructs series.
+    series()
+        Returns all of the series.
+    SF()
+        Returns series that should be shown by `SF`.
+    SF_MINT01()
+        Returns series that should be shown by `SF_MINT01`.
+    SF_MDCS01()
+        Returns series that should be shown by `SF_MDCS01`.
+    RDF()
+        Returns series that should be shown by `RDF`.
+    plotData(plotMode)
+        Returns series that should be plotted by a given plotMode.
+    """
 
     def __init__(self, sample, inputDir, offsetX, offsetY, parent):
+        """
+        Constructs all the necessary attributes for the SamplePlotConfig object.
+
+        Parameters
+        ----------
+        sample : Sample
+            Reference Sample object.
+        inputDir : str
+            Input file directory.
+        offsetX : float
+            X-Offset for data.
+        offsetY : float
+            Y-Offset for data.
+        parent : Any
+            Parent object.
+        """
         self.sample = sample
         self.inputDir = inputDir
         self.parent = parent
+
+        # Construct the datasets.
         self.constructDataSets(offsetX, offsetY)
 
     def constructDataSets(self, offsetX, offsetY):
+        """
+        This is the core function of the configuration, it is called every time
+        a configuration is initialised.
+        Reads data in from the input directory, and then constructs the relevant
+        data sets from that.
+
+        Parameters
+        ----------
+        offsetX : float
+            X-Offset for data.
+        offsetY : float
+            Y-Offset for data.
+        """
+
+        # Ensure that there are actually some data files.
         if len(self.sample.dataFiles):
 
+            # Base file path.
             baseFile = self.sample.dataFiles[0]
             ext = os.path.splitext(self.sample.dataFiles[0])[-1]
 
@@ -113,6 +180,13 @@ class SamplePlotConfig():
 
     # return all series
     def series(self):
+        """
+        Returns all of the series.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         return [
             self.mint01Series,
             self.mdcs01Series,
@@ -122,6 +196,13 @@ class SamplePlotConfig():
         ]
 
     def SF(self):
+        """
+        Returns series that should be shown by `SF`.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         return [
             self.mint01Series,
             self.mdcs01Series,
@@ -129,23 +210,51 @@ class SamplePlotConfig():
         ]
 
     def SF_MINT01(self):
+        """
+        Returns series that should be shown by `SF_MINT01`.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         return [
             self.mint01Series
         ]
 
     def SF_MDCS01(self):
+        """
+        Returns series that should be shown by `SF_MDCS01`.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         return [
             self.mdcs01Series,
             self.dcsSeries
         ]
 
     def RDF(self):
+        """
+        Returns series that should be shown by `RDF`.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         return [
             self.mdor01Series,
             self.mgor01Series
         ]
 
     def plotData(self, plotMode):
+        """
+        Returns series that should be plotted by a given plotMode.
+
+        Returns
+        -------
+        QLineSeries[] : series
+        """
         if len(self.sample.dataFiles):
             return {
                 PlotModes.SF: self.SF,

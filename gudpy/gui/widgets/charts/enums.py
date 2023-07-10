@@ -3,6 +3,20 @@ from enum import Enum
 
 
 def enumFromDict(clsname, _dict):
+    """
+    Creates an instance of `Enum` with name `clsname` from `_dict`.
+
+    Parameters
+    ----------
+    clsname : str
+        Resultant class name.
+    _dict : dict
+        Mapping from enum value to [display name, access name].
+    
+    Returns
+    -------
+    Enum : resultant Enum.
+    """
     return Enum(
         value=clsname,
         # Cartesian product of all keys and values.
@@ -48,11 +62,16 @@ PLOT_MODES = {
     ]
 }
 
-
+"""
+Enumerates plot modes.
+"""
 PlotModes = enumFromDict(
     "PlotModes", PLOT_MODES
 )
 
+"""
+Dictionary describing splitting modes.
+"""
 SPLIT_PLOTS = {
     PlotModes.SF_MINT01_RDF: (PlotModes.SF_MINT01, PlotModes.RDF),
     PlotModes.SF_MDCS01_RDF: (PlotModes.SF_MDCS01, PlotModes.RDF),
@@ -66,7 +85,9 @@ SPLIT_PLOTS = {
     PlotModes.SF_RDF_CANS: (PlotModes.SF_CANS, PlotModes.RDF_CANS)
 }
 
-
+"""
+Enumerates series types.
+"""
 class SeriesTypes(Enum):
     MINT01 = 0
     MDCS01 = 1
@@ -74,7 +95,9 @@ class SeriesTypes(Enum):
     MDOR01 = 3
     DCSLEVEL = 4
 
-
+"""
+Enumerates axis selection.
+"""
 class Axes(Enum):
     X = 0
     Y = 1

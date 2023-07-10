@@ -54,11 +54,38 @@ class Container:
         TABLES / TRANSMISSION monitor / filename
     crossSectionFilename : str
         Filename for total cross section source if applicable.
-    scatteringFractionAttenuationCoefficient : tuple(float, float)
-        Sample environment scattering fraction and attenuation coefficient,
-        per Angstrom
+    tweakFactor : float
+        Container tweak factor.
+    scatteringFraction : float
+        Sample environment scattering fraction.
+    attenuationCoefficient : float
+        Attenuation coefficient per angstrom.
+    runAsSample : bool
+        Should the container be run as a sample?
+    topHatW : float
+        Width of top hat function for Fourier Transform.
+    FTMode : FTModes
+        Mode for Fourier Transform.
+    minRadFT : float
+        Minimum radius for Fourier Transform.
+    maxRadFT : float
+        Maximum radius for Fourier Transform.
+    grBroadening : float
+        Broadening of g(r) at r = 1 Angstrom
+    powerForBroadening : float
+        Broadening power
+        0 = constant, 0.5 = sqrt(r), 1 = r
+    stepSize : float
+        Step size in radius for final g(r).
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.        
+
     Methods
     -------
+    convertToSample
+        Converts the container to a sample.
+    parseFromConfig(path)
+        Parses the container from a configuration file.
     """
     def __init__(self, config_=None):
         """
@@ -66,7 +93,8 @@ class Container:
 
         Parameters
         ----------
-        None
+        config_ : path
+            Path to parse configuration from.
         """
         self.name = ""
         self.periodNumber = 1
@@ -112,103 +140,16 @@ class Container:
         if config_:
             self.parseFromConfig(config_)
 
-    def __str__(self):
+    def convertToSample(self):
         """
-        Returns the string representation of the Container object.
-
-        Parameters
-        ----------
-        None
+        Converts the container to a sample object.
 
         Returns
         -------
-        string : str
-            String representation of Container.
+            Sample : converted sample.
         """
 
-        nameLine = (
-            f"CONTAINER {self.name}{config.spc5}"
-            if self.name != "CONTAINER"
-            else
-            f"CONTAINER{config.spc5}"
-        )
-
-        dataFilesLines = (
-            f'{str(self.dataFiles)}\n'
-            if len(self.dataFiles) > 0
-            else
-            ''
-            )
-
-        if self.densityUnits == UnitsOfDensity.ATOMIC:
-            units = 'atoms/\u212b^3'
-            density = -self.density
-        elif self.densityUnits == UnitsOfDensity.CHEMICAL:
-            units = 'gm/cm^3'
-            density = self.density
-
-        compositionSuffix = "" if str(self.composition) == "" else "\n"
-
-        geometryLines = (
-            f'{self.upstreamThickness}{config.spc2}'
-            f'{self.downstreamThickness}{config.spc5}'
-            f'Upstream and downstream thicknesses [cm]\n'
-            f'{self.angleOfRotation}{config.spc2}'
-            f'{self.sampleWidth}{config.spc5}'
-            f'Angle of rotation and sample width (cm)\n'
-            if (
-                self.geometry == Geometry.SameAsBeam
-                and config.geometry == Geometry.FLATPLATE
-            )
-            or self.geometry == Geometry.FLATPLATE
-            else
-            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
-            f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{config.spc5}'
-            f'Sample height (cm)\n'
-        )
-
-        densityLine = (
-            f'{density}{config.spc5}'
-            f'Density {units}?\n'
-        )
-
-        crossSectionSource = (
-            CrossSectionSource(self.totalCrossSectionSource.value).name
-        )
-        crossSectionLine = (
-            f"{crossSectionSource}{config.spc5}"
-            if self.totalCrossSectionSource != CrossSectionSource.FILE
-            else
-            f"{self.crossSectionFilename}{config.spc5}"
-        )
-
-        return (
-            f'{nameLine}{{\n\n'
-            f'{len(self.dataFiles)}{config.spc2}'
-            f'{self.periodNumber}{config.spc5}'
-            f'Number of files and period number\n'
-            f'{dataFilesLines}'
-            f'{str(self.composition)}{compositionSuffix}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}'
-            f'* 0 0 to specify end of composition input\n'
-            f'SameAsBeam{config.spc5}'
-            f'Geometry\n'
-            f'{geometryLines}'
-            f'{densityLine}'
-            f'{crossSectionLine}'
-            f'Total cross section source\n'
-            f'{self.tweakFactor}{config.spc5}'
-            f'Tweak factor\n'
-            f'{self.scatteringFraction}{config.spc2}'
-            f'{self.attenuationCoefficient}{config.spc5}'
-            f'Sample environment scattering fraction '
-            f'and attenuation coefficient [per \u212b]\n'
-            f'\n}}\n'
-        )
-
-    def convertToSample(self):
-
+        # Basic sample parameters
         sample = Sample()
         sample.name = self.name
         sample.periodNumber = self.periodNumber
@@ -227,6 +168,10 @@ class Container:
         sample.densityUnits = self.densityUnits
         sample.totalCrossSectionSource = self.totalCrossSectionSource
         sample.sampleTweakFactor = self.tweakFactor
+        sample.attenuationCoefficient = self.attenuationCoefficient
+        sample.scatteringFraction = 1.0
+
+        # Fourier Transform parameters.
         sample.topHatW = self.topHatW
         sample.FTMode = self.FTMode
         sample.grBroadening = self.grBroadening
@@ -237,11 +182,18 @@ class Container:
         sample.minRadFT = self.minRadFT
         sample.powerForBroadening = self.powerForBroadening
         sample.stepSize = self.stepSize
-        sample.scatteringFraction = 1.0
 
         return sample
 
     def parseFromConfig(self, path):
+        """
+        Parses the container from a path to a configuration file.
+
+        Parameters
+        ----------
+        path : str
+            Path to parse from.
+        """
         if not os.path.exists(path):
             raise ParserException(
                 "The path supplied is invalid.\
@@ -369,3 +321,93 @@ class Container:
                     " The input file is most likely of an incorrect format, "
                     "and some attributes were missing."
             ) from e
+
+    def __str__(self):
+        """
+        Returns the string representation of the Container object.
+
+        Returns
+        -------
+            str : String representation of Container.
+        """
+
+        nameLine = (
+            f"CONTAINER {self.name}{config.spc5}"
+            if self.name != "CONTAINER"
+            else
+            f"CONTAINER{config.spc5}"
+        )
+
+        dataFilesLines = (
+            f'{str(self.dataFiles)}\n'
+            if len(self.dataFiles) > 0
+            else
+            ''
+            )
+
+        if self.densityUnits == UnitsOfDensity.ATOMIC:
+            units = 'atoms/\u212b^3'
+            density = -self.density
+        elif self.densityUnits == UnitsOfDensity.CHEMICAL:
+            units = 'gm/cm^3'
+            density = self.density
+
+        compositionSuffix = "" if str(self.composition) == "" else "\n"
+
+        geometryLines = (
+            f'{self.upstreamThickness}{config.spc2}'
+            f'{self.downstreamThickness}{config.spc5}'
+            f'Upstream and downstream thicknesses [cm]\n'
+            f'{self.angleOfRotation}{config.spc2}'
+            f'{self.sampleWidth}{config.spc5}'
+            f'Angle of rotation and sample width (cm)\n'
+            if (
+                self.geometry == Geometry.SameAsBeam
+                and config.geometry == Geometry.FLATPLATE
+            )
+            or self.geometry == Geometry.FLATPLATE
+            else
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
+            f'Inner and outer radii [cm]\n'
+            f'{self.sampleHeight}{config.spc5}'
+            f'Sample height (cm)\n'
+        )
+
+        densityLine = (
+            f'{density}{config.spc5}'
+            f'Density {units}?\n'
+        )
+
+        crossSectionSource = (
+            CrossSectionSource(self.totalCrossSectionSource.value).name
+        )
+        crossSectionLine = (
+            f"{crossSectionSource}{config.spc5}"
+            if self.totalCrossSectionSource != CrossSectionSource.FILE
+            else
+            f"{self.crossSectionFilename}{config.spc5}"
+        )
+
+        return (
+            f'{nameLine}{{\n\n'
+            f'{len(self.dataFiles)}{config.spc2}'
+            f'{self.periodNumber}{config.spc5}'
+            f'Number of files and period number\n'
+            f'{dataFilesLines}'
+            f'{str(self.composition)}{compositionSuffix}'
+            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'* 0 0 to specify end of composition input\n'
+            f'SameAsBeam{config.spc5}'
+            f'Geometry\n'
+            f'{geometryLines}'
+            f'{densityLine}'
+            f'{crossSectionLine}'
+            f'Total cross section source\n'
+            f'{self.tweakFactor}{config.spc5}'
+            f'Tweak factor\n'
+            f'{self.scatteringFraction}{config.spc2}'
+            f'{self.attenuationCoefficient}{config.spc5}'
+            f'Sample environment scattering fraction '
+            f'and attenuation coefficient [per \u212b]\n'
+            f'\n}}\n'
+        )

@@ -132,28 +132,173 @@ class GudPyMainWindow(QMainWindow):
     ----------
     gudrunFile : GudrunFile
         GudrunFile object currently associated with the application.
+    modified : bool
+        Has the GudrunFile been modified?
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
-    iterator : TweakFactorIterator | WavelengthSubtractionIterator
+    iterator : TweakFactorIterator | WavelengthSubtractionIterator | ThicknessIterator | DensityIterator | CompositionIterator
         Iterator to use in iterations.
+    queue : Queue
+        Queue for tasks.
+    results : {}
+        Dictionary storing results.
+    allPlots : []
+        List of all plots.
+    plotModes : {}
+        Plot modes for each sample / container.
+    proc : QProcess
+        Currently running process.
+    output : str
+        Output of processing.
+    outputIterations : {}
+        Map of output per iteration.
+    previousProcTitle : str
+        Title of the previous process.
+    error : str
+        Error that occurred during processing.
+    cwd : str
+        Current working directory.
+    warning : str
+        Warning to be given to the user.
+    worker : CompositionWorker
+        Worker for composition iterations.
+    workerThread : QThread
+        Thread for worker.
+    timer : QTimer
+        Timer for autosaving.
+
     Methods
     -------
     initComponents()
-        Loads the UI file for the GudPyMainWindow
+        Sets up the UI and slots.
+    updateWidgets(fromFile=False)
+        Updates widget contents in the GUI.
+    handleObjectsChanged()
+        Handles change in the tree view.
     loadInputFile_()
         Loads an input file.
     saveInputFile()
         Saves the current GudPy file.
+    newInputFile()
+        Creates a new input file.
     updateFromFile()
         Updates from the original input file.
     updateGeometries()
         Updates geometries across objects.
     updateCompositions()
         Updates compositions across objects
-        Deletes the current object.
+    focusResult()
+        Focuses the results section on the current Sample / Container.
+    updateSamples()
+        Updates the results of each sample.
+    updateAllSamples()
+        Updates the results in the "All Samples" plot.
+    updateResults()
+        Updates results throughout the GUI.
+    updateComponents()
+        Updates geometries and compositions.
     exit_()
-        Exits
+        Quits GudPy.
+    makeProc(cmd, slot, finished=None, func=None, args=None)
+        Creates and starts a QProcess.
+    runPurge_()
+        Runs a purge.
+    runGudrun_()
+        Runs gudrun.
+    runContainersAsSamples()
+        Runs conainers as samples.
+    runFilesIndividually()
+        Runs files individually.
+    purgeOptionsMessageBox(dcs, finished, func, args, text)
+        Purge options message box, for running a purge.
+    purgeBeforeRunning(default=True)
+        Runs a purge before running gudrun.
+    iterateGudrun(dialog, name)
+        Iterate Gudrun.
+    batchProcessing()
+        Run batch processing.
+    batchProcessFinished(ec, es)
+        Slot for handling a batch process finished.
+    nextBatchProcess()
+        Begins the next batch process in the queue.
+    progressBatchProcess()
+        Slot for measuring and setting progress whilst batch processing.
+    batchProcessingFinished()
+        Slot for handling a batch processing pipeline finishing.
+    finishedCompositionIteration(originalSample, updatedSample)
+        Slot for handling a composition iteration finishing.
+    finishedCompositionIterations()
+        Slot for handling composition iterations finishing.
+    startedCompositionIteration(sample)
+        Slot for handling starting a composition iteration.
+    errorCompositionIteration(output)
+        Handles errors occuring during composition iterations.
+    progressCompositionIteration(currentIteration)
+        Slot for measuring and setting progress whilst iterating by composition.
+    nextCompositionIteration()
+        Begins the next composition iteration.
+    iterateByComposition()
+        Iterate by composition.
+    nextIteration()
+        Begins the next iteration, when performing basic iterations.
+    nextIterableProc()
+        Starts the next process in the queue.
+    iterationStarted()
+        Slot for handling the start of an iteration.
+    progressIteration()
+        Slot for measuring and setting progress whilst iterating.
+    checkFilesExist_()
+        Checks that data files exist.
+    autosave()
+        Slot for autosaving.
+    setModified()
+        Sets the current window to be modified.
+    setUnModified()
+        Sets the current window to be unmodified.
+    setControlsEnabled(state)
+        Toggles controls.
+    setActionsEnabled(state)
+        Toggles actions.
+    setTreeActionsEnabled(state)
+        Toggles tree actions.
+    progressIncrementDCS(gudrunFile)
+        Calculates progress of gudrun, base on the current output.
+    progressDCS()
+        Slot for measuring and setting progress whilst running gudrun.
+    progressIncrementPurge()
+        Calculates progress of purging, based on the current output.
+    progressPurge()
+        Slot for measuring and setting progress whilst purging.
+    procStarted()
+        Slot for handling a process being started.
+    runGudrunFinished(ec, es, gudrunFile=None)
+        Slot for handling running gudrun finishing.
+    procFinished(ec, es)
+        Slot for handling a process finishing.
+    stopProc()
+        Stops the currently running process and any threads.
+    viewInput()
+        Views the current input file.
+    handleAllPlotModeChanged(index)
+        Slot for handling change in the "All Samples" plot mode.
+    handleSamplePlotModeChanged(index)
+        Slot for handling change in the current Sample's plot mode.
+    handleContainerPlotModeChanged(index)
+        Slot for handling change in the current Container's plot mode.
+    isPlotModeSplittable(plotMode)
+        Determines if a given plot mode can be split into two different plots.
+    splitPlotMode(plotMode)
+        Determines how to split a given plot mode.
+    handlePlotModeChanged(plot, plotMode)
+        Calls `plot` with `plotMode`.
+    onException(cls, exception, tb)
+        Exception handler.
+    export()
+        Export output data.
+    cleanup()
+        Stops any currently running process and performs an autosave.
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the GudPyMainWindow object.
@@ -185,8 +330,10 @@ class GudPyMainWindow(QMainWindow):
 
     def initComponents(self):
         """
-        Loads the UI file for the GudPyMainWindow.
+        Sets up the UI and slots.
         """
+
+        # Load the UI file.
         if hasattr(sys, '_MEIPASS'):
             uifile = QFile(
                 os.path.join(
@@ -202,6 +349,7 @@ class GudPyMainWindow(QMainWindow):
                 )
             )
 
+        # Register custom widgets.
         loader = QUiLoader()
         loader.registerCustomWidget(GudPyTreeView)
         loader.registerCustomWidget(OutputTreeView)
@@ -237,11 +385,14 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(GudPyChartView)
         self.mainWidget = loader.load(uifile)
 
+        # Create a status bar.
         self.mainWidget.statusBar_ = QStatusBar(self)
         self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
         self.mainWidget.statusBarLayout = QHBoxLayout(
             self.mainWidget.statusBarWidget
         )
+
+        # Create a current task label and add it to the status bar.
         self.mainWidget.currentTaskLabel = QLabel(
             self.mainWidget.statusBarWidget
         )
@@ -249,6 +400,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
+
+        # Create a stop button and add it to the status bar.
         self.mainWidget.stopTaskButton = QToolButton(
             self.mainWidget.statusBarWidget
         )
@@ -264,6 +417,7 @@ class GudPyMainWindow(QMainWindow):
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
 
+        # Create a progress bar and add it to the status bar.
         self.mainWidget.progressBar = QProgressBar(
             self.mainWidget.statusBarWidget
         )
@@ -284,6 +438,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
+        # Create the beam plot and add it to the beam page.
         self.mainWidget.beamPlot = QChartView(
             self.mainWidget
         )
@@ -297,6 +452,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.beamPlot.setChart(self.mainWidget.beamChart)
 
+        # Create the sample top plot and add it to the sample page.
         self.mainWidget.sampleTopPlot = GudPyChartView(
             self.mainWidget
         )
@@ -305,6 +461,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.sampleTopPlot
         )
 
+        # Create the sample bottom plot and add it to the sample page.
         self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
 
         self.mainWidget.bottomPlotLayout.addWidget(
@@ -313,6 +470,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomSamplePlotFrame.setVisible(False)
 
+        # Create the container top plot and add it to the container page.
         self.mainWidget.containerTopPlot = GudPyChartView(
             self.mainWidget
         )
@@ -321,6 +479,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.containerTopPlot
         )
 
+        # Create the container bottom plot and add it to the container page.
         self.mainWidget.containerBottomPlot = GudPyChartView(
             self.mainWidget
         )
@@ -331,6 +490,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomContainerPlotFrame.setVisible(False)
 
+        # Create the all sample top plot and add it to the output page.
         self.mainWidget.allSampleTopPlot = GudPyChartView(
             self.mainWidget
         )
@@ -341,12 +501,15 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.allSampleBottomPlot = GudPyChartView(self.mainWidget)
 
+        # Create the all sample bottom plot and add it to the output page.
         self.mainWidget.bottomAllPlotLayout.addWidget(
             self.mainWidget.allSampleBottomPlot
         )
 
+        # By default, hide the bottom plot.
         self.mainWidget.bottomPlotFrame.setVisible(False)
 
+        # Populate the all sample top plot combo box.
         for plotMode in [
             plotMode for plotMode in PlotModes
             if plotMode not in [
@@ -360,6 +523,7 @@ class GudPyMainWindow(QMainWindow):
             self.handleAllPlotModeChanged
         )
 
+        # Populate the sample plot combo box.
         for plotMode in [
             plotMode for plotMode in PlotModes
             if "(Cans)" not in plotMode.name
@@ -370,6 +534,7 @@ class GudPyMainWindow(QMainWindow):
             self.handleSamplePlotModeChanged
         )
 
+        # Populate thecontainer plot combo box.
         for plotMode in [
             plotMode for plotMode in PlotModes if "(Cans)" in plotMode.name
         ]:
@@ -381,6 +546,7 @@ class GudPyMainWindow(QMainWindow):
             self.handleContainerPlotModeChanged
         )
 
+        # Set the window title, and setup slots.
         self.mainWidget.setWindowTitle("GudPy")
         self.mainWidget.show()
         self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
@@ -393,6 +559,8 @@ class GudPyMainWindow(QMainWindow):
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
         self.outputSlots = OutputSlots(self.mainWidget, self)
+
+        # Connect actions to slots.
         self.mainWidget.runPurge.triggered.connect(
             self.runPurge_
         )

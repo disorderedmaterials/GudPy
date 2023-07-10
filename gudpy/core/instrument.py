@@ -33,7 +33,7 @@ class Instrument:
         module and data acquisition dead times.
     spectrumNumbersForIncidentBeamMonitor : int[]
         Number of spectra of incident beam monitor.
-    wavelengthRangeForMonitorNormalisation : tuple(float, float)
+    wavelengthRangeForMonitorNormalisation : float[]
         Input wavelength range for monitor normalisation.
         0 0 signals to divide channel by channel.
     spectrumNumbersForTransmissionMonitor : int[]
@@ -42,7 +42,7 @@ class Instrument:
         Quiet count constant for incident beam monitor.
     transmissionMonitorQuietCountConst : float
         Quiet count constant for transmission beam monitor.
-    channelNosSpikeAnalysis : tuple(int, int)
+    channelNosSpikeAnalysis : int[]
         First and last channel numbers to check for spikes.
         0 0 signals to use all channels.
     spikeAnalysisAcceptanceFactor : float
@@ -73,10 +73,8 @@ class Instrument:
         Power used to set X-weighting for merge.
     subSingleAtomScattering : bool
         Should we subtract a background from each group prior to merge?
-    mergeWeights : int
-        0 = None
-        1 = By detector
-        2 = By channel
+    mergeWeights : MergeWeights
+        Merge weights by..?
     incidentFlightPath : float
         Incident flight path.
     spectrumNumberForOutputDiagnosticFiles : int
@@ -103,17 +101,15 @@ class Instrument:
         Should hard group edges be used?
     nxsDefinitionFile : str
         NeXus definition file to be used, if NeXus files are being used.
-    Methods
-    -------
+    goodDetectorThreshold : int
+        Threshold to use when checking if number of purged detectors is acceptable.
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.   
     """
 
     def __init__(self):
         """
         Constructs all the necessary attributes for the Instrument object.
-
-        Parameters
-        ----------
-        None
         """
         self.name = Instruments.NIMROD
         self.GudrunInputFileDir = ""
@@ -179,10 +175,6 @@ class Instrument:
     def __str__(self):
         """
         Returns the string representation of the Instrument object.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

@@ -3,6 +3,20 @@ from itertools import chain, product
 
 
 def enumFromDict(clsname, _dict):
+    """
+    Creates an instance of `Enum` with name `clsname` from `_dict`.
+
+    Parameters
+    ----------
+    clsname : str
+        Resultant class name.
+    _dict : dict
+        Mapping from enum value to [display name, access name].
+    
+    Returns
+    -------
+    Enum : resultant Enum.
+    """
     return Enum(
         value=clsname,
         names=chain.from_iterable(
@@ -12,6 +26,9 @@ def enumFromDict(clsname, _dict):
 
 
 class Instruments(Enum):
+    """
+    Enumerates Instrument names.
+    """
     SANDALS = 0
     GEM = 1
     NIMROD = 2
@@ -22,6 +39,9 @@ class Instruments(Enum):
 
 
 class Scales(Enum):
+    """
+    Enumrates scales.
+    """
     Q = 1
     D_SPACING = 2
     WAVELENGTH = 3
@@ -29,15 +49,20 @@ class Scales(Enum):
     TOF = 5
 
 
+"""
+Enumerates density units.
+"""
 UNITS_OF_DENSITY = {
     0: ["atoms/\u212b^3", "ATOMIC"],
     1: ["gm/cm^3", "CHEMICAL"]
 }
 
-
 UnitsOfDensity = enumFromDict("UnitsOfDensity", UNITS_OF_DENSITY)
 
 
+"""
+Enumerates merge weights modes.
+"""
 MERGE_WEIGHTS = {
     0: ["None", "NONE"],
     1: ["By Detector", "DETECTOR"],
@@ -46,6 +71,9 @@ MERGE_WEIGHTS = {
 
 MergeWeights = enumFromDict("MergeWeights", MERGE_WEIGHTS)
 
+"""
+Enumerates normalisation types.
+"""
 NORMALISATION_TYPES = {
     0: ["Nothing", "NOTHING"],
     1: ["<b>^2", "AVERAGE_SQUARED"],
@@ -54,6 +82,9 @@ NORMALISATION_TYPES = {
 
 NormalisationType = enumFromDict("NormalisationType", NORMALISATION_TYPES)
 
+"""
+Enumerates output units.
+"""
 OUTPUT_UNITS = {
     0: ["barns/atom/sr", "BARNS_ATOM_SR"],
     1: ["cm^-1/sr", "INV_CM_SR"]
@@ -63,17 +94,25 @@ OutputUnits = enumFromDict("OutputUnits", OUTPUT_UNITS)
 
 
 class Geometry(Enum):
+    """
+    Enumerates geometry.
+    """
     FLATPLATE = 0
     CYLINDRICAL = 1
     SameAsBeam = 2
 
 
 class CrossSectionSource(Enum):
+    """
+    Enumerates cross section source types.
+    """
     TABLES = 0
     TRANSMISSION = 1
     FILE = 2
 
-
+"""
+Enumerates Fourier Transform modes.
+"""
 FT_MODES = {
     0: ["No Fourier Transform", "NO_FT"],
     1: ["Subtract Average (Qmin)", "SUB_AVERAGE"],
@@ -84,10 +123,15 @@ FTModes = enumFromDict("FTModes", FT_MODES)
 
 
 class Format(Enum):
+    """
+    Enumerates input file formats.
+    """
     TXT = 0
     YAML = 1
 
-
+"""
+Enumerates extrapolation modes.
+"""
 EXTRAPOLATION_MODES = {
     0: ["BACKWARDS"],
     1: ["FORWARDS"],
@@ -98,6 +142,9 @@ EXTRAPOLATION_MODES = {
 
 ExtrapolationModes = enumFromDict("ExtrapolationModes", EXTRAPOLATION_MODES)
 
+"""
+Enumerates iteration modes.
+"""
 ITERATION_MODES = {
     0: ["None", "NONE"],
     1: ["Tweak Factor", "TWEAK_FACTOR"],

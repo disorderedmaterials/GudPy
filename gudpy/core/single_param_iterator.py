@@ -18,6 +18,7 @@ class SingleParamIterator():
     ----------
     gudrunFile : GudrunFile
         Input GudrunFile that we will be using for iterating.
+
     Methods
     ----------
     performIteration(_n)
@@ -26,7 +27,7 @@ class SingleParamIterator():
         To be overriden by sub-classes.
     iterate(n)
         Perform n iterations of iterating by tweak factor.
-    organiseOutput
+    organiseOutput(n)
         To be overriden by sub-classes.
     """
     def __init__(self, gudrunFile):
@@ -89,18 +90,6 @@ class SingleParamIterator():
         """
         pass
 
-    def organiseOutput(self, n):
-        """
-        Stub method to be overriden by sub-classes.
-        This method should organise the output of the iteration.
-
-        Parameters
-        ----------
-        n : int
-            Iteration no.
-        """
-        pass
-
     def iterate(self, n):
         """
         This method is the core of the SingleParamIterator.
@@ -119,3 +108,15 @@ class SingleParamIterator():
             time.sleep(1)
             self.performIteration(i)
             self.organiseOutput(i)
+
+    def organiseOutput(self, n):
+        """
+        Stub method to be overriden by sub-classes.
+        This method should organise the output of the iteration.
+
+        Parameters
+        ----------
+        n : int
+            Iteration number.
+        """
+        pass

@@ -3,10 +3,15 @@ from core.exception import ParserException
 import os
 from os.path import isfile
 import re
+
+# Set precision.
 from decimal import Decimal, getcontext
 getcontext().prec = 5
 
+# Regular expression for extracting percentages.
 percentageRegex = r'\d*[.]?\d*%'
+
+# Regular expression for extracting floats.
 floatRegex = r'\d*[.]?\d'
 
 
@@ -68,12 +73,18 @@ class GudFile:
         closer to the expected level. Particularly used when iterating by
         tweak factor - where the suggested tweak factor is applied accross
         iterations.
-    contents : str
+    stream : str
         Contents of the .gud file.
     output : str
         Output for use in the GUI.
     Methods
     -------
+    getNextLine(ignoreEmpty=False)
+        Gets the next line from the stream.
+    peekNextLine()
+        Gets the next line from the stream without removing it.
+    consumeLine(n)
+        Consumes n lines from the stream.
     parse():
         Parses the GudFile from path, assigning values
         to each of the attributes.
@@ -140,7 +151,7 @@ class GudFile:
             Should empty lines be ignored?
         Returns
         -------
-        str | None
+        str | None : next line in stream, if available.
         """
         if ignoreEmpty and self.stream:
             line = self.stream.pop(0)
@@ -154,12 +165,9 @@ class GudFile:
         """
         Returns the next line in the input stream, without removing it.
 
-        Parameters
-        ----------
-        None
         Returns
         -------
-        str | None
+        str | None : next line in stream, if available.
         """
         return self.stream[0] if self.stream else None
 
@@ -171,9 +179,6 @@ class GudFile:
         ----------
         n : int
             Number of lines to consume
-        Returns
-        -------
-        None
         """
         for _ in range(n):
             self.getNextLine()
@@ -182,13 +187,6 @@ class GudFile:
         """
         Parses the GudFile from its path, assigning extracted variables to
         their corresponding attributes.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
         """
 
         # Read the contents into an auxilliary variable.
@@ -294,18 +292,31 @@ class GudFile:
                     f"{str(e)}"
             ) from e
 
+    def write_out(self, overwrite=False):
+        """
+        Writes out the string representation of the GudFile.
+        If 'overwrite' is True, then the initial file is overwritten.
+        Otherwise, it is written to 'gudpy_{initial filename}.gud'.
+
+        Parameters
+        ----------
+        overwrite : bool, optional
+            Overwrite the initial file? (default is False).
+        """
+        if not overwrite:
+            f = open(self.outpath, "w", encoding="utf-8")
+        else:
+            f = open(self.path, "w", encoding="utf-8")
+        f.write(str(self))
+        f.close()
+
     def __str__(self):
         """
         Returns the string representation of the GudFile object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of GudFile.
+        str : String representation of GudFile.
         """
         outLine = (
             f'{self.err}'
@@ -348,25 +359,3 @@ class GudFile:
             f'{self.suggestedTweakFactor}\n'
 
         )
-
-    def write_out(self, overwrite=False):
-        """
-        Writes out the string representation of the GudFile.
-        If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.gud'.
-
-        Parameters
-        ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
-
-        Returns
-        -------
-        None
-        """
-        if not overwrite:
-            f = open(self.outpath, "w", encoding="utf-8")
-        else:
-            f = open(self.path, "w", encoding="utf-8")
-        f.write(str(self))
-        f.close()

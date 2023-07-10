@@ -15,17 +15,15 @@ class SampleBackground:
         DataFiles object storing data files belonging to the container.
     samples : Sample[]
         List of Sample objects against the SampleBackground.
-    Methods
-    -------
+    writeAllSamples : bool
+        Should all samples be used?
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.
     """
     def __init__(self):
         """
         Constructs all the necessary attributes for the
         SampleBackground object.
-
-        Parameters
-        ----------
-        None
         """
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "SAMPLE BACKGROUND")
@@ -41,26 +39,26 @@ class SampleBackground:
         """
         Returns the string representation of the SampleBackground object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of SampleBackground.
+        str : String representation of SampleBackground.
         """
         TAB = "          "
+
+        # Convert necessary containers to samples.
         CONV_SAMPLES = [
             str(c.convertToSample())
             for s in self.samples
             for c in s.containers
             if c.runAsSample
         ]
+
+        # Determine sample to write.
         if self.writeAllSamples:
             samples = [str(x) for x in self.samples]
         else:
             samples = [str(x) for x in self.samples if x.runThisSample]
+
         SAMPLES = "\n".join([*samples, *CONV_SAMPLES])
         self.writeAllSamples = True
 

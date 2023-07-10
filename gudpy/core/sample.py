@@ -45,8 +45,8 @@ class Sample:
         Height of the sample - if its geometry is CYLINDRICAL.
     density : str
         Density of the sample
-    densityUnits : int
-        0 = atoms/Angstrom^3, 1 = gm/cm^3
+    densityUnits : UnitsOfDensity
+        Units to use for output density (atoms/Angstrom^3, gm/cm^3)
     tempForNormalisationPC : float
         Temperature for Placzek Correction.
     overallBackgroundFactor : float
@@ -59,24 +59,26 @@ class Sample:
         Tweak factor for the sample.
     topHatW : float
         Width of top hat function for Fourier transform.
+    FTMode : FTModes
+        Fourier Transform mode.
     minRadFT : float
         Minimum radius for Fourier transform.
     grBroadening : float
         Broadening of g(r) at r = 1 Angstrom
-    resonanceValues : tuple[]
-        List of tuples storing wavelength ranges for resonance values.
-    exponentialValues : tuple[]
-        List of tuples storing exponential amplitude and decay values.
+    resonanceValues : [][]
+        List of lists storing wavelength ranges for resonance values.
+    exponentialValues : []][]
+        List of lists storing exponential amplitude and decay values.
     normalisationCorrectionFactor : float
         Factor to multiply normalisation by prior to dividing into sample.
     fileSelfScattering : str
         Name of file containing scattering as a function of wavelength.
-    normaliseTo : int
-        Normalisation type required on the final merged DCS data.
-        0 = nothing, 1 = <f>^2, 2 = <f^2>
+    normaliseTo : NormalisationType
+        Normalisation type required on the final merged DCS data
+        nothing, <f>^2, <f^2>
     maxRadFT : float
         Maximum radiues for Fourier transform.
-    outputUnits : int
+    outputUnits : OutputUnits
         Output units for final merged DCS, barns/atom/sr or cm^-1/sr
     powerForBroadening : float
         Broadening power
@@ -93,16 +95,17 @@ class Sample:
         compensate for different attenuation in different containers.
     containers : Container[]
         List of Container objects attached to this sample.
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.
+
     Methods
     -------
+    pathName()
+        Converts the sample name into a path name.
     """
     def __init__(self):
         """
         Constructs all the necessary attributes for the Sample object.
-
-        Parameters
-        ----------
-        None
         """
         self.name = ""
         self.periodNumber = 1
@@ -147,6 +150,13 @@ class Sample:
         }
 
     def pathName(self):
+        """
+        Converts the sample name into a path name.
+
+        Returns
+        -------
+        str : path representation of sample.
+        """
         return self.name.replace(" ", "_").translate(
             {ord(x): '' for x in r'/\!*~,&|[]'}
         ) + ".sample"
@@ -155,14 +165,9 @@ class Sample:
         """
         Returns the string representation of the Sample object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of Sample.
+        str : String representation of Sample.
         """
 
         nameLine = (
@@ -201,6 +206,7 @@ class Sample:
         )
 
         if self.densityUnits == UnitsOfDensity.ATOMIC:
+            # Negative density refers to atomic density.
             density = self.density*-1
         elif self.densityUnits == UnitsOfDensity.CHEMICAL:
             density = self.density
@@ -271,6 +277,7 @@ class Sample:
             f' and attenuation coefficient [per \u212b]\n'
         )
 
+        # Containers to write out.
         SAMPLE_CONTAINERS = (
             "\n".join([str(x) for x in self.containers if not x.runAsSample])
             if len(self.containers) > 0

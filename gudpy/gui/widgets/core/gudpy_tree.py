@@ -37,6 +37,7 @@ class GudPyTreeModel(QAbstractItemModel):
         Icon for samples.
     containerIcon : QIcon
         Icon for containers.
+
     Methods
     -------
     index(row, column, parent)
@@ -61,6 +62,8 @@ class GudPyTreeModel(QAbstractItemModel):
         Returns flags associated with a given index.
     isSample(index)
         Returns whether a given index is associated with a sample.
+    isContainer(index)
+        Returns whether a given index is associated with a container.
     isIncluded(index)
         Returns whether a given index of a sample is to be ran.
     insertRow(obj, parent)
@@ -96,6 +99,7 @@ class GudPyTreeModel(QAbstractItemModel):
         Creates a QPersistentModelIndex and adds it to the dict,
         to keep the internal pointer of the QModelIndex in
         reference.
+
         Parameters
         ----------
         row : int
@@ -104,6 +108,7 @@ class GudPyTreeModel(QAbstractItemModel):
             Column number.
         parent, optional: QModelIndex
             Parent index.
+
         Returns
         -------
         QModelIndex
@@ -157,14 +162,15 @@ class GudPyTreeModel(QAbstractItemModel):
         If the index is invalid, then an invalid QModelIndex is returned.
         Parent is decided on by checking the data type of the internal pointer
         of the index.
+
         Parameters
         ----------
         index : QModelIndex
             Index to find parent index of.
+
         Returns
         -------
-        QModelIndex
-            Parent index.
+        QModelIndex : Parent index.
         """
         if not index.isValid():
             return QModelIndex()
@@ -185,14 +191,15 @@ class GudPyTreeModel(QAbstractItemModel):
     def findParent(self, item):
         """
         Finds the parent of a given Sample or Container.
+
         Parameters
         ----------
         item : Sample | Container
             Object to find parent of.
+
         Returns
         -------
-        SampleBackground | Sample
-            Parent object.
+        SampleBackground | Sample : Parent object.
         """
         for i, sampleBackground in enumerate(
             self.gudrunFile.sampleBackgrounds
@@ -213,16 +220,17 @@ class GudPyTreeModel(QAbstractItemModel):
         QVariant is returned.
         Otherwise returns check state of index, or a QVariant constructed
         from its name.
+
         Parameters
         ----------
         index : QModelIndex
             Index to extract data from.
         role : int
             Role.
+
         Returns
         -------
-        QVariant | QCheckState
-            Data at index.
+        QVariant | QCheckState : Data at index.
         """
         if not index.isValid():
             return None
@@ -258,6 +266,7 @@ class GudPyTreeModel(QAbstractItemModel):
         Sets data at a given index, if the index is valid.
         Only used for assigning CheckStates to samples,
         and altering the names of samples/containers.
+
         Parameters
         ----------
         index : QModelIndex
@@ -266,10 +275,10 @@ class GudPyTreeModel(QAbstractItemModel):
             Value to assign to data.
         role : int
             Role.
+
         Returns
         -------
-        bool
-            Success / Failure.
+        bool : Success / Failure.
         """
         if not index.isValid():
             return False
@@ -293,14 +302,15 @@ class GudPyTreeModel(QAbstractItemModel):
     def checkState(self, index):
         """
         Returns the check state of a given index.
+
         Parameters
         ----------
         index : QModelIndex
             Index to return check state from.
+
         Returns
         -------
-        QCheckState
-            Check state.
+        QCheckState : Check state.
         """
         return Qt.Checked if self.isIncluded(index) else Qt.Unchecked
 
@@ -308,14 +318,15 @@ class GudPyTreeModel(QAbstractItemModel):
         """
         Returns the row count of a given parent index.
         The row count returned depends on the data type of the parent.
+
         Parameters
         ----------
-        parent : QModelIndex
+        parent : QModelIndex, optional
             Parent index to retrieve row count from.
+
         Returns
         -------
-        int
-            Row count.
+        int : Row count.
         """
         # If the parent is invalid, then it is a top level node.
         if not parent.isValid():
@@ -356,20 +367,28 @@ class GudPyTreeModel(QAbstractItemModel):
     def columnCount(self, parent=QModelIndex()):
         """
         Returns the column count of an index.
+
         Parameters
         ----------
-        parent : QModelIndex
+        parent : QModelIndex, optional
             Parent index to retrieve column row count from.
+
         Returns
         -------
-        int
-            Column count. This is always 1.
+        int : Column count. This is always 1.
         """
         return 1
 
     def setEnabled(self, state):
+        """
+        Enables / disables "editing" of the tree.
+
+        Parameters
+        ----------
+        state : bool
+            Should editing be enabled?
+        """
         self.flags_ = {}
-        # self.flags_[Sample]
         if state:
             self.flags_[Sample] = Qt.ItemIsEditable | Qt.ItemIsUserCheckable
             self.flags_[Container] = Qt.ItemIsEditable
@@ -380,14 +399,15 @@ class GudPyTreeModel(QAbstractItemModel):
     def flags(self, index):
         """
         Returns flags associated with a given index.
+
         Parameters
         ----------
         index : QModelIndex
             Index to retreive flags from.
+
         Returns
         -------
-        int
-            Flags.
+        int : Flags.
         """
         flags = super().flags(index)
         # If it is a sample, append checkable flag.
@@ -401,48 +421,52 @@ class GudPyTreeModel(QAbstractItemModel):
     def isSample(self, index):
         """
         Returns whether a given index is associated with a sample.
+
         Parameters
         ----------
         index : QModelIndex
             Index to check if sample is associated with.
+
         Returns
         -------
-        bool
-            Is it a sample or not?
+        bool : Is it a sample or not?
         """
         return isinstance(index.parent().internalPointer(), SampleBackground)
 
     def isContainer(self, index):
         """
         Returns whether a given index is associated with a container.
+
         Parameters
         ----------
         index : QModelIndex
             Index to check if container is associated with.
+
         Returns
         -------
-        bool
-            Is it a container or not?
+        bool : Is it a container or not?
         """
         return isinstance(index.parent().internalPointer(), Sample)
 
     def isIncluded(self, index):
         """
         Returns whether a given index of a sample is to be ran.
+
         Parameters
         ----------
         index : QModelIndex
             Index to check if the associated sample is to be included or not.
+
         Returns
         -------
-        bool
-            Is it to be included?
+        bool : Is it to be included?
         """
         return self.isSample(index) and index.internalPointer().runThisSample
 
     def insertRow(self, obj, parent):
         """
         Insert a row containing an object to a parent index.
+
         Parameters
         ----------
         obj : SampleBackground | Sample | Container
@@ -543,6 +567,7 @@ class GudPyTreeModel(QAbstractItemModel):
     def removeRow(self, index):
         """
         Remove a row from an index.
+
         Parameters
         ----------
         index : QModelIndex
@@ -614,17 +639,19 @@ class GudPyTreeView(QTreeView):
         GudrunFile object to build the tree from.
     parent : QWidget
         Parent widget.
-    model : QStandardItemModel
+    model_ : GudPyTreeModel
         Model to be used for the tree view.
     sibling : QStackedWidget
         Sibling widget to communicate signals and slots to/from.
+    clipboard : Any
+        Current clipboard contents.
     contextMenuEnabled : bool
         Is the context tree enabled?
+
     Methods
     -------
-    buildTree(gudrunFile, sibling)
-        Builds the tree view from the gudrunFile, pairing
-        the modelIndexes with pages of the sibling QStackedWidget.
+    buildTree(gudrunFile, parent)
+        Builds the tree view from the gudrunFile.
     makeModel()
         Creates the model for the tree view from the GudrunFile.
     currentChanged(current, previous)
@@ -639,28 +666,38 @@ class GudPyTreeView(QTreeView):
         Removes the current index from the model.
     contextMenuEvent(event)
         Creates context menu, for right clicking the table.
-    insertSampleBackground_(sampleBackground)
+    insertSampleBackground(sampleBackground)
         Inserts a SampleBackground into the GudrunFile.
-    insertSample_(sample)
+    insertSample(sample)
         Inserts a Sample into the GudrunFile.
-    insertContainer_(container)
+    insertContainer(container)
         Inserts a Container into the GudrunFile.
     copy()
         Copies the current object to the clipboard.
-    cut_()
+    del_()
+        Deletes the current object.
+    cut()
         Cuts the current object to the clipboard.
-    paste_()
+    paste()
         Pastes the clipboard back into the GudrunFile.
-    duplicate()
+    duplicateSample()
         Duplicates the current Sample.
     duplicateOnlySample()
         Duplicates the current Sample without any containers.
-    setSamplesSelectected(selected)
+    setSampleSelected(selected)
         Sets sample states to selected.
     selectOnlyThisSample()
         Selects only the current sample, and deselects all others.
     setContextEnabled(state)
         Enable/Disable the context menu.
+    getSamples()
+        Gets all of the samples in the tree.
+    getContainers()
+        Gets all of the containers in the ree.
+    convertToSample():
+        Converts the current container to a sample.
+    _expand(parent, _first, _last)
+        Expand the tree from the parent.
     """
 
     def __init__(self, parent):
@@ -677,20 +714,25 @@ class GudPyTreeView(QTreeView):
     def buildTree(self, gudrunFile, parent):
         """
         Constructs all the necessary attributes for the GudPyTreeView object.
-        Calls the makeModel method,
-        to create a QStandardItemModel for the tree view.
+        Calls the makeModel method, to create a GudPyTreeModel
+        for the tree view.
+
         Parameters
         ----------
         gudrunFile : GudrunFile
             GudrunFile object to create the tree from.
-        sibling : QStackedWidget
-            Sibling widget to communicate signals and slots to/from.
+        parent : Any
+            Parent widget.
         """
         self.gudrunFile = gudrunFile
         self.parent = parent
         self.makeModel()
+
+        # Select the Instrument.
         self.setCurrentIndex(self.model().index(0, 0))
         self.setHeaderHidden(True)
+
+        # Expand the tree.
         self.expandToDepth(0)
         self.model().rowsInserted.connect(self._expand)
 
@@ -702,12 +744,20 @@ class GudPyTreeView(QTreeView):
         Creates the QStandardItemModel to be used for the GudPyTreeView.
         The model is constructed from the GudrunFile.
         """
+        # Construct the model.
         self.model_ = GudPyTreeModel(self, self.gudrunFile)
         self.setModel(self.model_)
 
     def currentChanged(self, current, previous):
         """
         Slot method for current index being changed in the tree view.
+
+        Parameters
+        ----------
+        current : QModelIndex
+            Current index.
+        previous : QModelIndex
+            Previous index.
         """
         if current.internalPointer():
             self.click(current)
@@ -717,11 +767,14 @@ class GudPyTreeView(QTreeView):
         """
         Sets the current index of the sibling QStackedWidget
         to the absolute index of the modelIndex.
+
         Parameters
         ----------
         modelIndex : QModelIndex
-            QModelIndex of the QStandardItem that was clicked in the tree view.
+            QModelIndex that was clicked in the tree view.
         """
+
+        # Map of objects to indexes in the QStackedWidgets, and setter functions.
         indexMap = {
             Instrument: (0, None),
             Beam: (1, None),
@@ -734,12 +787,20 @@ class GudPyTreeView(QTreeView):
             Container: (6, self.parent.containerSlots.setContainer)
         }
         self.parent.setTreeActionsEnabled(False)
+        
+        # Get the type of the current object.
         type_ = type(modelIndex.internalPointer())
+
         index, setter = indexMap[type_]
+        # Set the index in the stacked widget.
         self.parent.mainWidget.objectStack.setCurrentIndex(index)
         self.parent.updateComponents()
+       
+        # Call the setter if necessary.
         if setter:
             setter(modelIndex.internalPointer())
+        
+        # Enable correct actions.
         if isinstance(
             modelIndex.internalPointer(),
             (Instrument, Beam, Components, Normalisation, SampleBackground)
@@ -786,28 +847,30 @@ class GudPyTreeView(QTreeView):
     def currentObject(self):
         """
         Returns the object associated with the current index.
+
         Returns
         -------
         Instrument | Beam | Normalisation |
-        SampleBackground | Sample | Container
-            Object associated with the current index.
+        SampleBackground | Sample | Container  : Object associated with the current index.
         """
         return self.currentIndex().internalPointer()
 
     def insertRow(self, obj):
         """
         Inserts an object into the current row in the model.
+
         Parameters
         ----------
-        obj : SampleBackground | Sample | Container
-            Object to be inserted.
+        SampleBackground | Sample | Container : Object to be inserted.
         """
         currentIndex = self.currentIndex()
+        # Insert a row.
         self.model().insertRow(obj, currentIndex)
         newIndex = self.model().index(
             currentIndex.row()+1, 0,
             self.model().parent(currentIndex)
         )
+        # Expend where the new row was inserted, so it is visible.
         self.expandRecursively(newIndex, 0)
         self.parent.updateAllSamples()
 
@@ -821,6 +884,7 @@ class GudPyTreeView(QTreeView):
         """
         Creates context menu, so that on right clicking the table,
         the user is able to perform menu actions.
+
         Parameters
         ----------
         event : QMouseEvent
@@ -982,6 +1046,7 @@ class GudPyTreeView(QTreeView):
         """
         Inserts a SampleBackground into the GudrunFile.
         Inserts it into the tree.
+
         Parameters
         ----------
         sampleBackground : SampleBackground, optional
@@ -995,6 +1060,7 @@ class GudPyTreeView(QTreeView):
         """
         Inserts a Sample into the GudrunFile.
         Inserts it into the tree.
+
         Parameters
         ----------
         sample : Sample, optional
@@ -1009,6 +1075,7 @@ class GudPyTreeView(QTreeView):
         """
         Inserts a Container into the GudrunFile.
         Inserts it into the tree.
+
         Parameters
         ----------
         container : Container, optional
@@ -1075,6 +1142,11 @@ class GudPyTreeView(QTreeView):
         """
         Sets all samples status to 'selected'.
         Used for selecting / deselecting all samples
+
+        Parameters
+        ----------
+        selected : bool
+            Should samples be selected?
         """
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
@@ -1097,10 +1169,22 @@ class GudPyTreeView(QTreeView):
     def setContextEnabled(self, state):
         """
         Disables/Enables the context menu.
+
+        Parameters
+        ----------
+        state : bool
+            Should the context menu be enabled?
         """
         self.contextMenuEnabled = state
 
     def getSamples(self):
+        """
+        Gets all of the samples in the tree.
+
+        Returns
+        -------
+        Sample[] : all samples in the tree.
+        """
         samples = []
         for i in range(
             NUM_GUDPY_CORE_OBJECTS,
@@ -1115,6 +1199,13 @@ class GudPyTreeView(QTreeView):
         return samples
 
     def getContainers(self):
+        """
+        Gets all of the containers in the tree.
+
+        Returns
+        -------
+        Container[] : all containers in the tree.
+        """
         containers = []
         for i in range(
             NUM_GUDPY_CORE_OBJECTS,
@@ -1129,10 +1220,22 @@ class GudPyTreeView(QTreeView):
         return containers
 
     def convertToSample(self):
+        """
+        Converts the current container to a sample,
+        and appends it to the current sample background.
+        """
         container = self.currentObject()
         sample = container.convertToSample()
         self.removeRow()
         self.insertSample(sample)
 
     def _expand(self, parent, _first, _last):
+        """
+        Expands the tree from the parent.
+
+        Parameters
+        ----------
+        parent : QModelIndex
+            Parent index.
+        """
         self.expand(parent)

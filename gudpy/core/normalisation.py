@@ -61,16 +61,12 @@ class Normalisation:
         Degree of smoothing on Vanadium.
     minNormalisationSignalBR : float
         Vanadium signal to background acceptance ratio.
-    Methods
-    -------
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.
     """
     def __init__(self):
         """
         Constructs all the necessary attributes for the Normalistion object.
-
-        Parameters
-        ----------
-        None
         """
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "NORMALISATION")
@@ -103,10 +99,6 @@ class Normalisation:
     def __str__(self):
         """
         Returns the string representation of the Normalisation object.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

@@ -47,16 +47,12 @@ class Beam:
         Sample dependant background factor.
     shieldingAttenuationCoefficient : float
         Absorption coefficient for the shielding.
-    Methods
-    -------
+    yamlignore : str{}
+        Class attributes to ignore during yaml serialisation.
     """
     def __init__(self):
         """
         Constructs all the necessary attributes for the Beam object.
-
-        Parameters
-        ----------
-        None
         """
         self.sampleGeometry = Geometry.FLATPLATE
         self.beamProfileValues = [1., 1.]
@@ -85,14 +81,9 @@ class Beam:
         """
         Returns the string representation of the Beam object.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        string : str
-            String representation of Beam.
+        str : String representation of Beam.
         """
 
         absorptionAndMSLine = (

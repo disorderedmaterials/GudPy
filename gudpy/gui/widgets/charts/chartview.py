@@ -19,24 +19,42 @@ class GudPyChartView(QChartView):
     Class to represent a GudPyChartView. Inherits QChartView.
 
     ...
+
     Attributes
     ----------
     chart : GudPyChart
         Chart to be shown in the view.
+    clipboard : QClipboard
+        Clipboard for copying.
+    previousPos : QPoint
+        Previous mouse position.
+
     Methods
     -------
     wheelEvent(event):
         Event handler for using the scroll wheel.
-    toggleLogarithmicAxes():
-        Toggles logarithmic axes in the chart.
-    contextMenuEvent(event):
-        Creates context menu.
+    mouseMoveEvent(event)
+        Event handler for moving the mouse.
+    mousePressEvent(event)
+        Event handler for pressing the mouse buttons.
+    copyPlot()
+        Copies the current plot to the clipboard.
+    mouseReleaseEvent(event)
+        Event handler for releasing the mouse button.
     keyPressEvent(event):
         Handles key presses.
     enterEvent(event):
         Handles the mouse entering the chart view.
     leaveEvent(event):
         Handles the mouse leaving the chart view.
+    contextMenuEvent(event):
+        Creates context menu.
+    toggleLogarithmicAxes():
+        Toggles logarithmic axes in the chart.
+    setChart(chart)
+        Sets the chart in the view.
+    resizeEvent(event)
+        Event handler for resizing the plot.
     """
     def __init__(self, parent):
         """
@@ -60,6 +78,8 @@ class GudPyChartView(QChartView):
 
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
+
+        # Initialise clipboard.
         self.clipboard = QClipboard(self.parent())
 
         self.previousPos = 0
@@ -73,6 +93,7 @@ class GudPyChartView(QChartView):
         event : QWheelEvent
             Event that triggered the function call.
         """
+
         # Decide on the zoom factor.
         # If y > 0, zoom in, if y < 0 zoom out.
         zoomFactor = 2.0 if event.angleDelta().y() > 0 else 0.5
@@ -97,22 +118,45 @@ class GudPyChartView(QChartView):
         self.chart().scroll(delta.x(), -delta.y())
 
     def mouseMoveEvent(self, event):
+        """
+        Event handler called when the mouse is moved.
+        This event is overridden for tracking the mouse coordinates
+        and translating the view.
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
+        """
+
+        # Ensure correct event type is caught.
         if isinstance(event, QMouseEvent):
+
+            # If the middle mouse button is held, then translate the view.
             if event.buttons() & Qt.MouseButton.MiddleButton:
 
+                # Determine offset.
                 if self.previousPos:
                     offset = event.pos() - self.previousPos
                 else:
                     offset = event.pos()
+                
+                # Zoom a very small amount
                 self.chart().zoom(1 + 0.00000001)
+
+                # Scroll the view.
                 self.chart().scroll(-offset.x(), offset.y())
 
                 self.previousPos = event.pos()
                 event.accept()
             else:
                 if type(self.chart()) == GudPyChart:
+                    # If the mouse is within the plot area.
                     if self.chart().plotArea().contains(event.pos()):
+
+                        # Determine the current mouse position, in axes coordinates.
                         pos = self.chart().mapToValue(event.pos())
+
+                        # Set the mouse coordinate label.
                         self.chart().label.setPlainText(
                             f"x={round(pos.x(), 4)}, y={round(pos.y(), 4)}"
                         )
@@ -123,7 +167,17 @@ class GudPyChartView(QChartView):
             return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
+        """
+        Event handler called when the mouse is pressed.
+        This event is overridden for rubber band zoom / translation.
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
+        """
         if isinstance(event, QMouseEvent):
+            # If middle mouse was pressed, set the previous position,
+            # for translating.
             if event.button() == Qt.MouseButton.MiddleButton:
                 self.previousPos = event.pos()
             elif event.button() == Qt.MouseButton.LeftButton:
@@ -134,10 +188,27 @@ class GudPyChartView(QChartView):
         return super().mousePressEvent(event)
 
     def copyPlot(self):
+        """
+        Copies the current plot to the clipboard.
+        """
+        # Grab a pixmap from the current view.
         pixMap = self.grab()
+        # Set the pixmap in the clipboard.
+        # This allows it to be pasted.
         self.clipboard.setPixmap(pixMap)
 
     def mouseReleaseEvent(self, event):
+        """
+        Event handler for releasing the mouse button.
+        This is overriden to support rubber band zoom.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
+        """
+
+        # Ensure correct type of event was caught.
         if isinstance(event, QMouseEvent):
             if event.button() == Qt.MouseButton.RightButton:
                 event.accept()
@@ -169,8 +240,14 @@ class GudPyChartView(QChartView):
         """
         Handles key presses.
         Used for implementing hotkeys / shortcuts.
+
+        Parameters
+        ----------
+        event : QKeyEvent
+            Event that triggered the function call. 
         """
         modifiers = QApplication.keyboardModifiers()
+        # 'Ctrl+C' refers to copying.
         if event.key() == Qt.Key_C and modifiers == Qt.ControlModifier:
             self.copyPlot()
         # 'L/l' refers to logarithms.
@@ -194,8 +271,12 @@ class GudPyChartView(QChartView):
         """
         Handles the mouse entering the chart view.
         Gives focus to the chart view.
-        """
 
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
+        """
         # Acquire focus.
         self.setFocus(Qt.OtherFocusReason)
         return super().enterEvent(event)
@@ -204,6 +285,11 @@ class GudPyChartView(QChartView):
         """
         Handles the mouse leaving the chart view.
         Gives focus back to the parent.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Event that triggered the function call.
         """
         # Relinquish focus.
         self.parent().setFocus(Qt.OtherFocusReason)
@@ -213,6 +299,7 @@ class GudPyChartView(QChartView):
         """
         Creates context menu, so that on right clicking the chartview,
         the user is able to perform actions.
+
         Parameters
         ----------
         event : QMouseEvent
@@ -221,12 +308,16 @@ class GudPyChartView(QChartView):
         if isinstance(event, QContextMenuEvent):
             self.menu = QMenu(self)
             actionMap = {}
+
+            # If no chart is initialised, then don't add any actions.
             if self.chart():
 
+                # Action for resetting the view.
                 resetAction = QAction("Reset View", self.menu)
                 resetAction.triggered.connect(self.chart().zoomReset)
                 self.menu.addAction(resetAction)
 
+                # Actions for toggling logarithmic axes.
                 toggleLogarithmicMenu = QMenu(self.menu)
                 toggleLogarithmicMenu.setTitle("Toggle logarithmic axes")
 
@@ -270,6 +361,7 @@ class GudPyChartView(QChartView):
 
                 self.menu.addMenu(toggleLogarithmicMenu)
 
+                # Actions specific to SF_MFCS01 / SF_MDCS01_CANS
                 if self.chart().plotMode in [
                     PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
                 ]:
@@ -284,6 +376,7 @@ class GudPyChartView(QChartView):
                         )
                     )
                     self.menu.addAction(showDCSLevelAction)
+                # Actions specific to RDF / RDF_CANS.
                 elif (
                     self.chart().plotMode in
                     [
@@ -314,7 +407,11 @@ class GudPyChartView(QChartView):
                         )
                     )
                     self.menu.addAction(showMgor01Action)
+                
+                # Ensure at least a single Sample is present in the chart.
                 if len(self.chart().samples) > 1:
+
+                    # Actions for showing / hiding samples.
                     showMenu = QMenu(self.menu)
                     showMenu.setTitle("Show..")
                     if self.chart().plotMode in [
@@ -341,6 +438,7 @@ class GudPyChartView(QChartView):
                         actionMap[action] = sample
                     self.menu.addMenu(showMenu)
 
+            # Action for copying plots.
             copyAction = QAction("Copy plot", self.menu)
             copyAction.triggered.connect(self.copyPlot)
             self.menu.addAction(copyAction)
@@ -356,10 +454,25 @@ class GudPyChartView(QChartView):
     def toggleLogarithmicAxes(self, axis):
         """
         Toggles logarithmic axes in the chart.
+
+        Parameters
+        ----------
+        axis : Axes
+            Target Axes.
         """
         self.chart().toggleLogarithmicAxis(axis)
 
     def setChart(self, chart):
+        """
+        Sets the chart in the view.
+
+        Parameters
+        ----------
+        chart : QChart | GudPyChart
+            Chart to set.
+        """
+        # If it's a GudPyChart, then set the position of
+        # the mouse coordinates label.
         if type(chart) == GudPyChart:
             chart.label.setPos(
                 self.mapToScene(
@@ -370,6 +483,14 @@ class GudPyChartView(QChartView):
         return super().setChart(chart)
 
     def resizeEvent(self, event):
+        """
+        Handles resizing of the chart view.
+
+        Parameters
+        ----------
+        event : QResizeEvent
+            Event that triggered the function call.
+        """
         if type(self.chart()) == GudPyChart:
             self.chart().label.setPos(
                 self.mapToScene(25, self.sceneRect().height()-50)

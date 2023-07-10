@@ -34,4 +34,12 @@ class DensityIterator(SingleParamIterator):
         object.density *= coefficient
 
     def organiseOutput(self, n):
+        """
+        Organises the output, using `n` to name the organised directory.
+
+        Parameters
+        ----------
+        n : int
+            Iteration number.
+        """
         self.gudrunFile.iterativeOrganise(f"IterateByDensity_{n}")

@@ -32,20 +32,25 @@ class WavelengthSubtractionIterator():
     QStep : float
         Step size for corrections on Q scale.
         Stored, as we switch between scales this data needs to be held.
+
     Methods
     ----------
-    enableLogarithmicBinning
+    enableLogarithmicBinning()
         Enables logarithmic binning
-    disableLogarithmicBinning
+    disableLogarithmicBinning()
         Disables logarithmic binning
-    collectQRange
+    collectQRange()
         Collects QMax, QMin and QStep, and stores them as attributes.
-    applyQRange
+    applyQRange()
         Applies the Q range and step collected to the X-scale.
-    applyWavelengthRanges
+    applyWavelengthRanges()
         Apply the wavelength ranges of the instrument to the X-scale.
-    zeroTopHatWidths
+    zeroTopHatWidths()
         Set width of top hat functions for FT to zero, for each sample.
+    resetTopHatWidths()
+        Reset the width of top hat functions to their previous values.
+    collectTopHatWidths()
+        Collect witdth of top hat functions for each sample.
     setSelfScatteringFiles(scale)
         Alters file extensions of self scattering files, to the
         relevant extension for the scale inputted.
