@@ -613,6 +613,8 @@ class GudrunFile:
             dataFiles = []
             for _ in range(numberOfFiles):
                 dataFiles.append(firstword(self.getNextToken()))
+            # Reverses list so that it is in ascending order
+            dataFiles.reverse()
 
             # Create a DataFiles object from the dataFiles list constructed.
             self.normalisation.dataFiles = (
