@@ -1213,8 +1213,8 @@ class InstrumentSlots():
 
             filename = (
                 QFileDialog.getExistingDirectory(
-                    self.widget, 
-                    title, 
+                    self.widget,
+                    title,
                     self.instrument.dataFileDir
                 )
             )
