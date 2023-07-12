@@ -641,6 +641,7 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile = GudrunFile(path=path)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
+
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
@@ -1257,6 +1258,9 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def nexusProcessing(self):
+        if not self.checkFilesExist_():
+            return
+
         self.setControlsEnabled(False)
         nexusProcessingDialog = NexusProcessingDialog(
             self.gudrunFile, self.mainWidget
@@ -1742,7 +1746,6 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(path=autosavePath)
 
     def setModified(self):
-
         if not self.modified:
             if self.gudrunFile.path:
                 self.modified = True
