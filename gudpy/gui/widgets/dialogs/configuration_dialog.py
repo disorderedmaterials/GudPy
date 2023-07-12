@@ -110,7 +110,7 @@ class ConfigurationDialog(QDialog):
 
     def handleDataFileTypeChanged(self, index):
         """
-        Sets file type upon change
+        Update data file type
         """
         self.dataFileType = self.widget.dataFileTypeCombo.itemText(
             index
