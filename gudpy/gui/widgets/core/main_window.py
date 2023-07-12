@@ -641,7 +641,6 @@ class GudPyMainWindow(QMainWindow):
                 self.gudrunFile = GudrunFile(path=path)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
-
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
 
