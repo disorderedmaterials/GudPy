@@ -63,7 +63,7 @@ class ConfigurationDialog(QDialog):
             dataFileTypes.index(self.dataFileType)
         )
 
-        self.widget.dataFileTypeCombo.currentIndexChanged.connect(
+        self.widget.dataFileTypeCombo.currentTextChanged.connect(
             self.handleDataFileTypeChanged
         )
 
@@ -108,13 +108,11 @@ class ConfigurationDialog(QDialog):
             open(self.configuration, "r").readlines()[-1]
         )
 
-    def handleDataFileTypeChanged(self, index):
+    def handleDataFileTypeChanged(self, comboText):
         """
         Update data file type
         """
-        self.dataFileType = self.widget.dataFileTypeCombo.itemText(
-            index
-        )
+        self.dataFileType = comboText
 
     def cancel(self):
         self.cancelled = True
