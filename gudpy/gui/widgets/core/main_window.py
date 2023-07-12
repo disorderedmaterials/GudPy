@@ -693,6 +693,7 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument = GudrunFile(
                 configurationDialog.configuration, config_=True
             ).instrument
+            self.gudrunFile.instrument.dataFileType = configurationDialog.dataFileType
             self.updateWidgets()
 
     def updateFromFile(self):
