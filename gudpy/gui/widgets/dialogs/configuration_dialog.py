@@ -27,6 +27,7 @@ class ConfigurationDialog(QDialog):
         super(ConfigurationDialog, self).__init__(parent=parent)
         self.parent = parent
         self.configuration = None
+        self.dataFileType = "raw"
         self.cancelled = False
         self.initComponents()
         self.loadConfigurations()
@@ -53,6 +54,17 @@ class ConfigurationDialog(QDialog):
         self.widget.setWindowTitle("Select Configuration")
         self.widget.configList.currentItemChanged.connect(
             self.setConfiguration
+        )
+
+        # Sets the combo box options
+        dataFileTypes = ["raw", "sav", "txt", "nxs", "*"]
+        self.widget.dataFileTypeCombo.addItems(dataFileTypes)
+        self.widget.dataFileTypeCombo.setCurrentIndex(
+            dataFileTypes.index(self.dataFileType)
+        )
+
+        self.widget.dataFileTypeCombo.currentTextChanged.connect(
+            self.handleDataFileTypeChanged
         )
 
         self.widget.buttonBox.rejected.connect(
@@ -95,6 +107,12 @@ class ConfigurationDialog(QDialog):
         self.widget.configDescriptionTextEdit.setText(
             open(self.configuration, "r").readlines()[-1]
         )
+
+    def handleDataFileTypeChanged(self, comboText):
+        """
+        Update data file type
+        """
+        self.dataFileType = comboText
 
     def cancel(self):
         self.cancelled = True

@@ -692,6 +692,9 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument = GudrunFile(
                 configurationDialog.configuration, config_=True
             ).instrument
+            self.gudrunFile.instrument.dataFileType = (
+                configurationDialog.dataFileType
+            )
             self.updateWidgets()
 
     def updateFromFile(self):
@@ -1257,6 +1260,9 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def nexusProcessing(self):
+        if not self.checkFilesExist_():
+            return
+
         self.setControlsEnabled(False)
         nexusProcessingDialog = NexusProcessingDialog(
             self.gudrunFile, self.mainWidget
@@ -1742,7 +1748,6 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(path=autosavePath)
 
     def setModified(self):
-
         if not self.modified:
             if self.gudrunFile.path:
                 self.modified = True
