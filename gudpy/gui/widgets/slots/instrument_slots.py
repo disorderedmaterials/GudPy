@@ -157,7 +157,7 @@ class InstrumentSlots():
         self.widget.runNexusProcessing.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
-        
+
         self.widget.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
