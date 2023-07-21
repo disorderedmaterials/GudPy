@@ -613,6 +613,8 @@ class GudrunFile:
             dataFiles = []
             for _ in range(numberOfFiles):
                 dataFiles.append(firstword(self.getNextToken()))
+            # Sorts list so that it is in ascending order
+            dataFiles.sort()
 
             # Create a DataFiles object from the dataFiles list constructed.
             self.normalisation.dataFiles = (
@@ -632,6 +634,9 @@ class GudrunFile:
             dataFilesBg = []
             for j in range(numberOfFilesBg):
                 dataFilesBg.append(firstword(self.getNextToken()))
+
+            # Sorts list so that it is in ascending order
+            dataFilesBg.sort()
 
             # Create a DataFiles object from the dataFiles list constructed.
             self.normalisation.dataFilesBg = (
