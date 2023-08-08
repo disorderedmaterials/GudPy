@@ -1,7 +1,7 @@
 import sys
 import os
 from PySide6.QtCore import QFile
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QListWidget, QLabel
 from PySide6.QtUiTools import QUiLoader
 
 
@@ -21,8 +21,9 @@ class MissingFilesDialog(QDialog):
     initComponents()
         Loads the UI file for the MissingFilesDialog.
     """
-    def __init__(self, missingFiles, parent):
+    def __init__(self, undefinedFiles, missingFiles, parent):
         super(MissingFilesDialog, self).__init__(parent=parent)
+        self.undefinedFiles = undefinedFiles
         self.missingFiles = missingFiles
         self.initComponents()
 
@@ -43,7 +44,22 @@ class MissingFilesDialog(QDialog):
                     current_dir, "..", "ui_files", "missingFilesDialog.ui"
                 )
             )
+
         loader = QUiLoader()
         self.widget = loader.load(uifile)
 
-        self.widget.missingFilesList.addItems(self.missingFiles)
+        if(self.undefinedFiles):
+            undefinedFilesLabel = QLabel(self)
+            undefinedFilesLabel.setText("Please specify paths for the following fields:")
+            undefinedFilesList = QListWidget(self)
+            undefinedFilesList.addItems(self.undefinedFiles)
+            self.widget.missingSectionsLayout.addWidget(undefinedFilesLabel)
+            self.widget.missingSectionsLayout.addWidget(undefinedFilesList)
+
+        if(self.missingFiles):
+            missingFilesLabel = QLabel(self)
+            missingFilesLabel.setText("Couldn't resolve some files! Check that all paths are correct:")
+            missingFilesList = QListWidget(self)
+            missingFilesList.addItems(self.missingFiles)
+            self.widget.missingSectionsLayout.addWidget(missingFilesLabel)
+            self.widget.missingSectionsLayout.addWidget(missingFilesList)

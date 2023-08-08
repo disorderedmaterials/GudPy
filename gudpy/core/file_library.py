@@ -39,20 +39,20 @@ class GudPyFileLibrary():
         dataFileType = gudrunFile.instrument.dataFileType
 
         # Collect directories
-        self.dirs = [
-            gudrunFile.instrument.GudrunInputFileDir,
-            gudrunFile.instrument.dataFileDir,
-            gudrunFile.instrument.GudrunStartFolder,
-            gudrunFile.instrument.startupFileFolder
-        ]
+        self.dirs = {
+            "Input file directory" : gudrunFile.instrument.GudrunInputFileDir,
+            "Data file directory" : gudrunFile.instrument.dataFileDir,
+            "Gudrun start folder" : gudrunFile.instrument.GudrunStartFolder,
+            "Startup file folder" : gudrunFile.instrument.startupFileFolder
+        }
 
         # Collect files of static objects
-        self.files = [
-            gudrunFile.instrument.groupFileName,
-            gudrunFile.instrument.deadtimeConstantsFileName,
-            gudrunFile.instrument.neutronScatteringParametersFile,
-            gudrunFile.beam.filenameIncidentBeamSpectrumParams,
-        ]
+        self.files = {
+            "Groups file" : gudrunFile.instrument.groupFileName,
+            "Deadtime constants file" : gudrunFile.instrument.deadtimeConstantsFileName,
+            "Scattering lengths file" : gudrunFile.instrument.neutronScatteringParametersFile,
+            "Incident beam spectrum parameters" : gudrunFile.beam.filenameIncidentBeamSpectrumParams,
+        }
 
         self.dataFiles = [
             *gudrunFile.normalisation.dataFiles.dataFiles,
@@ -62,14 +62,14 @@ class GudPyFileLibrary():
         # If NXS files are being used
         # then we also need the nexus definition file.
         if dataFileType.lower() == "nxs":
-            self.files.append(gudrunFile.instrument.nxsDefinitionFile)
+            self.files["Nexus definition file"] = gudrunFile.instrument.nxsDefinitionFile
 
         # If the Total Cross Section Source of any object uses a file,
-        # then we need to incldue that file.
+        # then we need to include that file.
         if gudrunFile.normalisation.totalCrossSectionSource == (
             CrossSectionSource.FILE
         ):
-            self.files.append(gudrunFile.normalisation.crossSectionFilename)
+            self.files["Total cross section source"] = gudrunFile.normalisation.crossSectionFilename
 
         # Iterate through SampleBackgrounds, Samples and Containers,
         # collecting their data files and if they are using
@@ -82,14 +82,14 @@ class GudPyFileLibrary():
             for sample in sampleBackground.samples:
                 self.dataFiles.extend(sample.dataFiles.dataFiles)
                 if sample.totalCrossSectionSource == CrossSectionSource.FILE:
-                    self.files.append(sample.crossSectionFilename)
+                    self.files[sample.name] = sample.crossSectionFilename
 
                 for container in sample.containers:
                     self.dataFiles.extend(container.dataFiles.dataFiles)
                     if container.totalCrossSectionSource == (
                         CrossSectionSource.FILE
                     ):
-                        self.files.append(container.crossSectionFilename)
+                        self.files[container.name] = container.crossSectionFilename
 
     def checkFilesExist(self):
         """
@@ -101,16 +101,19 @@ class GudPyFileLibrary():
             List of tuples of boolean values and paths,
             indicating if the given path exists.
         """
+
         return [
             *[
                 (
                     (
-                        os.path.isdir(dir_)
-                        | os.path.isdir(os.path.join(self.fileDir, dir_)),
+                        (os.path.isdir(dir_)
+                        | os.path.isdir(os.path.join(self.fileDir, dir_)))
+                        and (dir_ != "/"),
                     ),
+                    name,
                     dir_
                 )
-                for dir_ in self.dirs
+                for name, dir_ in self.dirs.items()
             ],
             *[
                 (
@@ -119,13 +122,15 @@ class GudPyFileLibrary():
                         | os.path.isfile(os.path.join(self.fileDir, file))
                         | (file == "*")
                     ),
+                    name,
                     file
                 )
-                for file in self.files
+                for name, file in self.files.items()
             ],
             *[
                 (
                     os.path.isfile(os.path.join(self.dataFileDir, dataFile)),
+                    "Data files",
                     dataFile
                 )
                 for dataFile in self.dataFiles

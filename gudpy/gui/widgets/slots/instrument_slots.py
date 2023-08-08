@@ -447,7 +447,8 @@ class InstrumentSlots():
 
         self.widget.browseNexusDefinitionButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.widget.nexusDefintionFileLineEdit, "NeXus defnition file"
+                self.widget.nexusDefintionFileLineEdit, 
+                "NeXus defnition file",
             )
         )
         self.widget.hardGroupEdgesCheckBox.stateChanged.connect(
@@ -1215,7 +1216,6 @@ class InstrumentSlots():
         str[]
         """
         if dir:
-
             filename = (
                 QFileDialog.getExistingDirectory(
                     self.widget,
