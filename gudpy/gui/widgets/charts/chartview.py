@@ -360,7 +360,7 @@ class GudPyChartView(QChartView):
         self.chart().toggleLogarithmicAxis(axis)
 
     def setChart(self, chart):
-        if type(chart) == GudPyChart:
+        if type(chart) is GudPyChart:
             chart.label.setPos(
                 self.mapToScene(
                     25, self.sceneRect().height()-50
@@ -370,7 +370,7 @@ class GudPyChartView(QChartView):
         return super().setChart(chart)
 
     def resizeEvent(self, event):
-        if type(self.chart()) == GudPyChart:
+        if type(self.chart()) is GudPyChart:
             self.chart().label.setPos(
                 self.mapToScene(25, self.sceneRect().height()-50)
             )
