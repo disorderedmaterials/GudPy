@@ -136,9 +136,7 @@ class NexusProcessingDialog(QDialog):
             self.nSlicesChanged
         )
 
-        self.widget.buttonBox.accepted.connect(self.run)
-
-        self.widget.buttonBox.rejected.connect(self.cancel)
+        self.widget.runButton.clicked.connect(self.run)
 
         self.widget.usePeriodDefinitionsButton.toggled.connect(
             self.useDefinedPulsesToggled
@@ -201,10 +199,6 @@ class NexusProcessingDialog(QDialog):
                 self.widget.close()
         else:
             QMessageBox.warning(self.widget, "GudPy Warning", err)
-
-    def cancel(self):
-        self.cancelled = True
-        self.widget.close()
 
     def partitionEvents(self):
         if not os.path.exists(self.partition_events):
@@ -321,10 +315,10 @@ class NexusProcessingDialog(QDialog):
         self.gudrunFile.nexus_processing.startLabel = text
 
     def setControlsEnabled(self, state):
-        self.widget.periodGroupBox.setEnabled(state)
-        self.widget.spectraGroupBox.setEnabled(state)
+        self.widget.pulseInformation.setEnabled(state)
+        self.widget.periodInformation.setEnabled(state)
         self.widget.runGroupBox.setEnabled(state)
-        self.widget.buttonBox.setEnabled(state)
+        self.widget.runButton.setEnabled(state)
 
     def browseSaveDirectory(self):
         self.gudrunFile.nexus_processing.outputDir = (
