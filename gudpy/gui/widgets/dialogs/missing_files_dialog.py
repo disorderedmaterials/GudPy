@@ -21,6 +21,7 @@ class MissingFilesDialog(QDialog):
     initComponents()
         Loads the UI file for the MissingFilesDialog.
     """
+
     def __init__(self, undefinedFiles, missingFiles, parent):
         super(MissingFilesDialog, self).__init__(parent=parent)
         self.undefinedFiles = undefinedFiles
@@ -31,11 +32,9 @@ class MissingFilesDialog(QDialog):
         """
         Loads the UI file for the MissingFilesDialog object.
         """
-        if hasattr(sys, '_MEIPASS'):
+        if hasattr(sys, "_MEIPASS"):
             uifile = QFile(
-                os.path.join(
-                    sys._MEIPASS, "ui_files", "missingFilesDialog.ui"
-                )
+                os.path.join(sys._MEIPASS, "ui_files", "missingFilesDialog.ui")
             )
         else:
             current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -48,17 +47,22 @@ class MissingFilesDialog(QDialog):
         loader = QUiLoader()
         self.widget = loader.load(uifile)
 
-        if(self.undefinedFiles):
+        if self.undefinedFiles:
             undefinedFilesLabel = QLabel(self)
-            undefinedFilesLabel.setText("Please specify paths for the following fields:")
+            undefinedFilesLabel.setText(
+                "Please specify paths for the following fields:"
+            )
             undefinedFilesList = QListWidget(self)
             undefinedFilesList.addItems(self.undefinedFiles)
             self.widget.missingSectionsLayout.addWidget(undefinedFilesLabel)
             self.widget.missingSectionsLayout.addWidget(undefinedFilesList)
 
-        if(self.missingFiles):
+        if self.missingFiles:
             missingFilesLabel = QLabel(self)
-            missingFilesLabel.setText("Couldn't resolve some files! Check that all paths are correct:")
+            missingFilesLabel.setText(
+                "Couldn't resolve some files! "
+                + "Check that all paths are correct:"
+            )
             missingFilesList = QListWidget(self)
             missingFilesList.addItems(self.missingFiles)
             self.widget.missingSectionsLayout.addWidget(missingFilesLabel)
