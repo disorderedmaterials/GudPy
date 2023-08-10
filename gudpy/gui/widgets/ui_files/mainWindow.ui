@@ -54,7 +54,6 @@
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QScrollArea">
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
@@ -2293,7 +2292,6 @@
               </item>
              </layout>
             </widget>
-            </widget>
             <widget class="QWidget" name="beamPage">
              <layout class="QVBoxLayout" name="verticalLayout_12">
               <item>
@@ -3239,7 +3237,6 @@
               </item>
              </layout>
             </widget>
-
             <widget class="QWidget" name="normalisationPage">
              <layout class="QVBoxLayout" name="verticalLayout_21">
               <item>
