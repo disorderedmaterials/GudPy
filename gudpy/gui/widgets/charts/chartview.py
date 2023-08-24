@@ -1,11 +1,14 @@
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import QRectF, QRect, Qt
 from PySide6.QtGui import (
-    QAction, QClipboard, QCursor, QPainter, QMouseEvent, QContextMenuEvent
+    QAction,
+    QClipboard,
+    QCursor,
+    QPainter,
+    QMouseEvent,
+    QContextMenuEvent,
 )
-from PySide6.QtWidgets import (
-    QApplication, QMenu, QSizePolicy
-)
+from PySide6.QtWidgets import QApplication, QMenu, QSizePolicy
 
 from core.container import Container
 from core.sample import Sample
@@ -38,6 +41,7 @@ class GudPyChartView(QChartView):
     leaveEvent(event):
         Handles the mouse leaving the chart view.
     """
+
     def __init__(self, parent):
         """
         Constructs all the necessary attributes for the GudPyChartView object.
@@ -99,7 +103,6 @@ class GudPyChartView(QChartView):
     def mouseMoveEvent(self, event):
         if isinstance(event, QMouseEvent):
             if event.buttons() & Qt.MouseButton.MiddleButton:
-
                 if self.previousPos:
                     offset = event.pos() - self.previousPos
                 else:
@@ -110,7 +113,7 @@ class GudPyChartView(QChartView):
                 self.previousPos = event.pos()
                 event.accept()
             else:
-                if type(self.chart()) == GudPyChart:
+                if isinstance(self.chart(), GudPyChart):
                     if self.chart().plotArea().contains(event.pos()):
                         pos = self.chart().mapToValue(event.pos())
                         self.chart().label.setPlainText(
@@ -142,7 +145,6 @@ class GudPyChartView(QChartView):
             if event.button() == Qt.MouseButton.RightButton:
                 event.accept()
             elif event.button() == Qt.MouseButton.LeftButton:
-
                 # Collect dims for rubber band rect.
                 width = event.pos().x() - self.rubberBandOrigin.x()
                 height = event.pos().y() - self.rubberBandOrigin.y()
@@ -152,7 +154,7 @@ class GudPyChartView(QChartView):
                     self.rubberBandOrigin.x(),
                     self.rubberBandOrigin.y(),
                     width,
-                    height
+                    height,
                 ).normalized()
 
                 # Zoom in on the area.
@@ -222,7 +224,6 @@ class GudPyChartView(QChartView):
             self.menu = QMenu(self)
             actionMap = {}
             if self.chart():
-
                 resetAction = QAction("Reset View", self.menu)
                 resetAction.triggered.connect(self.chart().zoomReset)
                 self.menu.addAction(resetAction)
@@ -236,8 +237,7 @@ class GudPyChartView(QChartView):
 
                 toggleLogarithmicAllAxesAction.setCheckable(True)
                 toggleLogarithmicAllAxesAction.setChecked(
-                    self.chart().logarithmicX
-                    & self.chart().logarithmicY
+                    self.chart().logarithmicX & self.chart().logarithmicY
                 )
                 toggleLogarithmicAllAxesAction.triggered.connect(
                     lambda: self.toggleLogarithmicAxes(Axes.A)
@@ -271,7 +271,8 @@ class GudPyChartView(QChartView):
                 self.menu.addMenu(toggleLogarithmicMenu)
 
                 if self.chart().plotMode in [
-                    PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS
+                    PlotModes.SF_MDCS01,
+                    PlotModes.SF_MDCS01_CANS,
                 ]:
                     showDCSLevelAction = QAction("Show dcs level", self.menu)
                     showDCSLevelAction.setCheckable(True)
@@ -284,22 +285,17 @@ class GudPyChartView(QChartView):
                         )
                     )
                     self.menu.addAction(showDCSLevelAction)
-                elif (
-                    self.chart().plotMode in
-                    [
-                        PlotModes.RDF,
-                        PlotModes.RDF_CANS
-                    ]
-                ):
+                elif self.chart().plotMode in [
+                    PlotModes.RDF,
+                    PlotModes.RDF_CANS,
+                ]:
                     showMdor01Action = QAction("Show mdor01 data", self.menu)
                     showMdor01Action.setCheckable(True)
                     showMdor01Action.setChecked(
                         self.chart().isVisible(SeriesTypes.MDOR01)
                     )
                     showMdor01Action.triggered.connect(
-                        lambda: self.chart().toggleVisible(
-                            SeriesTypes.MDOR01
-                        )
+                        lambda: self.chart().toggleVisible(SeriesTypes.MDOR01)
                     )
                     self.menu.addAction(showMdor01Action)
 
@@ -309,9 +305,7 @@ class GudPyChartView(QChartView):
                         self.chart().isVisible(SeriesTypes.MGOR01)
                     )
                     showMgor01Action.triggered.connect(
-                        lambda: self.chart().toggleVisible(
-                            SeriesTypes.MGOR01
-                        )
+                        lambda: self.chart().toggleVisible(SeriesTypes.MGOR01)
                     )
                     self.menu.addAction(showMgor01Action)
                 if len(self.chart().samples) > 1:
@@ -319,18 +313,22 @@ class GudPyChartView(QChartView):
                     showMenu.setTitle("Show..")
                     if self.chart().plotMode in [
                         PlotModes.SF_MINT01,
-                        PlotModes.SF_MDCS01, PlotModes.RDF
+                        PlotModes.SF_MDCS01,
+                        PlotModes.RDF,
                     ]:
                         samples = [
-                            sample for sample in self.chart().samples
+                            sample
+                            for sample in self.chart().samples
                             if isinstance(sample, Sample)
                         ]
                     elif self.chart().plotMode in [
                         PlotModes.SF_MINT01_CANS,
-                        PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
+                        PlotModes.SF_MDCS01_CANS,
+                        PlotModes.RDF_CANS,
                     ]:
                         samples = [
-                            sample for sample in self.chart().samples
+                            sample
+                            for sample in self.chart().samples
                             if isinstance(sample, Container)
                         ]
                     for sample in samples:
@@ -349,8 +347,7 @@ class GudPyChartView(QChartView):
 
             if action in actionMap.keys():
                 self.chart().toggleSampleVisibility(
-                    action.isChecked(),
-                    actionMap[action]
+                    action.isChecked(), actionMap[action]
                 )
 
     def toggleLogarithmicAxes(self, axis):
@@ -360,18 +357,16 @@ class GudPyChartView(QChartView):
         self.chart().toggleLogarithmicAxis(axis)
 
     def setChart(self, chart):
-        if type(chart) is GudPyChart:
+        if isinstance(chart, GudPyChart):
             chart.label.setPos(
-                self.mapToScene(
-                    25, self.sceneRect().height()-50
-                )
+                self.mapToScene(25, self.sceneRect().height() - 50)
             )
             chart.label.show()
         return super().setChart(chart)
 
     def resizeEvent(self, event):
-        if type(self.chart()) is GudPyChart:
+        if isinstance(self.chart(), GudPyChart):
             self.chart().label.setPos(
-                self.mapToScene(25, self.sceneRect().height()-50)
+                self.mapToScene(25, self.sceneRect().height() - 50)
             )
         return super().resizeEvent(event)
