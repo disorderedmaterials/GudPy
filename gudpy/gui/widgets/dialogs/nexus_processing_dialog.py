@@ -108,7 +108,6 @@ class NexusProcessingDialog(QDialog):
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
-
         self.widget.chooseStartingPulseGroupBox.setHidden(
             not self.widget.chooseStartingPulseRadioButton.isChecked()
         )
@@ -125,8 +124,12 @@ class NexusProcessingDialog(QDialog):
             self.defineStartingPulseToggled
         )
 
-        self.widget.startPulseDateTimeEdit.setDateTimeRange(self.start, self.end)
-        self.widget.startPulseDateTimeEdit.dateTimeChanged.connect(
+        self.widget.startPulseDateTimeEdit.setDateTimeRange(
+            self.start, self.end
+        )
+        (
+            self.widget.startPulseDateTimeEdit.dateTimeChanged
+        ).connect(
             self.startPulseDateTimeChanged
         )
 
@@ -392,10 +395,17 @@ class NexusProcessingDialog(QDialog):
         self.gudrunFile.nexus_processing.goodFrameThreshold = value
 
     def updatePulses(self):
-        if self.chooseStartingPulse and self.widget.spectraTableView.selectionModel():
-            self.loadEvents(self.widget.spectraTableView.selectionModel().selectedIndexes())
+        if (
+                self.chooseStartingPulse
+                and self.widget.spectraTableView.selectionModel()
+        ):
+            self.loadEvents(
+                self.widget.spectraTableView.selectionModel().selectedIndexes()
+            )
         else:
-            self.eventFromDateTime(self.widget.startPulseDateTimeEdit.dateTime())
+            self.eventFromDateTime(
+                self.widget.startPulseDateTimeEdit.dateTime()
+            )
         self.widget.chooseStartingPulseGroupBox.setHidden(
             not self.chooseStartingPulse
         )
@@ -403,12 +413,13 @@ class NexusProcessingDialog(QDialog):
             self.chooseStartingPulse
         )
         self.widget.useAllPulsesButton.setEnabled(self.chooseStartingPulse)
-        self.widget.usePeriodDefinitionsButton.setChecked(not self.chooseStartingPulse)
+        self.widget.usePeriodDefinitionsButton.setChecked(
+            not self.chooseStartingPulse
+        )
 
     def chooseStartingPulseToggled(self, state):
         self.chooseStartingPulse = state
         self.updatePulses()
-
 
     def defineStartingPulseToggled(self, state):
         self.chooseStartingPulse = not state
