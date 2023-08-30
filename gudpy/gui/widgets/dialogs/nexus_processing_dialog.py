@@ -391,8 +391,7 @@ class NexusProcessingDialog(QDialog):
     def goodFrameThresholdChanged(self, value):
         self.gudrunFile.nexus_processing.goodFrameThreshold = value
 
-    def chooseStartingPulseToggled(self, state):
-        self.chooseStartingPulse = state
+    def updatePulses(self):
         if self.chooseStartingPulse and self.widget.spectraTableView.selectionModel():
             self.loadEvents(self.widget.spectraTableView.selectionModel().selectedIndexes())
         else:
@@ -406,20 +405,14 @@ class NexusProcessingDialog(QDialog):
         self.widget.useAllPulsesButton.setEnabled(self.chooseStartingPulse)
         self.widget.usePeriodDefinitionsButton.setChecked(not self.chooseStartingPulse)
 
+    def chooseStartingPulseToggled(self, state):
+        self.chooseStartingPulse = state
+        self.updatePulses()
+
+
     def defineStartingPulseToggled(self, state):
         self.chooseStartingPulse = not state
-        if self.chooseStartingPulse and self.widget.spectraTableView.selectionModel():
-            self.loadEvents(self.widget.spectraTableView.selectionModel().selectedIndexes())
-        else:
-            self.eventFromDateTime(self.widget.startPulseDateTimeEdit.dateTime())
-        self.widget.chooseStartingPulseGroupBox.setHidden(
-            not self.chooseStartingPulse
-        )
-        self.widget.defineStartingPulseGroupBox.setHidden(
-            self.chooseStartingPulse
-        )
-        self.widget.useAllPulsesButton.setEnabled(self.chooseStartingPulse)
-        self.widget.usePeriodDefinitionsButton.setChecked(not self.chooseStartingPulse)
+        self.updatePulses()
 
     def startPulseDateTimeChanged(self, dateTime):
         self.eventFromDateTime(dateTime)
