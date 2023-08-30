@@ -107,6 +107,14 @@ class NexusProcessingDialog(QDialog):
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
+        self.widget.chooseStartingPulseGroupBox.setHidden(
+            not self.widget.chooseStartingPulseRadioButton.isChecked()
+        )
+
+        self.widget.defineStartingPulseGroupBox.setHidden(
+            not self.widget.defineStartingPulseGroupBox.isChecked()
+        )
+
         self.widget.periodDurationSpinBox.valueChanged.connect(
             self.periodDurationChanged
         )
@@ -234,6 +242,7 @@ class NexusProcessingDialog(QDialog):
         self.proc.start()
 
     def updateSpectra(self):
+        all_data = sorted(fp[f"/{spec}"][()][:].tolist())
         self.widget.spectraTableView.makeModel(
             list(
                 range(
