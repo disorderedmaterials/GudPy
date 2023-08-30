@@ -29,6 +29,7 @@ class NexusProcessingDialog(QDialog):
         self.cancelled = False
         self.preprocess = None
         self.useTempDir = True
+        self.chooseStartingPulse = True
 
         self.loadUI()
         self.initComponents()
@@ -107,12 +108,26 @@ class NexusProcessingDialog(QDialog):
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
 
+
         self.widget.chooseStartingPulseGroupBox.setHidden(
             not self.widget.chooseStartingPulseRadioButton.isChecked()
         )
 
         self.widget.defineStartingPulseGroupBox.setHidden(
-            not self.widget.defineStartingPulseGroupBox.isChecked()
+            not self.widget.defineStartingPulseRadioButton.isChecked()
+        )
+
+        self.widget.chooseStartingPulseRadioButton.clicked.connect(
+            self.chooseStartingPulseToggled
+        )
+
+        self.widget.defineStartingPulseRadioButton.clicked.connect(
+            self.defineStartingPulseToggled
+        )
+
+        self.widget.startPulseDateTimeEdit.setDateTimeRange(self.start, self.end)
+        self.widget.startPulseDateTimeEdit.dateTimeChanged.connect(
+            self.startPulseDateTimeChanged
         )
 
         self.widget.periodDurationSpinBox.valueChanged.connect(
@@ -242,7 +257,6 @@ class NexusProcessingDialog(QDialog):
         self.proc.start()
 
     def updateSpectra(self):
-        all_data = sorted(fp[f"/{spec}"][()][:].tolist())
         self.widget.spectraTableView.makeModel(
             list(
                 range(
@@ -284,6 +298,18 @@ class NexusProcessingDialog(QDialog):
                 self.widget.eventTableView.setCurrentIndex(
                     self.widget.eventTableView.model().index(0, 0)
                 )
+
+    def eventFromDateTime(self, dateTime):
+        event = dateTime.toSecsSinceEpoch() - self.start.toSecsSinceEpoch()
+        self.widget.spectraChart.removeAllSeries()
+        self.widget.spectraChart.plot(
+            [event]
+        )
+        self.widget.spectraChart.focusPulse(0)
+        self.gudrunFile.nexus_processing.period.setRawPulses(
+            [event]
+        )
+        self.gudrunFile.nexus_processing.period.startPulse = event
 
     def addPulse(self):
         self.widget.pulseTableView.insertRow()
@@ -364,3 +390,36 @@ class NexusProcessingDialog(QDialog):
 
     def goodFrameThresholdChanged(self, value):
         self.gudrunFile.nexus_processing.goodFrameThreshold = value
+
+    def chooseStartingPulseToggled(self, state):
+        self.chooseStartingPulse = state
+        if self.chooseStartingPulse and self.widget.spectraTableView.selectionModel():
+            self.loadEvents(self.widget.spectraTableView.selectionModel().selectedIndexes())
+        else:
+            self.eventFromDateTime(self.widget.startPulseDateTimeEdit.dateTime())
+        self.widget.chooseStartingPulseGroupBox.setHidden(
+            not self.chooseStartingPulse
+        )
+        self.widget.defineStartingPulseGroupBox.setHidden(
+            self.chooseStartingPulse
+        )
+        self.widget.useAllPulsesButton.setEnabled(self.chooseStartingPulse)
+        self.widget.usePeriodDefinitionsButton.setChecked(not self.chooseStartingPulse)
+
+    def defineStartingPulseToggled(self, state):
+        self.chooseStartingPulse = not state
+        if self.chooseStartingPulse and self.widget.spectraTableView.selectionModel():
+            self.loadEvents(self.widget.spectraTableView.selectionModel().selectedIndexes())
+        else:
+            self.eventFromDateTime(self.widget.startPulseDateTimeEdit.dateTime())
+        self.widget.chooseStartingPulseGroupBox.setHidden(
+            not self.chooseStartingPulse
+        )
+        self.widget.defineStartingPulseGroupBox.setHidden(
+            self.chooseStartingPulse
+        )
+        self.widget.useAllPulsesButton.setEnabled(self.chooseStartingPulse)
+        self.widget.usePeriodDefinitionsButton.setChecked(not self.chooseStartingPulse)
+
+    def startPulseDateTimeChanged(self, dateTime):
+        self.eventFromDateTime(dateTime)
