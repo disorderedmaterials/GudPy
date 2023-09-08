@@ -159,9 +159,10 @@ class GudPyTableModel(QAbstractTableModel):
         index : int
             Index to remove at.
         """
-        self.beginRemoveRows(QModelIndex(), index, index)
-        self._data.pop(index)
-        self.endRemoveRows()
+        if len(self._data) != 0:
+            self.beginRemoveRows(QModelIndex(), index, index)
+            self._data.pop(index)
+            self.endRemoveRows()
 
     def flags(self, parent=QModelIndex()):
         """
