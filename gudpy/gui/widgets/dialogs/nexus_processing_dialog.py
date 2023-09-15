@@ -316,7 +316,7 @@ class NexusProcessingDialog(QDialog):
 
     def setControlsEnabled(self, state):
         self.widget.pulseInformation.setEnabled(state)
-        self.widget.periodInformation.setEnabled(state)
+        self.widget.periodDefinitionGroupBox.setEnabled(state)
         self.widget.runGroupBox.setEnabled(state)
         self.widget.runButton.setEnabled(state)
 
@@ -342,7 +342,8 @@ class NexusProcessingDialog(QDialog):
 
     def useDefinedPulsesToggled(self, state):
         self.gudrunFile.nexus_processing.period.useDefinedPulses = state
-        self.widget.periodDefinitionGroupBox.setEnabled(state)
+        self.widget.periodDefinitionsGroup.setEnabled(state)
+        self.widget.pulseTableGroup.setEnabled(state)
 
     def interpolateToggled(self, state):
         self.gudrunFile.nexus_processing.interpolate = state
