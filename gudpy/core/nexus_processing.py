@@ -28,6 +28,7 @@ class RawPulse:
     end : float
         End time of the pulse.
     """
+
     def __init__(self, start, end):
         """
         Constructs all the necessary attributes for the RawPulse object.
@@ -65,6 +66,7 @@ class DefinedPulse:
     duration : float:
         Duration of the pulse.
     """
+
     def __init__(self, label="", periodOffset=0.0, duration=0.0):
         """
         Constructs all the necessary attributes for the RawPulse object.
@@ -117,6 +119,7 @@ class Period:
     setRawPulses(pulses)
         Sets raw pulses.
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the Period object.
@@ -232,6 +235,7 @@ class NexusProcessing:
     interpolateData(files)
         Interpolates data.
     """
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
@@ -294,7 +298,7 @@ class NexusProcessing:
                 if p.periodOffset > self.period.duration:
                     return (
                         False,
-                        f"Pulse {p.label} start {p.start}"
+                        f"Pulse {p.label}"
                         f" is beyond period duration {self.period.duration}.",
                     )
                 if p.periodOffset + p.duration > self.period.duration:
