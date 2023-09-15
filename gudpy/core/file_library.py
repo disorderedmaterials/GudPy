@@ -69,7 +69,7 @@ class GudPyFileLibrary:
         # then we also need the nexus definition file.
         if dataFileType.lower() == "nxs":
             self.files[
-                "Nexus definition file"
+                "NeXus definition file"
             ] = gudrunFile.instrument.nxsDefinitionFile
 
         # If the Total Cross Section Source of any object uses a file,
