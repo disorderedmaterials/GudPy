@@ -188,6 +188,7 @@ class NexusProcessingDialog(QDialog):
         self.widget.spectraChart = SpectraChart()
         self.widget.spectraChart.setTimeBoundaries(self.start, self.end)
         self.widget.spectraPlot.setChart(self.widget.spectraChart)
+        self.widget.spectraPlot.setMinimumSize(700, 0)
 
         self.widget.pulseComboBoxModel = PulseComboBoxModel(
             self.gudrunFile.nexus_processing.period.definedPulses, self.widget
