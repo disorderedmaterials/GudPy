@@ -1318,6 +1318,7 @@ class GudPyMainWindow(QMainWindow):
                 self.mainWidget, "GudPy Error",
                 self.error
             )
+            self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def progressNexusProcess(self):
         progress = self.progressIncrementDCS(
@@ -1401,6 +1402,7 @@ class GudPyMainWindow(QMainWindow):
             gudrunFile=self.gudrunFile.nexus_processing.gudrunFile,
             keyMap=self.keyMap
         )
+        self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def iterateGudrun(self, dialog, name):
         if not self.checkFilesExist_():

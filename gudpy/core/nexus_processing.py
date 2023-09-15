@@ -252,7 +252,7 @@ class NexusProcessing:
         self.sample = None
         self.useTempDataFileDir = False
         self.interpolate = False
-        self.tmp = tempfile.TemporaryDirectory()
+        self.tmp = None
         self.path = "modex.cfg"
         self.goodFrameThreshold = 0
 
@@ -324,13 +324,7 @@ class NexusProcessing:
             Should processing be headless?
         """
 
-        # Cleanup temp directory.
-        for f in os.listdir(self.tmp.name):
-            fp = os.path.join(self.tmp.name, f)
-            if os.path.isfile(fp):
-                os.remove(fp)
-            elif os.path.isdir(fp):
-                shutil.rmtree(fp)
+        self.tmp = tempfile.TemporaryDirectory()
 
         self.useTempDataFileDir = useTempDataFileDir
         # List to hold tasks, in the case of headful preprocessing.
