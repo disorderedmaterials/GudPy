@@ -386,8 +386,6 @@ class NexusProcessing:
             self.dataFileDir = os.path.join(self.tmp.name, "data")
             # If headless, copy all the data files into this new directory.
             if headless:
-                if os.path.exists(self.dataFileDir):
-                    shutil.rmtree(self.dataFileDir)
                 os.makedirs(self.dataFileDir)
                 for dataFile in self.ref.normalisation.dataFiles.dataFiles:
                     self.copyfile(
@@ -438,10 +436,6 @@ class NexusProcessing:
                         )
             # Otherwise, append the copies as tasks.
             else:
-                if os.path.exists(os.path.join(self.dataFileDir)):
-                    tasks.append(
-                        (shutil.rmtree, [os.path.join(self.dataFileDir)])
-                    )
                 tasks.append(
                     (
                         os.makedirs,
