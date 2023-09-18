@@ -115,40 +115,49 @@ class GudPyFileLibrary:
         """
 
         return [
-            *[
-                (
+            [
+                *[
                     (
                         (
-                            os.path.isdir(dir_)
-                            | os.path.isdir(os.path.join(self.fileDir, dir_))
-                        )
-                        and (dir_ != "/"),
-                    ),
-                    name,
-                    dir_,
-                )
-                for name, dir_ in self.dirs.items()
+                            (
+                                os.path.exists(dir_)
+                                | os.path.exists(os.path.join(
+                                    self.fileDir, dir_
+                                ))
+                                and dir_
+                                and not os.path.isfile(dir_)
+                                and dir_ != os.path.sep
+                            )
+                        ),
+                        name,
+                        dir_,
+                    )
+                    for name, dir_ in self.dirs.items()
+                ],
             ],
-            *[
-                (
+            [
+                *[
                     (
-                        os.path.isfile(file)
-                        | os.path.isfile(os.path.join(self.fileDir, file))
-                        | (file == "*")
-                    ),
-                    name,
-                    file,
-                )
-                for name, file in self.files.items()
-            ],
-            *[
-                (
-                    os.path.isfile(os.path.join(self.dataFileDir, dataFile)),
-                    "Data files",
-                    dataFile,
-                )
-                for dataFile in self.dataFiles
-            ],
+                        (
+                            os.path.isfile(file)
+                            | os.path.isfile(os.path.join(self.fileDir, file))
+                            | (file == "*")
+                        ),
+                        name,
+                        file,
+                    )
+                    for name, file in self.files.items()
+                ],
+                *[
+                    (
+                        os.path.isfile(os.path.join(
+                            self.dataFileDir, dataFile)),
+                        "Data files",
+                        dataFile,
+                    )
+                    for dataFile in self.dataFiles
+                ],
+            ]
         ]
 
     def exportMintData(

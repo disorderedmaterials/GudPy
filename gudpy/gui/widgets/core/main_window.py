@@ -1644,12 +1644,12 @@ class GudPyMainWindow(QMainWindow):
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
-        print(result)
-        if not all(r[0] for r in result):
+        if not all(r[0] for r in result[0]) or not all(r[0]
+                                                       for r in result[1]):
             undefined = [
-                r[1] for r in result if not r[0] and not r[2] or (r[2] == "/")
+                r[1] for r in result[0] if not r[0]
             ]
-            unresolved = [r[2] for r in result if not r[0] and r[2]]
+            unresolved = [r[2] for r in result[1] if not r[0] and r[2]]
             missingFilesDialog = MissingFilesDialog(
                 undefined, unresolved, self.mainWidget
             )
