@@ -50,7 +50,7 @@ class MissingFilesDialog(QDialog):
         if self.undefinedFiles:
             undefinedFilesLabel = QLabel(self)
             undefinedFilesLabel.setText(
-                "Please specify paths for the following fields:"
+                "Please specify correct paths for the following fields:"
             )
             undefinedFilesList = QListWidget(self)
             undefinedFilesList.addItems(self.undefinedFiles)
