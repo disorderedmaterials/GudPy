@@ -93,21 +93,25 @@ class NexusProcessingDialog(QDialog):
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
             start = (
-                datetime.today() if not fp.__contains__("/raw_data_1/start_time") else
-                datetime.strptime(fp["/raw_data_1/start_time"]
-                                  [()][0].decode("utf8"), "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if not fp.__contains__("/raw_data_1/start_time")
+                else datetime.strptime(
+                    fp["/raw_data_1/start_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             end = (
-                datetime.today() if not fp.__contains__("/raw_data_1/end_time") else
-                datetime.strptime(fp["/raw_data_1/end_time"]
-                                  [()][0].decode("utf8"), "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if not fp.__contains__("/raw_data_1/end_time")
+                else datetime.strptime(
+                    fp["/raw_data_1/end_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             self.start = QDateTime.fromString(
                 start.isoformat(), Qt.ISODateWithMs
             )
-            self.end = QDateTime.fromString(
-                end.isoformat(), Qt.ISODateWithMs
-            )
+            self.end = QDateTime.fromString(end.isoformat(), Qt.ISODateWithMs)
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
