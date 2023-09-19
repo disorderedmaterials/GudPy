@@ -94,7 +94,7 @@ class NexusProcessingDialog(QDialog):
 
             start = (
                 datetime.today()
-                if not fp.__contains__("/raw_data_1/start_time")
+                if not "/raw_data_1/start_time" in fp
                 else datetime.strptime(
                     fp["/raw_data_1/start_time"][()][0].decode("utf8"),
                     "%Y-%m-%dT%H:%M:%S",
@@ -102,7 +102,7 @@ class NexusProcessingDialog(QDialog):
             )
             end = (
                 datetime.today()
-                if not fp.__contains__("/raw_data_1/end_time")
+                if not "/raw_data_1/end_time" in fp
                 else datetime.strptime(
                     fp["/raw_data_1/end_time"][()][0].decode("utf8"),
                     "%Y-%m-%dT%H:%M:%S",
