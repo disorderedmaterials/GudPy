@@ -1205,7 +1205,7 @@ class GudPyMainWindow(QMainWindow):
             self.purgeBeforeRunning(default=False)
         elif messageBox.clickedButton() == purgeDefault:
             self.purgeBeforeRunning()
-        elif result == messageBox.Yes:
+        elif result == QMessageBox.Yes:
             self.makeProc(
               dcs, self.progressDCS,
               func=func, args=args,
