@@ -83,7 +83,7 @@ class NexusProcessingDialog(QDialog):
             )
         ) as fp:
 
-            if fp.__contains__("/raw_data_1/detector_1/spectrum_index"):
+            if "/raw_data_1/detector_1/spectrum_index" in fp:
                 spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
                     :
                 ].tolist()
