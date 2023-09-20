@@ -23,7 +23,7 @@ class TestGudPyWorkflows(TestCase):
 
         path = os.path.abspath("test/TestData/NIMROD-water/water.txt")
 
-        self.g = GudrunFile(os.path.abspath(path))
+        self.g = GudrunFile(os.path.abspath(path), format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
