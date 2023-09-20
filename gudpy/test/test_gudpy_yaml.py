@@ -1,14 +1,15 @@
 from unittest import TestCase
 
 from core.gudrun_file import GudrunFile
+from core.enums import Format
 
 
 class TestYAML(TestCase):
     def testYAML(self):
 
-        gf1 = GudrunFile("test/TestData/NIMROD-water/water.txt")
+        gf1 = GudrunFile("test/TestData/NIMROD-water/water.txt", Format.TXT)
         gf1.write_yaml("test/TestData/NIMROD-water/water.yaml")
-        gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml")
+        gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml", Format.TXT)
 
         self.assertDictEqual(gf1.instrument.__dict__, gf2.instrument.__dict__)
         self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)

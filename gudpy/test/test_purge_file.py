@@ -5,6 +5,7 @@ from shutil import copyfile
 
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
+from core.enums import Format
 
 
 class TestPurgeFile(TestCase):
@@ -21,12 +22,12 @@ class TestPurgeFile(TestCase):
                 + "/"
                 + path
             )
-        self.g = GudrunFile(dirpath)
+        self.g = GudrunFile(dirpath, Format.TXT)
 
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt")
+        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
 
         g.write_out(overwrite=True)
         self.g = g

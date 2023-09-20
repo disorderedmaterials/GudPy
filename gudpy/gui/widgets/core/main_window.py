@@ -584,7 +584,9 @@ class GudPyMainWindow(QMainWindow):
     def updateWidgets(self, fromFile=False):
         self.widgetsRefreshing = True
         if fromFile:
-            self.gudrunFile = GudrunFile(path=self.gudrunFile.path)
+            self.gudrunFile = GudrunFile(
+                path=self.gudrunFile.path,
+                format=self.gudrunFile.format)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
