@@ -128,7 +128,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config_=False):
+    def __init__(self, path=None, format=Format.YAML, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -138,10 +138,15 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        format : Format enum
+            Format of the file
+        config_ : bool
+            If a new input file should be constructed from a config
         """
 
         self.path = path
         self.yaml = YAML()
+        self.format = format
 
         # Construct the outpath.
         self.outpath = "gudpy.txt"
