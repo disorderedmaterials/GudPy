@@ -238,7 +238,7 @@ class TestParseGudFile(TestCase):
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
             os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
-            Format.TXT
+            format=Format.TXT
         )
 
         from pathlib import Path
@@ -271,7 +271,9 @@ class TestParseGudFile(TestCase):
         self.assertRaises(ParserException, GudFile, invalid_path)
 
     def testValidPath(self):
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
+        g = GudrunFile(
+            "test/TestData/NIMROD-water/good_water.txt",
+            format=Format.TXT)
         g.dcs()
         gf = GudFile(
             os.path.join(
@@ -279,7 +281,7 @@ class TestParseGudFile(TestCase):
             )
         )
         self.assertIsInstance(gf, GudFile)
-
+format=Format.TXT
     def testLoadGudFileA(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()
@@ -323,7 +325,7 @@ class TestParseGudFile(TestCase):
                         )
                     except Exception:
                         raise e
-
+format=Format.TXT
     def testLoadGudFileB(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()
@@ -369,7 +371,7 @@ class TestParseGudFile(TestCase):
                         )
                     except Exception:
                         raise e
-
+format=Format.TXT
     def testLoadGudFileC(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()
@@ -413,7 +415,7 @@ class TestParseGudFile(TestCase):
                         )
                     except Exception:
                         raise e
-
+format=Format.TXT
     def testLoadGudFileD(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()
@@ -458,7 +460,7 @@ class TestParseGudFile(TestCase):
                         )
                     except Exception:
                         raise e
-
+format=Format.TXT
     def testWriteGudFileA(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()
@@ -485,7 +487,7 @@ class TestParseGudFile(TestCase):
 
         for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
             self.assertEqual(v1, v2)
-
+format=Format.TXT
     def testWriteGudFileB(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         g.dcs()

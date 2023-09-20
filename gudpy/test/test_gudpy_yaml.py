@@ -7,7 +7,9 @@ from core.enums import Format
 class TestYAML(TestCase):
     def testYAML(self):
 
-        gf1 = GudrunFile("test/TestData/NIMROD-water/water.txt", Format.TXT)
+        gf1 = GudrunFile(
+            "test/TestData/NIMROD-water/water.txt",
+            format=Format.TXT)format=Format.TXT
         gf1.write_yaml("test/TestData/NIMROD-water/water.yaml")
         gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml", Format.TXT)
 

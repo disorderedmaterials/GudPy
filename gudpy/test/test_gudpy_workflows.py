@@ -30,7 +30,7 @@ class TestGudPyWorkflows(TestCase):
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
             os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
-            Format.TXT
+            format=Format.TXT
         )
 
         from pathlib import Path

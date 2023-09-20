@@ -631,7 +631,7 @@ class TestGudPyIO(TestCase):
             0
         ].__dict__ = self.expectedContainerA
 
-        self.g = GudrunFile(dirpath, Format.TXT)
+        self.g = GudrunFile(dirpath, format=Format.TXT)
 
         self.dicts = [
             self.expectedInstrument,
@@ -651,7 +651,9 @@ class TestGudPyIO(TestCase):
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
+        g = GudrunFile(
+            "test/TestData/NIMROD-water/good_water.txt",
+            format=Format.TXT)
 
         g.write_out(overwrite=True)
         return super().setUp()
@@ -899,7 +901,7 @@ class TestGudPyIO(TestCase):
         g1 = GudrunFile(
             os.path.join(
                 self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
+                format=Format.TXT.outpath
             ),
             Format.TXT
         )
@@ -1537,7 +1539,7 @@ class TestGudPyIO(TestCase):
                     "and some attributes were missing.",
                     str(cm.exception)
                 )
-
+format=Format.TXT
     def testZeroExitGudrun(self):
         g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
         result = g.dcs()

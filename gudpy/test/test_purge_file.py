@@ -22,12 +22,14 @@ class TestPurgeFile(TestCase):
                 + "/"
                 + path
             )
-        self.g = GudrunFile(dirpath, Format.TXT)
+        self.g = GudrunFile(dirpath, format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
+        g = GudrunFile(
+            "test/TestData/NIMROD-water/good_water.txt",
+            format=Format.TXT)
 
         g.write_out(overwrite=True)
         self.g = g
