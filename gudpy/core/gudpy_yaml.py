@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
+from ruamel.yaml import YAMLError
 import os
 
 from core.composition import (
@@ -8,6 +9,7 @@ from core.composition import (
 )
 from core.data_files import DataFiles
 from core.element import Element
+from core.exception import YAMLException
 from core.gui_config import GUIConfig
 
 from core.instrument import Instrument
@@ -33,40 +35,54 @@ class YAML:
 
     def parseYaml(self, path):
         self.path = path
-        return self.constructClasses(self.yamlToDict(path))
+        try:
+            parsedYAML = self.constructClasses(self.yamlToDict(path))
+        except YAMLError:
+            # Exception caused by yaml parsing library
+            raise YAMLException("Invalid YAML file")
+        except YAMLException as e:
+            # Exception caused by invalid arguments
+            raise YAMLException(e)
+        else:
+            return parsedYAML
 
     def yamlToDict(self, path):
-        # Decide the encoding
-        import chardet
-        with open(path, 'rb') as fp:
-            encoding = chardet.detect(fp.read())['encoding']
-
         # Read the input stream into our attribute.
-        with open(path, encoding=encoding) as fp:
+        with open(path, encoding=self.yaml.encoding) as fp:
             return self.yaml.load(fp)
 
     def constructClasses(self, yamldict):
         instrument = Instrument()
-        self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
+        if "Instrument" in yamldict:
+            self.maskYAMLDicttoClass(instrument, yamldict["Instrument"])
         instrument.GudrunInputFileDir = os.path.dirname(
             os.path.abspath(
                 self.path
             )
         )
+
         beam = Beam()
-        self.maskYAMLDicttoClass(beam, yamldict["Beam"])
+        if "Beam" in yamldict:
+            self.maskYAMLDicttoClass(beam, yamldict["Beam"])
+
         components = Components()
-        self.maskYAMLSeqtoClss(components, yamldict["Components"])
+        if "Components" in yamldict:
+            self.maskYAMLSeqtoClss(components, yamldict["Components"])
+
         normalisation = Normalisation()
-        self.maskYAMLDicttoClass(normalisation, yamldict["Normalisation"])
+        if "Normalisation" in yamldict:
+            self.maskYAMLDicttoClass(normalisation, yamldict["Normalisation"])
+
         sampleBackgrounds = []
-        for sbyaml in yamldict["SampleBackgrounds"]:
-            sampleBackground = SampleBackground()
-            self.maskYAMLDicttoClass(sampleBackground, sbyaml)
-            sampleBackgrounds.append(sampleBackground)
+        if "SampleBackgrounds" in yamldict:
+            for sbyaml in yamldict["SampleBackgrounds"]:
+                sampleBackground = SampleBackground()
+                self.maskYAMLDicttoClass(sampleBackground, sbyaml)
+                sampleBackgrounds.append(sampleBackground)
 
         GUI = GUIConfig()
-        self.maskYAMLDicttoClass(GUI, yamldict["GUI"])
+        if "GUI" in yamldict:
+            self.maskYAMLDicttoClass(GUI, yamldict["GUI"])
 
         return (
             instrument, beam, components,
@@ -76,14 +92,21 @@ class YAML:
     @abstractmethod
     def maskYAMLDicttoClass(self, cls, yamldict):
         for k, v in yamldict.items():
+            if not hasattr(cls, k):
+                # If attribute is not valid
+                raise YAMLException(
+                    f"Invalid attribute '{k}' given to '{type(cls).__name__}'")
+
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
+
             elif isinstance(cls.__dict__[k], DataFiles):
                 setattr(
                     cls, k,
                     DataFiles(
                         [v_ for v_ in v["dataFiles"]], v["name"])
                 )
+
             elif (
                 isinstance(
                     cls,
@@ -92,29 +115,60 @@ class YAML:
                 and k == "elements"
             ):
                 elements = []
-                for element in v:
-                    element_ = Element(
-                        **{
-                            "atomicSymbol": element["atomicSymbol"],
-                            "massNo": float(element["massNo"]),
-                            "abundance": float(element["abundance"])
-                        }
-                    )
-                    elements.append(element_)
+                for idx, element in enumerate(v):
+                    # Ensuring correct arguements are provided
+                    if (
+                        "atomicSymbol" not in element
+                        or "massNo" not in element
+                        or "abundance" not in element
+                    ):
+                        raise YAMLException(
+                            "Insufficient arguements given to element"
+                            + f" {idx + 1}. Expects 'atomicSymbol', 'massNo'"
+                            + " and 'abundance'"
+                        )
+
+                    # Setting element properties
+                    try:
+                        element_ = Element(
+                            **{
+                                "atomicSymbol": element["atomicSymbol"],
+                                "massNo": float(element["massNo"]),
+                                "abundance": float(element["abundance"])
+                            }
+                        )
+                        elements.append(element_)
+                    except ValueError:
+                        raise YAMLException(
+                            f"Invalid number given to element {idx + 1}"
+                            + f" in '{type(cls).__name__}")
                 setattr(cls, k, elements)
+
             elif isinstance(cls, Composition) and k == "weightedComponents":
                 weightedComponents = []
                 for weightedComponent in v:
+                    if (
+                        "component" not in weightedComponent
+                        or "ratio" not in weightedComponent
+                    ):
+                        raise YAMLException(
+                            "Weighted Component expects 'component' and"
+                            + " 'ratio' to be provided")
                     component = Component()
                     self.maskYAMLDicttoClass(
                         component, weightedComponent["component"]
                     )
                     ratio = weightedComponent["ratio"]
-                    weightedComponents.append(
-                        WeightedComponent(
-                            component, float(ratio))
-                    )
+                    try:
+                        weightedComponents.append(
+                            WeightedComponent(
+                                component, float(ratio))
+                        )
+                    except ValueError:
+                        raise YAMLException(
+                            "Invalid ratio given to Weighted Component")
                 setattr(cls, k, weightedComponents)
+
             elif (
                 isinstance(
                     cls,
@@ -123,16 +177,19 @@ class YAML:
                 and k == "composition"
             ):
                 self.maskYAMLDicttoClass(cls.__dict__[k], v)
+
             elif isinstance(cls, SampleBackground) and k == "samples":
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
                     self.maskYAMLDicttoClass(sample, sampleyaml)
                     cls.samples.append(sample)
+
             elif isinstance(cls, Sample) and k == "containers":
                 for contyaml in yamldict[k]:
                     container = Container()
                     self.maskYAMLDicttoClass(container, contyaml)
                     cls.containers.append(container)
+
             else:
                 setattr(cls, k, type(cls.__dict__[k])(self.toBuiltin(v)))
 

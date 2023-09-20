@@ -35,7 +35,7 @@ from core.enums import (
 )
 from core import config
 from core.gudpy_yaml import YAML
-from core.exception import ParserException
+from core.exception import ParserException, YAMLException
 from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
