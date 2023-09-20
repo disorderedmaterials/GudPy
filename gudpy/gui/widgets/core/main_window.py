@@ -626,19 +626,27 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load an input file.
         """
-        filename, _ = QFileDialog.getOpenFileName(
+        filters = {
+            "YAML (*.yaml)": Format.YAML,
+            "Gudrun Compatible (*.txt)": Format.TXT,
+            "Sample Parameters (*.sample)": Format.TXT
+        }
+
+        filename, filter = QFileDialog.getOpenFileName(
             self.mainWidget,
             "Select Input file for GudPy",
             ".",
-            "YAML (*.yaml);;Gudrun Compatible "
-            "(*.txt);;Sample Parameters (*.sample)"
+            f"{filters.keys()[0]};;" +
+            f"{filters.keys()[1]};;" +
+            f"{filters.keys()[2]};;"
         )
+        fmt = filters[filter]
         if filename:
             try:
                 if self.gudrunFile:
                     del self.gudrunFile
                 path = self.tryLoadAutosaved(filename)
-                self.gudrunFile = GudrunFile(path=path)
+                self.gudrunFile = GudrunFile(path=path, format=fmt)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
             except ParserException as e:

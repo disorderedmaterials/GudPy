@@ -1304,19 +1304,21 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path" + self.path
             )
-
-        try:
-            (
-                self.instrument,
-                self.beam,
-                self.components,
-                self.normalisation,
-                self.sampleBackgrounds,
-                config.GUI
-            ) = self.yaml.parseYaml(self.path)
-            self.format = Format.YAML
-        except Exception:
-            self.format = Format.TXT
+        if self.format == Format.YAML:
+            # YAML Files
+            try:
+                (
+                    self.instrument,
+                    self.beam,
+                    self.components,
+                    self.normalisation,
+                    self.sampleBackgrounds,
+                    config.GUI
+                ) = self.yaml.parseYaml(self.path)
+            except YAMLException as e:
+                raise ParserException(e)
+        else:
+            # TXT Files
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
