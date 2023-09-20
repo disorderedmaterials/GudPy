@@ -901,9 +901,9 @@ class TestGudPyIO(TestCase):
         g1 = GudrunFile(
             os.path.join(
                 self.g.instrument.GudrunInputFileDir,
-                format=Format.TXT.outpath
+                self.g.outpath
             ),
-            Format.TXT
+            format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
         self.assertEqual(
@@ -1532,15 +1532,16 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt")
+                GudrunFile("test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Container, an exception occured."
                     " The input file is most likely of an incorrect format, "
                     "and some attributes were missing.",
                     str(cm.exception)
                 )
-format=Format.TXT
+
     def testZeroExitGudrun(self):
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt", Format.TXT)
+        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt",
+                       format=Format.TXT)
         result = g.dcs()
         self.assertEqual(result.stderr, "")
