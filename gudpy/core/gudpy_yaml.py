@@ -193,7 +193,7 @@ class YAML:
             else:
                 setattr(cls, k, type(cls.__dict__[k])(self.toBuiltin(v)))
 
-    def maskYAMLSeqtoClss(self, cls, yamlseq):
+    def maskYAMLSeqtoClass(self, cls, yamlseq):
         if isinstance(cls, Components):
             components = []
             for component in yamlseq:
