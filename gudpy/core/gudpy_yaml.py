@@ -123,7 +123,7 @@ class YAML:
                         or "abundance" not in element
                     ):
                         raise YAMLException(
-                            "Insufficient arguements given to element"
+                            "Insufficient arguments given to element"
                             + f" {idx + 1}. Expects 'atomicSymbol', 'massNo'"
                             + " and 'abundance'"
                         )
