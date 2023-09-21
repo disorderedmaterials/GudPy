@@ -67,7 +67,7 @@ class YAML:
 
         components = Components()
         if "Components" in yamldict:
-            self.maskYAMLSeqtoClss(components, yamldict["Components"])
+            self.maskYAMLSeqtoClass(components, yamldict["Components"])
 
         normalisation = Normalisation()
         if "Normalisation" in yamldict:
