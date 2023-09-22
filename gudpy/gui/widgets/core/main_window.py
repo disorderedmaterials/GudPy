@@ -14,7 +14,7 @@ from PySide6.QtCore import (
     QThread,
     QProcess,
     QElapsedTimer,
-    QCoreApplication
+    QCoreApplication,
 )
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (
     QStatusBar,
     QWidget,
     QMenu,
-    QToolButton
+    QToolButton,
 )
 from PySide6.QtCharts import QChartView
 
@@ -44,22 +44,18 @@ from core.container import Container
 from core.thickness_iterator import ThicknessIterator
 from gui.widgets.dialogs.export_dialog import ExportDialog
 from gui.widgets.dialogs.iterate_composition_dialog import (
-    CompositionIterationDialog
+    CompositionIterationDialog,
 )
-from gui.widgets.dialogs.iterate_density_dialog import (
-    DensityIterationDialog
-)
+from gui.widgets.dialogs.iterate_density_dialog import DensityIterationDialog
 from gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
-    WavelengthInelasticitySubtractionsIterationDialog
+    WavelengthInelasticitySubtractionsIterationDialog,
 )
-from gui.widgets.dialogs.iterate_radius_dialog import (
-    RadiusIterationDialog
-)
+from gui.widgets.dialogs.iterate_radius_dialog import RadiusIterationDialog
 from gui.widgets.dialogs.iterate_thickness_dialog import (
-    ThicknessIterationDialog
+    ThicknessIterationDialog,
 )
 from gui.widgets.dialogs.iterate_tweak_factor_dialog import (
-    TweakFactorIterationDialog
+    TweakFactorIterationDialog,
 )
 from gui.widgets.dialogs.purge_dialog import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
@@ -68,7 +64,7 @@ from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
-    CompositionAcceptanceDialog
+    CompositionAcceptanceDialog,
 )
 from gui.widgets.dialogs.nexus_processing_dialog import NexusProcessingDialog
 from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
@@ -76,13 +72,9 @@ from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
 
 from gui.widgets.tables.composition_table import CompositionTable
-from gui.widgets.tables.ratio_composition_table import (
-    RatioCompositionTable
-)
+from gui.widgets.tables.ratio_composition_table import RatioCompositionTable
 from gui.widgets.tables.beam_profile_table import BeamProfileTable
-from gui.widgets.tables.grouping_parameter_table import (
-    GroupingParameterTable
-)
+from gui.widgets.tables.grouping_parameter_table import GroupingParameterTable
 from gui.widgets.tables.exponential_table import ExponentialTable
 from gui.widgets.tables.resonance_table import ResonanceTable
 from gui.widgets.tables.pulse_table import PulseTable
@@ -111,9 +103,7 @@ from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
 from core.tweak_factor_iterator import TweakFactorIterator
-from core.wavelength_subtraction_iterator import (
-    WavelengthSubtractionIterator
-)
+from core.wavelength_subtraction_iterator import WavelengthSubtractionIterator
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
@@ -188,19 +178,15 @@ class GudPyMainWindow(QMainWindow):
         """
         Loads the UI file for the GudPyMainWindow.
         """
-        if hasattr(sys, '_MEIPASS'):
+        if hasattr(sys, "_MEIPASS"):
             uifile = QFile(
-                os.path.join(
-                    sys._MEIPASS, "ui_files", "mainWindow.ui"
-                )
+                os.path.join(sys._MEIPASS, "ui_files", "mainWindow.ui")
             )
             current_dir = os.path.sep
         else:
             current_dir = os.path.dirname(os.path.realpath(__file__))
             uifile = QFile(
-                os.path.join(
-                    current_dir, "../ui_files", "mainWindow.ui"
-                )
+                os.path.join(current_dir, "../ui_files", "mainWindow.ui")
             )
 
         loader = QUiLoader()
@@ -253,12 +239,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.stopTaskButton = QToolButton(
             self.mainWidget.statusBarWidget
         )
-        self.mainWidget.stopTaskButton.setIcon(
-            QIcon(":/icons/stop")
-        )
-        self.mainWidget.stopTaskButton.clicked.connect(
-            self.stopProc
-        )
+        self.mainWidget.stopTaskButton.setIcon(QIcon(":/icons/stop"))
+        self.mainWidget.stopTaskButton.clicked.connect(self.stopProc)
         self.mainWidget.stopTaskButton.setEnabled(False)
 
         self.mainWidget.stopTaskButton.setSizePolicy(
@@ -285,9 +267,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
         self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
 
-        self.mainWidget.beamPlot = QChartView(
-            self.mainWidget
-        )
+        self.mainWidget.beamPlot = QChartView(self.mainWidget)
         self.mainWidget.beamPlot.setRenderHint(QPainter.Antialiasing)
 
         self.mainWidget.beamProfileLayout.insertWidget(
@@ -298,13 +278,9 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.beamPlot.setChart(self.mainWidget.beamChart)
 
-        self.mainWidget.sampleTopPlot = GudPyChartView(
-            self.mainWidget
-        )
+        self.mainWidget.sampleTopPlot = GudPyChartView(self.mainWidget)
 
-        self.mainWidget.topPlotLayout.addWidget(
-            self.mainWidget.sampleTopPlot
-        )
+        self.mainWidget.topPlotLayout.addWidget(self.mainWidget.sampleTopPlot)
 
         self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
 
@@ -314,17 +290,13 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomSamplePlotFrame.setVisible(False)
 
-        self.mainWidget.containerTopPlot = GudPyChartView(
-            self.mainWidget
-        )
+        self.mainWidget.containerTopPlot = GudPyChartView(self.mainWidget)
 
         self.mainWidget.topContainerPlotLayout.addWidget(
             self.mainWidget.containerTopPlot
         )
 
-        self.mainWidget.containerBottomPlot = GudPyChartView(
-            self.mainWidget
-        )
+        self.mainWidget.containerBottomPlot = GudPyChartView(self.mainWidget)
 
         self.mainWidget.bottomContainerPlotLayout.addWidget(
             self.mainWidget.containerBottomPlot
@@ -332,9 +304,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.bottomContainerPlotFrame.setVisible(False)
 
-        self.mainWidget.allSampleTopPlot = GudPyChartView(
-            self.mainWidget
-        )
+        self.mainWidget.allSampleTopPlot = GudPyChartView(self.mainWidget)
 
         self.mainWidget.topAllPlotLayout.addWidget(
             self.mainWidget.allSampleTopPlot
@@ -349,10 +319,14 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.bottomPlotFrame.setVisible(False)
 
         for plotMode in [
-            plotMode for plotMode in PlotModes
-            if plotMode not in [
-                PlotModes.SF, PlotModes.SF_RDF,
-                PlotModes.SF_CANS, PlotModes.SF_RDF_CANS
+            plotMode
+            for plotMode in PlotModes
+            if plotMode
+            not in [
+                PlotModes.SF,
+                PlotModes.SF_RDF,
+                PlotModes.SF_CANS,
+                PlotModes.SF_RDF_CANS,
             ]
         ]:
             self.mainWidget.allPlotComboBox.addItem(plotMode.name, plotMode)
@@ -362,8 +336,7 @@ class GudPyMainWindow(QMainWindow):
         )
 
         for plotMode in [
-            plotMode for plotMode in PlotModes
-            if "(Cans)" not in plotMode.name
+            plotMode for plotMode in PlotModes if "(Cans)" not in plotMode.name
         ]:
             self.mainWidget.plotComboBox.addItem(plotMode.name, plotMode)
 
@@ -394,52 +367,43 @@ class GudPyMainWindow(QMainWindow):
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
         self.outputSlots = OutputSlots(self.mainWidget, self)
-        self.mainWidget.runPurge.triggered.connect(
-            self.runPurge_
-        )
-        self.mainWidget.runGudrun.triggered.connect(
-            self.runGudrun_
-        )
+        self.mainWidget.runPurge.triggered.connect(self.runPurge_)
+        self.mainWidget.runGudrun.triggered.connect(self.runGudrun_)
 
         self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
                 WavelengthInelasticitySubtractionsIterationDialog,
-                "iterateInelasticitySubtractionsDialog"
+                "iterateInelasticitySubtractionsDialog",
             )
         )
 
         self.mainWidget.iterateTweakFactor.triggered.connect(
             lambda: self.iterateGudrun(
-                TweakFactorIterationDialog,
-                "iterateTweakFactorDialog"
+                TweakFactorIterationDialog, "iterateTweakFactorDialog"
             )
         )
 
         self.mainWidget.iterateDensity.triggered.connect(
             lambda: self.iterateGudrun(
-                DensityIterationDialog,
-                "iterateDensityDialog"
+                DensityIterationDialog, "iterateDensityDialog"
             )
         )
 
         self.mainWidget.iterateThickness.triggered.connect(
             lambda: self.iterateGudrun(
-                ThicknessIterationDialog,
-                "iterateThicknessDialog"
+                ThicknessIterationDialog, "iterateThicknessDialog"
             )
         )
 
         self.mainWidget.iterateRadius.triggered.connect(
             lambda: self.iterateGudrun(
-                RadiusIterationDialog,
-                "iterateRadiusDialog"
+                RadiusIterationDialog, "iterateRadiusDialog"
             )
         )
 
         self.mainWidget.iterateComposition.triggered.connect(
             lambda: self.iterateGudrun(
-                CompositionIterationDialog,
-                "iterateCompositionDialog"
+                CompositionIterationDialog, "iterateCompositionDialog"
             )
         )
 
@@ -451,9 +415,7 @@ class GudPyMainWindow(QMainWindow):
             self.runFilesIndividually
         )
 
-        self.mainWidget.batchProcessing.triggered.connect(
-            self.batchProcessing
-        )
+        self.mainWidget.batchProcessing.triggered.connect(self.batchProcessing)
 
         self.mainWidget.checkFilesExist.triggered.connect(
             self.checkFilesExist_
@@ -463,9 +425,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
 
-        self.mainWidget.viewLiveInputFile.triggered.connect(
-            self.viewInput
-        )
+        self.mainWidget.viewLiveInputFile.triggered.connect(self.viewInput)
 
         self.mainWidget.insertSampleBackground.triggered.connect(
             self.mainWidget.objectTree.insertSampleBackground
@@ -480,18 +440,13 @@ class GudPyMainWindow(QMainWindow):
         )
 
         actionMap = {
-            name:
-            lambda:
-            self.mainWidget.objectTree.insertContainer(
-                container=Container(
-                    config_=path
-                )
+            name: lambda: self.mainWidget.objectTree.insertContainer(
+                container=Container(config_=path)
             )
             for name, path in config.containerConfigurations.items()
         }
         insertContainerFromTemplate = QMenu(
-            "From Template..",
-            self.mainWidget.insertContainerMenu
+            "From Template..", self.mainWidget.insertContainerMenu
         )
         for name, action in actionMap.items():
             insertContainerFromTemplate.addAction(name, action)
@@ -500,12 +455,8 @@ class GudPyMainWindow(QMainWindow):
             insertContainerFromTemplate
         )
 
-        self.mainWidget.copy.triggered.connect(
-            self.mainWidget.objectTree.copy
-        )
-        self.mainWidget.cut.triggered.connect(
-            self.mainWidget.objectTree.cut
-        )
+        self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
+        self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
         self.mainWidget.paste.triggered.connect(
             self.mainWidget.objectTree.paste
         )
@@ -513,13 +464,9 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.objectTree.del_
         )
 
-        self.mainWidget.loadInputFile.triggered.connect(
-            self.loadInputFile_
-        )
+        self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
 
-        self.mainWidget.new_.triggered.connect(
-            self.newInputFile
-        )
+        self.mainWidget.new_.triggered.connect(self.newInputFile)
 
         self.mainWidget.objectStack.currentChanged.connect(
             self.updateComponents
@@ -534,9 +481,7 @@ class GudPyMainWindow(QMainWindow):
         self.setWindowModified(False)
 
         if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
-            self.mainWidget.runNexusProcessing.setVisible(
-                True
-            )
+            self.mainWidget.runNexusProcessing.setVisible(True)
 
         self.mainWidget.runNexusProcessing.triggered.connect(
             self.nexusProcessing
@@ -546,7 +491,6 @@ class GudPyMainWindow(QMainWindow):
         dir_ = os.path.dirname(path)
         for f in os.listdir(dir_):
             if os.path.abspath(f) == path + ".autosave":
-
                 with open(path, "r", encoding="utf-8") as fp:
                     original = fp.readlines()
                 with open(f, "r", encoding="utf-8") as fp:
@@ -601,17 +545,16 @@ class GudPyMainWindow(QMainWindow):
 
             if len(self.gudrunFile.sampleBackgrounds[0].samples):
                 self.sampleSlots.setSample(
-                    self.gudrunFile.sampleBackgrounds[0].
-                    samples[0]
+                    self.gudrunFile.sampleBackgrounds[0].samples[0]
                 )
 
                 if len(
-                    self.gudrunFile.sampleBackgrounds[0].
-                    samples[0].containers
+                    self.gudrunFile.sampleBackgrounds[0].samples[0].containers
                 ):
                     self.containerSlots.setContainer(
                         self.gudrunFile.sampleBackgrounds[0]
-                        .samples[0].containers[0]
+                        .samples[0]
+                        .containers[0]
                     )
         self.setActionsEnabled(True)
         self.mainWidget.objectTree.buildTree(self.gudrunFile, self)
@@ -647,7 +590,7 @@ class GudPyMainWindow(QMainWindow):
             fmt = filters[filter]
             try:
                 if self.gudrunFile:
-                    del self.gudrunFile
+                    self.gudrunFile = None
                 path = self.tryLoadAutosaved(filename)
                 self.gudrunFile = GudrunFile(path=path, format=fmt)
                 self.updateWidgets()
@@ -675,11 +618,12 @@ class GudPyMainWindow(QMainWindow):
         """
         filename, filter = QFileDialog.getSaveFileName(
             self,
-            "Save input file as..", ".",
-            "YAML (*.yaml);;Gudrun Compatible (*.txt)"
+            "Save input file as..",
+            ".",
+            "YAML (*.yaml);;Gudrun Compatible (*.txt)",
         )
         if filename:
-            ext = re.search(r'\((.+?)\)', filter).group(1).replace('*', '')
+            ext = re.search(r"\((.+?)\)", filter).group(1).replace("*", "")
             fmt = Format.TXT if ext == ".txt" else Format.YAML
             if filter and sys.platform.startswith("linux"):
                 filename += ext
@@ -687,11 +631,11 @@ class GudPyMainWindow(QMainWindow):
                 QMessageBox.warning(
                     self.mainWidget,
                     "GudPy Warning",
-                    f"Cannot save to {filename}, gudpy.txt is reserved."
+                    f"Cannot save to {filename}, gudpy.txt is reserved.",
                 )
                 return
-            self.gudrunFile.instrument.GudrunInputFileDir = (
-                os.path.dirname(os.path.abspath(filename))
+            self.gudrunFile.instrument.GudrunInputFileDir = os.path.dirname(
+                os.path.abspath(filename)
             )
             self.gudrunFile.path = filename
             self.gudrunFile.save(path=filename, format=fmt)
@@ -699,7 +643,7 @@ class GudPyMainWindow(QMainWindow):
 
     def newInputFile(self):
         if self.gudrunFile:
-            del self.gudrunFile
+            self.gudrunFile = None
         self.gudrunFile = GudrunFile()
         configurationDialog = ConfigurationDialog(self)
         result = configurationDialog.widget.exec()
@@ -722,7 +666,7 @@ class GudPyMainWindow(QMainWindow):
             QMessageBox.critical(
                 self.mainWidget,
                 "GudPy Error",
-                f"An error occured reverting to the previous state.\n{str(e)}"
+                f"An error occured reverting to the previous state.\n{str(e)}",
             )
             with open(self.gudrunFile.path, "w", encoding="utf-8") as fp:
                 fp.write(str(self.currentState))
@@ -742,9 +686,9 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.sampleBackgrounds
         ):
             for j, sample in enumerate(sampleBackground.samples):
-                self.gudrunFile.sampleBackgrounds[i].samples[j].geometry = (
-                    config.geometry
-                )
+                self.gudrunFile.sampleBackgrounds[i].samples[
+                    j
+                ].geometry = config.geometry
                 for k in range(len(sample.containers)):
                     sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
                     sample.containers[k].geometry = config.geometry
@@ -760,27 +704,20 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
-        if (
-            self.mainWidget.objectStack.currentIndex() == 5
-            and isinstance(
-                self.mainWidget.objectTree.currentObject(), Sample
-            )
+        if self.mainWidget.objectStack.currentIndex() == 5 and isinstance(
+            self.mainWidget.objectTree.currentObject(), Sample
         ):
             try:
-                topPlot, bottomPlot, gudFile = (
-                    self.results[self.mainWidget.objectTree.currentObject()]
-                )
+                topPlot, bottomPlot, gudFile = self.results[
+                    self.mainWidget.objectTree.currentObject()
+                ]
             except KeyError:
                 self.updateSamples()
-                topPlot, bottomPlot, gudFile = (
-                    self.results[self.mainWidget.objectTree.currentObject()]
-                )
-            self.mainWidget.sampleTopPlot.setChart(
-                topPlot
-            )
-            self.mainWidget.sampleBottomPlot.setChart(
-                bottomPlot
-            )
+                topPlot, bottomPlot, gudFile = self.results[
+                    self.mainWidget.objectTree.currentObject()
+                ]
+            self.mainWidget.sampleTopPlot.setChart(topPlot)
+            self.mainWidget.sampleBottomPlot.setChart(bottomPlot)
 
             plotsMap = {
                 PlotModes.SF: 0,
@@ -789,7 +726,7 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.RDF: 3,
                 PlotModes.SF_RDF: 4,
                 PlotModes.SF_MINT01_RDF: 5,
-                PlotModes.SF_MDCS01_RDF: 6
+                PlotModes.SF_MDCS01_RDF: 6,
             }
 
             if (
@@ -808,9 +745,7 @@ class GudPyMainWindow(QMainWindow):
 
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
-                self.mainWidget.dcsLabel.setText(
-                    f"DCS Level: {dcsLevel}"
-                )
+                self.mainWidget.dcsLabel.setText(f"DCS Level: {dcsLevel}")
                 self.mainWidget.resultLabel.setText(gudFile.output)
                 if gudFile.err:
                     self.mainWidget.resultLabel.setStyleSheet(
@@ -826,47 +761,36 @@ class GudPyMainWindow(QMainWindow):
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
             else:
-                self.mainWidget.dcsLabel.setText(
-                    "DCS Level"
-                )
+                self.mainWidget.dcsLabel.setText("DCS Level")
                 self.mainWidget.resultLabel.setText("Error")
-                self.mainWidget.resultLabel.setStyleSheet(
-                    ""
-                )
+                self.mainWidget.resultLabel.setStyleSheet("")
                 self.mainWidget.suggestedTweakFactorLabel.setText(
                     "Suggested Tweak Factor"
                 )
-        elif (
-            self.mainWidget.objectStack.currentIndex() == 6
-            and isinstance(
-                self.mainWidget.objectTree.currentObject(), Container
-            )
+        elif self.mainWidget.objectStack.currentIndex() == 6 and isinstance(
+            self.mainWidget.objectTree.currentObject(), Container
         ):
             try:
-                topPlot, bottomPlot, gudFile = (
-                    self.results[self.mainWidget.objectTree.currentObject()]
-                )
+                topPlot, bottomPlot, gudFile = self.results[
+                    self.mainWidget.objectTree.currentObject()
+                ]
             except KeyError:
                 self.updateSamples()
-                topPlot, bottomPlot, gudFile = (
-                    self.results[self.mainWidget.objectTree.currentObject()]
-                )
+                topPlot, bottomPlot, gudFile = self.results[
+                    self.mainWidget.objectTree.currentObject()
+                ]
             if sum(
                 [
                     *[s.count() for s in topPlot.series()],
-                    *[s.count() for s in bottomPlot.series()]
+                    *[s.count() for s in bottomPlot.series()],
                 ]
             ):
                 self.mainWidget.containerSplitter.setSizes([2, 1])
             else:
                 self.mainWidget.containerSplitter.setSizes([1, 0])
 
-            self.mainWidget.containerTopPlot.setChart(
-                topPlot
-            )
-            self.mainWidget.containerBottomPlot.setChart(
-                bottomPlot
-            )
+            self.mainWidget.containerTopPlot.setChart(topPlot)
+            self.mainWidget.containerBottomPlot.setChart(bottomPlot)
 
             plotsMap = {
                 PlotModes.SF_CANS: 0,
@@ -875,7 +799,7 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.RDF_CANS: 3,
                 PlotModes.SF_RDF_CANS: 4,
                 PlotModes.SF_MINT01_RDF_CANS: 5,
-                PlotModes.SF_MDCS01_RDF_CANS: 6
+                PlotModes.SF_MDCS01_RDF_CANS: 6,
             }
 
             if (
@@ -915,20 +839,17 @@ class GudPyMainWindow(QMainWindow):
     def updateSamples(self):
         samples = [
             *self.mainWidget.objectTree.getSamples(),
-            *self.mainWidget.objectTree.getContainers()
+            *self.mainWidget.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(
-                self.gudrunFile
-            )
+            topChart = GudPyChart(self.gudrunFile)
             topChart.addSample(sample)
-            bottomChart = GudPyChart(
-                self.gudrunFile
-            )
+            bottomChart = GudPyChart(self.gudrunFile)
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
-                    PlotModes.SF if isinstance(sample, Sample)
+                    PlotModes.SF
+                    if isinstance(sample, Sample)
                     else PlotModes.SF_CANS
                 )
                 self.plotModes[sample] = plotMode
@@ -944,7 +865,7 @@ class GudPyMainWindow(QMainWindow):
                 path = breplace(
                     sample.dataFiles[0],
                     self.gudrunFile.instrument.dataFileType,
-                    "gud"
+                    "gud",
                 )
                 if not os.path.exists(path):
                     path = os.path.join(
@@ -954,30 +875,24 @@ class GudPyMainWindow(QMainWindow):
             self.results[sample] = [topChart, bottomChart, gf]
 
     def updateAllSamples(self):
-
         samples = [
             *self.mainWidget.objectTree.getSamples(),
-            *self.mainWidget.objectTree.getContainers()
+            *self.mainWidget.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(
-            self.gudrunFile
-        )
+        allTopChart = GudPyChart(self.gudrunFile)
         allTopChart.addSamples(samples)
         allTopChart.plot(
             self.mainWidget.allPlotComboBox.itemData(
                 self.mainWidget.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(
-            self.gudrunFile
-        )
+        allBottomChart = GudPyChart(self.gudrunFile)
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.mainWidget.allSampleTopPlot.setChart(allTopChart)
         self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
 
     def updateResults(self):
-
         self.updateSamples()
         self.updateAllSamples()
         self.focusResult()
@@ -995,11 +910,11 @@ class GudPyMainWindow(QMainWindow):
         Exits GudPy - questions user if they want to save on exit or not.
         """
         messageBox = QMessageBox
-        result = (
-            messageBox.question(
-                self.mainWidget, '',
-                "Do you want to save?", messageBox.No | messageBox.Yes
-            )
+        result = messageBox.question(
+            self.mainWidget,
+            "",
+            "Do you want to save?",
+            messageBox.No | messageBox.Yes,
         )
 
         if result == messageBox.Yes:
@@ -1007,8 +922,14 @@ class GudPyMainWindow(QMainWindow):
         sys.exit(0)
 
     def makeProc(
-        self, cmd, slot, dir_=None, func=None,
-        args=None, started=None, finished=None
+        self,
+        cmd,
+        slot,
+        dir_=None,
+        func=None,
+        args=None,
+        started=None,
+        finished=None,
     ):
         if not started:
             started = self.procStarted
@@ -1020,9 +941,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(started)
         self.proc.finished.connect(finished)
-        self.proc.setWorkingDirectory(
-            dir_
-        )
+        self.proc.setWorkingDirectory(dir_)
         if func:
             func(*args)
         self.proc.start()
@@ -1042,7 +961,8 @@ class GudPyMainWindow(QMainWindow):
         elif isinstance(purge, FileNotFoundError):
             QMessageBox.critical(
                 self.mainWidget,
-                "GudPy Error", "Couldn't find purge_det binary."
+                "GudPy Error",
+                "Couldn't find purge_det binary.",
             )
             self.setControlsEnabled(True)
         elif not purge:
@@ -1059,41 +979,47 @@ class GudPyMainWindow(QMainWindow):
         dcs = self.gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath
+                self.gudrunFile.outpath,
             ),
-            headless=False
+            headless=False,
         )
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
+                self.mainWidget,
+                "GudPy Error",
+                "Couldn't find gudrun_dcs binary.",
             )
-        elif (
-            not self.gudrunFile.purged
-            and os.path.exists(
-                os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    'purge_det.dat'
-                )
+        elif not self.gudrunFile.purged and os.path.exists(
+            os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, self.runGudrunFinished, func, args,
+                dcs,
+                self.runGudrunFinished,
+                func,
+                args,
                 "purge_det.dat found, but wasn't run in this session. "
-                "Continue?"
+                "Continue?",
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, self.runGudrunFinished, func, args,
-                "It looks like you may not have purged detectors. Continue?"
+                dcs,
+                self.runGudrunFinished,
+                func,
+                args,
+                "It looks like you may not have purged detectors. Continue?",
             )
         else:
             self.makeProc(
-                dcs, self.progressDCS,
-                func=func, args=args,
-                finished=self.runGudrunFinished
+                dcs,
+                self.progressDCS,
+                func=func,
+                args=args,
+                finished=self.runGudrunFinished,
+
             )
 
     def runContainersAsSamples(self):
@@ -1104,9 +1030,9 @@ class GudPyMainWindow(QMainWindow):
         dcs = runContainersAsSamples.runContainersAsSamples(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath
+                self.gudrunFile.outpath,
             ),
-            headless=False
+            headless=False,
         )
 
         def finished(ec, es):
@@ -1118,33 +1044,34 @@ class GudPyMainWindow(QMainWindow):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
+                self.mainWidget,
+                "GudPy Error",
+                "Couldn't find gudrun_dcs binary.",
             )
-        elif (
-            not self.gudrunFile.purged
-            and os.path.exists(
-                os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    'purge_det.dat'
-                )
+        elif not self.gudrunFile.purged and os.path.exists(
+            os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, finished, func, args,
+                dcs,
+                finished,
+                func,
+                args,
                 "purge_det.dat found, but wasn't run in this session. "
-                "Continue?"
+                "Continue?",
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, finished, func, args,
-                "It looks like you may not have purged detectors. Continue?"
+                dcs,
+                finished,
+                func,
+                args,
+                "It looks like you may not have purged detectors. Continue?",
             )
         else:
             self.makeProc(
-                dcs, self.progressDCS,
-                finished=finished,
-                func=func, args=args
+                dcs, self.progressDCS, finished=finished, func=func, args=args
             )
 
     def runFilesIndividually(self):
@@ -1155,41 +1082,42 @@ class GudPyMainWindow(QMainWindow):
         dcs = runIndividualFiles.gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath
+                self.gudrunFile.outpath,
             ),
-            headless=False
+            headless=False,
         )
 
         def finished(ec, es):
-            self.runGudrunFinished(
-                gudrunFile=runIndividualFiles.gudrunFile
-            )
+            self.runGudrunFinished(gudrunFile=runIndividualFiles.gudrunFile)
 
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         if isinstance(dcs, FileNotFoundError):
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
+                self.mainWidget,
+                "GudPy Error",
+                "Couldn't find gudrun_dcs binary.",
             )
-        elif (
-            not self.gudrunFile.purged
-            and os.path.exists(
-                os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    'purge_det.dat'
-                )
+        elif not self.gudrunFile.purged and os.path.exists(
+            os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
             )
         ):
             self.purgeOptionsMessageBox(
-                dcs, finished, func, args,
+                dcs,
+                finished,
+                func,
+                args,
                 "purge_det.dat found, but wasn't run in this session. "
-                "Continue?"
+                "Continue?",
             )
         elif not self.gudrunFile.purged:
             self.purgeOptionsMessageBox(
-                dcs, finished, func, args,
-                "It looks like you may not have purged detectors. Continue?"
+                dcs,
+                finished,
+                func,
+                args,
+                "It looks like you may not have purged detectors. Continue?",
             )
         else:
             self.makeProc(
@@ -1203,12 +1131,8 @@ class GudPyMainWindow(QMainWindow):
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
         messageBox.addButton(QMessageBox.No)
-        openPurgeDialog = QPushButton(
-            "Open purge dialog", messageBox
-        )
-        purgeDefault = QPushButton(
-            "Purge with default parameters", messageBox
-        )
+        openPurgeDialog = QPushButton("Open purge dialog", messageBox)
+        purgeDefault = QPushButton("Purge with default parameters", messageBox)
 
         messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
         messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
@@ -1233,16 +1157,15 @@ class GudPyMainWindow(QMainWindow):
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
         if default:
-            purge_det = self.gudrunFile.purge(
-                headless=False
-            )
+            purge_det = self.gudrunFile.purge(headless=False)
             if isinstance(purge_det, Sequence):
                 purge, func, args = purge_det
                 self.makeProc(purge, self.progressPurge, func=func, args=args)
             elif isinstance(purge_det, FileNotFoundError):
                 QMessageBox.critical(
                     self.mainWidget,
-                    "GudPy Error", "Couldn't find purge_det binary."
+                    "GudPy Error",
+                    "Couldn't find purge_det binary.",
                 )
                 self.setControlsEnabled(True)
                 return
@@ -1251,16 +1174,17 @@ class GudPyMainWindow(QMainWindow):
         dcs = self.gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath
+                self.gudrunFile.outpath,
             ),
-            headless=False
+            headless=False,
         )
         if isinstance(dcs, Sequence):
             dcs, func, args = dcs
         elif isinstance(dcs, FileNotFoundError):
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                "Couldn't find gudrun_dcs binary."
+                self.mainWidget,
+                "GudPy Error",
+                "Couldn't find gudrun_dcs binary.",
             )
             self.setControlsEnabled(True)
             return
@@ -1268,9 +1192,10 @@ class GudPyMainWindow(QMainWindow):
             (
                 (dcs, self.progressDCS),
                 {
-                    "func": func, "args": args,
-                    "finished": self.runGudrunFinished
-                }
+                    "func": func,
+                    "args": args,
+                    "finished": self.runGudrunFinished,
+                },
             )
         )
 
@@ -1284,8 +1209,8 @@ class GudPyMainWindow(QMainWindow):
         )
         nexusProcessingDialog.widget.exec()
         if (
-            nexusProcessingDialog.cancelled or
-            not nexusProcessingDialog.preprocess
+            nexusProcessingDialog.cancelled
+            or not nexusProcessingDialog.preprocess
         ):
             self.setControlsEnabled(True)
         else:
@@ -1306,9 +1231,7 @@ class GudPyMainWindow(QMainWindow):
     def nexusProcessingStarted(self):
         self.nexusProcessingFiles = set()
         self.text = "NeXuS Pre-processing"
-        self.mainWidget.currentTaskLabel.setText(
-            self.text
-        )
+        self.mainWidget.currentTaskLabel.setText(self.text)
 
     def progressNexusPreprocess(self):
         data = self.proc.readAllStandardOutput()
@@ -1317,7 +1240,7 @@ class GudPyMainWindow(QMainWindow):
         if data:
             self.nexusProcessingFiles.add(data.split()[0])
 
-        progress = re.findall(r'(\d+(?:\.\d+)?)%', stdout)
+        progress = re.findall(r"(\d+(?:\.\d+)?)%", stdout)
         if progress:
             self.mainWidget.progressBar.setValue(int(float(progress[-1])))
 
@@ -1329,10 +1252,7 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from modulation_excitation\n{stderr}"
             )
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                self.error
-            )
+            QMessageBox.critical(self.mainWidget, "GudPy Error", self.error)
 
     def progressNexusProcess(self):
         progress = self.progressIncrementDCS(
@@ -1353,9 +1273,7 @@ class GudPyMainWindow(QMainWindow):
                 self.nexusProcessingFiles, headless=False
             )
             self.text = "NeXuS Processing"
-            self.mainWidget.currentTaskLabel.setText(
-                self.text
-            )
+            self.mainWidget.currentTaskLabel.setText(self.text)
             self.queue = Queue()
             for t in tasks:
                 self.queue.put(t)
@@ -1378,10 +1296,13 @@ class GudPyMainWindow(QMainWindow):
         if isinstance(task[0], QProcess):
             dcs, func, args, dir_ = task
             self.makeProc(
-                dcs, self.progressNexusProcess,
-                dir_=dir_, func=func, args=args,
+                dcs,
+                self.progressNexusProcess,
+                dir_=dir_,
+                func=func,
+                args=args,
                 started=self.processPulseStarted,
-                finished=self.processPulseFinished
+                finished=self.processPulseFinished,
             )
         else:
             func, args = task
@@ -1394,7 +1315,7 @@ class GudPyMainWindow(QMainWindow):
     def processPulseFinished(self):
         timer = QElapsedTimer()
         timer.start()
-        while (timer.elapsed() < 5000):
+        while timer.elapsed() < 5000:
             QCoreApplication.processEvents()
         self.nexusProcessingOutput[self.currentFile + 1] = self.output
         self.currentFile += 1
@@ -1412,9 +1333,10 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(0)
         self.proc = None
         self.outputSlots.setOutput(
-            self.nexusProcessingOutput, "gudrun_dcs",
+            self.nexusProcessingOutput,
+            "gudrun_dcs",
             gudrunFile=self.gudrunFile.nexus_processing.gudrunFile,
-            keyMap=self.keyMap
+            keyMap=self.keyMap,
         )
 
     def iterateGudrun(self, dialog, name):
@@ -1532,11 +1454,7 @@ class GudPyMainWindow(QMainWindow):
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
         self.mainWidget.progressBar.setValue(
-            int(
-                (
-                    self.currentIteration / self.totalIterations
-                ) * 100
-            )
+            int((self.currentIteration / self.totalIterations) * 100)
         )
         if not self.queue.empty():
             self.nextCompositionIteration()
@@ -1558,23 +1476,21 @@ class GudPyMainWindow(QMainWindow):
 
     def startedCompositionIteration(self, sample):
         self.mainWidget.currentTaskLabel.setText(
-            f"{self.text}"
-            f" ({sample.name})"
+            f"{self.text}" f" ({sample.name})"
         )
 
     def errorCompositionIteration(self, output):
         QMessageBox.critical(
-            self.mainWidget, "GudPy Error",
+            self.mainWidget,
+            "GudPy Error",
             "An error occured whilst iterating by composition."
-            " Please check the output to see what went wrong."
+            " Please check the output to see what went wrong.",
         )
         self.setControlsEnabled(True)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.mainWidget.progressBar.setValue(0)
         self.outputSlots.setOutput(
-            output,
-            "gudrun_dcs",
-            gudrunFile=self.gudrunFile
+            output, "gudrun_dcs", gudrunFile=self.gudrunFile
         )
         self.queue = Queue()
 
@@ -1609,19 +1525,21 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Warning",
                 "No iterations were queued."
                 " It's likely no Samples selected for analysis"
-                " use the Component(s) selected for iteration."
+                " use the Component(s) selected for iteration.",
             )
             self.setControlsEnabled(True)
         else:
             self.compositionMap = {}
             self.totalIterations = len(
                 [
-                    s for sb in self.gudrunFile.sampleBackgrounds
+                    s
+                    for sb in self.gudrunFile.sampleBackgrounds
                     for s in sb.samples
                     if s.runThisSample
                     and len(
                         [
-                            wc for c in self.iterator.components
+                            wc
+                            for c in self.iterator.components
                             for wc in s.composition.weightedComponents
                             if wc.component.eq(c)
                         ]
@@ -1651,18 +1569,14 @@ class GudPyMainWindow(QMainWindow):
                 f"IterateByDensity_{self.currentIteration+1}"
             )
         if isinstance(
-            self.iterator, (
-                TweakFactorIterator, SingleParamIterator
-            )
+            self.iterator, (TweakFactorIterator, SingleParamIterator)
         ):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
             self.outputIterations[self.currentIteration + 1] = self.output
             self.outputSlots.setOutput(
-                self.outputIterations,
-                "gudrun_dcs",
-                gudrunFile=self.gudrunFile
+                self.outputIterations, "gudrun_dcs", gudrunFile=self.gudrunFile
             )
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             if self.currentIteration % 2 == 0:
@@ -1704,10 +1618,13 @@ class GudPyMainWindow(QMainWindow):
 
     def iterationStarted(self):
         if isinstance(
-            self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
-            )
+            self.iterator,
+            (
+                TweakFactorIterator,
+                ThicknessIterator,
+                RadiusIterator,
+                DensityIterator,
+            ),
         ):
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
@@ -1716,8 +1633,7 @@ class GudPyMainWindow(QMainWindow):
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
             iteration = math.ceil((self.currentIteration + 1) / 2)
             self.mainWidget.currentTaskLabel.setText(
-                f"{self.text}"
-                f" {iteration}/{int(self.numberIterations/2)}"
+                f"{self.text}" f" {iteration}/{int(self.numberIterations/2)}"
             )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1730,10 +1646,13 @@ class GudPyMainWindow(QMainWindow):
             )
             return
         if isinstance(
-            self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
-            )
+            self.iterator,
+            (
+                TweakFactorIterator,
+                ThicknessIterator,
+                RadiusIterator,
+                DensityIterator,
+            ),
         ):
             progress /= self.numberIterations
         elif isinstance(self.iterator, WavelengthSubtractionIterator):
@@ -1745,10 +1664,14 @@ class GudPyMainWindow(QMainWindow):
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
-        if not all(r[0] for r in result):
-            unresolved = [r[1] for r in result if not r[0]]
+        if not all(r[0] for r in result[0]) or not all(r[0]
+                                                       for r in result[1]):
+            undefined = [
+                r[1] for r in result[0] if not r[0]
+            ]
+            unresolved = [r[2] for r in result[1] if not r[0] and r[2]]
             missingFilesDialog = MissingFilesDialog(
-                unresolved, self.mainWidget
+                undefined, unresolved, self.mainWidget
             )
             missingFilesDialog.widget.exec_()
             return False
@@ -1756,8 +1679,10 @@ class GudPyMainWindow(QMainWindow):
 
     def autosave(self):
         if (
-            self.gudrunFile and self.gudrunFile.path
-            and not self.proc and not self.workerThread
+            self.gudrunFile
+            and self.gudrunFile.path
+            and not self.proc
+            and not self.workerThread
         ):
             autosavePath = self.gudrunFile.path + ".autosave"
             self.gudrunFile.write_out(path=autosavePath)
@@ -1796,9 +1721,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(
-            state &
-            self.modified &
-            len(self.gudrunFile.path) > 0
+            state & self.modified & len(self.gudrunFile.path) > 0
             if self.gudrunFile.path
             else False
         )
@@ -1812,8 +1735,8 @@ class GudPyMainWindow(QMainWindow):
 
         if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
             self.mainWidget.runNexusProcessing.setEnabled(
-                state &
-                (
+                state
+                & (
                     self.gudrunFile.instrument.dataFileType == "nxs"
                     or self.gudrunFile.instrument.dataFileType == "NXS"
                 )
@@ -1822,7 +1745,6 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def setActionsEnabled(self, state):
-
         self.setTreeActionsEnabled(state)
 
         self.mainWidget.runPurge.setEnabled(state)
@@ -1834,17 +1756,14 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runContainersAsSamples.setEnabled(state)
         self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(
-            state &
-            self.modified
-        )
+        self.mainWidget.save.setEnabled(state & self.modified)
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
 
         if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
             self.mainWidget.runNexusProcessing.setEnabled(
-                state &
-                (
+                state
+                & (
                     self.gudrunFile.instrument.dataFileType == "nxs"
                     or self.gudrunFile.instrument.dataFileType == "NXS"
                 )
@@ -1869,17 +1788,14 @@ class GudPyMainWindow(QMainWindow):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
         self.output += stdout
-        ERROR_KWDS = [
-            "does not exist",
-            "error",
-            "Error"
-        ]
+        ERROR_KWDS = ["does not exist", "error", "Error"]
         if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
             self.error = stdout
             return -1
         # Number of GudPy objects.
         markers = (
-            config.NUM_GUDPY_CORE_OBJECTS - 1
+            config.NUM_GUDPY_CORE_OBJECTS
+            - 1
             + len(gudrunFile.sampleBackgrounds)
             + sum(
                 [
@@ -1896,9 +1812,10 @@ class GudPyMainWindow(QMainWindow):
                                 len(sample.containers)
                                 for sample in sampleBackground.samples
                                 if sample.runThisSample
-                            ]
+                            ],
                         ]
-                    ) for sampleBackground in gudrunFile.sampleBackgrounds
+                    )
+                    for sampleBackground in gudrunFile.sampleBackgrounds
                 ]
             )
         )
@@ -1910,7 +1827,7 @@ class GudPyMainWindow(QMainWindow):
                 stdout.count("Got to: NORMALISATION"),
                 stdout.count("Got to: SAMPLE BACKGROUND"),
                 stdout.count("Finished merging data for sample"),
-                stdout.count("Got to: CONTAINER")
+                stdout.count("Got to: CONTAINER"),
             ]
         )
         return progress
@@ -1939,8 +1856,8 @@ class GudPyMainWindow(QMainWindow):
 
         def appendDfs(dfs):
             for df in dfs:
-                dataFiles.append(df.replace(
-                    self.gudrunFile.instrument.dataFileType, "grp")
+                dataFiles.append(
+                    df.replace(self.gudrunFile.instrument.dataFileType, "grp")
                 )
 
         appendDfs(self.gudrunFile.normalisation.dataFiles[0])
@@ -1991,9 +1908,9 @@ class GudPyMainWindow(QMainWindow):
                 lines = stdout.split("\n")
                 targetLine = next(
                     (
-                        s for s in lines
-                        if "spectra in" in s
-                        and dataFiles[-1] in s
+                        s
+                        for s in lines
+                        if "spectra in" in s and dataFiles[-1] in s
                     )
                 )
             except StopIteration:
@@ -2047,10 +1964,13 @@ class GudPyMainWindow(QMainWindow):
         self.proc = None
         output = self.output
         if isinstance(
-            self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
-            )
+            self.iterator,
+            (
+                TweakFactorIterator,
+                ThicknessIterator,
+                RadiusIterator,
+                DensityIterator,
+            ),
         ):
             self.outputIterations[self.currentIteration + 1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
@@ -2060,16 +1980,14 @@ class GudPyMainWindow(QMainWindow):
 
         if self.error:
             QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                repr(self.error)
+                self.mainWidget, "GudPy Error", repr(self.error)
             )
             self.error = ""
             self.queue = Queue()
         if self.queue.empty():
             if self.warning:
                 QMessageBox.warning(
-                    self.mainWidget, "GudPy Warning",
-                    repr(self.warning)
+                    self.mainWidget, "GudPy Warning", repr(self.warning)
                 )
                 self.warning = ""
             self.setControlsEnabled(True)
@@ -2079,9 +1997,10 @@ class GudPyMainWindow(QMainWindow):
                 self.updateResults()
             except ParserException:
                 QMessageBox.warning(
-                    self.mainWidget, "GudPy Warning",
+                    self.mainWidget,
+                    "GudPy Warning",
                     "The process did not entirely finish,"
-                    " please check your parameters."
+                    " please check your parameters.",
                 )
             self.outputSlots.setOutput(
                 output, "gudrun_dcs", gudrunFile=self.gudrunFile
@@ -2187,7 +2106,7 @@ class GudPyMainWindow(QMainWindow):
         QMessageBox.critical(
             self.mainWidget,
             "GudPy Error",
-            f"{''.join(traceback.format_exception(cls, exception, tb))}"
+            f"{''.join(traceback.format_exception(cls, exception, tb))}",
         )
 
     def export(self):

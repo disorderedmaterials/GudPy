@@ -5,7 +5,7 @@ from pathlib import Path
 from core.enums import CrossSectionSource
 
 
-class GudPyFileLibrary():
+class GudPyFileLibrary:
     """
     Class to represent a GudPyFileLibrary,
     (all files related to the input file).
@@ -39,37 +39,47 @@ class GudPyFileLibrary():
         dataFileType = gudrunFile.instrument.dataFileType
 
         # Collect directories
-        self.dirs = [
-            gudrunFile.instrument.GudrunInputFileDir,
-            gudrunFile.instrument.dataFileDir,
-            gudrunFile.instrument.GudrunStartFolder,
-            gudrunFile.instrument.startupFileFolder
-        ]
+        self.dirs = {
+            "Input file directory": gudrunFile.instrument.GudrunInputFileDir,
+            "Data file directory": gudrunFile.instrument.dataFileDir,
+            "Gudrun start folder": gudrunFile.instrument.GudrunStartFolder,
+            "Startup file folder": gudrunFile.instrument.startupFileFolder,
+        }
 
         # Collect files of static objects
-        self.files = [
-            gudrunFile.instrument.groupFileName,
-            gudrunFile.instrument.deadtimeConstantsFileName,
-            gudrunFile.instrument.neutronScatteringParametersFile,
-            gudrunFile.beam.filenameIncidentBeamSpectrumParams,
-        ]
+        self.files = {
+            "Groups file": gudrunFile.instrument.groupFileName,
+            "Deadtime constants file": (
+                gudrunFile.instrument.deadtimeConstantsFileName
+            ),
+            "Scattering lengths file": (
+                gudrunFile.instrument.neutronScatteringParametersFile
+            ),
+            "Incident beam spectrum parameters": (
+                gudrunFile.beam.filenameIncidentBeamSpectrumParams
+            ),
+        }
 
         self.dataFiles = [
             *gudrunFile.normalisation.dataFiles.dataFiles,
-            *gudrunFile.normalisation.dataFilesBg.dataFiles
+            *gudrunFile.normalisation.dataFilesBg.dataFiles,
         ]
 
         # If NXS files are being used
         # then we also need the nexus definition file.
         if dataFileType.lower() == "nxs":
-            self.files.append(gudrunFile.instrument.nxsDefinitionFile)
+            self.files[
+                "NeXus definition file"
+            ] = gudrunFile.instrument.nxsDefinitionFile
 
         # If the Total Cross Section Source of any object uses a file,
-        # then we need to incldue that file.
+        # then we need to include that file.
         if gudrunFile.normalisation.totalCrossSectionSource == (
             CrossSectionSource.FILE
         ):
-            self.files.append(gudrunFile.normalisation.crossSectionFilename)
+            self.files[
+                "Total cross section source"
+            ] = gudrunFile.normalisation.crossSectionFilename
 
         # Iterate through SampleBackgrounds, Samples and Containers,
         # collecting their data files and if they are using
@@ -82,14 +92,16 @@ class GudPyFileLibrary():
             for sample in sampleBackground.samples:
                 self.dataFiles.extend(sample.dataFiles.dataFiles)
                 if sample.totalCrossSectionSource == CrossSectionSource.FILE:
-                    self.files.append(sample.crossSectionFilename)
+                    self.files[sample.name] = sample.crossSectionFilename
 
                 for container in sample.containers:
                     self.dataFiles.extend(container.dataFiles.dataFiles)
                     if container.totalCrossSectionSource == (
                         CrossSectionSource.FILE
                     ):
-                        self.files.append(container.crossSectionFilename)
+                        self.files[
+                            container.name
+                        ] = container.crossSectionFilename
 
     def checkFilesExist(self):
         """
@@ -101,47 +113,64 @@ class GudPyFileLibrary():
             List of tuples of boolean values and paths,
             indicating if the given path exists.
         """
+
         return [
-            *[
-                (
+            [
+                *[
                     (
-                        os.path.isdir(dir_)
-                        | os.path.isdir(os.path.join(self.fileDir, dir_)),
-                    ),
-                    dir_
-                )
-                for dir_ in self.dirs
-            ],
-            *[
-                (
+                        (
+                            (
+                                os.path.exists(dir_)
+                                | os.path.exists(os.path.join(
+                                    self.fileDir, dir_
+                                ))
+                                and dir_
+                                and not os.path.isfile(dir_)
+                                and dir_ != os.path.sep
+                            )
+                        ),
+                        name,
+                        dir_,
+                    )
+                    for name, dir_ in self.dirs.items()
+                ],
+                *[
                     (
-                        os.path.isfile(file)
-                        | os.path.isfile(os.path.join(self.fileDir, file))
-                        | (file == "*")
-                    ),
-                    file
-                )
-                for file in self.files
+                        (
+                            os.path.isfile(file)
+                            | os.path.isfile(os.path.join(self.fileDir, file))
+                            | (file == "*")
+                        ),
+                        name,
+                        file,
+                    )
+                    for name, file in self.files.items()
+                ],
             ],
-            *[
-                (
-                    os.path.isfile(os.path.join(self.dataFileDir, dataFile)),
-                    dataFile
-                )
-                for dataFile in self.dataFiles
+            [
+                *[
+                    (
+                        os.path.isfile(os.path.join(
+                            self.dataFileDir, dataFile)),
+                        "Data files",
+                        dataFile,
+                    )
+                    for dataFile in self.dataFiles
+                ],
             ]
         ]
 
     def exportMintData(
-        self, samples, renameDataFiles=False,
-        exportTo=None, includeParams=False
+        self,
+        samples,
+        renameDataFiles=False,
+        exportTo=None,
+        includeParams=False,
     ):
         if not exportTo:
-            exportTo = (
-                os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    Path(self.gudrunFile.path).stem + ".zip"
-                )
+            exportTo = os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                Path(self.gudrunFile.path).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
@@ -149,12 +178,11 @@ class GudPyFileLibrary():
                     path = os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,
                         sample.dataFiles.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "mint01"
-                        )
+                            self.gudrunFile.instrument.dataFileType, "mint01"
+                        ),
                     )
                 safeSampleName = sample.name.replace(" ", "_").translate(
-                    {ord(x): '' for x in r'/\!*~,&|[]'}
+                    {ord(x): "" for x in r"/\!*~,&|[]"}
                 )
                 if os.path.exists(path):
                     outpath = path
@@ -165,7 +193,7 @@ class GudPyFileLibrary():
                     if includeParams:
                         path = os.path.join(
                             self.gudrunFile.instrument.GudrunInputFileDir,
-                            safeSampleName + ".sample"
+                            safeSampleName + ".sample",
                         )
                         if not os.path.exists(path):
                             sample.write_out(
