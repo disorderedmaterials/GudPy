@@ -134,8 +134,6 @@ class GudPyFileLibrary:
                     )
                     for name, dir_ in self.dirs.items()
                 ],
-            ],
-            [
                 *[
                     (
                         (
@@ -148,6 +146,8 @@ class GudPyFileLibrary:
                     )
                     for name, file in self.files.items()
                 ],
+            ],
+            [
                 *[
                     (
                         os.path.isfile(os.path.join(
