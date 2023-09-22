@@ -7,15 +7,15 @@ import re
 from copy import deepcopy
 
 from core.utils import (
-        extract_nums_from_string,
-        firstword, boolifyNum,
-        extract_ints_from_string,
-        extract_floats_from_string,
-        firstNFloats,
-        firstNInts,
-        nthfloat,
-        nthint,
-        resolve
+    extract_nums_from_string,
+    firstword, boolifyNum,
+    extract_ints_from_string,
+    extract_floats_from_string,
+    firstNFloats,
+    firstNInts,
+    nthfloat,
+    nthint,
+    resolve
 )
 from core.instrument import Instrument
 from core.beam import Beam
@@ -35,7 +35,7 @@ from core.enums import (
 )
 from core import config
 from core.gudpy_yaml import YAML
-from core.exception import ParserException
+from core.exception import ParserException, YAMLException
 from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
@@ -128,7 +128,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config_=False):
+    def __init__(self, path=None, format=Format.YAML, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -138,10 +138,15 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        format : Format enum
+            Format of the file
+        config_ : bool
+            If a new input file should be constructed from a config
         """
 
         self.path = path
         self.yaml = YAML()
+        self.format = format
 
         # Construct the outpath.
         self.outpath = "gudpy.txt"
@@ -435,32 +440,32 @@ class GudrunFile:
                 self.instrument.detectorCalibrationFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.groupFileName
+                pattern,
+                self.instrument.groupFileName
             )
 
             if match:
                 self.instrument.groupFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.deadtimeConstantsFileName
+                pattern,
+                self.instrument.deadtimeConstantsFileName
             )
 
             if match:
                 self.instrument.deadtimeConstantsFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.neutronScatteringParametersFile
+                pattern,
+                self.instrument.neutronScatteringParametersFile
             )
 
             if match:
                 self.instrument.neutronScatteringParametersFile = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.neutronScatteringParametersFile
+                pattern,
+                self.instrument.neutronScatteringParametersFile
             )
 
             if match:
@@ -468,10 +473,10 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Instrument, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
-                    f"{str(e)}"
+                "Whilst parsing Instrument, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
+                f"{str(e)}"
             ) from e
 
     def parseBeam(self):
@@ -551,8 +556,8 @@ class GudrunFile:
             pattern = re.compile(r"StartupFiles\S*")
 
             match = re.search(
-                    pattern,
-                    self.beam.filenameIncidentBeamSpectrumParams
+                pattern,
+                self.beam.filenameIncidentBeamSpectrumParams
             )
 
             if match:
@@ -573,9 +578,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Beam, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Beam, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseNormalisation(self):
@@ -777,9 +782,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Normalisation, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Normalisation, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseSampleBackground(self):
@@ -821,9 +826,9 @@ class GudrunFile:
             return sampleBackground
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Sample Background, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Sample Background, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseSample(self):
@@ -979,7 +984,7 @@ class GudrunFile:
             while (
                     "to finish specifying wavelength range of resonance"
                     not in line
-                    ):
+            ):
                 sample.resonanceValues.append(
                     extract_floats_from_string(line)
                 )
@@ -1027,9 +1032,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Sample, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Sample, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseContainer(self):
@@ -1172,9 +1177,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Container, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseComponents(self):
@@ -1304,19 +1309,21 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path" + self.path
             )
-
-        try:
-            (
-                self.instrument,
-                self.beam,
-                self.components,
-                self.normalisation,
-                self.sampleBackgrounds,
-                config.GUI
-            ) = self.yaml.parseYaml(self.path)
-            self.format = Format.YAML
-        except Exception:
-            self.format = Format.TXT
+        if self.format == Format.YAML:
+            # YAML Files
+            try:
+                (
+                    self.instrument,
+                    self.beam,
+                    self.components,
+                    self.normalisation,
+                    self.sampleBackgrounds,
+                    config.GUI
+                ) = self.yaml.parseYaml(self.path)
+            except YAMLException as e:
+                raise ParserException(e)
+        else:
+            # TXT Files
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
@@ -1634,9 +1641,9 @@ class GudrunFile:
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(
-                    self.instrument.dataFileType,
-                    "gud"
-                )
+            self.instrument.dataFileType,
+            "gud"
+        )
         gudFile = GudFile(
             os.path.join(
                 self.instrument.GudrunInputFileDir, gudPath

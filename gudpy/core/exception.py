@@ -4,3 +4,7 @@ class ParserException(Exception):
 
 class ChemicalFormulaParserException(Exception):
     pass
+
+
+class YAMLException(Exception):
+    pass
