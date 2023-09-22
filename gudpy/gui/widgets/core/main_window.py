@@ -528,7 +528,9 @@ class GudPyMainWindow(QMainWindow):
     def updateWidgets(self, fromFile=False):
         self.widgetsRefreshing = True
         if fromFile:
-            self.gudrunFile = GudrunFile(path=self.gudrunFile.path)
+            self.gudrunFile = GudrunFile(
+                path=self.gudrunFile.path,
+                format=self.gudrunFile.format)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -570,23 +572,35 @@ class GudPyMainWindow(QMainWindow):
         """
         Opens a QFileDialog to load an input file.
         """
-        filename, _ = QFileDialog.getOpenFileName(
+        filters = {
+            "YAML (*.yaml)": Format.YAML,
+            "Gudrun Compatible (*.txt)": Format.TXT,
+            "Sample Parameters (*.sample)": Format.TXT
+        }
+
+        filename, filter = QFileDialog.getOpenFileName(
             self.mainWidget,
             "Select Input file for GudPy",
             ".",
-            "YAML (*.yaml);;Gudrun Compatible "
-            "(*.txt);;Sample Parameters (*.sample)",
+            f"{list(filters.keys())[0]};;" +
+            f"{list(filters.keys())[1]};;" +
+            f"{list(filters.keys())[2]};;"
         )
         if filename:
+            fmt = filters[filter]
             try:
                 if self.gudrunFile:
                     self.gudrunFile = None
                 path = self.tryLoadAutosaved(filename)
-                self.gudrunFile = GudrunFile(path=path)
+                self.gudrunFile = GudrunFile(path=path, format=fmt)
                 self.updateWidgets()
                 self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
+            except IOError:
+                QMessageBox.critical(self.mainWidget,
+                                     "GudPy Error",
+                                     "Could not open file")
 
     def saveInputFile(self):
         """
@@ -1005,6 +1019,7 @@ class GudPyMainWindow(QMainWindow):
                 func=func,
                 args=args,
                 finished=self.runGudrunFinished,
+
             )
 
     def runContainersAsSamples(self):
@@ -1106,7 +1121,9 @@ class GudPyMainWindow(QMainWindow):
             )
         else:
             self.makeProc(
-                dcs, self.progressDCS, func=func, args=args, finished=finished
+                dcs, self.progressDCS,
+                func=func, args=args,
+                finished=finished
             )
 
     def purgeOptionsMessageBox(self, dcs, finished, func, args, text):
@@ -1127,9 +1144,11 @@ class GudPyMainWindow(QMainWindow):
             self.purgeBeforeRunning(default=False)
         elif messageBox.clickedButton() == purgeDefault:
             self.purgeBeforeRunning()
-        elif result == messageBox.Yes:
+        elif result == QMessageBox.Yes:
             self.makeProc(
-                dcs, self.progressDCS, func=func, args=args, finished=finished
+                dcs, self.progressDCS,
+                func=func, args=args,
+                finished=finished
             )
         else:
             messageBox.close()
@@ -1260,9 +1279,10 @@ class GudPyMainWindow(QMainWindow):
                 self.queue.put(t)
             self.currentFile = 0
             self.keyMap = {
-                n
-                + 1: os.path.splitext(
-                    os.path.basename(self.nexusProcessingFiles[n])
+                n + 1: os.path.splitext(
+                    os.path.basename(
+                        self.nexusProcessingFiles[n]
+                    )
                 )[0]
                 for n in range(len(self.nexusProcessingFiles))
             }
@@ -1475,9 +1495,9 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
-        progress = (currentIteration / self.numberIterations) * (
-            self.currentIteration / self.totalIterations
-        )
+        progress = (
+            currentIteration / self.numberIterations
+        ) * (self.currentIteration / self.totalIterations)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
     def nextCompositionIteration(self):
