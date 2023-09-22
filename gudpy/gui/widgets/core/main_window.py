@@ -580,7 +580,7 @@ class GudPyMainWindow(QMainWindow):
         if filename:
             try:
                 if self.gudrunFile:
-                    del self.gudrunFile
+                    self.gudrunFile = None
                 path = self.tryLoadAutosaved(filename)
                 self.gudrunFile = GudrunFile(path=path)
                 self.updateWidgets()
@@ -629,7 +629,7 @@ class GudPyMainWindow(QMainWindow):
 
     def newInputFile(self):
         if self.gudrunFile:
-            del self.gudrunFile
+            self.gudrunFile = None
         self.gudrunFile = GudrunFile()
         configurationDialog = ConfigurationDialog(self)
         result = configurationDialog.widget.exec()
