@@ -141,6 +141,7 @@ class GudrunFile:
         """
 
         self.path = path
+        self.filename = os.path.basename(path)
         self.yaml = YAML()
 
         # Construct the outpath.
