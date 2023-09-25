@@ -1512,12 +1512,13 @@ class GudrunFile:
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
         path : str, optional
             Path to parse from (default is empty, which indicates self.path).
-        purge : bool, optional
-            Should detectors be purged?
+        headless : bool, optional
+            Is this being run through CL or GUI?
+        iterative : bool, optional
+            Is Gudrun being iterated?
+
         Returns
         -------
         subprocess.CompletedProcess
