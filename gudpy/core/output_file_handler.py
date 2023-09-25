@@ -52,12 +52,9 @@ class OutputFileHandler():
     def organiseSampleFiles(self, run, sampleRunFile, tree=""):
         dir = self.gudrunFile.instrument.GudrunInputFileDir
         if tree:
-            outputDir = os.path.join(dir, tree, run)
+            outputDir = self.uniquify(os.path.join(dir, tree, run))
         else:
-            outputDir = os.path.join(dir, run)
-            if os.path.exists(outputDir):
-                shutil.rmtree(outputDir)
-        if not os.path.exists(outputDir):
+            outputDir = self.uniquify(os.path.join(dir, run))
             os.makedirs(outputDir)
         os.makedirs(os.path.join(outputDir, "outputs"))
         os.makedirs(os.path.join(outputDir, "diagnostics"))
@@ -81,7 +78,10 @@ class OutputFileHandler():
                     )
 
     def naiveOrganise(self):
+        """ Calls `organiseSampleFiles` on members of `runFiles`"""
+
         for run, runFile in self.runFiles:
+            print(f"{run}     {runFile}")
             self.organiseSampleFiles(run, runFile)
 
     def iterativeOrganise(self, head):
@@ -93,3 +93,24 @@ class OutputFileHandler():
             shutil.rmtree(path)
         for run, runFile in self.runFiles:
             self.organiseSampleFiles(run, runFile, tree=head)
+
+    def uniquify(self, path):
+        """
+        Function to increment path if it already exists
+
+        Parameters
+        ----------
+        path : str
+            requested path
+
+        Returns
+        -------
+        str
+            avaliable path
+        """
+        root, ext = os.path.splitext(path)
+        fileCount = 1
+        while os.path.exists(path):
+            path = root + "_" + str(fileCount) + ext
+            fileCount += 1
+        return path
