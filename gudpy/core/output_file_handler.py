@@ -203,7 +203,7 @@ class OutputFileHandler():
                         uniquify(
                             os.path.join(
                                 self.outputDir,
-                                f"{sample.name}_{head}"))
+                                sample.name))
                     )
 
     def copyOutputs(self, fpath, targetDir):

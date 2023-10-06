@@ -1647,13 +1647,19 @@ class GudPyMainWindow(QMainWindow):
                     self.currentIteration,
                     "WavelengthIteration"
                 )
-            else:
+            elif self.queue.qsize():
                 self.iterator.gudrunFile.iterativeOrganise(
                     self.numberIterations,
                     self.currentIteration,
                     "QIteration"
                 )
                 self.currentIteration += 1
+            else:
+                self.iterator.gudrunFile.iterativeOrganise(
+                    self.currentIteration,
+                    self.currentIteration,
+                    "QIteration"
+                )
             self.outputIterations[self.currentIteration + 1] = self.output
         else:
             self.currentIteration += 1
@@ -1687,7 +1693,8 @@ class GudPyMainWindow(QMainWindow):
     def iterationStarted(self):
         self.mainWidget.currentTaskLabel.setText(
             f"{self.text}"
-            f" {self.currentIteration+1}/{self.numberIterations + 1}"
+            f" {(self.numberIterations + 1) - self.queue.qsize()}"
+            + f"/{self.numberIterations + 1}"
         )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 

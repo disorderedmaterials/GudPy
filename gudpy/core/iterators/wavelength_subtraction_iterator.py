@@ -57,6 +57,8 @@ class WavelengthSubtractionIterator():
         Perform n iterations on the wavelength scale and Q scale.
     """
 
+    name = "IterateByWavelengthSubtraction"
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
