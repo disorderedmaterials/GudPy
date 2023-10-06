@@ -64,15 +64,16 @@ class OutputFileHandler():
             self.copyOutputs(normBgFile,
                              os.path.join(outputDir, self.NORM_BG))
 
-    def createSampleBgDir(self, outputDir, sampleBackground):
-        for dataFile in sampleBackground.dataFiles:
-            self.copyOutputs(
-                dataFile,
-                os.path.join(
-                    outputDir, self.SAMPLE_BGS, self.SAMPLE_BG),
-                sep="",
-                incFirst=True
-            )
+    def createSampleBgDir(self, outputDir):
+        for count, sampleBackground in enumerate(
+                self.gudrunFile.sampleBackgrounds):
+            for dataFile in sampleBackground.dataFiles:
+                self.copyOutputs(
+                    dataFile,
+                    os.path.join(
+                        outputDir, self.SAMPLE_BGS,
+                        f"{self.SAMPLE_BG}{count + 1}")
+                )
 
     def createSampleDir(self, outputDir, samples, tree=""):
         # Create sample folders within background folders
@@ -119,18 +120,19 @@ class OutputFileHandler():
     def naiveOrganise(self):
         # Create normalisation and sample background folders
         self.createNormDir(self.outputDir)
+        self.createSampleBgDir(self.outputDir)
         # Create sample folders
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            self.createSampleBgDir(self.outputDir, sampleBackground)
             self.createSampleDir(
                 self.outputDir,
                 sampleBackground.samples)
 
     def iterativeOrganise(self, nTotal, nCurrent, head):
+        if nCurrent == 0:
+            self.createNormDir(self.outputDir)
+            self.createSampleBgDir(
+                self.outputDir)
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            if nCurrent == 0:
-                self.createNormDir(self.outputDir)
-                self.createSampleBgDir(self.outputDir, sampleBackground)
             self.createSampleDir(
                 self.gudrunDir,
                 sampleBackground.samples,
