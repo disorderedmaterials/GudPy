@@ -142,6 +142,7 @@ class GudrunFile:
         """
 
         self.path = path
+        self.filename = os.path.basename(path)
         self.yaml = YAML()
 
         # Construct the outpath.
@@ -436,32 +437,32 @@ class GudrunFile:
                 self.instrument.detectorCalibrationFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.groupFileName
+                pattern,
+                self.instrument.groupFileName
             )
 
             if match:
                 self.instrument.groupFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.deadtimeConstantsFileName
+                pattern,
+                self.instrument.deadtimeConstantsFileName
             )
 
             if match:
                 self.instrument.deadtimeConstantsFileName = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.neutronScatteringParametersFile
+                pattern,
+                self.instrument.neutronScatteringParametersFile
             )
 
             if match:
                 self.instrument.neutronScatteringParametersFile = match.group()
 
             match = re.search(
-                    pattern,
-                    self.instrument.neutronScatteringParametersFile
+                pattern,
+                self.instrument.neutronScatteringParametersFile
             )
 
             if match:
@@ -469,10 +470,10 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Instrument, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
-                    f"{str(e)}"
+                "Whilst parsing Instrument, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
+                f"{str(e)}"
             ) from e
 
     def parseBeam(self):
@@ -552,8 +553,8 @@ class GudrunFile:
             pattern = re.compile(r"StartupFiles\S*")
 
             match = re.search(
-                    pattern,
-                    self.beam.filenameIncidentBeamSpectrumParams
+                pattern,
+                self.beam.filenameIncidentBeamSpectrumParams
             )
 
             if match:
@@ -574,9 +575,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Beam, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Beam, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseNormalisation(self):
@@ -778,9 +779,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Normalisation, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Normalisation, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseSampleBackground(self):
@@ -822,9 +823,9 @@ class GudrunFile:
             return sampleBackground
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Sample Background, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Sample Background, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseSample(self):
@@ -852,8 +853,6 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
-            if not sample.name:
-                sample.name = "SAMPLE"
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -980,7 +979,7 @@ class GudrunFile:
             while (
                     "to finish specifying wavelength range of resonance"
                     not in line
-                    ):
+            ):
                 sample.resonanceValues.append(
                     extract_floats_from_string(line)
                 )
@@ -1028,9 +1027,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Sample, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Sample, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseContainer(self):
@@ -1059,8 +1058,6 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("CONTAINER", "").strip()
             )
-            if not container.name:
-                container.name = "CONTAINER"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -1173,9 +1170,9 @@ class GudrunFile:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Container, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
 
     def parseComponents(self):
@@ -1651,9 +1648,9 @@ class GudrunFile:
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(
-                    self.instrument.dataFileType,
-                    "gud"
-                )
+            self.instrument.dataFileType,
+            "gud"
+        )
         gudFile = GudFile(
             os.path.join(
                 self.instrument.GudrunInputFileDir, gudPath
