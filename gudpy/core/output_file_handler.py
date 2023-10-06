@@ -137,8 +137,10 @@ class OutputFileHandler():
                     self.gudrunDir, sample.pathName())):
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, sample.pathName()),
-                    os.path.join(samplePath, sample.pathName())
+                    os.path.join(samplePath, sample.pathName()),
+                    symlinks=True
                 )
+
             # Create container folders within sample folder
             for container in sample.containers:
                 containerPath = uniquify(os.path.join(
