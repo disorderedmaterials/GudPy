@@ -15,6 +15,7 @@ from core.gud_file import GudFile
 from core.iterators.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
+from core.enums import Format
 
 
 class TestGudPyWorkflows(TestCase):
@@ -22,13 +23,14 @@ class TestGudPyWorkflows(TestCase):
 
         path = os.path.abspath("test/TestData/NIMROD-water/water.txt")
 
-        self.g = GudrunFile(os.path.abspath(path))
+        self.g = GudrunFile(os.path.abspath(path), format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
-            os.path.abspath("test/TestData/NIMROD-water/good_water.txt")
+            os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
+            format=Format.TXT
         )
 
         from pathlib import Path
@@ -106,10 +108,10 @@ class TestGudPyWorkflows(TestCase):
                     self.g.instrument.GudrunInputFileDir, mintFilename
                 ),
                 "r", encoding="utf-8"
-                ).readlines()[10:]
+            ).readlines()[10:]
             expectedData = open(
                 actualMintFile, "r", encoding="utf-8"
-                ).readlines()[10:]
+            ).readlines()[10:]
             close = 0
             total = 0
             for a, b in zip(actualData, expectedData):
@@ -122,9 +124,9 @@ class TestGudPyWorkflows(TestCase):
                         float(x.strip()),
                         float(y.strip()),
                         rel_tol=0.01
-                            ):
+                    ):
                         close += 1
-            self.assertTrue((close/total) >= 0.95)
+            self.assertTrue((close / total) >= 0.95)
 
     def testGudPyIterateByTweakFactor(self):
 
@@ -372,7 +374,7 @@ class TestGudPyWorkflows(TestCase):
                     x
                     for x in self.g.sampleBackgrounds[0].samples
                     if x.runThisSample
-                    ]:
+            ]:
                 mintFilename = (
                     sample.dataFiles[0].replace(
                         self.g.instrument.dataFileType, "mint01"
@@ -385,14 +387,14 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualData = open(
-                   os.path.join(
-                       self.g.instrument.GudrunInputFileDir,
-                       mintFilename
-                   ), "r", encoding="utf-8"
+                    os.path.join(
+                        self.g.instrument.GudrunInputFileDir,
+                        mintFilename
+                    ), "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
-                    ).readlines()[10:]
+                ).readlines()[10:]
                 close = 0
                 total = 0
                 for a, b in zip(actualData, expectedData):
@@ -405,9 +407,9 @@ class TestGudPyWorkflows(TestCase):
                             float(x.strip()),
                             float(y.strip()),
                             rel_tol=0.02
-                                ):
+                        ):
                             close += 1
-                self.assertTrue((close/total) >= 0.95)
+                self.assertTrue((close / total) >= 0.95)
 
                 msubFilename = (
                     sample.dataFiles[0].replace(
@@ -420,14 +422,14 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualData = open(
-                   os.path.join(
-                       self.g.instrument.GudrunInputFileDir,
-                       msubFilename
-                   ), "r", encoding="utf-8"
+                    os.path.join(
+                        self.g.instrument.GudrunInputFileDir,
+                        msubFilename
+                    ), "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMsubFilename, "r", encoding="utf-8"
-                    ).readlines()[10:]
+                ).readlines()[10:]
                 close = 0
                 total = 0
                 for a, b in zip(actualData, expectedData):
@@ -441,6 +443,6 @@ class TestGudPyWorkflows(TestCase):
                             float(x.strip()),
                             float(y.strip()),
                             rel_tol=0.02
-                                ):
+                        ):
                             close += 1
-                self.assertTrue((close/total) >= 0.95)
+                self.assertTrue((close / total) >= 0.95)

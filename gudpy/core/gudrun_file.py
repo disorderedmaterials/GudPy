@@ -36,7 +36,7 @@ from core.enums import (
 )
 from core import config
 from core.gudpy_yaml import YAML
-from core.exception import ParserException
+from core.exception import ParserException, YAMLException
 from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
@@ -129,7 +129,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config_=False):
+    def __init__(self, path=None, format=Format.YAML, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -139,11 +139,16 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        format : Format enum
+            Format of the file
+        config_ : bool
+            If a new input file should be constructed from a config
         """
 
         self.path = path
         self.filename = os.path.basename(path)
         self.yaml = YAML()
+        self.format = format
 
         # Construct the outpath.
         self.outpath = "gudpy.txt"
@@ -1317,19 +1322,21 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path" + self.path
             )
-
-        try:
-            (
-                self.instrument,
-                self.beam,
-                self.components,
-                self.normalisation,
-                self.sampleBackgrounds,
-                config.GUI
-            ) = self.yaml.parseYaml(self.path)
-            self.format = Format.YAML
-        except Exception:
-            self.format = Format.TXT
+        if self.format == Format.YAML:
+            # YAML Files
+            try:
+                (
+                    self.instrument,
+                    self.beam,
+                    self.components,
+                    self.normalisation,
+                    self.sampleBackgrounds,
+                    config.GUI
+                ) = self.yaml.parseYaml(self.path)
+            except YAMLException as e:
+                raise ParserException(e)
+        else:
+            # TXT Files
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
