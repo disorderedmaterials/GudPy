@@ -1611,7 +1611,7 @@ class GudPyMainWindow(QMainWindow):
         else:
             self.queue = iterationDialog.queue
             self.iterator = iterationDialog.iterator
-            self.numberIterations = iterationDialog.queue.qsize()
+            self.numberIterations = iterationDialog.queue.qsize() - 1
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
@@ -1687,7 +1687,7 @@ class GudPyMainWindow(QMainWindow):
     def iterationStarted(self):
         self.mainWidget.currentTaskLabel.setText(
             f"{self.text}"
-            f" {self.currentIteration+1}/{self.numberIterations+1}"
+            f" {self.currentIteration+1}/{self.numberIterations + 1}"
         )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
