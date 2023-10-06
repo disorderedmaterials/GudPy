@@ -7,15 +7,16 @@ import re
 from copy import deepcopy
 
 from core.utils import (
-        extract_nums_from_string,
-        firstword, boolifyNum,
-        extract_ints_from_string,
-        extract_floats_from_string,
-        firstNFloats,
-        firstNInts,
-        nthfloat,
-        nthint,
-        resolve
+    extract_nums_from_string,
+    firstword, boolifyNum,
+    extract_ints_from_string,
+    extract_floats_from_string,
+    firstNFloats,
+    firstNInts,
+    nthfloat,
+    nthint,
+    resolve,
+    uniquifyName
 )
 from core.instrument import Instrument
 from core.beam import Beam
@@ -1270,10 +1271,25 @@ class GudrunFile:
             elif "GO" in line:
                 self.getNextToken()
             elif "SAMPLE" in line and firstword(line) == "SAMPLE":
-                sampleBackground.samples.append(self.makeParse("SAMPLE"))
+                sample = self.makeParse("SAMPLE")
+                if not sample.name:
+                    sample.name = uniquifyName(
+                        "SAMPLE",
+                        [s.name for s in sampleBackground.samples],
+                        sep="",
+                        incFirst=True)
+                sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and firstword(line) == "CONTAINER":
+                container = self.makeParse("CONTAINER")
+                if not container.name:
+                    container.name = uniquifyName(
+                        "CONTAINER",
+                        [c.name
+                         for c in sampleBackground.samples[-1].containers],
+                        sep="",
+                        incFirst=True)
                 sampleBackground.samples[-1].containers.append(
-                    self.makeParse("CONTAINER")
+                    container
                 )
             self.consumeWhitespace()
             line = self.peekNextToken()
