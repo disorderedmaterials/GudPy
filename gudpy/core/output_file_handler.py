@@ -6,8 +6,16 @@ class OutputFileHandler():
 
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
-        self.getRunFiles()
-        self.outputs = {
+        # String constants
+        self.NORM = "Normalisation"
+        self.NORM_BG = "NormalisationBackground"
+        self.SAMPLE = "Sample"
+        self.SAMPLE_BG = "SampleBackground"
+        self.SAMPLE_BGS = "SampleBackgrounds"
+        self.CONTAINERS = "Containers"
+        self.OUTPUTS = "Outputs"
+        self.DIAGNOSTICS = "Diagnostics"
+        self.Outputs = {
             "sampleOutputs": [
                 "dcs01",
                 "dcsd01",
