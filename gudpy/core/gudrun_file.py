@@ -1645,9 +1645,9 @@ class GudrunFile:
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.naiveOrganise()
 
-    def iterativeOrganise(self, head):
+    def iterativeOrganise(self, nTotal, nCurrent, head):
         outputFileHandler = OutputFileHandler(self)
-        outputFileHandler.iterativeOrganise(head)
+        outputFileHandler.iterativeOrganise(nTotal, nCurrent, head)
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(
