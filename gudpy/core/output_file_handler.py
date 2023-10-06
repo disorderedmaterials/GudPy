@@ -127,9 +127,6 @@ class OutputFileHandler():
                 sampleBackground.samples)
 
     def iterativeOrganise(self, nTotal, nCurrent, head):
-        print(head)
-        print(f"Total {nTotal}")
-        print(f"Current {nCurrent}")
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             if nCurrent == 0:
                 self.createNormDir(self.outputDir)
