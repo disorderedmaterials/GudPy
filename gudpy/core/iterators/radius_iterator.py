@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from core.iterators.single_param_iterator import SingleParamIterator
 
 
 class RadiusIterator(SingleParamIterator):
@@ -21,6 +21,8 @@ class RadiusIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+    name = "IterateByRadius"
+
     def applyCoefficientToAttribute(self, object, coefficient):
         if self.targetRadius == "inner":
             object.innerRadius *= coefficient
@@ -29,6 +31,3 @@ class RadiusIterator(SingleParamIterator):
 
     def setTargetRadius(self, targetRadius):
         self.targetRadius = targetRadius
-
-    def organiseOutput(self, n):
-        self.gudrunFile.iterativeOrganise(f"IterateByRadius_{n}")
