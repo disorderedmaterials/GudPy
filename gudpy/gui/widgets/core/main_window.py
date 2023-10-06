@@ -35,13 +35,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from core.single_param_iterator import SingleParamIterator
-from core.composition_iterator import CompositionIterator
-from core.density_iterator import DensityIterator
-from core.radius_iterator import RadiusIterator
+from core.iterators.single_param_iterator import SingleParamIterator
+from core.iterators.composition_iterator import CompositionIterator
+from core.iterators.density_iterator import DensityIterator
+from core.iterators.radius_iterator import RadiusIterator
 from core.sample import Sample
 from core.container import Container
-from core.thickness_iterator import ThicknessIterator
+from core.iterators.thickness_iterator import ThicknessIterator
 from gui.widgets.dialogs.export_dialog import ExportDialog
 from gui.widgets.dialogs.iterate_composition_dialog import (
     CompositionIterationDialog
@@ -110,8 +110,8 @@ from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.wavelength_subtraction_iterator import (
+from core.iterators.tweak_factor_iterator import TweakFactorIterator
+from core.iterators.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 from core.run_containers_as_samples import RunContainersAsSamples

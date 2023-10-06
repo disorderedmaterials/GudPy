@@ -1,5 +1,5 @@
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.tweak_factor_iterator import TweakFactorIterator
+from core.iterators.tweak_factor_iterator import TweakFactorIterator
 
 
 class TweakFactorIterationDialog(IterationDialog):

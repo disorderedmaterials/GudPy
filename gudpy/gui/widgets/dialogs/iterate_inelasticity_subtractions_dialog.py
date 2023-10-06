@@ -1,5 +1,5 @@
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.wavelength_subtraction_iterator import (
+from core.iterators.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 
