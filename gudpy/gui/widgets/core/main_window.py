@@ -1641,7 +1641,6 @@ class GudPyMainWindow(QMainWindow):
                 gudrunFile=self.gudrunFile
             )
         if isinstance(self.iterator, WavelengthSubtractionIterator):
-            print(f"Q size: {self.queue.qsize()}")
             if self.queue.qsize() % 2 != 0:
                 self.iterator.gudrunFile.iterativeOrganise(
                     self.numberIterations + 1,

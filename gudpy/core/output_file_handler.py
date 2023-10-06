@@ -68,10 +68,10 @@ class OutputFileHandler():
         for dataFile in sampleBackground.dataFiles:
             self.copyOutputs(
                 dataFile,
-                uniquify(os.path.join(
+                os.path.join(
                     outputDir, self.SAMPLE_BGS, self.SAMPLE_BG),
-                    sep="",
-                    incFirst=True)
+                sep="",
+                incFirst=True
             )
 
     def createSampleDir(self, outputDir, samples, tree=""):
