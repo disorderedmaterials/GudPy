@@ -135,10 +135,9 @@ class OutputFileHandler():
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
-                shutil.copyfile(
+                shutil.copy(
                     os.path.join(self.gudrunDir, sample.pathName()),
-                    os.path.join(samplePath, sample.pathName()),
-                    symlinks=True
+                    os.path.join(samplePath, sample.pathName())
                 )
 
             # Create container folders within sample folder
