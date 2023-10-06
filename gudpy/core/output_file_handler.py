@@ -180,15 +180,20 @@ class OutputFileHandler():
             which gets incremented per iteration
         """
         if nCurrent == 0:
+            # Create the normalisation and sample background directories
+            # if this is the first iteration
             self.createNormDir(self.outputDir)
             self.createSampleBgDir(
                 self.outputDir)
+        # Create the sample output folders
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             self.createSampleDir(
                 self.gudrunDir,
                 sampleBackground.samples,
                 f"{head}_{nCurrent + 1}")
             if nCurrent == nTotal:
+                # If this is the final iteration, move root folder
+                # to output folder
                 for sample in [
                     s for s in sampleBackground.samples
                     if s.runThisSample and len(s.dataFiles)
