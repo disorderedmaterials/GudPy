@@ -35,14 +35,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from core.single_param_iterator import SingleParamIterator
-from core.composition_iterator import CompositionIterator
-from core.density_iterator import DensityIterator
-from core.radius_iterator import RadiusIterator
 from core.sample import Sample
 from core.container import Container
-from core.thickness_iterator import ThicknessIterator
 
+import core.iterators as iterators
 from gui.widgets import dialogs, tables, charts, slots, core
 import core.enums as enums
 
@@ -51,10 +47,6 @@ from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.inelasticity_subtraction_iterator import (
-    InelasticitySubtractionIterator
-)
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
@@ -74,7 +66,8 @@ class GudPyMainWindow(QMainWindow):
         GudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
-    iterator : TweakFactorIterator | InelasticitySubtractionIterator
+    iterator : SingleParamIterator | InelasticitySubtractionIterator
+      | TweakFactorIterator | CompositionIterator
         Iterator to use in iterations.
     Methods
     -------
