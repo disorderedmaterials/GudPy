@@ -1013,9 +1013,9 @@ class GudPyMainWindow(QMainWindow):
             )
         else:
             self.makeProc(
-              dcs, self.progressDCS,
-              func=func, args=args,
-              finished=self.runGudrunFinished
+                dcs, self.progressDCS,
+                func=func, args=args,
+                finished=self.runGudrunFinished
             )
 
     def runContainersAsSamples(self):
@@ -1115,9 +1115,9 @@ class GudPyMainWindow(QMainWindow):
             )
         else:
             self.makeProc(
-              dcs, self.progressDCS,
-              func=func, args=args,
-              finished=finished
+                dcs, self.progressDCS,
+                func=func, args=args,
+                finished=finished
             )
 
     def purgeOptionsMessageBox(self, dcs, finished, func, args, text):
@@ -1144,9 +1144,9 @@ class GudPyMainWindow(QMainWindow):
             self.purgeBeforeRunning()
         elif result == messageBox.Yes:
             self.makeProc(
-              dcs, self.progressDCS,
-              func=func, args=args,
-              finished=finished
+                dcs, self.progressDCS,
+                func=func, args=args,
+                finished=finished
             )
         else:
             messageBox.close()
@@ -1283,7 +1283,7 @@ class GudPyMainWindow(QMainWindow):
                 self.queue.put(t)
             self.currentFile = 0
             self.keyMap = {
-                n+1: os.path.splitext(
+                n + 1: os.path.splitext(
                     os.path.basename(
                         self.nexusProcessingFiles[n]
                     )
@@ -1318,7 +1318,7 @@ class GudPyMainWindow(QMainWindow):
         timer.start()
         while (timer.elapsed() < 5000):
             QCoreApplication.processEvents()
-        self.nexusProcessingOutput[self.currentFile+1] = self.output
+        self.nexusProcessingOutput[self.currentFile + 1] = self.output
         self.currentFile += 1
         self.output = ""
         func, args = self.queue.get()
@@ -1354,7 +1354,7 @@ class GudPyMainWindow(QMainWindow):
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
-            if isinstance(self.iterator, CompositionIterator):
+            if isinstance(self.iterator, iterators.CompositionIterator):
                 self.iterateByComposition()
             else:
                 self.nextIterableProc()
@@ -1382,7 +1382,7 @@ class GudPyMainWindow(QMainWindow):
             self.nextBatchProcess()
 
     def batchProcessFinished(self, ec, es):
-        self.outputBatches[self.currentIteration+1] = self.output
+        self.outputBatches[self.currentIteration + 1] = self.output
         self.output = ""
         self.currentIteration += 1
         self.nextBatchProcess()
@@ -1410,7 +1410,7 @@ class GudPyMainWindow(QMainWindow):
                     with self.queue.mutex:
                         remaining = list(self.queue.queue)
                     n = remaining.index(None)
-                    for _ in range(n+1):
+                    for _ in range(n + 1):
                         self.queue.get()
                     self.nextBatchProcess()
                 else:
@@ -1504,7 +1504,7 @@ class GudPyMainWindow(QMainWindow):
         progress = (
             currentIteration / self.numberIterations
         ) * (self.currentIteration / self.totalIterations)
-        self.mainWidget.progressBar.setValue(int(progress*100))
+        self.mainWidget.progressBar.setValue(int(progress * 100))
 
     def nextCompositionIteration(self):
         args, kwargs, sample = self.queue.get()
@@ -1815,7 +1815,7 @@ class GudPyMainWindow(QMainWindow):
                                     for sample in sampleBackground.samples
                                     if sample.runThisSample
                                 ]
-                                ),
+                            ),
                             *[
                                 len(sample.containers)
                                 for sample in sampleBackground.samples
@@ -1826,7 +1826,7 @@ class GudPyMainWindow(QMainWindow):
                 ]
             )
         )
-        stepSize = math.ceil(100/markers)
+        stepSize = math.ceil(100 / markers)
         progress = stepSize * sum(
             [
                 stdout.count("Got to: INSTRUMENT"),
@@ -1897,7 +1897,7 @@ class GudPyMainWindow(QMainWindow):
                 ]
             )
 
-        stepSize = math.ceil(100/len(dataFiles))
+        stepSize = math.ceil(100 / len(dataFiles))
         progress = 0
         for df in dataFiles:
             if df in stdout:
