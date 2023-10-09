@@ -29,6 +29,7 @@ class SingleParamIterator():
     organiseOutput
         To be overriden by sub-classes.
     """
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
@@ -58,9 +59,9 @@ class SingleParamIterator():
                 if s.runThisSample
             ]:
                 gudPath = sample.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "gud"
-                        )
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
+                )
                 gudFile = GudFile(
                     os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,

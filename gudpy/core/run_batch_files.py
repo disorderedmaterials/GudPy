@@ -1,10 +1,12 @@
 from copy import deepcopy
 import os
 from core.enums import IterationModes
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.thickness_iterator import ThicknessIterator
-from core.radius_iterator import RadiusIterator
-from core.density_iterator import DensityIterator
+from core.iterators import (
+    DensityIterator,
+    TweakFactorIterator,
+    ThicknessIterator,
+    RadiusIterator
+)
 
 
 class BatchProcessor:
@@ -93,10 +95,10 @@ class BatchProcessor:
     def propogateResults(self, current, next, iterationMode):
         for (
             sampleBackgroundA, sampleBackgroundB
-         ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
+        ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
             for (
                 sampleA, sampleB
-             ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
+            ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     sampleB.sampleTweakFactor = sampleA.sampleTweakFactor
                 elif iterationMode == IterationModes.THICKNESS:

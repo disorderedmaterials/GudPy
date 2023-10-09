@@ -1,5 +1,5 @@
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.radius_iterator import RadiusIterator
+from core.iterators import RadiusIterator
 from core.enums import Geometry
 from core import config
 

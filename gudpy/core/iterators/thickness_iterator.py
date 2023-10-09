@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from .single_param_iterator import SingleParamIterator
 
 
 class ThicknessIterator(SingleParamIterator):
@@ -19,6 +19,7 @@ class ThicknessIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+
     def applyCoefficientToAttribute(self, object, coefficient):
         # Determine a new total thickness.
         totalThickness = object.upstreamThickness + object.downstreamThickness

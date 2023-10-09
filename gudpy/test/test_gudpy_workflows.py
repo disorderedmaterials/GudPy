@@ -7,13 +7,13 @@ import math
 
 from core.composition import Composition, Component
 from core.gudrun_file import GudrunFile
-from core.thickness_iterator import ThicknessIterator
-from core.density_iterator import DensityIterator
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.composition_iterator import CompositionIterator
 from core.gud_file import GudFile
-from core.inelasticity_subtraction_iterator import (
-    InelasticitySubtractionIterator
+from core.iterators import (
+    InelasticitySubtractionIterator,
+    DensityIterator,
+    ThicknessIterator,
+    TweakFactorIterator,
+    CompositionIterator
 )
 
 

@@ -1,5 +1,5 @@
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.inelasticity_subtraction_iterator import (
+from core.iterators import (
     InelasticitySubtractionIterator
 )
 

@@ -3,7 +3,7 @@ from copy import deepcopy
 from PySide6.QtCore import Qt
 
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.composition_iterator import (
+from core.iterators import (
     CompositionIterator, calculateTotalMolecules
 )
 

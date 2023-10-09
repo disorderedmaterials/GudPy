@@ -4,7 +4,7 @@ from PySide6.QtCore import QObject, Signal, QThread
 
 from core.gud_file import GudFile
 from core.sample import Sample
-from core.composition_iterator import gss
+from core.iterators import gss
 
 
 class CompositionWorker(QObject):
@@ -123,4 +123,4 @@ class CompositionWorker(QObject):
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+            return (gudFile.expectedDCS - gudFile.averageLevelMergedDCS)**2

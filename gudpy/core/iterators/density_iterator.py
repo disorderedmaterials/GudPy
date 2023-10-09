@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from .single_param_iterator import SingleParamIterator
 
 
 class DensityIterator(SingleParamIterator):
@@ -18,6 +18,7 @@ class DensityIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+
     def applyCoefficientToAttribute(self, object, coefficient):
         """
         Multiplies a sample's density by a given coefficient.

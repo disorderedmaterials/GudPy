@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from .single_param_iterator import SingleParamIterator
 
 
 class RadiusIterator(SingleParamIterator):
@@ -21,6 +21,7 @@ class RadiusIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+
     def applyCoefficientToAttribute(self, object, coefficient):
         if self.targetRadius == "inner":
             object.innerRadius *= coefficient
