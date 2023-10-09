@@ -1558,25 +1558,25 @@ class GudPyMainWindow(QMainWindow):
         if self.error:
             self.procFinished(9, QProcess.NormalExit)
             return
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, iterators.TweakFactorIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByTweakFactor_{self.currentIteration+1}"
             )
-        elif isinstance(self.iterator, ThicknessIterator):
+        elif isinstance(self.iterator, iterators.ThicknessIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByThickness_{self.currentIteration+1}"
             )
-        elif isinstance(self.iterator, RadiusIterator):
+        elif isinstance(self.iterator, iterators.RadiusIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByRadius_{self.currentIteration+1}"
             )
-        elif isinstance(self.iterator, DensityIterator):
+        elif isinstance(self.iterator, iterators.DensityIterator):
             self.gudrunFile.iterativeOrganise(
                 f"IterateByDensity_{self.currentIteration+1}"
             )
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, SingleParamIterator
+                iterators.TweakFactorIterator, iterators.SingleParamIterator
             )
         ):
             time.sleep(1)
@@ -1588,7 +1588,7 @@ class GudPyMainWindow(QMainWindow):
                 "gudrun_dcs",
                 gudrunFile=self.gudrunFile
             )
-        elif isinstance(self.iterator, InelasticitySubtractionIterator):
+        elif isinstance(self.iterator, iterators.InelasticitySubtractionIterator):
             if self.currentIteration % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
                     f"WavelengthIteration_{(self.currentIteration // 2) + 1}"
@@ -1617,7 +1617,8 @@ class GudPyMainWindow(QMainWindow):
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
-        if isinstance(self.iterator, InelasticitySubtractionIterator):
+        if isinstance(self.iterator,
+                      iterators.InelasticitySubtractionIterator):
             if self.currentIteration % 2 == 0:
                 self.iterator.wavelengthIteration(self.currentIteration)
             else:
@@ -1629,15 +1630,15 @@ class GudPyMainWindow(QMainWindow):
     def iterationStarted(self):
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
+                iterators.TweakFactorIterator, iterators.ThicknessIterator,
+                iterators.RadiusIterator, iterators.DensityIterator
             )
         ):
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
                 f" {self.currentIteration+1}/{self.numberIterations}"
             )
-        elif isinstance(self.iterator, InelasticitySubtractionIterator):
+        elif isinstance(self.iterator, iterators.InelasticitySubtractionIterator):
             iteration = math.ceil((self.currentIteration + 1) / 2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
@@ -1655,12 +1656,12 @@ class GudPyMainWindow(QMainWindow):
             return
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
+                iterators.TweakFactorIterator, iterators.ThicknessIterator,
+                iterators.RadiusIterator, iterators.DensityIterator
             )
         ):
             progress /= self.numberIterations
-        elif isinstance(self.iterator, InelasticitySubtractionIterator):
+        elif isinstance(self.iterator, iterators.InelasticitySubtractionIterator):
             progress /= self.numberIterations
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -1972,11 +1973,11 @@ class GudPyMainWindow(QMainWindow):
         output = self.output
         if isinstance(
             self.iterator, (
-                TweakFactorIterator, ThicknessIterator,
-                RadiusIterator, DensityIterator
+                iterators.TweakFactorIterator, iterators.ThicknessIterator,
+                iterators.RadiusIterator, iterators.DensityIterator
             )
         ):
-            self.outputIterations[self.currentIteration+1] = self.output
+            self.outputIterations[self.currentIteration + 1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
         if self.iterator:
             output = self.outputIterations
