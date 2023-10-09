@@ -37,10 +37,9 @@ from PySide6.QtCharts import QChartView
 
 from core.sample import Sample
 from core.container import Container
-
-import core.iterators as iterators
 from gui.widgets import dialogs, tables, charts, slots, core
 import core.enums as enums
+import core.iterators as iterators
 
 from gui.widgets.resources import resources_rc  # noqa
 from core.file_library import GudPyFileLibrary
