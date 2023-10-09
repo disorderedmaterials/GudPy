@@ -111,8 +111,8 @@ from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
 from core.tweak_factor_iterator import TweakFactorIterator
-from core.wavelength_subtraction_iterator import (
-    WavelengthSubtractionIterator
+from core.inelasticity_subtraction_iterator import (
+    InelasticitySubtractionIterator
 )
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
@@ -134,7 +134,7 @@ class GudPyMainWindow(QMainWindow):
         GudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
-    iterator : TweakFactorIterator | WavelengthSubtractionIterator
+    iterator : TweakFactorIterator | InelasticitySubtractionIterator
         Iterator to use in iterations.
     Methods
     -------
@@ -219,7 +219,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
         loader.registerCustomWidget(
-            WavelengthInelasticitySubtractionsIterationDialog
+            dialogs.InelasticityIterationDialog
         )
         loader.registerCustomWidget(RadiusIterationDialog)
         loader.registerCustomWidget(ThicknessIterationDialog)
