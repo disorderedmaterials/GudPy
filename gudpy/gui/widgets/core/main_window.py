@@ -402,7 +402,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
-                WavelengthInelasticitySubtractionsIterationDialog,
+                dialogs.InelasticityIterationDialog,
                 "iterateInelasticitySubtractionsDialog"
             )
         )
@@ -1649,7 +1649,7 @@ class GudPyMainWindow(QMainWindow):
                 "gudrun_dcs",
                 gudrunFile=self.gudrunFile
             )
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+        elif isinstance(self.iterator, InelasticitySubtractionIterator):
             if self.currentIteration % 2 == 0:
                 self.iterator.gudrunFile.iterativeOrganise(
                     f"WavelengthIteration_{(self.currentIteration // 2) + 1}"
@@ -1658,7 +1658,7 @@ class GudPyMainWindow(QMainWindow):
             else:
                 self.iterator.gudrunFile.iterativeOrganise(
                     f"QIteration_{(self.currentIteration // 2) + 1}"
-                    )
+                )
                 self.outputIterations[self.currentIteration + 1] = self.output
         if not self.queue.empty():
             self.currentIteration += 1
@@ -1678,7 +1678,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
-        if isinstance(self.iterator, WavelengthSubtractionIterator):
+        if isinstance(self.iterator, InelasticitySubtractionIterator):
             if self.currentIteration % 2 == 0:
                 self.iterator.wavelengthIteration(self.currentIteration)
             else:
@@ -1698,8 +1698,8 @@ class GudPyMainWindow(QMainWindow):
                 f"{self.text}"
                 f" {self.currentIteration+1}/{self.numberIterations}"
             )
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            iteration = math.ceil((self.currentIteration+1)/2)
+        elif isinstance(self.iterator, InelasticitySubtractionIterator):
+            iteration = math.ceil((self.currentIteration + 1) / 2)
             self.mainWidget.currentTaskLabel.setText(
                 f"{self.text}"
                 f" {iteration}/{int(self.numberIterations/2)}"
@@ -1721,7 +1721,7 @@ class GudPyMainWindow(QMainWindow):
             )
         ):
             progress /= self.numberIterations
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
+        elif isinstance(self.iterator, InelasticitySubtractionIterator):
             progress /= self.numberIterations
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
