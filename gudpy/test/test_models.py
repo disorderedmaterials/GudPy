@@ -4,14 +4,7 @@ from PySide6.QtCore import QModelIndex, Qt
 from gudpy.core.element import Element
 from gudpy.core.isotopes import Sears91
 
-from gui.widgets.tables.gudpy_tables import GudPyTableModel
-from gui.widgets.tables.beam_profile_table import BeamProfileModel
-from gui.widgets.tables.composition_table import CompositionModel
-from gui.widgets.tables.exponential_table import ExponentialModel
-from gui.widgets.tables.grouping_parameter_table import (
-    GroupingParameterModel
-)
-from gui.widgets.tables.resonance_table import ResonanceModel
+from gui.widgets import tables
 
 
 class TestModels(TestCase):
@@ -22,7 +15,7 @@ class TestModels(TestCase):
 
     def testGudPyTableModel(self):
 
-        model = GudPyTableModel([["test"]], ["test"], None)
+        model = tables.GudPyTableModel([["test"]], ["test"], None)
 
         self.assertEqual(model._data, [["test"]])
         self.assertEqual(model.headers, ["test"])
@@ -56,7 +49,7 @@ class TestModels(TestCase):
 
     def testGroupingParameterModel(self):
 
-        model = GroupingParameterModel(
+        model = tables.GroupingParameterModel(
             [[0, 0.0, 0.0, 0.0]],
             ["Group", "XMin", "XMax", "Background Factor"],
             None,
@@ -118,7 +111,7 @@ class TestModels(TestCase):
 
     def testBeamProfileModel(self):
 
-        model = BeamProfileModel([0.0], [], None)
+        model = tables.BeamProfileModel([0.0], [], None)
 
         self.assertEqual(model._data, [0.0])
         self.assertEqual(model.headers, [])
@@ -146,7 +139,7 @@ class TestModels(TestCase):
     def testCompositionModel(self):
 
         elementA = Element("V", 0, 1.0)
-        model = CompositionModel(
+        model = tables.CompositionModel(
             [elementA], ["Element", "Mass No", "Abundance"], None
         )
 
@@ -194,7 +187,8 @@ class TestModels(TestCase):
 
     def testExponentialModel(self):
 
-        model = ExponentialModel([[0, 1.5]], ["Amplitude", "Decay 1/A"], None)
+        model = tables.ExponentialModel(
+            [[0, 1.5]], ["Amplitude", "Decay 1/A"], None)
 
         self.assertEqual(model._data, [[0, 1.5]])
         self.assertEqual(model.headers, ["Amplitude", "Decay 1/A"])
@@ -234,7 +228,7 @@ class TestModels(TestCase):
 
     def testResonanceModel(self):
 
-        model = ResonanceModel(
+        model = tables.ResonanceModel(
             [[0.0, 1.0]], ["Wavelength min", "Wavelength max"], None
         )
 
