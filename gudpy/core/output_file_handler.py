@@ -14,15 +14,6 @@ class OutputFileHandler():
             self.gudrunDir,
             os.path.splitext(self.gudrunFile.filename)[0]
         )
-        # String constants
-        self.NORM = "Normalisation"
-        self.NORM_BG = "NormalisationBackground"
-        self.SAMPLE = "Sample"
-        self.SAMPLE_BG = "SampleBackground"
-        self.SAMPLE_BGS = "SampleBackgrounds"
-        self.CONTAINERS = "Containers"
-        self.OUTPUTS = "Outputs"
-        self.DIAGNOSTICS = "Diagnostics"
         self.Outputs = {
             "sampleOutputs": [
                 "dcs01",
@@ -68,10 +59,13 @@ class OutputFileHandler():
         """
         # Create normalisation folders and move datafiles
         for normFile in self.gudrunFile.normalisation.dataFiles:
-            self.copyOutputs(normFile, os.path.join(outputDir, self.NORM))
+            self.copyOutputs(
+                normFile, os.path.join(
+                    outputDir, "Normalisation"))
         for normBgFile in self.gudrunFile.normalisation.dataFilesBg:
             self.copyOutputs(normBgFile,
-                             os.path.join(outputDir, self.NORM_BG))
+                             os.path.join(outputDir,
+                                          "NormalisationBackground"))
 
     def createSampleBgDir(self, outputDir):
         """
@@ -91,8 +85,8 @@ class OutputFileHandler():
                 self.copyOutputs(
                     dataFile,
                     os.path.join(
-                        outputDir, self.SAMPLE_BGS,
-                        f"{self.SAMPLE_BG}{count + 1}")
+                        outputDir, "SampleBackgrounds",
+                        f"SampleBackground{count + 1}")
                 )
 
     def createSampleDir(self, outputDir, samples, tree=""):
@@ -135,7 +129,8 @@ class OutputFileHandler():
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
-                shutil.copy(
+                makeDir(samplePath)
+                shutil.copyfile(
                     os.path.join(self.gudrunDir, sample.pathName()),
                     os.path.join(samplePath, sample.pathName())
                 )
@@ -258,9 +253,9 @@ class OutputFileHandler():
         # Path to folder which will hold all outputs from the run
         runDir = os.path.join(targetDir, fname)
         # Path to folder which will hold Gudrun outputs
-        outDir = os.path.join(runDir, self.OUTPUTS)
+        outDir = os.path.join(runDir, "Outputs")
         # Path to folder which will hold Gudrun diagnostic outputs
-        diagDir = os.path.join(runDir, self.DIAGNOSTICS)
+        diagDir = os.path.join(runDir, "Diagnostics")
         for f in os.listdir(self.gudrunDir):
             # Moving all files with output file extensions
             for suffix in self.Outputs["sampleOutputs"]:
