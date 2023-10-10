@@ -1253,7 +1253,11 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from modulation_excitation\n{stderr}"
             )
-            QMessageBox.critical(self.mainWidget, "GudPy Error", self.error)
+            QMessageBox.critical(
+                self.mainWidget, "GudPy Error",
+                self.error
+            )
+            self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def progressNexusProcess(self):
         progress = self.progressIncrementDCS(
@@ -1337,8 +1341,9 @@ class GudPyMainWindow(QMainWindow):
             self.nexusProcessingOutput,
             "gudrun_dcs",
             gudrunFile=self.gudrunFile.nexus_processing.gudrunFile,
-            keyMap=self.keyMap,
+            keyMap=self.keyMap
         )
+        self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def batchProcessing(self):
         if not self.checkFilesExist_():
