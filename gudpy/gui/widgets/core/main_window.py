@@ -35,13 +35,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from core.single_param_iterator import SingleParamIterator
-from core.composition_iterator import CompositionIterator
-from core.density_iterator import DensityIterator
-from core.radius_iterator import RadiusIterator
+from core.iterators.single_param_iterator import SingleParamIterator
+from core.iterators.composition_iterator import CompositionIterator
+from core.iterators.density_iterator import DensityIterator
+from core.iterators.radius_iterator import RadiusIterator
 from core.sample import Sample
 from core.container import Container
-from core.thickness_iterator import ThicknessIterator
+from core.iterators.thickness_iterator import ThicknessIterator
 from gui.widgets.dialogs.export_dialog import ExportDialog
 from gui.widgets.dialogs.iterate_composition_dialog import (
     CompositionIterationDialog,
@@ -102,8 +102,10 @@ from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.wavelength_subtraction_iterator import WavelengthSubtractionIterator
+from core.iterators.tweak_factor_iterator import TweakFactorIterator
+from core.iterators.wavelength_subtraction_iterator import (
+    WavelengthSubtractionIterator
+)
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
@@ -1019,7 +1021,6 @@ class GudPyMainWindow(QMainWindow):
                 func=func,
                 args=args,
                 finished=self.runGudrunFinished,
-
             )
 
     def runContainersAsSamples(self):
@@ -1339,27 +1340,6 @@ class GudPyMainWindow(QMainWindow):
             keyMap=self.keyMap,
         )
 
-    def iterateGudrun(self, dialog, name):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
-        iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
-        iterationDialog.widget.exec()
-        if not iterationDialog.iterator:
-            self.setControlsEnabled(True)
-        else:
-            self.queue = iterationDialog.queue
-            self.iterator = iterationDialog.iterator
-            self.numberIterations = iterationDialog.numberIterations
-            self.currentIteration = 0
-            self.text = iterationDialog.text
-            self.outputIterations = {}
-            if isinstance(self.iterator, CompositionIterator):
-                self.iterateByComposition()
-            else:
-                self.nextIterableProc()
-            self.mainWidget.stopTaskButton.setEnabled(True)
-
     def batchProcessing(self):
         if not self.checkFilesExist_():
             return
@@ -1463,7 +1443,8 @@ class GudPyMainWindow(QMainWindow):
 
     def finishedCompositionIterations(self):
         for original, new in self.compositionMap.items():
-            dialog = CompositionAcceptanceDialog(new, self.mainWidget)
+            dialog = CompositionAcceptanceDialog(
+                new, self.gudrunFile, self.mainWidget)
             result = dialog.widget.exec()
             if result:
                 original.composition = new.composition
@@ -1513,6 +1494,10 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.errorCompositionIteration)
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
+        self.gudrunFile.iterativeOrganise(
+            self.numberIterations - 1,
+            self.currentIteration,
+            self.iterator.name)
         self.currentIteration += 1
 
     def iterateByComposition(self):
@@ -1548,29 +1533,37 @@ class GudPyMainWindow(QMainWindow):
             )
             self.nextCompositionIteration()
 
+    def iterateGudrun(self, dialog, name):
+        if not self.checkFilesExist_():
+            return
+        self.setControlsEnabled(False)
+        iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
+        iterationDialog.widget.exec()
+        if not iterationDialog.iterator:
+            self.setControlsEnabled(True)
+        else:
+            self.queue = iterationDialog.queue
+            self.iterator = iterationDialog.iterator
+            self.numberIterations = iterationDialog.queue.qsize() - 1
+            self.currentIteration = 0
+            self.text = iterationDialog.text
+            self.outputIterations = {}
+            if isinstance(self.iterator, CompositionIterator):
+                self.iterateByComposition()
+            else:
+                self.nextIterableProc()
+            self.mainWidget.stopTaskButton.setEnabled(True)
+
     def nextIteration(self):
         if self.error:
             self.procFinished(9, QProcess.NormalExit)
             return
-        if isinstance(self.iterator, TweakFactorIterator):
+        if isinstance(self.iterator, SingleParamIterator):
             self.gudrunFile.iterativeOrganise(
-                f"IterateByTweakFactor_{self.currentIteration+1}"
+                self.numberIterations,
+                self.currentIteration,
+                self.iterator.name
             )
-        elif isinstance(self.iterator, ThicknessIterator):
-            self.gudrunFile.iterativeOrganise(
-                f"IterateByThickness_{self.currentIteration+1}"
-            )
-        elif isinstance(self.iterator, RadiusIterator):
-            self.gudrunFile.iterativeOrganise(
-                f"IterateByRadius_{self.currentIteration+1}"
-            )
-        elif isinstance(self.iterator, DensityIterator):
-            self.gudrunFile.iterativeOrganise(
-                f"IterateByDensity_{self.currentIteration+1}"
-            )
-        if isinstance(
-            self.iterator, (TweakFactorIterator, SingleParamIterator)
-        ):
             time.sleep(1)
             self.iterator.performIteration(self.currentIteration)
             self.gudrunFile.write_out()
@@ -1578,19 +1571,31 @@ class GudPyMainWindow(QMainWindow):
             self.outputSlots.setOutput(
                 self.outputIterations, "gudrun_dcs", gudrunFile=self.gudrunFile
             )
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            if self.currentIteration % 2 == 0:
+        if isinstance(self.iterator, WavelengthSubtractionIterator):
+            if self.queue.qsize() % 2 != 0:
                 self.iterator.gudrunFile.iterativeOrganise(
-                    f"WavelengthIteration_{(self.currentIteration // 2) + 1}"
+                    self.numberIterations + 1,
+                    self.currentIteration,
+                    "WavelengthIteration"
                 )
-                self.outputIterations[self.currentIteration + 1] = self.output
+            elif self.queue.qsize():
+                self.iterator.gudrunFile.iterativeOrganise(
+                    self.numberIterations,
+                    self.currentIteration,
+                    "QIteration"
+                )
+                self.currentIteration += 1
             else:
                 self.iterator.gudrunFile.iterativeOrganise(
-                    f"QIteration_{(self.currentIteration // 2) + 1}"
+                    self.currentIteration,
+                    self.currentIteration,
+                    "QIteration"
                 )
-                self.outputIterations[self.currentIteration + 1] = self.output
-        if not self.queue.empty():
+            self.outputIterations[self.currentIteration + 1] = self.output
+        else:
             self.currentIteration += 1
+
+        if not self.queue.empty():
             self.nextIterableProc()
         else:
             self.procFinished(0, QProcess.NormalExit)
@@ -1608,7 +1613,7 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.instrument.GudrunInputFileDir
         )
         if isinstance(self.iterator, WavelengthSubtractionIterator):
-            if self.currentIteration % 2 == 0:
+            if self.queue.qsize() % 2 == 0:
                 self.iterator.wavelengthIteration(self.currentIteration)
             else:
                 self.iterator.QIteration(self.currentIteration)
@@ -1617,24 +1622,11 @@ class GudPyMainWindow(QMainWindow):
         self.proc.start()
 
     def iterationStarted(self):
-        if isinstance(
-            self.iterator,
-            (
-                TweakFactorIterator,
-                ThicknessIterator,
-                RadiusIterator,
-                DensityIterator,
-            ),
-        ):
-            self.mainWidget.currentTaskLabel.setText(
-                f"{self.text}"
-                f" {self.currentIteration+1}/{self.numberIterations}"
-            )
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            iteration = math.ceil((self.currentIteration + 1) / 2)
-            self.mainWidget.currentTaskLabel.setText(
-                f"{self.text}" f" {iteration}/{int(self.numberIterations/2)}"
-            )
+        self.mainWidget.currentTaskLabel.setText(
+            f"{self.text}"
+            f" {(self.numberIterations + 1) - self.queue.qsize()}"
+            + f"/{self.numberIterations + 1}"
+        )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
     def progressIteration(self):
@@ -1645,18 +1637,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
-        if isinstance(
-            self.iterator,
-            (
-                TweakFactorIterator,
-                ThicknessIterator,
-                RadiusIterator,
-                DensityIterator,
-            ),
-        ):
-            progress /= self.numberIterations
-        elif isinstance(self.iterator, WavelengthSubtractionIterator):
-            progress /= self.numberIterations
+        progress /= self.numberIterations
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100

@@ -29,6 +29,7 @@ class SingleParamIterator():
     organiseOutput
         To be overriden by sub-classes.
     """
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
@@ -55,12 +56,12 @@ class SingleParamIterator():
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in [
                 s for s in sampleBackground.samples
-                if s.runThisSample
+                if s.runThisSample and len(s.dataFiles)
             ]:
                 gudPath = sample.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "gud"
-                        )
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
+                )
                 gudFile = GudFile(
                     os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,
@@ -89,17 +90,19 @@ class SingleParamIterator():
         """
         pass
 
-    def organiseOutput(self, n):
+    def organiseOutput(self, nTotal, nCurrent):
         """
-        Stub method to be overriden by sub-classes.
-        This method should organise the output of the iteration.
+        This should organises the output of the iteration.
 
         Parameters
         ----------
-        n : int
-            Iteration no.
+        nTotal : int
+            Total number of requested iterations
+        nCurrent : int
+            Current iteration
         """
-        pass
+        self.gudrunFile.iterativeOrganise(
+            nTotal, nCurrent, self.name)
 
     def iterate(self, n):
         """
@@ -118,4 +121,4 @@ class SingleParamIterator():
             self.gudrunFile.process()
             time.sleep(1)
             self.performIteration(i)
-            self.organiseOutput(i)
+            self.organiseOutput(n, i)

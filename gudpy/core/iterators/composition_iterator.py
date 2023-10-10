@@ -17,14 +17,14 @@ def gss(
 
     if (
         (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])]))
-        < (rtol/100)**2
+        < (rtol / 100)**2
     ):
         if endIterFunc:
             endIterFunc(n)
         return (bounds[2] + bounds[1]) / 2
 
     # Calculate a potential centre = c + 2 - GR * (upper-c)
-    d = bounds[1] + (2 - (1 + math.sqrt(5))/2)*(bounds[2]-bounds[1])
+    d = bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * (bounds[2] - bounds[1])
 
     # If the new centre evaluates to less than the current
     fd1 = f(d, *args)
@@ -43,7 +43,7 @@ def gss(
         if endIterFunc:
             endIterFunc(n)
         return gss(
-            f, bounds, n+1, maxN, rtol,
+            f, bounds, n + 1, maxN, rtol,
             args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
         )
     # Otherwise, swap and reverse.
@@ -52,7 +52,7 @@ def gss(
         if endIterFunc:
             endIterFunc()
         return gss(
-            f, bounds, n+1, maxN, rtol,
+            f, bounds, n + 1, maxN, rtol,
             args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
         )
 
@@ -103,6 +103,9 @@ class CompositionIterator():
     gss(f, bounds, n, args=())
         Performs n iterations using cost function f, args and bounds.
     """
+
+    name = "IterateByComposition"
+
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.components = []
@@ -118,6 +121,7 @@ class CompositionIterator():
     ratio : int, optional
         Ratio of component.
     """
+
     def setComponent(self, component, ratio=1):
         self.components = [component]
         self.ratio = ratio
@@ -132,6 +136,7 @@ class CompositionIterator():
     ratio : int, optional
         Ratio of component.
     """
+
     def setComponents(self, components, ratio=1):
         self.components = [c for c in components if c]
         self.ratio = ratio
@@ -146,6 +151,7 @@ class CompositionIterator():
     sampleBackground : SampleBackground
         Target Sample Background.
     """
+
     def processSingleComponent(self, x, sampleBackground):
         self.gudrunFile.sampleBackgrounds = [sampleBackground]
 
@@ -165,9 +171,9 @@ class CompositionIterator():
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType,
-                    "gud"
-                )
+            self.gudrunFile.instrument.dataFileType,
+            "gud"
+        )
         gudFile = GudFile(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, gudPath
@@ -177,7 +183,7 @@ class CompositionIterator():
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+            return (gudFile.expectedDCS - gudFile.averageLevelMergedDCS)**2
 
     """
     Cost function for processing two components.
@@ -191,6 +197,7 @@ class CompositionIterator():
     totalMolecules : float
         Sum of molecules of both components.
     """
+
     def processTwoComponents(self, x, sampleBackground, totalMolecules):
         self.gudrunFile.sampleBackgrounds = [sampleBackground]
         x = abs(x)
@@ -212,9 +219,9 @@ class CompositionIterator():
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType,
-                    "gud"
-                )
+            self.gudrunFile.instrument.dataFileType,
+            "gud"
+        )
         gudFile = GudFile(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, gudPath
@@ -244,6 +251,7 @@ class CompositionIterator():
     rtol : float
         Relative tolerance
     """
+
     def iterate(self, n=10, rtol=10.):
         if not self.components or not self.ratio:
             return None

@@ -7,12 +7,12 @@ import math
 
 from core.composition import Composition, Component
 from core.gudrun_file import GudrunFile
-from core.thickness_iterator import ThicknessIterator
-from core.density_iterator import DensityIterator
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.composition_iterator import CompositionIterator
+from core.iterators.thickness_iterator import ThicknessIterator
+from core.iterators.density_iterator import DensityIterator
+from core.iterators.tweak_factor_iterator import TweakFactorIterator
+from core.iterators.composition_iterator import CompositionIterator
 from core.gud_file import GudFile
-from core.wavelength_subtraction_iterator import (
+from core.iterators.wavelength_subtraction_iterator import (
     WavelengthSubtractionIterator
 )
 from core.enums import Format

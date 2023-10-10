@@ -4,7 +4,7 @@ from PySide6.QtCore import QObject, Signal, QThread
 
 from core.gud_file import GudFile
 from core.sample import Sample
-from core.composition_iterator import gss
+from core.iterators.composition_iterator import gss
 
 
 class CompositionWorker(QObject):

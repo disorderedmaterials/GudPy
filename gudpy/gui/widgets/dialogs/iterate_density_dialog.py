@@ -1,5 +1,5 @@
 from gui.widgets.dialogs.iteration_dialog import IterationDialog
-from core.density_iterator import DensityIterator
+from core.iterators.density_iterator import DensityIterator
 
 
 class DensityIterationDialog(IterationDialog):

@@ -7,9 +7,10 @@ from PySide6.QtUiTools import QUiLoader
 
 class CompositionAcceptanceDialog(QDialog):
 
-    def __init__(self, sample, parent):
+    def __init__(self, sample, gudrunFile, parent):
         super(CompositionAcceptanceDialog, self).__init__(parent=parent)
         self.sample = sample
+        self.gudrunFile = gudrunFile
         self.accepted_ = False
         self.initComponents()
 
