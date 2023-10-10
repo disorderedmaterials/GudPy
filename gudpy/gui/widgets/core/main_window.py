@@ -38,10 +38,10 @@ from PySide6.QtCharts import QChartView
 from core.sample import Sample
 from core.container import Container
 from gui.widgets import dialogs, tables, charts, slots, core
+from gui.widgets.resources import resources_rc  # noqa
 import core.enums as enums
 import core.iterators as iterators
 
-from gui.widgets.resources import resources_rc  # noqa
 from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
