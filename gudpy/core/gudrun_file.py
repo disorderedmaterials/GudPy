@@ -146,6 +146,7 @@ class GudrunFile:
         """
 
         self.path = path
+        self.inputFileDir = os.path.dirname(path)
         self.filename = os.path.basename(path)
         self.yaml = YAML()
         self.format = format

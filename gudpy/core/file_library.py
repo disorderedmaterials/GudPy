@@ -40,7 +40,6 @@ class GudPyFileLibrary:
 
         # Collect directories
         self.dirs = {
-            "Input file directory": gudrunFile.instrument.GudrunInputFileDir,
             "Data file directory": gudrunFile.instrument.dataFileDir,
             "Gudrun start folder": gudrunFile.instrument.GudrunStartFolder,
             "Startup file folder": gudrunFile.instrument.startupFileFolder,
@@ -169,14 +168,14 @@ class GudPyFileLibrary:
     ):
         if not exportTo:
             exportTo = os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
+                self.gudrunFile.inputFileDir,
                 Path(self.gudrunFile.path).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
                 if len(sample.dataFiles.dataFiles):
                     path = os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        self.gudrunFile.inputFileDir,
                         sample.dataFiles.dataFiles[0].replace(
                             self.gudrunFile.instrument.dataFileType, "mint01"
                         ),
@@ -192,12 +191,12 @@ class GudPyFileLibrary:
                     zipFile.write(path, arcname=os.path.basename(outpath))
                     if includeParams:
                         path = os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            self.gudrunFile.inputFileDir,
                             safeSampleName + ".sample",
                         )
                         if not os.path.exists(path):
                             sample.write_out(
-                                self.gudrunFile.instrument.GudrunInputFileDir
+                                self.gudrunFile.inputFileDir
                             )
                         zipFile.write(path, arcname=os.path.basename(path))
 
