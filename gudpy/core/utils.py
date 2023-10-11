@@ -171,9 +171,16 @@ def makeDir(targetPath):
     ----------
     targetPath : str
         Path where directory is to be made
+
+    Returns
+    -------
+    dirPath : str
+        Path of created directory
     """
     if not os.path.isdir(targetPath):
         os.makedirs(targetPath)
+
+    return targetPath
 
 
 def uniquify(path, sep="_", incFirst=False):
