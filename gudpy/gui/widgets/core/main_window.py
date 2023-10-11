@@ -4,6 +4,7 @@ import sys
 import time
 import math
 import traceback
+import tempfile
 from queue import Queue
 from collections.abc import Sequence
 import re
@@ -939,6 +940,9 @@ class GudPyMainWindow(QMainWindow):
             finished = self.procFinished
         if not dir_:
             dir_ = self.gudrunFile.instrument.GudrunInputFileDir
+
+        dir_ = self.tmp.name
+
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(started)
@@ -948,10 +952,26 @@ class GudPyMainWindow(QMainWindow):
             func(*args)
         self.proc.start()
 
-    def runPurge_(self):
+    def prepareRun(self):
         if not self.checkFilesExist_():
             return
         self.setControlsEnabled(False)
+
+        self.tmp = tempfile.TemporaryDirectory()
+        self.gudrunFile.instrument.GudrunInputFileDir = self.tmp.name
+
+    def cleanupRun(self):
+        self.tmp.cleanup()
+        self.tmp = None
+
+        self.setControlsEnabled(True)
+        self.mainWidget.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.queue = Queue()
+
+    def runPurge_(self):
+        self.prepareRun()
+
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         result = purgeDialog.widget.exec_()
         purge = purgeDialog.purge_det
@@ -975,9 +995,8 @@ class GudPyMainWindow(QMainWindow):
             self.makeProc(purge, self.progressPurge, func=func, args=args)
 
     def runGudrun_(self):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
+        self.prepareRun()
+
         dcs = self.gudrunFile.dcs(
             path=os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir,
@@ -1024,9 +1043,8 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runContainersAsSamples(self):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
+        self.prepareRun()
+
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
         dcs = runContainersAsSamples.runContainersAsSamples(
             path=os.path.join(
@@ -1076,9 +1094,7 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runFilesIndividually(self):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
+        self.prepareRun()
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
         dcs = runIndividualFiles.gudrunFile.dcs(
             path=os.path.join(
@@ -1333,9 +1349,7 @@ class GudPyMainWindow(QMainWindow):
             self.nexusProcessingFinished()
 
     def nexusProcessingFinished(self):
-        self.setControlsEnabled(True)
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.mainWidget.progressBar.setValue(0)
+        self.cleanupRun()
         self.proc = None
         self.outputSlots.setOutput(
             self.nexusProcessingOutput,
@@ -1346,9 +1360,7 @@ class GudPyMainWindow(QMainWindow):
         self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def batchProcessing(self):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
+        self.prepareRun()
         batchProcessingDialog = BatchProcessingDialog(
             self.gudrunFile, self.mainWidget
         )
@@ -1455,10 +1467,7 @@ class GudPyMainWindow(QMainWindow):
                 original.composition = new.composition
                 if self.sampleSlots.sample == original:
                     self.sampleSlots.setSample(original)
-        self.setControlsEnabled(True)
-        self.mainWidget.progressBar.setValue(0)
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.queue = Queue()
+        self.cleanupRun()
 
     def startedCompositionIteration(self, sample):
         self.mainWidget.currentTaskLabel.setText(
@@ -1472,13 +1481,10 @@ class GudPyMainWindow(QMainWindow):
             "An error occured whilst iterating by composition."
             " Please check the output to see what went wrong.",
         )
-        self.setControlsEnabled(True)
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.mainWidget.progressBar.setValue(0)
+        self.cleanupRun()
         self.outputSlots.setOutput(
             output, "gudrun_dcs", gudrunFile=self.gudrunFile
         )
-        self.queue = Queue()
 
     def progressCompositionIteration(self, currentIteration):
         progress = (
@@ -1539,9 +1545,7 @@ class GudPyMainWindow(QMainWindow):
             self.nextCompositionIteration()
 
     def iterateGudrun(self, dialog, name):
-        if not self.checkFilesExist_():
-            return
-        self.setControlsEnabled(False)
+        self.prepareRun()
         iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
         if not iterationDialog.iterator:
@@ -1962,22 +1966,13 @@ class GudPyMainWindow(QMainWindow):
             self.sampleSlots.setSample(self.sampleSlots.sample)
         if self.iterator:
             output = self.outputIterations
-        self.iterator = None
-
+            self.iterator = None
         if self.error:
             QMessageBox.critical(
                 self.mainWidget, "GudPy Error", repr(self.error)
             )
             self.error = ""
-            self.queue = Queue()
-        if self.queue.empty():
-            if self.warning:
-                QMessageBox.warning(
-                    self.mainWidget, "GudPy Warning", repr(self.warning)
-                )
-                self.warning = ""
-            self.setControlsEnabled(True)
-            self.mainWidget.stopTaskButton.setEnabled(False)
+            self.cleanupRun()
         if "purge_det" not in self.mainWidget.currentTaskLabel.text():
             try:
                 self.updateResults()
@@ -1997,8 +1992,13 @@ class GudPyMainWindow(QMainWindow):
             )
         self.outputIterations = {}
         self.output = ""
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.mainWidget.progressBar.setValue(0)
+        if self.queue.empty():
+            if self.warning:
+                QMessageBox.warning(
+                    self.mainWidget, "GudPy Warning", repr(self.warning)
+                )
+                self.warning = ""
+            self.cleanupRun()
         if not self.queue.empty():
             args, kwargs = self.queue.get()
             self.makeProc(*args, **kwargs)
@@ -2008,6 +2008,7 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         if self.proc:
             if self.proc.state() == QProcess.Running:
+                self.cleanupRun()
                 self.proc.kill()
         if self.workerThread:
             self.workerThread.requestInterruption()

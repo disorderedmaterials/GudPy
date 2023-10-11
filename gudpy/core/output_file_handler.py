@@ -7,45 +7,55 @@ class OutputFileHandler():
 
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
-        # Directory where Gudrun files are outputted
+        # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.gudrunFile.instrument.GudrunInputFileDir
+        # Temporary output dir
+        self.tempOutputDir = os.path.join(self.gudrunDir, "out")
         # Name the output directory as the input file
         self.outputDir = os.path.join(
-            self.gudrunDir,
+            self.gudrunFile.inputFileDir,
             os.path.splitext(self.gudrunFile.filename)[0]
         )
-        self.Outputs = {
-            "sampleOutputs": [
-                "dcs01",
-                "dcsd01",
-                "dcse01",
-                "dcst01",
-                "dscw01",
-                "mdcs01",
-                "mdcsd01",
-                "mdcse01",
-                "mdcsw01",
-                "mint01",
-                "mgor01",
-                "mdor01",
-                "gud",
-                "sample"
-            ],
-            "sampleDiagnostics": [
-                "abs01",
-                "bak",
-                "gr1",
-                "gr2",
-                "mul01",
-                "mut01",
-                "pla01",
-                "rawmon",
-                "smomon",
-                "trans01"
-            ],
-            "containerOutputs": [
-            ]
-        }
+        # Paths to sample output folers
+        self.sampleOutputPaths = []
+        # Path to additional output folder
+        self.addOutputPath = uniquify(
+            os.path.join(self.tempOutputDir, "AdditionalOutputs")
+        )
+
+        # Files that have been copied
+        self.copiedFiles = []
+        self.outputExts = [
+            "dcs01",
+            "dcsd01",
+            "dcse01",
+            "dcst01",
+            "dscw01",
+            "mdcs01",
+            "mdcsd01",
+            "mdcse01",
+            "mdcsw01",
+            "mint01",
+            "mgor01",
+            "mdor01",
+            "gud",
+            "sample"
+        ]
+
+        # List of run samples
+        self.samples = []
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in [
+                    s for s in sampleBackground.samples
+                    if s.runThisSample and len(s.dataFiles)]:
+                self.samples.append(sample)
+                # Generate paths for sample output directories
+                self.sampleOutputPaths.append(
+                    uniquify(os.path.join(
+                        self.tempOutputDir,
+                        sample.name
+                    ))
+                )
 
     def createNormDir(self, outputDir):
         """
@@ -89,7 +99,7 @@ class OutputFileHandler():
                         f"SampleBackground{count + 1}")
                 )
 
-    def createSampleDir(self, outputDir, samples, tree=""):
+    def createSampleDir(self, outputDir, tree=""):
         """
         Creates output directory for each sample
 
@@ -106,10 +116,7 @@ class OutputFileHandler():
 
         """
         # Create sample folders within background folders
-        for sample in [
-            s for s in samples
-            if s.runThisSample and len(s.dataFiles)
-        ]:
+        for sample in self.samples:
             if tree:
                 samplePath = os.path.join(
                     outputDir,
@@ -122,7 +129,7 @@ class OutputFileHandler():
                 ))
             # Move datafiles to sample folder
             for dataFile in sample.dataFiles:
-                self.copySuffixedOutputs(
+                self.copyOutputsByExt(
                     dataFile,
                     samplePath
                 )
@@ -134,6 +141,7 @@ class OutputFileHandler():
                     os.path.join(self.gudrunDir, sample.pathName()),
                     os.path.join(samplePath, sample.pathName())
                 )
+                self.copiedFiles.append(sample.pathName())
 
             # Create container folders within sample folder
             for container in sample.containers:
@@ -155,10 +163,16 @@ class OutputFileHandler():
         self.createNormDir(self.outputDir)
         self.createSampleBgDir(self.outputDir)
         # Create sample folders
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            self.createSampleDir(
-                self.outputDir,
-                sampleBackground.samples)
+        self.createSampleDir(
+            self.tempOutputDir)
+        # Copy remaining outputs
+        self.copyRemaining(self.addOutputPath)
+        # Move over sample & additional outputs to output directory
+        for folder in os.listdir(self.tempOutputDir):
+            shutil.move(
+                os.path.join(self.tempOutputDir, folder),
+                uniquify(os.path.join(self.outputDir, folder))
+            )
 
     def iterativeOrganise(self, nTotal, nCurrent, head):
         """
@@ -181,26 +195,33 @@ class OutputFileHandler():
             self.createNormDir(self.outputDir)
             self.createSampleBgDir(
                 self.outputDir)
+            for sampleDir in self.sampleOutputPaths:
+                makeDir(sampleDir)
+
         # Create the sample output folders
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            self.createSampleDir(
-                self.gudrunDir,
-                sampleBackground.samples,
-                f"{head}_{nCurrent + 1}")
-            if nCurrent == nTotal:
-                # If this is the final iteration, move root folder
-                # to output folder
-                for sample in [
-                    s for s in sampleBackground.samples
-                    if s.runThisSample and len(s.dataFiles)
-                ]:
-                    shutil.move(
-                        os.path.join(self.gudrunDir, sample.name),
-                        uniquify(
-                            os.path.join(
-                                self.outputDir,
-                                sample.name))
-                    )
+        self.createSampleDir(
+            self.gudrunDir,
+            f"{head}_{nCurrent + 1}")
+
+        self.copyRemaining(os.path.join(
+            self.addOutputPath,
+            f"{head}_{nCurrent + 1}"))
+
+        # Copy organised folder to temporary sample output dir
+        for sample, sampleOutDir in zip(self.samples, self.sampleOutputPaths):
+            shutil.move(
+                os.path.join(
+                    self.gudrunDir,
+                    sample.name,
+                    f"{head}_{nCurrent + 1}"),
+                sampleOutDir
+            )
+        # Move over sample & additional outputs to output directory
+        for folder in os.listdir(self.tempOutputDir):
+            shutil.move(
+                os.path.join(self.tempOutputDir, folder),
+                uniquify(os.path.join(self.outputDir, folder))
+            )
 
     def copyOutputs(self, fpath, targetDir):
         """
@@ -222,7 +243,7 @@ class OutputFileHandler():
         for f in os.listdir(self.gudrunDir):
             # Get files with the same filename but not the same
             # extension
-            if os.path.splitext(f)[0] == fname and f != fpath:
+            if os.path.splitext(f)[0] == fname:
                 if not dirCreated:
                     makeDir(runDir)
                     dirCreated = True
@@ -230,8 +251,9 @@ class OutputFileHandler():
                     os.path.join(self.gudrunDir, f),
                     os.path.join(runDir, f)
                 )
+                self.copiedFiles.append(f)
 
-    def copySuffixedOutputs(self, fname, targetDir):
+    def copyOutputsByExt(self, fname, targetDir):
         """
         Copy all files with the same basename
         as the provided filepath and splits them into outputs
@@ -253,25 +275,42 @@ class OutputFileHandler():
         # Path to folder which will hold all outputs from the run
         runDir = os.path.join(targetDir, fname)
         # Path to folder which will hold Gudrun outputs
-        outDir = os.path.join(runDir, "Outputs")
+        outDir = makeDir(os.path.join(runDir, "Outputs"))
         # Path to folder which will hold Gudrun diagnostic outputs
-        diagDir = os.path.join(runDir, "Diagnostics")
+        diagDir = makeDir(os.path.join(runDir, "Diagnostics"))
         for f in os.listdir(self.gudrunDir):
-            # Moving all files with output file extensions
-            for suffix in self.Outputs["sampleOutputs"]:
+            for suffix in self.outputExts:
+                # Moving files with output file extensions
                 if f == f"{fname}.{suffix}":
-                    if not os.path.isdir(outDir):
-                        makeDir(outDir)
                     shutil.copyfile(
                         os.path.join(self.gudrunDir, f),
                         os.path.join(outDir, f)
                     )
-            # Moving all files with diagnostic file extensions
-            for suffix in self.Outputs["sampleDiagnostics"]:
-                if f == f"{fname}.{suffix}":
-                    if not os.path.isdir(diagDir):
-                        makeDir(diagDir)
+                    self.copiedFiles.append(f)
+                # Moving diagnostic files
+                elif os.path.splitext(f)[0] == fname:
                     shutil.copyfile(
                         os.path.join(self.gudrunDir, f),
                         os.path.join(diagDir, f)
                     )
+                    self.copiedFiles.append(f)
+
+    def copyRemaining(self, targetDir):
+        """
+        Copy over all files that haven't been copied over,
+        as specified in `copiedFiles`
+
+        Parameters
+        ----------
+        targetDir : str
+            Directory for the files to be copied to
+        """
+        makeDir(targetDir)
+
+        for f in os.listdir(self.gudrunDir):
+            if f not in self.copiedFiles and os.path.isfile(
+                    os.path.join(self.gudrunDir, f)):
+                shutil.copyfile(
+                    os.path.join(self.gudrunDir, f),
+                    os.path.join(targetDir, f)
+                )
