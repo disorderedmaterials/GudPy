@@ -4,7 +4,7 @@ from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PySide6.QtUiTools import QUiLoader
 
-from core.file_library import GudPyFileLibrary
+from core.io.file_library import GudPyFileLibrary
 
 
 class ExportDialog(QDialog):
@@ -33,6 +33,7 @@ class ExportDialog(QDialog):
     exportAs()
         Allows exporting to a specific file.
     """
+
     def __init__(self, gudrunFile, parent):
         super(ExportDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
@@ -89,8 +90,8 @@ class ExportDialog(QDialog):
                     )
                 )
                 namedAfterSample = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in r'/\!*~,&|[]'}
-                        ) + ".mint01"
+                    {ord(x): '' for x in r'/\!*~,&|[]'}
+                ) + ".mint01"
 
                 if os.path.exists(os.path.join(
                     self.gudrunFile.instrument.GudrunInputFileDir, mintFile

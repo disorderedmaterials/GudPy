@@ -4,12 +4,10 @@ import os
 from core.element import Element
 from core.data_files import DataFiles
 from core.composition import Composition
-from core.enums import FTModes, Geometry, UnitsOfDensity
 from core import config
-from core.enums import CrossSectionSource
 from core.sample import Sample
 from core.exception import ParserException
-from core.utils import firstword, nthfloat, nthint
+from core import enums, utils
 
 
 class Container:
@@ -28,8 +26,8 @@ class Container:
         DataFiles object storing data files belonging to the container.
     composition : Composition
         Composition object storing the atomic composition of the container.
-    geometry : Geometry
-        Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
+    geometry : enums.Geometry
+        enums.Geometry of the container (FLATPLATE / CYLINDRICAL / SameAsBeam).
     upstreamThickness : float
         Upstream thickness of the container - if its geometry is FLATPLATE.
     downstreamThickness : float
@@ -50,7 +48,7 @@ class Container:
         0 = atoms/Angstrom^3, 1 = gm/cm^3
     overallBackgroundFactor : float
         Background factor.
-    totalCrossSectionSource : CrossSectionSource
+    totalCrossSectionSource : enums.CrossSectionSource
         TABLES / TRANSMISSION monitor / filename
     crossSectionFilename : str
         Filename for total cross section source if applicable.
@@ -60,6 +58,7 @@ class Container:
     Methods
     -------
     """
+
     def __init__(self, config_=None):
         """
         Constructs all the necessary attributes for the Container object.
@@ -72,7 +71,7 @@ class Container:
         self.periodNumber = 1
         self.dataFiles = DataFiles([], "CONTAINER")
         self.composition = Composition("CONTAINER")
-        self.geometry = Geometry.SameAsBeam
+        self.geometry = enums.Geometry.SameAsBeam
         self.upstreamThickness = 0.1
         self.downstreamThickness = 0.1
         self.angleOfRotation = 0.0
@@ -81,8 +80,8 @@ class Container:
         self.outerRadius = 0.0
         self.sampleHeight = 0.0
         self.density = 0.0542
-        self.densityUnits = UnitsOfDensity.ATOMIC
-        self.totalCrossSectionSource = CrossSectionSource.TABLES
+        self.densityUnits = enums.UnitsOfDensity.ATOMIC
+        self.totalCrossSectionSource = enums.CrossSectionSource.TABLES
         self.crossSectionFilename = ""
         self.tweakFactor = 1.0
         self.scatteringFraction = 0.0
@@ -90,7 +89,7 @@ class Container:
 
         self.runAsSample = False
         self.topHatW = 0.0
-        self.FTMode = FTModes.SUB_AVERAGE
+        self.FTMode = enums.FTModes.SUB_AVERAGE
         self.minRadFT = 0.0
         self.maxRadFT = 0.0
         self.grBroadening = 0.
@@ -138,12 +137,12 @@ class Container:
             if len(self.dataFiles) > 0
             else
             ''
-            )
+        )
 
-        if self.densityUnits == UnitsOfDensity.ATOMIC:
+        if self.densityUnits == enums.UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
             density = -self.density
-        elif self.densityUnits == UnitsOfDensity.CHEMICAL:
+        elif self.densityUnits == enums.UnitsOfDensity.CHEMICAL:
             units = 'gm/cm^3'
             density = self.density
 
@@ -157,10 +156,10 @@ class Container:
             f'{self.sampleWidth}{config.spc5}'
             f'Angle of rotation and sample width (cm)\n'
             if (
-                self.geometry == Geometry.SameAsBeam
-                and config.geometry == Geometry.FLATPLATE
+                self.geometry == enums.Geometry.SameAsBeam
+                and config.geometry == enums.Geometry.FLATPLATE
             )
-            or self.geometry == Geometry.FLATPLATE
+            or self.geometry == enums.Geometry.FLATPLATE
             else
             f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
             f'Inner and outer radii [cm]\n'
@@ -174,11 +173,11 @@ class Container:
         )
 
         crossSectionSource = (
-            CrossSectionSource(self.totalCrossSectionSource.value).name
+            enums.CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
             f"{crossSectionSource}{config.spc5}"
-            if self.totalCrossSectionSource != CrossSectionSource.FILE
+            if self.totalCrossSectionSource != enums.CrossSectionSource.FILE
             else
             f"{self.crossSectionFilename}{config.spc5}"
         )
@@ -193,7 +192,7 @@ class Container:
             f'*{config.spc2}0{config.spc2}0{config.spc5}'
             f'* 0 0 to specify end of composition input\n'
             f'SameAsBeam{config.spc5}'
-            f'Geometry\n'
+            f'enums.Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
             f'{crossSectionLine}'
@@ -275,7 +274,7 @@ class Container:
             # So we extract the 0th integer for the number of files,
             # and the 1st integer for the period number.
             dataFileInfo = self.getNextToken()
-            self.periodNumber = nthint(dataFileInfo, 1)
+            self.periodNumber = utils.nthint(dataFileInfo, 1)
 
             # Construct composition
             composition = []
@@ -288,9 +287,9 @@ class Container:
             # then the panel has been parsed.
             while "end of composition input" not in line:
 
-                atomicSymbol = firstword(line)
-                massNo = nthint(line, 1)
-                abundance = nthfloat(line, 2)
+                atomicSymbol = utils.firstword(line)
+                massNo = utils.nthint(line, 1)
+                abundance = utils.nthfloat(line, 2)
 
                 # Create an Element object and append to the composition list.
                 composition.append(Element(atomicSymbol, massNo, abundance))
@@ -305,36 +304,37 @@ class Container:
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            self.geometry = Geometry[firstword(self.getNextToken())]
+            self.geometry = enums.Geometry[utils.firstword(
+                self.getNextToken())]
 
             # Is the geometry FLATPLATE?
             if (
                 (
-                    self.geometry == Geometry.SameAsBeam
-                    and config.geometry == Geometry.FLATPLATE
+                    self.geometry == enums.Geometry.SameAsBeam
+                    and config.geometry == enums.Geometry.FLATPLATE
                 )
-                    or self.geometry == Geometry.FLATPLATE):
+                    or self.geometry == enums.Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
                 # thickness, the angle of rotation and sample width.
                 thickness = self.getNextToken()
-                self.upstreamThickness = nthfloat(thickness, 0)
-                self.downstreamThickness = nthfloat(thickness, 1)
+                self.upstreamThickness = utils.nthfloat(thickness, 0)
+                self.downstreamThickness = utils.nthfloat(thickness, 1)
 
                 geometryValues = self.getNextToken()
-                self.angleOfRotation = nthfloat(geometryValues, 0)
-                self.sampleWidth = nthfloat(geometryValues, 1)
+                self.angleOfRotation = utils.nthfloat(geometryValues, 0)
+                self.sampleWidth = utils.nthfloat(geometryValues, 1)
             else:
 
                 # Otherwise, it is CYLINDRICAL,
                 # then extract the inner and outer
                 # radii and the sample height.
                 radii = self.getNextToken()
-                self.innerRadius = nthfloat(radii, 0)
-                self.outerRadius = nthfloat(radii, 1)
-                self.sampleHeight = nthfloat(self.getNextToken(), 0)
+                self.innerRadius = utils.nthfloat(radii, 0)
+                self.outerRadius = utils.nthfloat(radii, 1)
+                self.sampleHeight = utils.nthfloat(self.getNextToken(), 0)
 
             # Extract the density.
-            density = nthfloat(self.getNextToken(), 0)
+            density = utils.nthfloat(self.getNextToken(), 0)
 
             # Take the absolute value of the density - since it could be -ve.
             self.density = abs(density)
@@ -343,29 +343,29 @@ class Container:
             # -ve density means it is atomic (atoms/A^3)
             # +ve means it is chemical (gm/cm^3)
             self.densityUnits = (
-                UnitsOfDensity.ATOMIC if
+                enums.UnitsOfDensity.ATOMIC if
                 density < 0
-                else UnitsOfDensity.CHEMICAL
+                else enums.UnitsOfDensity.CHEMICAL
             )
-            crossSectionSource = firstword(self.getNextToken())
+            crossSectionSource = utils.firstword(self.getNextToken())
             if (
                 crossSectionSource == "TABLES"
                 or crossSectionSource == "TRANSMISSION"
             ):
                 self.totalCrossSectionSource = (
-                    CrossSectionSource[crossSectionSource]
+                    enums.CrossSectionSource[crossSectionSource]
                 )
             else:
-                self.totalCrossSectionSource = CrossSectionSource.FILE
+                self.totalCrossSectionSource = enums.CrossSectionSource.FILE
                 self.crossSectionFilename = crossSectionSource
-            self.tweakFactor = nthfloat(self.getNextToken(), 0)
+            self.tweakFactor = utils.nthfloat(self.getNextToken(), 0)
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Container, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e

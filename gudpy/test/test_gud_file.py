@@ -3,7 +3,7 @@ from shutil import copyfile
 from unittest import TestCase
 
 from core.exception import ParserException
-from core.gud_file import GudFile
+from core.io.gud_file import GudFile
 from core.gudrun_file import GudrunFile
 
 

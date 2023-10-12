@@ -1,5 +1,5 @@
 from core.utils import spacify
-from core.enums import Geometry
+from core import enums
 from core import config
 
 
@@ -11,7 +11,7 @@ class Beam:
 
     Attributes
     ----------
-    sampleGeometry : Geometry
+    sampleGeometry : enums.Geometry
         geometry of the beam (FLATPLATE / CYLINDRICAL).
     beamProfileValues : float[]
         list of beam profile values.
@@ -50,6 +50,7 @@ class Beam:
     Methods
     -------
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the Beam object.
@@ -58,7 +59,7 @@ class Beam:
         ----------
         None
         """
-        self.sampleGeometry = Geometry.FLATPLATE
+        self.sampleGeometry = enums.Geometry.FLATPLATE
         self.beamProfileValues = [1., 1.]
         self.stepSizeAbsorption = 0.0
         self.stepSizeMS = 0.0
@@ -123,7 +124,7 @@ class Beam:
 
         return (
 
-            f'{Geometry(self.sampleGeometry.value).name}{config.spc5}'
+            f'{enums.Geometry(self.sampleGeometry.value).name}{config.spc5}'
             f'Sample geometry\n'
             f'{len(self.beamProfileValues)}{config.spc5}'
             f'Number of beam profile values\n'

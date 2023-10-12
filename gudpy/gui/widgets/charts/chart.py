@@ -6,8 +6,7 @@ from PySide6.QtWidgets import QGraphicsTextItem
 from core.sample import Sample
 from core.container import Container
 from gui.widgets.charts.sample_plot_config import SamplePlotConfig
-from gui.widgets.charts.enums import PlotModes, SeriesTypes
-from gui.widgets.charts.enums import Axes
+from gui.widgets.charts import enums
 
 
 class GudPyChart(QChart):
@@ -30,7 +29,7 @@ class GudPyChart(QChart):
         self.logarithmicYAxis = QLogValueAxis(self)
         self.logarithmicYAxis.setBase(10.0)
 
-        self.plotMode = PlotModes.SF_MINT01
+        self.plotMode = enums.PlotModes.SF_MINT01
 
         self.label = QGraphicsTextItem("x=,y=", self)
 
@@ -93,20 +92,20 @@ class GudPyChart(QChart):
             self.removeAxis(axis)
 
         plotsDCS = self.plotMode in [
-            PlotModes.SF,
-            PlotModes.SF_CANS,
-            PlotModes.SF_MDCS01,
-            PlotModes.SF_MDCS01_CANS
+            enums.PlotModes.SF,
+            enums.PlotModes.SF_CANS,
+            enums.PlotModes.SF_MDCS01,
+            enums.PlotModes.SF_MDCS01_CANS
         ]
         plotsSamples = self.plotMode in [
-            PlotModes.SF,
-            PlotModes.SF_MDCS01,
-            PlotModes.SF_MINT01, PlotModes.RDF
+            enums.PlotModes.SF,
+            enums.PlotModes.SF_MDCS01,
+            enums.PlotModes.SF_MINT01, enums.PlotModes.RDF
         ]
         plotsContainers = self.plotMode in [
-            PlotModes.SF_CANS,
-            PlotModes.SF_MINT01_CANS,
-            PlotModes.SF_MDCS01_CANS, PlotModes.RDF_CANS
+            enums.PlotModes.SF_CANS,
+            enums.PlotModes.SF_MINT01_CANS,
+            enums.PlotModes.SF_MDCS01_CANS, enums.PlotModes.RDF_CANS
         ]
         for sample in self.samples:
             if self.series():
@@ -170,16 +169,16 @@ class GudPyChart(QChart):
 
         # Label axes
         if self.plotMode in [
-            PlotModes.SF,
-            PlotModes.SF_MINT01,
-            PlotModes.SF_MDCS01,
-            PlotModes.SF_CANS,
-            PlotModes.SF_MINT01_CANS, PlotModes.SF_MDCS01_CANS
+            enums.PlotModes.SF,
+            enums.PlotModes.SF_MINT01,
+            enums.PlotModes.SF_MDCS01,
+            enums.PlotModes.SF_CANS,
+            enums.PlotModes.SF_MINT01_CANS, enums.PlotModes.SF_MDCS01_CANS
         ]:
             XLabel = "Q, 1\u212b"
             YLabel = "DCS, barns/sr/atom"
         elif self.plotMode in [
-            PlotModes.RDF, PlotModes.RDF_CANS
+            enums.PlotModes.RDF, enums.PlotModes.RDF_CANS
         ]:
             XLabel = "r, \u212b"
             YLabel = "G(r)"
@@ -212,11 +211,11 @@ class GudPyChart(QChart):
         """
         targetAttr = (
             {
-                SeriesTypes.MINT01: "mint01Series",
-                SeriesTypes.MDCS01: "mdcs01Series",
-                SeriesTypes.DCSLEVEL: "dcsSeries",
-                SeriesTypes.MGOR01: "mgor01Series",
-                SeriesTypes.MDOR01: "mdor01Series"
+                enums.SeriesTypes.MINT01: "mint01Series",
+                enums.SeriesTypes.MDCS01: "mdcs01Series",
+                enums.SeriesTypes.DCSLEVEL: "dcsSeries",
+                enums.SeriesTypes.MGOR01: "mgor01Series",
+                enums.SeriesTypes.MDOR01: "mdor01Series"
             }[seriesType]
         )
 
@@ -238,11 +237,11 @@ class GudPyChart(QChart):
         # is visible, then they all should be.
         targetAttr = (
             {
-                SeriesTypes.MINT01: "mint01Series",
-                SeriesTypes.MDCS01: "mdcs01Series",
-                SeriesTypes.DCSLEVEL: "dcsSeries",
-                SeriesTypes.MGOR01: "mgor01Series",
-                SeriesTypes.MDOR01: "mdor01Series"
+                enums.SeriesTypes.MINT01: "mint01Series",
+                enums.SeriesTypes.MDCS01: "mdcs01Series",
+                enums.SeriesTypes.DCSLEVEL: "dcsSeries",
+                enums.SeriesTypes.MGOR01: "mgor01Series",
+                enums.SeriesTypes.MDOR01: "mdor01Series"
             }[seriesType]
         )
 
@@ -256,14 +255,15 @@ class GudPyChart(QChart):
 
     def isSampleVisible(self, sample):
 
-        if self.plotMode in [PlotModes.SF_MINT01, PlotModes.SF_MINT01_CANS]:
+        if self.plotMode in [enums.PlotModes.SF_MINT01,
+                             enums.PlotModes.SF_MINT01_CANS]:
             return self.configs[sample].mint01Series.isVisible()
-        elif self.plotMode in [PlotModes.SF_MDCS01, PlotModes.SF_MDCS01_CANS]:
+        elif self.plotMode in [enums.PlotModes.SF_MDCS01, enums.PlotModes.SF_MDCS01_CANS]:
             return (
                 self.configs[sample].mdcs01Series.isVisible()
                 | self.configs[sample].dcsSeries.isVisible()
             )
-        elif self.plotMode in [PlotModes.RDF, PlotModes.RDF_CANS]:
+        elif self.plotMode in [enums.PlotModes.RDF, enums.PlotModes.RDF_CANS]:
             return (
                 self.configs[sample].mdor01Series.isVisible()
                 | self.configs[sample].mgor01Series.isVisible()
@@ -277,14 +277,14 @@ class GudPyChart(QChart):
         self.configs[sample].mgor01Series.setVisible(state)
 
     def toggleLogarithmicAxis(self, axis):
-        if axis == Axes.A:
+        if axis == enums.Axes.A:
             self.logarithmicA = not self.logarithmicA
             self.logarithmicX = self.logarithmicA
             self.logarithmicY = self.logarithmicA
-        elif axis == Axes.X:
+        elif axis == enums.Axes.X:
             self.logarithmicX = not self.logarithmicX
             self.logarithmicA = self.logarithmicX and self.logarithmicY
-        elif axis == Axes.Y:
+        elif axis == enums.Axes.Y:
             self.logarithmicY = not self.logarithmicY
             self.logarithmicA = self.logarithmicX and self.logarithmicY
 

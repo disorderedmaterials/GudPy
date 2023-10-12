@@ -1,7 +1,7 @@
 import os
 import time
 
-from core.gud_file import GudFile
+from core.io.gud_file import GudFile
 
 
 class TweakFactorIterator():
@@ -26,6 +26,7 @@ class TweakFactorIterator():
     iterate(n)
         Perform n iterations of iterating by tweak factor.
     """
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
@@ -55,9 +56,9 @@ class TweakFactorIterator():
                 if s.runThisSample
             ]:
                 gudPath = sample.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "gud"
-                        )
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
+                )
                 gudFile = GudFile(
                     os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,

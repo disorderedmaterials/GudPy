@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
-from core.run_batch_files import BatchProcessor
+from core.processes.run_batch_files import BatchProcessor
 from core.enums import Geometry, IterationModes
 from core import config
 

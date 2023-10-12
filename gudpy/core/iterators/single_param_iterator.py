@@ -1,4 +1,4 @@
-from core.gud_file import GudFile
+from core.io.gud_file import GudFile
 import os
 import time
 

@@ -35,20 +35,19 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
+import core.enums as enums
+import core.iterators as iterators
 from core.sample import Sample
 from core.container import Container
 from gui.widgets import dialogs, tables, charts, slots, core
 from gui.widgets.resources import resources_rc  # noqa
-import core.enums as enums
-import core.iterators as iterators
-
-from core.file_library import GudPyFileLibrary
+from core.io.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
-from core.run_containers_as_samples import RunContainersAsSamples
-from core.run_individual_files import RunIndividualFiles
-from core.gud_file import GudFile
+from core.processes.run_containers_as_samples import RunContainersAsSamples
+from core.processes.run_individual_files import RunIndividualFiles
+from core.io.gud_file import GudFile
 from core.utils import breplace, nthint
 
 

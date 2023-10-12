@@ -1,13 +1,13 @@
 import os
 import sys
 
-from core.enums import Geometry
+from core import enums
 from core.gui_config import GUIConfig
 
 spc2 = "  "
 spc5 = "          "
 
-geometry = Geometry.FLATPLATE
+geometry = enums.Geometry.FLATPLATE
 NUM_GUDPY_CORE_OBJECTS = 4
 USE_USER_DEFINED_COMPONENTS = False
 NORMALISE_COMPOSITIONS = False

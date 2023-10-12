@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 from PySide6.QtCore import QObject, Signal, QThread
 
-from core.gud_file import GudFile
+from core.io.gud_file import GudFile
 from core.sample import Sample
 from core.iterators import gss
 

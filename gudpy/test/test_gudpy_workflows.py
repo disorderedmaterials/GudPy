@@ -7,7 +7,7 @@ import math
 
 from core.composition import Composition, Component
 from core.gudrun_file import GudrunFile
-from core.gud_file import GudFile
+from core.io.gud_file import GudFile
 from core.iterators import (
     InelasticitySubtractionIterator,
     DensityIterator,
