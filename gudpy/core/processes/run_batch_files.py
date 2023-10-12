@@ -171,6 +171,8 @@ class BatchProcessor:
                         initial.process(headless=headless)
                         iterator.performIteration(i)
                         initial.iterativeOrganise(
+                            maxIterations - 1,
+                            i,
                             os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
@@ -201,6 +203,8 @@ class BatchProcessor:
                     iterator.performIteration(i)
                     self.batchedGudrunFile.iterativeOrganise(
                         os.path.join(
+                            maxIterations - 1,
+                            i,
                             self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
@@ -231,7 +235,7 @@ class BatchProcessor:
                 tasks.append(
                     [
                         self.batchedGudrunFile.iterativeOrganise,
-                        [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
+                        [0, 0, f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
                     ]
                 )
                 tasks.append(
@@ -266,6 +270,8 @@ class BatchProcessor:
                             [
                                 initial.iterativeOrganise,
                                 [
+                                    maxIterations - 1,
+                                    i,
                                     os.path.join(
                                         initial.GudrunInputFileDir,
                                         f"BATCH_PROCESSING_BATCH_SIZE"
@@ -320,6 +326,8 @@ class BatchProcessor:
                         [
                             self.batchedGudrunFile.iterativeOrganise,
                             [
+                                maxIterations - 1,
+                                i,
                                 os.path.join(
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                     f"{dirText}_{i+1}",

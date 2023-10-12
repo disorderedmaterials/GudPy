@@ -15,7 +15,8 @@ from core.utils import (
     firstNInts,
     nthfloat,
     nthint,
-    resolve
+    resolve,
+    uniquifyName
 )
 from core.instrument import Instrument
 from core.beam import Beam
@@ -128,7 +129,7 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, config_=False):
+    def __init__(self, path=None, format=Format.YAML, config_=False):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -138,10 +139,16 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        format : Format enum
+            Format of the file
+        config_ : bool
+            If a new input file should be constructed from a config
         """
 
         self.path = path
+        self.filename = os.path.basename(path)
         self.yaml = YAML()
+        self.format = format
 
         # Construct the outpath.
         self.outpath = "gudpy.txt"
@@ -851,8 +858,6 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
-            if not sample.name:
-                sample.name = "SAMPLE"
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -1058,8 +1063,6 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("CONTAINER", "").strip()
             )
-            if not container.name:
-                container.name = "CONTAINER"
             self.consumeWhitespace()
 
             # The number of files and period number are both stored
@@ -1270,10 +1273,25 @@ class GudrunFile:
             elif "GO" in line:
                 self.getNextToken()
             elif "SAMPLE" in line and firstword(line) == "SAMPLE":
-                sampleBackground.samples.append(self.makeParse("SAMPLE"))
+                sample = self.makeParse("SAMPLE")
+                if not sample.name:
+                    sample.name = uniquifyName(
+                        "SAMPLE",
+                        [s.name for s in sampleBackground.samples],
+                        sep="",
+                        incFirst=True)
+                sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and firstword(line) == "CONTAINER":
+                container = self.makeParse("CONTAINER")
+                if not container.name:
+                    container.name = uniquifyName(
+                        "CONTAINER",
+                        [c.name
+                         for c in sampleBackground.samples[-1].containers],
+                        sep="",
+                        incFirst=True)
                 sampleBackground.samples[-1].containers.append(
-                    self.makeParse("CONTAINER")
+                    container
                 )
             self.consumeWhitespace()
             line = self.peekNextToken()
@@ -1304,19 +1322,21 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path" + self.path
             )
-
-        try:
-            (
-                self.instrument,
-                self.beam,
-                self.components,
-                self.normalisation,
-                self.sampleBackgrounds,
-                config.GUI
-            ) = self.yaml.parseYaml(self.path)
-            self.format = Format.YAML
-        except Exception:
-            self.format = Format.TXT
+        if self.format == Format.YAML:
+            # YAML Files
+            try:
+                (
+                    self.instrument,
+                    self.beam,
+                    self.components,
+                    self.normalisation,
+                    self.sampleBackgrounds,
+                    config.GUI
+                ) = self.yaml.parseYaml(self.path)
+            except YAMLException as e:
+                raise ParserException(e)
+        else:
+            # TXT Files
             parsing = ""
             KEYWORDS = {
                 "INSTRUMENT": False,
@@ -1512,12 +1532,13 @@ class GudrunFile:
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
         path : str, optional
             Path to parse from (default is empty, which indicates self.path).
-        purge : bool, optional
-            Should detectors be purged?
+        headless : bool, optional
+            Is this being run through CL or GUI?
+        iterative : bool, optional
+            Is Gudrun being iterated?
+
         Returns
         -------
         subprocess.CompletedProcess
@@ -1628,9 +1649,9 @@ class GudrunFile:
         outputFileHandler = OutputFileHandler(self)
         outputFileHandler.naiveOrganise()
 
-    def iterativeOrganise(self, head):
+    def iterativeOrganise(self, nTotal, nCurrent, head):
         outputFileHandler = OutputFileHandler(self)
-        outputFileHandler.iterativeOrganise(head)
+        outputFileHandler.iterativeOrganise(nTotal, nCurrent, head)
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(

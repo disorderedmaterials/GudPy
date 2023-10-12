@@ -18,14 +18,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Couldn't resolve some files! Check that all paths are correct and try again</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QListWidget" name="missingFilesList"/>
+    <layout class="QVBoxLayout" name="missingSectionsLayout" />
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

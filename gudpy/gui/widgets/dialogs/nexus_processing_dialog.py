@@ -83,26 +83,35 @@ class NexusProcessingDialog(QDialog):
             )
         ) as fp:
 
-            spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
-                :
-            ].tolist()
+            if "/raw_data_1/detector_1/spectrum_index" in fp:
+                spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
+                    :
+                ].tolist()
+            else:
+                spectra = [0]
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
-            start = fp["/raw_data_1/start_time"][()][0].decode("utf8")
-            end = fp["/raw_data_1/end_time"][()][0].decode("utf8")
             start = (
-                datetime.strptime(start, "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if "/raw_data_1/start_time" not in fp
+                else datetime.strptime(
+                    fp["/raw_data_1/start_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             end = (
-                datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if "/raw_data_1/end_time" not in fp
+                else datetime.strptime(
+                    fp["/raw_data_1/end_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             self.start = QDateTime.fromString(
                 start.isoformat(), Qt.ISODateWithMs
             )
-            self.end = QDateTime.fromString(
-                end.isoformat(), Qt.ISODateWithMs
-            )
+            self.end = QDateTime.fromString(end.isoformat(), Qt.ISODateWithMs)
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))

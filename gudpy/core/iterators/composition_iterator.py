@@ -104,6 +104,8 @@ class CompositionIterator():
         Performs n iterations using cost function f, args and bounds.
     """
 
+    name = "IterateByComposition"
+
     def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.components = []

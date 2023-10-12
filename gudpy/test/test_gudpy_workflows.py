@@ -15,6 +15,7 @@ from core.iterators import (
     TweakFactorIterator,
     CompositionIterator
 )
+from core.enums import Format
 
 
 class TestGudPyWorkflows(TestCase):
@@ -22,13 +23,14 @@ class TestGudPyWorkflows(TestCase):
 
         path = os.path.abspath("test/TestData/NIMROD-water/water.txt")
 
-        self.g = GudrunFile(os.path.abspath(path))
+        self.g = GudrunFile(os.path.abspath(path), format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
         copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
-            os.path.abspath("test/TestData/NIMROD-water/good_water.txt")
+            os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
+            format=Format.TXT
         )
 
         from pathlib import Path

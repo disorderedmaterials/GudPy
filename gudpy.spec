@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 binaries = [
     (os.path.join("bin", f), '.')
     for f in os.listdir("bin")

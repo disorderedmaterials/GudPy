@@ -162,3 +162,81 @@ def nthreplace(str, old, new, nth):
     if len(tokens) > nth:
         string = f'{old.join(tokens[:nth])}{new}{old.join(tokens[nth:])}'
     return string
+
+
+def makeDir(targetPath):
+    """Creates directory if it doesn't already exist
+
+    Parameters
+    ----------
+    targetPath : str
+        Path where directory is to be made
+    """
+    if not os.path.isdir(targetPath):
+        os.makedirs(targetPath)
+
+
+def uniquify(path, sep="_", incFirst=False):
+    """
+    Function to increment path based on the amount
+    of existing paths
+
+    Parameters
+    ----------
+    path : str
+        requested path
+    sep : str
+        desired seperator between basename and number
+    incFirst : bool
+        whether to increment the first instance of the
+        path
+
+    Returns
+    -------
+    str
+        avaliable path
+    """
+
+    root, ext = os.path.splitext(path)
+    fileCount = 1
+    if incFirst:
+        path = root + sep + str(fileCount) + ext
+        fileCount += 1
+    while os.path.exists(path):
+        path = root + sep + str(fileCount) + ext
+        fileCount += 1
+    return path
+
+
+def uniquifyName(basename, names, sep="_", incFirst=False):
+    """
+    Function to increment a default name based on the amount
+    of existing default names
+
+    Parameters
+    ----------
+    basename : str
+        base default name
+    names : str[]
+        list of current existing names
+    sep : str
+        desired seperator between basename and number
+    incFirst : bool
+        whether to increment the first instance of the
+        path
+
+    Returns
+    -------
+    str
+        avaliable path
+    """
+
+    nameCount = 1
+    name = basename
+    if incFirst:
+        name = basename + sep + str(nameCount)
+        nameCount += 1
+    while name in names:
+        name = basename + sep + str(nameCount)
+        nameCount += 1
+    return name
