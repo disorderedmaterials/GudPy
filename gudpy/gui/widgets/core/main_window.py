@@ -596,7 +596,8 @@ class GudPyMainWindow(QMainWindow):
                 path = self.tryLoadAutosaved(filename)
                 self.gudrunFile = GudrunFile(path=path, format=fmt)
                 self.updateWidgets()
-                self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
+                self.mainWidget.setWindowTitle(
+                    f"GudPy - {self.gudrunFile.filename}")
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
             except IOError:
