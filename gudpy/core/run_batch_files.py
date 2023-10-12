@@ -1,10 +1,10 @@
 from copy import deepcopy
 import os
 from core.enums import IterationModes
-from core.tweak_factor_iterator import TweakFactorIterator
-from core.thickness_iterator import ThicknessIterator
-from core.radius_iterator import RadiusIterator
-from core.density_iterator import DensityIterator
+from core.iterators.tweak_factor_iterator import TweakFactorIterator
+from core.iterators.thickness_iterator import ThicknessIterator
+from core.iterators.radius_iterator import RadiusIterator
+from core.iterators.density_iterator import DensityIterator
 
 
 class BatchProcessor:
@@ -93,10 +93,10 @@ class BatchProcessor:
     def propogateResults(self, current, next, iterationMode):
         for (
             sampleBackgroundA, sampleBackgroundB
-         ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
+        ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
             for (
                 sampleA, sampleB
-             ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
+            ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
                 if iterationMode == IterationModes.TWEAK_FACTOR:
                     sampleB.sampleTweakFactor = sampleA.sampleTweakFactor
                 elif iterationMode == IterationModes.THICKNESS:
@@ -169,6 +169,8 @@ class BatchProcessor:
                         initial.process(headless=headless)
                         iterator.performIteration(i)
                         initial.iterativeOrganise(
+                            maxIterations - 1,
+                            i,
                             os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
@@ -199,6 +201,8 @@ class BatchProcessor:
                     iterator.performIteration(i)
                     self.batchedGudrunFile.iterativeOrganise(
                         os.path.join(
+                            maxIterations - 1,
+                            i,
                             self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
@@ -229,7 +233,7 @@ class BatchProcessor:
                 tasks.append(
                     [
                         self.batchedGudrunFile.iterativeOrganise,
-                        [f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
+                        [0, 0, f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
                     ]
                 )
                 tasks.append(
@@ -264,6 +268,8 @@ class BatchProcessor:
                             [
                                 initial.iterativeOrganise,
                                 [
+                                    maxIterations - 1,
+                                    i,
                                     os.path.join(
                                         initial.GudrunInputFileDir,
                                         f"BATCH_PROCESSING_BATCH_SIZE"
@@ -318,6 +324,8 @@ class BatchProcessor:
                         [
                             self.batchedGudrunFile.iterativeOrganise,
                             [
+                                maxIterations - 1,
+                                i,
                                 os.path.join(
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",
                                     f"{dirText}_{i+1}",

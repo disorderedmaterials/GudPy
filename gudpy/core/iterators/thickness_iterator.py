@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from core.iterators.single_param_iterator import SingleParamIterator
 
 
 class ThicknessIterator(SingleParamIterator):
@@ -19,6 +19,9 @@ class ThicknessIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+
+    name = "IterateByThickness"
+
     def applyCoefficientToAttribute(self, object, coefficient):
         # Determine a new total thickness.
         totalThickness = object.upstreamThickness + object.downstreamThickness
@@ -26,6 +29,3 @@ class ThicknessIterator(SingleParamIterator):
         # Assign the new thicknesses.
         object.downstreamThickness = totalThickness / 2
         object.upstreamThickness = totalThickness / 2
-
-    def organiseOutput(self, n):
-        self.gudrunFile.iterativeOrganise(f"IterateByThickness_{n}")

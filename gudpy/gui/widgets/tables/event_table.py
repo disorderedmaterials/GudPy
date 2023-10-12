@@ -22,6 +22,7 @@ class EventModel(GudPyTableModel):
     data(index, role)
         Returns data at a given index
     """
+
     def __init__(self, h5path, spec, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
@@ -39,7 +40,6 @@ class EventModel(GudPyTableModel):
         with h5.File(h5path) as fp:
             if spec in fp.keys():
                 data = sorted(fp[f"/{spec}"][()][:].tolist())
-                print(data)
             else:
                 data = []
         super(EventModel, self).__init__(data, headers, parent)
@@ -117,6 +117,7 @@ class EventTable(QTableView):
     makeModel(data)
         Creates the model using the data.
     """
+
     def __init__(self, parent):
         """
         Constructs all the necessary attributes

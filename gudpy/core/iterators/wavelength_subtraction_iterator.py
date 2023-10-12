@@ -57,6 +57,8 @@ class WavelengthSubtractionIterator():
         Perform n iterations on the wavelength scale and Q scale.
     """
 
+    name = "IterateByWavelengthSubtraction"
+
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
@@ -119,14 +121,12 @@ class WavelengthSubtractionIterator():
         width of top hat functions for FT to zero, for each sample
         that is being run.
         """
-        # Enumerator for sample backgrounds
-        iterator = enumerate(self.gudrunFile.sampleBackgrounds)
 
         # Iterate through all of the samples, and set top hat widths to zero.
-        for i, sampleBackground in iterator:
-            for j, sample in enumerate(sampleBackground.samples):
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
                 if sample.runThisSample:
-                    target = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    target = sample
                     target.topHatW = 0
 
     def resetTopHatWidths(self):
@@ -135,16 +135,14 @@ class WavelengthSubtractionIterator():
         width of top hat functions for their previous values, for each sample
         that is being run.
         """
-        # Enumerator for sample backgrounds
-        iterator = enumerate(self.gudrunFile.sampleBackgrounds)
 
         # Iterate through all of the samples, and set top hat widths to
         # their previous values
-        for i, sampleBackground in iterator:
-            for j, sample in enumerate(sampleBackground.samples):
-                if sample.runThisSample:
-                    target = self.gudrunFile.sampleBackgrounds[i].samples[j]
-                    target.topHatW = self.topHatWidths[j]
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample, topHatW in zip(
+                    sampleBackground.samples, self.topHatWidths):
+                target = sample
+                target.topHatW = topHatW
 
     def collectTopHatWidths(self):
         """
@@ -169,16 +167,13 @@ class WavelengthSubtractionIterator():
         # Dict to pick suffix based on scale
         suffix = {Scales.Q: "msubw01", Scales.WAVELENGTH: "mint01"}[scale]
 
-        # Enumerator for sample backgrounds
-        iterator = enumerate(self.gudrunFile.sampleBackgrounds)
-
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
         # relevant to the specified scale
-        for i, sampleBackground in iterator:
-            for j, sample in enumerate(sampleBackground.samples):
-                if sample.runThisSample:
-                    target = self.gudrunFile.sampleBackgrounds[i].samples[j]
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                if sample.runThisSample and len(sample.dataFiles):
+                    target = sample
                     filename = target.dataFiles[0]
                     target.fileSelfScattering = (
                         str(Path(filename).stem) + '.' + suffix
@@ -255,8 +250,8 @@ class WavelengthSubtractionIterator():
             self.wavelengthIteration(i)
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
-            self.gudrunFile.iterativeOrganise(f"WavelengthIteration_{i+1}")
+            self.gudrunFile.iterativeOrganise(n, i, "WavelengthIteration")
             self.QIteration(i)
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
-            self.gudrunFile.iterativeOrganise(f"QIteration_{i+1}")
+            self.gudrunFile.iterativeOrganise(n, i, "QIteration")

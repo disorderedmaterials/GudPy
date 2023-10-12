@@ -9,7 +9,7 @@ inputs:
     default: 2023.1
   modexTag:
     type: string
-    default: 0.1.4
+    default: 0.1.5
   hdf5tag:
     type: string
     default: hdf5-1_10_7
