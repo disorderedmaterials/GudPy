@@ -3,11 +3,12 @@ import time
 from copy import deepcopy
 
 from core.enums import Scales
+from core.iterators.iterator import Iterator
 
 
-class WavelengthSubtractionIterator():
+class InelasticitySubtraction(Iterator):
     """
-    Class to represent a WavelengthSubtractionIterator.
+    Class to represent a InelasticitySubtraction iterator.
     This class is used for iteratively subtracting wavelength.
     Each iteration comprises of a wavelength run and a
     Q binning run.
@@ -57,12 +58,12 @@ class WavelengthSubtractionIterator():
         Perform n iterations on the wavelength scale and Q scale.
     """
 
-    name = "IterateByWavelengthSubtraction"
+    name = "IterateByWavelengthInelasticitySubtraction"
 
     def __init__(self, gudrunFile):
         """
         Constructs all the necessary attributes for the
-        WavelengthSubtractionIterator object.
+        InelasticitySubtraction object.
 
         Parameters
         ----------
@@ -70,6 +71,7 @@ class WavelengthSubtractionIterator():
             Input GudrunFile that we will be using for iterating.
         """
         self.gudrunFile = deepcopy(gudrunFile)
+        self.iterationType = "WavelengthIteration"
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
@@ -179,7 +181,7 @@ class WavelengthSubtractionIterator():
                         str(Path(filename).stem) + '.' + suffix
                     )
 
-    def wavelengthIteration(self, i):
+    def wavelengthIteration(self):
         """
         Performs one iteration on the wavelength scale.
         If the iteration is the first iteration,
@@ -195,7 +197,7 @@ class WavelengthSubtractionIterator():
         Then, write out the GudrunFile and call gudrun_dcs.
         """
         # First iteration
-        if i == 0:
+        if self.nCurrent == 0:
             # Disable subtracting of wavelength binned data.
             # Collect the top hat widths and Q range and step size.
             self.gudrunFile.instrument.subWavelengthBinnedData = False
@@ -217,7 +219,7 @@ class WavelengthSubtractionIterator():
         self.zeroTopHatWidths()
         self.setSelfScatteringFiles(Scales.WAVELENGTH)
 
-    def QIteration(self, i):
+    def QIteration(self):
         """
         Performs one iteration on the Q scale.
         Enables subtracting of wavelength-binned data.
@@ -239,19 +241,25 @@ class WavelengthSubtractionIterator():
         self.resetTopHatWidths()
         self.setSelfScatteringFiles(Scales.Q)
 
-    def iterate(self, n):
+    def performIteration(self):
+        if self.nCurrent % 2 != 0:
+            self.wavelengthIteration()
+            self.iterationType = "WavelengthIteration"
+        else:
+            self.QIteration()
+            self.iterationType = "QIteration"
+            self.nCurrent += 1
+
+    def iterate(self):
         """
         Perform n iterations on both
         the wavelength scale and Q scale.
         """
 
-        for i in range(n):
+        for _ in range(self.nTotal):
 
-            self.wavelengthIteration(i)
+            self.performIteration()
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
-            self.gudrunFile.iterativeOrganise(n, i, "WavelengthIteration")
-            self.QIteration(i)
-            self.gudrunFile.process(iterative=True)
-            time.sleep(1)
-            self.gudrunFile.iterativeOrganise(n, i, "QIteration")
+            self.gudrunFile.iterativeOrganise(
+                self.nTotal, self.nCurrent, self.iterationType)

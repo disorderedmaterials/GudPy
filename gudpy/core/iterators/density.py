@@ -1,9 +1,9 @@
-from core.iterators.single_param_iterator import SingleParamIterator
+from core.iterators.iterator import Iterator
 
 
-class DensityIterator(SingleParamIterator):
+class DensityIterator(Iterator):
     """
-    Class to represent a Density Iterator. Inherits SingleParamIterator.
+    Class to represent a Density Iterator. Inherits Iterator.
     This class is used for iteratively tweaking the density.
     This means running gudrun_dcs iteratively, and adjusting the density
     of each sample across iterations. The new density is determined by

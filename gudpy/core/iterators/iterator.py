@@ -1,11 +1,12 @@
-from core.gud_file import GudFile
 import os
 import time
 
+from core.gud_file import GudFile
 
-class SingleParamIterator():
+
+class Iterator():
     """
-    Class to represent a Single Param Iterator.
+    Class to represent an Iterator.
     This class is used for iteratively tweaking a parameter by a coefficient.
     This means running gudrun_dcs iteratively, and adjusting parameter
     of each sample across iterations. The new coefficient
@@ -20,36 +21,36 @@ class SingleParamIterator():
         Input GudrunFile that we will be using for iterating.
     Methods
     ----------
-    performIteration(_n)
+    performIteration()
         Performs a single iteration.
     applyCoefficientToAttribute(object, coefficient)
         To be overriden by sub-classes.
-    iterate(n)
+    iterate()
         Perform n iterations of iterating by tweak factor.
     organiseOutput
         To be overriden by sub-classes.
     """
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunFile, nTotal):
         """
         Constructs all the necessary attributes for the
-        SingleParamIterator object.
+        Iterator object.
 
         Parameters
         ----------
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
+        nTotal : int
+            Total number of iterations to be run
         """
         self.gudrunFile = gudrunFile
+        self.nTotal = nTotal
+        self.nCurrent = 0
 
-    def performIteration(self, _n):
+    def performIteration(self):
         """
         Performs a single iteration of the current workflow.
 
-        Parameters
-        ----------
-        _n : int
-            Iteration number.
         """
         # Iterate through all samples that are being run,
         # applying the coefficient to the target parameter.
@@ -74,6 +75,7 @@ class SingleParamIterator():
                 )
                 # Apply the coefficient.
                 self.applyCoefficientToAttribute(sample, coefficient)
+        self.nCurrent += 1
 
     def applyCoefficientToAttribute(self, object, coefficient):
         """
@@ -90,7 +92,7 @@ class SingleParamIterator():
         """
         pass
 
-    def organiseOutput(self, nTotal, nCurrent):
+    def organiseOutput(self):
         """
         This should organises the output of the iteration.
 
@@ -102,11 +104,11 @@ class SingleParamIterator():
             Current iteration
         """
         self.gudrunFile.iterativeOrganise(
-            nTotal, nCurrent, self.name)
+            self.nTotal, self.nCurrent, self.name)
 
-    def iterate(self, n):
+    def iterate(self):
         """
-        This method is the core of the SingleParamIterator.
+        This method is the core of the Iterator.
         It performs n iterations of tweaking by a class-specific parameter.
         Namely, it performs gudrun_dcs n times, adjusting said parameter
         for each sample before each iteration, after the first one,
@@ -117,8 +119,8 @@ class SingleParamIterator():
         n : int
             Number of iterations to perform.
         """
-        for i in range(n):
+        for _ in range(self.nTotal):
             self.gudrunFile.process()
             time.sleep(1)
-            self.performIteration(i)
-            self.organiseOutput(n, i)
+            self.performIteration()
+            self.organiseOutput()
