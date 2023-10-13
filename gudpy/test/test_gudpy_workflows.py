@@ -6,15 +6,15 @@ import re
 import math
 
 from core.composition import Composition, Component
-from core.gudrun_file import GudrunFile
-from core.iterators.thickness_iterator import ThicknessIterator
-from core.iterators.density_iterator import DensityIterator
-from core.iterators.tweak_factor_iterator import TweakFactorIterator
-from core.iterators.composition_iterator import CompositionIterator
 from core.gud_file import GudFile
-from core.iterators.wavelength_subtraction_iterator import (
-    WavelengthSubtractionIterator
+from core.gudrun_file import GudrunFile
+from core.iterators.composition import CompositionIterator
+from core.iterators.density import DensityIterator
+from core.iterators.inelasticity_subtraction import (
+    InelasticitySubtraction
 )
+from core.iterators.thickness import ThicknessIterator
+from core.iterators.tweak_factor import TweakFactorIterator
 from core.enums import Format
 
 

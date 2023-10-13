@@ -36,26 +36,21 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from core.iterators.single_param_iterator import SingleParamIterator
-from core.iterators.composition_iterator import CompositionIterator
-from core.iterators.density_iterator import DensityIterator
-from core.iterators.radius_iterator import RadiusIterator
+from core.iterators.iterator import Iterator
+from core.iterators.composition import CompositionIterator
+from core.iterators.density import DensityIterator
+from core.iterators.radius import RadiusIterator
 from core.sample import Sample
 from core.container import Container
-from core.iterators.thickness_iterator import ThicknessIterator
+from core.iterators.thickness import ThicknessIterator
 from gui.widgets.dialogs.export_dialog import ExportDialog
-from gui.widgets.dialogs.iterate_composition_dialog import (
+
+from gui.widgets.dialogs.iteration_dialog import (
     CompositionIterationDialog,
-)
-from gui.widgets.dialogs.iterate_density_dialog import DensityIterationDialog
-from gui.widgets.dialogs.iterate_inelasticity_subtractions_dialog import (
-    WavelengthInelasticitySubtractionsIterationDialog,
-)
-from gui.widgets.dialogs.iterate_radius_dialog import RadiusIterationDialog
-from gui.widgets.dialogs.iterate_thickness_dialog import (
+    DensityIterationDialog,
+    InelasticitySubtractionIterationDialog,
+    RadiusIterationDialog,
     ThicknessIterationDialog,
-)
-from gui.widgets.dialogs.iterate_tweak_factor_dialog import (
     TweakFactorIterationDialog,
 )
 from gui.widgets.dialogs.purge_dialog import PurgeDialog

@@ -1,9 +1,23 @@
 import os
 from queue import Queue
 import sys
+from copy import deepcopy
 from PySide6.QtWidgets import QDialog
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, Qt
 from PySide6.QtUiTools import QUiLoader
+
+from core.enums import Geometry
+from core import config
+from core.iterators.composition import (
+    CompositionIterator, calculateTotalMolecules
+)
+from core.iterators.density import DensityIterator
+from core.iterators.inelasticity_subtraction import (
+    InelasticitySubtraction
+)
+from core.iterators.radius import RadiusIterator
+from core.iterators.thickness import ThicknessIterator
+from core.iterators.tweak_factor import TweakFactorIterator
 
 
 class IterationDialog(QDialog):
