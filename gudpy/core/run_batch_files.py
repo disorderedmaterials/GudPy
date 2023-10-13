@@ -1,10 +1,10 @@
 from copy import deepcopy
 import os
 from core.enums import IterationModes
-from core.iterators.tweak_factor_iterator import TweakFactorIterator
-from core.iterators.thickness_iterator import ThicknessIterator
-from core.iterators.radius_iterator import RadiusIterator
-from core.iterators.density_iterator import DensityIterator
+from core.iterators.tweak_factor import TweakFactorIterator
+from core.iterators.thickness import ThicknessIterator
+from core.iterators.radius import RadiusIterator
+from core.iterators.density import DensityIterator
 
 
 class BatchProcessor:
