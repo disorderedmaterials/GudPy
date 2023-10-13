@@ -1654,7 +1654,7 @@ class GudrunFile:
         if nCurrent == 0:
             self.outputFileHandler = OutputFileHandler(self)
         self.outputFileHandler.iterativeOrganise(nTotal, nCurrent, head)
-        if nCurrent == nTotal:
+        if nCurrent == nTotal - 1:
             del self.outputFileHandler
 
     def determineError(self, sample):
