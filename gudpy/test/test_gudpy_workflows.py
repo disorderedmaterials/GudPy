@@ -6,15 +6,15 @@ import re
 import math
 
 from core.composition import Composition, Component
-from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
-from core.iterators.composition import CompositionIterator
+from core.iterators.thickness import ThicknessIterator
 from core.iterators.density import DensityIterator
+from core.iterators.tweak_factor import TweakFactorIterator
+from core.iterators.composition import CompositionIterator
+from core.gud_file import GudFile
 from core.iterators.inelasticity_subtraction import (
     InelasticitySubtraction
 )
-from core.iterators.thickness import ThicknessIterator
-from core.iterators.tweak_factor import TweakFactorIterator
 from core.enums import Format
 
 
@@ -131,8 +131,8 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByTweakFactor(self):
 
         self.g.purge()
-        tweakFactorIterator = TweakFactorIterator(self.g)
-        tweakFactorIterator.iterate(5)
+        tweakFactorIterator = TweakFactorIterator(self.g, 5)
+        tweakFactorIterator.iterate()
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
@@ -181,8 +181,8 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByThickness(self):
 
         self.g.purge()
-        thicknessIterator = ThicknessIterator(self.g)
-        thicknessIterator.iterate(5)
+        thicknessIterator = ThicknessIterator(self.g, 5)
+        thicknessIterator.iterate()
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
@@ -231,8 +231,8 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByDensity(self):
 
         self.g.purge()
-        densityIterator = DensityIterator(self.g)
-        densityIterator.iterate(5)
+        densityIterator = DensityIterator(self.g, 5)
+        densityIterator.iterate()
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
@@ -281,8 +281,8 @@ class TestGudPyWorkflows(TestCase):
     def testIterateByThickness(self):
 
         self.g.purge()
-        thicknessIterator = ThicknessIterator(self.g)
-        thicknessIterator.iterate(5)
+        thicknessIterator = ThicknessIterator(self.g, 5)
+        thicknessIterator.iterate()
 
         gfPath = self.g.sampleBackgrounds[0].samples[0].dataFiles.dataFiles[0]
         gfPath = gfPath.replace(self.g.instrument.dataFileType, 'gud')
@@ -365,10 +365,10 @@ class TestGudPyWorkflows(TestCase):
 
         for i in range(1, 4):
             self.g.purge()
-            wavelengthSubtractionIterator = (
-                WavelengthSubtractionIterator(self.g)
+            inelasitictyIterator = (
+                InelasticitySubtraction(self.g, i)
             )
-            wavelengthSubtractionIterator.iterate(i)
+            inelasitictyIterator.iterate()
 
             for sample in [
                     x
