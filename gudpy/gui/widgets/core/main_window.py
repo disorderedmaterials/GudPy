@@ -36,13 +36,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView
 
-from core.iterators.iterator import Iterator
-from core.iterators.composition import CompositionIterator
-from core.iterators.density import DensityIterator
-from core.iterators.radius import RadiusIterator
-from core.sample import Sample
 from core.container import Container
-from core.iterators.thickness import ThicknessIterator
+from core.iterators.composition import CompositionIterator
+from core.sample import Sample
 from gui.widgets.dialogs.export_dialog import ExportDialog
 
 from gui.widgets.dialogs.iteration_dialog import (
@@ -98,10 +94,6 @@ from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
 from core import config
-from core.iterators.tweak_factor_iterator import TweakFactorIterator
-from core.iterators.wavelength_subtraction_iterator import (
-    WavelengthSubtractionIterator
-)
 from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
@@ -122,7 +114,7 @@ class GudPyMainWindow(QMainWindow):
         GudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
-    iterator : TweakFactorIterator | WavelengthSubtractionIterator
+    iterator : Iterator | CompositionIterator
         Iterator to use in iterations.
     Methods
     -------
