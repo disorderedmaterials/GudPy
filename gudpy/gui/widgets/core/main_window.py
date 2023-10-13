@@ -196,7 +196,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
         loader.registerCustomWidget(
-            WavelengthInelasticitySubtractionsIterationDialog
+            InelasticitySubtractionIterationDialog
         )
         loader.registerCustomWidget(RadiusIterationDialog)
         loader.registerCustomWidget(ThicknessIterationDialog)
@@ -362,7 +362,7 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
-                WavelengthInelasticitySubtractionsIterationDialog,
+                InelasticitySubtractionIterationDialog,
                 "iterateInelasticitySubtractionsDialog",
             )
         )
@@ -1475,7 +1475,7 @@ class GudPyMainWindow(QMainWindow):
 
     def progressCompositionIteration(self, currentIteration):
         progress = (
-            currentIteration / self.numberIterations
+            self.currentIteration / self.numberIterations
         ) * (self.currentIteration / self.totalIterations)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
@@ -1540,7 +1540,6 @@ class GudPyMainWindow(QMainWindow):
         else:
             self.queue = iterationDialog.queue
             self.iterator = iterationDialog.iterator
-            self.numberIterations = iterationDialog.queue.qsize() - 1
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
@@ -1554,43 +1553,13 @@ class GudPyMainWindow(QMainWindow):
         if self.error:
             self.procFinished(9, QProcess.NormalExit)
             return
-        if isinstance(self.iterator, SingleParamIterator):
-            self.gudrunFile.iterativeOrganise(
-                self.numberIterations,
-                self.currentIteration,
-                self.iterator.name
-            )
-            time.sleep(1)
-            self.iterator.performIteration(self.currentIteration)
-            self.gudrunFile.write_out()
-            self.outputIterations[self.currentIteration + 1] = self.output
-            self.outputSlots.setOutput(
-                self.outputIterations, "gudrun_dcs", gudrunFile=self.gudrunFile
-            )
-        if isinstance(self.iterator, WavelengthSubtractionIterator):
-            if self.queue.qsize() % 2 != 0:
-                self.iterator.gudrunFile.iterativeOrganise(
-                    self.numberIterations + 1,
-                    self.currentIteration,
-                    "WavelengthIteration"
-                )
-            elif self.queue.qsize():
-                self.iterator.gudrunFile.iterativeOrganise(
-                    self.numberIterations,
-                    self.currentIteration,
-                    "QIteration"
-                )
-                self.currentIteration += 1
-            else:
-                self.iterator.gudrunFile.iterativeOrganise(
-                    self.currentIteration,
-                    self.currentIteration,
-                    "QIteration"
-                )
-            self.outputIterations[self.currentIteration + 1] = self.output
-        else:
-            self.currentIteration += 1
-
+        self.iterator.organiseOutput()
+        self.iterator.performIteration()
+        self.gudrunFile.write_out()
+        self.outputIterations[self.iterator.nCurrent] = self.output
+        self.outputSlots.setOutput(
+            self.outputIterations, "gudrun_dcs", gudrunFile=self.gudrunFile
+        )
         if not self.queue.empty():
             self.nextIterableProc()
         else:
@@ -1608,11 +1577,6 @@ class GudPyMainWindow(QMainWindow):
         self.proc.setWorkingDirectory(
             self.gudrunFile.instrument.GudrunInputFileDir
         )
-        if isinstance(self.iterator, WavelengthSubtractionIterator):
-            if self.queue.qsize() % 2 == 0:
-                self.iterator.wavelengthIteration(self.currentIteration)
-            else:
-                self.iterator.QIteration(self.currentIteration)
         if func:
             func(*args)
         self.proc.start()
@@ -1620,8 +1584,8 @@ class GudPyMainWindow(QMainWindow):
     def iterationStarted(self):
         self.mainWidget.currentTaskLabel.setText(
             f"{self.text}"
-            f" {(self.numberIterations + 1) - self.queue.qsize()}"
-            + f"/{self.numberIterations + 1}"
+            f" {self.iterator.nCurrent + 1}"
+            + f"/{self.iterator.nTotal}"
         )
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
@@ -1633,7 +1597,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
-        progress /= self.numberIterations
+        progress /= self.iterator.nTotal
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
@@ -1940,18 +1904,9 @@ class GudPyMainWindow(QMainWindow):
     def procFinished(self, ec, es):
         self.proc = None
         output = self.output
-        if isinstance(
-            self.iterator,
-            (
-                TweakFactorIterator,
-                ThicknessIterator,
-                RadiusIterator,
-                DensityIterator,
-            ),
-        ):
+        if self.iterator:
             self.outputIterations[self.currentIteration + 1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
-        if self.iterator:
             output = self.outputIterations
             self.iterator = None
         if self.error:
