@@ -1653,7 +1653,7 @@ class GudrunFile:
     def iterativeOrganise(self, nTotal, nCurrent, head):
         if nCurrent == 0:
             self.outputFileHandler = OutputFileHandler(self)
-        self.outputFileHandler.iterativeOrganise(nTotal, nCurrent, head)
+        self.outputFileHandler.iterativeOrganise(nCurrent, head)
         if nCurrent == nTotal - 1:
             del self.outputFileHandler
 

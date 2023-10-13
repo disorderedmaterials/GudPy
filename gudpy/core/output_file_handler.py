@@ -183,7 +183,7 @@ class OutputFileHandler():
                 uniquify(os.path.join(self.outputDir, folder))
             )
 
-    def iterativeOrganise(self, nTotal, nCurrent, head):
+    def iterativeOrganise(self, nCurrent, head):
         """
         Organises Gudrun outputs when it is run
         iteratively
