@@ -6,7 +6,19 @@ import tempfile
 
 class OutputFileHandler():
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunFile, nCurrent=0, head=""):
+        """
+        Initialise `OutputFileHandler`
+
+        Parameters
+        ----------
+        gudrunFile : GudrunFile
+            Gudrun file object that defines run parameters
+        nCurrent : int, optional
+            Current iteration number by default 0
+        head : str, optional
+            Iterator type, by default ""
+        """
         self.gudrunFile = gudrunFile
         # List of run samples
         self.samples = []
@@ -15,7 +27,10 @@ class OutputFileHandler():
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, os.path.splitext(
             self.gudrunFile.filename)[0])
-        self.samplePaths = []
+        if head:
+            self.tempOutDir = os.path.join(
+                self.tempOutDir, f"{head}_{nCurrent + 1}")
+
         # Name the output directory as the input file
         self.outputDir = os.path.join(
             self.gudrunFile.inputFileDir,
@@ -49,11 +64,11 @@ class OutputFileHandler():
 
         # If output directory exists, move to a temp dir and clear it
         # Avoids shutil.rmtree
-        if os.path.exists(self.outputDir):
+        if nCurrent == 0 and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
                 shutil.move(self.outputDir, os.path.join(tmp.name, "prev"))
 
-    def naiveOrganise(self):
+    def organiseOutput(self):
         """Organises Gudrun outputs
         """
         # Create normalisation and sample background folders
@@ -63,38 +78,19 @@ class OutputFileHandler():
         self.createSampleDir(self.tempOutDir)
         # Create additonal output folders
         self.createAddOutDir(self.tempOutDir)
-        # Move over samples to output directory
-        self.exportTempDir()
-
-    def iterativeOrganise(self, nCurrent, head):
-        """
-        Organises Gudrun outputs when it is run
-        iteratively
-
-        Parameters
-        ----------
-        nTotal : int
-            Total number of iterations
-        nCurrent : int
-            Current iteration
-        head : str
-            Intended basename for folders
-            which gets incremented per iteration
-        """
-        iterName = f"{head}_{nCurrent + 1}"
-        iterDir = os.path.join(self.tempOutDir, iterName)
-
-        # Create the normalisation and sample background directories
-        # if this is the first iteration
-        self.createNormDir(iterDir)
-        self.createSampleBgDir(iterDir)
-
-        # Create the sample output folders
-        self.createSampleDir(iterDir)
-
-        self.createAddOutDir(iterDir)
-
-        self.exportTempDir()
+        # Move over folders to output directory
+        makeDir(self.outputDir)
+        for (root, dirs, files) in os.listdir(self.tempOutDir):
+            r = os.path.join(
+                self.gudrunFile.inputFileDir,
+                root.partition(self.gudrunDir)[-1])
+            for d in dirs:
+                makeDir(os.path.join(r, d))
+            for f in files:
+                shutil.copyfile(
+                    os.path.join(root, f),
+                    os.path.join(r, f)
+                )
 
     def createNormDir(self, dest):
         """
@@ -212,31 +208,6 @@ class OutputFileHandler():
                     os.path.join(self.gudrunDir, f),
                     os.path.join(addDir, f)
                 )
-
-    def exportDir(self, src, dest):
-        """
-        Copy moves directory `src` to `dest` if it exists
-
-        Parameters
-        ----------
-        src : str
-            Path to target directory
-        dest : str
-            Directory for the directory to be moved to
-
-        Returns
-        -------
-        Path where `src` is now located
-        """
-
-        if os.path.exists(src):
-            shutil.move(
-                os.path.join(src),
-                os.path.join(dest)
-            )
-            return dest
-        else:
-            return src
 
     def copyOutputs(self, fpath, dest):
         """

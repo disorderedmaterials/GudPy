@@ -261,5 +261,5 @@ class InelasticitySubtraction(Iterator):
             self.performIteration()
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
-            self.gudrunFile.iterativeOrganise(
+            self.gudrunFile.organiseOutputs(
                 self.nCurrent, self.iterationType)

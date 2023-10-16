@@ -1561,7 +1561,7 @@ class GudrunFile:
                 os.chdir(cwd)
                 return False
             if not iterative:
-                self.naiveOrganise()
+                self.organiseOutputs()
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1646,13 +1646,9 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
-    def naiveOrganise(self):
-        outputFileHandler = OutputFileHandler(self)
-        outputFileHandler.naiveOrganise()
-
-    def iterativeOrganise(self, nTotal, nCurrent, head):
-        self.outputFileHandler = OutputFileHandler(self)
-        self.outputFileHandler.iterativeOrganise(nCurrent, head)
+    def organiseOutput(self, nCurrent=0, head=""):
+        self.outputFileHandler = OutputFileHandler(self, nCurrent)
+        self.outputFileHandler.organiseOutput()
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(
