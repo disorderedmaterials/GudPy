@@ -104,7 +104,7 @@ class Iterator():
             Current iteration
         """
         self.gudrunFile.iterativeOrganise(
-            self.nTotal, self.nCurrent, self.name)
+            self.nCurrent, self.name)
 
     def iterate(self):
         """

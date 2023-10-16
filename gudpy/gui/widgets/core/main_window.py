@@ -1492,7 +1492,6 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
         self.gudrunFile.iterativeOrganise(
-            self.numberIterations - 1,
             self.currentIteration,
             self.iterator.name)
         self.currentIteration += 1
