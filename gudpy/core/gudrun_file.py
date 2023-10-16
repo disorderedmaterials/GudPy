@@ -1647,7 +1647,7 @@ class GudrunFile:
         return sample
 
     def organiseOutput(self, nCurrent=0, head=""):
-        self.outputFileHandler = OutputFileHandler(self, nCurrent)
+        self.outputFileHandler = OutputFileHandler(self, nCurrent, head)
         self.outputFileHandler.organiseOutput()
 
     def determineError(self, sample):

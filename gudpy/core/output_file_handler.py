@@ -66,7 +66,7 @@ class OutputFileHandler():
         # Avoids shutil.rmtree
         if nCurrent == 0 and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(self.outputDir, os.path.join(tmp.name, "prev"))
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
     def organiseOutput(self):
         """Organises Gudrun outputs
@@ -80,10 +80,10 @@ class OutputFileHandler():
         self.createAddOutDir(self.tempOutDir)
         # Move over folders to output directory
         makeDir(self.outputDir)
-        for (root, dirs, files) in os.listdir(self.tempOutDir):
+        for root, dirs, files in os.walk(self.tempOutDir):
             r = os.path.join(
                 self.gudrunFile.inputFileDir,
-                root.partition(self.gudrunDir)[-1])
+                root.partition(self.gudrunDir + "/")[-1])
             for d in dirs:
                 makeDir(os.path.join(r, d))
             for f in files:
