@@ -168,7 +168,7 @@ class BatchProcessor:
                     for i in range(maxIterations):
                         initial.process(headless=headless)
                         iterator.performIteration(i)
-                        initial.organiseOutputs(
+                        initial.organiseOutput(
                             i,
                             os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
@@ -198,7 +198,7 @@ class BatchProcessor:
                 for i in range(maxIterations):
                     self.batchedGudrunFile.process(headless=headless)
                     iterator.performIteration(i)
-                    self.batchedGudrunFile.organiseOutputs(
+                    self.batchedGudrunFile.organiseOutput(
                         os.path.join(
                             i,
                             self.gudrunFile.instrument.GudrunInputFileDir,
@@ -230,7 +230,7 @@ class BatchProcessor:
                 )
                 tasks.append(
                     [
-                        self.batchedGudrunFile.organiseOutputs,
+                        self.batchedGudrunFile.organiseOutput,
                         [0, f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
                     ]
                 )
@@ -264,7 +264,7 @@ class BatchProcessor:
                         tasks.append([iterator.performIteration, [i]])
                         tasks.append(
                             [
-                                initial.organiseOutputs,
+                                initial.organiseOutput,
                                 [
                                     i,
                                     os.path.join(
@@ -319,7 +319,7 @@ class BatchProcessor:
                     tasks.append([iterator.performIteration, [i]])
                     tasks.append(
                         [
-                            self.batchedGudrunFile.organiseOutputs,
+                            self.batchedGudrunFile.organiseOutput,
                             [
                                 i,
                                 os.path.join(

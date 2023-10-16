@@ -103,7 +103,7 @@ class Iterator():
         nCurrent : int
             Current iteration
         """
-        self.gudrunFile.organiseOutputs(
+        self.gudrunFile.organiseOutput(
             self.nCurrent, self.name)
 
     def iterate(self):

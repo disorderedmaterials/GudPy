@@ -1491,7 +1491,7 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.errorCompositionIteration)
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
-        self.gudrunFile.organiseOutputs(
+        self.gudrunFile.organiseOutput(
             self.currentIteration,
             self.iterator.name)
         self.currentIteration += 1
@@ -1894,9 +1894,9 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrunFinished(self, ec, es, gudrunFile=None):
         if gudrunFile:
-            gudrunFile.organiseOutputs()
+            gudrunFile.organiseOutput()
         else:
-            self.gudrunFile.organiseOutputs()
+            self.gudrunFile.organiseOutput()
         self.procFinished(ec, es)
 
     def procFinished(self, ec, es):

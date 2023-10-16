@@ -1561,7 +1561,7 @@ class GudrunFile:
                 os.chdir(cwd)
                 return False
             if not iterative:
-                self.organiseOutputs()
+                self.organiseOutput()
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
