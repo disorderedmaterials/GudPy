@@ -106,10 +106,12 @@ class CompositionIterator():
 
     name = "IterateByComposition"
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunFile, nTotal):
         self.gudrunFile = gudrunFile
         self.components = []
         self.ratio = 0
+        self.nTotal = nTotal
+        self.nCurrent = 0
 
     """
     Sets component and ratio.
@@ -180,6 +182,8 @@ class CompositionIterator():
             )
         )
 
+        self.nCurrent += 1
+
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
@@ -227,6 +231,8 @@ class CompositionIterator():
                 self.gudrunFile.instrument.GudrunInputFileDir, gudPath
             )
         )
+
+        self.nCurrent += 1
 
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
@@ -278,6 +284,9 @@ class CompositionIterator():
                             [1e-2, self.ratio, 10], 0,
                             args=(sb, totalMolecules,)
                         )
+
+        self.gudrunFile.organiseOutput(
+            iterate=True, nCurrent=self.nCurrent, head=self.name)
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)

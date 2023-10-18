@@ -33,6 +33,8 @@ class InelasticitySubtraction(Iterator):
     QStep : float
         Step size for corrections on Q scale.
         Stored, as we switch between scales this data needs to be held.
+    nSet : int
+        Number of completed iteration sets (one QIteration, one Wavelength)
     Methods
     ----------
     enableLogarithmicBinning
@@ -58,9 +60,9 @@ class InelasticitySubtraction(Iterator):
         Perform n iterations on the wavelength scale and Q scale.
     """
 
-    name = "IterateByWavelengthInelasticitySubtraction"
+    name = "IterateByInelasticitySubtraction"
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunFile, nTotal):
         """
         Constructs all the necessary attributes for the
         InelasticitySubtraction object.
@@ -70,12 +72,15 @@ class InelasticitySubtraction(Iterator):
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
+        super().__init__(gudrunFile, nTotal)
         self.gudrunFile = deepcopy(gudrunFile)
+        # Does a default iteration first (no changes)
         self.iterationType = "WavelengthIteration"
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
+        self.nSet = 0
 
     def enableLogarithmicBinning(self):
         """
@@ -196,6 +201,7 @@ class InelasticitySubtraction(Iterator):
         the extensions of the self scattering files to .mint01.
         Then, write out the GudrunFile and call gudrun_dcs.
         """
+        self.iterationType = "WavelengthIteration"
         # First iteration
         if self.nCurrent == 0:
             # Disable subtracting of wavelength binned data.
@@ -229,6 +235,7 @@ class InelasticitySubtraction(Iterator):
         the extensions of the self scattering files to .msubw01.
         Then, write out the GudrunFile and call gudrun_dcs.
         """
+        self.iterationType = "QIteration"
         # Enable subtracting of wavelength binned data
         self.gudrunFile.instrument.subWavelengthBinnedData = True
         # Set the min, max and step size on the X scale
@@ -242,13 +249,19 @@ class InelasticitySubtraction(Iterator):
         self.setSelfScatteringFiles(Scales.Q)
 
     def performIteration(self):
-        if self.nCurrent % 2 != 0:
+        if self.nCurrent % 2 == 0:
             self.wavelengthIteration()
-            self.iterationType = "WavelengthIteration"
+            self.nSet += 1
         else:
             self.QIteration()
-            self.iterationType = "QIteration"
-            self.nCurrent += 1
+        self.nCurrent += 1
+
+    def organiseOutput(self):
+        """
+        This organises the output of the iteration.
+        """
+        self.gudrunFile.organiseOutput(
+            iterate=True, nCurrent=self.nSet, head=self.iterationType)
 
     def iterate(self):
         """
@@ -262,4 +275,6 @@ class InelasticitySubtraction(Iterator):
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
             self.gudrunFile.organiseOutput(
-                self.nCurrent, self.iterationType)
+                iterate=True,
+                nCurrent=self.nCurrent,
+                head=self.iterationType)

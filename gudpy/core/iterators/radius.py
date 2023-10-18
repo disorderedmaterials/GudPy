@@ -18,8 +18,6 @@ class RadiusIterator(Iterator):
         Multiplies a sample's inner/outer radii by a given coefficient.
     setTargetRadius
         Sets the target radius attribute.
-    organiseOutput
-        Organises the output of the iteration.
     """
     name = "IterateByRadius"
 

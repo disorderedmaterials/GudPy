@@ -1646,8 +1646,9 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
-    def organiseOutput(self, nCurrent=0, head=""):
-        self.outputFileHandler = OutputFileHandler(self, nCurrent, head)
+    def organiseOutput(self, nCurrent=0, head="", iterate=False):
+        self.outputFileHandler = OutputFileHandler(
+            self, iterate=iterate, nCurrent=nCurrent, head=head)
         self.outputFileHandler.organiseOutput()
 
     def determineError(self, sample):

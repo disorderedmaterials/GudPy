@@ -169,8 +169,9 @@ class BatchProcessor:
                         initial.process(headless=headless)
                         iterator.performIteration(i)
                         initial.organiseOutput(
-                            i,
-                            os.path.join(
+                            iterate=True,
+                            nCurrent=i,
+                            head=os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                                 "FIRST_BATCH",
@@ -199,8 +200,9 @@ class BatchProcessor:
                     self.batchedGudrunFile.process(headless=headless)
                     iterator.performIteration(i)
                     self.batchedGudrunFile.organiseOutput(
-                        os.path.join(
-                            i,
+                        iterate=True,
+                        nCurrent=i,
+                        head=os.path.join(
                             self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
@@ -231,7 +233,7 @@ class BatchProcessor:
                 tasks.append(
                     [
                         self.batchedGudrunFile.organiseOutput,
-                        [0, f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
+                        [True, 0, f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}"],
                     ]
                 )
                 tasks.append(
@@ -266,6 +268,7 @@ class BatchProcessor:
                             [
                                 initial.organiseOutput,
                                 [
+                                    True,
                                     i,
                                     os.path.join(
                                         initial.GudrunInputFileDir,
@@ -321,6 +324,7 @@ class BatchProcessor:
                         [
                             self.batchedGudrunFile.organiseOutput,
                             [
+                                True,
                                 i,
                                 os.path.join(
                                     f"BATCH_PROCESSING_BATCH_SIZE_{batchSize}",

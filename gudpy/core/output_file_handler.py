@@ -6,7 +6,7 @@ import tempfile
 
 class OutputFileHandler():
 
-    def __init__(self, gudrunFile, nCurrent=0, head=""):
+    def __init__(self, gudrunFile, iterate=False, nCurrent=0, head=""):
         """
         Initialise `OutputFileHandler`
 
@@ -27,9 +27,9 @@ class OutputFileHandler():
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, os.path.splitext(
             self.gudrunFile.filename)[0])
-        if head:
+        if iterate:
             self.tempOutDir = os.path.join(
-                self.tempOutDir, f"{head}_{nCurrent + 1}")
+                self.tempOutDir, f"{head}_{nCurrent}")
 
         # Name the output directory as the input file
         self.outputDir = os.path.join(

@@ -1,7 +1,6 @@
 from core.exception import ParserException
 
 import os
-from os.path import isfile
 import re
 from decimal import Decimal, getcontext
 getcontext().prec = 5
@@ -80,6 +79,7 @@ class GudFile:
     write_out(overwrite=False)
         Writes out the string representation of the GudFile to a file.
     """
+
     def __init__(self, path):
         """
         Constructs all the necessary attributes for the GudFile object.
@@ -123,8 +123,8 @@ class GudFile:
         if not self.path.endswith(".gud"):
             raise ParserException("Only .gud files can be parsed.")
 
-        if not isfile(self.path):
-            raise ParserException("Please provide a valid path.")
+        if not os.path.isfile(os.path.abspath(self.path)):
+            raise ParserException(f"{self.path} is not a valid path.")
 
         # Parse the GudFile
         self.parse()
@@ -273,10 +273,10 @@ class GudFile:
             else:
                 percentage = float(re.findall(floatRegex, output)[0])
                 if percentage < 100:
-                    diff = float(Decimal(100.0)-Decimal(percentage))
+                    diff = float(Decimal(100.0) - Decimal(percentage))
                     self.output = f"-{diff}%"
                 elif percentage > 100:
-                    diff = float(Decimal(percentage)-Decimal(100.0))
+                    diff = float(Decimal(percentage) - Decimal(100.0))
                     self.output = f"+{diff}%"
                 else:
                     self.output = "0%"
@@ -288,10 +288,10 @@ class GudFile:
 
         except Exception as e:
             raise ParserException(
-                    f"Whilst parsing {self.path}, an exception occured."
-                    " It's likely gudrun_dcs failed, and invalid values"
-                    " were yielded. "
-                    f"{str(e)}"
+                f"Whilst parsing {self.path}, an exception occured."
+                " It's likely gudrun_dcs failed, and invalid values"
+                " were yielded. "
+                f"{str(e)}"
             ) from e
 
     def __str__(self):

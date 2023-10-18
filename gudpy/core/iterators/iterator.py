@@ -104,7 +104,7 @@ class Iterator():
             Current iteration
         """
         self.gudrunFile.organiseOutput(
-            self.nCurrent, self.name)
+            iterate=True, nCurrent=self.nCurrent, head=self.name)
 
     def iterate(self):
         """
@@ -123,4 +123,7 @@ class Iterator():
             self.gudrunFile.process()
             time.sleep(1)
             self.performIteration()
-            self.organiseOutput()
+            self.organiseOutput(
+                iterate=True,
+                nCurrent=self.nCurrent,
+                head=self.name)

@@ -15,8 +15,6 @@ class DensityIterator(Iterator):
     ----------
     applyCoefficientToAttribute
         Multiplies a sample's density by a given coefficient.
-    organiseOutput
-        Organises the output of the iteration.
     """
     name = "IterateByDensity"
 
