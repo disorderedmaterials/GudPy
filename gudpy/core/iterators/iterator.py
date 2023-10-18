@@ -45,13 +45,16 @@ class Iterator():
         """
         self.gudrunFile = gudrunFile
         self.nTotal = nTotal
-        self.nCurrent = 0
+        self.nCurrent = -1
 
     def performIteration(self):
         """
         Performs a single iteration of the current workflow.
 
         """
+        if self.nCurrent == -1:
+            self.nCurrent += 1
+            return
         # Iterate through all samples that are being run,
         # applying the coefficient to the target parameter.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:

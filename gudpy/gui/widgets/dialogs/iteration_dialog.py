@@ -69,7 +69,7 @@ class IterationDialog(QDialog):
 
     def enqueueTasks(self):
         self.queue = Queue()
-        for _ in range(self.numberIterations):
+        for _ in range(self.numberIterations + 1):
             self.queue.put(
                 self.iterator.gudrunFile.dcs(
                     path=os.path.join(
@@ -90,16 +90,19 @@ class DensityIterationDialog(IterationDialog):
 
 class InelasticitySubtractionIterationDialog(IterationDialog):
 
+    def numberIterationsChanged(self, value):
+        self.numberIterations = value
+
     def iterate(self):
         self.iterator = InelasticitySubtraction(
-            self.gudrunFile, self.numberIterations * 2)
+            self.gudrunFile, (self.numberIterations * 2))
         self.enqueueTasks()
         self.text = "Inelasticity subtractions"
         self.widget.close()
 
     def enqueueTasks(self):
         self.queue = Queue()
-        for _ in range((self.numberIterations * 2)):
+        for _ in range((self.numberIterations * 2) + 1):
             self.queue.put(
                 self.iterator.gudrunFile.dcs(
                     path=os.path.join(
@@ -247,7 +250,7 @@ class CompositionIterationDialog(IterationDialog):
             self.widget.iterateButton.setEnabled(False)
 
     def iterate(self):
-        self.iterator = CompositionIterator(self.gudrunFile)
+        self.iterator = CompositionIterator(self.gudrunFile, 10)
         self.iterator.setComponents(self.components)
         self.queue = Queue()
         for sampleBackground in self.gudrunFile.sampleBackgrounds:

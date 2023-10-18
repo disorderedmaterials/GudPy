@@ -249,6 +249,10 @@ class InelasticitySubtraction(Iterator):
         self.setSelfScatteringFiles(Scales.Q)
 
     def performIteration(self):
+        if self.nCurrent == -1:
+            self.nCurrent += 1
+            return
+
         if self.nCurrent % 2 == 0:
             self.wavelengthIteration()
             self.nSet += 1

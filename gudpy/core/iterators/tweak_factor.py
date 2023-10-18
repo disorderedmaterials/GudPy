@@ -39,6 +39,10 @@ class TweakFactorIterator(Iterator):
         _n : int
             Iteration number.
         """
+        if self.nCurrent == -1:
+            self.nCurrent += 1
+            return
+
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
         for sampleBackground in self.gudrunFile.sampleBackgrounds:

@@ -1474,8 +1474,8 @@ class GudPyMainWindow(QMainWindow):
 
     def progressCompositionIteration(self, currentIteration):
         progress = (
-            self.currentIteration / self.numberIterations
-        ) * (self.currentIteration / self.totalIterations)
+            self.iterator.nCurrent / self.iterator.nTotal
+        ) * (self.iterator.nCurrent / self.totalIterations)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
     def nextCompositionIteration(self):
@@ -1492,8 +1492,9 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
         self.gudrunFile.organiseOutput(
-            self.currentIteration,
-            self.iterator.name)
+            iterate=True,
+            nCurrent=self.currentIteration,
+            head=self.iterator.name)
         self.currentIteration += 1
 
     def iterateByComposition(self):
@@ -1527,9 +1528,22 @@ class GudPyMainWindow(QMainWindow):
                     )
                 ]
             )
+            self.iterator.nTotal = self.totalIterations
             self.nextCompositionIteration()
 
     def iterateGudrun(self, dialog, name):
+        """
+        Iteratively runs Gudrun dcs and applies a change depending on which
+        parameter is iterated. The first iteration is a default iteration in
+        which no parameters are altered.
+
+        Parameters
+        ----------
+        dialog : IterationDialog
+            Dialog to be run to get user information
+        name : str
+            Name of dialog
+        """
         self.prepareRun()
         iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
@@ -1552,11 +1566,10 @@ class GudPyMainWindow(QMainWindow):
             self.procFinished(9, QProcess.NormalExit)
             return
         self.iterator.organiseOutput()
-        self.iterator.performIteration()
-        self.gudrunFile.write_out()
-        self.outputIterations[self.iterator.nCurrent] = self.output
+        self.outputIterations[self.iterator.nCurrent + 1] = self.output
         self.outputSlots.setOutput(
-            self.outputIterations, "gudrun_dcs", gudrunFile=self.gudrunFile
+            self.outputIterations, "gudrun_dcs",
+            gudrunFile=self.iterator.gudrunFile
         )
         if not self.queue.empty():
             self.nextIterableProc()
@@ -1567,25 +1580,24 @@ class GudPyMainWindow(QMainWindow):
     def nextIterableProc(self):
         if self.queue.empty():
             return
+        iterInfo = f" {self.iterator.nCurrent + 1}/{self.iterator.nTotal}" if (
+            self.iterator.nCurrent != -1
+        ) else "- Default run"
+        # Set progress bar
+        self.mainWidget.currentTaskLabel.setText(f"{self.text} {iterInfo}")
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
+        # If this is not the first iteration, run the iterator
+        self.iterator.performIteration()
+        self.iterator.gudrunFile.write_out()
         self.proc, func, args = self.queue.get()
-        self.proc.started.connect(self.iterationStarted)
         self.proc.finished.connect(self.nextIteration)
         self.proc.readyReadStandardOutput.connect(self.progressIteration)
-        self.proc.started.connect(self.iterationStarted)
         self.proc.setWorkingDirectory(
-            self.gudrunFile.instrument.GudrunInputFileDir
+            self.iterator.gudrunFile.instrument.GudrunInputFileDir
         )
         if func:
             func(*args)
         self.proc.start()
-
-    def iterationStarted(self):
-        self.mainWidget.currentTaskLabel.setText(
-            f"{self.text}"
-            f" {self.iterator.nCurrent + 1}"
-            + f"/{self.iterator.nTotal}"
-        )
-        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
 
     def progressIteration(self):
         progress = self.progressIncrementDCS(self.gudrunFile)
@@ -1903,7 +1915,7 @@ class GudPyMainWindow(QMainWindow):
         self.proc = None
         output = self.output
         if self.iterator:
-            self.outputIterations[self.currentIteration + 1] = self.output
+            self.outputIterations[self.iterator.nCurrent + 1] = self.output
             self.sampleSlots.setSample(self.sampleSlots.sample)
             output = self.outputIterations
             self.iterator = None

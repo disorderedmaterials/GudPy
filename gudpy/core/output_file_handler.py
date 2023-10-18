@@ -27,9 +27,12 @@ class OutputFileHandler():
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, os.path.splitext(
             self.gudrunFile.filename)[0])
-        if iterate:
+        if iterate and nCurrent != 0:
             self.tempOutDir = os.path.join(
                 self.tempOutDir, f"{head}_{nCurrent}")
+        elif iterate:
+            self.tempOutDir = os.path.join(
+                self.tempOutDir, f"{head}_Default")
 
         # Name the output directory as the input file
         self.outputDir = os.path.join(
