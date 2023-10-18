@@ -7550,7 +7550,7 @@
   </action>
   <action name="iterateInelasticitySubtractions">
    <property name="text">
-    <string>Inelasticity Subtractions</string>
+    <string>By Inelasticity Subtractions</string>
    </property>
   </action>
   <action name="iterateTweakFactor">
