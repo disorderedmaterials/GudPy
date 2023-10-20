@@ -1525,6 +1525,10 @@ class GudrunFile:
                             writeParameters=False
                         )
 
+    def setGudrunDir(self, dir):
+        assert (os.path.isdir(os.path.abspath(dir)))
+        self.instrument.GudrunInputFileDir = dir
+
     def dcs(self, path='', headless=True, iterative=False):
         """
         Call gudrun_dcs on the path supplied.
@@ -1546,6 +1550,8 @@ class GudrunFile:
             The result of calling gudrun_dcs using subprocess.run.
             Can access stdout/stderr from this.
         """
+        assert (self.instrument.GudrunInputFileDir)
+
         if not path:
             path = os.path.basename(self.path)
         if headless:
@@ -1646,10 +1652,11 @@ class GudrunFile:
             self.sampleBackgrounds[i].append(sample)
         return sample
 
-    def organiseOutput(self, nCurrent=0, head="", iterate=False):
-        self.outputFileHandler = OutputFileHandler(
-            self, iterate=iterate, nCurrent=nCurrent, head=head)
-        self.outputFileHandler.organiseOutput()
+    def organiseOutput(self, head="", overwrite=True):
+        outputHandler = OutputFileHandler(
+            self, head=head, overwrite=overwrite
+        )
+        outputHandler.organiseOutput()
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(
