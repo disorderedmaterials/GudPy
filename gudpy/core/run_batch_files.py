@@ -169,8 +169,6 @@ class BatchProcessor:
                         initial.process(headless=headless)
                         iterator.performIteration(i)
                         initial.organiseOutput(
-                            iterate=True,
-                            nCurrent=i,
                             head=os.path.join(
                                 self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
@@ -200,8 +198,6 @@ class BatchProcessor:
                     self.batchedGudrunFile.process(headless=headless)
                     iterator.performIteration(i)
                     self.batchedGudrunFile.organiseOutput(
-                        iterate=True,
-                        nCurrent=i,
                         head=os.path.join(
                             self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",

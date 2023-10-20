@@ -285,8 +285,7 @@ class CompositionIterator():
                             args=(sb, totalMolecules,)
                         )
 
-        self.gudrunFile.organiseOutput(
-            iterate=True, nCurrent=self.nCurrent, head=self.name)
+        self.gudrunFile.organiseOutput()
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)

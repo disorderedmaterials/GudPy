@@ -31,6 +31,8 @@ class Iterator():
         To be overriden by sub-classes.
     """
 
+    name = ""
+
     def __init__(self, gudrunFile, nTotal):
         """
         Constructs all the necessary attributes for the
@@ -46,6 +48,7 @@ class Iterator():
         self.gudrunFile = gudrunFile
         self.nTotal = nTotal
         self.nCurrent = -1
+        self.iterationType = self.name
 
     def performIteration(self):
         """
@@ -97,17 +100,9 @@ class Iterator():
 
     def organiseOutput(self):
         """
-        This should organises the output of the iteration.
-
-        Parameters
-        ----------
-        nTotal : int
-            Total number of requested iterations
-        nCurrent : int
-            Current iteration
+        This organises the output of the iteration.
         """
-        self.gudrunFile.organiseOutput(
-            iterate=True, nCurrent=self.nCurrent, head=self.name)
+        self.gudrunFile.organiseOutput()
 
     def iterate(self):
         """
@@ -126,7 +121,4 @@ class Iterator():
             self.gudrunFile.process()
             time.sleep(1)
             self.performIteration()
-            self.organiseOutput(
-                iterate=True,
-                nCurrent=self.nCurrent,
-                head=self.name)
+            self.organiseOutput()
