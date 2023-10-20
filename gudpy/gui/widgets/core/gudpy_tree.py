@@ -17,6 +17,7 @@ from core.sample import Sample
 from core.sample_background import SampleBackground
 from core.container import Container
 from core.config import NUM_GUDPY_CORE_OBJECTS
+from core.utils import uniquifyName
 
 
 class GudPyTreeModel(QAbstractItemModel):
@@ -123,14 +124,14 @@ class GudPyTreeModel(QAbstractItemModel):
                 obj = rows[row]
             else:
                 obj = self.gudrunFile.sampleBackgrounds[
-                    row-NUM_GUDPY_CORE_OBJECTS
+                    row - NUM_GUDPY_CORE_OBJECTS
                 ]
         elif parent.isValid() and not parent.parent().isValid():
             # Valid parent and invalid grandparent, means that the index
             # corresponds to a sample.
             obj = (
                 self.gudrunFile.sampleBackgrounds[
-                    parent.row()-NUM_GUDPY_CORE_OBJECTS
+                    parent.row() - NUM_GUDPY_CORE_OBJECTS
                 ]
                 .samples[row]
             )
@@ -139,7 +140,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # corresponds to a container.
             obj = (
                 self.gudrunFile.sampleBackgrounds[
-                    parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                    parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 ].samples[parent.row()].containers[row]
             )
         else:
@@ -284,7 +285,11 @@ class GudPyTreeModel(QAbstractItemModel):
             role == Qt.EditRole
             and (self.isSample(index) or self.isContainer(index))
         ):
-            index.internalPointer().name = value
+            index.internalPointer().name = uniquifyName(
+                value,
+                [s.name for s in self.gudrunFile.sampleBackground.samples],
+                sep="",
+                incFirst=True)
             self.dataChanged.emit(index, index)
             return True
         else:
@@ -333,7 +338,7 @@ class GudPyTreeModel(QAbstractItemModel):
             ):
                 return len(
                     self.gudrunFile.sampleBackgrounds[
-                        parent.row()-NUM_GUDPY_CORE_OBJECTS
+                        parent.row() - NUM_GUDPY_CORE_OBJECTS
                     ].samples
                 )
             else:
@@ -347,7 +352,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # containers for the sample.
             return len(
                 self.gudrunFile.sampleBackgrounds[
-                    parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                    parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 ].samples[parent.row()].containers
             )
         else:
@@ -474,13 +479,13 @@ class GudPyTreeModel(QAbstractItemModel):
                 parent = QModelIndex()
                 setter = self.gudrunFile.sampleBackgrounds.append
             if isinstance(obj, Sample):
-                targetIndex = parent.row()-NUM_GUDPY_CORE_OBJECTS
+                targetIndex = parent.row() - NUM_GUDPY_CORE_OBJECTS
                 setter = (
                     self.gudrunFile.sampleBackgrounds[targetIndex]
                     .samples.append
                 )
             elif isinstance(obj, Container):
-                targetIndex = parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 setter = (
                     self.gudrunFile.sampleBackgrounds[targetIndex]
                     .samples[parent.row()].containers.append
@@ -505,7 +510,7 @@ class GudPyTreeModel(QAbstractItemModel):
                 parent = QModelIndex()
                 setter = self.gudrunFile.sampleBackgrounds.insert
             elif isinstance(obj, Sample):
-                targetIndex = parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+                targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 index = (
                     self.gudrunFile.sampleBackgrounds[targetIndex]
                     .samples.index(parentObj)
@@ -516,7 +521,7 @@ class GudPyTreeModel(QAbstractItemModel):
                 )
             elif isinstance(obj, Container):
                 targetIndex = (
-                    parent.parent().parent().row()-NUM_GUDPY_CORE_OBJECTS
+                    parent.parent().parent().row() - NUM_GUDPY_CORE_OBJECTS
                 )
                 index = (
                     self.gudrunFile.sampleBackgrounds[targetIndex].
@@ -532,7 +537,7 @@ class GudPyTreeModel(QAbstractItemModel):
             self.beginInsertRows(parent.parent(), start, end)
             # Call the setter.
             # index+1 to insert after the current index.
-            setter(index+1, obj)
+            setter(index + 1, obj)
             # End inserting rows.
             self.endInsertRows()
             self.dataChanged.emit(
@@ -556,12 +561,12 @@ class GudPyTreeModel(QAbstractItemModel):
         if isinstance(obj, SampleBackground):
             remove = self.gudrunFile.sampleBackgrounds.remove
         elif isinstance(obj, Sample):
-            targetIndex = parent.row()-NUM_GUDPY_CORE_OBJECTS
+            targetIndex = parent.row() - NUM_GUDPY_CORE_OBJECTS
             remove = (
                 self.gudrunFile.sampleBackgrounds[targetIndex].samples.remove
             )
         elif isinstance(obj, Container):
-            targetIndex = parent.parent().row()-NUM_GUDPY_CORE_OBJECTS
+            targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
             remove = (
                 self.gudrunFile.sampleBackgrounds[targetIndex]
                 .samples[parent.row()].containers.remove
@@ -805,7 +810,7 @@ class GudPyTreeView(QTreeView):
         currentIndex = self.currentIndex()
         self.model().insertRow(obj, currentIndex)
         newIndex = self.model().index(
-            currentIndex.row()+1, 0,
+            currentIndex.row() + 1, 0,
             self.model().parent(currentIndex)
         )
         self.expandRecursively(newIndex, 0)
