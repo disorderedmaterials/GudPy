@@ -20,11 +20,14 @@ class OutputFileHandler():
             Whether or not to overwrite previous output directiory,
             by default True
         """
+
         self.gudrunFile = gudrunFile
         # List of run samples
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.gudrunFile.instrument.GudrunInputFileDir
+        # Make sure it is a temporary directory
+        assert (self.gudrunDir.startswith(tempfile.gettempdir()))
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, os.path.splitext(
             self.gudrunFile.filename)[0])

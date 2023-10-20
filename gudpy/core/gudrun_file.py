@@ -4,6 +4,7 @@ import os
 import subprocess
 import time
 import re
+import tempfile
 from copy import deepcopy
 
 from core.utils import (
@@ -1556,13 +1557,15 @@ class GudrunFile:
             path = os.path.basename(self.path)
         if headless:
             try:
-                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                cwd = os.getcwd()
-                os.chdir(self.instrument.GudrunInputFileDir)
-                result = subprocess.run(
-                    [gudrun_dcs, path], capture_output=True, text=True
-                )
-                os.chdir(cwd)
+                with tempfile.TemporaryDirectory() as tmp:
+                    self.setGudrunDir(tmp)
+                    gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                    cwd = os.getcwd()
+                    os.chdir(self.instrument.GudrunInputFileDir)
+                    result = subprocess.run(
+                        [gudrun_dcs, path], capture_output=True, text=True
+                    )
+                    os.chdir(cwd)
             except FileNotFoundError:
                 os.chdir(cwd)
                 return False
