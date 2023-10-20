@@ -1,5 +1,4 @@
 from copy import deepcopy
-from typing import OrderedDict
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtCore import (
     QAbstractItemModel,
