@@ -1556,8 +1556,8 @@ class GudrunFile:
         if not path:
             path = os.path.basename(self.path)
         if headless:
-            try:
-                with tempfile.TemporaryDirectory() as tmp:
+            with tempfile.TemporaryDirectory() as tmp:
+                try:
                     self.setGudrunDir(tmp)
                     gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
                     cwd = os.getcwd()
@@ -1566,12 +1566,12 @@ class GudrunFile:
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
                     os.chdir(cwd)
-            except FileNotFoundError:
-                os.chdir(cwd)
-                return False
-            if not iterative:
-                self.organiseOutput()
-            return result
+                except FileNotFoundError:
+                    os.chdir(cwd)
+                    return False
+                if not iterative:
+                    self.organiseOutput()
+                return result
         else:
             if hasattr(sys, '_MEIPASS'):
                 gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
