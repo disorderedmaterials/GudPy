@@ -6,7 +6,7 @@ import tempfile
 
 class OutputFileHandler():
 
-    def __init__(self, gudrunFile, iterate=False, nCurrent=0, head=""):
+    def __init__(self, gudrunFile, head="", overwrite=True):
         """
         Initialise `OutputFileHandler`
 
@@ -14,10 +14,11 @@ class OutputFileHandler():
         ----------
         gudrunFile : GudrunFile
             Gudrun file object that defines run parameters
-        nCurrent : int, optional
-            Current iteration number by default 0
         head : str, optional
-            Iterator type, by default ""
+            Where to branch outputs, if desired, by default ""
+        overwrite : bool, optional
+            Whether or not to overwrite previous output directiory,
+            by default True
         """
         self.gudrunFile = gudrunFile
         # List of run samples
@@ -27,12 +28,9 @@ class OutputFileHandler():
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, os.path.splitext(
             self.gudrunFile.filename)[0])
-        if iterate and nCurrent != 0:
+        if head:
             self.tempOutDir = os.path.join(
-                self.tempOutDir, f"{head}_{nCurrent}")
-        elif iterate:
-            self.tempOutDir = os.path.join(
-                self.tempOutDir, f"{head}_Default")
+                self.tempOutDir, f"{head}")
 
         # Name the output directory as the input file
         self.outputDir = os.path.join(
@@ -67,7 +65,7 @@ class OutputFileHandler():
 
         # If output directory exists, move to a temp dir and clear it
         # Avoids shutil.rmtree
-        if nCurrent == 0 and os.path.exists(self.outputDir):
+        if overwrite is True and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
                 shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
@@ -75,12 +73,12 @@ class OutputFileHandler():
         """Organises Gudrun outputs
         """
         # Create normalisation and sample background folders
-        self.createNormDir(self.tempOutDir)
-        self.createSampleBgDir(self.tempOutDir)
+        self._createNormDir(self.tempOutDir)
+        self._createSampleBgDir(self.tempOutDir)
         # Create sample folders
-        self.createSampleDir(self.tempOutDir)
+        self._createSampleDir(self.tempOutDir)
         # Create additonal output folders
-        self.createAddOutDir(self.tempOutDir)
+        self._createAddOutDir(self.tempOutDir)
         # Move over folders to output directory
         makeDir(self.outputDir)
         for root, dirs, files in os.walk(self.tempOutDir):
@@ -95,7 +93,7 @@ class OutputFileHandler():
                     os.path.join(r, f)
                 )
 
-    def createNormDir(self, dest):
+    def _createNormDir(self, dest):
         """
         Creates directories for normalisation background
         and normalisation outputs.
@@ -107,15 +105,15 @@ class OutputFileHandler():
         """
         # Create normalisation folders and move datafiles
         for normFile in self.gudrunFile.normalisation.dataFiles:
-            self.copyOutputs(
+            self._copyOutputs(
                 normFile, os.path.join(
                     dest, "Normalisation"))
         for normBgFile in self.gudrunFile.normalisation.dataFilesBg:
-            self.copyOutputs(normBgFile,
-                             os.path.join(dest,
-                                          "NormalisationBackground"))
+            self._copyOutputs(normBgFile,
+                              os.path.join(dest,
+                                           "NormalisationBackground"))
 
-    def createSampleBgDir(self, dest):
+    def _createSampleBgDir(self, dest):
         """
         Creates output directory for sample backgrounds
 
@@ -130,14 +128,14 @@ class OutputFileHandler():
             # Move all datafiles into their sample background folder
             # Creates the folder if there is none
             for dataFile in sampleBackground.dataFiles:
-                self.copyOutputs(
+                self._copyOutputs(
                     dataFile,
                     os.path.join(
                         dest, "SampleBackgrounds",
                         f"SampleBackground{count + 1}")
                 )
 
-    def createSampleDir(self, dest):
+    def _createSampleDir(self, dest):
         """
         Creates output directory for each sample
 
@@ -155,13 +153,13 @@ class OutputFileHandler():
         """
         # Create sample folders within background folders
         for sample in self.samples:
-            samplePath = uniquify(os.path.join(
+            samplePath = os.path.join(
                 dest,
                 sample.name
-            ))
+            )
             # Move datafiles to sample folder
             for dataFile in sample.dataFiles:
-                self.copyOutputsByExt(
+                self._copyOutputsByExt(
                     dataFile,
                     samplePath
                 )
@@ -182,12 +180,12 @@ class OutputFileHandler():
                      if container.name != "CONTAINER"
                      else "Container")))
                 for dataFile in container.dataFiles:
-                    self.copyOutputs(
+                    self._copyOutputs(
                         dataFile,
                         containerPath
                     )
 
-    def createAddOutDir(self, dest):
+    def _createAddOutDir(self, dest):
         """
         Copy over all files that haven't been copied over,
         as specified in `copiedFiles`
@@ -212,7 +210,7 @@ class OutputFileHandler():
                     os.path.join(addDir, f)
                 )
 
-    def copyOutputs(self, fpath, dest):
+    def _copyOutputs(self, fpath, dest):
         """
         Copy all files with the same basename
         as the provided filepath, except the original file.
@@ -242,7 +240,7 @@ class OutputFileHandler():
                 )
                 self.copiedFiles.append(f)
 
-    def copyOutputsByExt(self, fname, dest):
+    def _copyOutputsByExt(self, fname, dest):
         """
         Copy all files with the same basename
         as the provided filepath and splits them into outputs
