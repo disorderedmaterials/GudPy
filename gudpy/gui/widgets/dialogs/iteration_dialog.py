@@ -95,14 +95,14 @@ class InelasticitySubtractionIterationDialog(IterationDialog):
 
     def iterate(self):
         self.iterator = InelasticitySubtraction(
-            self.gudrunFile, (self.numberIterations * 2))
+            self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Inelasticity subtractions"
         self.widget.close()
 
     def enqueueTasks(self):
         self.queue = Queue()
-        for _ in range((self.numberIterations * 2) + 1):
+        for _ in range((self.numberIterations * 2)):
             self.queue.put(
                 self.iterator.gudrunFile.dcs(
                     path=os.path.join(

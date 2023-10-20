@@ -33,8 +33,6 @@ class InelasticitySubtraction(Iterator):
     QStep : float
         Step size for corrections on Q scale.
         Stored, as we switch between scales this data needs to be held.
-    nSet : int
-        Number of completed iteration sets (one QIteration, one Wavelength)
     Methods
     ----------
     enableLogarithmicBinning
@@ -75,12 +73,12 @@ class InelasticitySubtraction(Iterator):
         super().__init__(gudrunFile, nTotal)
         self.gudrunFile = deepcopy(gudrunFile)
         # Does a default iteration first (no changes)
-        self.iterationType = "WavelengthIteration"
+        self.iterationType = "QIteration"
+        self.nCurrent = 0
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
-        self.nSet = 0
 
     def enableLogarithmicBinning(self):
         """
@@ -249,23 +247,21 @@ class InelasticitySubtraction(Iterator):
         self.setSelfScatteringFiles(Scales.Q)
 
     def performIteration(self):
-        if self.nCurrent == -1:
-            self.nCurrent += 1
-            return
-
-        if self.nCurrent % 2 == 0:
+        if self.iterationType == "QIteration":
             self.wavelengthIteration()
-            self.nSet += 1
+            self.nCurrent += 1
         else:
             self.QIteration()
-        self.nCurrent += 1
 
     def organiseOutput(self):
         """
         This organises the output of the iteration.
         """
+        overwrite = (self.nCurrent == 1 and
+                     self.iterationType == "WavelengthIteration")
         self.gudrunFile.organiseOutput(
-            iterate=True, nCurrent=self.nSet, head=self.iterationType)
+            head=f"{self.iterationType}_{self.nCurrent}",
+            overwrite=overwrite)
 
     def iterate(self):
         """
@@ -278,7 +274,4 @@ class InelasticitySubtraction(Iterator):
             self.performIteration()
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
-            self.gudrunFile.organiseOutput(
-                iterate=True,
-                nCurrent=self.nCurrent,
-                head=self.iterationType)
+            self.organiseOutput()
