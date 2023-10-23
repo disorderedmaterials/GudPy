@@ -123,7 +123,7 @@ class GudFile:
         if not self.path.endswith(".gud"):
             raise ParserException("Only .gud files can be parsed.")
 
-        if not os.path.isfile(os.path.abspath(self.path)):
+        if not os.path.isfile(self.path):
             raise ParserException(f"{self.path} is not a valid path.")
 
         # Parse the GudFile

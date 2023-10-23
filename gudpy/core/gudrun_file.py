@@ -1565,12 +1565,11 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
+                    self.organiseOutput()
                     os.chdir(cwd)
                 except FileNotFoundError:
                     os.chdir(cwd)
                     return False
-                if not iterative:
-                    self.organiseOutput()
                 return result
         else:
             if hasattr(sys, '_MEIPASS'):
