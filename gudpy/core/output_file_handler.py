@@ -23,6 +23,9 @@ class GudrunOutput:
     def gudFiles(self) -> list[str]:
         return list(self.sampleOutputs.values())
 
+    def gudFile(self, idx: int) -> str:
+        return list(self.sampleOutputs.values())[idx]
+
 
 class OutputFileHandler():
 
