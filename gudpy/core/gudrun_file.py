@@ -1501,10 +1501,8 @@ class GudrunFile:
             )
         elif not overwrite:
             f = open(
-                os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.outpath
-                ), "w", encoding="utf-8")
+                self.gudrunOutput.inputFile,
+                "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         if os.path.basename(f.name) == self.outpath:
@@ -1521,10 +1519,8 @@ class GudrunFile:
                         gf.sampleBackgrounds = [deepcopy(sb)]
                         gf.sampleBackgrounds[0].samples = [deepcopy(s)]
                         gf.write_out(
-                            path=os.path.join(
-                                self.instrument.GudrunInputFileDir,
-                                s.pathName(),
-                            ),
+                            path=self.gudrunOutput.sampleOutputs[
+                                s.name].sampleFile,
                             overwrite=True,
                             writeParameters=False
                         )
