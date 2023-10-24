@@ -25,8 +25,7 @@ class GudrunOutput:
 
     def gudFile(self, idx: int) -> str:
         asList = list(self.sampleOutputs.values())
-        if idx >= len(asList):
-            return ""
+        assert (idx < len(asList))
         return asList[idx]
 
 
@@ -200,6 +199,10 @@ class OutputFileHandler():
         sampleOutputs = {}
         # Create sample folders within background folders
         for sample in self.samples:
+            sampleFile = ""
+            gudFile = ""
+            sampleOutput = {}
+
             samplePath = os.path.join(
                 dest,
                 sample.name
@@ -256,6 +259,7 @@ class OutputFileHandler():
             Path to the input file
         """
         addDir = makeDir(os.path.join(dest, "AdditionalOutputs"))
+        inputFile = ""
 
         for f in os.listdir(self.gudrunDir):
             if f == self.gudrunFile.outpath:
