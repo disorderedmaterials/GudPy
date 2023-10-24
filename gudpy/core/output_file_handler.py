@@ -24,7 +24,10 @@ class GudrunOutput:
         return list(self.sampleOutputs.values())
 
     def gudFile(self, idx: int) -> str:
-        return list(self.sampleOutputs.values())[idx]
+        asList = list(self.sampleOutputs.values())
+        if idx >= len(asList):
+            return ""
+        return asList[idx]
 
 
 class OutputFileHandler():
@@ -209,7 +212,7 @@ class OutputFileHandler():
                 )
                 if idx == 0:
                     sampleOutput = out
-                    gudFile = out[".gud"]
+                    gudFile = out[".gud"] if ".gud" in out else ""
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
