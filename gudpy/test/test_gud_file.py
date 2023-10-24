@@ -276,9 +276,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
-            )
+            g.gudrunOutput.gudFile(0)
         )
         self.assertIsInstance(gf, GudFile)
 
@@ -288,9 +286,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir, "NIMROD00016608_H2O_in_N9.gud"
-            )
+            g.gudrunOutput.gudFile(0)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -335,10 +331,7 @@ class TestParseGudFile(TestCase):
         g.dcs()
 
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016609_D2O_in_N10.gud"
-            )
+            g.gudrunOutput.gudFile(1)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -382,9 +375,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir, "NIMROD00016741_HDO_in_N6.gud"
-            )
+            g.gudrunOutput.gudFile(2)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -428,10 +419,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016742_NullWater_in_N8.gud"
-            )
+            g.gudrunOutput.gudFile(3)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -475,10 +463,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016742_NullWater_in_N8.gud"
-            )
+            g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
         gf1 = GudFile(gf.outpath)
@@ -504,10 +489,7 @@ class TestParseGudFile(TestCase):
             format=Format.TXT)
         g.dcs()
         gf = GudFile(
-            os.path.join(
-                g.instrument.GudrunInputFileDir,
-                "NIMROD00016742_NullWater_in_N8.gud"
-            )
+            g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
         gf1 = GudFile(gf.outpath)

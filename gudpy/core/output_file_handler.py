@@ -20,6 +20,9 @@ class GudrunOutput:
     inputFile: str
     sampleOutputs: typing.Dict[str, SampleOutput]
 
+    def gudFiles(self) -> list[str]:
+        return list(self.sampleOutputs.values())
+
 
 class OutputFileHandler():
 
