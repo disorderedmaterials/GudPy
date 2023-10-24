@@ -1501,8 +1501,10 @@ class GudrunFile:
             )
         elif not overwrite:
             f = open(
-                self.gudrunOutput.inputFile,
-                "w", encoding="utf-8")
+                os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath
+                ), "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         if os.path.basename(f.name) == self.outpath:
@@ -1519,8 +1521,10 @@ class GudrunFile:
                         gf.sampleBackgrounds = [deepcopy(sb)]
                         gf.sampleBackgrounds[0].samples = [deepcopy(s)]
                         gf.write_out(
-                            path=self.gudrunOutput.sampleOutputs[
-                                s.name].sampleFile,
+                            path=os.path.join(
+                                self.instrument.GudrunInputFileDir,
+                                s.pathName(),
+                            ),
                             overwrite=True,
                             writeParameters=False
                         )
@@ -1529,7 +1533,7 @@ class GudrunFile:
         assert (os.path.isdir(os.path.abspath(dir)))
         self.instrument.GudrunInputFileDir = dir
 
-    def dcs(self, path='', headless=True, iterative=False):
+    def dcs(self, path='', headless=True, iterator=None):
         """
         Call gudrun_dcs on the path supplied.
         If the path is its default value,
@@ -1564,7 +1568,11 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
-                    self.gudrunOutput = self.organiseOutput()
+                    if iterator is not None:
+                        self.gudrunOutput = iterator.organiseOutput()
+                    else:
+                        self.gudrunOutput = self.organiseOutput()
+                    self.setGudrunDir(self.gudrunOutput.path)
                     os.chdir(cwd)
                 except FileNotFoundError:
                     os.chdir(cwd)
@@ -1594,7 +1602,7 @@ class GudrunFile:
                     ]
                 )
 
-    def process(self, headless=True, iterative=False):
+    def process(self, headless=True, iterator=None):
         """
         Write out the current state of the file,
         and then call gudrun_dcs on the file that
@@ -1616,7 +1624,7 @@ class GudrunFile:
         dcs = self.dcs(
             path=self.outpath,
             headless=headless,
-            iterative=iterative
+            iterator=iterator
         )
         os.chdir(cwd)
         return dcs
@@ -1657,7 +1665,8 @@ class GudrunFile:
         outputHandler = OutputFileHandler(
             self, head=head, overwrite=overwrite
         )
-        outputHandler.organiseOutput()
+        gudrunOutput = outputHandler.organiseOutput()
+        return gudrunOutput
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(

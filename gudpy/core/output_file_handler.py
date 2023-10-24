@@ -21,12 +21,16 @@ class GudrunOutput:
     sampleOutputs: typing.Dict[str, SampleOutput]
 
     def gudFiles(self) -> list[str]:
-        return list(self.sampleOutputs.values())
+        return [so.gudFile for so in self.sampleOutputs.values()]
 
-    def gudFile(self, idx: int) -> str:
-        asList = list(self.sampleOutputs.values())
-        assert (idx < len(asList))
-        return asList[idx]
+    def gudFile(self, idx: int = None, sampName: str = None) -> str:
+        if idx is not None:
+            asList = list(self.sampleOutputs.values())
+            assert (idx < len(asList))
+            return asList[idx].gudFile
+        elif sampName is not None:
+            assert (sampName in self.sampleOutputs)
+            return self.sampleOutputs[sampName].gudFile
 
 
 class OutputFileHandler():
@@ -205,7 +209,7 @@ class OutputFileHandler():
 
             samplePath = os.path.join(
                 dest,
-                sample.name
+                sample.name.replace(" ", "_")
             )
             # Move datafiles to sample folder
             for idx, dataFile in enumerate(sample.dataFiles):
@@ -213,9 +217,10 @@ class OutputFileHandler():
                     dataFile,
                     samplePath
                 )
-                if idx == 0:
+                if idx == 0 and out[dataFile]:
                     sampleOutput = out
-                    gudFile = out[".gud"] if ".gud" in out else ""
+                    gudFile = (out[dataFile][".gud"]
+                               if ".gud" in out[dataFile] else "")
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
@@ -306,7 +311,7 @@ class OutputFileHandler():
                 )
                 self.copiedFiles.append(f)
 
-    def _copyOutputsByExt(self, fname, dest):
+    def _copyOutputsByExt(self, fpath, dest):
         """
         Copy all files with the same basename
         as the provided filepath and splits them into outputs
@@ -316,7 +321,7 @@ class OutputFileHandler():
 
         Parameters
         ----------
-        fname : str
+        fpath : str
             Full filename of target file
         suffixes : str[]
             List of target file extenstions
@@ -329,7 +334,7 @@ class OutputFileHandler():
             Dictionary mapping output extension to filepath
         """
         # Data filename
-        fname = os.path.splitext(fname)[0]
+        fname = os.path.splitext(fpath)[0]
         # Path to folder which will hold all outputs from the run
         runDir = os.path.join(dest, fname)
         # Path to folder which will hold Gudrun outputs
@@ -338,16 +343,18 @@ class OutputFileHandler():
         diagDir = makeDir(os.path.join(runDir, "Diagnostics"))
 
         outputs = {}
+        outputs[fpath] = {}
         for f in os.listdir(self.gudrunDir):
             # If the file has the same name as requested filename
             fn, ext = os.path.splitext(f)
             if fn == fname:
                 # Set dir depending on file extension
                 dir = outDir if ext in self.outputExts else diagDir
-                outputs[ext] = os.path.join(dir, f)
+                if dir == outDir:
+                    outputs[fpath][ext] = os.path.join(dir, f)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
-                    outputs[ext]
+                    os.path.join(dir, f)
                 )
                 self.copiedFiles.append(f)
         return outputs

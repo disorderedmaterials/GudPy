@@ -79,12 +79,12 @@ class TweakFactorIterator(Iterator):
         n : int
             Number of iterations to perform.
         """
+        self.gudrunFile.process(iterator=self)
         # Perform n iterations of tweaking by tweak factor.
         for _ in range(self.nTotal):
 
             # Write out what we currently have,
             # and run gudrun_dcs on that file.
-            self.gudrunFile.process(iterative=True)
             time.sleep(1)
             self.performIteration()
-            self.organiseOutput()
+            self.gudrunFile.process(itertor=self)

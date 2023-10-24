@@ -65,15 +65,8 @@ class Iterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
-                gudPath = sample.dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType,
-                    "gud"
-                )
                 gudFile = GudFile(
-                    os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        gudPath
-                    )
+                    self.gudrunFile.gudrunOutput.gudFile(sample.name)
                 )
                 # Calculate coefficient: actualDCSLevel / expectedDCSLevel
                 coefficient = (
@@ -117,8 +110,8 @@ class Iterator():
         n : int
             Number of iterations to perform.
         """
+        self.gudrunFile.process(iterator=self)
         for _ in range(self.nTotal):
-            self.gudrunFile.process()
             time.sleep(1)
             self.performIteration()
-            self.organiseOutput()
+            self.gudrunFile.process(iterator=self)
