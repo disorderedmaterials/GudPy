@@ -146,15 +146,18 @@ class GudrunFile:
             If a new input file should be constructed from a config
         """
 
+        # Path and filename of initial input file
         self.path = path
         self.inputFileDir = os.path.dirname(path)
         self.filename = os.path.basename(path)
         self.yaml = YAML()
         self.format = format
 
-        # Construct the outpath.
+        # Construct the outpath of generated input file
         self.outpath = "gudpy.txt"
+        self.outputDir = ""
         self.components = Components(components=[])
+        self.gudrunOutput = None
 
         if isinstance(path, type(None)):
             self.instrument = Instrument()
@@ -1565,7 +1568,7 @@ class GudrunFile:
                     result = subprocess.run(
                         [gudrun_dcs, path], capture_output=True, text=True
                     )
-                    self.organiseOutput()
+                    self.gudrunOutput = self.organiseOutput()
                     os.chdir(cwd)
                 except FileNotFoundError:
                     os.chdir(cwd)
