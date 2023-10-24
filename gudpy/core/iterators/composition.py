@@ -106,11 +106,11 @@ class CompositionIterator():
 
     name = "IterateByComposition"
 
-    def __init__(self, gudrunFile, nTotal):
+    def __init__(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.components = []
         self.ratio = 0
-        self.nTotal = nTotal
+        self.nTotal = 0
         self.nCurrent = 0
 
     """
