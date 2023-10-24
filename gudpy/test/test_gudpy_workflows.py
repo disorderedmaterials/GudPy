@@ -78,8 +78,7 @@ class TestGudPyWorkflows(TestCase):
         self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
 
         for sample in self.g.sampleBackgrounds[0].samples:
-
-.name            mintFilename = (
+            mintFilename = (
                 sample.dataFiles[0].replace(
                     self.g.instrument.dataFileType, "mint01"
                 )
@@ -291,9 +290,9 @@ class TestGudPyWorkflows(TestCase):
             inelasitictyIterator.iterate()
 
             for sample in [
-                    x
-                    for x in self.g.sampleBackgrounds[0].samples
-  .name                  if x.runThisSample
+                x
+                for x in self.g.sampleBackgrounds[0].samples
+                if x.runThisSample
             ]:
                 mintFilename = (
                     sample.dataFiles[0].replace(

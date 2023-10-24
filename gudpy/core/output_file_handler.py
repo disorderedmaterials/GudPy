@@ -344,4 +344,3 @@ class OutputFileHandler():
                 )
                 self.copiedFiles.append(f)
         return outputs
-
