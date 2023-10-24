@@ -2,7 +2,7 @@ import os
 import shutil
 import typing
 from dataclasses import dataclass
-from core.utils import makeDir, uniquify
+from core.utils import makeDir
 import tempfile
 
 
@@ -123,7 +123,7 @@ class OutputFileHandler():
                     os.path.join(root, f),
                     os.path.join(r, f)
                 )
-        
+
         return GudrunOutput(path=self.outputDir,
                             name=os.path.splitext(self.gudrunFile.filename)[0],
                             inputFile=inputFile,
@@ -186,7 +186,7 @@ class OutputFileHandler():
             Target basename if running iteratively,
             is the root folder of the sample folders
             by default ""
-        
+
         Returns
         --------
         sampleOutputs : Dict[str, SampleOutput]
@@ -219,7 +219,7 @@ class OutputFileHandler():
                     sampleFile
                 )
                 self.copiedFiles.append(sample.pathName())
-            
+
             sampleOutputs[sample.name] = SampleOutput(
                 sampleFile, gudFile, sampleOutput)
 
@@ -315,7 +315,7 @@ class OutputFileHandler():
             List of target file extenstions
         dest : str
             Directory for the files to be copied to
-        
+
         Returns
         -------
         outputs : Dict[str, str]
