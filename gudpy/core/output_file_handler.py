@@ -130,7 +130,7 @@ class OutputFileHandler():
                     os.path.join(root, f),
                     os.path.join(r, f)
                 )
-        
+
         for key, val in sampleOutputs.items():
             print(f"{key}         {val}")
 
