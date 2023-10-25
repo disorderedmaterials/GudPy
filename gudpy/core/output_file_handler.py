@@ -131,9 +131,6 @@ class OutputFileHandler():
                     os.path.join(r, f)
                 )
 
-        for key, val in sampleOutputs.items():
-            print(f"{key}         {val}")
-
         return GudrunOutput(path=self.outputDir,
                             name=os.path.splitext(self.gudrunFile.filename)[0],
                             inputFile=inputFile,
