@@ -23,14 +23,14 @@ class GudrunOutput:
     def gudFiles(self) -> list[str]:
         return [so.gudFile for so in self.sampleOutputs.values()]
 
-    def gudFile(self, idx: int = None, sampName: str = None) -> str:
+    def gudFile(self, idx: int = None, *, name: str = None) -> str:
         if idx is not None:
             asList = list(self.sampleOutputs.values())
             assert (idx < len(asList))
             return asList[idx].gudFile
-        elif sampName is not None:
-            assert (sampName in self.sampleOutputs)
-            return self.sampleOutputs[sampName].gudFile
+        elif name is not None:
+            assert (name in self.sampleOutputs)
+            return self.sampleOutputs[name].gudFile
 
 
 class OutputFileHandler():
@@ -67,7 +67,8 @@ class OutputFileHandler():
         # Name the output directory as the input file
         self.outputDir = os.path.join(
             self.gudrunFile.inputFileDir,
-            os.path.splitext(self.gudrunFile.filename)[0]
+            os.path.splitext(self.gudrunFile.filename)[0],
+            f"{head}"
         )
         # Files that have been copied
         self.copiedFiles = []
@@ -129,6 +130,9 @@ class OutputFileHandler():
                     os.path.join(root, f),
                     os.path.join(r, f)
                 )
+        
+        for key, val in sampleOutputs.items():
+            print(f"{key}         {val}")
 
         return GudrunOutput(path=self.outputDir,
                             name=os.path.splitext(self.gudrunFile.filename)[0],
@@ -224,12 +228,17 @@ class OutputFileHandler():
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
-                sampleFile = os.path.join(samplePath, sample.pathName())
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, sample.pathName()),
-                    sampleFile
+                    os.path.join(samplePath, sample.pathName())
                 )
                 self.copiedFiles.append(sample.pathName())
+
+            # Path to sample file output
+            sampleFile = os.path.join(
+                self.outputDir,
+                sample.name.replace(" ", "_"),
+                sample.pathName())
 
             sampleOutputs[sample.name] = SampleOutput(
                 sampleFile, gudFile, sampleOutput)
@@ -268,10 +277,11 @@ class OutputFileHandler():
 
         for f in os.listdir(self.gudrunDir):
             if f == self.gudrunFile.outpath:
-                inputFile = os.path.join(dest, f)
+                inputFile = os.path.join(
+                    self.outputDir, "AdditionalOutputs", f)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
-                    inputFile
+                    os.path.join(addDir, f)
                 )
             elif f not in self.copiedFiles and os.path.isfile(
                     os.path.join(self.gudrunDir, f)):
@@ -351,7 +361,8 @@ class OutputFileHandler():
                 # Set dir depending on file extension
                 dir = outDir if ext in self.outputExts else diagDir
                 if dir == outDir:
-                    outputs[fpath][ext] = os.path.join(dir, f)
+                    outputs[fpath][ext] = os.path.join(
+                        self.outputDir, "Outputs", f)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
                     os.path.join(dir, f)

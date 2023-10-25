@@ -66,7 +66,7 @@ class Iterator():
                 if s.runThisSample and len(s.dataFiles)
             ]:
                 gudFile = GudFile(
-                    self.gudrunFile.gudrunOutput.gudFile(sample.name)
+                    self.gudrunFile.gudrunOutput.gudFile(name=sample.name)
                 )
                 # Calculate coefficient: actualDCSLevel / expectedDCSLevel
                 coefficient = (
@@ -95,7 +95,8 @@ class Iterator():
         """
         This organises the output of the iteration.
         """
-        self.gudrunFile.organiseOutput()
+        gudrunOutput = self.gudrunFile.organiseOutput()
+        return gudrunOutput
 
     def iterate(self):
         """

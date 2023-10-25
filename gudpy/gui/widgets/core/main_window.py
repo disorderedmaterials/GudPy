@@ -1562,7 +1562,7 @@ class GudPyMainWindow(QMainWindow):
         if self.error:
             self.procFinished(9, QProcess.NormalExit)
             return
-        self.iterator.organiseOutput()
+        self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
         if self.iterator.nCurrent != -1:
             # If this is not the default run
             self.outputIterations[
