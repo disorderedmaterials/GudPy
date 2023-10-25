@@ -121,7 +121,8 @@ class GudFile:
 
         # Handle edge cases - invalid extensions and paths.
         if not self.path.endswith(".gud"):
-            raise ParserException(f"Attempted to parse {self.path}\nOnly .gud files can be parsed.")
+            raise ParserException(f"Attempted to parse {self.path}" +
+                                  "\nOnly .gud files can be parsed.")
 
         if not os.path.isfile(self.path):
             raise ParserException(f"{self.path} is not a valid path.")

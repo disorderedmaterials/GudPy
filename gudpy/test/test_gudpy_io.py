@@ -875,8 +875,8 @@ class TestGudPyIO(TestCase):
 
             with open(
                 os.path.join(
-                    g.instrument.GudrunInputFileDir,
-                    g.outpath
+                    self.g.instrument.GudrunInputFileDir,
+                    self.g.outpath
                 ),
                 encoding="utf-8"
             ) as fg:
