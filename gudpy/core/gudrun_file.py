@@ -1573,10 +1573,8 @@ class GudrunFile:
                     self.gudrunOutput = self.organiseOutput()
                 self.setGudrunDir(self.gudrunOutput.path)
                 tmp.cleanup()
-                os.chdir(cwd)
             except FileNotFoundError:
                 tmp.cleanup()
-                os.chdir(cwd)
                 return False
             return result
         else:
