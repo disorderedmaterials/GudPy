@@ -1567,6 +1567,7 @@ class GudrunFile:
                     [gudrun_dcs, path], cwd=tmp.name,
                     capture_output=True, text=True
                 )
+                print(result)
                 if iterator is not None:
                     self.gudrunOutput = iterator.organiseOutput()
                 else:
