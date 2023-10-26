@@ -1563,13 +1563,10 @@ class GudrunFile:
             try:
                 self.setGudrunDir(tmp.name)
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                cwd = os.getcwd()
-                os.chdir(self.instrument.GudrunInputFileDir)
                 result = subprocess.run(
-                    [gudrun_dcs, path], capture_output=True, text=True
+                    [gudrun_dcs, path], cwd=tmp.name,
+                    capture_output=True, text=True
                 )
-                for f in os.listdir(tmp.name):
-                    print(f)
                 if iterator is not None:
                     self.gudrunOutput = iterator.organiseOutput()
                 else:
