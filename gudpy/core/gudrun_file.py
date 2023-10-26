@@ -1559,25 +1559,27 @@ class GudrunFile:
         if not path:
             path = os.path.basename(self.path)
         if headless:
-            with tempfile.TemporaryDirectory() as tmp:
-                try:
-                    self.setGudrunDir(tmp)
-                    gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                    cwd = os.getcwd()
-                    os.chdir(self.instrument.GudrunInputFileDir)
-                    result = subprocess.run(
-                        [gudrun_dcs, path], capture_output=True, text=True
-                    )
-                    if iterator is not None:
-                        self.gudrunOutput = iterator.organiseOutput()
-                    else:
-                        self.gudrunOutput = self.organiseOutput()
-                    self.setGudrunDir(self.gudrunOutput.path)
-                    os.chdir(cwd)
-                except FileNotFoundError:
-                    os.chdir(cwd)
-                    return False
-                return result
+            tmp = tempfile.TemporaryDirectory()
+            try:
+                self.setGudrunDir(tmp.name)
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                cwd = os.getcwd()
+                os.chdir(self.instrument.GudrunInputFileDir)
+                result = subprocess.run(
+                    [gudrun_dcs, path], capture_output=True, text=True
+                )
+                if iterator is not None:
+                    self.gudrunOutput = iterator.organiseOutput()
+                else:
+                    self.gudrunOutput = self.organiseOutput()
+                self.setGudrunDir(self.gudrunOutput.path)
+                tmp.cleanup()
+                os.chdir(cwd)
+            except FileNotFoundError:
+                tmp.cleanup()
+                os.chdir(cwd)
+                return False
+            return result
         else:
             if hasattr(sys, '_MEIPASS'):
                 gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
