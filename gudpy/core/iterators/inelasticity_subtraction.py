@@ -259,7 +259,7 @@ class InelasticitySubtraction(Iterator):
         """
         overwrite = (self.nCurrent == 1 and
                      self.iterationType == "WavelengthIteration")
-        self.gudrunFile.organiseOutput(
+        return self.gudrunFile.organiseOutput(
             head=f"{self.iterationType}_{self.nCurrent}",
             overwrite=overwrite)
 

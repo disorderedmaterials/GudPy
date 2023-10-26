@@ -1568,6 +1568,8 @@ class GudrunFile:
                 result = subprocess.run(
                     [gudrun_dcs, path], capture_output=True, text=True
                 )
+                for f in os.listdir(tmp.name):
+                    print(f)
                 if iterator is not None:
                     self.gudrunOutput = iterator.organiseOutput()
                 else:
