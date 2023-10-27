@@ -21,15 +21,18 @@ from core.enums import Format
 class TestGudPyWorkflows(TestCase):
     def setUp(self) -> None:
 
-        path = os.path.abspath("test/TestData/NIMROD-water/water.txt")
+        testDir = os.path.dirname(__file__)
+        path = os.path.join(
+            testDir, "TestData/NIMROD-water/water.txt")
 
-        self.g = GudrunFile(os.path.abspath(path), format=Format.TXT)
+        self.g = GudrunFile(path, format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.path, os.path.join(
+            testDir, "TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
-            os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
+            os.path.join(testDir, "TestData/NIMROD-water/good_water.txt"),
             format=Format.TXT
         )
 
