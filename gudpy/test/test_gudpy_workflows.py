@@ -31,6 +31,7 @@ class TestGudPyWorkflows(TestCase):
 
         copyfile(self.g.path, os.path.join(
             testDir, "TestData/NIMROD-water/good_water.txt")
+        )
         g = GudrunFile(
             os.path.join(testDir, "TestData/NIMROD-water/good_water.txt"),
             format=Format.TXT
