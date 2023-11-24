@@ -586,7 +586,7 @@ class GudPyMainWindow(QMainWindow):
             ".",
             f"{list(filters.keys())[0]};;" +
             f"{list(filters.keys())[1]};;" +
-            f"{list(filters.keys())[2]};;"
+            f"{list(filters.keys())[2]}"
         )
         if filename:
             fmt = filters[filter]
