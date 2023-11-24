@@ -10,6 +10,9 @@ git clone https://github.com/disorderedmaterials/GudPy
 git clone https://github.com/disorderedmaterials/ModEx
 git clone https://github.com/disorderedmaterials/Gudrun
 
+# Install some extra RPM stuff (otherwise the HDF5 FC will fail as it seems to need it)
+sudo dnf install redhat-rpm-config
+
 # Upgrade compiler
 sudo yum install -y gcc-toolset-10
 
