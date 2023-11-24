@@ -48,7 +48,9 @@ class GudPyFileLibrary:
 
         # Collect files of static objects
         self.files = {
-            "Detector Calibration File": gudrunFile.instrument.detectorCalibrationFileName,
+            "Detector Calibration File": (
+                gudrunFile.instrument.detectorCalibrationFileName
+            ),
             "Groups File": gudrunFile.instrument.groupFileName,
             "Deadtime Constants File": (
                 gudrunFile.instrument.deadtimeConstantsFileName
