@@ -30,6 +30,9 @@ sudo ln -s /usr/lib64/libxcb-util.so.1 /usr/lib64/libxcb-render-util.so.0
 # Fix broken gcc
 sudo ln -s /opt/rh/gcc-toolset-10/root/usr/lib/gcc/x86_64-redhat-linux/10/plugin/annobin.so /opt/rh/gcc-toolset-10/root/usr/lib/gcc/x86_64-redhat-linux/10/plugin/gcc-annobin.so
 
+# Install missing xcb lib
+sudo dnf install xcb-util-cursor.x86_64
+
 # Upgrade Python
 sudo dnf module -y install python39
 sudo alternatives --set python3 /usr/bin/python3.9
