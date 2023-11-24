@@ -1657,6 +1657,12 @@ class GudPyMainWindow(QMainWindow):
             )
             missingFilesDialog.widget.exec_()
             return False
+
+        QMessageBox.information(
+            self.mainWidget,
+            "GudPy Information",
+            "All files found!",
+        )
         return True
 
     def autosave(self):
