@@ -994,6 +994,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
@@ -1050,6 +1051,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
@@ -1100,6 +1102,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
