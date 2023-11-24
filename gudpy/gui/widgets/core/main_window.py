@@ -420,7 +420,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.batchProcessing.triggered.connect(self.batchProcessing)
 
         self.mainWidget.checkFilesExist.triggered.connect(
-            self.checkFilesExist_
+            lambda: self.checkFilesExist_(True)
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -1644,7 +1644,7 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def checkFilesExist_(self):
+    def checkFilesExist_(self, showSuccessDialog: bool = False):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
                                                        for r in result[1]):
@@ -1658,11 +1658,12 @@ class GudPyMainWindow(QMainWindow):
             missingFilesDialog.widget.exec_()
             return False
 
-        QMessageBox.information(
-            self.mainWidget,
-            "GudPy Information",
-            "All files found!",
-        )
+        if showSuccessDialog:
+            QMessageBox.information(
+                self.mainWidget,
+                "GudPy Information",
+                "All files found!",
+            )
         return True
 
     def autosave(self):
