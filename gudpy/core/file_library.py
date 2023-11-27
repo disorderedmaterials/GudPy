@@ -48,14 +48,17 @@ class GudPyFileLibrary:
 
         # Collect files of static objects
         self.files = {
-            "Groups file": gudrunFile.instrument.groupFileName,
-            "Deadtime constants file": (
+            "Detector Calibration File": (
+                gudrunFile.instrument.detectorCalibrationFileName
+            ),
+            "Groups File": gudrunFile.instrument.groupFileName,
+            "Deadtime Constants File": (
                 gudrunFile.instrument.deadtimeConstantsFileName
             ),
-            "Scattering lengths file": (
+            "Scattering Lengths File": (
                 gudrunFile.instrument.neutronScatteringParametersFile
             ),
-            "Incident beam spectrum parameters": (
+            "Incident Beam Spectrum Parameters": (
                 gudrunFile.beam.filenameIncidentBeamSpectrumParams
             ),
         }
@@ -69,7 +72,7 @@ class GudPyFileLibrary:
         # then we also need the nexus definition file.
         if dataFileType.lower() == "nxs":
             self.files[
-                "NeXus definition file"
+                "NeXus Definition File"
             ] = gudrunFile.instrument.nxsDefinitionFile
 
         # If the Total Cross Section Source of any object uses a file,
