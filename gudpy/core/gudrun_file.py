@@ -29,7 +29,7 @@ from core.composition import Component, Components, Composition
 from core.element import Element
 from core.data_files import DataFiles
 from core.purge_file import PurgeFile
-from core.output_file_handler import OutputFileHandler
+from core.output_file_handler import GudrunOutputHandler
 from core.enums import (
     CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
@@ -1662,7 +1662,7 @@ class GudrunFile:
         return sample
 
     def organiseOutput(self, head="", overwrite=True):
-        outputHandler = OutputFileHandler(
+        outputHandler = GudrunOutputHandler(
             self, head=head, overwrite=overwrite
         )
         gudrunOutput = outputHandler.organiseOutput()

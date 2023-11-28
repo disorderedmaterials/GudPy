@@ -33,11 +33,46 @@ class GudrunOutput:
             return self.sampleOutputs[name].gudFile
 
 
-class OutputFileHandler():
+class OutputHandler:
+    """Class to organise purge output files
+    """
+
+    def __init__(self, gudrunFile, dirName, overwrite=True):
+        self.gudrunFile = gudrunFile
+        # Directory where files are outputted and process was run (temp)
+        self.procDir = self.gudrunFile.instrument.GudrunInputFileDir
+        # Make sure it is a temporary directory
+        assert (self.procDir.startswith(tempfile.gettempdir()))
+        # Name the output directory as the input file
+        self.outputDir = os.path.join(
+            self.gudrunFile.inputFileDir,
+            self.gudrunFile.projectDir,
+            dirName
+        )
+
+        # If output directory exists, move to a temp dir and clear it
+        # Avoids shutil.rmtree
+        if overwrite and os.path.exists(self.outputDir):
+            with tempfile.TemporaryDirectory() as tmp:
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
+
+    def organiseOutput(self):
+        """Function to move all files from the process directory to
+        the project directory
+        """
+        makeDir(self.outputDir)
+        for f in os.listdir(self.procDir):
+            shutil.copyfile(
+                os.path.join(self.procDir, f),
+                os.path.join(self.outputDir, f)
+            )
+
+
+class GudrunOutputHandler(OutputHandler):
 
     def __init__(self, gudrunFile, head="", overwrite=True):
         """
-        Initialise `OutputFileHandler`
+        Initialise `GudrunOutputHandler`
 
         Parameters
         ----------
@@ -50,7 +85,15 @@ class OutputFileHandler():
             by default True
         """
 
-        self.gudrunFile = gudrunFile
+        super().__init__(
+            gudrunFile,
+            "Gudrun",
+            overwrite=overwrite
+        )
+
+        # Append head to path
+        self.outputDir = os.path.join(self.outputDir, f"{head}")
+
         # List of run samples
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
