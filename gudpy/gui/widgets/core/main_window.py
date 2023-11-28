@@ -976,7 +976,7 @@ class GudPyMainWindow(QMainWindow):
             )
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
+                self.gudrunFile.projectDir, "Purge", "purge_det.dat"
             )
         ):
             self.purgeOptionsMessageBox(
