@@ -947,38 +947,14 @@ class GudPyMainWindow(QMainWindow):
         self.gudrunFile.setGudrunDir(self.tmp.name)
 
     def cleanupRun(self):
-        self.tmp.cleanup()
-        self.tmp = None
+        if self.tmp:
+            self.tmp.cleanup()
+            self.tmp = None
 
         self.setControlsEnabled(True)
         self.mainWidget.progressBar.setValue(0)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.queue = Queue()
-
-    def runPurge_(self):
-        self.prepareRun()
-
-        purgeDialog = PurgeDialog(self.gudrunFile, self)
-        result = purgeDialog.widget.exec_()
-        purge = purgeDialog.purge_det
-        if isinstance(purge, Sequence):
-            purge, func, args = purge
-        if purgeDialog.cancelled or result == QDialogButtonBox.No:
-            self.setControlsEnabled(True)
-            self.queue = Queue()
-        elif isinstance(purge, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find purge_det binary.",
-            )
-            self.setControlsEnabled(True)
-        elif not purge:
-            self.setControlsEnabled(True)
-        else:
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-            self.gudrunFile.purgeFile.write_out()
-            self.makeProc(purge, self.progressPurge, func=func, args=args)
 
     def runGudrun_(self):
         self.prepareRun()
@@ -1160,6 +1136,7 @@ class GudPyMainWindow(QMainWindow):
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
         if default:
+            self.prepareRun()
             purge_det = self.gudrunFile.purge(headless=False)
             if isinstance(purge_det, Sequence):
                 purge, func, args = purge_det
@@ -1799,6 +1776,33 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
+    def runPurge_(self):
+        self.prepareRun()
+
+        purgeDialog = PurgeDialog(self.gudrunFile, self)
+        result = purgeDialog.widget.exec_()
+        purge = purgeDialog.purge_det
+        if isinstance(purge, Sequence):
+            purge, func, args = purge
+        if purgeDialog.cancelled or result == QDialogButtonBox.No:
+            self.setControlsEnabled(True)
+            self.queue = Queue()
+        elif isinstance(purge, FileNotFoundError):
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                "Couldn't find purge_det binary.",
+            )
+            self.setControlsEnabled(True)
+        elif not purge:
+            self.setControlsEnabled(True)
+        else:
+            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+            self.gudrunFile.purgeFile.write_out()
+            self.makeProc(purge, self.progressPurge, func=func,
+                          dir_=self.gudrunFile.instrument.GudrunInputFileDir,
+                          args=args)
+
     def progressIncrementPurge(self):
         if not self.proc:
             return 0
@@ -1880,6 +1884,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from purge_det\n{self.error}"
             )
             self.gudrunFile.purged = False
+            self.cleanupRun()
             return
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
@@ -1897,6 +1902,8 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.goodDetectorsLabel.setText(
                 f"Number of Good Detectors: {detectors}"
             )
+            self.gudrunFile.purgeFile.organiseOutput()
+            self.cleanupRun()
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(

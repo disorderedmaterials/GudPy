@@ -155,7 +155,8 @@ class GudrunFile:
 
         # Construct the outpath of generated input file
         self.outpath = "gudpy.txt"
-        self.outputDir = ""
+        self.projectDir = os.path.join(
+            self.inputFileDir, os.path.splitext(self.filename)[0])
         self.components = Components(components=[])
         self.gudrunOutput = None
 
@@ -1558,24 +1559,22 @@ class GudrunFile:
 
         if not path:
             path = os.path.basename(self.path)
+
         if headless:
-            tmp = tempfile.TemporaryDirectory()
             try:
-                self.setGudrunDir(tmp.name)
-                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                result = subprocess.run(
-                    [gudrun_dcs, path], cwd=tmp.name,
-                    capture_output=True, text=True
-                )
-                print(result)
-                if iterator is not None:
-                    self.gudrunOutput = iterator.organiseOutput()
-                else:
-                    self.gudrunOutput = self.organiseOutput()
-                self.setGudrunDir(self.gudrunOutput.path)
-                tmp.cleanup()
+                with tempfile.TemporaryDirectory() as tmp:
+                    self.setGudrunDir(tmp.name)
+                    gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                    result = subprocess.run(
+                        [gudrun_dcs, path], cwd=tmp.name,
+                        capture_output=True, text=True
+                    )
+                    if iterator is not None:
+                        self.gudrunOutput = iterator.organiseOutput()
+                    else:
+                        self.gudrunOutput = self.organiseOutput()
+                    self.setGudrunDir(self.gudrunOutput.path)
             except FileNotFoundError:
-                tmp.cleanup()
                 return False
             return result
         else:

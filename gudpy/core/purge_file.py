@@ -1,11 +1,13 @@
 import os
 import sys
 import subprocess
+import tempfile
 
 from PySide6.QtCore import QProcess
 from core.enums import Instruments
 from core.utils import resolve, spacify, numifyBool
 from core import config
+from core.output_file_handler import OutputHandler
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -35,6 +37,7 @@ class PurgeFile():
     purge()
         Writes out the file, and then calls purge_det on that file.
     """
+
     def __init__(
             self,
             gudrunFile
@@ -248,16 +251,17 @@ class PurgeFile():
         self.excludeSampleAndCan = excludeSampleAndCan
         if headless:
             try:
-                cwd = os.getcwd()
-                purge_det = resolve("bin", f"purge_det{SUFFIX}")
-                os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-                self.write_out()
-                result = subprocess.run(
-                    [purge_det, "purge_det.dat"],
-                    capture_output=True,
-                    text=True
-                )
-                os.chdir(cwd)
+                with tempfile.TemporaryDirectory() as tmp:
+                    self.setGudrunDir(tmp.name)
+                    purge_det = resolve("bin", f"purge_det{SUFFIX}")
+                    self.write_out(tmp.name)
+                    result = subprocess.run(
+                        [purge_det, "purge_det.dat"],
+                        cwd=tmp.name,
+                        capture_output=True,
+                        text=True
+                    )
+                    self.organiseOutput()
             except FileNotFoundError:
                 return False
             return result
@@ -285,3 +289,7 @@ class PurgeFile():
                     )
                 ]
             )
+
+    def organiseOutput(self):
+        outputHandler = OutputHandler(self.gudrunFile, "Purge", overwrite=True)
+        outputHandler.organiseOutput()
