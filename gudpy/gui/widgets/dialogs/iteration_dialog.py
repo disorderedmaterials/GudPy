@@ -250,7 +250,7 @@ class CompositionIterationDialog(IterationDialog):
             self.widget.iterateButton.setEnabled(False)
 
     def iterate(self):
-        self.iterator = CompositionIterator(self.gudrunFile, 10)
+        self.iterator = CompositionIterator(self.gudrunFile)
         self.iterator.setComponents(self.components)
         self.queue = Queue()
         for sampleBackground in self.gudrunFile.sampleBackgrounds:

@@ -74,6 +74,7 @@ class InelasticitySubtraction(Iterator):
         self.gudrunFile = deepcopy(gudrunFile)
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
+        self.iterationCount = 0
         self.nCurrent = 0
         self.topHatWidths = []
         self.QMax = 0.
@@ -201,7 +202,7 @@ class InelasticitySubtraction(Iterator):
         """
         self.iterationType = "WavelengthIteration"
         # First iteration
-        if self.nCurrent == 0:
+        if self.iterationCount == 0:
             # Disable subtracting of wavelength binned data.
             # Collect the top hat widths and Q range and step size.
             self.gudrunFile.instrument.subWavelengthBinnedData = False
@@ -247,20 +248,23 @@ class InelasticitySubtraction(Iterator):
         self.setSelfScatteringFiles(Scales.Q)
 
     def performIteration(self):
+        print(self.iterationType)
+        print(self.iterationCount)
         if self.iterationType == "QIteration":
             self.wavelengthIteration()
-            self.nCurrent += 1
+            self.iterationCount += 1
         else:
             self.QIteration()
+            self.nCurrent += 1
 
     def organiseOutput(self):
         """
         This organises the output of the iteration.
         """
-        overwrite = (self.nCurrent == 1 and
+        overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
         return self.gudrunFile.organiseOutput(
-            head=f"{self.iterationType}_{self.nCurrent}",
+            head=f"{self.iterationType}_{self.iterationCount}",
             overwrite=overwrite)
 
     def iterate(self):
