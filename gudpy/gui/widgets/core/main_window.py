@@ -1414,8 +1414,10 @@ class GudPyMainWindow(QMainWindow):
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
         self.mainWidget.progressBar.setValue(
-            int((self.currentIteration / self.totalIterations) * 100)
+            int((self.iterator.nCurrent / self.totalIterations) * 100)
         )
+        self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
+        self.cleanupRun()
         if not self.queue.empty():
             self.nextCompositionIteration()
         else:
@@ -1430,9 +1432,9 @@ class GudPyMainWindow(QMainWindow):
                 original.composition = new.composition
                 if self.sampleSlots.sample == original:
                     self.sampleSlots.setSample(original)
-        self.cleanupRun()
 
     def startedCompositionIteration(self, sample):
+        self.prepareRun()
         self.mainWidget.currentTaskLabel.setText(
             f"{self.text}" f" ({sample.name})"
         )
@@ -1468,7 +1470,6 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.errorCompositionIteration)
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
-        self.gudrunFile.organiseOutput()
         self.currentIteration += 1
 
     def iterateByComposition(self):

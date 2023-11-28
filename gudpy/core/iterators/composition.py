@@ -289,3 +289,10 @@ class CompositionIterator():
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
+
+    def organiseOutput(self):
+        """
+        This organises the output of the iteration.
+        """
+        gudrunOutput = self.gudrunFile.organiseOutput()
+        return gudrunOutput
