@@ -1518,7 +1518,6 @@ class GudPyMainWindow(QMainWindow):
         name : str
             Name of dialog
         """
-        self.prepareRun()
         iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
         iterationDialog.widget.exec()
         if not iterationDialog.iterator:
@@ -1536,6 +1535,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.stopTaskButton.setEnabled(True)
 
     def nextIteration(self):
+        self.cleanupRun
         if self.error:
             self.procFinished(9, QProcess.NormalExit)
             return
@@ -1558,6 +1558,7 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
 
     def nextIterableProc(self):
+        self.prepareRun()
         if self.queue.empty():
             return
         iterInfo = f" {self.iterator.nCurrent + 1}/{self.iterator.nTotal}" if (
