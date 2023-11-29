@@ -112,6 +112,7 @@ class CompositionIterator():
         self.ratio = 0
         self.nTotal = 0
         self.nCurrent = 0
+        self.iterationType = self.name
 
     """
     Sets component and ratio.
@@ -222,13 +223,10 @@ class CompositionIterator():
         self.gudrunFile.process()
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            self.gudrunFile.instrument.dataFileType,
-            "gud"
-        )
+
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.gudrunOutput.gudFile(name=sampleBackground.samples[0].name)
             )
         )
 

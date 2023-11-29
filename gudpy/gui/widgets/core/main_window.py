@@ -576,6 +576,8 @@ class GudPyMainWindow(QMainWindow):
             f"{list(filters.keys())[2]};;"
         )
         if filename:
+            if not filter:
+                filter = "YAML (*.yaml)"
             fmt = filters[filter]
             try:
                 if self.gudrunFile:
@@ -940,11 +942,13 @@ class GudPyMainWindow(QMainWindow):
 
     def prepareRun(self):
         if not self.checkFilesExist_():
-            return
+            return False
         self.setControlsEnabled(False)
 
         self.tmp = tempfile.TemporaryDirectory()
         self.gudrunFile.setGudrunDir(self.tmp.name)
+
+        return True
 
     def cleanupRun(self):
         if self.tmp:
@@ -957,7 +961,8 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
 
     def runGudrun_(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
 
         dcs = self.gudrunFile.dcs(
             path=os.path.join(
@@ -1003,9 +1008,12 @@ class GudPyMainWindow(QMainWindow):
                 args=args,
                 finished=self.runGudrunFinished,
             )
+        
+        return True
 
     def runContainersAsSamples(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
 
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
         dcs = runContainersAsSamples.runContainersAsSamples(
@@ -1056,7 +1064,8 @@ class GudPyMainWindow(QMainWindow):
             )
 
     def runFilesIndividually(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
         dcs = runIndividualFiles.gudrunFile.dcs(
             path=os.path.join(
@@ -1136,7 +1145,8 @@ class GudPyMainWindow(QMainWindow):
     def purgeBeforeRunning(self, default=True):
         self.setControlsEnabled(False)
         if default:
-            self.prepareRun()
+            if not self.prepareRun():
+                return False
             purge_det = self.gudrunFile.purge(headless=False)
             if isinstance(purge_det, Sequence):
                 purge, func, args = purge_det
@@ -1323,7 +1333,8 @@ class GudPyMainWindow(QMainWindow):
         self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def batchProcessing(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
         batchProcessingDialog = BatchProcessingDialog(
             self.gudrunFile, self.mainWidget
         )
@@ -1434,7 +1445,6 @@ class GudPyMainWindow(QMainWindow):
                     self.sampleSlots.setSample(original)
 
     def startedCompositionIteration(self, sample):
-        self.prepareRun()
         self.mainWidget.currentTaskLabel.setText(
             f"{self.text}" f" ({sample.name})"
         )
@@ -1452,12 +1462,12 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def progressCompositionIteration(self, currentIteration):
-        progress = (
-            self.iterator.nCurrent / self.iterator.nTotal
-        ) * (self.iterator.nCurrent / self.totalIterations)
+        progress = (self.iterator.nCurrent / self.totalIterations)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
     def nextCompositionIteration(self):
+        if not self.prepareRun():
+            return False
         args, kwargs, sample = self.queue.get()
         self.worker = CompositionWorker(args, kwargs, sample, self.gudrunFile)
         self.worker.started.connect(self.startedCompositionIteration)
@@ -1504,6 +1514,9 @@ class GudPyMainWindow(QMainWindow):
                 ]
             )
             self.iterator.nTotal = self.totalIterations
+            # Run default iteration
+            #if not self.runGudrun_():
+             #   return
             self.nextCompositionIteration()
 
     def iterateGudrun(self, dialog, name):
@@ -1559,7 +1572,8 @@ class GudPyMainWindow(QMainWindow):
         self.output = ""
 
     def nextIterableProc(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
         if self.queue.empty():
             return
         iterInfo = f" {self.iterator.nCurrent + 1}/{self.iterator.nTotal}" if (
@@ -1779,7 +1793,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def runPurge_(self):
-        self.prepareRun()
+        if not self.prepareRun():
+            return False
 
         purgeDialog = PurgeDialog(self.gudrunFile, self)
         result = purgeDialog.widget.exec_()
