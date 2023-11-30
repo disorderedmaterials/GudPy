@@ -181,7 +181,7 @@ class OutputTreeModel(QAbstractItemModel):
 class OutputTreeView(QTreeView):
 
     def __init__(self, parent):
-        super(OutputTreeView, self).__init__(parent)
+        super().__init__(parent)
 
     def buildTree(self, gudrunFile, output, parent, keyMap=None):
         self.gudrunFile = gudrunFile
