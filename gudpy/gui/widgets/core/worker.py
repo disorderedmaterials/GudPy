@@ -19,7 +19,6 @@ class CompositionWorker(QObject):
         self.sample = sample
         self.updatedSample = None
         self.errored = False
-        self.currentIteration = 0
         self.gudrunFile = gudrunFile
         super(CompositionWorker, self).__init__()
 

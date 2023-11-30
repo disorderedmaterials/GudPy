@@ -1425,7 +1425,7 @@ class GudPyMainWindow(QMainWindow):
     def finishedCompositionIteration(self, originalSample, updatedSample):
         self.compositionMap[originalSample] = updatedSample
         self.mainWidget.progressBar.setValue(
-            int((self.iterator.nCurrent / self.totalIterations) * 100)
+            int((self.iterator.nCurrent / self.iterator.nTotal) * 100)
         )
         self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
         self.cleanupRun()
@@ -1462,7 +1462,10 @@ class GudPyMainWindow(QMainWindow):
         )
 
     def progressCompositionIteration(self, currentIteration):
-        progress = (self.iterator.nCurrent / self.totalIterations)
+        self.iterator.nCurrent += 1
+        print(self.iterator.nCurrent)
+        print(self.iterator.nTotal)
+        progress = (self.iterator.nCurrent / self.iterator.nTotal)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
     def nextCompositionIteration(self):
@@ -1480,7 +1483,6 @@ class GudPyMainWindow(QMainWindow):
         self.worker.errorOccured.connect(self.errorCompositionIteration)
         self.worker.errorOccured.connect(self.workerThread.quit)
         self.worker.finished.connect(self.finishedCompositionIteration)
-        self.currentIteration += 1
 
     def iterateByComposition(self):
         if not self.iterator.components:
@@ -1497,26 +1499,6 @@ class GudPyMainWindow(QMainWindow):
             self.setControlsEnabled(True)
         else:
             self.compositionMap = {}
-            self.totalIterations = len(
-                [
-                    s
-                    for sb in self.gudrunFile.sampleBackgrounds
-                    for s in sb.samples
-                    if s.runThisSample
-                    and len(
-                        [
-                            wc
-                            for c in self.iterator.components
-                            for wc in s.composition.weightedComponents
-                            if wc.component.eq(c)
-                        ]
-                    )
-                ]
-            )
-            self.iterator.nTotal = self.totalIterations
-            # Run default iteration
-            #if not self.runGudrun_():
-             #   return
             self.nextCompositionIteration()
 
     def iterateGudrun(self, dialog, name):
@@ -1543,6 +1525,7 @@ class GudPyMainWindow(QMainWindow):
             self.text = iterationDialog.text
             self.outputIterations = {}
             if isinstance(self.iterator, CompositionIterator):
+                self.iterator.nTotal = self.iterationDialog.rtol + 1
                 self.iterateByComposition()
             else:
                 self.nextIterableProc()

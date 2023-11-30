@@ -113,6 +113,7 @@ class CompositionIterator():
         self.nTotal = 0
         self.nCurrent = 0
         self.iterationType = self.name
+        self.nWeightedComponents = 0
 
     """
     Sets component and ratio.
