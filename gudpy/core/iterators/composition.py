@@ -227,7 +227,8 @@ class CompositionIterator():
 
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.gudrunOutput.gudFile(name=sampleBackground.samples[0].name)
+                self.gudrunFile.gudrunOutput.gudFile(
+                    name=sampleBackground.samples[0].name)
             )
         )
 

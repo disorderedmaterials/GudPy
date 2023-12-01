@@ -1008,7 +1008,7 @@ class GudPyMainWindow(QMainWindow):
                 args=args,
                 finished=self.runGudrunFinished,
             )
-        
+
         return True
 
     def runContainersAsSamples(self):
