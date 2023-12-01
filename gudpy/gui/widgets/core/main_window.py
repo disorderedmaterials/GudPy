@@ -1579,7 +1579,7 @@ class GudPyMainWindow(QMainWindow):
             func(*args)
         self.proc.start()
 
-    def checkFilesExist_(self):
+    def checkFilesExist_(self, showSuccessDialog: bool = False):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
                                                        for r in result[1]):
@@ -1622,7 +1622,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
-
 
     def autosave(self):
         if (
