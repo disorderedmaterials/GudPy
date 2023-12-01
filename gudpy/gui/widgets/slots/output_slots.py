@@ -8,17 +8,6 @@ class OutputSlots():
         self.widget.outputTextEdit.append(
             stdout
         )
-        """
-        if scrollBottom:
-            self.widget.outputTextEdit.verticalScrollBar().setValue(
-                self.widget.outputTextEdit.verticalScrollBar(
-                ).maximum()
-            )
-        else:
-            self.widget.outputTextEdit.verticalScrollBar().setValue(
-                scrollValue
-            )
-        """
 
     def setOutput(self, output, task, gudrunFile=None, keyMap=None):
         if not gudrunFile:
