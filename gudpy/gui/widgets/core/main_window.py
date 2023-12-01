@@ -407,7 +407,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.batchProcessing.triggered.connect(self.batchProcessing)
 
         self.mainWidget.checkFilesExist.triggered.connect(
-            self.checkFilesExist_
+            lambda: self.checkFilesExist_(True)
         )
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
@@ -573,7 +573,7 @@ class GudPyMainWindow(QMainWindow):
             ".",
             f"{list(filters.keys())[0]};;" +
             f"{list(filters.keys())[1]};;" +
-            f"{list(filters.keys())[2]};;"
+            f"{list(filters.keys())[2]}"
         )
         if filename:
             if not filter:
@@ -585,7 +585,8 @@ class GudPyMainWindow(QMainWindow):
                 path = self.tryLoadAutosaved(filename)
                 self.gudrunFile = GudrunFile(path=path, format=fmt)
                 self.updateWidgets()
-                self.mainWidget.setWindowTitle(self.gudrunFile.path + " [*]")
+                self.mainWidget.setWindowTitle(
+                    f"GudPy - {self.gudrunFile.filename}[*]")
             except ParserException as e:
                 QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
             except IOError:
@@ -979,6 +980,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.projectDir, "Purge", "purge_det.dat"
@@ -1037,6 +1039,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
@@ -1086,6 +1089,7 @@ class GudPyMainWindow(QMainWindow):
                 "GudPy Error",
                 "Couldn't find gudrun_dcs binary.",
             )
+            self.setControlsEnabled(True)
         elif not self.gudrunFile.purged and os.path.exists(
             os.path.join(
                 self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
@@ -1588,7 +1592,37 @@ class GudPyMainWindow(QMainWindow):
             )
             missingFilesDialog.widget.exec_()
             return False
+
+        if showSuccessDialog:
+            QMessageBox.information(
+                self.mainWidget,
+                "GudPy Information",
+                "All files found!",
+            )
         return True
+
+    def iterationStarted(self):
+        self.mainWidget.currentTaskLabel.setText(
+            f"{self.text}"
+            f" {(self.numberIterations + 1) - self.queue.qsize()}"
+            + f"/{self.numberIterations + 1}"
+        )
+        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
+
+    def progressIteration(self):
+        progress = self.progressIncrementDCS(self.gudrunFile)
+        if progress == -1:
+            self.error = (
+                f"An error occurred. See the following traceback"
+                f" from gudrun_dcs\n{self.error}"
+            )
+            return
+        progress /= self.numberIterations
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+
 
     def autosave(self):
         if (
