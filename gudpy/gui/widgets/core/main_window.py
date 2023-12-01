@@ -1772,7 +1772,7 @@ class GudPyMainWindow(QMainWindow):
         if stdout:
             self.output += stdout
             self.outputSlots.setOutputStream(
-                self.output
+                stdout
             )
         ERROR_KWDS = ["does not exist", "error", "Error"]
         if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
@@ -1840,7 +1840,7 @@ class GudPyMainWindow(QMainWindow):
         if stdout:
             self.output += stdout
             self.outputSlots.setOutputStream(
-                self.output
+                stdout
             )
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
