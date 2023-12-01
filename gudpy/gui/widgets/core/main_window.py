@@ -944,7 +944,7 @@ class GudPyMainWindow(QMainWindow):
         if not self.checkFilesExist_():
             return False
         self.setControlsEnabled(False)
-
+        self.mainWidget.progressBar.setValue(0)
         self.tmp = tempfile.TemporaryDirectory()
         self.gudrunFile.setGudrunDir(self.tmp.name)
 
@@ -1463,8 +1463,6 @@ class GudPyMainWindow(QMainWindow):
 
     def progressCompositionIteration(self, currentIteration):
         self.iterator.nCurrent += 1
-        print(self.iterator.nCurrent)
-        print(self.iterator.nTotal)
         progress = (self.iterator.nCurrent / self.iterator.nTotal)
         self.mainWidget.progressBar.setValue(int(progress * 100))
 
@@ -1525,7 +1523,7 @@ class GudPyMainWindow(QMainWindow):
             self.text = iterationDialog.text
             self.outputIterations = {}
             if isinstance(self.iterator, CompositionIterator):
-                self.iterator.nTotal = self.iterationDialog.rtol + 1
+                self.iterator.nTotal = iterationDialog.numberIterations
                 self.iterateByComposition()
             else:
                 self.nextIterableProc()
@@ -1569,27 +1567,13 @@ class GudPyMainWindow(QMainWindow):
         self.iterator.gudrunFile.write_out()
         self.proc, func, args = self.queue.get()
         self.proc.finished.connect(self.nextIteration)
-        self.proc.readyReadStandardOutput.connect(self.progressIteration)
+        self.proc.readyReadStandardOutput.connect(self.progressDCS)
         self.proc.setWorkingDirectory(
             self.iterator.gudrunFile.instrument.GudrunInputFileDir
         )
         if func:
             func(*args)
         self.proc.start()
-
-    def progressIteration(self):
-        progress = self.progressIncrementDCS(self.gudrunFile)
-        if progress == -1:
-            self.error = (
-                f"An error occurred. See the following traceback"
-                f" from gudrun_dcs\n{self.error}"
-            )
-            return
-        progress /= self.iterator.nTotal
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
-            progress if progress <= 100 else 100
-        )
 
     def checkFilesExist_(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
@@ -1613,7 +1597,9 @@ class GudPyMainWindow(QMainWindow):
             and not self.proc
             and not self.workerThread
         ):
-            autosavePath = self.gudrunFile.path + ".autosave"
+            autosavePath = os.path.join(
+                self.gudrunFile.inputFileDir,
+                self.gudrunFile.filename + ".autosave")
             self.gudrunFile.write_out(path=autosavePath)
 
     def setModified(self):

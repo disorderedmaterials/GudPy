@@ -195,6 +195,7 @@ class CompositionIterationDialog(IterationDialog):
         )
 
     def compositionRtolChanged(self, value):
+        print(self.numberIterations)
         self.rtol = value
 
     def enableItems(self, comboBox):

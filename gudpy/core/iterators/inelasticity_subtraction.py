@@ -248,8 +248,6 @@ class InelasticitySubtraction(Iterator):
         self.setSelfScatteringFiles(Scales.Q)
 
     def performIteration(self):
-        print(self.iterationType)
-        print(self.iterationCount)
         if self.iterationType == "QIteration":
             self.wavelengthIteration()
             self.iterationCount += 1
