@@ -10,7 +10,7 @@ import tempfile
 class SampleOutput:
     sampleFile: str
     gudFile: str
-    outputs: typing.Dict[str, str]
+    outputs: typing.Dict[str, typing.Dict[str, str]]
 
 
 @dataclass
@@ -42,6 +42,7 @@ class OutputHandler:
         # Directory where files are outputted and process was run (temp)
         self.procDir = self.gudrunFile.instrument.GudrunInputFileDir
         # Make sure it is a temporary directory
+        print(self.procDir)
         assert (self.procDir.startswith(tempfile.gettempdir()))
         # Name the output directory as the input file
         self.outputDir = os.path.join(
@@ -247,6 +248,7 @@ class GudrunOutputHandler(OutputHandler):
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
+                makeDir(samplePath)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, sample.pathName()),
                     os.path.join(samplePath, sample.pathName())

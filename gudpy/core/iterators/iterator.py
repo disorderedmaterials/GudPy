@@ -110,8 +110,8 @@ class Iterator():
         n : int
             Number of iterations to perform.
         """
-        self.gudrunFile.process(iterator=self)
+        self.gudrunFile.dcs(iterator=self)
         for _ in range(self.nTotal):
             time.sleep(1)
             self.performIteration()
-            self.gudrunFile.process(iterator=self)
+            self.gudrunFile.dcs(iterator=self)

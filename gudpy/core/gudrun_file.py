@@ -1532,6 +1532,8 @@ class GudrunFile:
 
     def setGudrunDir(self, dir):
         assert (os.path.isdir(os.path.abspath(dir)))
+        print(
+            f"Gudrun dir set to: {dir} was initially: {self.instrument.GudrunInputFileDir}")
         self.instrument.GudrunInputFileDir = dir
 
     def dcs(self, path='', headless=True, iterator=None):
@@ -1555,27 +1557,27 @@ class GudrunFile:
             The result of calling gudrun_dcs using subprocess.run.
             Can access stdout/stderr from this.
         """
-        assert (self.instrument.GudrunInputFileDir)
-
         if not path:
             path = os.path.basename(self.path)
 
         if headless:
-            try:
-                with tempfile.TemporaryDirectory() as tmp:
-                    self.setGudrunDir(tmp.name)
-                    gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                    result = subprocess.run(
-                        [gudrun_dcs, path], cwd=tmp.name,
-                        capture_output=True, text=True
-                    )
-                    if iterator is not None:
-                        self.gudrunOutput = iterator.organiseOutput()
-                    else:
-                        self.gudrunOutput = self.organiseOutput()
-                    self.setGudrunDir(self.gudrunOutput.path)
-            except FileNotFoundError:
-                return False
+            with tempfile.TemporaryDirectory() as tmp:
+                self.setGudrunDir(tmp)
+                path = os.path.join(
+                    tmp,
+                    path
+                )
+                self.write_out(path)
+                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
+                result = subprocess.run(
+                    [gudrun_dcs, path], cwd=tmp,
+                    capture_output=True, text=True
+                )
+                if iterator is not None:
+                    self.gudrunOutput = iterator.organiseOutput()
+                else:
+                    self.gudrunOutput = self.organiseOutput()
+                self.setGudrunDir(self.gudrunOutput.path)
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -1600,33 +1602,6 @@ class GudrunFile:
                         False
                     ]
                 )
-
-    def process(self, headless=True, iterator=None):
-        """
-        Write out the current state of the file,
-        and then call gudrun_dcs on the file that
-        was written out.
-
-        Parameters
-        ----------
-        purge : bool, optional
-            Should detectors be purged?
-        Returns
-        -------
-        subprocess.CompletedProcess
-            The result of calling gudrun_dcs using subprocess.run.
-            Can access stdout/stderr from this.
-        """
-        cwd = os.getcwd()
-        os.chdir(self.instrument.GudrunInputFileDir)
-        self.write_out()
-        dcs = self.dcs(
-            path=self.outpath,
-            headless=headless,
-            iterator=iterator
-        )
-        os.chdir(cwd)
-        return dcs
 
     def purge(self, *args, **kwargs):
         """

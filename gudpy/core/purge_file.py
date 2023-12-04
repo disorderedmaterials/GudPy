@@ -252,12 +252,15 @@ class PurgeFile():
         if headless:
             try:
                 with tempfile.TemporaryDirectory() as tmp:
-                    self.setGudrunDir(tmp.name)
+                    self.gudrunFile.setGudrunDir(tmp)
                     purge_det = resolve("bin", f"purge_det{SUFFIX}")
-                    self.write_out(tmp.name)
+                    self.write_out(os.path.join(
+                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        "purge_det.dat"
+                    ))
                     result = subprocess.run(
                         [purge_det, "purge_det.dat"],
-                        cwd=tmp.name,
+                        cwd=tmp,
                         capture_output=True,
                         text=True
                     )

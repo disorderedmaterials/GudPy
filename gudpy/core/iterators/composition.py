@@ -171,7 +171,7 @@ class CompositionIterator():
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.process()
+        self.gudrunFile.dcs()
 
         time.sleep(1)
         gudPath = sampleBackground.samples[0].dataFiles[0].replace(
@@ -180,7 +180,8 @@ class CompositionIterator():
         )
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.gudrunOutput.gudFile(
+                    name=sampleBackground.samples[0].name)
             )
         )
 
@@ -221,7 +222,7 @@ class CompositionIterator():
             wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.process()
+        self.gudrunFile.dcs()
 
         time.sleep(1)
 

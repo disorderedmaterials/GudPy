@@ -83,17 +83,15 @@ class TestGudPyWorkflows(TestCase):
 
         for sample in self.g.sampleBackgrounds[0].samples:
             mintFilename = (
-                sample.dataFiles[0].replace(
-                    self.g.instrument.dataFileType, "mint01"
-                )
+                os.path.splitext(sample.dataFiles[0])[0]
             )
 
-            actualMintFile = f'test/TestData/water-ref/plain/{mintFilename}'
-
-            actualData = open(
-                os.path.join(
-                    self.g.instrument.GudrunInputFileDir, mintFilename
-                ),
+            actualMintFile = ("test/TestData/water-ref/plain/"
+                              f"{mintFilename}.mint01")
+            print(self.g.gudrunOutput.sampleOutputs[
+                sample.name].outputs[sample.dataFiles[0]][".mint01"])
+            actualData = open(self.g.gudrunOutput.sampleOutputs[
+                sample.name].outputs[sample.dataFiles[0]][".mint01"],
                 "r", encoding="utf-8"
             ).readlines()[10:]
             expectedData = open(
