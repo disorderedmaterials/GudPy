@@ -1779,7 +1779,11 @@ class GudPyMainWindow(QMainWindow):
             return 0
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        self.output += stdout
+        if stdout:
+            self.output += stdout
+            self.outputSlots.setOutputStream(
+                stdout
+            )
         ERROR_KWDS = ["does not exist", "error", "Error"]
         if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
             self.error = stdout
@@ -1843,7 +1847,11 @@ class GudPyMainWindow(QMainWindow):
             return 0
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf8")
-        self.output += stdout
+        if stdout:
+            self.output += stdout
+            self.outputSlots.setOutputStream(
+                stdout
+            )
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
