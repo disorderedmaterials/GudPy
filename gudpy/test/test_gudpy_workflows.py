@@ -88,8 +88,6 @@ class TestGudPyWorkflows(TestCase):
 
             actualMintFile = ("test/TestData/water-ref/plain/"
                               f"{mintFilename}.mint01")
-            print(self.g.gudrunOutput.sampleOutputs[
-                sample.name].outputs[sample.dataFiles[0]][".mint01"])
             actualData = open(self.g.gudrunOutput.sampleOutputs[
                 sample.name].outputs[sample.dataFiles[0]][".mint01"],
                 "r", encoding="utf-8"
@@ -296,22 +294,21 @@ class TestGudPyWorkflows(TestCase):
                 for x in self.g.sampleBackgrounds[0].samples
                 if x.runThisSample
             ]:
-                mintFilename = (
-                    sample.dataFiles[0].replace(
-                        self.g.instrument.dataFileType, "mint01"
-                    )
+                dataFilename = (
+                    os.path.splitext(sample.dataFiles[0])[0]
                 )
 
                 actualMintFile = (
                     f'test/TestData/water-ref/wavelength{i}/'
-                    f'{mintFilename}'
+                    f'{dataFilename}.mint01'
                 )
 
                 actualData = open(
-                    os.path.join(
-                        self.g.instrument.GudrunInputFileDir,
-                        mintFilename
-                    ), "r", encoding="utf-8"
+                    inelasitictyIterator.gudrunOutputs[
+                        len(inelasitictyIterator.gudrunOutputs) - 1
+                    ].output(
+                        sample.name, sample.dataFiles[0], ".mint01"),
+                    "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
@@ -332,21 +329,17 @@ class TestGudPyWorkflows(TestCase):
                             close += 1
                 self.assertTrue((close / total) >= 0.95)
 
-                msubFilename = (
-                    sample.dataFiles[0].replace(
-                        self.g.instrument.dataFileType, "msubw01"
-                    )
-                )
-
                 actualMsubFilename = (
-                    f'test/TestData/water-ref/wavelength{i}/{msubFilename}'
+                    f'test/TestData/water-ref/wavelength{i}/'
+                    f'{dataFilename}.msubw01'
                 )
 
                 actualData = open(
-                    os.path.join(
-                        self.g.instrument.GudrunInputFileDir,
-                        msubFilename
-                    ), "r", encoding="utf-8"
+                    inelasitictyIterator.gudrunOutputs[
+                        len(inelasitictyIterator.gudrunOutputs) - 2
+                    ].output(
+                        sample.name, sample.dataFiles[0], ".msubw01"),
+                    "r", encoding="utf-8"
                 ).readlines()[10:]
                 expectedData = open(
                     actualMsubFilename, "r", encoding="utf-8"
