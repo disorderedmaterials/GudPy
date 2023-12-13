@@ -1,6 +1,6 @@
 from pathlib import Path
 import time
-from copy import deepcopy
+import os
 
 from core.enums import Scales
 from core.iterators.iterator import Iterator
@@ -71,15 +71,17 @@ class InelasticitySubtraction(Iterator):
             Input GudrunFile that we will be using for iterating.
         """
         super().__init__(gudrunFile, nTotal)
-        self.gudrunFile = deepcopy(gudrunFile)
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
+        # Individual iterations
         self.iterationCount = 0
+        # Iteration pair
         self.nCurrent = 0
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
+        self.gudrunOutputs = []
 
     def enableLogarithmicBinning(self):
         """
@@ -171,7 +173,7 @@ class InelasticitySubtraction(Iterator):
         then set self scattering file extensions to mint01.
         """
         # Dict to pick suffix based on scale
-        suffix = {Scales.Q: "msubw01", Scales.WAVELENGTH: "mint01"}[scale]
+        suffix = {Scales.Q: ".msubw01", Scales.WAVELENGTH: ".mint01"}[scale]
 
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
@@ -181,8 +183,15 @@ class InelasticitySubtraction(Iterator):
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
                     filename = target.dataFiles[0]
+                    prevOutput = (
+                        self.gudrunFile.gudrunOutput.output(
+                            sample.name, filename, suffix)
+                        if self.gudrunFile.gudrunOutput else ""
+                    )
                     target.fileSelfScattering = (
-                        str(Path(filename).stem) + '.' + suffix
+                        os.path.join(
+                            prevOutput,
+                        )
                     )
 
     def wavelengthIteration(self):
@@ -198,7 +207,7 @@ class InelasticitySubtraction(Iterator):
         the x-scale, enable logarithmic binning, set the scale
         to the wavelength scale, zero the top hat widths, change
         the extensions of the self scattering files to .mint01.
-        Then, write out the GudrunFile and call gudrun_dcs.
+        Then, write out the gudrunFile and call gudrun_dcs.
         """
         self.iterationType = "WavelengthIteration"
         # First iteration
@@ -232,7 +241,7 @@ class InelasticitySubtraction(Iterator):
         the x-scale, disable logarithmic binning, set the scale
         to the Q scale, reset the top hat widths, change
         the extensions of the self scattering files to .msubw01.
-        Then, write out the GudrunFile and call gudrun_dcs.
+        Then, write out the gudrunFile and call gudrun_dcs.
         """
         self.iterationType = "QIteration"
         # Enable subtracting of wavelength binned data
@@ -271,8 +280,8 @@ class InelasticitySubtraction(Iterator):
         the wavelength scale and Q scale.
         """
         print("ITERATING WAVELENGTH")
-        for _ in range(self.nTotal):
+        for _ in range(self.nTotal * 2):
             self.performIteration()
             self.gudrunFile.dcs(iterator=self)
+            self.gudrunOutputs.append(self.gudrunFile.gudrunOutput)
             time.sleep(1)
-            self.organiseOutput()
