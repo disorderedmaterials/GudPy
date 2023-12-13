@@ -171,13 +171,10 @@ class CompositionIterator():
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.dcs()
+        self.gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            self.gudrunFile.instrument.dataFileType,
-            "gud"
-        )
+
         gudFile = GudFile(
             os.path.join(
                 self.gudrunFile.gudrunOutput.gudFile(
@@ -222,7 +219,7 @@ class CompositionIterator():
             wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.dcs()
+        self.gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
 
@@ -285,8 +282,6 @@ class CompositionIterator():
                             [1e-2, self.ratio, 10], 0,
                             args=(sb, totalMolecules,)
                         )
-
-        self.gudrunFile.organiseOutput()
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
