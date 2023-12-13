@@ -250,23 +250,22 @@ class PurgeFile():
         self.ignoreBad = ignoreBad
         self.excludeSampleAndCan = excludeSampleAndCan
         if headless:
-            try:
-                with tempfile.TemporaryDirectory() as tmp:
-                    self.gudrunFile.setGudrunDir(tmp)
-                    purge_det = resolve("bin", f"purge_det{SUFFIX}")
-                    self.write_out(os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        "purge_det.dat"
-                    ))
-                    result = subprocess.run(
-                        [purge_det, "purge_det.dat"],
-                        cwd=tmp,
-                        capture_output=True,
-                        text=True
-                    )
-                    self.organiseOutput()
-            except FileNotFoundError:
-                return False
+            with tempfile.TemporaryDirectory() as tmp:
+                self.gudrunFile.setGudrunDir(tmp)
+                purge_det = resolve("bin", f"purge_det{SUFFIX}")
+                self.write_out(os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    "purge_det.dat"
+                ))
+                result = subprocess.run(
+                    [purge_det, "purge_det.dat"],
+                    cwd=tmp,
+                    capture_output=True,
+                    text=True
+                )
+                self.organiseOutput()
+            self.gudrunFile.setGudrunDir(
+                self.gudrunFile.projectDir)
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -287,7 +286,8 @@ class PurgeFile():
                 self.write_out,
                 [
                     os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        self.gudrunFile.projectDir,
+                        "Purge",
                         "purge_det.dat"
                     )
                 ]
