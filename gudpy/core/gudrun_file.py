@@ -1473,7 +1473,8 @@ class GudrunFile:
         if not format:
             format = self.format
         if format == Format.TXT:
-            self.write_out(path=path.replace(path.split(".")[-1], "txt"))
+            self.write_out(path=path.replace(
+                path.split(".")[-1], "txt"), overwrite=True)
         elif format == Format.YAML:
             self.write_yaml(path=path.replace(path.split(".")[-1], "yaml"))
 
@@ -1497,10 +1498,16 @@ class GudrunFile:
         None
         """
         if path:
+            if not overwrite:
+                assert (not os.path.exists(path))
             f = open(
                 path, "w", encoding="utf-8"
             )
         elif not overwrite:
+            assert (not os.path.exists(os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath)
+            ))
             f = open(
                 os.path.join(
                     self.instrument.GudrunInputFileDir,
@@ -1557,8 +1564,8 @@ class GudrunFile:
             The result of calling gudrun_dcs using subprocess.run.
             Can access stdout/stderr from this.
         """
-        if not path:
-            path = os.path.basename(self.path)
+
+        path = f"./{self.outpath}"
 
         if headless:
             with tempfile.TemporaryDirectory() as tmp:
@@ -1569,10 +1576,15 @@ class GudrunFile:
                 )
                 self.write_out(path)
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                result = subprocess.run(
+                with subprocess.Popen(
                     [gudrun_dcs, path], cwd=tmp,
-                    capture_output=True, text=True
-                )
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ) as gudrun:
+                    gudrun.wait()
+                    result = gudrun
+                    _, stderr = gudrun.communicate()
+                    result.stderr = stderr.decode("utf8")
+
                 if iterator is not None:
                     self.gudrunOutput = iterator.organiseOutput()
                 else:
@@ -1598,7 +1610,7 @@ class GudrunFile:
                     proc,
                     self.write_out,
                     [
-                        path,
+                        '',
                         False
                     ]
                 )
