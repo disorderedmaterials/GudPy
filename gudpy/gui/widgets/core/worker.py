@@ -1,10 +1,64 @@
 import os
+import tempfile
 from copy import deepcopy
 from PySide6.QtCore import QObject, Signal, QThread
+import subprocess
+import sys
 
+from core import config
 from core.gud_file import GudFile
+import core.utils as utils
 from core.sample import Sample
 from core.iterators.composition import gss
+
+SUFFIX = ".exe" if os.name == "nt" else ""
+
+
+class GudrunWorker(QObject):
+    started = Signal(int)
+    nextIteration = Signal(int)
+    errorOccured = Signal(str)
+    finished = Signal(int)
+
+    def __init__(self):
+        super().__init__()
+
+    def work(self, gudrunFile, iterator=None):
+        self.started.emit(1)
+
+        if hasattr(sys, '_MEIPASS'):
+            gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
+        else:
+            gudrun_dcs = utils.resolve(
+                os.path.join(
+                    config.__rootdir__, "bin"
+                ), f"gudrun_dcs{SUFFIX}"
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = gudrunFile.outpath
+            gudrunFile.setGudrunDir(tmp)
+            path = os.path.join(
+                tmp,
+                path
+            )
+            gudrunFile.write_out(path)
+            with subprocess.Popen(
+                [gudrun_dcs, path], cwd=tmp,
+                stdout=subprocess.PIPE
+            ) as gudrun:
+                for line in gudrun.stdout:
+                    print(line.decode("utf8").rstrip("\n"))
+
+            if iterator is not None:
+                print("ORGANISE")
+                gudrunFile.gudrunOutput = iterator.organiseOutput()
+            else:
+                gudrunFile.gudrunOutput = gudrunFile.organiseOutput()
+            print("REVERTING DIR")
+            gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
+
+        self.finished.emit(1)
 
 
 class CompositionWorker(QObject):
