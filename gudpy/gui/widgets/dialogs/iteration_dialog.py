@@ -71,11 +71,7 @@ class IterationDialog(QDialog):
         self.queue = Queue()
         for _ in range(self.numberIterations + 1):
             self.queue.put(
-                self.iterator.gudrunFile.dcs(
-                    path=os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        "gudpy.txt"
-                    ), headless=False)
+                self.iterator.gudrunFile.dcs(headless=False)
             )
 
 
@@ -104,11 +100,7 @@ class InelasticitySubtractionIterationDialog(IterationDialog):
         self.queue = Queue()
         for _ in range((self.numberIterations * 2)):
             self.queue.put(
-                self.iterator.gudrunFile.dcs(
-                    path=os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        "gudpy.txt"
-                    ), headless=False)
+                self.iterator.gudrunFile.dcs(headless=False)
             )
 
 
@@ -195,7 +187,6 @@ class CompositionIterationDialog(IterationDialog):
         )
 
     def compositionRtolChanged(self, value):
-        print(self.numberIterations)
         self.rtol = value
 
     def enableItems(self, comboBox):
