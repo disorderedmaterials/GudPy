@@ -51,11 +51,9 @@ class GudrunWorker(QObject):
                     print(line.decode("utf8").rstrip("\n"))
 
             if iterator is not None:
-                print("ORGANISE")
                 gudrunFile.gudrunOutput = iterator.organiseOutput()
             else:
                 gudrunFile.gudrunOutput = gudrunFile.organiseOutput()
-            print("REVERTING DIR")
             gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
 
         self.finished.emit(1)
