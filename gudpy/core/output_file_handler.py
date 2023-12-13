@@ -122,9 +122,6 @@ class GudrunOutputHandler(OutputHandler):
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
 
-        for f in os.listdir(self.gudrunDir):
-            print(f)
-
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
         # Temporary output dir paths
