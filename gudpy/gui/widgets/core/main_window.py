@@ -1789,23 +1789,32 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
+        if isinstance(self.iterator, InelasticitySubtraction):
+            progress /= 2
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
 
-    def runPurge_(self):
-        if not self.prepareRun():
-            return False
+    def runPurge_(self, dialog: bool = False) -> bool:
+        self.setControlsEnabled(False)
+        if (dialog):
+            purgeDialog = PurgeDialog(self.gudrunFile, self)
+            result = purgeDialog.widget.exec_()
+            purge = purgeDialog.purge_det
 
-        purgeDialog = PurgeDialog(self.gudrunFile, self)
-        result = purgeDialog.widget.exec_()
-        purge = purgeDialog.purge_det
+            if purgeDialog.cancelled or result == QDialogButtonBox.No or not purge:
+                self.setControlsEnabled(True)
+                self.queue = Queue()
+                return False
+
+        else:
+            purge_det = self.gudrunFile.purge(headless=False)
+            if isinstance(purge_det, Sequence):
+                purge, func, args = purge_det
+
         if isinstance(purge, Sequence):
             purge, func, args = purge
-        if purgeDialog.cancelled or result == QDialogButtonBox.No:
-            self.setControlsEnabled(True)
-            self.queue = Queue()
         elif isinstance(purge, FileNotFoundError):
             QMessageBox.critical(
                 self.mainWidget,
@@ -1813,14 +1822,15 @@ class GudPyMainWindow(QMainWindow):
                 "Couldn't find purge_det binary.",
             )
             self.setControlsEnabled(True)
-        elif not purge:
-            self.setControlsEnabled(True)
-        else:
-            os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-            self.gudrunFile.purgeFile.write_out()
-            self.makeProc(purge, self.progressPurge, func=func,
-                          dir_=self.gudrunFile.instrument.GudrunInputFileDir,
-                          args=args)
+            return False
+
+        if not self.prepareRun():
+            return False
+        os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
+        self.gudrunFile.purgeFile.write_out()
+        self.makeProc(purge, self.progressPurge, func=func,
+                      dir_=self.gudrunFile.instrument.GudrunInputFileDir,
+                      args=args)
 
     def progressIncrementPurge(self):
         if not self.proc:
