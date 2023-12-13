@@ -356,18 +356,18 @@ class TestParseGudFile(TestCase):
                 )
             else:
                 try:
+                    float(self.expectedGudFileB[key])
+                except ValueError:
                     self.assertEqual(
-                        self.expectedGudFileB[key], gudAttrsDict[key]
+                        self.expectedGudFileB[key],
+                        gudAttrsDict[key]
                     )
-                except AssertionError as e:
-                    try:
-                        self.assertAlmostEqual(
-                            float(self.expectedGudFileB[key]),
-                            float(gudAttrsDict[key]),
-                            1,
-                        )
-                    except Exception:
-                        raise e
+                else:
+                    self.assertAlmostEqual(
+                        float(self.expectedGudFileB[key]),
+                        float(gudAttrsDict[key]),
+                        1,
+                    )
 
     def testLoadGudFileC(self):
         g = GudrunFile(
