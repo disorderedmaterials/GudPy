@@ -279,7 +279,6 @@ class InelasticitySubtraction(Iterator):
         Perform n iterations on both
         the wavelength scale and Q scale.
         """
-        print("ITERATING WAVELENGTH")
         for _ in range(self.nTotal * 2):
             self.performIteration()
             self.gudrunFile.dcs(iterator=self)
