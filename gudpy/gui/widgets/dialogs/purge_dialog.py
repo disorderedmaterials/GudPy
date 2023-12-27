@@ -4,6 +4,8 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QDialog
 
+from core.purge_file import PurgeFile
+
 
 class PurgeDialog(QDialog):
     """
@@ -21,6 +23,7 @@ class PurgeDialog(QDialog):
     initComponents()
         Loads the UI file for the IterationDialog
     """
+
     def __init__(self, gudrunFile, parent):
         super(PurgeDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
@@ -38,12 +41,13 @@ class PurgeDialog(QDialog):
         Purge with the specified configuration.
         Called when an accepted signal is emmited from the buttonBox.
         """
-        self.purge_det = self.gudrunFile.purge(
-            headless=False,
-            standardDeviation=(
-                self.stdDeviationsAcceptanceOffset,
-                self.stdsAroundMeanDeviation
-            ),
+        self.gudrunFile.purgeFilestandardDeviation = (
+            self.stdDeviationsAcceptanceOffset,
+            self.stdsAroundMeanDeviation
+        )
+        self.gudrunFile.purgeFile = PurgeFile(
+            self.gudrunFile,
+            standardDeviation=self.gudrunFile.purgeFilestandardDeviation,
             ignoreBad=self.ignoreBad,
             excludeSampleAndCan=self.excludeSampleAndCan
         )
