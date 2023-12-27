@@ -37,6 +37,7 @@ from PySide6.QtCharts import QChartView
 
 from core.container import Container
 from core.iterators.composition import CompositionIterator
+from core.iterators.inelasticity_subtraction import InelasticitySubtraction
 from core.sample import Sample
 from gui.widgets.dialogs.export_dialog import ExportDialog
 
@@ -97,7 +98,7 @@ from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
 from core.utils import breplace, nthint
-from gui.widgets.core.worker import CompositionWorker
+from gui.widgets.core.worker import CompositionWorker, GudrunWorker, PurgeWorker
 
 
 class GudPyMainWindow(QMainWindow):
@@ -356,8 +357,12 @@ class GudPyMainWindow(QMainWindow):
         self.sampleSlots = SampleSlots(self.mainWidget, self)
         self.containerSlots = ContainerSlots(self.mainWidget, self)
         self.outputSlots = OutputSlots(self.mainWidget, self)
-        self.mainWidget.runPurge.triggered.connect(self.runPurge_)
-        self.mainWidget.runGudrun.triggered.connect(self.runGudrun_)
+        self.mainWidget.runPurge.triggered.connect(
+            lambda: self.runPurge_(self.gudrunFile, dialog=True)
+        )
+        self.mainWidget.runGudrun.triggered.connect(
+            lambda: self.runGudrun(self.gudrunFile, self.procFinished)
+        )
 
         self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
@@ -506,7 +511,7 @@ class GudPyMainWindow(QMainWindow):
                     messageBox.addButton(QMessageBox.No)
                     messageBox.addButton(QMessageBox.Yes)
                     result = messageBox.exec()
-                    if result == messageBox.Yes:
+                    if result == QMessageBox.Yes:
                         return os.path.abspath(f)
                     else:
                         return path
@@ -630,19 +635,19 @@ class GudPyMainWindow(QMainWindow):
                 os.path.abspath(filename)
             )
             self.gudrunFile.path = filename
-            self.gudrunFile.save(path=filename, format=fmt)
-            self.setUnModified()
+        self.gudrunFile.save(path=filename, format=fmt)
+        self.setUnModified()
 
     def newInputFile(self):
         if self.gudrunFile:
             self.gudrunFile = None
-        self.gudrunFile = GudrunFile()
         configurationDialog = ConfigurationDialog(self)
         result = configurationDialog.widget.exec()
         if not configurationDialog.cancelled and result:
-            self.gudrunFile.instrument = GudrunFile(
-                configurationDialog.configuration, config_=True
-            ).instrument
+            self.gudrunFile = GudrunFile(
+                configurationDialog.configuration, format=Format.TXT,
+                config_=True
+            )
             self.gudrunFile.instrument.dataFileType = (
                 configurationDialog.dataFileType
             )
@@ -913,6 +918,83 @@ class GudPyMainWindow(QMainWindow):
             self.gudrunFile.write_out(overwrite=True)
         sys.exit(0)
 
+    def checkFilesExist_(self, showSuccessDialog: bool = False):
+        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        if not all(r[0] for r in result[0]) or not all(r[0]
+                                                       for r in result[1]):
+            undefined = [
+                r[1] for r in result[0] if not r[0]
+            ]
+            unresolved = [r[2] for r in result[1] if not r[0] and r[2]]
+            missingFilesDialog = MissingFilesDialog(
+                undefined, unresolved, self.mainWidget
+            )
+            missingFilesDialog.widget.exec_()
+            return False
+
+        if showSuccessDialog:
+            QMessageBox.information(
+                self.mainWidget,
+                "GudPy Information",
+                "All files found!",
+            )
+        return True
+
+    def prepareRun(self):
+        if not self.checkFilesExist_():
+            return False
+
+        if not self.gudrunFile.checkSaveLocation():
+            dirname = QFileDialog.getSaveFileName(
+                self.mainWidget,
+                "Choose save location",
+            )
+            self.gudrunFile.setSaveLocation(dirname)
+
+        self.setControlsEnabled(False)
+        self.mainWidget.progressBar.setValue(0)
+        return True
+
+    def cleanupRun(self):
+        self.setControlsEnabled(True)
+        self.mainWidget.progressBar.setValue(0)
+        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.queue = Queue()
+
+    def checkPurge(self):
+        if not self.gudrunFile.purged and os.path.exists(
+            os.path.join(
+                self.gudrunFile.projectDir, "Purge", "purge_det.dat"
+            )
+        ):
+            purgeResult = self.purgeOptionsMessageBox(
+                "purge_det.dat found, but wasn't run in this session. "
+                "Run Purge?",
+            )
+        elif not self.gudrunFile.purged:
+            purgeResult = self.purgeOptionsMessageBox(
+                "It looks like you may not have purged detectors. Run Purge?",
+            )
+        else:
+            purgeResult = True
+
+        return purgeResult
+
+    def runGudrun(self, gudrunFile, finished, iterator=None):
+        if not self.prepareRun() or not self.checkPurge():
+            return False
+
+        self.worker = GudrunWorker(gudrunFile, iterator)
+        self.workerThread = QThread()
+        self.worker.moveToThread(self.workerThread)
+        self.workerThread.started.connect(self.worker.gudrun)
+        self.worker.started.connect(self.procStarted)
+        self.worker.outputChanged.connect(self.progressDCS)
+        self.worker.finished.connect(self.workerThread.quit)
+        self.worker.finished.connect(finished)
+        self.worker.finished.connect(self.cleanupRun)
+        self.workerThread.start()
+
     def makeProc(
         self,
         cmd,
@@ -930,8 +1012,6 @@ class GudPyMainWindow(QMainWindow):
         if not dir_:
             dir_ = self.gudrunFile.instrument.GudrunInputFileDir
 
-        dir_ = self.tmp.name
-
         self.proc = cmd
         self.proc.readyReadStandardOutput.connect(slot)
         self.proc.started.connect(started)
@@ -941,257 +1021,46 @@ class GudPyMainWindow(QMainWindow):
             func(*args)
         self.proc.start()
 
-    def prepareRun(self):
-        if not self.checkFilesExist_():
-            return False
-        self.setControlsEnabled(False)
-        self.mainWidget.progressBar.setValue(0)
-        self.tmp = tempfile.TemporaryDirectory()
-        self.gudrunFile.setGudrunDir(self.tmp.name)
-
-        return True
-
-    def cleanupRun(self):
-        if self.tmp:
-            self.tmp.cleanup()
-            self.tmp = None
-
-        self.setControlsEnabled(True)
-        self.mainWidget.progressBar.setValue(0)
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.queue = Queue()
-
-    def runGudrun_(self):
-        if not self.prepareRun():
-            return False
-
-        dcs = self.gudrunFile.dcs(
-            path=os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath,
-            ),
-            headless=False,
-        )
-        if isinstance(dcs, Sequence):
-            dcs, func, args = dcs
-        if isinstance(dcs, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find gudrun_dcs binary.",
-            )
-            self.setControlsEnabled(True)
-        elif not self.gudrunFile.purged and os.path.exists(
-            os.path.join(
-                self.gudrunFile.projectDir, "Purge", "purge_det.dat"
-            )
-        ):
-            self.purgeOptionsMessageBox(
-                dcs,
-                self.runGudrunFinished,
-                func,
-                args,
-                "purge_det.dat found, but wasn't run in this session. "
-                "Continue?",
-            )
-        elif not self.gudrunFile.purged:
-            self.purgeOptionsMessageBox(
-                dcs,
-                self.runGudrunFinished,
-                func,
-                args,
-                "It looks like you may not have purged detectors. Continue?",
-            )
-        else:
-            self.makeProc(
-                dcs,
-                self.progressDCS,
-                func=func,
-                args=args,
-                finished=self.runGudrunFinished,
-            )
-
-        return True
-
     def runContainersAsSamples(self):
         if not self.prepareRun():
             return False
 
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
-        dcs = runContainersAsSamples.runContainersAsSamples(
-            path=os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath,
-            ),
-            headless=False,
-        )
+        runContainersAsSamples.convertContainers()
 
-        def finished(ec, es):
-            self.runGudrunFinished(
-                gudrunFile=runContainersAsSamples.gudrunFile
-            )
-
-        if isinstance(dcs, Sequence):
-            dcs, func, args = dcs
-        if isinstance(dcs, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find gudrun_dcs binary.",
-            )
-            self.setControlsEnabled(True)
-        elif not self.gudrunFile.purged and os.path.exists(
-            os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
-            )
-        ):
-            self.purgeOptionsMessageBox(
-                dcs,
-                finished,
-                func,
-                args,
-                "purge_det.dat found, but wasn't run in this session. "
-                "Continue?",
-            )
-        elif not self.gudrunFile.purged:
-            self.purgeOptionsMessageBox(
-                dcs,
-                finished,
-                func,
-                args,
-                "It looks like you may not have purged detectors. Continue?",
-            )
-        else:
-            self.makeProc(
-                dcs, self.progressDCS, finished=finished, func=func, args=args
-            )
+        self.runGudrun(
+            runContainersAsSamples.gudrunFile,
+            self.procFinished)
 
     def runFilesIndividually(self):
         if not self.prepareRun():
             return False
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
-        dcs = runIndividualFiles.gudrunFile.dcs(
-            path=os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath,
-            ),
-            headless=False,
-        )
 
-        def finished(ec, es):
-            self.runGudrunFinished(gudrunFile=runIndividualFiles.gudrunFile)
+        self.runGudrun(
+            runIndividualFiles.gudrunFile,
+            self.procFinished)
 
-        if isinstance(dcs, Sequence):
-            dcs, func, args = dcs
-        if isinstance(dcs, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find gudrun_dcs binary.",
-            )
-            self.setControlsEnabled(True)
-        elif not self.gudrunFile.purged and os.path.exists(
-            os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, "purge_det.dat"
-            )
-        ):
-            self.purgeOptionsMessageBox(
-                dcs,
-                finished,
-                func,
-                args,
-                "purge_det.dat found, but wasn't run in this session. "
-                "Continue?",
-            )
-        elif not self.gudrunFile.purged:
-            self.purgeOptionsMessageBox(
-                dcs,
-                finished,
-                func,
-                args,
-                "It looks like you may not have purged detectors. Continue?",
-            )
-        else:
-            self.makeProc(
-                dcs, self.progressDCS,
-                func=func, args=args,
-                finished=finished
-            )
-
-    def purgeOptionsMessageBox(self, dcs, finished, func, args, text):
+    def purgeOptionsMessageBox(self, text):
         messageBox = QMessageBox(self.mainWidget)
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
+        messageBox.addButton(QMessageBox.Yes)
         messageBox.addButton(QMessageBox.No)
-        openPurgeDialog = QPushButton("Open purge dialog", messageBox)
-        purgeDefault = QPushButton("Purge with default parameters", messageBox)
-
-        messageBox.addButton(openPurgeDialog, QMessageBox.ApplyRole)
-        messageBox.addButton(purgeDefault, QMessageBox.ApplyRole)
-
+        messageBox.addButton(QMessageBox.Cancel)
         messageBox.addButton(QMessageBox.Yes)
         result = messageBox.exec()
 
-        if messageBox.clickedButton() == openPurgeDialog:
-            self.purgeBeforeRunning(default=False)
-        elif messageBox.clickedButton() == purgeDefault:
-            self.purgeBeforeRunning()
-        elif result == QMessageBox.Yes:
-            self.makeProc(
-                dcs, self.progressDCS,
-                func=func, args=args,
-                finished=finished
-            )
+        if result == QMessageBox.Yes:
+            # Run Purge and queue Gudrun after
+            self.runPurge_(dialog=True, finished=lambda: self.runGudrun(
+                self.gudrunFile, self.procFinished
+            ))
+            return False
+        elif result == QMessageBox.No:
+            return True
         else:
-            messageBox.close()
-            self.setControlsEnabled(True)
-
-    def purgeBeforeRunning(self, default=True):
-        self.setControlsEnabled(False)
-        if default:
-            if not self.prepareRun():
-                return False
-            purge_det = self.gudrunFile.purge(headless=False)
-            if isinstance(purge_det, Sequence):
-                purge, func, args = purge_det
-                self.makeProc(purge, self.progressPurge, func=func, args=args)
-            elif isinstance(purge_det, FileNotFoundError):
-                QMessageBox.critical(
-                    self.mainWidget,
-                    "GudPy Error",
-                    "Couldn't find purge_det binary.",
-                )
-                self.setControlsEnabled(True)
-                return
-        else:
-            self.runPurge_()
-        dcs = self.gudrunFile.dcs(
-            path=os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                self.gudrunFile.outpath,
-            ),
-            headless=False,
-        )
-        if isinstance(dcs, Sequence):
-            dcs, func, args = dcs
-        elif isinstance(dcs, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find gudrun_dcs binary.",
-            )
-            self.setControlsEnabled(True)
-            return
-        self.queue.put(
-            (
-                (dcs, self.progressDCS),
-                {
-                    "func": func,
-                    "args": args,
-                    "finished": self.runGudrunFinished,
-                },
-            )
-        )
+            return False
 
     def nexusProcessing(self):
         if not self.checkFilesExist_():
@@ -1327,6 +1196,8 @@ class GudPyMainWindow(QMainWindow):
 
     def nexusProcessingFinished(self):
         self.cleanupRun()
+        self.worker = None
+        self.workerThread = None
         self.proc = None
         self.outputSlots.setOutput(
             self.nexusProcessingOutput,
@@ -1356,7 +1227,7 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.stopTaskButton.setEnabled(True)
             self.nextBatchProcess()
 
-    def batchProcessFinished(self, ec, es):
+    def batchProcessFinished(self):
         self.outputBatches[self.currentIteration + 1] = self.output
         self.output = ""
         self.currentIteration += 1
@@ -1410,7 +1281,7 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def batchProcessingFinished(self):
+    def batchProcessingFinished(self, ec, es):
         self.setControlsEnabled(True)
         self.queue = Queue()
         self.proc = None
@@ -1567,38 +1438,8 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.currentTaskLabel.setText(f"{self.text} {iterInfo}")
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.iterator.performIteration()
-        self.iterator.gudrunFile.write_out()
-        self.proc, func, args = self.queue.get()
-        self.proc.finished.connect(self.nextIteration)
-        self.proc.readyReadStandardOutput.connect(self.progressDCS)
-        self.proc.setWorkingDirectory(
-            self.iterator.gudrunFile.instrument.GudrunInputFileDir
-        )
-        if func:
-            func(*args)
-        self.proc.start()
-
-    def checkFilesExist_(self, showSuccessDialog: bool = False):
-        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
-        if not all(r[0] for r in result[0]) or not all(r[0]
-                                                       for r in result[1]):
-            undefined = [
-                r[1] for r in result[0] if not r[0]
-            ]
-            unresolved = [r[2] for r in result[1] if not r[0] and r[2]]
-            missingFilesDialog = MissingFilesDialog(
-                undefined, unresolved, self.mainWidget
-            )
-            missingFilesDialog.widget.exec_()
-            return False
-
-        if showSuccessDialog:
-            QMessageBox.information(
-                self.mainWidget,
-                "GudPy Information",
-                "All files found!",
-            )
-        return True
+        self.runGudrun(self.iterator.gudrunFile,
+                       self.nextIteration, self.iterator)
 
     def iterationStarted(self):
         self.mainWidget.currentTaskLabel.setText(
@@ -1727,13 +1568,9 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.paste.setEnabled(state)
         self.mainWidget.delete_.setEnabled(state)
 
-    def progressIncrementDCS(self, gudrunFile=None):
+    def progressIncrementDCS(self, gudrunFile=None, stdout=""):
         if not gudrunFile:
             gudrunFile = self.gudrunFile
-        if not self.proc:
-            return 0
-        data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf8")
         self.output += stdout
         ERROR_KWDS = ["does not exist", "error", "Error"]
         if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
@@ -1779,8 +1616,8 @@ class GudPyMainWindow(QMainWindow):
         )
         return progress
 
-    def progressDCS(self):
-        progress = self.progressIncrementDCS(self.gudrunFile)
+    def progressDCS(self, stdout):
+        progress = self.progressIncrementDCS(self.gudrunFile, stdout)
         if progress == -1:
             self.queue = Queue()
             self.error = (
@@ -1795,51 +1632,41 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def runPurge_(self, dialog: bool = False) -> bool:
-        self.setControlsEnabled(False)
-        if (dialog):
+    def runPurge_(self, finished=None, dialog=False) -> bool:
+        if dialog:
+            self.setControlsEnabled(False)
             purgeDialog = PurgeDialog(self.gudrunFile, self)
             result = purgeDialog.widget.exec_()
-            purge = purgeDialog.purge_det
 
-            if purgeDialog.cancelled or result == QDialogButtonBox.No or not purge:
+            if (purgeDialog.cancelled or result == QDialogButtonBox.No):
                 self.setControlsEnabled(True)
                 self.queue = Queue()
                 return False
 
-        else:
-            purge_det = self.gudrunFile.purge(headless=False)
-            if isinstance(purge_det, Sequence):
-                purge, func, args = purge_det
-
-        if isinstance(purge, Sequence):
-            purge, func, args = purge
-        elif isinstance(purge, FileNotFoundError):
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Couldn't find purge_det binary.",
-            )
-            self.setControlsEnabled(True)
-            return False
-
         if not self.prepareRun():
             return False
-        os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-        self.gudrunFile.purgeFile.write_out()
-        self.makeProc(purge, self.progressPurge, func=func,
-                      dir_=self.gudrunFile.instrument.GudrunInputFileDir,
-                      args=args)
 
-    def progressIncrementPurge(self):
-        if not self.proc:
-            return 0
-        data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf8")
+        self.worker = PurgeWorker(self.gudrunFile)
+        self.workerThread = QThread()
+        self.worker.moveToThread(self.workerThread)
+        self.workerThread.started.connect(self.worker.purge)
+        self.worker.started.connect(self.procStarted)
+        self.worker.outputChanged.connect(self.progressPurge)
+        self.worker.finished.connect(self.cleanupRun)
+        self.worker.finished.connect(self.workerThread.quit)
+
+        if finished:
+            self.worker.finished.connect(finished)
+
+        self.workerThread.start()
+
+    def progressIncrementPurge(self, stdout=""):
         self.output += stdout
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
+            if isinstance(dfs, str):
+                dfs = [dfs]
             for df in dfs:
                 dataFiles.append(
                     df.replace(self.gudrunFile.instrument.dataFileType, "grp")
@@ -1904,8 +1731,8 @@ class GudPyMainWindow(QMainWindow):
         else:
             return progress, False, -1
 
-    def progressPurge(self):
-        progress, finished, detectors = self.progressIncrementPurge()
+    def progressPurge(self, stdout):
+        progress, finished, detectors = self.progressIncrementPurge(stdout)
         if progress == -1:
             self.error = (
                 f"An error occurred. See the following traceback"
@@ -1920,6 +1747,7 @@ class GudPyMainWindow(QMainWindow):
         )
 
         if finished:
+            self.gudrunFile.purged = True
             thresh = self.gudrunFile.instrument.goodDetectorThreshold
             if thresh and detectors < thresh:
                 self.warning = (
@@ -1930,25 +1758,17 @@ class GudPyMainWindow(QMainWindow):
             self.mainWidget.goodDetectorsLabel.setText(
                 f"Number of Good Detectors: {detectors}"
             )
-            self.gudrunFile.purgeFile.organiseOutput()
             self.cleanupRun()
 
     def procStarted(self):
         self.mainWidget.currentTaskLabel.setText(
-            self.proc.program().split(os.path.sep)[-1]
+            self.worker.PROCESS
         )
         self.mainWidget.stopTaskButton.setEnabled(True)
         self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
         self.output = ""
 
-    def runGudrunFinished(self, ec, es, gudrunFile=None):
-        if gudrunFile:
-            gudrunFile.organiseOutput()
-        else:
-            self.gudrunFile.organiseOutput()
-        self.procFinished(ec, es)
-
-    def procFinished(self, ec, es):
+    def procFinished(self):
         self.proc = None
         output = self.output
         if self.iterator:
