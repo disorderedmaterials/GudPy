@@ -40,7 +40,10 @@ class PurgeFile():
 
     def __init__(
             self,
-            gudrunFile
+            gudrunFile,
+            standardDeviation=(10, 10),
+            ignoreBad=True,
+            excludeSampleAndCan=True,
     ):
         """
         Constructs all the necessary attributes for the PurgeFile object.
@@ -51,9 +54,9 @@ class PurgeFile():
             Parent GudrunFile that we are creating the PurgeFile from.
         """
         self.gudrunFile = gudrunFile
-        self.excludeSampleAndCan = True
-        self.standardDeviation = (10, 10)
-        self.ignoreBad = True
+        self.excludeSampleAndCan = excludeSampleAndCan
+        self.standardDeviation = standardDeviation
+        self.ignoreBad = ignoreBad
 
     def write_out(self, path=""):
         """
@@ -294,5 +297,5 @@ class PurgeFile():
             )
 
     def organiseOutput(self):
-        outputHandler = OutputHandler(self.gudrunFile, "Purge", overwrite=True)
+        outputHandler = OutputHandler(self.gudrunFile, "Purge")
         outputHandler.organiseOutput()
