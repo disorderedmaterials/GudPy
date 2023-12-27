@@ -2,7 +2,7 @@ import os
 import shutil
 import typing
 from dataclasses import dataclass
-from core.utils import makeDir
+import core.utils as utils
 import tempfile
 
 
@@ -42,36 +42,39 @@ class OutputHandler:
     """Class to organise purge output files
     """
 
-    def __init__(self, gudrunFile, dirName: str, overwrite=True):
+    def __init__(self, gudrunFile, dirName: str):
         self.gudrunFile = gudrunFile
+        self.dirName = dirName
         # Directory where files are outputted and process was run (temp)
         self.procDir = self.gudrunFile.instrument.GudrunInputFileDir
         # Make sure it is a temporary directory
-        print(self.procDir)
         assert (self.procDir.startswith(tempfile.gettempdir()))
-        # Name the output directory as the input file
+        # Get the output directory
         self.outputDir = os.path.join(
-            self.gudrunFile.inputFileDir,
             self.gudrunFile.projectDir,
-            dirName
+            self.dirName
         )
-
-        # If output directory exists, move to a temp dir and clear it
-        # Avoids shutil.rmtree
-        if overwrite and os.path.exists(self.outputDir):
-            with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
     def organiseOutput(self):
         """Function to move all files from the process directory to
         the project directory
         """
-        makeDir(self.outputDir)
-        for f in os.listdir(self.procDir):
-            shutil.copyfile(
-                os.path.join(self.procDir, f),
-                os.path.join(self.outputDir, f)
-            )
+
+        # If output directory exists, move to a temp dir and clear it
+        # Avoids shutil.rmtree
+
+        with tempfile.TemporaryDirectory() as tmp:
+            newDir = utils.makeDir(os.path.join(tmp, self.dirName))
+
+            for f in os.listdir(self.procDir):
+                shutil.copyfile(
+                    os.path.join(self.procDir, f),
+                    os.path.join(newDir, f)
+                )
+
+            if os.path.exists(self.outputDir):
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
+            shutil.move(newDir, self.outputDir)
 
 
 class GudrunOutputHandler(OutputHandler):
@@ -111,9 +114,9 @@ class GudrunOutputHandler(OutputHandler):
         super().__init__(
             gudrunFile,
             "Gudrun",
-            overwrite=overwrite
         )
 
+        self.overwrite = overwrite
         # Append head to path
         self.outputDir = os.path.join(self.outputDir, f"{head}")
 
@@ -156,10 +159,13 @@ class GudrunOutputHandler(OutputHandler):
         # Create additonal output folders
         inputFilePath = self._createAddOutDir(self.tempOutDir)
 
-        # Move over folders to output directory
-        shutil.move(self.tempOutDir, self.outputDir)
+        # If overwrite, move previous directory
+        if self.overwrite and os.path.exists(self.outputDir):
+            with tempfile.TemporaryDirectory() as tmp:
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
-        print(f"MOVING OUTPUTS FROM {self.tempOutDir} TO {self.outputDir}")
+        # Move over folders to output directory
+        shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
 
         return GudrunOutput(path=self.outputDir,
                             name=os.path.splitext(self.gudrunFile.filename)[0],
@@ -258,7 +264,7 @@ class GudrunOutputHandler(OutputHandler):
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
-                makeDir(samplePath)
+                utils.makeDir(samplePath)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, sample.pathName()),
                     os.path.join(samplePath, sample.pathName())
@@ -303,7 +309,7 @@ class GudrunOutputHandler(OutputHandler):
         inputFile : str
             Path to the input file
         """
-        addDir = makeDir(os.path.join(dest, "AdditionalOutputs"))
+        addDir = utils.makeDir(os.path.join(dest, "AdditionalOutputs"))
         inputFile = ""
 
         for f in os.listdir(self.gudrunDir):
@@ -348,7 +354,7 @@ class GudrunOutputHandler(OutputHandler):
             # extension
             if os.path.splitext(f)[0] == fname:
                 if not dirCreated:
-                    makeDir(runDir)
+                    utils.makeDir(runDir)
                     dirCreated = True
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
@@ -395,9 +401,10 @@ class GudrunOutputHandler(OutputHandler):
             if fn == fname:
                 if not dirCreated:
                     # Path to folder which will hold Gudrun outputs
-                    outDir = makeDir(os.path.join(runDir, "Outputs"))
+                    outDir = utils.makeDir(os.path.join(runDir, "Outputs"))
                     # Path to folder which will hold Gudrun diagnostic outputs
-                    diagDir = makeDir(os.path.join(runDir, "Diagnostics"))
+                    diagDir = utils.makeDir(
+                        os.path.join(runDir, "Diagnostics"))
                 # Set dir depending on file extension
                 dir = outDir if ext in self.outputExts else diagDir
                 if dir == outDir:
