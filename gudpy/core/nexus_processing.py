@@ -251,7 +251,7 @@ class NexusProcessing:
         self.period = Period()
         self.extrapolationMode = ExtrapolationModes.FORWARDS
         self.startLabel = ""
-        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
+        self.dataFileDir = self.ref.instrument.dataFileDir
         self.outputDir = ""
         self.sample = None
         self.useTempDataFileDir = False
@@ -271,6 +271,8 @@ class NexusProcessing:
         """
         Checks if the current configuration is valid.
         """
+
+        self.dataFileDir = self.ref.instrument.dataFileDir
 
         # Check for valid directories.
         if not self.outputDir:
@@ -640,7 +642,6 @@ class NexusProcessing:
         files : str[]
             List of files to interpolate.
         """
-        print("Using good frame threshold: ", str(self.goodFrameThreshold))
         # Sort the files beforehand,
         # so they should be in ascending order by start time.
         files = sorted(
