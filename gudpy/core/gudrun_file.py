@@ -147,36 +147,47 @@ class GudrunFile:
         """
 
         # Path and filename of initial input file
-        self.path = path
-        self.inputFileDir = os.path.dirname(path)
-        self.filename = os.path.basename(path)
+
         self.yaml = YAML()
         self.format = format
 
         # Construct the outpath of generated input file
         self.outpath = "gudpy.txt"
-        self.projectDir = os.path.join(
-            self.inputFileDir, os.path.splitext(self.filename)[0])
+
         self.components = Components(components=[])
         self.gudrunOutput = None
 
-        if isinstance(path, type(None)):
-            self.instrument = Instrument()
-            self.beam = Beam()
-            self.normalisation = Normalisation()
-            self.sampleBackgrounds = []
-        else:
+        if path:
+            self.path = path
+            self.inputFileDir = os.path.dirname(path)
+            self.filename = os.path.basename(path)
+            self.projectDir = os.path.join(
+                self.inputFileDir, os.path.splitext(self.filename)[0])
             self.instrument = None
             self.beam = Beam()
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
-            self.parse(config_=config_)
+        else:
+            self.instrument = Instrument()
+            self.beam = Beam()
+            self.normalisation = Normalisation()
+            self.sampleBackgrounds = []
 
+        self.parse(config_=config_)
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
         self.purgeFile = PurgeFile(self)
         self.nexus_processing = NexusProcessing(self)
+
+    def checkSaveLocation(self):
+        return self.path is not None
+
+    def setSaveLocation(self, projectDir):
+        self.projectDir = projectDir
+        self.inputFileDir = projectDir
+        self.filename = os.path.basename(projectDir)
+        self.path = os.path.join(self.projectDir, self.filename)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
@@ -1539,8 +1550,6 @@ class GudrunFile:
 
     def setGudrunDir(self, dir):
         assert (os.path.isdir(os.path.abspath(dir)))
-        print(
-            f"Gudrun dir set to: {dir} was initially: {self.instrument.GudrunInputFileDir}")
         self.instrument.GudrunInputFileDir = dir
 
     def dcs(self, path='', headless=True, iterator=None):
