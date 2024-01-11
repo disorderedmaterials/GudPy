@@ -1571,7 +1571,11 @@ class GudPyMainWindow(QMainWindow):
     def progressIncrementDCS(self, gudrunFile=None, stdout=""):
         if not gudrunFile:
             gudrunFile = self.gudrunFile
-        self.output += stdout
+        if stdout:
+            self.output += stdout
+            self.outputSlots.setOutputStream(
+                stdout
+            )
         ERROR_KWDS = ["does not exist", "error", "Error"]
         if [KWD for KWD in ERROR_KWDS if KWD in stdout]:
             self.error = stdout
@@ -1661,7 +1665,11 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.start()
 
     def progressIncrementPurge(self, stdout=""):
-        self.output += stdout
+        if stdout:
+            self.output += stdout
+            self.outputSlots.setOutputStream(
+                stdout
+            )
         dataFiles = [self.gudrunFile.instrument.groupFileName]
 
         def appendDfs(dfs):
