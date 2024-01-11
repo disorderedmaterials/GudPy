@@ -32,7 +32,7 @@ runs:
     shell: bash
     run: |
       cd gudpy
-      nose2 --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml test
+      nose2 --verbose --with-coverage --coverage-report xml --plugin nose2.plugins.junitxml --junit-xml test
 
       mkdir ../results
       mv nose2-junit.xml ../results/nose2-junit-${{ runner.os }}.xml
