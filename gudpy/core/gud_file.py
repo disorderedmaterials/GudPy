@@ -90,6 +90,18 @@ class GudFile:
         path : str
             Path to the file.
         """
+
+        # Handle edge cases - invalid extensions and paths.
+        if not path:
+            raise ParserException("Please supply a valid path.")
+
+        if not path.endswith(".gud"):
+            raise ParserException(f"Attempted to parse {path}" +
+                                  "\nOnly .gud files can be parsed.")
+
+        if not os.path.isfile(path):
+            raise ParserException(f"{path} is not a valid path.")
+
         self.path = path
 
         # Construct the outpath
@@ -118,14 +130,6 @@ class GudFile:
         self.suggestedTweakFactor = 0.0
         self.stream = []
         self.output = ""
-
-        # Handle edge cases - invalid extensions and paths.
-        if not self.path.endswith(".gud"):
-            raise ParserException(f"Attempted to parse {self.path}" +
-                                  "\nOnly .gud files can be parsed.")
-
-        if not os.path.isfile(self.path):
-            raise ParserException(f"{self.path} is not a valid path.")
 
         # Parse the GudFile
         self.parse()
