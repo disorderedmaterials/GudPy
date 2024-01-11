@@ -3,9 +3,7 @@ import os
 import sys
 import math
 import traceback
-import tempfile
 from queue import Queue
-from collections.abc import Sequence
 import re
 from PySide6.QtCore import (
     QFile,
@@ -26,7 +24,6 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QProgressBar,
-    QPushButton,
     QSizePolicy,
     QStatusBar,
     QWidget,
@@ -98,7 +95,11 @@ from core.run_containers_as_samples import RunContainersAsSamples
 from core.run_individual_files import RunIndividualFiles
 from core.gud_file import GudFile
 from core.utils import breplace, nthint
-from gui.widgets.core.worker import CompositionWorker, GudrunWorker, PurgeWorker
+from gui.widgets.core.worker import (
+    CompositionWorker,
+    GudrunWorker,
+    PurgeWorker
+)
 
 
 class GudPyMainWindow(QMainWindow):

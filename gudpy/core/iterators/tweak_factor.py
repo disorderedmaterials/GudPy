@@ -1,4 +1,3 @@
-import os
 import time
 
 from core.gud_file import GudFile
