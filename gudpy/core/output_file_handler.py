@@ -327,7 +327,7 @@ class GudrunOutputHandler(OutputHandler):
                         os.path.join(self.gudrunDir, f),
                         os.path.join(addDir, f)
                     )
-                except IsADirectoryError:
+                except (IsADirectoryError, PermissionError):
                     # If it is a directory, move on to next file
                     continue
         return inputFile
