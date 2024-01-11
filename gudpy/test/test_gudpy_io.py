@@ -900,11 +900,10 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         self.g.write_out(overwrite=True)
+        for f in os.listdir(self.g.instrument.GudrunInputFileDir):
+            print(f)
         g1 = GudrunFile(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir

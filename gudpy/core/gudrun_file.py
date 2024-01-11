@@ -1526,6 +1526,10 @@ class GudrunFile:
                     self.outpath
                 ), "w", encoding="utf-8")
         else:
+            if not self.path:
+                self.path = os.path.join(
+                    self.instrument.GudrunInputFileDir,
+                    self.outpath)
             f = open(self.path, "w", encoding="utf-8")
         if os.path.basename(f.name) == self.outpath:
             for sampleBackground in self.sampleBackgrounds:
