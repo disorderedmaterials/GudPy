@@ -157,8 +157,9 @@ class GudrunFile:
         self.components = Components(components=[])
         self.gudrunOutput = None
 
-        if path:
-            self.path = path
+        self.path = path
+
+        if self.path:
             self.inputFileDir = os.path.dirname(path)
             self.filename = os.path.basename(path)
             self.projectDir = os.path.join(

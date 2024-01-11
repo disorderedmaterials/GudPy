@@ -1543,7 +1543,7 @@ class TestGudPyIO(TestCase):
                 )
 
     def testZeroExitGudrun(self):
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt",
+        g = GudrunFile(path="test/TestData/NIMROD-water/good_water.txt",
                        format=Format.TXT)
         result = g.dcs()
-        self.assertEqual(result.stderr, "")
+        self.assertEqual(result.stderr, None)
