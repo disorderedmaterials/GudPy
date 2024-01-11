@@ -759,10 +759,7 @@ class TestGudPyIO(TestCase):
     def testWriteGudrunFile(self):
         self.g.write_out(overwrite=True)
         with open(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             encoding="utf-8"
         ) as f:
             outlines = "\n".join(f.readlines()[:-5])
@@ -851,10 +848,7 @@ class TestGudPyIO(TestCase):
             "copyGF.txt"
         )
         g1 = GudrunFile(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
