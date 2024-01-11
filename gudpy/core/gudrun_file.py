@@ -1587,12 +1587,23 @@ class GudrunFile:
                 gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
                 with subprocess.Popen(
                     [gudrun_dcs, path], cwd=tmp,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
                 ) as gudrun:
-                    gudrun.wait()
                     result = gudrun
-                    _, stderr = gudrun.communicate()
-                    result.stderr = stderr.decode("utf8")
+
+                    ERROR_KWDS = ["does not exist", "error", "Error"]
+
+                    for line in gudrun.stdout:
+                        if [KWD for KWD in ERROR_KWDS if KWD
+                                in line.decode("utf8").rstrip("\n")]:
+                            result.error = line
+                            result.returncode = 1
+                            return result
+
+                    if gudrun.stderr:
+                        result.stderr = gudrun.stderr
+                        return result
 
                 if iterator is not None:
                     self.gudrunOutput = iterator.organiseOutput()
