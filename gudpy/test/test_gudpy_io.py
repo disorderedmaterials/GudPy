@@ -880,8 +880,7 @@ class TestGudPyIO(TestCase):
 
             with open(
                 os.path.join(
-                    self.g.instrument.GudrunInputFileDir,
-                    self.g.outpath
+                    self.g.path
                 ),
                 encoding="utf-8"
             ) as fg:
@@ -894,8 +893,6 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         self.g.write_out(overwrite=True)
-        for f in os.listdir(self.g.instrument.GudrunInputFileDir):
-            print(f)
         g1 = GudrunFile(
             self.g.path,
             format=Format.TXT
