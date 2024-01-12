@@ -1,4 +1,3 @@
-import os
 import time
 
 from core.gud_file import GudFile
@@ -50,15 +49,8 @@ class TweakFactorIterator(Iterator):
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
-                gudPath = sample.dataFiles[0].replace(
-                    self.gudrunFile.instrument.dataFileType,
-                    "gud"
-                )
                 gudFile = GudFile(
-                    os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        gudPath
-                    )
+                    self.gudrunFile.gudrunOutput.gudFile(name=sample.name)
                 )
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
@@ -79,7 +71,7 @@ class TweakFactorIterator(Iterator):
         n : int
             Number of iterations to perform.
         """
-        self.gudrunFile.process(iterator=self)
+        self.gudrunFile.dcs(iterator=self)
         # Perform n iterations of tweaking by tweak factor.
         for _ in range(self.nTotal):
 
@@ -87,4 +79,4 @@ class TweakFactorIterator(Iterator):
             # and run gudrun_dcs on that file.
             time.sleep(1)
             self.performIteration()
-            self.gudrunFile.process(itertor=self)
+            self.gudrunFile.dcs(iterator=self)

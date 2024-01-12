@@ -757,12 +757,9 @@ class TestGudPyIO(TestCase):
                 )
 
     def testWriteGudrunFile(self):
-        self.g.write_out()
+        self.g.write_out(overwrite=True)
         with open(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             encoding="utf-8"
         ) as f:
             outlines = "\n".join(f.readlines()[:-5])
@@ -845,38 +842,45 @@ class TestGudPyIO(TestCase):
                     valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):
-        self.g.write_out()
+        self.g.write_out(overwrite=True)
+        copyPath = os.path.join(
+            self.g.instrument.GudrunInputFileDir,
+            "copyGF.txt"
+        )
         g1 = GudrunFile(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
-        g1.write_out()
+        g1.write_out(copyPath, overwrite=True)
+
+        def compareString(string1, string2):
+            return string1 == string2
 
         with open(
-                os.path.join(
-                    g1.instrument.GudrunInputFileDir,
-                    g1.outpath
-                ),
+                copyPath,
+                "r",
                 encoding="utf-8"
         ) as f:
+            fileContent = "\n".join(f.readlines()[:-5])
             self.assertEqual(
-                "\n".join(f.readlines()[:-5]),
-                "\n".join(str(self.g).splitlines(keepends=True)[:-5])
+                compareString(
+                    fileContent,
+                    "\n".join(
+                        str(self.g).splitlines(keepends=True)[:-5])),
+                True
             )
-
             self.assertEqual(
-                "\n".join(f.readlines()[:-5]),
-                "\n".join(str(g1).splitlines(keepends=True)[:-5])
+                compareString(
+                    fileContent,
+                    "\n".join(
+                        str(g1).splitlines(keepends=True)[:-5])),
+                True
             )
 
             with open(
                 os.path.join(
-                    self.g.instrument.GudrunInputFileDir,
-                    self.g.outpath
+                    self.g.path
                 ),
                 encoding="utf-8"
             ) as fg:
@@ -884,18 +888,13 @@ class TestGudPyIO(TestCase):
                     "\n".join(
                         fg.readlines()[:-5]
                     ),
-                    "\n".join(
-                        f.readlines()[:-5]
-                    )
+                    fileContent
                 )
 
     def testReloadGudrunFile(self):
-        self.g.write_out()
+        self.g.write_out(overwrite=True)
         g1 = GudrunFile(
-            os.path.join(
-                self.g.instrument.GudrunInputFileDir,
-                self.g.outpath
-            ),
+            self.g.path,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
@@ -1534,7 +1533,7 @@ class TestGudPyIO(TestCase):
                 )
 
     def testZeroExitGudrun(self):
-        g = GudrunFile("test/TestData/NIMROD-water/good_water.txt",
+        g = GudrunFile(path="test/TestData/NIMROD-water/good_water.txt",
                        format=Format.TXT)
         result = g.dcs()
-        self.assertEqual(result.stderr, "")
+        self.assertEqual(result.stderr, None)

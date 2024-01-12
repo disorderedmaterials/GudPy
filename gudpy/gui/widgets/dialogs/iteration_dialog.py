@@ -71,11 +71,7 @@ class IterationDialog(QDialog):
         self.queue = Queue()
         for _ in range(self.numberIterations + 1):
             self.queue.put(
-                self.iterator.gudrunFile.dcs(
-                    path=os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        "gudpy.txt"
-                    ), headless=False)
+                self.iterator.gudrunFile.dcs(headless=False)
             )
 
 
@@ -104,11 +100,7 @@ class InelasticitySubtractionIterationDialog(IterationDialog):
         self.queue = Queue()
         for _ in range((self.numberIterations * 2)):
             self.queue.put(
-                self.iterator.gudrunFile.dcs(
-                    path=os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
-                        "gudpy.txt"
-                    ), headless=False)
+                self.iterator.gudrunFile.dcs(headless=False)
             )
 
 
@@ -250,7 +242,7 @@ class CompositionIterationDialog(IterationDialog):
             self.widget.iterateButton.setEnabled(False)
 
     def iterate(self):
-        self.iterator = CompositionIterator(self.gudrunFile, 10)
+        self.iterator = CompositionIterator(self.gudrunFile)
         self.iterator.setComponents(self.components)
         self.queue = Queue()
         for sampleBackground in self.gudrunFile.sampleBackgrounds:

@@ -1,13 +1,11 @@
 from unittest import TestCase
-
-
 from core.utils import (
-        iteristype,
-        firstword, boolifyNum,
-        numifyBool, spacify,
-        extract_ints_from_string,
-        extract_floats_from_string,
-        count_occurrences)
+    iteristype,
+    firstword, boolifyNum,
+    numifyBool, spacify,
+    extract_ints_from_string,
+    extract_floats_from_string,
+    count_occurrences)
 
 
 class TestUtils(TestCase):
