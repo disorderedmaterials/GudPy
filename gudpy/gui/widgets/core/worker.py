@@ -9,6 +9,7 @@ from core import config
 from core.gud_file import GudFile
 import core.utils as utils
 from core.sample import Sample
+from core import enums
 from core.iterators.composition import gss
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -101,6 +102,13 @@ class GudrunWorker(QObject):
             path = os.path.join(
                 tmp,
                 path
+            )
+            self.gudrunFile.save(
+                path=os.path.join(
+                    self.gudrunFile.projectDir,
+                    f"{self.gudrunFile.filename}"
+                ),
+                format=enums.Format.YAML
             )
             self.gudrunFile.write_out(path)
             with subprocess.Popen(

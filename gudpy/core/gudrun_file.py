@@ -199,7 +199,7 @@ class GudrunFile:
     def setSaveLocation(self, projectDir):
         self.projectDir = projectDir
         self.inputFileDir = projectDir
-        self.filename = os.path.basename(projectDir)
+        self.filename = f"{os.path.basename(projectDir)}.yaml"
         self.path = os.path.join(self.projectDir, self.filename)
 
     def checkNormDataFiles(self):
@@ -1482,16 +1482,18 @@ class GudrunFile:
 
     def save(self, path='', format=None):
 
+        print(f"saving to {path}")
+
         if not path:
             path = self.path
 
         if not format:
             format = self.format
         if format == Format.TXT:
-            self.write_out(path=path.replace(
-                path.split(".")[-1], "txt"), overwrite=True)
+            self.write_out(
+                path=f"{os.path.splitext(path)[0]}.txt", overwrite=True)
         elif format == Format.YAML:
-            self.write_yaml(path=path.replace(path.split(".")[-1], "yaml"))
+            self.write_yaml(path=f"{os.path.splitext(path)[0]}.yaml")
 
     def write_yaml(self, path):
         self.yaml.writeYAML(self, path)
