@@ -158,28 +158,40 @@ class GudrunFile:
         self.gudrunOutput = None
 
         self.path = path
+        if config_:
+            self.path = None
 
         if self.path:
-            self.inputFileDir = os.path.dirname(path)
-            self.filename = os.path.basename(path)
-            self.projectDir = os.path.join(
-                self.inputFileDir, os.path.splitext(self.filename)[0])
-            self.instrument = None
+            self.instrument = Instrument()
             self.beam = Beam()
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
+            self.inputFileDir = os.path.dirname(path)
+            self.setGudrunDir(self.inputFileDir)
+            self.filename = os.path.basename(path)
+            self.projectDir = os.path.join(
+                self.inputFileDir, os.path.splitext(self.filename)[0])
         else:
             self.instrument = Instrument()
             self.beam = Beam()
             self.normalisation = Normalisation()
             self.sampleBackgrounds = []
 
-        self.parse(config_=config_)
+        self.parse(path, config_=config_)
         self.purged = False
         # Parse the GudrunFile.
         self.stream = None
         self.purgeFile = PurgeFile(self)
         self.nexus_processing = NexusProcessing(self)
+
+    def __deepcopy__(self, memo):
+        result = self.__class__.__new__(self.__class__)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k == "yaml":
+                continue
+            setattr(result, k, deepcopy(v, memo))
+        return result
 
     def checkSaveLocation(self):
         return self.path is not None
@@ -190,14 +202,9 @@ class GudrunFile:
         self.filename = os.path.basename(projectDir)
         self.path = os.path.join(self.projectDir, self.filename)
 
-    def __deepcopy__(self, memo):
-        result = self.__class__.__new__(self.__class__)
-        memo[id(self)] = result
-        for k, v in self.__dict__.items():
-            if k == "yaml":
-                continue
-            setattr(result, k, deepcopy(v, memo))
-        return result
+    def checkNormDataFiles(self):
+        return (len(self.normalisation.dataFiles)
+                and len(self.normalisation.dataFilesBg))
 
     def getNextToken(self):
         """
@@ -288,15 +295,11 @@ class GudrunFile:
         """
         try:
             # Initialise instrument attribute to a new instance of Instrument.
-            self.instrument = Instrument()
             self.consumeWhitespace()
 
             # For string attributes,
             # we simply extract the firstword in the line.
             self.instrument.name = Instruments[firstword(self.getNextToken())]
-            self.instrument.GudrunInputFileDir = (
-                os.path.dirname(os.path.abspath(self.path))
-            )
             self.consumeTokens(1)
             self.instrument.dataFileDir = firstword(self.getNextToken())
             self.instrument.dataFileType = firstword(self.getNextToken())
@@ -1315,7 +1318,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self, config_=False):
+    def parse(self, path, config_=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1331,14 +1334,14 @@ class GudrunFile:
         """
         self.config = config_
         # Ensure only valid files are given.
-        if not self.path:
+        if not path:
             raise ParserException(
                 "Path not supplied. Cannot parse from an empty path!"
             )
-        if not os.path.exists(self.path):
+        if not os.path.exists(path):
             raise ParserException(
                 "The path supplied is invalid.\
-                 Cannot parse from an invalid path" + self.path
+                 Cannot parse from an invalid path" + path
             )
         if self.format == Format.YAML:
             # YAML Files
@@ -1350,7 +1353,7 @@ class GudrunFile:
                     self.normalisation,
                     self.sampleBackgrounds,
                     config.GUI
-                ) = self.yaml.parseYaml(self.path)
+                ) = self.yaml.parseYaml(path)
             except YAMLException as e:
                 raise ParserException(e)
         else:
@@ -1364,11 +1367,11 @@ class GudrunFile:
 
             # Decide the encoding
             import chardet
-            with open(self.path, 'rb') as fp:
+            with open(path, 'rb') as fp:
                 encoding = chardet.detect(fp.read())['encoding']
 
             # Read the input stream into our attribute.
-            with open(self.path, encoding=encoding) as fp:
+            with open(path, encoding=encoding) as fp:
                 self.stream = fp.readlines()
 
             # Here we go! Get the first token and begin parsing.
