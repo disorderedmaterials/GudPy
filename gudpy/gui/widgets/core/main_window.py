@@ -359,7 +359,7 @@ class GudPyMainWindow(QMainWindow):
         self.containerSlots = ContainerSlots(self.mainWidget, self)
         self.outputSlots = OutputSlots(self.mainWidget, self)
         self.mainWidget.runPurge.triggered.connect(
-            lambda: self.runPurge_(self.gudrunFile, dialog=True)
+            lambda: self.runPurge(self.gudrunFile, dialog=True)
         )
         self.mainWidget.runGudrun.triggered.connect(
             lambda: self.runGudrun(self.gudrunFile, self.procFinished)
@@ -945,8 +945,16 @@ class GudPyMainWindow(QMainWindow):
         if not self.checkFilesExist_():
             return False
 
+        if not self.gudrunFile.checkNormDataFiles():
+            QMessageBox.warning(
+                self.mainWidget,
+                "GudPy Warning",
+                "Please specify normalisation data files."
+            )
+            return False
+
         if not self.gudrunFile.checkSaveLocation():
-            dirname = QFileDialog.getSaveFileName(
+            dirname, _ = QFileDialog.getSaveFileName(
                 self.mainWidget,
                 "Choose save location",
             )
@@ -1054,7 +1062,7 @@ class GudPyMainWindow(QMainWindow):
 
         if result == QMessageBox.Yes:
             # Run Purge and queue Gudrun after
-            self.runPurge_(dialog=True, finished=lambda: self.runGudrun(
+            self.runPurge(dialog=True, finished=lambda: self.runGudrun(
                 self.gudrunFile, self.procFinished
             ))
             return False
@@ -1472,7 +1480,7 @@ class GudPyMainWindow(QMainWindow):
             and not self.workerThread
         ):
             autosavePath = os.path.join(
-                self.gudrunFile.inputFileDir,
+                self.gudrunFile.projectDir,
                 self.gudrunFile.filename + ".autosave")
             self.gudrunFile.write_out(path=autosavePath)
 
@@ -1637,7 +1645,7 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def runPurge_(self, finished=None, dialog=False) -> bool:
+    def runPurge(self, finished=None, dialog=False) -> bool:
         if dialog:
             self.setControlsEnabled(False)
             purgeDialog = PurgeDialog(self.gudrunFile, self)
@@ -1661,7 +1669,7 @@ class GudPyMainWindow(QMainWindow):
         self.worker.finished.connect(self.workerThread.quit)
 
         if finished:
-            self.worker.finished.connect(finished)
+            self.workerThread.finished.connect(finished)
 
         self.workerThread.start()
 
