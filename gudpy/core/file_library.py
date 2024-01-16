@@ -171,14 +171,14 @@ class GudPyFileLibrary:
     ):
         if not exportTo:
             exportTo = os.path.join(
-                self.gudrunFile.inputFileDir,
+                self.gudrunFile.projectDir,
                 Path(self.gudrunFile.path).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
                 if len(sample.dataFiles.dataFiles):
                     path = os.path.join(
-                        self.gudrunFile.inputFileDir,
+                        self.gudrunFile.projectDir,
                         sample.dataFiles.dataFiles[0].replace(
                             self.gudrunFile.instrument.dataFileType, "mint01"
                         ),
@@ -199,7 +199,7 @@ class GudPyFileLibrary:
                         )
                         if not os.path.exists(path):
                             sample.write_out(
-                                self.gudrunFile.inputFileDir
+                                self.gudrunFile.projectDir
                             )
                         zipFile.write(path, arcname=os.path.basename(path))
 

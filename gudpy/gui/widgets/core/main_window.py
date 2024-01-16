@@ -1480,7 +1480,7 @@ class GudPyMainWindow(QMainWindow):
             and not self.workerThread
         ):
             autosavePath = os.path.join(
-                self.gudrunFile.inputFileDir,
+                self.gudrunFile.projectDir,
                 self.gudrunFile.filename + ".autosave")
             self.gudrunFile.write_out(path=autosavePath)
 

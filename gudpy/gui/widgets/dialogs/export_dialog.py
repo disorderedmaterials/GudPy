@@ -33,11 +33,15 @@ class ExportDialog(QDialog):
     exportAs()
         Allows exporting to a specific file.
     """
+
     def __init__(self, gudrunFile, parent):
         super(ExportDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
         self.initComponents()
         self.loadFilesList()
+
+        if not self.gudrunFile.checkSaveLocation():
+            self.widget.exportButton.setEnabled(False)
 
     def initComponents(self):
         """
@@ -89,8 +93,8 @@ class ExportDialog(QDialog):
                     )
                 )
                 namedAfterSample = sample.name.replace(" ", "_").translate(
-                            {ord(x): '' for x in r'/\!*~,&|[]'}
-                        ) + ".mint01"
+                    {ord(x): '' for x in r'/\!*~,&|[]'}
+                ) + ".mint01"
 
                 if os.path.exists(os.path.join(
                     self.gudrunFile.instrument.GudrunInputFileDir, mintFile
@@ -133,7 +137,7 @@ class ExportDialog(QDialog):
         dialog.setDefaultSuffix("zip")
         dialog.setWindowTitle("Export to..")
         dialog.setDirectory(".")
-        dialog.setAcceptMode(dialog.AcceptSave)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
         if dialog.exec() == dialog.Accepted:
             filename = dialog.selectedFiles()[0]
 

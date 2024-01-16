@@ -156,33 +156,31 @@ class GudrunFile:
 
         self.components = Components(components=[])
         self.gudrunOutput = None
-
+        self.instrument = Instrument()
+        self.beam = Beam()
+        self.normalisation = Normalisation()
+        self.sampleBackgrounds = []
         self.path = path
+
+        self.projectDir = None
+        self.filename = None
+        self.purged = False
+        self.stream = None
+        self.purgeFile = PurgeFile(self)
+        self.nexus_processing = NexusProcessing(self)
+
         if config_:
             self.path = None
 
         if self.path:
-            self.instrument = Instrument()
-            self.beam = Beam()
-            self.normalisation = Normalisation()
-            self.sampleBackgrounds = []
-            self.inputFileDir = os.path.dirname(path)
-            self.setGudrunDir(self.inputFileDir)
-            self.filename = os.path.basename(path)
+            self.setGudrunDir(os.path.dirname(path))
             self.projectDir = os.path.join(
-                self.inputFileDir, os.path.splitext(self.filename)[0])
-        else:
-            self.instrument = Instrument()
-            self.beam = Beam()
-            self.normalisation = Normalisation()
-            self.sampleBackgrounds = []
+                os.path.dirname(path),
+                os.path.splitext(os.path.basename(path))[0]
+            )
+            self.setSaveLocation(self.projectDir)
 
         self.parse(path, config_=config_)
-        self.purged = False
-        # Parse the GudrunFile.
-        self.stream = None
-        self.purgeFile = PurgeFile(self)
-        self.nexus_processing = NexusProcessing(self)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
@@ -198,7 +196,6 @@ class GudrunFile:
 
     def setSaveLocation(self, projectDir):
         self.projectDir = projectDir
-        self.inputFileDir = projectDir
         self.filename = f"{os.path.basename(projectDir)}.yaml"
         self.path = os.path.join(self.projectDir, self.filename)
 
