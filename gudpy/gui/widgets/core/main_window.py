@@ -1464,7 +1464,6 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-
     def autosave(self):
         if (
             self.gudrunFile
