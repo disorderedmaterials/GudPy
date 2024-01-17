@@ -247,7 +247,7 @@ class TestParseGudFile(TestCase):
 
         g.write_out(self.g.loadFile, overwrite=True)
         self.g = g
-        g.write_out(overwrite=True)
+        g.write_out(self.g.loadFile, overwrite=True)
         return super().setUp()
 
     def tearDown(self) -> None:
