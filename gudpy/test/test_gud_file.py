@@ -245,7 +245,7 @@ class TestParseGudFile(TestCase):
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
         g.instrument.dataFileDir = str(dataFileDir) + "/"
 
-        g.write_out(overwrite=True)
+        g.write_out(self.g.loadFile, overwrite=True)
         self.g = g
         g.write_out(overwrite=True)
         return super().setUp()

@@ -655,7 +655,8 @@ class TestGudPyIO(TestCase):
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        g.write_out(overwrite=True)
+        g.write_out(self.g.loadFile,
+                    overwrite=True)
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -757,9 +758,9 @@ class TestGudPyIO(TestCase):
                 )
 
     def testWriteGudrunFile(self):
-        self.g.write_out(overwrite=True)
+        self.g.write_out(self.g.loadFile, overwrite=True)
         with open(
-            self.g.path,
+            self.g.loadFile,
             encoding="utf-8"
         ) as f:
             outlines = "\n".join(f.readlines()[:-5])
