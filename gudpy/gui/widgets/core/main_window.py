@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import os
 import sys
+import shutil
 import math
 import traceback
 from queue import Queue
@@ -418,7 +419,9 @@ class GudPyMainWindow(QMainWindow):
 
         self.mainWidget.save.triggered.connect(self.saveInputFile)
 
-        self.mainWidget.saveAs.triggered.connect(self.saveInputFileAs)
+        self.mainWidget.saveAs.triggered.connect(self.saveAs)
+
+        self.mainWidget.exportInputFile.triggered.connect(self.exportInputFile)
 
         self.mainWidget.viewLiveInputFile.triggered.connect(self.viewInput)
 
@@ -460,6 +463,8 @@ class GudPyMainWindow(QMainWindow):
         )
 
         self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
+
+        self.mainWidget.loadProject.triggered.connect(self.loadProject_)
 
         self.mainWidget.new_.triggered.connect(self.newInputFile)
 
@@ -600,26 +605,79 @@ class GudPyMainWindow(QMainWindow):
                                      "GudPy Error",
                                      "Could not open file")
 
+    def loadProject_(self):
+        """Load from previous GudPy project
+        """
+        projectDir = QFileDialog.getExistingDirectory(self, 'Select Project')
+
+        try:
+            self.gudrunFile = GudrunFile(
+                projectDir=projectDir, format=Format.YAML)
+            autosave = self.tryLoadAutosaved(self.gudrunFile.path)
+            if autosave != self.gudrunFile.path:
+                self.gudrunFile = GudrunFile(
+                    path=autosave, format=Format.YAML)
+            self.updateWidgets()
+            self.mainWidget.setWindowTitle(
+                f"GudPy - {self.gudrunFile.filename}[*]")
+        except FileNotFoundError:
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                "Could not load project- does not contain valid input file"
+            )
+        except ParserException as e:
+            QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
+        except IOError:
+            QMessageBox.critical(self.mainWidget,
+                                 "GudPy Error",
+                                 "Could not open file")
+
     def saveInputFile(self):
         """
         Saves the current state of the input file.
         """
-        if not self.gudrunFile.path:
-            self.saveInputFileAs()
-        else:
-            self.gudrunFile.save()
-            self.setUnModified()
+        if not self.gudrunFile.checkSaveLocation():
+            dirname, _ = QFileDialog.getSaveFileName(
+                self.mainWidget,
+                "Choose save location",
+            )
+            self.gudrunFile.setSaveLocation(dirname)
 
-    def saveInputFileAs(self):
+        self.gudrunFile.save()
+        self.setUnModified()
+
+    def saveAs(self):
+        dirname, _ = QFileDialog.getSaveFileName(
+            self.mainWidget,
+            "Choose save location",
+        )
+        oldLocation = self.gudrunFile.projectDir
+        self.gudrunFile.setSaveLocation(dirname)
+        os.makedirs(self.gudrunFile.projectDir)
+        if os.path.exists(os.path.join(oldLocation, "Purge")):
+            shutil.copytree(
+                os.path.join(oldLocation, "Purge"),
+                os.path.join(self.gudrunFile.projectDir, "Purge")
+            )
+        if os.path.exists(os.path.join(oldLocation, "Gudrun")):
+            shutil.copytree(
+                os.path.join(oldLocation, "Gudrun"),
+                os.path.join(self.gudrunFile.projectDir, "Gudrun")
+            )
+        self.gudrunFile.save(path=self.gudrunFile.path, format=Format.YAML)
+
+    def exportInputFile(self):
         """
         Saves the current state of the input file as...
         """
         filename, filter = QFileDialog.getSaveFileName(
             self,
-            "Save input file as..",
+            "Export input file as..",
             ".",
             "YAML (*.yaml);;Gudrun Compatible (*.txt)",
         )
+        fmt = Format.YAML
         if filename:
             ext = re.search(r"\((.+?)\)", filter).group(1).replace("*", "")
             fmt = Format.TXT if ext == ".txt" else Format.YAML
@@ -629,7 +687,14 @@ class GudPyMainWindow(QMainWindow):
                 QMessageBox.warning(
                     self.mainWidget,
                     "GudPy Warning",
-                    f"Cannot save to {filename}, gudpy.txt is reserved.",
+                    f"Cannot export to {filename}, gudpy.txt is reserved.",
+                )
+                return
+            if os.path.dirname(filename) == self.gudrunFile.projectDir:
+                QMessageBox.warning(
+                    self.mainWidget,
+                    "GudPy Warning",
+                    "Do not modify project folder."
                 )
                 return
             self.gudrunFile.instrument.GudrunInputFileDir = os.path.dirname(
@@ -1482,7 +1547,7 @@ class GudPyMainWindow(QMainWindow):
             autosavePath = os.path.join(
                 self.gudrunFile.projectDir,
                 self.gudrunFile.filename + ".autosave")
-            self.gudrunFile.write_out(path=autosavePath)
+            self.gudrunFile.write_out(path=autosavePath, overwrite=True)
 
     def setModified(self):
         if not self.modified:
@@ -1522,8 +1587,10 @@ class GudPyMainWindow(QMainWindow):
             if self.gudrunFile.path
             else False
         )
+        self.mainWidget.exportInputFile.setEnabled(state)
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.loadInputFile.setEnabled(state)
+        self.mainWidget.loadProject.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
         self.mainWidget.new_.setEnabled(state)
         self.mainWidget.checkFilesExist.setEnabled(state)
@@ -1554,7 +1621,7 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.batchProcessing.setEnabled(state)
         self.mainWidget.viewLiveInputFile.setEnabled(state)
         self.mainWidget.save.setEnabled(state & self.modified)
-        self.mainWidget.saveAs.setEnabled(state)
+        self.mainWidget.exportInputFile.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
 
         if os.environ.get("NEXUS_PROCESSING_ENABLED", False):

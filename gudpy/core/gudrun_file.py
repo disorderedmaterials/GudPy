@@ -130,7 +130,13 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, format=Format.YAML, config_=False):
+    def __init__(
+        self,
+        path=None,
+        projectDir=None,
+        format=Format.YAML,
+        config_=False
+    ):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -140,6 +146,8 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        projectDir : str
+            Path to the project folder
         format : Format enum
             Format of the file
         config_ : bool
@@ -161,22 +169,51 @@ class GudrunFile:
         self.loadFile = path
         self.path = None
 
-        self.projectDir = None
+        self.projectDir = projectDir
         self.filename = None
         self.purged = False
         self.stream = None
         self.purgeFile = PurgeFile(self)
         self.nexus_processing = NexusProcessing(self)
 
+        self.gudrunOutput = None
+        self.purgeOutput = None
+
+        if projectDir:
+            if os.path.exists(os.path.join(
+                projectDir,
+                f"{os.path.basename(projectDir)}.yaml"
+            )):
+                # If default file exists
+                self.path = os.path.join(
+                    projectDir,
+                    f"{os.path.basename(projectDir)}.yaml"
+                )
+            else:
+                # Try to find yaml files
+                for f in os.listdir(projectDir):
+                    if os.path.splitext(f)[1] == ".yaml":
+                        # If file is yaml
+                        self.path = os.path.join(projectDir, f)
+            if self.path is None:
+                raise FileNotFoundError()
+
+            self.setSaveLocation(projectDir)
+            self.parse(self.path)
+
+            if os.path.exists(os.path.join(projectDir, "Purge")):
+                self.purgeOutput = os.path.join(projectDir, "Purge")
+
+            if os.path.exists(os.path.join(projectDir, "Gudrun")):
+                self.purgeOutput = os.path.join(projectDir, "Purge")
+
         if self.loadFile:
             self.setGudrunDir(os.path.dirname(self.loadFile))
-            self.projectDir = os.path.join(
+            self.setSaveLocation(os.path.join(
                 os.path.dirname(self.loadFile),
                 os.path.splitext(os.path.basename(self.loadFile))[0]
-            )
-            self.setSaveLocation(self.projectDir)
-
-        self.parse(self.loadFile, config_=config_)
+            ))
+            self.parse(self.loadFile, config_=config_)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)

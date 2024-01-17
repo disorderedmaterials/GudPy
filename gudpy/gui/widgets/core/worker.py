@@ -60,7 +60,9 @@ class PurgeWorker(QObject):
                         purge.stderr.decode("utf8").rstrip("\n"))
                     return
 
-            self.gudrunFile.purgeFile.organiseOutput()
+            self.gudrunFile.purgeOutput = (
+                self.gudrunFile.purgeFile.organiseOutput()
+            )
 
         self.gudrunFile.setGudrunDir(
             self.gudrunFile.projectDir)
