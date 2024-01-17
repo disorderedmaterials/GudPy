@@ -194,7 +194,7 @@ class GudPyFileLibrary:
                     zipFile.write(path, arcname=os.path.basename(outpath))
                     if includeParams:
                         path = os.path.join(
-                            self.gudrunFile.inputFileDir,
+                            self.gudrunFile.projectDir,
                             safeSampleName + ".sample",
                         )
                         if not os.path.exists(path):
