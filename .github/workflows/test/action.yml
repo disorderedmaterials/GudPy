@@ -1,8 +1,5 @@
 name: Test
 
-env:
-  ACTIONS_STEP_DEBUG: true
-
 runs:
   using: "composite"
   steps:

@@ -655,8 +655,7 @@ class TestGudPyIO(TestCase):
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        g.write_out(self.g.loadFile,
-                    overwrite=True)
+        g.write_out(self.g.loadFile, overwrite=True)
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -821,7 +820,7 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, outlines)
         inlines = ""
-        with open(self.g.path) as f:
+        with open(self.g.loadFile) as f:
             inlines = f.read()
         for dic in self.dicts:
             for value in dic.values():
@@ -843,7 +842,7 @@ class TestGudPyIO(TestCase):
                     valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):
-        self.g.write_out(overwrite=True)
+        self.g.write_out(self.g.loadFile, overwrite=True)
         copyPath = os.path.join(
             self.g.instrument.GudrunInputFileDir,
             "copyGF.txt"
@@ -893,7 +892,7 @@ class TestGudPyIO(TestCase):
                 )
 
     def testReloadGudrunFile(self):
-        self.g.write_out(overwrite=True)
+        self.g.write_out(self.g.loadFile, overwrite=True)
         g1 = GudrunFile(
             self.g.path,
             format=Format.TXT
