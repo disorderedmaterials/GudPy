@@ -848,7 +848,7 @@ class TestGudPyIO(TestCase):
             "copyGF.txt"
         )
         g1 = GudrunFile(
-            self.g.path,
+            self.g.loadFile,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
@@ -894,7 +894,7 @@ class TestGudPyIO(TestCase):
     def testReloadGudrunFile(self):
         self.g.write_out(self.g.loadFile, overwrite=True)
         g1 = GudrunFile(
-            self.g.path,
+            self.g.loadFile,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
