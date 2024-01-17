@@ -38,7 +38,6 @@ from core.enums import (
 from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException, YAMLException
-from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -166,7 +165,6 @@ class GudrunFile:
         self.purged = False
         self.stream = None
         self.purgeFile = PurgeFile(self)
-        self.nexus_processing = NexusProcessing(self)
 
         if self.loadFile:
             self.setGudrunDir(os.path.dirname(self.loadFile))
