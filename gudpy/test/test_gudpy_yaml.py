@@ -13,6 +13,9 @@ class TestYAML(TestCase):
         gf1.write_yaml("test/TestData/NIMROD-water/water.yaml")
         gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml")
 
+        print(gf1.instrument.__dict__)
+        print(gf2.instrument.__dict__)
+
         self.assertDictEqual(gf1.instrument.__dict__, gf2.instrument.__dict__)
         self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
 
