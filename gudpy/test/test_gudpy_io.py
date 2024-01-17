@@ -820,7 +820,7 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, outlines)
         inlines = ""
-        with open(self.g.path) as f:
+        with open(self.g.loadFile) as f:
             inlines = f.read()
         for dic in self.dicts:
             for value in dic.values():
