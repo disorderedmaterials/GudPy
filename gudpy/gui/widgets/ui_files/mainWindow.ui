@@ -7336,6 +7336,7 @@
      <string>File</string>
     </property>
     <addaction name="loadInputFile"/>
+    <addaction name="loadProject"/>
     <addaction name="new_"/>
     <addaction name="separator"/>
     <addaction name="viewLiveInputFile"/>
@@ -7343,6 +7344,7 @@
     <addaction name="save"/>
     <addaction name="saveAs"/>
     <addaction name="separator"/>
+    <addaction name="exportInputFile"/>
     <addaction name="exportArchive"/>
     <addaction name="separator"/>
     <addaction name="exit"/>
@@ -7405,6 +7407,11 @@
     <string>Ctrl+O</string>
    </property>
   </action>
+  <action name="loadProject">
+   <property name="text">
+    <string>Load project</string>
+   </property>
+  </action>
   <action name="loadConfiguration">
    <property name="text">
     <string>Load configuration</string>
@@ -7445,6 +7452,11 @@
   <action name="saveAs">
    <property name="text">
     <string>Save As..</string>
+   </property>
+  </action>
+  <action name="exportInputFile">
+   <property name="text">
+    <string>Export Input File</string>
    </property>
   </action>
   <action name="insertSample">
