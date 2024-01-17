@@ -55,7 +55,7 @@ class TestGudPyWorkflows(TestCase):
             gudrunFile.sampleBackgrounds[0].samples[sampleIndex].name].gudFile
 
     def testGudPyDCS(self):
-
+        self.g.dcs()
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.err)[0]
