@@ -146,7 +146,6 @@ class GudrunFile:
             If a new input file should be constructed from a config
         """
 
-
         self.yaml = YAML()
         self.format = format
 
