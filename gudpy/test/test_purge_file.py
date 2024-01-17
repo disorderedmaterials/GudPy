@@ -31,7 +31,7 @@ class TestPurgeFile(TestCase):
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        g.write_out(overwrite=True)
+        g.write_out(self.g.loadFile, overwrite=True)
         self.g = g
         self.expectedPurgeFile = {
             "standardDeviation": (10, 10),
