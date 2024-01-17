@@ -880,7 +880,7 @@ class TestGudPyIO(TestCase):
 
             with open(
                 os.path.join(
-                    self.g.path
+                    self.g.loadFile
                 ),
                 encoding="utf-8"
             ) as fg:
