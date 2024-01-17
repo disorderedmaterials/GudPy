@@ -146,7 +146,6 @@ class GudrunFile:
             If a new input file should be constructed from a config
         """
 
-        # Path and filename of initial input file
 
         self.yaml = YAML()
         self.format = format
@@ -289,7 +288,6 @@ class GudrunFile:
         None
         """
         try:
-            # Initialise instrument attribute to a new instance of Instrument.
             self.consumeWhitespace()
 
             # For string attributes,
@@ -1476,8 +1474,6 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
-
-        print(f"saving to {path}")
 
         if not path:
             path = self.path
