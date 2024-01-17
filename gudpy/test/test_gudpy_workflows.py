@@ -29,7 +29,7 @@ class TestGudPyWorkflows(TestCase):
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, os.path.join(
+        copyfile(self.g.loadFile, os.path.join(
             testDir, "TestData/NIMROD-water/good_water.txt")
         )
         g = GudrunFile(

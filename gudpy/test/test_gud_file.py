@@ -235,7 +235,7 @@ class TestParseGudFile(TestCase):
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
             os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
             format=Format.TXT
