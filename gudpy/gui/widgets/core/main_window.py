@@ -11,8 +11,6 @@ from PySide6.QtCore import (
     QTimer,
     QThread,
     QProcess,
-    QElapsedTimer,
-    QCoreApplication,
 )
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
