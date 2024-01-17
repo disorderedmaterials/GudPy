@@ -160,7 +160,8 @@ class GudrunFile:
         self.beam = Beam()
         self.normalisation = Normalisation()
         self.sampleBackgrounds = []
-        self.path = path
+        self.loadFile = path
+        self.path = None
 
         self.projectDir = None
         self.filename = None
@@ -169,18 +170,15 @@ class GudrunFile:
         self.purgeFile = PurgeFile(self)
         self.nexus_processing = NexusProcessing(self)
 
-        if config_:
-            self.path = None
-
-        if self.path:
-            self.setGudrunDir(os.path.dirname(path))
+        if self.loadFile:
+            self.setGudrunDir(os.path.dirname(self.loadFile))
             self.projectDir = os.path.join(
-                os.path.dirname(path),
-                os.path.splitext(os.path.basename(path))[0]
+                os.path.dirname(self.loadFile),
+                os.path.splitext(os.path.basename(self.loadFile))[0]
             )
             self.setSaveLocation(self.projectDir)
 
-        self.parse(path, config_=config_)
+        self.parse(self.loadFile, config_=config_)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
