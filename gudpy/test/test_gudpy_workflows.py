@@ -16,6 +16,7 @@ from core.iterators.inelasticity_subtraction import (
     InelasticitySubtraction
 )
 from core.enums import Format
+from core import gudpy
 
 
 class TestGudPyWorkflows(TestCase):
@@ -55,7 +56,7 @@ class TestGudPyWorkflows(TestCase):
             gudrunFile.sampleBackgrounds[0].samples[sampleIndex].name].gudFile
 
     def testGudPyDCS(self):
-        self.g.dcs()
+        gudpy.gudrun(self.g)
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
         dcsLevelPercentage = re.findall(r'\d*[.]?\d*%', gf1.err)[0]

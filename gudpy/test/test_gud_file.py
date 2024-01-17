@@ -6,6 +6,7 @@ from core.exception import ParserException
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
 from core.enums import Format
+from core import gudpy
 
 
 class TestParseGudFile(TestCase):
@@ -274,7 +275,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(0)
         )
@@ -284,7 +285,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(0)
         )
@@ -328,7 +329,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
 
         gf = GudFile(
             g.gudrunOutput.gudFile(1)
@@ -373,7 +374,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(2)
         )
@@ -417,7 +418,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(3)
         )
@@ -461,7 +462,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(3)
         )
@@ -487,7 +488,7 @@ class TestParseGudFile(TestCase):
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
-        g.dcs()
+        gudpy.gudrun(g)
         gf = GudFile(
             g.gudrunOutput.gudFile(3)
         )
