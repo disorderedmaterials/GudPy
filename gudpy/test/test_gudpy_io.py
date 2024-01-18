@@ -42,7 +42,7 @@ class TestGudPyIO(TestCase):
             "name": Instruments.NIMROD,
             "GudrunInputFileDir":
             os.path.abspath(os.path.dirname(os.path.abspath(dirpath))),
-            "dataFileDir": "NIMROD-water/raw/",
+            "dataFileDir": os.path.abspath("test/TestData/NIMROD-water/raw/"),
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
                 'StartupFiles/NIMROD/NIMROD84modules'
