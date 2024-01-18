@@ -1549,8 +1549,8 @@ class GudrunFile:
                         )
 
     def setGudrunDir(self, dir):
-        assert (os.path.isdir(os.path.abspath(dir)))
-        self.instrument.GudrunInputFileDir = os.path.abspath(dir)
+        assert (os.path.isdir(dir))
+        self.instrument.GudrunInputFileDir = dir
 
     def dcs(self, path='', headless=True, iterator=None):
         """

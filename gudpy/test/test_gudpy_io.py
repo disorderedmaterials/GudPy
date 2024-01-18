@@ -42,7 +42,7 @@ class TestGudPyIO(TestCase):
             "name": Instruments.NIMROD,
             "GudrunInputFileDir":
             os.path.abspath(os.path.dirname(os.path.abspath(dirpath))),
-            "dataFileDir": os.path.abspath("NIMROD-water/raw/"),
+            "dataFileDir": "NIMROD-water/raw/",
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
                 'StartupFiles/NIMROD/NIMROD84modules'
@@ -632,10 +632,6 @@ class TestGudPyIO(TestCase):
         ].__dict__ = self.expectedContainerA
 
         self.g = GudrunFile(dirpath, format=Format.TXT)
-        # Set to absolute path
-        self.g.instrument.dataFileDir = os.path.abspath(
-            self.g.instrument.dataFileDir
-        )
 
         self.dicts = [
             self.expectedInstrument,
