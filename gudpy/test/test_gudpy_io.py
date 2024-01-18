@@ -632,6 +632,10 @@ class TestGudPyIO(TestCase):
         ].__dict__ = self.expectedContainerA
 
         self.g = GudrunFile(dirpath, format=Format.TXT)
+        # Set to absolute path
+        self.g.instrument.dataFileDir = os.path.abspath(
+            self.g.instrument.dataFileDir
+        )
 
         self.dicts = [
             self.expectedInstrument,
