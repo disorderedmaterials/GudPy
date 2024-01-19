@@ -670,6 +670,14 @@ class TestGudPyIO(TestCase):
         instrumentAttrsDict = self.g.instrument.__dict__
 
         for key in instrumentAttrsDict.keys():
+            pathKeys = ["GudrunInputFileDir", "dataFileDir"]
+            if key in pathKeys:
+                self.expectedInstrument[key] = os.path.abspath(
+                    self.expectedInstrument[key]
+                )
+                instrumentAttrsDict[key] = os.path.abspath(
+                    instrumentAttrsDict[key]
+                )
             self.assertEqual(
                 self.expectedInstrument[key], instrumentAttrsDict[key]
             )
