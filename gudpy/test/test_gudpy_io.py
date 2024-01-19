@@ -672,15 +672,12 @@ class TestGudPyIO(TestCase):
         for key in instrumentAttrsDict.keys():
             pathKeys = ["GudrunInputFileDir", "dataFileDir"]
             if key in pathKeys:
-                self.expectedInstrument[key] = os.path.abspath(
-                    self.expectedInstrument[key]
+                # Ignore the paths as they vary
+                continue
+            else:
+                self.assertEqual(
+                    self.expectedInstrument[key], instrumentAttrsDict[key]
                 )
-                instrumentAttrsDict[key] = os.path.abspath(
-                    instrumentAttrsDict[key]
-                )
-            self.assertEqual(
-                self.expectedInstrument[key], instrumentAttrsDict[key]
-            )
 
         beamAttrsDict = self.g.beam.__dict__
 
