@@ -823,6 +823,8 @@ class TestGudPyIO(TestCase):
                         else:
                             valueInLines(val, outlines)
                 else:
+                    print(value)
+                    print(outlines)
                     valueInLines(value, outlines)
         inlines = ""
         with open(self.g.loadFile) as f:
