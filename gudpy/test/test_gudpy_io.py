@@ -773,7 +773,7 @@ class TestGudPyIO(TestCase):
             )
 
         def valueInLines(value, lines):
-            if isinstance(value, str) and value != "":
+            if isinstance(value, str):
                 self.assertTrue(value in lines)
             elif isinstance(value, (list, tuple)):
                 if len(value) == 0:
@@ -825,7 +825,7 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, outlines)
         inlines = ""
-        with open(self.g.loadFile) as f:
+        with open(self.g.loadFile, encoding="utf-8") as f:
             inlines = f.read()
         for dic in self.dicts:
             for value in dic.values():
