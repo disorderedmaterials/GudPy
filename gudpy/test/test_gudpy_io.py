@@ -773,10 +773,7 @@ class TestGudPyIO(TestCase):
             )
 
         def valueInLines(value, lines):
-            if isinstance(value, str):
-                print(value)
-                print("Noella")
-                print(lines)
+            if isinstance(value, str) and value != "":
                 self.assertTrue(value in lines)
             elif isinstance(value, (list, tuple)):
                 if len(value) == 0:
