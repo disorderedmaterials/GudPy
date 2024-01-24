@@ -8,8 +8,7 @@ from core.utils import spacify
 from core.enums import Scales, MergeWeights, Instruments
 
 
-class InstrumentSlots():
-
+class InstrumentSlots:
     def __init__(self, widget, parent):
         self.widget = widget
         self.parent = parent
@@ -104,9 +103,9 @@ class InstrumentSlots():
         )
 
         # Setup the widgets and slots for the scales.
-        selection, min_, max_, step = (
-            self.scales[self.instrument.scaleSelection]
-        )
+        selection, min_, max_, step = self.scales[
+            self.instrument.scaleSelection
+        ]
 
         selection.setChecked(True)
         min_.setValue(self.instrument.XMin)
@@ -153,6 +152,11 @@ class InstrumentSlots():
             self.instrument.nxsDefinitionFile
         )
 
+        # Enable Nexus Processing if data file type is nxs
+        self.widget.runNexusProcessing.setEnabled(
+            self.instrument.dataFileType in ["nxs", "NXS"]
+        )
+
         self.widget.nexusDefintionFileLineEdit.setEnabled(
             self.instrument.dataFileType in ["nxs", "NXS"]
         )
@@ -193,7 +197,8 @@ class InstrumentSlots():
         self.widget.browseDataFileDirectoryButton.clicked.connect(
             lambda: self.handleBrowse(
                 self.widget.dataFileDirectoryLineEdit,
-                "Data file directory", dir=True
+                "Data file directory",
+                dir=True,
             )
         )
 
@@ -247,22 +252,18 @@ class InstrumentSlots():
         # Setup the widgets and slots for the spectrum numbers
         # and quiet count const for the incident beam monitor.
         # Regular expression to accept space delimited integers.
-        spectrumNumbersRegex = QRegularExpression(
-            r"^\d+(?:\s+\d+)*$"
-        )
+        spectrumNumbersRegex = QRegularExpression(r"^\d+(?:\s+\d+)*$")
         spectrumNumbersValidator = QRegularExpressionValidator(
             spectrumNumbersRegex
         )
 
-        (
-            self.widget.spectrumNumbersIBLineEdit
-        ).textChanged.connect(
+        (self.widget.spectrumNumbersIBLineEdit).textChanged.connect(
             self.handleSpectrumNumbersIBChanged
         )
 
-        (
-            self.widget.spectrumNumbersIBLineEdit
-        ).setValidator(spectrumNumbersValidator)
+        (self.widget.spectrumNumbersIBLineEdit).setValidator(
+            spectrumNumbersValidator
+        )
 
         (
             self.widget.incidentMonitorQuietCountConstSpinBox
@@ -274,9 +275,9 @@ class InstrumentSlots():
             self.handleSpectrumNumbersTChanged
         )
 
-        (
-            self.widget.spectrumNumbersTLineEdit
-        ).setValidator(spectrumNumbersValidator)
+        (self.widget.spectrumNumbersTLineEdit).setValidator(
+            spectrumNumbersValidator
+        )
         (
             self.widget.transmissionMonitorQuietCountConstSpinBox
         ).valueChanged.connect(
@@ -371,9 +372,7 @@ class InstrumentSlots():
             self.handleWavelengthStepChanged
         )
 
-        self.widget.energyRadioButton.toggled.connect(
-            self.handleEnergyToggled
-        )
+        self.widget.energyRadioButton.toggled.connect(self.handleEnergyToggled)
         self.widget.minEnergySpinBox.valueChanged.connect(
             self.handleEnergyMinChanged
         )
@@ -442,7 +441,7 @@ class InstrumentSlots():
 
         self.widget.browseNexusDefinitionButton.clicked.connect(
             lambda: self.handleBrowse(
-                self.widget.nexusDefintionFileLineEdit, "NeXus defnition file"
+                self.widget.nexusDefintionFileLineEdit, "NeXus definition file"
             )
         )
         self.widget.hardGroupEdgesCheckBox.stateChanged.connect(
@@ -959,9 +958,7 @@ class InstrumentSlots():
             self.parent.setModified()
 
     def handleQToggled(self, state):
-        [
-            widget.setEnabled(state) for widget in self.scales[Scales.Q][1:]
-        ]
+        [widget.setEnabled(state) for widget in self.scales[Scales.Q][1:]]
         if not self.widgetsRefreshing:
             if state:
                 self.instrument.scaleSelection = Scales.Q
@@ -971,7 +968,7 @@ class InstrumentSlots():
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
-                    self.instrument.XStep
+                    self.instrument.XStep,
                 ) = values
                 self.parent.setModified()
 
@@ -999,8 +996,8 @@ class InstrumentSlots():
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
-                    self.instrument.XStep
-                 ) = values
+                    self.instrument.XStep,
+                ) = values
 
                 self.instrument.scaleSelection = Scales.D_SPACING
                 self.parent.setModified()
@@ -1029,7 +1026,7 @@ class InstrumentSlots():
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
-                    self.instrument.XStep
+                    self.instrument.XStep,
                 ) = values
 
                 self.instrument.scaleSelection = Scales.WAVELENGTH
@@ -1049,14 +1046,13 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             if state:
                 values = [
-                    widget.value()
-                    for widget in self.scales[Scales.ENERGY][1:]
+                    widget.value() for widget in self.scales[Scales.ENERGY][1:]
                 ]
 
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
-                    self.instrument.XStep
+                    self.instrument.XStep,
                 ) = values
 
                 self.instrument.scaleSelection = Scales.ENERGY
@@ -1076,14 +1072,13 @@ class InstrumentSlots():
         if not self.widgetsRefreshing:
             if state:
                 values = [
-                    widget.value()
-                    for widget in self.scales[Scales.TOF][1:]
+                    widget.value() for widget in self.scales[Scales.TOF][1:]
                 ]
 
                 (
                     self.instrument.XMin,
                     self.instrument.XMax,
-                    self.instrument.XStep
+                    self.instrument.XStep,
                 ) = values
 
                 self.instrument.scaleSelection = Scales.TOF
@@ -1210,22 +1205,17 @@ class InstrumentSlots():
         str[]
         """
         if dir:
-            filename = (
-                QFileDialog.getExistingDirectory(
-                    self.widget, title, os.path.expanduser("~")
-                )
+            filename = QFileDialog.getExistingDirectory(
+                self.widget, title, self.instrument.dataFileDir
             )
         else:
             instrumentFilesDir = os.path.join(
                 self.instrument.GudrunStartFolder,
                 self.instrument.startupFileFolder,
-                Instruments(self.instrument.name.value).name
+                Instruments(self.instrument.name.value).name,
             )
             filename, _ = QFileDialog.getOpenFileName(
-                self.widget,
-                title,
-                instrumentFilesDir,
-                ""
+                self.widget, title, instrumentFilesDir, ""
             )
         if dir:
             return filename + os.path.sep if filename else ""

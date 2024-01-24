@@ -7,14 +7,17 @@ GudPy offers a range of additional functionality unavailable in the Gudrun Java 
 ## Running GudPy
 ### IDAaaS
 The continuous build is released on IDAaaS on a nightly basis, this is where you can find the most cutting-edge (yet experimental) version of GudPy.
+For development on IDAaaS make sure you use `python3.11` (the system default is 3.6). You will also need to install a higher version of PySide6 (e.g. 6.5.0) with version 3.11 of Python as well as `xcb-util-cursor.x86_64` in order for the xcb platform plugin to function correctly.
 ### Stable Release
 Stable releases are available on the [release page](https://github.com/disorderedmaterials/GudPy/releases).
 ### From Source
 Requires `python>=3.8` and `pip`.
 1. Clone the repository.
 2. Download the latest [Gudrun binaries and startup files](https://github.com/disorderedmaterials/Gudrun/releases), and unzip/untar into the `bin` directory.
-3. `python3 -m pip install -r requirements.txt`
-4. `python3 gudpy`
+4. `python3 -m pip install -r requirements.txt`
+5. Manually compile the resources: `pyside6-rcc gudpy/gui/widgets/resources/resources.qrc > gudpy/gui/widgets/resources/resources_rc.py`
+6. `python3 gudpy`
+
 ## Additional functionality
 ### Components
 - `Components` can be defined within the "Components" tab.

@@ -1,4 +1,4 @@
-from core.single_param_iterator import SingleParamIterator
+from core.iterators.single_param_iterator import SingleParamIterator
 
 
 class DensityIterator(SingleParamIterator):
@@ -18,6 +18,8 @@ class DensityIterator(SingleParamIterator):
     organiseOutput
         Organises the output of the iteration.
     """
+    name = "IterateByDensity"
+
     def applyCoefficientToAttribute(self, object, coefficient):
         """
         Multiplies a sample's density by a given coefficient.
@@ -32,6 +34,3 @@ class DensityIterator(SingleParamIterator):
         """
         # Apply the coefficient to the density.
         object.density *= coefficient
-
-    def organiseOutput(self, n):
-        self.gudrunFile.iterativeOrganise(f"IterateByDensity_{n}")

@@ -2,9 +2,10 @@ import os
 import time
 
 from core.gud_file import GudFile
+from core.iterators.single_param_iterator import SingleParamIterator
 
 
-class TweakFactorIterator():
+class TweakFactorIterator(SingleParamIterator):
     """
     Class to represent a Tweak Factor Iterator.
     This class is used for iteratively tweaking by the tweak factor.
@@ -26,17 +27,8 @@ class TweakFactorIterator():
     iterate(n)
         Perform n iterations of iterating by tweak factor.
     """
-    def __init__(self, gudrunFile):
-        """
-        Constructs all the necessary attributes for the
-        TweakFactorIterator object.
 
-        Parameters
-        ----------
-        gudrunFile : GudrunFile
-            Input GudrunFile that we will be using for iterating.
-        """
-        self.gudrunFile = gudrunFile
+    name = "IterateByTweakFactor"
 
     def performIteration(self, _n):
         """
@@ -52,12 +44,12 @@ class TweakFactorIterator():
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in [
                 s for s in sampleBackground.samples
-                if s.runThisSample
+                if s.runThisSample and len(s.dataFiles)
             ]:
                 gudPath = sample.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType,
-                            "gud"
-                        )
+                    self.gudrunFile.instrument.dataFileType,
+                    "gud"
+                )
                 gudFile = GudFile(
                     os.path.join(
                         self.gudrunFile.instrument.GudrunInputFileDir,
@@ -90,4 +82,4 @@ class TweakFactorIterator():
             self.gudrunFile.process(iterative=True)
             time.sleep(1)
             self.performIteration(i)
-            self.gudrunFile.iterativeOrganise(f"IterateByTweakFactor_{i+1}")
+            self.organiseOutput(n, i)

@@ -83,26 +83,35 @@ class NexusProcessingDialog(QDialog):
             )
         ) as fp:
 
-            spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
-                :
-            ].tolist()
+            if "/raw_data_1/detector_1/spectrum_index" in fp:
+                spectra = fp["/raw_data_1/detector_1/spectrum_index"][()][
+                    :
+                ].tolist()
+            else:
+                spectra = [0]
             self.widget.lowerSpecSpinBox.setRange(min(spectra), max(spectra))
             self.widget.upperSpecSpinBox.setRange(min(spectra), max(spectra))
 
-            start = fp["/raw_data_1/start_time"][()][0].decode("utf8")
-            end = fp["/raw_data_1/end_time"][()][0].decode("utf8")
             start = (
-                datetime.strptime(start, "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if "/raw_data_1/start_time" not in fp
+                else datetime.strptime(
+                    fp["/raw_data_1/start_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             end = (
-                datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
+                datetime.today()
+                if "/raw_data_1/end_time" not in fp
+                else datetime.strptime(
+                    fp["/raw_data_1/end_time"][()][0].decode("utf8"),
+                    "%Y-%m-%dT%H:%M:%S",
+                )
             )
             self.start = QDateTime.fromString(
                 start.isoformat(), Qt.ISODateWithMs
             )
-            self.end = QDateTime.fromString(
-                end.isoformat(), Qt.ISODateWithMs
-            )
+            self.end = QDateTime.fromString(end.isoformat(), Qt.ISODateWithMs)
 
         self.widget.lowerSpecSpinBox.setValue(min(spectra))
         self.widget.upperSpecSpinBox.setValue(max(spectra))
@@ -136,9 +145,7 @@ class NexusProcessingDialog(QDialog):
             self.nSlicesChanged
         )
 
-        self.widget.buttonBox.accepted.connect(self.run)
-
-        self.widget.buttonBox.rejected.connect(self.cancel)
+        self.widget.runButton.clicked.connect(self.run)
 
         self.widget.usePeriodDefinitionsButton.toggled.connect(
             self.useDefinedPulsesToggled
@@ -201,10 +208,6 @@ class NexusProcessingDialog(QDialog):
                 self.widget.close()
         else:
             QMessageBox.warning(self.widget, "GudPy Warning", err)
-
-    def cancel(self):
-        self.cancelled = True
-        self.widget.close()
 
     def partitionEvents(self):
         if not os.path.exists(self.partition_events):
@@ -321,10 +324,10 @@ class NexusProcessingDialog(QDialog):
         self.gudrunFile.nexus_processing.startLabel = text
 
     def setControlsEnabled(self, state):
-        self.widget.periodGroupBox.setEnabled(state)
-        self.widget.spectraGroupBox.setEnabled(state)
+        self.widget.pulseInformation.setEnabled(state)
+        self.widget.periodDefinitionGroupBox.setEnabled(state)
         self.widget.runGroupBox.setEnabled(state)
-        self.widget.buttonBox.setEnabled(state)
+        self.widget.runButton.setEnabled(state)
 
     def browseSaveDirectory(self):
         self.gudrunFile.nexus_processing.outputDir = (
@@ -348,7 +351,8 @@ class NexusProcessingDialog(QDialog):
 
     def useDefinedPulsesToggled(self, state):
         self.gudrunFile.nexus_processing.period.useDefinedPulses = state
-        self.widget.periodDefinitionGroupBox.setEnabled(state)
+        self.widget.periodDefinitionsGroup.setEnabled(state)
+        self.widget.pulseTableGroup.setEnabled(state)
 
     def interpolateToggled(self, state):
         self.gudrunFile.nexus_processing.interpolate = state
