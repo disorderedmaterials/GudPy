@@ -1490,7 +1490,6 @@ class TestGudPyIO(TestCase):
             self.expectedSampleA["exponentialValues"],
             gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
         )
-        print(gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues)
 
     def testLoadMissingContainerAttributesRand(self):
 

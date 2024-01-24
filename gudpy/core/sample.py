@@ -235,7 +235,7 @@ class Sample:
                 sameseps=True
             )
         )
-        if len(self.exponentialValues[0]) == 2:
+        if self.exponentialValues and len(self.exponentialValues[0]) == 2:
             # Append for compatibility with GudrunGUI
             self.exponentialValues[0].append(0)
         exponentialLines = (
