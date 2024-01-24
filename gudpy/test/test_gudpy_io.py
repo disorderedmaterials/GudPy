@@ -1477,6 +1477,21 @@ class TestGudPyIO(TestCase):
                     str(cm.exception)
                 )
 
+    def testAppendExponentialValues(self):
+        # Remove last element of exponential values list
+        self.g.sampleBackgrounds[0].samples[0].exponentialValues[0].pop()
+        self.g.write_out()
+
+        gudrunFile = GudrunFile(os.path.join(
+            self.g.instrument.GudrunInputFileDir,
+            self.g.outpath
+        ), format=Format.TXT)
+        self.assertEqual(
+            self.expectedSampleA["exponentialValues"],
+            gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
+        )
+        print(gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues)
+
     def testLoadMissingContainerAttributesRand(self):
 
         expectedContainerA = deepcopy(self.expectedContainerA)

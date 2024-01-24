@@ -96,6 +96,7 @@ class Sample:
     Methods
     -------
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the Sample object.
@@ -234,6 +235,9 @@ class Sample:
                 sameseps=True
             )
         )
+        if len(self.exponentialValues[0]) == 2:
+            # Append for compatibility with GudrunGUI
+            self.exponentialValues[0].append(0)
         exponentialLines = (
             bjoin(
                 self.exponentialValues,
