@@ -1,9 +1,9 @@
-from core.iterators.single_param_iterator import SingleParamIterator
+from core.iterators.iterator import Iterator
 
 
-class RadiusIterator(SingleParamIterator):
+class RadiusIterator(Iterator):
     """
-    Class to represent a Radius Iterator. Inherits SingleParamIterator.
+    Class to represent a Radius Iterator. Inherits Iterator.
     This class is used for iteratively tweaking the thickness of a
     flatplate sample.
     This means running gudrun_dcs iteratively, and adjusting the inner/outer
@@ -18,8 +18,6 @@ class RadiusIterator(SingleParamIterator):
         Multiplies a sample's inner/outer radii by a given coefficient.
     setTargetRadius
         Sets the target radius attribute.
-    organiseOutput
-        Organises the output of the iteration.
     """
     name = "IterateByRadius"
 

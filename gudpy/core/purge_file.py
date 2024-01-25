@@ -1,11 +1,13 @@
 import os
 import sys
 import subprocess
+import tempfile
 
 from PySide6.QtCore import QProcess
 from core.enums import Instruments
 from core.utils import resolve, spacify, numifyBool
 from core import config
+from core.output_file_handler import OutputHandler
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -35,9 +37,13 @@ class PurgeFile():
     purge()
         Writes out the file, and then calls purge_det on that file.
     """
+
     def __init__(
             self,
-            gudrunFile
+            gudrunFile,
+            standardDeviation=(10, 10),
+            ignoreBad=True,
+            excludeSampleAndCan=True,
     ):
         """
         Constructs all the necessary attributes for the PurgeFile object.
@@ -48,9 +54,9 @@ class PurgeFile():
             Parent GudrunFile that we are creating the PurgeFile from.
         """
         self.gudrunFile = gudrunFile
-        self.excludeSampleAndCan = True
-        self.standardDeviation = (10, 10)
-        self.ignoreBad = True
+        self.excludeSampleAndCan = excludeSampleAndCan
+        self.standardDeviation = standardDeviation
+        self.ignoreBad = ignoreBad
 
     def write_out(self, path=""):
         """
@@ -247,19 +253,22 @@ class PurgeFile():
         self.ignoreBad = ignoreBad
         self.excludeSampleAndCan = excludeSampleAndCan
         if headless:
-            try:
-                cwd = os.getcwd()
+            with tempfile.TemporaryDirectory() as tmp:
+                self.gudrunFile.setGudrunDir(tmp)
                 purge_det = resolve("bin", f"purge_det{SUFFIX}")
-                os.chdir(self.gudrunFile.instrument.GudrunInputFileDir)
-                self.write_out()
+                self.write_out(os.path.join(
+                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    "purge_det.dat"
+                ))
                 result = subprocess.run(
                     [purge_det, "purge_det.dat"],
+                    cwd=tmp,
                     capture_output=True,
                     text=True
                 )
-                os.chdir(cwd)
-            except FileNotFoundError:
-                return False
+                self.organiseOutput()
+            self.gudrunFile.setGudrunDir(
+                self.gudrunFile.projectDir)
             return result
         else:
             if hasattr(sys, '_MEIPASS'):
@@ -280,8 +289,13 @@ class PurgeFile():
                 self.write_out,
                 [
                     os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir,
+                        self.gudrunFile.projectDir,
+                        "Purge",
                         "purge_det.dat"
                     )
                 ]
             )
+
+    def organiseOutput(self):
+        outputHandler = OutputHandler(self.gudrunFile, "Purge")
+        outputHandler.organiseOutput()

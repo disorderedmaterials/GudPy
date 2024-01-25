@@ -1,5 +1,4 @@
 from copy import deepcopy
-from typing import OrderedDict
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtCore import (
     QAbstractItemModel,
@@ -18,24 +17,27 @@ class OutputTreeModel(QAbstractItemModel):
     def __init__(self, output, gudrunFile, keyMap=None, parent=None):
         super().__init__(parent)
         if isinstance(output, str):
-            output = {1: output}
+            output = {0: output}
         self.keyMap = keyMap
         self.output = output
         self.gudrunFile = gudrunFile
         self.map = {}
         self.refs = []
-        self.data_ = OrderedDict(
-            sorted(
-                {i: [] for i in output.keys()}.items()
-            )
-        )
+        self.data_ = {}
+
+        for idx, key in enumerate(output.keys()):
+            self.data_[idx] = {
+                "name": key,
+                "outputs": []
+            }
+
         self.persistentIndexes = {}
         self.setupData()
 
     def setupData(self):
-        for iteration, output in self.output.items():
+        for idx, [name, output] in enumerate(self.output.items()):
             gf = deepcopy(self.gudrunFile)
-            gf.iteration = iteration
+            gf.name = name
             gf.output = output
             self.refs.append(gf)
             offsets = [
@@ -48,12 +50,12 @@ class OutputTreeModel(QAbstractItemModel):
                 i = deepcopy(self.gudrunFile.instrument)
                 i.output = output
                 i.name = "General"
-                self.data_[iteration].append(i)
+                self.data_[idx]["outputs"].append(i)
                 return
 
             sbindicies = []
-            for i in range(len(offsets)-1):
-                sbindicies.append([offsets[i], offsets[i+1]-1])
+            for i in range(len(offsets) - 1):
+                sbindicies.append([offsets[i], offsets[i + 1] - 1])
 
             sbindicies.append(
                 [
@@ -67,7 +69,7 @@ class OutputTreeModel(QAbstractItemModel):
                 [0: sbindicies[0][0]]
             )
             i.name = "General"
-            self.data_[iteration].append(i)
+            self.data_[idx]["outputs"].append(i)
             prev = None
             for start, end in sbindicies:
                 splicedOutput = (
@@ -85,19 +87,17 @@ class OutputTreeModel(QAbstractItemModel):
                         if s.runThisSample
                     ], indices
                 ):
-                    if len(self.data_[iteration]) == 1:
-                        s = deepcopy(sample)
-                        s.output = index+start
-                        prev = s
-                    else:
-                        s = deepcopy(sample)
+                    s = deepcopy(sample)
+                    s.output = index + start
+
+                    if len(self.data_[idx]["outputs"]) != 1:
                         prev.output = "".join(
                             output.splitlines(keepends=True)
-                            [prev.output:index+start-1]
+                            [prev.output:index + start - 1]
                         )
-                        s.output = index + start
-                        prev = s
-                    self.data_[iteration].append(s)
+
+                    prev = s
+                    self.data_[idx]["outputs"].append(s)
                 if prev:
                     prev.output = "".join(
                         output.splitlines(keepends=True)
@@ -110,7 +110,7 @@ class OutputTreeModel(QAbstractItemModel):
             return QModelIndex()
         elif not parent.isValid():
             if len(self.data_.keys()) == 1:
-                obj = self.data_[1][row]
+                obj = self.data_[0]["outputs"][row]
             elif len(self.data_.keys()) > 1:
                 try:
                     obj = self.refs[row]
@@ -119,15 +119,17 @@ class OutputTreeModel(QAbstractItemModel):
             else:
                 return QModelIndex()
         elif parent.isValid():
-            obj = self.data_[self.refs.index(parent.internalPointer())+1][row]
+            obj = self.data_[
+                self.refs.index(
+                    parent.internalPointer())]["outputs"][row]
         index = self.createIndex(row, 0, obj)
         self.persistentIndexes[obj] = QPersistentModelIndex(index)
         return index
 
     def findParent(self, obj):
         for parent, items in self.data_.items():
-            if obj in items:
-                return self.refs[parent-1]
+            if obj in items["outputs"]:
+                return self.refs[parent]
 
     def parent(self, index):
         if not index.isValid():
@@ -146,7 +148,8 @@ class OutputTreeModel(QAbstractItemModel):
     def rowCount(self, parent=QModelIndex()):
         if not parent.isValid():
             if len(self.data_.keys()) == 1:
-                return len(self.data_[1])
+                # get length of first value
+                return len(self.data_[0]["outputs"])
             elif len(self.data_.keys()) > 1:
                 return len(self.data_.keys())
             else:
@@ -154,7 +157,9 @@ class OutputTreeModel(QAbstractItemModel):
         parentObj = parent.internalPointer()
         if isinstance(parentObj, GudrunFile):
             return len(
-                self.data_[self.refs.index(parent.internalPointer())+1]
+                self.data_[
+                    self.refs.index(
+                        parent.internalPointer())]["outputs"]
             )
         else:
             return 0
@@ -169,9 +174,9 @@ class OutputTreeModel(QAbstractItemModel):
             obj = index.internalPointer()
             if isinstance(obj, GudrunFile):
                 if self.keyMap:
-                    return self.keyMap[obj.iteration]
+                    return self.keyMap[obj.name]
                 else:
-                    return obj.iteration
+                    return obj.name
             elif isinstance(obj, (Instrument, Sample)):
                 return obj.name
         else:

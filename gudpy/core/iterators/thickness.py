@@ -1,9 +1,9 @@
-from core.iterators.single_param_iterator import SingleParamIterator
+from core.iterators.iterator import Iterator
 
 
-class ThicknessIterator(SingleParamIterator):
+class ThicknessIterator(Iterator):
     """
-    Class to represent a Thickness Iterator. Inherits SingleParamIterator.
+    Class to represent a Thickness Iterator. Inherits Iterator.
     This class is used for iteratively tweaking the thickness of a
     flatplate sample.
     This means running gudrun_dcs iteratively, and adjusting the thickness

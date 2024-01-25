@@ -110,6 +110,10 @@ class CompositionIterator():
         self.gudrunFile = gudrunFile
         self.components = []
         self.ratio = 0
+        self.nTotal = 0
+        self.nCurrent = 0
+        self.iterationType = self.name
+        self.nWeightedComponents = 0
 
     """
     Sets component and ratio.
@@ -167,18 +171,18 @@ class CompositionIterator():
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.process()
+        self.gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            self.gudrunFile.instrument.dataFileType,
-            "gud"
-        )
+
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.gudrunOutput.gudFile(
+                    name=sampleBackground.samples[0].name)
             )
         )
+
+        self.nCurrent += 1
 
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
@@ -215,18 +219,18 @@ class CompositionIterator():
             wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.process()
+        self.gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            self.gudrunFile.instrument.dataFileType,
-            "gud"
-        )
+
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir, gudPath
+                self.gudrunFile.gudrunOutput.gudFile(
+                    name=sampleBackground.samples[0].name)
             )
         )
+
+        self.nCurrent += 1
 
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
@@ -281,3 +285,10 @@ class CompositionIterator():
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
+
+    def organiseOutput(self):
+        """
+        This organises the output of the iteration.
+        """
+        gudrunOutput = self.gudrunFile.organiseOutput()
+        return gudrunOutput

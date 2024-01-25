@@ -26,12 +26,12 @@ class TestPurgeFile(TestCase):
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.path, "test/TestData/NIMROD-water/good_water.txt")
+        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
         g = GudrunFile(
             "test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        g.write_out(overwrite=True)
+        g.write_out(self.g.loadFile, overwrite=True)
         self.g = g
         self.expectedPurgeFile = {
             "standardDeviation": (10, 10),
@@ -61,5 +61,6 @@ class TestPurgeFile(TestCase):
 
         purge = PurgeFile(self.g)
         purge.write_out()
-        outlines = open("purge_det.dat", encoding="utf-8").read()
-        self.assertEqual(outlines, str(purge))
+        with open("purge_det.dat", encoding="utf-8") as f:
+            outlines = f.read()
+            self.assertEqual(outlines, str(purge))

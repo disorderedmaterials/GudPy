@@ -251,12 +251,12 @@ class NexusProcessing:
         self.period = Period()
         self.extrapolationMode = ExtrapolationModes.FORWARDS
         self.startLabel = ""
-        self.dataFileDir = self.gudrunFile.instrument.dataFileDir
+        self.dataFileDir = self.ref.instrument.dataFileDir
         self.outputDir = ""
         self.sample = None
         self.useTempDataFileDir = False
         self.interpolate = False
-        self.tmp = tempfile.TemporaryDirectory()
+        self.tmp = None
         self.path = "modex.cfg"
         self.goodFrameThreshold = 0
 
@@ -271,6 +271,8 @@ class NexusProcessing:
         """
         Checks if the current configuration is valid.
         """
+
+        self.dataFileDir = self.ref.instrument.dataFileDir
 
         # Check for valid directories.
         if not self.outputDir:
@@ -328,13 +330,7 @@ class NexusProcessing:
             Should processing be headless?
         """
 
-        # Cleanup temp directory.
-        for f in os.listdir(self.tmp.name):
-            fp = os.path.join(self.tmp.name, f)
-            if os.path.isfile(fp):
-                os.remove(fp)
-            elif os.path.isdir(fp):
-                shutil.rmtree(fp)
+        self.tmp = tempfile.TemporaryDirectory()
 
         self.useTempDataFileDir = useTempDataFileDir
         # List to hold tasks, in the case of headful preprocessing.
@@ -396,8 +392,6 @@ class NexusProcessing:
             self.dataFileDir = os.path.join(self.tmp.name, "data")
             # If headless, copy all the data files into this new directory.
             if headless:
-                if os.path.exists(self.dataFileDir):
-                    shutil.rmtree(self.dataFileDir)
                 os.makedirs(self.dataFileDir)
                 for dataFile in self.ref.normalisation.dataFiles.dataFiles:
                     self.copyfile(
@@ -448,10 +442,6 @@ class NexusProcessing:
                         )
             # Otherwise, append the copies as tasks.
             else:
-                if os.path.exists(os.path.join(self.dataFileDir)):
-                    tasks.append(
-                        (shutil.rmtree, [os.path.join(self.dataFileDir)])
-                    )
                 tasks.append(
                     (
                         os.makedirs,
@@ -652,7 +642,6 @@ class NexusProcessing:
         files : str[]
             List of files to interpolate.
         """
-        print("Using good frame threshold: ", str(self.goodFrameThreshold))
         # Sort the files beforehand,
         # so they should be in ascending order by start time.
         files = sorted(

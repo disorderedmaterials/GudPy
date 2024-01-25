@@ -1,13 +1,13 @@
-from pathlib import Path
 import time
-from copy import deepcopy
+import os
 
 from core.enums import Scales
+from core.iterators.iterator import Iterator
 
 
-class WavelengthSubtractionIterator():
+class InelasticitySubtraction(Iterator):
     """
-    Class to represent a WavelengthSubtractionIterator.
+    Class to represent a InelasticitySubtraction iterator.
     This class is used for iteratively subtracting wavelength.
     Each iteration comprises of a wavelength run and a
     Q binning run.
@@ -57,23 +57,30 @@ class WavelengthSubtractionIterator():
         Perform n iterations on the wavelength scale and Q scale.
     """
 
-    name = "IterateByWavelengthSubtraction"
+    name = "IterateByInelasticitySubtraction"
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunFile, nTotal):
         """
         Constructs all the necessary attributes for the
-        WavelengthSubtractionIterator object.
+        InelasticitySubtraction object.
 
         Parameters
         ----------
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
-        self.gudrunFile = deepcopy(gudrunFile)
+        super().__init__(gudrunFile, nTotal)
+        # Does a default iteration first (no changes)
+        self.iterationType = "QIteration"
+        # Individual iterations
+        self.iterationCount = 0
+        # Iteration pair
+        self.nCurrent = 0
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
+        self.gudrunOutputs = []
 
     def enableLogarithmicBinning(self):
         """
@@ -165,7 +172,7 @@ class WavelengthSubtractionIterator():
         then set self scattering file extensions to mint01.
         """
         # Dict to pick suffix based on scale
-        suffix = {Scales.Q: "msubw01", Scales.WAVELENGTH: "mint01"}[scale]
+        suffix = {Scales.Q: ".msubw01", Scales.WAVELENGTH: ".mint01"}[scale]
 
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
@@ -175,11 +182,18 @@ class WavelengthSubtractionIterator():
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
                     filename = target.dataFiles[0]
+                    prevOutput = (
+                        self.gudrunFile.gudrunOutput.output(
+                            sample.name, filename, suffix)
+                        if self.gudrunFile.gudrunOutput else ""
+                    )
                     target.fileSelfScattering = (
-                        str(Path(filename).stem) + '.' + suffix
+                        os.path.join(
+                            prevOutput,
+                        )
                     )
 
-    def wavelengthIteration(self, i):
+    def wavelengthIteration(self):
         """
         Performs one iteration on the wavelength scale.
         If the iteration is the first iteration,
@@ -192,10 +206,11 @@ class WavelengthSubtractionIterator():
         the x-scale, enable logarithmic binning, set the scale
         to the wavelength scale, zero the top hat widths, change
         the extensions of the self scattering files to .mint01.
-        Then, write out the GudrunFile and call gudrun_dcs.
+        Then, write out the gudrunFile and call gudrun_dcs.
         """
+        self.iterationType = "WavelengthIteration"
         # First iteration
-        if i == 0:
+        if self.iterationCount == 0:
             # Disable subtracting of wavelength binned data.
             # Collect the top hat widths and Q range and step size.
             self.gudrunFile.instrument.subWavelengthBinnedData = False
@@ -217,7 +232,7 @@ class WavelengthSubtractionIterator():
         self.zeroTopHatWidths()
         self.setSelfScatteringFiles(Scales.WAVELENGTH)
 
-    def QIteration(self, i):
+    def QIteration(self):
         """
         Performs one iteration on the Q scale.
         Enables subtracting of wavelength-binned data.
@@ -225,8 +240,9 @@ class WavelengthSubtractionIterator():
         the x-scale, disable logarithmic binning, set the scale
         to the Q scale, reset the top hat widths, change
         the extensions of the self scattering files to .msubw01.
-        Then, write out the GudrunFile and call gudrun_dcs.
+        Then, write out the gudrunFile and call gudrun_dcs.
         """
+        self.iterationType = "QIteration"
         # Enable subtracting of wavelength binned data
         self.gudrunFile.instrument.subWavelengthBinnedData = True
         # Set the min, max and step size on the X scale
@@ -239,19 +255,31 @@ class WavelengthSubtractionIterator():
         self.resetTopHatWidths()
         self.setSelfScatteringFiles(Scales.Q)
 
-    def iterate(self, n):
+    def performIteration(self):
+        if self.iterationType == "QIteration":
+            self.wavelengthIteration()
+            self.iterationCount += 1
+        else:
+            self.QIteration()
+            self.nCurrent += 1
+
+    def organiseOutput(self):
+        """
+        This organises the output of the iteration.
+        """
+        overwrite = (self.iterationCount == 1 and
+                     self.iterationType == "WavelengthIteration")
+        return self.gudrunFile.organiseOutput(
+            head=f"{self.iterationType}_{self.iterationCount}",
+            overwrite=overwrite)
+
+    def iterate(self):
         """
         Perform n iterations on both
         the wavelength scale and Q scale.
         """
-
-        for i in range(n):
-
-            self.wavelengthIteration(i)
-            self.gudrunFile.process(iterative=True)
+        for _ in range(self.nTotal * 2):
+            self.performIteration()
+            self.gudrunFile.dcs(iterator=self)
+            self.gudrunOutputs.append(self.gudrunFile.gudrunOutput)
             time.sleep(1)
-            self.gudrunFile.iterativeOrganise(n, i, "WavelengthIteration")
-            self.QIteration(i)
-            self.gudrunFile.process(iterative=True)
-            time.sleep(1)
-            self.gudrunFile.iterativeOrganise(n, i, "QIteration")
