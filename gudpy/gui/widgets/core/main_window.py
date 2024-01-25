@@ -63,7 +63,6 @@ from gui.widgets.tables.beam_profile_table import BeamProfileTable
 from gui.widgets.tables.grouping_parameter_table import GroupingParameterTable
 from gui.widgets.tables.exponential_table import ExponentialTable
 from gui.widgets.tables.resonance_table import ResonanceTable
-from gui.widgets.tables.pulse_table import PulseTable
 from gui.widgets.tables.spectra_table import SpectraTable
 from gui.widgets.tables.event_table import EventTable
 from gui.widgets.tables.components_table import ComponentsList
@@ -185,7 +184,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(RatioCompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
-        loader.registerCustomWidget(PulseTable)
         loader.registerCustomWidget(SpectraTable)
         loader.registerCustomWidget(EventTable)
         loader.registerCustomWidget(DataFilesList)
