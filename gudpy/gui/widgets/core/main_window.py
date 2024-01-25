@@ -647,7 +647,6 @@ class GudPyMainWindow(QMainWindow):
         if not self.setSaveLocation(saveAs=True):
             return False
         oldLocation = self.gudrunFile.projectDir
-        self.gudrunFile.setSaveLocation(dirname)
         os.makedirs(self.gudrunFile.projectDir)
         if os.path.exists(os.path.join(oldLocation, "Purge")):
             shutil.copytree(
