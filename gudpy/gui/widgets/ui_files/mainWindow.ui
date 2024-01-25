@@ -3368,17 +3368,6 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QToolButton" name="duplicateDataFileButton">
-                       <property name="text">
-                        <string>...</string>
-                       </property>
-                       <property name="icon">
-                        <iconset resource="../resources/resources.qrc">
-                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <spacer name="verticalSpacer_7">
                        <property name="orientation">
                         <enum>Qt::Vertical</enum>
@@ -3516,17 +3505,6 @@
                        <property name="icon">
                         <iconset resource="../resources/resources.qrc">
                          <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QToolButton" name="duplicateBackgroundDataFileButton">
-                       <property name="text">
-                        <string>...</string>
-                       </property>
-                       <property name="icon">
-                        <iconset resource="../resources/resources.qrc">
-                         <normaloff>:/icons/duplicate.png</normaloff>:/icons/duplicate.png</iconset>
                        </property>
                       </widget>
                      </item>
