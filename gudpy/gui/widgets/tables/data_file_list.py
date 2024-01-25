@@ -40,4 +40,5 @@ class DataFilesList(QListView):
         Removes rows from the model.
         """
         if self.currentIndex().isValid():
-            self.model().removeRow(self.currentIndex().row())
+            for index in self.selectedIndexes():
+                self.model().removeRow(index.row())
