@@ -637,21 +637,15 @@ class GudPyMainWindow(QMainWindow):
         """
         Saves the current state of the input file.
         """
-        if not self.gudrunFile.checkSaveLocation():
-            dirname, _ = QFileDialog.getSaveFileName(
-                self.mainWidget,
-                "Choose save location",
-            )
-            self.gudrunFile.setSaveLocation(dirname)
+        if not self.setSaveLocation(saveAs=True):
+            return False
 
         self.gudrunFile.save()
         self.setUnModified()
 
     def saveAs(self):
-        dirname, _ = QFileDialog.getSaveFileName(
-            self.mainWidget,
-            "Choose save location",
-        )
+        if not self.setSaveLocation(saveAs=True):
+            return False
         oldLocation = self.gudrunFile.projectDir
         self.gudrunFile.setSaveLocation(dirname)
         os.makedirs(self.gudrunFile.projectDir)
@@ -1018,12 +1012,8 @@ class GudPyMainWindow(QMainWindow):
             )
             return False
 
-        if not self.gudrunFile.checkSaveLocation():
-            dirname, _ = QFileDialog.getSaveFileName(
-                self.mainWidget,
-                "Choose save location",
-            )
-            self.gudrunFile.setSaveLocation(dirname)
+        if not self.setSaveLocation():
+            return False
 
         self.setControlsEnabled(False)
         self.mainWidget.progressBar.setValue(0)
@@ -1034,6 +1024,29 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.progressBar.setValue(0)
         self.mainWidget.currentTaskLabel.setText("No task running.")
         self.queue = Queue()
+
+    def setSaveLocation(self, saveAs=False):
+        """Function to let the user choose where the project is saved to
+
+        Parameters
+        ----------
+        saveAs : bool, optional
+            Whether to saveAs (bypass current savelocation), by default False
+
+        Returns
+        -------
+        bool
+            Detects whether getting save file was successful or not
+        """
+        if not self.gudrunFile.checkSaveLocation() or saveAs:
+            dirname, _ = QFileDialog.getSaveFileName(
+                self.mainWidget,
+                "Choose save location",
+            )
+            if not dirname:
+                return False
+            self.gudrunFile.setSaveLocation(dirname)
+            return True
 
     def checkPurge(self):
         if not self.gudrunFile.purged and os.path.exists(
