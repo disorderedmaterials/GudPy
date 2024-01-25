@@ -138,12 +138,6 @@ class NormalisationSlots():
             )
         )
 
-        self.widget.duplicateDataFileButton.clicked.connect(
-            lambda: self.duplicateDataFile(
-                self.widget.dataFilesList
-            )
-        )
-
         self.widget.addBackgroundDataFileButton.clicked.connect(
             lambda: self.addDataFiles(
                 self.widget.backgroundDataFilesList,
@@ -155,12 +149,6 @@ class NormalisationSlots():
 
         self.widget.removeBackgroundDataFileButton.clicked.connect(
             lambda: self.removeDataFile(
-                self.widget.backgroundDataFilesList
-            )
-        )
-
-        self.widget.duplicateBackgroundDataFileButton.clicked.connect(
-            lambda: self.duplicateDataFile(
                 self.widget.backgroundDataFilesList
             )
         )
