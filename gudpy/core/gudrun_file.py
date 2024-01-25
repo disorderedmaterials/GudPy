@@ -208,11 +208,12 @@ class GudrunFile:
                 self.purgeOutput = os.path.join(projectDir, "Purge")
 
         if self.loadFile:
-            self.setGudrunDir(os.path.dirname(self.loadFile))
-            self.setSaveLocation(os.path.join(
-                os.path.dirname(self.loadFile),
-                os.path.splitext(os.path.basename(self.loadFile))[0]
-            ))
+            if not config_:
+                self.setGudrunDir(os.path.dirname(self.loadFile))
+                self.setSaveLocation(os.path.join(
+                    os.path.dirname(self.loadFile),
+                    os.path.splitext(os.path.basename(self.loadFile))[0]
+                ))
             self.parse(self.loadFile, config_=config_)
 
     def __deepcopy__(self, memo):
