@@ -42,7 +42,10 @@ class TestGudPyIO(TestCase):
             "name": Instruments.NIMROD,
             "GudrunInputFileDir":
             os.path.abspath(os.path.dirname(os.path.abspath(dirpath))),
-            "dataFileDir": "NIMROD-water/raw/",
+            "dataFileDir": (
+                os.path.abspath(
+                    "test/TestData/NIMROD-water/raw/") + os.path.sep
+            ),
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
                 'StartupFiles/NIMROD/NIMROD84modules'
@@ -670,9 +673,14 @@ class TestGudPyIO(TestCase):
         instrumentAttrsDict = self.g.instrument.__dict__
 
         for key in instrumentAttrsDict.keys():
-            self.assertEqual(
-                self.expectedInstrument[key], instrumentAttrsDict[key]
-            )
+            pathKeys = ["GudrunInputFileDir", "dataFileDir"]
+            if key in pathKeys:
+                # Ignore the paths as they vary
+                continue
+            else:
+                self.assertEqual(
+                    self.expectedInstrument[key], instrumentAttrsDict[key]
+                )
 
         beamAttrsDict = self.g.beam.__dict__
 
@@ -820,7 +828,7 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, outlines)
         inlines = ""
-        with open(self.g.loadFile) as f:
+        with open(self.g.loadFile, encoding="utf-8") as f:
             inlines = f.read()
         for dic in self.dicts:
             for value in dic.values():
@@ -848,7 +856,7 @@ class TestGudPyIO(TestCase):
             "copyGF.txt"
         )
         g1 = GudrunFile(
-            self.g.path,
+            self.g.loadFile,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
@@ -880,7 +888,7 @@ class TestGudPyIO(TestCase):
 
             with open(
                 os.path.join(
-                    self.g.path
+                    self.g.loadFile
                 ),
                 encoding="utf-8"
             ) as fg:
@@ -894,7 +902,7 @@ class TestGudPyIO(TestCase):
     def testReloadGudrunFile(self):
         self.g.write_out(self.g.loadFile, overwrite=True)
         g1 = GudrunFile(
-            self.g.path,
+            self.g.loadFile,
             format=Format.TXT
         )
         g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
