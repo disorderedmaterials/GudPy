@@ -176,6 +176,16 @@ class GudrunFile:
 
         self.parse(self.loadFile, config_=config_)
 
+        if self.loadFile:
+            self.setGudrunDir(os.path.dirname(self.loadFile))
+            self.projectDir = os.path.join(
+                os.path.dirname(self.loadFile),
+                os.path.splitext(os.path.basename(self.loadFile))[0]
+            )
+            self.setSaveLocation(self.projectDir)
+
+        self.parse(self.loadFile, config_=config_)
+
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
         memo[id(self)] = result
@@ -291,7 +301,8 @@ class GudrunFile:
             # we simply extract the firstword in the line.
             self.instrument.name = Instruments[firstword(self.getNextToken())]
             self.consumeTokens(1)
-            self.instrument.dataFileDir = firstword(self.getNextToken())
+            self.instrument.dataFileDir = os.path.abspath(
+                firstword(self.getNextToken())) + os.path.sep
             self.instrument.dataFileType = firstword(self.getNextToken())
             self.instrument.detectorCalibrationFileName = (
                 firstword(self.getNextToken())
@@ -1547,8 +1558,7 @@ class GudrunFile:
                         )
 
     def setGudrunDir(self, dir):
-        assert (os.path.isdir(os.path.abspath(dir)))
-        self.instrument.GudrunInputFileDir = os.path.abspath(dir)
+        self.instrument.GudrunInputFileDir = dir
 
     def dcs(self, path='', headless=True, iterator=None):
         """
