@@ -99,7 +99,7 @@ class GudrunWorker(QObject):
             return
 
         with tempfile.TemporaryDirectory() as tmp:
-            path = self.gudrunFile.outpath
+            path = self.gudrunFile.OUTPATH
             self.gudrunFile.setGudrunDir(tmp)
             path = os.path.join(
                 tmp,

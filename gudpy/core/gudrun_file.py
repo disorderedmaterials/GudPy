@@ -56,7 +56,7 @@ class GudrunFile:
     ----------
     path : str
         Path to the file.
-    outpath : str
+    OUTPATH : str
         Path to write to, when not overwriting the initial file.
     instrument : Instrument
         Instrument object extracted from the input file.
@@ -158,7 +158,7 @@ class GudrunFile:
         self.format = format
 
         # Construct the outpath of generated input file
-        self.outpath = "gudpy.txt"
+        self.OUTPATH = "gudpy.txt"
 
         self.components = Components(components=[])
         self.gudrunOutput = None
@@ -1517,6 +1517,8 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
+        if not self.checkSaveLocation():
+            return False
 
         if not path:
             path = self.path
@@ -1557,20 +1559,20 @@ class GudrunFile:
         elif not overwrite:
             assert (not os.path.exists(os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
+                    self.OUTPATH)
             ))
             f = open(
                 os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath
+                    self.OUTPATH
                 ), "w", encoding="utf-8")
         else:
             if not self.path:
                 self.path = os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
+                    self.OUTPATH)
             f = open(self.path, "w", encoding="utf-8")
-        if os.path.basename(f.name) == self.outpath:
+        if os.path.basename(f.name) == self.OUTPATH:
             for sampleBackground in self.sampleBackgrounds:
                 sampleBackground.writeAllSamples = False
         f.write(str(self))
@@ -1617,7 +1619,7 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
 
-        path = f"./{self.outpath}"
+        path = f"./{self.OUTPATH}"
 
         if headless:
             with tempfile.TemporaryDirectory() as tmp:

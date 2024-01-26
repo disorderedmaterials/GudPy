@@ -313,7 +313,7 @@ class GudrunOutputHandler(OutputHandler):
         inputFile = ""
 
         for f in os.listdir(self.gudrunDir):
-            if f == self.gudrunFile.outpath:
+            if f == self.gudrunFile.OUTPATH:
                 inputFile = os.path.join(
                     self.outputDir, "AdditionalOutputs", f)
                 shutil.copyfile(
