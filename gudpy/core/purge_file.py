@@ -129,7 +129,7 @@ class PurgeFile():
         )
 
         nxsDefinitionFileLine = (
-            f"{nxsDefinitionFilePath}{config.spc5}"
+            f"{nxsDefinitionFilePath}{config.spc10}"
             f"NeXus definition file\n"
             if self.gudrunFile.instrument.dataFileType in ["nxs", "NXS"]
             else
@@ -138,13 +138,13 @@ class PurgeFile():
 
         normalisationDataFiles = [
             f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumber}"
-            f"{config.spc5}"
+            f"{config.spc10}"
             for df in self.gudrunFile.normalisation.dataFiles
         ]
 
         normalisationDataFilesBg = [
             f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumberBg}"
-            f"{config.spc5}"
+            f"{config.spc10}"
             for df in self.gudrunFile.normalisation.dataFilesBg
         ]
 
@@ -191,29 +191,29 @@ class PurgeFile():
 
         return (
             f'{HEADER}'
-            f'{instrumentLine}{config.spc5}'
+            f'{instrumentLine}{config.spc10}'
             f'Instrument name\n'
-            f'{self.gudrunFile.instrument.GudrunInputFileDir}{config.spc5}'
+            f'{self.gudrunFile.instrument.GudrunInputFileDir}{config.spc10}'
             f'Gudrun input file directory:\n'
-            f'{self.gudrunFile.instrument.dataFileDir}{config.spc5}'
+            f'{self.gudrunFile.instrument.dataFileDir}{config.spc10}'
             f'Data file directory\n'
-            f'{detCalibrationFileLine}{config.spc5}'
+            f'{detCalibrationFileLine}{config.spc10}'
             f'Detector calibration file name\n'
-            f'{groupFileLine}{config.spc5}'
+            f'{groupFileLine}{config.spc10}'
             f'Groups file name\n'
-            f'{spectrumNumbersLine}{config.spc5}'
+            f'{spectrumNumbersLine}{config.spc10}'
             f'Spectrum number(s) for incident beam monitor\n'
-            f'{channelNosLine}{config.spc5}'
+            f'{channelNosLine}{config.spc10}'
             f'Channel numbers for spike analysis\n'
-            f'{groupsAcceptanceFactorLine}{config.spc5}'
+            f'{groupsAcceptanceFactorLine}{config.spc10}'
             f'Spike analysis acceptance factor\n'
             f'{nxsDefinitionFileLine}'
-            f'{spacify(self.standardDeviation, num_spaces=2)}{config.spc5}'
+            f'{spacify(self.standardDeviation, num_spaces=2)}{config.spc10}'
             f'Specify the number of standard deviations allowed'
             f' above and below the mean ratio.'
             f' Specify the range of std\'s allowed'
             f' around the mean standard deviation.\n'
-            f'{numifyBool(self.ignoreBad)}{config.spc5}'
+            f'{numifyBool(self.ignoreBad)}{config.spc10}'
             f'Ignore any existing bad spectrum and spike files'
             f' (spec.bad, spike.dat)?\n'
             f'{dataFilesLines}'
