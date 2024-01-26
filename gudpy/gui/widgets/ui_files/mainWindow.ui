@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1580</width>
-    <height>1453</height>
+    <width>1400</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="mainWidget">
+  <widget class="QScrollArea" name="mainWidget">
    <layout class="QVBoxLayout" name="verticalLayout_8">
     <item>
      <widget class="QTabWidget" name="tabWidget">
@@ -54,6 +54,8 @@
             <property name="currentIndex">
              <number>0</number>
             </property>
+
+            <widget class="QScrollArea">
             <widget class="QWidget" name="instrumentPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
@@ -2295,6 +2297,8 @@
               </item>
              </layout>
             </widget>
+            </widget>
+
             <widget class="QWidget" name="beamPage">
              <layout class="QVBoxLayout" name="verticalLayout_12">
               <item>
@@ -3049,6 +3053,7 @@
               </item>
              </layout>
             </widget>
+
             <widget class="QWidget" name="componentPage">
              <layout class="QVBoxLayout" name="verticalLayout_51">
               <item>
@@ -3240,6 +3245,7 @@
               </item>
              </layout>
             </widget>
+
             <widget class="QWidget" name="normalisationPage">
              <layout class="QVBoxLayout" name="verticalLayout_21">
               <item>
@@ -4347,6 +4353,7 @@
               </item>
              </layout>
             </widget>
+
             <widget class="QWidget" name="sampleBackgroundPage">
              <layout class="QHBoxLayout" name="horizontalLayout_51">
               <item>
