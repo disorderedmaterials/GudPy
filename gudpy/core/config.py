@@ -5,7 +5,7 @@ from core.enums import Geometry
 from core.gui_config import GUIConfig
 
 spc2 = "  "
-spc5 = "          "
+spc10 = "          "
 
 geometry = Geometry.FLATPLATE
 NUM_GUDPY_CORE_OBJECTS = 4

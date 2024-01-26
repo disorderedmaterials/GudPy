@@ -231,7 +231,7 @@ class Composition():
         string = ""
         for el in self.elements:
             string += (
-                str(el) + config.spc5 +
+                str(el) + config.spc10 +
                 "Composition\n"
             )
 

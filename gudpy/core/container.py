@@ -60,6 +60,7 @@ class Container:
     Methods
     -------
     """
+
     def __init__(self, config_=None):
         """
         Constructs all the necessary attributes for the Container object.
@@ -127,10 +128,10 @@ class Container:
         """
 
         nameLine = (
-            f"CONTAINER {self.name}{config.spc5}"
+            f"CONTAINER {self.name}{config.spc10}"
             if self.name != "CONTAINER"
             else
-            f"CONTAINER{config.spc5}"
+            f"CONTAINER{config.spc10}"
         )
 
         dataFilesLines = (
@@ -138,7 +139,7 @@ class Container:
             if len(self.dataFiles) > 0
             else
             ''
-            )
+        )
 
         if self.densityUnits == UnitsOfDensity.ATOMIC:
             units = 'atoms/\u212b^3'
@@ -151,10 +152,10 @@ class Container:
 
         geometryLines = (
             f'{self.upstreamThickness}{config.spc2}'
-            f'{self.downstreamThickness}{config.spc5}'
+            f'{self.downstreamThickness}{config.spc10}'
             f'Upstream and downstream thicknesses [cm]\n'
             f'{self.angleOfRotation}{config.spc2}'
-            f'{self.sampleWidth}{config.spc5}'
+            f'{self.sampleWidth}{config.spc10}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 self.geometry == Geometry.SameAsBeam
@@ -162,14 +163,14 @@ class Container:
             )
             or self.geometry == Geometry.FLATPLATE
             else
-            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc10}'
             f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{config.spc5}'
+            f'{self.sampleHeight}{config.spc10}'
             f'Sample height (cm)\n'
         )
 
         densityLine = (
-            f'{density}{config.spc5}'
+            f'{density}{config.spc10}'
             f'Density {units}?\n'
         )
 
@@ -177,31 +178,31 @@ class Container:
             CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
-            f"{crossSectionSource}{config.spc5}"
+            f"{crossSectionSource}{config.spc10}"
             if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
-            f"{self.crossSectionFilename}{config.spc5}"
+            f"{self.crossSectionFilename}{config.spc10}"
         )
 
         return (
             f'{nameLine}{{\n\n'
             f'{len(self.dataFiles)}{config.spc2}'
-            f'{self.periodNumber}{config.spc5}'
+            f'{self.periodNumber}{config.spc10}'
             f'Number of files and period number\n'
             f'{dataFilesLines}'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'*{config.spc2}0{config.spc2}0{config.spc10}'
             f'* 0 0 to specify end of composition input\n'
-            f'SameAsBeam{config.spc5}'
+            f'SameAsBeam{config.spc10}'
             f'Geometry\n'
             f'{geometryLines}'
             f'{densityLine}'
             f'{crossSectionLine}'
             f'Total cross section source\n'
-            f'{self.tweakFactor}{config.spc5}'
+            f'{self.tweakFactor}{config.spc10}'
             f'Tweak factor\n'
             f'{self.scatteringFraction}{config.spc2}'
-            f'{self.attenuationCoefficient}{config.spc5}'
+            f'{self.attenuationCoefficient}{config.spc10}'
             f'Sample environment scattering fraction '
             f'and attenuation coefficient [per \u212b]\n'
             f'\n}}\n'
@@ -365,7 +366,7 @@ class Container:
 
         except Exception as e:
             raise ParserException(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing."
+                "Whilst parsing Container, an exception occured."
+                " The input file is most likely of an incorrect format, "
+                "and some attributes were missing."
             ) from e
