@@ -16,6 +16,7 @@ class DataFiles:
     Methods
     -------
     """
+
     def __init__(self, dataFiles, name):
         """
         Constructs all the necessary attributes for the DataFiles object.
@@ -49,9 +50,9 @@ class DataFiles:
             String representation of DataFiles.
         """
         self.str = [
-            df + config.spc5 + self.name + " data files"
+            df + config.spc10 + self.name + " data files"
             for df in self.dataFiles
-            ]
+        ]
         return """\n""".join(self.str)
 
     def __len__(self):
