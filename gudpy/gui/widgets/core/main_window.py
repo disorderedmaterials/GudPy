@@ -1002,6 +1002,14 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.started.connect(self.worker.gudrun)
         self.worker.started.connect(self.procStarted)
         self.worker.outputChanged.connect(self.progressDCS)
+        self.worker.errorOccured.connect(
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"Error occured while running Gudrun:"
+                f"\n{self.worker.stderr}"
+            )
+        )
         self.worker.finished.connect(self.workerThread.quit)
         self.worker.finished.connect(finished)
         self.worker.finished.connect(self.cleanupRun)
@@ -1677,6 +1685,14 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.started.connect(self.worker.purge)
         self.worker.started.connect(self.procStarted)
         self.worker.outputChanged.connect(self.progressPurge)
+        self.worker.errorOccured.connect(
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"Error occured while running Purge:"
+                f"\n{self.worker.stderr}"
+            )
+        )
         self.worker.finished.connect(self.cleanupRun)
         self.worker.finished.connect(self.workerThread.quit)
 

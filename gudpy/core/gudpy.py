@@ -78,15 +78,18 @@ class Purge(Process):
                     self._outputChanged(line.decode("utf8"))
                     if self.checkError(line):
                         self._errorOccured(line)
+                        return [1, self.stderr]
                 if purge.stderr:
                     self._errorOccured(
                         purge.stderr.decode("utf8"))
-                    return
+                    return [1, self.stderr]
 
             self.gudrunFile.purgeFile.organiseOutput()
 
         self.gudrunFile.setGudrunDir(
             self.gudrunFile.projectDir)
+
+        return 0
 
 
 class Gudrun(Process):
@@ -120,14 +123,17 @@ class Gudrun(Process):
                 for line in gudrun.stdout:
                     if self.checkError(line):
                         self._errorOccured(line)
+                        return 1
                     self._outputChanged(line.decode("utf8"))
                 if gudrun.stderr:
                     self._errorOccured(
                         gudrun.stderr.decode("utf8"))
-                    return
+                    return 1
 
             if self.iterator is not None:
                 self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
             else:
                 self.gudrunFile.gudrunOutput = self.gudrunFile.organiseOutput()
             self.gudrunFile.setGudrunDir(self.gudrunFile.gudrunOutput.path)
+
+        return 0
