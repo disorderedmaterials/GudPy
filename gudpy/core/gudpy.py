@@ -30,15 +30,28 @@ class Process:
                 ), f"{self.PROCESS}{SUFFIX}"
             )
 
-    def checkBinary(self):
-        if not os.path.exists(self.BINARY_PATH):
-            raise FileNotFoundError(f"Missing {self.PROCESS} binary")
-
     def _outputChanged(self, output):
         self.stdout += output
 
     def _errorOccured(self, stderr):
         self.stderr += stderr
+
+    def checkBinary(self):
+        if not os.path.exists(self.BINARY_PATH):
+            raise FileNotFoundError(f"Missing {self.PROCESS} binary")
+
+    def checkError(self, line):
+        # Check for errors.
+        ERROR_KWDS = [
+            "does not exist",
+            "error",
+            "Error"
+        ]
+        if [KWD for KWD in ERROR_KWDS if KWD in line]:
+            self.stderr += line
+            return True
+
+        return False
 
 
 class Purge(Process):
@@ -63,6 +76,8 @@ class Purge(Process):
             ) as purge:
                 for line in purge.stdout:
                     self._outputChanged(line.decode("utf8"))
+                    if self.checkError(line):
+                        self._errorOccured(line)
                 if purge.stderr:
                     self._errorOccured(
                         purge.stderr.decode("utf8"))
@@ -103,6 +118,8 @@ class Gudrun(Process):
                 stderr=subprocess.STDOUT
             ) as gudrun:
                 for line in gudrun.stdout:
+                    if self.checkError(line):
+                        self._errorOccured(line)
                     self._outputChanged(line.decode("utf8"))
                 if gudrun.stderr:
                     self._errorOccured(
