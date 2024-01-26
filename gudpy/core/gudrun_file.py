@@ -195,8 +195,9 @@ class GudrunFile:
                     if os.path.splitext(f)[1] == ".yaml":
                         # If file is yaml
                         self.path = os.path.join(projectDir, f)
-            if self.path is None:
-                raise FileNotFoundError()
+            if not self.path:
+                raise FileNotFoundError(
+                    "Could not find GudPy input file within the project")
 
             self.setSaveLocation(projectDir)
             self.parse(self.path)
@@ -207,7 +208,7 @@ class GudrunFile:
             if os.path.exists(os.path.join(projectDir, "Gudrun")):
                 self.purgeOutput = os.path.join(projectDir, "Purge")
 
-        if self.loadFile:
+        elif self.loadFile:
             if not config_:
                 self.setGudrunDir(os.path.dirname(self.loadFile))
                 self.setSaveLocation(os.path.join(
@@ -215,6 +216,10 @@ class GudrunFile:
                     os.path.splitext(os.path.basename(self.loadFile))[0]
                 ))
             self.parse(self.loadFile, config_=config_)
+
+        else:
+            raise FileNotFoundError(
+                "No project directory or load file specified")
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
