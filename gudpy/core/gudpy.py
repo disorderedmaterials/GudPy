@@ -78,11 +78,11 @@ class Purge(Process):
                     self._outputChanged(line.decode("utf8"))
                     if self.checkError(line):
                         self._errorOccured(line)
-                        return [1, self.stderr]
+                        return 1
                 if purge.stderr:
                     self._errorOccured(
                         purge.stderr.decode("utf8"))
-                    return [1, self.stderr]
+                    return 1
 
             self.gudrunFile.purgeFile.organiseOutput()
 
