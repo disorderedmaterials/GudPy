@@ -1067,9 +1067,10 @@ class GudPyMainWindow(QMainWindow):
 
         if result == QMessageBox.Yes:
             # Run Purge and queue Gudrun after
-            self.runPurge(dialog=True, finished=lambda: self.runGudrun(
-                self.gudrunFile, self.procFinished
-            ))
+            self.runPurge(self.gudrunFile, dialog=True, finished=(
+                lambda: self.runGudrun(
+                    self.gudrunFile, self.procFinished
+                )))
             return False
         elif result == QMessageBox.No:
             return True
@@ -1655,10 +1656,10 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def runPurge(self, finished=None, dialog=False) -> bool:
+    def runPurge(self, gudrunFile, finished=None, dialog=False) -> bool:
         if dialog:
             self.setControlsEnabled(False)
-            purgeDialog = PurgeDialog(self.gudrunFile, self)
+            purgeDialog = PurgeDialog(gudrunFile, self)
             result = purgeDialog.widget.exec_()
 
             if (purgeDialog.cancelled or result == QDialogButtonBox.No):
@@ -1670,7 +1671,7 @@ class GudPyMainWindow(QMainWindow):
             self.cleanupRun()
             return False
 
-        self.worker = PurgeWorker(self.gudrunFile)
+        self.worker = PurgeWorker(gudrunFile)
         self.workerThread = QThread()
         self.worker.moveToThread(self.workerThread)
         self.workerThread.started.connect(self.worker.purge)
