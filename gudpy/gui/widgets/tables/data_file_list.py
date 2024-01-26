@@ -1,4 +1,4 @@
-from PySide6.QtCore import QModelIndex, QStringListModel
+from PySide6.QtCore import QModelIndex, QStringListModel, QPersistentModelIndex
 from PySide6.QtWidgets import QListView
 
 
@@ -40,5 +40,9 @@ class DataFilesList(QListView):
         Removes rows from the model.
         """
         if self.currentIndex().isValid():
-            for index in self.selectedIndexes():
+            indexes = []
+            for index_ref in self.selectedIndexes():
+                index = QPersistentModelIndex(index_ref)
+                indexes.append(index)
+            for index in indexes:
                 self.model().removeRow(index.row())
