@@ -10,83 +10,107 @@ from core import enums
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-def gudrun(gudrunFile, iterator=None):
-    PROCESS = "gudrun_dcs"
+class Process:
+    def __init__(self, gudrunFile, process):
+        self.PROCESS = process
+        self.BINARY_PATH = ""
 
-    if hasattr(sys, '_MEIPASS'):
-        gudrun_dcs = os.path.join(sys._MEIPASS, f"{PROCESS}{SUFFIX}")
-    else:
-        gudrun_dcs = utils.resolve(
-            os.path.join(
-                config.__rootdir__, "bin"
-            ), f"{PROCESS}{SUFFIX}"
-        )
+        self.gudrunFile = gudrunFile
+        self.stdout = ""
+        self.sterr = ""
 
-    if not os.path.exists(gudrun_dcs):
-        return (-1, "MISSING_BINARY")
-
-    with tempfile.TemporaryDirectory() as tmp:
-        path = gudrunFile.outpath
-        gudrunFile.setGudrunDir(tmp)
-        path = os.path.join(
-            tmp,
-            path
-        )
-        gudrunFile.save(
-            path=os.path.join(
-                gudrunFile.projectDir,
-                f"{gudrunFile.filename}"
-            ),
-            format=enums.Format.YAML
-        )
-        gudrunFile.write_out(path)
-
-        # Run gudrun
-        result = subprocess.run(
-            path
-            [gudrun_dcs, path], cwd=tmp, capture_output=True, text=True
-        )
-
-        if iterator is not None:
-            gudrunFile.gudrunOutput = iterator.organiseOutput()
+        # Find binary
+        if hasattr(sys, '_MEIPASS'):
+            self.BINARY_PATH = os.path.join(
+                sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
         else:
-            gudrunFile.gudrunOutput = gudrunFile.organiseOutput()
+            self.BINARY_PATH = utils.resolve(
+                os.path.join(
+                    config.__rootdir__, "bin"
+                ), f"{self.PROCESS}{SUFFIX}"
+            )
 
-        gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
-        return result
+    def checkBinary(self):
+        if not os.path.exists(self.BINARY_PATH):
+            raise FileNotFoundError(f"Missing {self.PROCESS} binary")
+
+    def _outputChanged(self, output):
+        self.stdout += output
+
+    def _errorOccured(self, stderr):
+        self.stderr += stderr
 
 
-def purge(gudrunFile):
-    PROCESS = "purge_det"
+class Purge(Process):
+    def __init__(self, gudrunFile):
+        self.PROCESS = "purge_det"
+        super().__init__(gudrunFile, self.PROCESS)
 
-    if hasattr(sys, '_MEIPASS'):
-        purge_det = os.path.join(sys._MEIPASS, f"{PROCESS}{SUFFIX}")
-    else:
-        purge_det = utils.resolve(
-            os.path.join(
-                config.__rootdir__, "bin"
-            ), f"{PROCESS}{SUFFIX}"
-        )
-    if not os.path.exists(purge_det):
-        return (-1, "MISSING_BINARY")
+    def purge(self):
+        self.checkBinary()
 
-    with tempfile.TemporaryDirectory() as tmp:
-        gudrunFile.setGudrunDir(tmp)
-        gudrunFile.purgeFile.write_out(os.path.join(
-            gudrunFile.instrument.GudrunInputFileDir,
-            f"{PROCESS}.dat"
-        ))
+        with tempfile.TemporaryDirectory() as tmp:
+            self.gudrunFile.setGudrunDir(tmp)
+            self.gudrunFile.purgeFile.write_out(os.path.join(
+                self.gudrunFile.instrument.GudrunInputFileDir,
+                f"{self.PROCESS}.dat"
+            ))
 
-        result = subprocess.run(
-            [purge_det, "purge_det.dat"],
-            cwd=tmp,
-            capture_output=True,
-            text=True
-        )
+            with subprocess.Popen(
+                [self.BINARY_PATH, f"{self.PROCESS}.dat"], cwd=tmp,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT
+            ) as purge:
+                for line in purge.stdout:
+                    self._outputChanged(line.decode("utf8"))
+                if purge.stderr:
+                    self._errorOccured(
+                        purge.stderr.decode("utf8"))
+                    return
 
-    gudrunFile.purgeFile.organiseOutput()
+            self.gudrunFile.purgeFile.organiseOutput()
 
-    gudrunFile.setGudrunDir(
-        gudrunFile.projectDir)
+        self.gudrunFile.setGudrunDir(
+            self.gudrunFile.projectDir)
 
-    return result
+
+class Gudrun(Process):
+    def __init__(self, gudrunFile, iterator=None):
+        self.PROCESS = "gudrun_dcs"
+        self.iterator = iterator
+        super().__init__(gudrunFile, self.PROCESS)
+
+    def gudrun(self):
+        self.checkBinary()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            self.gudrunFile.setGudrunDir(tmp)
+            path = os.path.join(
+                tmp,
+                self.gudrunFile.outpath
+            )
+            self.gudrunFile.save(
+                path=os.path.join(
+                    self.gudrunFile.projectDir,
+                    f"{self.gudrunFile.filename}"
+                ),
+                format=enums.Format.YAML
+            )
+            self.gudrunFile.write_out(path)
+            with subprocess.Popen(
+                [self.BINARY_PATH, path], cwd=tmp,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT
+            ) as gudrun:
+                for line in gudrun.stdout:
+                    self._outputChanged(line.decode("utf8"))
+                if gudrun.stderr:
+                    self._errorOccured(
+                        gudrun.stderr.decode("utf8"))
+                    return
+
+            if self.iterator is not None:
+                self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
+            else:
+                self.gudrunFile.gudrunOutput = self.gudrunFile.organiseOutput()
+            self.gudrunFile.setGudrunDir(self.gudrunFile.gudrunOutput.path)
