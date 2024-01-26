@@ -11,8 +11,6 @@ from PySide6.QtCore import (
     QTimer,
     QThread,
     QProcess,
-    QElapsedTimer,
-    QCoreApplication,
 )
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtUiTools import QUiLoader
@@ -55,7 +53,6 @@ from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance_dialog import (
     CompositionAcceptanceDialog,
 )
-from gui.widgets.dialogs.nexus_processing_dialog import NexusProcessingDialog
 from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
@@ -66,7 +63,6 @@ from gui.widgets.tables.beam_profile_table import BeamProfileTable
 from gui.widgets.tables.grouping_parameter_table import GroupingParameterTable
 from gui.widgets.tables.exponential_table import ExponentialTable
 from gui.widgets.tables.resonance_table import ResonanceTable
-from gui.widgets.tables.pulse_table import PulseTable
 from gui.widgets.tables.spectra_table import SpectraTable
 from gui.widgets.tables.event_table import EventTable
 from gui.widgets.tables.components_table import ComponentsList
@@ -152,7 +148,6 @@ class GudPyMainWindow(QMainWindow):
         self.plotModes = {}
         self.proc = None
         self.output = ""
-        self.nexusProcessingOutput = {}
         self.outputIterations = {}
         self.previousProcTitle = ""
         self.error = ""
@@ -189,7 +184,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(RatioCompositionTable)
         loader.registerCustomWidget(ExponentialTable)
         loader.registerCustomWidget(ResonanceTable)
-        loader.registerCustomWidget(PulseTable)
         loader.registerCustomWidget(SpectraTable)
         loader.registerCustomWidget(EventTable)
         loader.registerCustomWidget(DataFilesList)
@@ -209,7 +203,6 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
         loader.registerCustomWidget(CompositionAcceptanceDialog)
-        loader.registerCustomWidget(NexusProcessingDialog)
         loader.registerCustomWidget(BatchProcessingDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
@@ -474,13 +467,6 @@ class GudPyMainWindow(QMainWindow):
         self.setActionsEnabled(False)
         self.mainWidget.tabWidget.setVisible(False)
         self.setWindowModified(False)
-
-        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
-            self.mainWidget.runNexusProcessing.setVisible(True)
-
-        self.mainWidget.runNexusProcessing.triggered.connect(
-            self.nexusProcessing
-        )
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
@@ -1002,6 +988,14 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.started.connect(self.worker.gudrun)
         self.worker.started.connect(self.procStarted)
         self.worker.outputChanged.connect(self.progressDCS)
+        self.worker.errorOccured.connect(
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"Error occured while running Gudrun:"
+                f"\n{self.worker.stderr}"
+            )
+        )
         self.worker.finished.connect(self.workerThread.quit)
         self.worker.finished.connect(finished)
         self.worker.finished.connect(self.cleanupRun)
@@ -1078,151 +1072,6 @@ class GudPyMainWindow(QMainWindow):
             return False
         else:
             return False
-
-    def nexusProcessing(self):
-        if not self.checkFilesExist_():
-            return
-
-        self.setControlsEnabled(False)
-        nexusProcessingDialog = NexusProcessingDialog(
-            self.gudrunFile, self.mainWidget
-        )
-        nexusProcessingDialog.widget.exec()
-        if (
-            nexusProcessingDialog.cancelled
-            or not nexusProcessingDialog.preprocess
-        ):
-            self.setControlsEnabled(True)
-        else:
-            tasks = nexusProcessingDialog.preprocess
-            for task in tasks[:-1]:
-                func, args = task
-                func(*args)
-
-            self.proc = tasks[-1]
-            self.proc.started.connect(self.nexusProcessingStarted)
-            self.proc.readyReadStandardOutput.connect(
-                self.progressNexusPreprocess
-            )
-            self.proc.readyReadStandardError.connect(self.errorNexusPreprocess)
-            self.proc.finished.connect(self.preprocessNexusFinished)
-            self.proc.start()
-
-    def nexusProcessingStarted(self):
-        self.nexusProcessingFiles = set()
-        self.text = "NeXuS Pre-processing"
-        self.mainWidget.currentTaskLabel.setText(self.text)
-
-    def progressNexusPreprocess(self):
-        data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf8")
-        _, _, data = stdout.partition("Finished processing: ")
-        if data:
-            self.nexusProcessingFiles.add(data.split()[0])
-
-        progress = re.findall(r"(\d+(?:\.\d+)?)%", stdout)
-        if progress:
-            self.mainWidget.progressBar.setValue(int(float(progress[-1])))
-
-    def errorNexusPreprocess(self):
-        data = self.proc.readAllStandardError()
-        stderr = bytes(data).decode("utf8")
-        if stderr:
-            self.error = (
-                f"An error occurred. See the following traceback"
-                f" from modulation_excitation\n{stderr}"
-            )
-            QMessageBox.critical(
-                self.mainWidget, "GudPy Error",
-                self.error
-            )
-            self.gudrunFile.nexus_processing.tmp.cleanup()
-
-    def progressNexusProcess(self):
-        progress = self.progressIncrementDCS(
-            self.gudrunFile.nexus_processing.gudrunFile
-        )
-        progress /= self.nPulses
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
-            progress if progress <= 100 else 100
-        )
-
-    def preprocessNexusFinished(self):
-        self.nexusProcessingFiles = list(self.nexusProcessingFiles)
-        self.nPulses = len(self.nexusProcessingFiles)
-        self.mainWidget.progressBar.setValue(0)
-        if self.nPulses > 0:
-            tasks = self.gudrunFile.nexus_processing.process(
-                self.nexusProcessingFiles, headless=False
-            )
-            self.text = "NeXuS Processing"
-            self.mainWidget.currentTaskLabel.setText(self.text)
-            self.queue = Queue()
-            for t in tasks:
-                self.queue.put(t)
-            self.currentFile = 0
-            self.keyMap = {
-                n + 1: os.path.splitext(
-                    os.path.basename(
-                        self.nexusProcessingFiles[n]
-                    )
-                )[0]
-                for n in range(len(self.nexusProcessingFiles))
-            }
-            self.processPulse()
-        else:
-            self.setControlsEnabled(True)
-            self.mainWidget.currentTaskLabel.setText("No task running.")
-
-    def processPulse(self):
-        task = self.queue.get()
-        if isinstance(task[0], QProcess):
-            dcs, func, args, dir_ = task
-            self.makeProc(
-                dcs,
-                self.progressNexusProcess,
-                dir_=dir_,
-                func=func,
-                args=args,
-                started=self.processPulseStarted,
-                finished=self.processPulseFinished,
-            )
-        else:
-            func, args = task
-            func(*args)
-            self.nexusProcessingFinished()
-
-    def processPulseStarted(self):
-        return
-
-    def processPulseFinished(self):
-        timer = QElapsedTimer()
-        timer.start()
-        while timer.elapsed() < 5000:
-            QCoreApplication.processEvents()
-        self.nexusProcessingOutput[self.currentFile + 1] = self.output
-        self.currentFile += 1
-        self.output = ""
-        func, args = self.queue.get()
-        func(*args)
-        if not self.queue.empty():
-            self.processPulse()
-        else:
-            self.nexusProcessingFinished()
-
-    def nexusProcessingFinished(self):
-        self.cleanupRun()
-        self.worker = None
-        self.workerThread = None
-        self.proc = None
-        self.outputSlots.setOutput(
-            self.nexusProcessingOutput,
-            "gudrun_dcs",
-            gudrunFile=self.gudrunFile.nexus_processing.gudrunFile,
-            keyMap=self.keyMap
-        )
-        self.gudrunFile.nexus_processing.tmp.cleanup()
 
     def batchProcessing(self):
         if not self.prepareRun():
@@ -1541,17 +1390,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.runFilesIndividually.setEnabled(state)
         self.mainWidget.runContainersAsSamples.setEnabled(state)
 
-        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
-            self.mainWidget.runNexusProcessing.setEnabled(
-                state
-                & (
-                    self.gudrunFile.instrument.dataFileType == "nxs"
-                    or self.gudrunFile.instrument.dataFileType == "NXS"
-                )
-                if self.gudrunFile
-                else False
-            )
-
     def setActionsEnabled(self, state):
         self.setTreeActionsEnabled(state)
 
@@ -1567,17 +1405,6 @@ class GudPyMainWindow(QMainWindow):
         self.mainWidget.save.setEnabled(state & self.modified)
         self.mainWidget.saveAs.setEnabled(state)
         self.mainWidget.exportArchive.setEnabled(state)
-
-        if os.environ.get("NEXUS_PROCESSING_ENABLED", False):
-            self.mainWidget.runNexusProcessing.setEnabled(
-                state
-                & (
-                    self.gudrunFile.instrument.dataFileType == "nxs"
-                    or self.gudrunFile.instrument.dataFileType == "NXS"
-                )
-                if self.gudrunFile
-                else False
-            )
 
     def setTreeActionsEnabled(self, state):
         self.mainWidget.insertSampleBackground.setEnabled(state)
@@ -1677,6 +1504,14 @@ class GudPyMainWindow(QMainWindow):
         self.workerThread.started.connect(self.worker.purge)
         self.worker.started.connect(self.procStarted)
         self.worker.outputChanged.connect(self.progressPurge)
+        self.worker.errorOccured.connect(
+            QMessageBox.critical(
+                self.mainWidget,
+                "GudPy Error",
+                f"Error occured while running Purge:"
+                f"\n{self.worker.stderr}"
+            )
+        )
         self.worker.finished.connect(self.cleanupRun)
         self.worker.finished.connect(self.workerThread.quit)
 
