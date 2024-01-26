@@ -1,10 +1,6 @@
-from PySide6.QtCore import QProcess
-import sys
 import os
-import subprocess
 import time
 import re
-import tempfile
 from copy import deepcopy
 
 from core.utils import (
@@ -16,7 +12,6 @@ from core.utils import (
     firstNInts,
     nthfloat,
     nthint,
-    resolve,
     uniquifyName
 )
 from core.instrument import Instrument
@@ -1551,89 +1546,6 @@ class GudrunFile:
 
     def setGudrunDir(self, dir):
         self.instrument.GudrunInputFileDir = dir
-
-    def dcs(self, path='', headless=True, iterator=None):
-        """
-        Call gudrun_dcs on the path supplied.
-        If the path is its default value,
-        then use the path attribute as the path.
-
-        Parameters
-        ----------
-        path : str, optional
-            Path to parse from (default is empty, which indicates self.path).
-        headless : bool, optional
-            Is this being run through CL or GUI?
-        iterative : bool, optional
-            Is Gudrun being iterated?
-
-        Returns
-        -------
-        subprocess.CompletedProcess
-            The result of calling gudrun_dcs using subprocess.run.
-            Can access stdout/stderr from this.
-        """
-
-        path = f"./{self.outpath}"
-
-        if headless:
-            with tempfile.TemporaryDirectory() as tmp:
-                self.setGudrunDir(tmp)
-                path = os.path.join(
-                    tmp,
-                    path
-                )
-                self.write_out(path)
-                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                with subprocess.Popen(
-                    [gudrun_dcs, path], cwd=tmp,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT
-                ) as gudrun:
-                    result = gudrun
-
-                    ERROR_KWDS = ["does not exist", "error", "Error"]
-
-                    for line in gudrun.stdout:
-                        if [KWD for KWD in ERROR_KWDS if KWD
-                                in line.decode("utf8").rstrip("\n")]:
-                            result.error = line
-                            result.returncode = 1
-                            return result
-
-                    if gudrun.stderr:
-                        result.stderr = gudrun.stderr
-                        return result
-
-                if iterator is not None:
-                    self.gudrunOutput = iterator.organiseOutput()
-                else:
-                    self.gudrunOutput = self.organiseOutput()
-                self.setGudrunDir(self.gudrunOutput.path)
-            return result
-        else:
-            if hasattr(sys, '_MEIPASS'):
-                gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
-            else:
-                gudrun_dcs = resolve(
-                    os.path.join(
-                        config.__rootdir__, "bin"
-                    ), f"gudrun_dcs{SUFFIX}"
-                )
-            if not os.path.exists(gudrun_dcs):
-                return FileNotFoundError()
-            else:
-                proc = QProcess()
-                proc.setProgram(gudrun_dcs)
-                proc.setArguments([path])
-                return (
-                    proc,
-                    self.write_out,
-                    [
-                        '',
-                        False
-                    ]
-                )
 
     def purge(self, *args, **kwargs):
         """
