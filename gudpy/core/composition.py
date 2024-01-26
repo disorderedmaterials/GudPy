@@ -5,6 +5,7 @@ from core.element import Element
 from core.isotopes import Sears91
 from core.exception import ChemicalFormulaParserException
 from core.mass_data import massData
+from core import config
 
 
 class ChemicalFormulaParser():
@@ -115,7 +116,7 @@ class Component():
             [
                 e.eq(el) for e, el in zip(self.elements, obj.elements)
             ]
-         ) and self.name == obj.name
+        ) and self.name == obj.name
 
 
 class Components():
@@ -230,7 +231,7 @@ class Composition():
         string = ""
         for el in self.elements:
             string += (
-                str(el) + "        "
+                str(el) + config.spc10 +
                 "Composition\n"
             )
 

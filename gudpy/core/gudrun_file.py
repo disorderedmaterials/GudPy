@@ -293,7 +293,8 @@ class GudrunFile:
             # we simply extract the firstword in the line.
             self.instrument.name = Instruments[firstword(self.getNextToken())]
             self.consumeTokens(1)
-            self.instrument.dataFileDir = firstword(self.getNextToken())
+            self.instrument.dataFileDir = os.path.abspath(
+                firstword(self.getNextToken())) + os.path.sep
             self.instrument.dataFileType = firstword(self.getNextToken())
             self.instrument.detectorCalibrationFileName = (
                 firstword(self.getNextToken())
@@ -1427,18 +1428,18 @@ class GudrunFile:
 
         LINEBREAK = "\n\n"
         header = (
-            f"'{config.spc2}'{config.spc2}'{config.spc5}'"
+            f"'{config.spc2}'{config.spc2}'{config.spc10}'"
             f"{config.spc2}'{os.path.sep}'{LINEBREAK}"
         )
         instrument = (
-            f"INSTRUMENT{config.spc5}{{\n\n"
+            f"INSTRUMENT{config.spc10}{{\n\n"
             + str(self.instrument)
             + LINEBREAK
             + "}"
         )
-        beam = f"BEAM{config.spc5}{{\n\n" + str(self.beam) + LINEBREAK + "}"
+        beam = f"BEAM{config.spc10}{{\n\n" + str(self.beam) + LINEBREAK + "}"
         normalisation = (
-            f"NORMALISATION{config.spc5}{{\n\n"
+            f"NORMALISATION{config.spc10}{{\n\n"
             + str(self.normalisation)
             + LINEBREAK
             + "}"
@@ -1447,9 +1448,9 @@ class GudrunFile:
             [str(x) for x in self.sampleBackgrounds]
         ).rstrip()
         footer = (
-            f"\n\n\nEND{config.spc5}"
+            f"\n\n\nEND{config.spc10}"
             f"\n1\nDate and time last written:  "
-            f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc5}"
+            f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc10}"
             f"\nN"
         )
 
@@ -1549,8 +1550,7 @@ class GudrunFile:
                         )
 
     def setGudrunDir(self, dir):
-        assert (os.path.isdir(os.path.abspath(dir)))
-        self.instrument.GudrunInputFileDir = os.path.abspath(dir)
+        self.instrument.GudrunInputFileDir = dir
 
     def dcs(self, path='', headless=True, iterator=None):
         """

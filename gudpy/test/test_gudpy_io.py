@@ -43,7 +43,10 @@ class TestGudPyIO(TestCase):
             "name": Instruments.NIMROD,
             "GudrunInputFileDir":
             os.path.abspath(os.path.dirname(os.path.abspath(dirpath))),
-            "dataFileDir": "NIMROD-water/raw/",
+            "dataFileDir": (
+                os.path.abspath(
+                    "test/TestData/NIMROD-water/raw/") + os.path.sep
+            ),
             "dataFileType": "raw",
             "detectorCalibrationFileName": (
                 'StartupFiles/NIMROD/NIMROD84modules'
@@ -671,9 +674,14 @@ class TestGudPyIO(TestCase):
         instrumentAttrsDict = self.g.instrument.__dict__
 
         for key in instrumentAttrsDict.keys():
-            self.assertEqual(
-                self.expectedInstrument[key], instrumentAttrsDict[key]
-            )
+            pathKeys = ["GudrunInputFileDir", "dataFileDir"]
+            if key in pathKeys:
+                # Ignore the paths as they vary
+                continue
+            else:
+                self.assertEqual(
+                    self.expectedInstrument[key], instrumentAttrsDict[key]
+                )
 
         beamAttrsDict = self.g.beam.__dict__
 
@@ -821,7 +829,7 @@ class TestGudPyIO(TestCase):
                 else:
                     valueInLines(value, outlines)
         inlines = ""
-        with open(self.g.loadFile) as f:
+        with open(self.g.loadFile, encoding="utf-8") as f:
             inlines = f.read()
         for dic in self.dicts:
             for value in dic.values():
@@ -1468,6 +1476,20 @@ class TestGudPyIO(TestCase):
                     "and some attributes were missing.",
                     str(cm.exception)
                 )
+
+    def testAppendExponentialValues(self):
+        # Remove last element of exponential values list
+        self.g.sampleBackgrounds[0].samples[0].exponentialValues[0].pop()
+        self.g.write_out()
+
+        gudrunFile = GudrunFile(os.path.join(
+            self.g.instrument.GudrunInputFileDir,
+            self.g.outpath
+        ), format=Format.TXT)
+        self.assertEqual(
+            self.expectedSampleA["exponentialValues"],
+            gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
+        )
 
     def testLoadMissingContainerAttributesRand(self):
 

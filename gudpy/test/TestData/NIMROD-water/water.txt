@@ -4,7 +4,7 @@ INSTRUMENT          {
 
 NIMROD          Instrument name
 /home/test/gudpy-water/          Gudrun input file directory:
-NIMROD-water/raw/          Data file directory
+test/TestData/NIMROD-water/raw/          Data file directory
 raw          Data file type
 StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat          Detector calibration file name
 4          User table column number for phi values
