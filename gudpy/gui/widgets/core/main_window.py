@@ -1011,8 +1011,14 @@ class GudPyMainWindow(QMainWindow):
             )
             return False
 
-        if not self.setSaveLocation():
-            return False
+        if not self.gudrunFile.checkSaveLocation():
+            dirname, _ = QFileDialog.getSaveFileName(
+                self.mainWidget,
+                "Choose save location",
+                (os.path.dirname(self.gudrunFile.loadFile)
+                 if self.gudrunFile.loadFile else "")
+            )
+            self.gudrunFile.setSaveLocation(dirname)
 
         self.setControlsEnabled(False)
         self.mainWidget.progressBar.setValue(0)
@@ -1068,6 +1074,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun(self, gudrunFile, finished, iterator=None):
         if not self.prepareRun() or not self.checkPurge():
+            self.cleanupRun()
             return False
 
         self.worker = GudrunWorker(gudrunFile, iterator)
@@ -1109,6 +1116,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runContainersAsSamples(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
 
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
@@ -1120,6 +1128,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runFilesIndividually(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
 
@@ -1139,12 +1148,15 @@ class GudPyMainWindow(QMainWindow):
 
         if result == QMessageBox.Yes:
             # Run Purge and queue Gudrun after
-            self.runPurge(dialog=True, finished=lambda: self.runGudrun(
-                self.gudrunFile, self.procFinished
-            ))
+            self.runPurge(self.gudrunFile, dialog=True, finished=(
+                lambda: self.runGudrun(
+                    self.gudrunFile, self.procFinished
+                )))
             return False
         elif result == QMessageBox.No:
             return True
+        elif result == QMessageBox.Cancel:
+            return False
         else:
             return False
 
@@ -1295,6 +1307,7 @@ class GudPyMainWindow(QMainWindow):
 
     def batchProcessing(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         batchProcessingDialog = BatchProcessingDialog(
             self.gudrunFile, self.mainWidget
@@ -1429,6 +1442,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextCompositionIteration(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         args, kwargs, sample = self.queue.get()
         self.worker = CompositionWorker(args, kwargs, sample, self.gudrunFile)
@@ -1514,6 +1528,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIterableProc(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         if self.queue.empty():
             return
@@ -1724,10 +1739,10 @@ class GudPyMainWindow(QMainWindow):
             progress if progress <= 100 else 100
         )
 
-    def runPurge(self, finished=None, dialog=False) -> bool:
+    def runPurge(self, gudrunFile, finished=None, dialog=False) -> bool:
         if dialog:
             self.setControlsEnabled(False)
-            purgeDialog = PurgeDialog(self.gudrunFile, self)
+            purgeDialog = PurgeDialog(gudrunFile, self)
             result = purgeDialog.widget.exec_()
 
             if (purgeDialog.cancelled or result == QDialogButtonBox.No):
@@ -1736,9 +1751,10 @@ class GudPyMainWindow(QMainWindow):
                 return False
 
         if not self.prepareRun():
+            self.cleanupRun()
             return False
 
-        self.worker = PurgeWorker(self.gudrunFile)
+        self.worker = PurgeWorker(gudrunFile)
         self.workerThread = QThread()
         self.worker.moveToThread(self.workerThread)
         self.workerThread.started.connect(self.worker.purge)
