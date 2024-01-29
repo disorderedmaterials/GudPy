@@ -467,7 +467,7 @@ class TestParseGudFile(TestCase):
             g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
-        gf1 = GudFile(gf.outpath)
+        gf1 = GudFile(gf.OUTPATH)
 
         dicA = gf.__dict__
         dicA.pop("outpath")
@@ -493,7 +493,7 @@ class TestParseGudFile(TestCase):
             g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
-        gf1 = GudFile(gf.outpath)
+        gf1 = GudFile(gf.OUTPATH)
 
         dicA = gf.__dict__
         dicA.pop("outpath")
