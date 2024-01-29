@@ -50,6 +50,7 @@ class Beam:
     Methods
     -------
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the Beam object.
@@ -99,7 +100,7 @@ class Beam:
             f'{self.stepSizeAbsorption}{config.spc2}'
             f'{self.stepSizeMS}{config.spc2}'
             f'{self.noSlices}'
-            f'{config.spc5}'
+            f'{config.spc10}'
             f'Step size for absorption and m.s. calculation'
             f' and no. of slices\n'
         )
@@ -109,7 +110,7 @@ class Beam:
             f'{self.incidentBeamRightEdge}{config.spc2}'
             f'{self.incidentBeamBottomEdge}{config.spc2}'
             f'{self.incidentBeamTopEdge}'
-            f'{config.spc5}'
+            f'{config.spc10}'
             f'Incident beam edges relative to centre of sample [cm]\n'
         )
         scatteredBeamLine = (
@@ -117,31 +118,31 @@ class Beam:
             f'{self.scatteredBeamRightEdge}{config.spc2}'
             f'{self.scatteredBeamBottomEdge}{config.spc2}'
             f'{self.scatteredBeamTopEdge}'
-            f'{config.spc5}'
+            f'{config.spc10}'
             f'Scattered beam edges relative to centre of sample [cm]\n'
         )
 
         return (
 
-            f'{Geometry(self.sampleGeometry.value).name}{config.spc5}'
+            f'{Geometry(self.sampleGeometry.value).name}{config.spc10}'
             f'Sample geometry\n'
-            f'{len(self.beamProfileValues)}{config.spc5}'
+            f'{len(self.beamProfileValues)}{config.spc10}'
             f'Number of beam profile values\n'
             f'{spacify(self.beamProfileValues, num_spaces=2)}'
-            f'{config.spc2}{config.spc5}'
+            f'{config.spc2}{config.spc10}'
             f'Beam profile values (Maximum of 50 allowed currently)\n'
             f'{absorptionAndMSLine}'
-            f'{self.angularStepForCorrections}{config.spc5}'
+            f'{self.angularStepForCorrections}{config.spc10}'
             f'Angular step for corrections [deg.]\n'
             f'{incidentBeamLine}'
             f'{scatteredBeamLine}'
-            f'{self.filenameIncidentBeamSpectrumParams}{config.spc5}'
+            f'{self.filenameIncidentBeamSpectrumParams}{config.spc10}'
             f'Filename containing incident beam spectrum parameters\n'
-            f'{self.overallBackgroundFactor}{config.spc5}'
+            f'{self.overallBackgroundFactor}{config.spc10}'
             f'Overall background factor\n'
-            f'{self.sampleDependantBackgroundFactor}{config.spc5}'
+            f'{self.sampleDependantBackgroundFactor}{config.spc10}'
             f'Sample dependent background factor\n'
-            f'{self.shieldingAttenuationCoefficient}{config.spc5}'
+            f'{self.shieldingAttenuationCoefficient}{config.spc10}'
             f'Shielding attenuation coefficient [per m per \u212b]'
 
         )

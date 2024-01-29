@@ -1,5 +1,6 @@
 import os
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QAbstractItemView
 
 from core.enums import (
     Geometry, CrossSectionSource, UnitsOfDensity, Instruments
@@ -23,6 +24,13 @@ class NormalisationSlots():
         )
         self.widget.backgroundDataFilesList.makeModel(
             self.normalisation.dataFilesBg.dataFiles
+        )
+
+        self.widget.dataFilesList.setSelectionMode(
+            QAbstractItemView.ExtendedSelection)
+
+        self.widget.backgroundDataFilesList.setSelectionMode(
+            QAbstractItemView.ExtendedSelection
         )
 
         self.widget.dataFilesList.model().dataChanged.connect(
@@ -138,12 +146,6 @@ class NormalisationSlots():
             )
         )
 
-        self.widget.duplicateDataFileButton.clicked.connect(
-            lambda: self.duplicateDataFile(
-                self.widget.dataFilesList
-            )
-        )
-
         self.widget.addBackgroundDataFileButton.clicked.connect(
             lambda: self.addDataFiles(
                 self.widget.backgroundDataFilesList,
@@ -155,12 +157,6 @@ class NormalisationSlots():
 
         self.widget.removeBackgroundDataFileButton.clicked.connect(
             lambda: self.removeDataFile(
-                self.widget.backgroundDataFilesList
-            )
-        )
-
-        self.widget.duplicateBackgroundDataFileButton.clicked.connect(
-            lambda: self.duplicateDataFile(
                 self.widget.backgroundDataFilesList
             )
         )
@@ -645,10 +641,6 @@ class NormalisationSlots():
         Called when an itemChanged signal is emitted,
         from the dataFilesList.
         Alters the normalisation's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item altered.
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
@@ -663,10 +655,6 @@ class NormalisationSlots():
         Called when an itemChanged signal is emitted,
         from the dataFilesList.
         Alters the normalisation's data files as such.
-        Parameters
-        ----------
-        item : QListWidgetItem
-            The item altered.
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()

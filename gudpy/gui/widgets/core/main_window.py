@@ -1068,6 +1068,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runGudrun(self, gudrunFile, finished, iterator=None):
         if not self.prepareRun() or not self.checkPurge():
+            self.cleanupRun()
             return False
 
         self.worker = GudrunWorker(gudrunFile, iterator)
@@ -1109,6 +1110,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runContainersAsSamples(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
 
         runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
@@ -1120,6 +1122,7 @@ class GudPyMainWindow(QMainWindow):
 
     def runFilesIndividually(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         runIndividualFiles = RunIndividualFiles(self.gudrunFile)
 
@@ -1145,6 +1148,8 @@ class GudPyMainWindow(QMainWindow):
             return False
         elif result == QMessageBox.No:
             return True
+        elif result == QMessageBox.Cancel:
+            return False
         else:
             return False
 
@@ -1295,6 +1300,7 @@ class GudPyMainWindow(QMainWindow):
 
     def batchProcessing(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         batchProcessingDialog = BatchProcessingDialog(
             self.gudrunFile, self.mainWidget
@@ -1429,6 +1435,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextCompositionIteration(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         args, kwargs, sample = self.queue.get()
         self.worker = CompositionWorker(args, kwargs, sample, self.gudrunFile)
@@ -1514,6 +1521,7 @@ class GudPyMainWindow(QMainWindow):
 
     def nextIterableProc(self):
         if not self.prepareRun():
+            self.cleanupRun()
             return False
         if self.queue.empty():
             return
@@ -1736,6 +1744,7 @@ class GudPyMainWindow(QMainWindow):
                 return False
 
         if not self.prepareRun():
+            self.cleanupRun()
             return False
 
         self.worker = PurgeWorker(self.gudrunFile)

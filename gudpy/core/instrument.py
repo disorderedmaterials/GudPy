@@ -215,12 +215,12 @@ class Instrument:
 
         joined = bjoin(
             self.groupingParameterPanel,
-            f"{config.spc5}Group, Xmin, Xmax, Background factor\n",
+            f"{config.spc10}Group, Xmin, Xmax, Background factor\n",
             sameseps=True
         )
         groupingParameterPanelLine = (
             f'{joined}'
-            f'0{config.spc2}0{config.spc2}0{config.spc2}0{config.spc5}'
+            f'0{config.spc2}0{config.spc2}0{config.spc2}0{config.spc10}'
             f'0 0 0 0 to end input of specified values\n'
         )
 
@@ -232,18 +232,18 @@ class Instrument:
             mergeBy = "By channel?"
 
         mergeWeightsLine = (
-            f'{self.mergeWeights.value}{config.spc5}'
+            f'{self.mergeWeights.value}{config.spc10}'
             f'{mergeBy}\n'
         )
 
         scaleSelectionLine = (
-            f'{self.scaleSelection.value}{config.spc5}'
+            f'{self.scaleSelection.value}{config.spc10}'
             f'Scale selection: 1 = Q, 2 = d-space,'
             f' 3 = wavelength, 4 = energy, 5 = TOF\n'
         )
 
         nexusDefinitionLine = (
-            f'\n{self.nxsDefinitionFile}{config.spc5}'
+            f'\n{self.nxsDefinitionFile}{config.spc10}'
             f'NeXus definition file'
             if (
                 self.dataFileType == "nxs" or
@@ -254,70 +254,70 @@ class Instrument:
         )
 
         return (
-            f'{Instruments(self.name.value).name}{config.spc5}'
+            f'{Instruments(self.name.value).name}{config.spc10}'
             f'Instrument name\n'
-            f'{self.GudrunInputFileDir}{config.spc5}'
+            f'{self.GudrunInputFileDir}{config.spc10}'
             f'Gudrun input file directory:\n'
-            f'{self.dataFileDir}{config.spc5}'
+            f'{self.dataFileDir}{config.spc10}'
             f'Data file directory\n'
-            f'{self.dataFileType}{config.spc5}'
+            f'{self.dataFileType}{config.spc10}'
             f'Data file type\n'
-            f'{self.detectorCalibrationFileName}{config.spc5}'
+            f'{self.detectorCalibrationFileName}{config.spc10}'
             f'Detector calibration file name\n'
-            f'{self.columnNoPhiVals}{config.spc5}'
+            f'{self.columnNoPhiVals}{config.spc10}'
             f'User table column number for phi values\n'
-            f'{self.groupFileName}{config.spc5}'
+            f'{self.groupFileName}{config.spc10}'
             f'Groups file name\n'
-            f'{self.deadtimeConstantsFileName}{config.spc5}'
+            f'{self.deadtimeConstantsFileName}{config.spc10}'
             f'Deadtime constants file name\n'
             f'{spacify(self.spectrumNumbersForIncidentBeamMonitor)}'
-            f'{config.spc5}'
+            f'{config.spc10}'
             f'Spectrum number(s) for incident beam monitor\n'
-            f'{wavelengthLineA}{config.spc5}'
+            f'{wavelengthLineA}{config.spc10}'
             f'Wavelength range [\u212b] for monitor normalisation\n'
             f'{spacify(self.spectrumNumbersForTransmissionMonitor)}'
-            f'{config.spc5}'
+            f'{config.spc10}'
             f'Spectrum number(s) for transmission monitor\n'
-            f'{self.incidentMonitorQuietCountConst}{config.spc5}'
+            f'{self.incidentMonitorQuietCountConst}{config.spc10}'
             f'Incident monitor quiet count constant\n'
-            f'{self.transmissionMonitorQuietCountConst}{config.spc5}'
+            f'{self.transmissionMonitorQuietCountConst}{config.spc10}'
             f'Transmission monitor quiet count constant\n'
-            f'{channelNosLine}{config.spc5}'
+            f'{channelNosLine}{config.spc10}'
             f'Channel numbers for spike analysis\n'
-            f'{self.spikeAnalysisAcceptanceFactor}{config.spc5}'
+            f'{self.spikeAnalysisAcceptanceFactor}{config.spc10}'
             f'Spike analysis acceptance factor\n'
-            f'{wavelengthLineB}{config.spc5}'
+            f'{wavelengthLineB}{config.spc10}'
             f'Wavelength range to use [\u212b] and step size\n'
-            f'{self.NoSmoothsOnMonitor}{config.spc2}{config.spc5}'
+            f'{self.NoSmoothsOnMonitor}{config.spc2}{config.spc10}'
             f'No. of smooths on monitor\n'
-            f'{XScaleLine}{config.spc5}'
+            f'{XScaleLine}{config.spc10}'
             f'Min, Max and step in x-scale (-ve for logarithmic binning)\n'
             f'{groupingParameterPanelLine}'
-            f'{self.groupsAcceptanceFactor}{config.spc5}'
+            f'{self.groupsAcceptanceFactor}{config.spc10}'
             f'Groups acceptance factor\n'
-            f'{self.mergePower}{config.spc5}'
+            f'{self.mergePower}{config.spc10}'
             f'Merge power\n'
-            f'{numifyBool(self.subSingleAtomScattering)}{config.spc5}'
+            f'{numifyBool(self.subSingleAtomScattering)}{config.spc10}'
             f'Subtract single atom scattering?\n'
             f'{mergeWeightsLine}'
-            f'{self.incidentFlightPath}{config.spc5}'
+            f'{self.incidentFlightPath}{config.spc10}'
             f'Incident flight path [m]\n'
-            f'{self.spectrumNumberForOutputDiagnosticFiles}{config.spc5}'
+            f'{self.spectrumNumberForOutputDiagnosticFiles}{config.spc10}'
             f'Spectrum number to output diagnostic files\n'
-            f'{self.neutronScatteringParametersFile}{config.spc5}'
+            f'{self.neutronScatteringParametersFile}{config.spc10}'
             f'Neutron scattering parameters file\n'
             f'{scaleSelectionLine}'
-            f'{numifyBool(self.subWavelengthBinnedData)}{config.spc5}'
+            f'{numifyBool(self.subWavelengthBinnedData)}{config.spc10}'
             f'Subtract wavelength-binned data?\n'
-            f'{self.GudrunStartFolder}{config.spc5}'
+            f'{self.GudrunStartFolder}{config.spc10}'
             f'Folder where Gudrun started\n'
-            f'{self.startupFileFolder}{config.spc5}'
+            f'{self.startupFileFolder}{config.spc10}'
             f'Folder containing the startup file\n'
-            f'{self.logarithmicStepSize}{config.spc5}'
+            f'{self.logarithmicStepSize}{config.spc10}'
             f'Logarithmic step size\n'
-            f'{numifyBool(self.hardGroupEdges)}{config.spc5}'
+            f'{numifyBool(self.hardGroupEdges)}{config.spc10}'
             f'Hard group edges?'
             f'{nexusDefinitionLine}\n'
-            f'0{config.spc5}Number of iterations\n'
-            f'0{config.spc5}Tweak the tweak factor(s)?'
+            f'0{config.spc10}Number of iterations\n'
+            f'0{config.spc10}Tweak the tweak factor(s)?'
         )

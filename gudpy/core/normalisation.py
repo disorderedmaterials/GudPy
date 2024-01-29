@@ -64,6 +64,7 @@ class Normalisation:
     Methods
     -------
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the Normalistion object.
@@ -131,17 +132,17 @@ class Normalisation:
         compositionSuffix = "" if str(self.composition) == "" else "\n"
 
         geometryLine = (
-            f'SameAsBeam{config.spc5}Geometry\n'
+            f'SameAsBeam{config.spc10}Geometry\n'
             if self.geometry == Geometry.SameAsBeam
             else
-            f'{Geometry(self.geometry.value).name}{config.spc5}Geometry\n'
+            f'{Geometry(self.geometry.value).name}{config.spc10}Geometry\n'
         )
         geometryLines = (
             f'{self.upstreamThickness}{config.spc2}'
-            f'{self.downstreamThickness}{config.spc5}'
+            f'{self.downstreamThickness}{config.spc10}'
             f'Upstream and downstream thickness [cm]\n'
             f'{self.angleOfRotation}{config.spc2}'
-            f'{self.sampleWidth}{config.spc5}'
+            f'{self.sampleWidth}{config.spc10}'
             f'Angle of rotation and sample width (cm)\n'
             if (
                 (
@@ -150,9 +151,9 @@ class Normalisation:
                 )
                 or self.geometry == Geometry.FLATPLATE)
             else
-            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc5}'
+            f'{self.innerRadius}{config.spc2}{self.outerRadius}{config.spc10}'
             f'Inner and outer radii [cm]\n'
-            f'{self.sampleHeight}{config.spc5}'
+            f'{self.sampleHeight}{config.spc10}'
             f'Sample height (cm)\n'
         )
 
@@ -164,7 +165,7 @@ class Normalisation:
             density = self.density
 
         densityLine = (
-            f'{density}{config.spc5}'
+            f'{density}{config.spc10}'
             f'Density {units}?\n'
         )
 
@@ -172,10 +173,10 @@ class Normalisation:
             CrossSectionSource(self.totalCrossSectionSource.value).name
         )
         crossSectionLine = (
-            f"{crossSectionSource}{config.spc5}"
+            f"{crossSectionSource}{config.spc10}"
             if self.totalCrossSectionSource != CrossSectionSource.FILE
             else
-            f"{self.crossSectionFilename}{config.spc5}"
+            f"{self.crossSectionFilename}{config.spc10}"
         )
 
         if not self.normalisationDifferentialCrossSectionFile:
@@ -183,31 +184,31 @@ class Normalisation:
 
         return (
             f'{len(self.dataFiles)}{config.spc2}'
-            f'{self.periodNumber}{config.spc5}'
+            f'{self.periodNumber}{config.spc10}'
             f'Number of  files and period number\n'
             f'{dataFilesLineA}'
             f'{len(self.dataFilesBg)}{config.spc2}'
-            f'{self.periodNumberBg}{config.spc5}'
+            f'{self.periodNumberBg}{config.spc10}'
             f'Number of  files and period number\n'
             f'{dataFilesLineB}'
-            f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc5}'
+            f'{numifyBool(self.forceCalculationOfCorrections)}{config.spc10}'
             f'Force calculation of corrections?\n'
             f'{str(self.composition)}{compositionSuffix}'
-            f'*{config.spc2}0{config.spc2}0{config.spc5}'
+            f'*{config.spc2}0{config.spc2}0{config.spc10}'
             f'* 0 0 to specify end of composition input\n'
             f'{geometryLine}'
             f'{geometryLines}'
             f'{densityLine}'
-            f'{self.tempForNormalisationPC}{config.spc5}'
+            f'{self.tempForNormalisationPC}{config.spc10}'
             f'Temperature for normalisation Placzek correction\n'
             f'{crossSectionLine}'
             f'Total cross section source\n'
-            f'{self.normalisationDifferentialCrossSectionFile}{config.spc5}'
+            f'{self.normalisationDifferentialCrossSectionFile}{config.spc10}'
             f'Normalisation differential cross section filename\n'
-            f'{self.lowerLimitSmoothedNormalisation}{config.spc5}'
+            f'{self.lowerLimitSmoothedNormalisation}{config.spc10}'
             f'Lower limit on smoothed normalisation\n'
-            f'{self.normalisationDegreeSmoothing}{config.spc5}'
+            f'{self.normalisationDegreeSmoothing}{config.spc10}'
             f'Normalisation degree of smoothing\n'
-            f'{self.minNormalisationSignalBR}{config.spc5}'
+            f'{self.minNormalisationSignalBR}{config.spc10}'
             f'Minimum normalisation signal to background ratio'
         )
