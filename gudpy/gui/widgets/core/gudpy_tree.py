@@ -980,7 +980,7 @@ class GudPyTreeView(QTreeView):
 
         if action in actionMap.keys():
             self.insertContainer(
-                container=Container(config_=actionMap[action])
+                container=Container(config=actionMap[action])
             )
 
     def insertSampleBackground(self, sampleBackground=None):
