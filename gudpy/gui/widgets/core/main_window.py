@@ -513,7 +513,7 @@ class GudPyMainWindow(QMainWindow):
         self.widgetsRefreshing = True
         if fromFile:
             self.gudrunFile = GudrunFile(
-                path=self.gudrunFile.path,
+                loadFile=self.gudrunFile.path,
                 format=self.gudrunFile.format)
         self.mainWidget.gudrunFile = self.gudrunFile
         self.mainWidget.tabWidget.setVisible(True)
@@ -551,150 +551,6 @@ class GudPyMainWindow(QMainWindow):
     def handleObjectsChanged(self):
         if not self.widgetsRefreshing:
             self.setModified()
-
-    def loadInputFile_(self):
-        """
-        Opens a QFileDialog to load an input file.
-        """
-        filters = {
-            "YAML (*.yaml)": Format.YAML,
-            "Gudrun Compatible (*.txt)": Format.TXT,
-            "Sample Parameters (*.sample)": Format.TXT
-        }
-
-        filename, filter = QFileDialog.getOpenFileName(
-            self.mainWidget,
-            "Select Input file for GudPy",
-            ".",
-            f"{list(filters.keys())[0]};;" +
-            f"{list(filters.keys())[1]};;" +
-            f"{list(filters.keys())[2]}"
-        )
-        if filename:
-            if not filter:
-                filter = "YAML (*.yaml)"
-            fmt = filters[filter]
-            try:
-                if self.gudrunFile:
-                    self.gudrunFile = None
-                path = self.tryLoadAutosaved(filename)
-                self.gudrunFile = GudrunFile(path=path, format=fmt)
-                self.updateWidgets()
-                self.mainWidget.setWindowTitle(
-                    f"GudPy - {self.gudrunFile.filename}[*]")
-            except ParserException as e:
-                QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
-            except IOError:
-                QMessageBox.critical(self.mainWidget,
-                                     "GudPy Error",
-                                     "Could not open file")
-
-    def loadProject_(self):
-        """Load from previous GudPy project
-        """
-        projectDir = QFileDialog.getExistingDirectory(self, 'Select Project')
-
-        try:
-            self.gudrunFile = GudrunFile(
-                projectDir=projectDir, format=Format.YAML)
-            autosave = self.tryLoadAutosaved(self.gudrunFile.path)
-            if autosave != self.gudrunFile.path:
-                self.gudrunFile = GudrunFile(
-                    path=autosave, format=Format.YAML)
-            self.updateWidgets()
-            self.mainWidget.setWindowTitle(
-                f"GudPy - {self.gudrunFile.filename}[*]")
-        except FileNotFoundError:
-            QMessageBox.critical(
-                self.mainWidget,
-                "GudPy Error",
-                "Could not load project- does not contain valid input file"
-            )
-        except ParserException as e:
-            QMessageBox.critical(self.mainWidget, "GudPy Error", str(e))
-        except IOError:
-            QMessageBox.critical(self.mainWidget,
-                                 "GudPy Error",
-                                 "Could not open file")
-
-    def saveInputFile(self):
-        """
-        Saves the current state of the input file.
-        """
-        if not self.setSaveLocation(saveAs=True):
-            return False
-
-        self.gudrunFile.save()
-        self.setUnModified()
-
-    def saveAs(self):
-        if not self.setSaveLocation(saveAs=True):
-            return False
-        oldLocation = self.gudrunFile.projectDir
-        os.makedirs(self.gudrunFile.projectDir)
-        if os.path.exists(os.path.join(oldLocation, "Purge")):
-            shutil.copytree(
-                os.path.join(oldLocation, "Purge"),
-                os.path.join(self.gudrunFile.projectDir, "Purge")
-            )
-        if os.path.exists(os.path.join(oldLocation, "Gudrun")):
-            shutil.copytree(
-                os.path.join(oldLocation, "Gudrun"),
-                os.path.join(self.gudrunFile.projectDir, "Gudrun")
-            )
-        self.gudrunFile.save(path=self.gudrunFile.path, format=Format.YAML)
-
-    def exportInputFile(self):
-        """
-        Saves the current state of the input file as...
-        """
-        filename, filter = QFileDialog.getSaveFileName(
-            self,
-            "Export input file as..",
-            ".",
-            "YAML (*.yaml);;Gudrun Compatible (*.txt)",
-        )
-        fmt = Format.YAML
-        if filename:
-            ext = re.search(r"\((.+?)\)", filter).group(1).replace("*", "")
-            fmt = Format.TXT if ext == ".txt" else Format.YAML
-            if filter and sys.platform.startswith("linux"):
-                filename += ext
-            if os.path.basename(filename) == "gudpy.txt":
-                QMessageBox.warning(
-                    self.mainWidget,
-                    "GudPy Warning",
-                    f"Cannot export to {filename}, gudpy.txt is reserved.",
-                )
-                return
-            if os.path.dirname(filename) == self.gudrunFile.projectDir:
-                QMessageBox.warning(
-                    self.mainWidget,
-                    "GudPy Warning",
-                    "Do not modify project folder."
-                )
-                return
-            self.gudrunFile.instrument.GudrunInputFileDir = os.path.dirname(
-                os.path.abspath(filename)
-            )
-            self.gudrunFile.path = filename
-        self.gudrunFile.save(path=filename, format=fmt)
-        self.setUnModified()
-
-    def newInputFile(self):
-        if self.gudrunFile:
-            self.gudrunFile = None
-        configurationDialog = ConfigurationDialog(self)
-        result = configurationDialog.widget.exec()
-        if not configurationDialog.cancelled and result:
-            self.gudrunFile = GudrunFile(
-                configurationDialog.configuration, format=Format.TXT,
-                config=True
-            )
-            self.gudrunFile.instrument.dataFileType = (
-                configurationDialog.dataFileType
-            )
-            self.updateWidgets()
 
     def updateFromFile(self):
         """
@@ -1027,7 +883,7 @@ class GudPyMainWindow(QMainWindow):
         bool
             Detects whether getting save file was successful or not
         """
-        if not self.gudrunFile.checkSaveLocation() or saveAs:
+        if saveAs or not self.gudrunFile.checkSaveLocation():
             dirname, _ = QFileDialog.getSaveFileName(
                 self.mainWidget,
                 "Choose save location",

@@ -146,13 +146,7 @@ class GudrunFile:
 
         # Construct the outpath of generated input file
         self.OUTPATH = "gudpy.txt"
-
-        self.components = Components(components=[])
         self.gudrunOutput = None
-        self.instrument = Instrument()
-        self.beam = Beam()
-        self.normalisation = Normalisation()
-        self.sampleBackgrounds = []
         self.projectDir = projectDir
         self.filename = None
         self.stream = None

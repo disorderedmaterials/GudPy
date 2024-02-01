@@ -19,6 +19,15 @@ from core.file_library import GudPyFileLibrary
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
+class Parameters:
+    def __init__(self):
+        self.instrument = Instrument()
+        self.beam = Beam()
+        self.normalisation = Normalisation()
+        self.sampleBackgrounds = []
+        self.components = Components(components=[])
+
+
 class GudPy:
     def __init__(
         self,
@@ -38,6 +47,10 @@ class GudPy:
         self.gudrun = Gudrun()
         self.gudrunOutput = None
         self.purgeOutput = None
+
+        self.params = Parameters()
+
+        self.projectDir = ""
 
         if projectDir:
             self.loadFromProject(projectDir)
@@ -101,10 +114,18 @@ class GudPy:
         self.projectDir = projectDir
         self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
 
-    def saveAs(self, oldDir: str, targetDir: str):
+    def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
+        if not path:
+            path = self.gudrunFile.path()
+        self.gudrunFile.save(path=path,
+                             format=format)
+
+    def saveAs(self, targetDir: str):
         if os.path.exists(targetDir):
             raise IsADirectoryError("Cannot be an existing directory")
 
+        oldDir = self.projectDir
+        self.setSaveLocation(targetDir)
         os.makedirs(targetDir)
 
         if os.path.exists(os.path.join(oldDir, "Purge")):
@@ -206,7 +227,7 @@ class Purge(Process):
         super().__init__(self.PROCESS)
 
     def organiseOutput(self):
-        outputHandler = handlers.OutputHandler(self.gudrunFile, "Purge")
+        outputHandler = handlers.OutputHandler("Purge")
         outputHandler.organiseOutput()
 
     def purge(self, gudrunFile: GudrunFile):
