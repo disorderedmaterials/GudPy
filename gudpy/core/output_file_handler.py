@@ -17,7 +17,6 @@ class SampleOutput:
 @dataclass
 class GudrunOutput:
     path: str
-    name: str
     inputFilePath: str
     sampleOutputs: typing.Dict[str, SampleOutput]
 
@@ -39,7 +38,7 @@ class GudrunOutput:
 
 
 class OutputHandler:
-    """Class to organise purge output files
+    """Class to organise output files
     """
 
     def __init__(self, gudrunFile, dirName: str):
@@ -75,6 +74,8 @@ class OutputHandler:
             if os.path.exists(self.outputDir):
                 shutil.move(self.outputDir, os.path.join(tmp, "prev"))
             shutil.move(newDir, self.outputDir)
+
+        return self.outputDir
 
 
 class GudrunOutputHandler(OutputHandler):
@@ -168,7 +169,6 @@ class GudrunOutputHandler(OutputHandler):
         shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
 
         return GudrunOutput(path=self.outputDir,
-                            name=os.path.splitext(self.gudrunFile.filename)[0],
                             inputFilePath=inputFilePath,
                             sampleOutputs=sampleOutputs
                             )
@@ -313,7 +313,7 @@ class GudrunOutputHandler(OutputHandler):
         inputFile = ""
 
         for f in os.listdir(self.gudrunDir):
-            if f == self.gudrunFile.outpath:
+            if f == self.gudrunFile.OUTPATH:
                 inputFile = os.path.join(
                     self.outputDir, "AdditionalOutputs", f)
                 shutil.copyfile(

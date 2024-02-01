@@ -1,134 +1,48 @@
 import os
-import tempfile
 from copy import deepcopy
 from PySide6.QtCore import QObject, Signal, QThread
-import subprocess
-import sys
 
-from core import config
+from core import gudpy
 from core.gud_file import GudFile
-import core.utils as utils
 from core.sample import Sample
-from core import enums
 from core.iterators.composition import gss
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-class PurgeWorker(QObject):
+class Worker(QObject):
     started = Signal(int)
     errorOccured = Signal(str)
     outputChanged = Signal(str)
     finished = Signal(int)
 
-    def __init__(self, gudrunFile):
+    def __init___(self):
         super().__init__()
-        self.gudrunFile = gudrunFile
-        self.PROCESS = "purge_det"
+
+    def _outputChanged(self, output):
+        self.outputChanged.emit(output)
+
+    def _errorOccured(self, stderr):
+        self.errorOccured.emit(stderr)
+
+
+class PurgeWorker(Worker, gudpy.Purge):
+    def __init__(self, gudrunFile):
+        super().__init__(gudrunFile=gudrunFile)
 
     def purge(self):
         self.started.emit(1)
-
-        if hasattr(sys, '_MEIPASS'):
-            purge_det = os.path.join(sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
-        else:
-            purge_det = utils.resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"{self.PROCESS}{SUFFIX}"
-            )
-        if not os.path.exists(purge_det):
-            self.errorOccured.emit("MISSING_BINARY")
-            return
-
-        with tempfile.TemporaryDirectory() as tmp:
-            self.gudrunFile.setGudrunDir(tmp)
-            self.gudrunFile.purgeFile.write_out(os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                f"{self.PROCESS}.dat"
-            ))
-
-            with subprocess.Popen(
-                [purge_det, f"{self.PROCESS}.dat"], cwd=tmp,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            ) as purge:
-                for line in purge.stdout:
-                    self.outputChanged.emit(line.decode("utf8").rstrip("\n"))
-                if purge.stderr:
-                    self.errorOccured.emit(
-                        purge.stderr.decode("utf8").rstrip("\n"))
-                    return
-
-            self.gudrunFile.purgeFile.organiseOutput()
-
-        self.gudrunFile.setGudrunDir(
-            self.gudrunFile.projectDir)
-
+        super(PurgeWorker, self).purge()
         self.finished.emit(1)
 
 
-class GudrunWorker(QObject):
-    started = Signal(int)
-    outputChanged = Signal(str)
-    nextIteration = Signal(int)
-    errorOccured = Signal(str)
-    finished = Signal(int)
-
+class GudrunWorker(Worker, gudpy.Gudrun):
     def __init__(self, gudrunFile, iterator):
-        super().__init__()
-        self.gudrunFile = gudrunFile
-        self.iterator = iterator
-        self.PROCESS = "gudrun_dcs"
+        super().__init__(gudrunFile=gudrunFile, iterator=iterator)
 
     def gudrun(self):
         self.started.emit(1)
-
-        if hasattr(sys, '_MEIPASS'):
-            gudrun_dcs = os.path.join(sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
-        else:
-            gudrun_dcs = utils.resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"{self.PROCESS}{SUFFIX}"
-            )
-        if not os.path.exists(gudrun_dcs):
-            self.errorOccured.emit("MISSING_BINARY")
-            return
-
-        with tempfile.TemporaryDirectory() as tmp:
-            path = self.gudrunFile.outpath
-            self.gudrunFile.setGudrunDir(tmp)
-            path = os.path.join(
-                tmp,
-                path
-            )
-            self.gudrunFile.save(
-                path=os.path.join(
-                    self.gudrunFile.projectDir,
-                    f"{self.gudrunFile.filename}"
-                ),
-                format=enums.Format.YAML
-            )
-            self.gudrunFile.write_out(path)
-            with subprocess.Popen(
-                [gudrun_dcs, path], cwd=tmp,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            ) as gudrun:
-                for line in gudrun.stdout:
-                    self.outputChanged.emit(line.decode("utf8").rstrip("\n"))
-                if gudrun.stderr:
-                    self.errorOccured.emit(
-                        gudrun.stderr.decode("utf8").rstrip("\n"))
-                    return
-
-            if self.iterator is not None:
-                self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
-            else:
-                self.gudrunFile.gudrunOutput = self.gudrunFile.organiseOutput()
-            self.gudrunFile.setGudrunDir(self.gudrunFile.gudrunOutput.path)
-
+        super(GudrunWorker, self).gudrun()
         self.finished.emit(1)
 
 

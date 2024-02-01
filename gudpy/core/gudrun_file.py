@@ -1,10 +1,6 @@
-from PySide6.QtCore import QProcess
-import sys
 import os
-import subprocess
 import time
 import re
-import tempfile
 from copy import deepcopy
 
 from core.utils import (
@@ -16,7 +12,6 @@ from core.utils import (
     firstNInts,
     nthfloat,
     nthint,
-    resolve,
     uniquifyName
 )
 from core.instrument import Instrument
@@ -28,8 +23,6 @@ from core.container import Container
 from core.composition import Component, Components, Composition
 from core.element import Element
 from core.data_files import DataFiles
-from core.purge_file import PurgeFile
-from core.output_file_handler import GudrunOutputHandler
 from core.enums import (
     CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
@@ -38,7 +31,6 @@ from core.enums import (
 from core import config
 from core.gudpy_yaml import YAML
 from core.exception import ParserException, YAMLException
-from core.nexus_processing import NexusProcessing
 from core.gud_file import GudFile
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -56,7 +48,7 @@ class GudrunFile:
     ----------
     path : str
         Path to the file.
-    outpath : str
+    OUTPATH : str
         Path to write to, when not overwriting the initial file.
     instrument : Instrument
         Instrument object extracted from the input file.
@@ -121,16 +113,17 @@ class GudrunFile:
         Assign objects from the file to the attributes of the class.
     write_out(overwrite=False)
         Writes out the string representation of the GudrunFile to a file.
-    dcs(path='', purge=True):
-        Call gudrun_dcs on the path supplied. If the path is its
-        default value, then use the path attribute as the path.
-    process():
-        Write out the GudrunFile, and call gudrun_dcs on the outputted file.
     purge():
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, format=Format.YAML, config_=False):
+    def __init__(
+        self,
+        projectDir=None,
+        loadFile=None,
+        format=Format.YAML,
+        config=False
+    ):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -140,9 +133,11 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        projectDir : str
+            Path to the project folder
         format : Format enum
             Format of the file
-        config_ : bool
+        config : bool
             If a new input file should be constructed from a config
         """
 
@@ -150,7 +145,7 @@ class GudrunFile:
         self.format = format
 
         # Construct the outpath of generated input file
-        self.outpath = "gudpy.txt"
+        self.OUTPATH = "gudpy.txt"
 
         self.components = Components(components=[])
         self.gudrunOutput = None
@@ -158,25 +153,17 @@ class GudrunFile:
         self.beam = Beam()
         self.normalisation = Normalisation()
         self.sampleBackgrounds = []
-        self.loadFile = path
-        self.path = None
-
-        self.projectDir = None
+        self.projectDir = projectDir
         self.filename = None
-        self.purged = False
         self.stream = None
-        self.purgeFile = PurgeFile(self)
-        self.nexus_processing = NexusProcessing(self)
 
-        if self.loadFile:
-            self.setGudrunDir(os.path.dirname(self.loadFile))
-            self.projectDir = os.path.join(
-                os.path.dirname(self.loadFile),
-                os.path.splitext(os.path.basename(self.loadFile))[0]
-            )
-            self.setSaveLocation(self.projectDir)
+        if loadFile:
+            self.setGudrunDir(os.path.dirname(loadFile))
 
-        self.parse(self.loadFile, config_=config_)
+        if not config:
+            self.setGudrunDir(os.path.dirname(loadFile))
+
+        self.parse(loadFile, config=config)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
@@ -187,13 +174,8 @@ class GudrunFile:
             setattr(result, k, deepcopy(v, memo))
         return result
 
-    def checkSaveLocation(self):
-        return self.path is not None
-
-    def setSaveLocation(self, projectDir):
-        self.projectDir = projectDir
-        self.filename = f"{os.path.basename(projectDir)}.yaml"
-        self.path = os.path.join(self.projectDir, self.filename)
+    def path(self):
+        return os.path.join(self.projectDir, self.filename)
 
     def checkNormDataFiles(self):
         return (len(self.normalisation.dataFiles)
@@ -1311,7 +1293,7 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self, path, config_=False):
+    def parse(self, path, config=False):
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1325,7 +1307,7 @@ class GudrunFile:
         -------
         None
         """
-        self.config = config_
+        self.config = config
         # Ensure only valid files are given.
         if not path:
             raise ParserException(
@@ -1386,13 +1368,13 @@ class GudrunFile:
                 line = self.getNextToken()
 
             # If we didn't parse each one of the keywords, then panic.
-            if not all(KEYWORDS.values()) and not config_:
+            if not all(KEYWORDS.values()) and not config:
                 raise ParserException((
                     'INSTRUMENT, BEAM and NORMALISATION'
                     ' were not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
                 ))
-            elif not KEYWORDS["INSTRUMENT"] and config_:
+            elif not KEYWORDS["INSTRUMENT"] and config:
                 raise ParserException((
                     'INSTRUMENT was not parsed. It\'s possible the file'
                     ' supplied is of an incorrect format!'
@@ -1474,9 +1456,11 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
+        if not self.checkSaveLocation():
+            return False
 
         if not path:
-            path = self.path
+            path = self.path()
 
         if not format:
             format = self.format
@@ -1514,20 +1498,20 @@ class GudrunFile:
         elif not overwrite:
             assert (not os.path.exists(os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
+                    self.OUTPATH)
             ))
             f = open(
                 os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath
+                    self.OUTPATH
                 ), "w", encoding="utf-8")
         else:
-            if not self.path:
-                self.path = os.path.join(
+            if not self.path():
+                path = os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
-            f = open(self.path, "w", encoding="utf-8")
-        if os.path.basename(f.name) == self.outpath:
+                    self.OUTPATH)
+            f = open(path, "w", encoding="utf-8")
+        if os.path.basename(f.name) == self.OUTPATH:
             for sampleBackground in self.sampleBackgrounds:
                 sampleBackground.writeAllSamples = False
         f.write(str(self))
@@ -1552,108 +1536,6 @@ class GudrunFile:
     def setGudrunDir(self, dir):
         self.instrument.GudrunInputFileDir = dir
 
-    def dcs(self, path='', headless=True, iterator=None):
-        """
-        Call gudrun_dcs on the path supplied.
-        If the path is its default value,
-        then use the path attribute as the path.
-
-        Parameters
-        ----------
-        path : str, optional
-            Path to parse from (default is empty, which indicates self.path).
-        headless : bool, optional
-            Is this being run through CL or GUI?
-        iterative : bool, optional
-            Is Gudrun being iterated?
-
-        Returns
-        -------
-        subprocess.CompletedProcess
-            The result of calling gudrun_dcs using subprocess.run.
-            Can access stdout/stderr from this.
-        """
-
-        path = f"./{self.outpath}"
-
-        if headless:
-            with tempfile.TemporaryDirectory() as tmp:
-                self.setGudrunDir(tmp)
-                path = os.path.join(
-                    tmp,
-                    path
-                )
-                self.write_out(path)
-                gudrun_dcs = resolve("bin", f"gudrun_dcs{SUFFIX}")
-                with subprocess.Popen(
-                    [gudrun_dcs, path], cwd=tmp,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT
-                ) as gudrun:
-                    result = gudrun
-
-                    ERROR_KWDS = ["does not exist", "error", "Error"]
-
-                    for line in gudrun.stdout:
-                        if [KWD for KWD in ERROR_KWDS if KWD
-                                in line.decode("utf8").rstrip("\n")]:
-                            result.error = line
-                            result.returncode = 1
-                            return result
-
-                    if gudrun.stderr:
-                        result.stderr = gudrun.stderr
-                        return result
-
-                if iterator is not None:
-                    self.gudrunOutput = iterator.organiseOutput()
-                else:
-                    self.gudrunOutput = self.organiseOutput()
-                self.setGudrunDir(self.gudrunOutput.path)
-            return result
-        else:
-            if hasattr(sys, '_MEIPASS'):
-                gudrun_dcs = os.path.join(sys._MEIPASS, f"gudrun_dcs{SUFFIX}")
-            else:
-                gudrun_dcs = resolve(
-                    os.path.join(
-                        config.__rootdir__, "bin"
-                    ), f"gudrun_dcs{SUFFIX}"
-                )
-            if not os.path.exists(gudrun_dcs):
-                return FileNotFoundError()
-            else:
-                proc = QProcess()
-                proc.setProgram(gudrun_dcs)
-                proc.setArguments([path])
-                return (
-                    proc,
-                    self.write_out,
-                    [
-                        '',
-                        False
-                    ]
-                )
-
-    def purge(self, *args, **kwargs):
-        """
-        Call Purge.purge() to purge the detectors.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        subprocess.CompletedProcess
-            The result of calling purge_det using subprocess.run.
-            Can access stdout/stderr from this.
-        """
-        self.purgeFile = PurgeFile(self)
-        result = self.purgeFile.purge(*args, **kwargs)
-        if result:
-            self.purged = True
-        return result
-
     def convertToSample(self, container, persist=False):
 
         sample = container.convertToSample()
@@ -1666,13 +1548,6 @@ class GudrunFile:
                         break
             self.sampleBackgrounds[i].append(sample)
         return sample
-
-    def organiseOutput(self, head="", overwrite=True):
-        outputHandler = GudrunOutputHandler(
-            self, head=head, overwrite=overwrite
-        )
-        gudrunOutput = outputHandler.organiseOutput()
-        return gudrunOutput
 
     def determineError(self, sample):
         gudPath = sample.dataFiles[0].replace(

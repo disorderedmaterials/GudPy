@@ -40,6 +40,7 @@ class OutputTreeModel(QAbstractItemModel):
             gf.name = name
             gf.output = output
             self.refs.append(gf)
+            # Indexes for each sample background
             offsets = [
                 n for n, l in
                 enumerate(output.splitlines(keepends=True))
@@ -63,13 +64,13 @@ class OutputTreeModel(QAbstractItemModel):
                 ]
             )
 
-            i = deepcopy(self.gudrunFile.instrument)
-            i.output = "".join(
+            instrument = deepcopy(self.gudrunFile.instrument)
+            instrument.output = "".join(
                 output.splitlines(keepends=True)
                 [0: sbindicies[0][0]]
             )
-            i.name = "General"
-            self.data_[idx]["outputs"].append(i)
+            instrument.name = "General"
+            self.data_[idx]["outputs"].append(instrument)
             prev = None
             for start, end in sbindicies:
                 splicedOutput = (

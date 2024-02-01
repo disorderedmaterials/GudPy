@@ -22,6 +22,7 @@ from core.enums import (
     MergeWeights, NormalisationType, OutputUnits,
     Geometry, Format
 )
+from core import gudpy
 
 
 class TestGudPyIO(TestCase):
@@ -1557,5 +1558,5 @@ class TestGudPyIO(TestCase):
     def testZeroExitGudrun(self):
         g = GudrunFile(path="test/TestData/NIMROD-water/good_water.txt",
                        format=Format.TXT)
-        result = g.dcs()
+        result = gudpy.gudrun(g)
         self.assertEqual(result.stderr, None)
