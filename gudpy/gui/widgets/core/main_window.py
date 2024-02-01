@@ -32,8 +32,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCharts import QChartView
 
 from core.container import Container
-from core.iterators.composition import CompositionIterator
-from core.iterators.inelasticity_subtraction import InelasticitySubtraction
+from core import iterators
 from core.sample import Sample
 from gui.widgets.dialogs.export_dialog import ExportDialog
 
@@ -112,7 +111,7 @@ class GudPyMainWindow(QMainWindow):
         GudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
-    iterator : Iterator | CompositionIterator
+    iterator : Iterator | iterators.CompositionIterator
         Iterator to use in iterations.
     Methods
     -------
@@ -192,8 +191,7 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(CompositionIterationDialog)
         loader.registerCustomWidget(DensityIterationDialog)
         loader.registerCustomWidget(
-            InelasticitySubtractionIterationDialog
-        )
+            InelasticitySubtractionIterationDialog)
         loader.registerCustomWidget(RadiusIterationDialog)
         loader.registerCustomWidget(ThicknessIterationDialog)
         loader.registerCustomWidget(TweakFactorIterationDialog)
@@ -359,10 +357,10 @@ class GudPyMainWindow(QMainWindow):
             lambda: self.runGudrun(self.gudrunFile, self.procFinished)
         )
 
-        self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
+        self.mainWidget.iterateiterators.InelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
-                InelasticitySubtractionIterationDialog,
-                "iterateInelasticitySubtractionsDialog",
+                iterators.InelasticitySubtractionIterationDialog,
+                "iterateiterators.InelasticitySubtractionsDialog",
             )
         )
 
@@ -1346,7 +1344,7 @@ class GudPyMainWindow(QMainWindow):
             self.currentIteration = 0
             self.text = iterationDialog.text
             self.outputIterations = {}
-            if isinstance(self.iterator, CompositionIterator):
+            if isinstance(self.iterator, iterators.CompositionIterator):
                 self.iterator.nTotal = iterationDialog.numberIterations
                 self.iterateByComposition()
             else:
@@ -1559,7 +1557,7 @@ class GudPyMainWindow(QMainWindow):
                 f" from gudrun_dcs\n{self.error}"
             )
             return
-        if isinstance(self.iterator, InelasticitySubtraction):
+        if isinstance(self.iterator, iterators.InelasticitySubtraction):
             progress /= 2
         progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
