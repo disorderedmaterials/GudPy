@@ -1,10 +1,7 @@
 from copy import deepcopy
 import os
 from core.enums import IterationModes
-from core.iterators.tweak_factor import TweakFactorIterator
-from core.iterators.thickness import ThicknessIterator
-from core.iterators.radius import RadiusIterator
-from core.iterators.density import DensityIterator
+from core import iterators
 
 
 class BatchProcessor:
@@ -131,21 +128,21 @@ class BatchProcessor:
         tasks = []
 
         if iterationMode == IterationModes.TWEAK_FACTOR:
-            iteratorType = TweakFactorIterator
+            iteratorType = iterators.TweakFactorIterator
             dirText = "IterateByTweakFactor"
         elif iterationMode == IterationModes.THICKNESS:
-            iteratorType = ThicknessIterator
+            iteratorType = iterators.ThicknessIterator
             dirText = "IterateByThickness"
         elif iterationMode == IterationModes.INNER_RADIUS:
-            iteratorType = RadiusIterator
+            iteratorType = iterators.RadiusIterator
             dirText = "IterateByInnerRadius"
             targetRadius = "inner"
         elif iterationMode == IterationModes.OUTER_RADIUS:
-            iteratorType = RadiusIterator
+            iteratorType = iterators.RadiusIterator
             dirText = "IterateByOuterRadius"
             targetRadius = "outer"
         elif iterationMode == IterationModes.DENSITY:
-            iteratorType = DensityIterator
+            iteratorType = iterators.DensityIterator
             dirText = "IterateByDensity"
 
         if headless:
@@ -163,7 +160,7 @@ class BatchProcessor:
             else:
                 if propogateFirstBatch:
                     iterator = iteratorType(initial)
-                    if isinstance(iterator, RadiusIterator):
+                    if isinstance(iterator, iterators.RadiusIterator):
                         iterator.setTargetRadius(targetRadius)
                     for i in range(maxIterations):
                         initial.process(headless=headless)
@@ -191,7 +188,7 @@ class BatchProcessor:
                         initial, self.batchedGudrunFile, iterationMode
                     )
                 iterator = iteratorType(self.batchedGudrunFile)
-                if isinstance(iterator, RadiusIterator):
+                if isinstance(iterator, iterators.RadiusIterator):
                     iterator.setTargetRadius(targetRadius)
 
                 for i in range(maxIterations):

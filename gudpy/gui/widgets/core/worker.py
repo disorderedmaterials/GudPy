@@ -5,7 +5,7 @@ from PySide6.QtCore import QObject, Signal, QThread
 from core import gudpy
 from core.gud_file import GudFile
 from core.sample import Sample
-from core.iterators.composition import gss
+from core import iterators
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -64,7 +64,7 @@ class CompositionWorker(QObject):
     def work(self):
         self.started.emit(self.sample)
         # perform golden-section search.
-        gss(
+        iterators.gss(
             self.costup,
             *self.args,
             **self.kwargs,

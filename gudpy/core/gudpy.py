@@ -3,13 +3,14 @@ import os
 import sys
 import subprocess
 import shutil
+import copy
 
 from core import config
 from core import utils
 from core import enums
 from core import exception as exc
+from core import iterators
 
-import core.iterators as it
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
@@ -244,7 +245,7 @@ class Purge(Process):
 
 
 class Gudrun(Process):
-    def __init__(self, iterator: it.Iterator = None):
+    def __init__(self, iterator: iterators.Iterator = None):
         self.PROCESS = "gudrun_dcs"
         self.iterator = iterator
         self.gudrunOutput = handlers.GudrunOutput()
@@ -303,7 +304,7 @@ class RunContainersAsSamples:
 
     def __init__(self, gudrunFile):
 
-        self.gudrunFile = deepcopy(gudrunFile)
+        self.gudrunFile = copy.deepcopy(gudrunFile)
 
     def convertContainers(self):
         containersAsSamples = []

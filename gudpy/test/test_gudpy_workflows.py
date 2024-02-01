@@ -7,14 +7,8 @@ import math
 
 from core.composition import Composition, Component
 from core.gudrun_file import GudrunFile
-from core.iterators.thickness import ThicknessIterator
-from core.iterators.density import DensityIterator
-from core.iterators.tweak_factor import TweakFactorIterator
-from core.iterators.composition import CompositionIterator
+from core import iterators
 from core.gud_file import GudFile
-from core.iterators.inelasticity_subtraction import (
-    InelasticitySubtraction
-)
 from core.enums import Format
 from core import gudpy
 
@@ -114,8 +108,9 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByTweakFactor(self):
 
         self.g.purge()
-        tweakFactorIterator = TweakFactorIterator(self.g, 5)
-        tweakFactorIterator.iterate()
+        iterators.TweakFactorIterator = iterators.TweakFactorIterator(
+            self.g, 5)
+        iterators.TweakFactorIterator.iterate()
 
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
@@ -144,8 +139,8 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByThickness(self):
 
         self.g.purge()
-        thicknessIterator = ThicknessIterator(self.g, 5)
-        thicknessIterator.iterate()
+        iterators.ThicknessIterator = iterators.ThicknessIterator(self.g, 5)
+        iterators.ThicknessIterator.iterate()
 
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
@@ -174,8 +169,8 @@ class TestGudPyWorkflows(TestCase):
     def testGudPyIterateByDensity(self):
 
         self.g.purge()
-        densityIterator = DensityIterator(self.g, 5)
-        densityIterator.iterate()
+        iterators.DensityIterator = iterators.DensityIterator(self.g, 5)
+        iterators.DensityIterator.iterate()
 
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
@@ -204,8 +199,8 @@ class TestGudPyWorkflows(TestCase):
     def testIterateByThickness(self):
 
         self.g.purge()
-        thicknessIterator = ThicknessIterator(self.g, 5)
-        thicknessIterator.iterate()
+        iterators.ThicknessIterator = iterators.ThicknessIterator(self.g, 5)
+        iterators.ThicknessIterator.iterate()
 
         gfPath = self.getGudFile(self.g, 0)
         gf1 = GudFile(gfPath)
@@ -253,9 +248,9 @@ class TestGudPyWorkflows(TestCase):
 
         sample.composition = composition
 
-        compositionIterator = CompositionIterator(g)
-        compositionIterator.setComponent(h2, 1)
-        compositionIterator.iterate(10, 3)
+        iterators.CompositionIterator = iterators.CompositionIterator(g)
+        iterators.CompositionIterator.setComponent(h2, 1)
+        iterators.CompositionIterator.iterate(10, 3)
         self.assertAlmostEqual(
             sample.composition.weightedComponents[0].ratio, 2, 1
         )
@@ -269,7 +264,7 @@ class TestGudPyWorkflows(TestCase):
         for i in range(1, 4):
             self.g.purge()
             inelasitictyIterator = (
-                InelasticitySubtraction(self.g, i)
+                iterators.InelasticitySubtraction(self.g, i)
             )
             inelasitictyIterator.iterate()
 

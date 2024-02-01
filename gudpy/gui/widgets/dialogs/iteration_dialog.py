@@ -8,16 +8,7 @@ from PySide6.QtUiTools import QUiLoader
 
 from core.enums import Geometry
 from core import config
-from core.iterators.composition import (
-    CompositionIterator, calculateTotalMolecules
-)
-from core.iterators.density import DensityIterator
-from core.iterators.inelasticity_subtraction import (
-    InelasticitySubtraction
-)
-from core.iterators.radius import RadiusIterator
-from core.iterators.thickness import ThicknessIterator
-from core.iterators.tweak_factor import TweakFactorIterator
+from core import iterators
 
 
 class IterationDialog(QDialog):
@@ -78,19 +69,19 @@ class IterationDialog(QDialog):
 class DensityIterationDialog(IterationDialog):
 
     def iterate(self):
-        self.iterator = DensityIterator(self.gudrunFile, self.numberIterations)
+        self.iterator = iterators.DensityIterator(self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Iterate by Density"
         self.widget.close()
 
 
-class InelasticitySubtractionIterationDialog(IterationDialog):
+class iterators.InelasticitySubtractionIterationDialog(IterationDialog):
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
 
     def iterate(self):
-        self.iterator = InelasticitySubtraction(
+        self.iterator = iterators.InelasticitySubtraction(
             self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Inelasticity subtractions"
@@ -113,7 +104,7 @@ class RadiusIterationDialog(IterationDialog):
         )
 
     def iterate(self):
-        self.iterator = RadiusIterator(self.gudrunFile, self.numberIterations)
+        self.iterator = iterators.RadiusIterator(self.gudrunFile, self.numberIterations)
         self.iterator.setTargetRadius("inner")
         self.enqueueTasks()
         self.text = "Iterate by Radius"
@@ -129,7 +120,7 @@ class ThicknessIterationDialog(IterationDialog):
         )
 
     def iterate(self):
-        self.iterator = ThicknessIterator(
+        self.iterator = iterators.ThicknessIterator(
             self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Iterate by Thickness"
@@ -139,7 +130,7 @@ class ThicknessIterationDialog(IterationDialog):
 class TweakFactorIterationDialog(IterationDialog):
 
     def iterate(self):
-        self.iterator = TweakFactorIterator(
+        self.iterator = iterators.TweakFactorIterator(
             self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Iterate by Tweak Factor"
@@ -242,7 +233,7 @@ class CompositionIterationDialog(IterationDialog):
             self.widget.iterateButton.setEnabled(False)
 
     def iterate(self):
-        self.iterator = CompositionIterator(self.gudrunFile)
+        self.iterator = iterators.CompositionIterator(self.gudrunFile)
         self.iterator.setComponents(self.components)
         self.queue = Queue()
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
@@ -287,7 +278,7 @@ class CompositionIterationDialog(IterationDialog):
                                             self.gudrunFile,
                                             sb,
                                             self.iterator.components,
-                                            calculateTotalMolecules(
+                                            iterators.calculateTotalMolecules(
                                                 self.iterator.components,
                                                 sample
                                             )
