@@ -82,7 +82,7 @@ from gui.widgets.slots.container_slots import ContainerSlots
 from gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
 from gui.widgets.slots.sample_slots import SampleSlots
 from gui.widgets.slots.output_slots import OutputSlots
-from gui.widgets.resources import resources_rc  # noqa
+# from gui.widgets.resources import resources_rc  # noqa
 from core.file_library import GudPyFileLibrary
 from core.gudrun_file import GudrunFile
 from core.exception import ParserException
@@ -357,10 +357,10 @@ class GudPyMainWindow(QMainWindow):
             lambda: self.runGudrun(self.gudrunFile, self.procFinished)
         )
 
-        self.mainWidget.iterateiterators.InelasticitySubtractions.triggered.connect(
+        self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
-                iterators.InelasticitySubtractionIterationDialog,
-                "iterateiterators.InelasticitySubtractionsDialog",
+                InelasticitySubtractionIterationDialog,
+                "InelasticitySubtractionsDialog",
             )
         )
 
@@ -430,7 +430,7 @@ class GudPyMainWindow(QMainWindow):
 
         actionMap = {
             name: lambda: self.mainWidget.objectTree.insertContainer(
-                container=Container(config_=path)
+                container=Container(config=path)
             )
             for name, path in config.containerConfigurations.items()
         }
@@ -689,7 +689,7 @@ class GudPyMainWindow(QMainWindow):
         if not configurationDialog.cancelled and result:
             self.gudrunFile = GudrunFile(
                 configurationDialog.configuration, format=Format.TXT,
-                config_=True
+                config=True
             )
             self.gudrunFile.instrument.dataFileType = (
                 configurationDialog.dataFileType

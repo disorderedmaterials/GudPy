@@ -69,13 +69,14 @@ class IterationDialog(QDialog):
 class DensityIterationDialog(IterationDialog):
 
     def iterate(self):
-        self.iterator = iterators.DensityIterator(self.gudrunFile, self.numberIterations)
+        self.iterator = iterators.DensityIterator(
+            self.gudrunFile, self.numberIterations)
         self.enqueueTasks()
         self.text = "Iterate by Density"
         self.widget.close()
 
 
-class iterators.InelasticitySubtractionIterationDialog(IterationDialog):
+class InelasticitySubtractionIterationDialog(IterationDialog):
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
@@ -104,7 +105,8 @@ class RadiusIterationDialog(IterationDialog):
         )
 
     def iterate(self):
-        self.iterator = iterators.RadiusIterator(self.gudrunFile, self.numberIterations)
+        self.iterator = iterators.RadiusIterator(
+            self.gudrunFile, self.numberIterations)
         self.iterator.setTargetRadius("inner")
         self.enqueueTasks()
         self.text = "Iterate by Radius"
