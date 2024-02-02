@@ -32,14 +32,14 @@ from core import exception as exc
 from core import gudpy as gp
 
 
-class GudPyGUI(QtCore.QObject):
+class GudPyController(QtCore.QObject):
     def __init__(self):
         """
         Constructs all the necessary attributes for the GudPyMainWindow object.
         Calls initComponents() to load the UI file.
         """
         super().__init__()
-        self.gudpy = gp.GudPy()
+        self.gudpy = gp.GudPyGUI()
 
         self.mainWidget = GudPyMainWindow()
         self.modified = False
@@ -62,6 +62,8 @@ class GudPyGUI(QtCore.QObject):
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.autosave)
+
+        self.purged = False
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
@@ -126,9 +128,9 @@ class GudPyGUI(QtCore.QObject):
             try:
                 self.gudpy.loadFromFile(loadFile=filename, format=fmt)
             except (FileNotFoundError, exc.ParserException) as e:
-                self.sendErrorMesse(e)
+                self.mainWidget.sendError(e)
             except IOError:
-                self.sendError("Could not open file.")
+                self.mainWidget.sendError("Could not open file.")
 
             self.updateWidgets()
             self.mainWidget.setWindowTitle(
@@ -142,9 +144,9 @@ class GudPyGUI(QtCore.QObject):
         try:
             self.gudpy.loadFromProject(projectDir=projectDir)
         except (FileNotFoundError, exc.ParserException) as e:
-            self.sendError(e)
+            self.mainWidget.sendError(e)
         except IOError:
-            self.sendError("Could not open file.")
+            self.mainWidget.sendError("Could not open file.")
 
         self.updateWidgets()
         self.mainWidget.setWindowTitle(
@@ -218,7 +220,7 @@ class GudPyGUI(QtCore.QObject):
         try:
             self.gudpy(dirname)
         except IsADirectoryError as e:
-            self.sendError(e)
+            self.mainWidget.sendError(e)
 
     def exportInputFile(self):
         """
@@ -237,7 +239,7 @@ class GudPyGUI(QtCore.QObject):
             if filter and sys.platform.startswith("linux"):
                 filename += ext
             if os.path.dirname(filename) == self.gudpy.projectDir:
-                self.sendWarning("Do not modify project folder.")
+                self.mainWidget.sendWarning("Do not modify project folder.")
                 return
         self.gudpy.save(path=filename, format=fmt)
         self.setUnModified()
@@ -248,10 +250,75 @@ class GudPyGUI(QtCore.QObject):
 
     """
 
+    def updateProgressBar(self, progress):
+        progress += self.mainWidget.progressBar.value()
+        self.mainWidget.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+
+    def checkFilesExist_(self, showSuccessDialog: bool = False):
+        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        if not all(r[0] for r in result[0]) or not all(r[0]
+                                                       for r in result[1]):
+            undefined = [
+                r[1] for r in result[0] if not r[0]
+            ]
+            unresolved = [r[2] for r in result[1] if not r[0] and r[2]]
+            missingFilesDialog = MissingFilesDialog(
+                undefined, unresolved, self.mainWidget
+            )
+            missingFilesDialog.widget.exec_()
+            return False
+
+        if showSuccessDialog:
+            QMessageBox.information(
+                self.mainWidget,
+                "GudPy Information",
+                "All files found!",
+            )
+        return True
+
+    def prepareRun(self):
+        if not self.checkFilesExist_():
+            return False
+
+        if not self.gudrunFile.checkNormDataFiles():
+            self.mainWidget.sendWarning("Please specify normalisation data files.")
+            return False
+
+        if not self.checkSaveLocation():
+            dirname, _ = QFileDialog.getSaveFileName(
+                self.mainWidget,
+                "Choose save location",
+                (os.path.dirname(self.gudrunFile.loadFile)
+                 if self.gudrunFile.loadFile else "")
+            )
+            self.gudrunFile.setSaveLocation(dirname)
+        self.mainWidget.processStarted()
+        return True
+
+    def checkPurge(self):
+        if not self.purged and os.path.exists(
+            os.path.join(
+                self.gudrunFile.projectDir, "Purge", "purge_det.dat"
+            )
+        ):
+            purgeResult = self.mainWidget.purgeOptionsMessageBox(
+                "purge_det.dat found, but wasn't run in this session. "
+                "Run Purge?",
+            )
+        elif not self.gudrunFile.purged:
+            purgeResult = self.mainWidget.purgeOptionsMessageBox(
+                "It looks like you may not have purged detectors. Run Purge?",
+            )
+        else:
+            purgeResult = True
+        return purgeResult
+
     def runPurge(self, finished=None, dialog=False) -> bool:
         if dialog:
             self.mainWidget.setControlsEnabled(False)
-            purgeDialog = PurgeDialog(gudrunFile, self)
+            purgeDialog = dialogs.PurgeDialog(gudrunFile, self)
             result = purgeDialog.widget.exec_()
 
             if (purgeDialog.cancelled or result == QDialogButtonBox.No):
@@ -259,34 +326,82 @@ class GudPyGUI(QtCore.QObject):
                 return False
 
         if not self.prepareRun():
-            self.cleanupRun()
+            self.mainWidget.processStopped()
+            return False
+        
+        self.gudpy.purge = worker.PurgeWorker(self.gudpy.purgeFile)
+        self.gudpy.purge.outputChanged.connect(self.outputSlots.setOutputStream)
+        self.gudpy.purge.progress.connect(self.updateProgressBar)
+        self.gudpy.purge.finished.connect(self.purgeFinished)
+
+        self.gudpy.purge.start()
+
+    def purgeFinished(self, exitcode):
+        self.purged = True
+        self.mainWidget.processStopped()
+
+        if exitcode != 0:
+            self.mainWidget.sendError(
+                "Purge failed with the following output: "
+                f"{self.gudpy.purge.error}"
+            )
+            return
+
+        thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
+        if thresh and self.gudpy.purge.detectors < thresh:
+            self.mainWidget.sendWarning(
+                f"{self.detectors} detectors made it through the purge."
+                " The acceptable minimum for "
+                f"{self.gudpy.gudrunFile.instrument.name.name} is {thresh}"
+            )
+        self.mainWidget.goodDetectorsLabel.setText(
+            f"Number of Good Detectors: {self.detectors}"
+        )
+        self.outputSlots.setOutput(
+                self.gudpy.purge.stdout, "purge_det", gudrunFile=self.gudpy.gudrunFile
+        )
+
+    def runGudrun(self, iterator=None):
+        if not self.prepareRun() or not self.checkPurge():
+            self.mainWidget.processStopped()
             return False
 
-        self.worker = worker.PurgeWorker(gudrunFile)
-        self.workerThread = QtGui.QThread()
-        self.worker.moveToThread(self.workerThread)
-        self.workerThread.started.connect(self.worker.purge)
-        self.worker.started.connect(self.procStarted)
-        self.worker.outputChanged.connect(self.progressPurge)
-        self.worker.errorOccured.connect(self.sendError)
-        self.worker.finished.connect(self.cleanupRun)
-        self.worker.finished.connect(self.workerThread.quit)
+        self.gudpy.gudrun = worker.GudrunWorker(self.gudpy.gudrunFile, iterator)
+        self.gudpy.gudrun.outputChanged.connect(self.outputSlots.setOutputStream)
+        self.gudpy.gudrun.progress.connect(self.updateProgressBar)
+        self.gudpy.gudrun.finished.connect(self.gudrunFinished)
 
-        if finished:
-            self.workerThread.finished.connect(finished)
+        self.gudpy.gudrun.start()
 
-        self.workerThread.start()
+    def gudrunFinished(self, exitcode):
+        if exitcode != 0:
+            self.mainWidget.sendError(
+                f"Gudrun failed with the following output: "
+                f"\n{self.gudpy.gudrun.error}"
+            )
+            return
 
-    def sendError(self, error: str):
-        QtWidgets.QMessageBox.critical(
-            self.mainWidget, "GudPy Error", str(error))
-
-    def sendWarning(self, warning: str):
-        QtWidgets.QMessageBox.warning(
-            self.mainWidget,
-            "GudPy Warning",
-            warning
+        if self.gudpy.iterator:
+            self.outputIterations[
+                f"{self.gudpy.iterator.iterationType} {self.gudpy.iterator.nCurrent}"
+            ] = self.gudpy.gudrun.stdout
+            self.sampleSlots.setSample(self.sampleSlots.sample)
+            self.gudpy.iterator = None
+    
+        self.outputSlots.setOutput(
+            self.gudpy.gudrun.stdout, "gudrun_dcs", gudrunFile=self.gudpy.gudrunFile
         )
+
+
+
+ 
+
+
+""" 
+
+    COMMUNICATION
+
+"""
 
     def exit_(self):
         """
