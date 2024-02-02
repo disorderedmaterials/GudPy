@@ -4,6 +4,7 @@ import sys
 import subprocess
 import shutil
 import copy
+import typing as typ
 
 from core import config
 from core import utils
@@ -48,7 +49,7 @@ class GudPy:
         self.gudrunOutput = None
         self.purgeOutput = None
 
-        self.params = Parameters()
+        self.data = Parameters()
 
         self.projectDir = ""
 
@@ -194,9 +195,6 @@ class Process:
     def _outputChanged(self, output: str):
         self.stdout += output
 
-    def _errorOccured(self, stderr: str):
-        self.error += stderr
-
     def _checkBinary(self):
         if not os.path.exists(self.BINARY_PATH):
             raise FileNotFoundError(f"Missing {self.PROCESS} binary")
@@ -213,7 +211,7 @@ class Process:
             "Error"
         ]
         if [KWD for KWD in ERROR_KWDS if KWD in line]:
-            self.stderr += line
+            self.error += line
             return True
 
         return False
@@ -223,22 +221,21 @@ class Purge(Process):
     def __init__(self):
         self.PROCESS = "purge_det"
         self.purgeOutput = ""
-        self.purged = False
+        self.detectors = None
         super().__init__(self.PROCESS)
 
-    def organiseOutput(self):
-        outputHandler = handlers.OutputHandler("Purge")
+    def organiseOutput(self, procDir: str):
+        outputHandler = handlers.OutputHandler(procDir, "Purge")
         outputHandler.organiseOutput()
 
-    def purge(self, gudrunFile: GudrunFile):
+    def purge(self, purgeFile: PurgeFile):
         self._prepareRun()
         self._checkBinary()
         self.purgeOutput = ""
 
         with tempfile.TemporaryDirectory() as tmp:
-            gudrunFile.setGudrunDir(tmp)
-            gudrunFile.purgeFile.write_out(os.path.join(
-                gudrunFile.instrument.GudrunInputFileDir,
+            purgeFile.write_out(os.path.join(
+                tmp,
                 f"{self.PROCESS}.dat"
             ))
 
@@ -250,17 +247,13 @@ class Purge(Process):
                 for line in purge.stdout:
                     self._outputChanged(line.decode("utf8"))
                     if self._checkError(line):
-                        self._errorOccured(line)
                         return 1
                 if purge.stderr:
                     self._errorOccured(
                         purge.stderr.decode("utf8"))
                     return 1
 
-            self.purgeOutput = gudrunFile.purgeFile.organiseOutput()
-
-        gudrunFile.setGudrunDir(
-            gudrunFile.projectDir)
+            self.purgeOutput = purgeFile.organiseOutput(tmp)
 
         return 0
 
@@ -272,9 +265,11 @@ class Gudrun(Process):
         self.gudrunOutput = handlers.GudrunOutput()
         super().__init__(self.PROCESS)
 
-    def organiseOutput(self, head: str = "", overwrite: bool = True):
+    def organiseOutput(
+            self, gudrunFile: GudrunFile, head: str = "",
+            overwrite: bool = True):
         outputHandler = handlers.GudrunOutputHandler(
-            self, head=head, overwrite=overwrite
+            self, gudrunFile=gudrunFile, head=head, overwrite=overwrite
         )
         gudrunOutput = outputHandler.organiseOutput()
         return gudrunOutput
@@ -304,18 +299,15 @@ class Gudrun(Process):
             ) as gudrun:
                 for line in gudrun.stdout:
                     if self._checkError(line):
-                        self._errorOccured(line)
                         return 1
                     self._outputChanged(line.decode("utf8"))
                 if gudrun.stderr:
-                    self._errorOccured(
-                        gudrun.stderr.decode("utf8"))
                     return 1
 
             if self.iterator is not None:
-                self.gudrunOutput = self.iterator.organiseOutput()
+                self.gudrunOutput = self.iterator.organiseOutput(gudrunFile)
             else:
-                self.gudrunOutput = self.organiseOutput()
+                self.gudrunOutput = self.organiseOutput(gudrunFile)
             gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
 
         return 0
