@@ -5,6 +5,8 @@ import math
 
 from core.gud_file import GudFile
 from core.enums import Scales
+from core.gudrun_file import GudrunFile
+import core.output_file_handler as handlers
 
 
 class Iterator():
@@ -36,7 +38,7 @@ class Iterator():
 
     name = ""
 
-    def __init__(self, gudrunFile, nTotal):
+    def __init__(self, nTotal):
         """
         Constructs all the necessary attributes for the
         Iterator object.
@@ -47,13 +49,19 @@ class Iterator():
             Input GudrunFile that we will be using for iterating.
         nTotal : int
             Total number of iterations to be run
+        iterationType : str
+            Type of iteration being conducted
+        requireDefault : bool
+
         """
-        self.gudrunFile = gudrunFile
         self.nTotal = nTotal
         self.nCurrent = -1
         self.iterationType = self.name
+        self.requireDefault = False
 
-    def performIteration(self):
+    def performIteration(self,
+                         gudrunFile: GudrunFile,
+                         prevOutput: handlers.GudrunOutput):
         """
         Performs a single iteration of the current workflow.
 
@@ -63,23 +71,24 @@ class Iterator():
             return
         # Iterate through all samples that are being run,
         # applying the coefficient to the target parameter.
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in [
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
                 gudFile = GudFile(
-                    self.gudrunFile.gudrunOutput.gudFile(name=sample.name)
+                    gudrunFile.gudrunOutput.gudFile(name=sample.name)
                 )
                 # Calculate coefficient: actualDCSLevel / expectedDCSLevel
                 coefficient = (
                     gudFile.averageLevelMergedDCS / gudFile.expectedDCS
                 )
                 # Apply the coefficient.
-                self.applyCoefficientToAttribute(sample, coefficient)
+                self.applyCoefficientToAttribute(
+                    sample, coefficient, prevOutput)
         self.nCurrent += 1
 
-    def applyCoefficientToAttribute(self, object, coefficient):
+    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
         """
         Stub method to be overriden by sub-classes.
         The idea is that this method applies the 'coefficient'
@@ -94,31 +103,12 @@ class Iterator():
         """
         pass
 
-    def organiseOutput(self):
+    def organiseOutput(self, gudrunFile):
         """
         This organises the output of the iteration.
         """
-        gudrunOutput = self.gudrunFile.organiseOutput()
+        gudrunOutput = gudrunFile.organiseOutput()
         return gudrunOutput
-
-    def iterate(self):
-        """
-        This method is the core of the Iterator.
-        It performs n iterations of tweaking by a class-specific parameter.
-        Namely, it performs gudrun_dcs n times, adjusting said parameter
-        for each sample before each iteration, after the first one,
-        using the results of the previous iteration to do so.
-
-        Parameters
-        ----------
-        n : int
-            Number of iterations to perform.
-        """
-        self.gudrunFile.dcs(iterator=self)
-        for _ in range(self.nTotal):
-            time.sleep(1)
-            self.performIteration()
-            self.gudrunFile.dcs(iterator=self)
 
 
 class Radius(Iterator):
@@ -141,7 +131,7 @@ class Radius(Iterator):
     """
     name = "IterateByRadius"
 
-    def applyCoefficientToAttribute(self, object, coefficient):
+    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
         if self.targetRadius == "inner":
             object.innerRadius *= coefficient
         elif self.targetRadius == "outer":
@@ -172,7 +162,7 @@ class Thickness(Iterator):
 
     name = "IterateByThickness"
 
-    def applyCoefficientToAttribute(self, object, coefficient):
+    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
         # Determine a new total thickness.
         totalThickness = object.upstreamThickness + object.downstreamThickness
         totalThickness *= coefficient
@@ -206,7 +196,7 @@ class TweakFactor(Iterator):
 
     name = "IterateByTweakFactor"
 
-    def performIteration(self):
+    def performIteration(self, gudrunFile, prevOutput):
         """
         Performs a single iteration of the current workflow.
 
@@ -221,42 +211,17 @@ class TweakFactor(Iterator):
 
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in [
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
                 gudFile = GudFile(
-                    self.gudrunFile.gudrunOutput.gudFile(name=sample.name)
+                    prevOutput.gudFile(name=sample.name)
                 )
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
         self.nCurrent += 1
-
-    def iterate(self):
-        """
-        This method is the core of the TweakFactorIterator.
-        It performs n iterations of tweaking by the tweak factor.
-        Namely, it performs gudrun_dcs n times, adjusting the tweak factor
-        for each sample before each iteration, after the first one, to
-        the suggested tweak factor outputted from the previous iteration
-        of gudrun_dcs. gudrun_dcs outputs a .gud file, which we
-        parse to extract the suggested tweak factor from.
-
-        Parameters
-        ----------
-        n : int
-            Number of iterations to perform.
-        """
-        self.gudrunFile.dcs(iterator=self)
-        # Perform n iterations of tweaking by tweak factor.
-        for _ in range(self.nTotal):
-
-            # Write out what we currently have,
-            # and run gudrun_dcs on that file.
-            time.sleep(1)
-            self.performIteration()
-            self.gudrunFile.dcs(iterator=self)
 
 
 class Density(Iterator):
@@ -276,7 +241,7 @@ class Density(Iterator):
     """
     name = "IterateByDensity"
 
-    def applyCoefficientToAttribute(self, object, coefficient):
+    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
         """
         Multiplies a sample's density by a given coefficient.
         Overrides the implementation from the base class.
@@ -361,6 +326,8 @@ class InelasticitySubtraction(Iterator):
         self.iterationType = "QIteration"
         # Individual iterations
         self.iterationCount = 0
+        # If a default iteration is required
+        self.requireDefault = False
         # Iteration pair
         self.nCurrent = 0
         self.topHatWidths = []
@@ -369,47 +336,47 @@ class InelasticitySubtraction(Iterator):
         self.QStep = 0.
         self.gudrunOutputs = []
 
-    def enableLogarithmicBinning(self):
+    def enableLogarithmicBinning(self, gudrunFile):
         """
         Enables logarithmic binning.
         """
-        self.gudrunFile.instrument.useLogarithmicBinning = True
+        gudrunFile.instrument.useLogarithmicBinning = True
 
-    def disableLogarithmicBinning(self):
+    def disableLogarithmicBinning(self, gudrunFile):
         """
         Disables logarithmic binning.
         """
-        self.gudrunFile.instrument.useLogarithmicBinning = False
+        gudrunFile.instrument.useLogarithmicBinning = False
 
-    def collectQRange(self):
+    def collectQRange(self, gudrunFile):
         """
         Collects the max, min and step on the Q scale.
         Stores them in attributes.
         """
-        self.QMax = self.gudrunFile.instrument.XMax
-        self.QMin = self.gudrunFile.instrument.XMin
-        self.QStep = self.gudrunFile.instrument.XStep
+        self.QMax = gudrunFile.instrument.XMax
+        self.QMin = gudrunFile.instrument.XMin
+        self.QStep = gudrunFile.instrument.XStep
 
-    def applyQRange(self):
+    def applyQRange(self, gudrunFile):
         """
         Apply max, min and step from Q scale to X scale.
         """
-        self.gudrunFile.instrument.XMax = self.QMax
-        self.gudrunFile.instrument.XMin = self.QMin
-        self.gudrunFile.instrument.XStep = self.QStep
+        gudrunFile.instrument.XMax = self.QMax
+        gudrunFile.instrument.XMin = self.QMin
+        gudrunFile.instrument.XStep = self.QStep
 
-    def applyWavelengthRanges(self):
+    def applyWavelengthRanges(self, gudrunFile):
         """
         Apply max, min and step from wavelength scale to X scale.
         """
-        self.gudrunFile.instrument.XMax = (
-            self.gudrunFile.instrument.wavelengthMax
+        gudrunFile.instrument.XMax = (
+            gudrunFile.instrument.wavelengthMax
         )
-        self.gudrunFile.instrument.XMin = (
-            self.gudrunFile.instrument.wavelengthMin
+        gudrunFile.instrument.XMin = (
+            gudrunFile.instrument.wavelengthMin
         )
 
-    def zeroTopHatWidths(self):
+    def zeroTopHatWidths(self, gudrunFile):
         """
         Iterate through all samples, setting the
         width of top hat functions for FT to zero, for each sample
@@ -417,13 +384,13 @@ class InelasticitySubtraction(Iterator):
         """
 
         # Iterate through all of the samples, and set top hat widths to zero.
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
                     target = sample
                     target.topHatW = 0
 
-    def resetTopHatWidths(self):
+    def resetTopHatWidths(self, gudrunFile):
         """
         Iterate through all samples, setting the
         width of top hat functions for their previous values, for each sample
@@ -432,13 +399,13 @@ class InelasticitySubtraction(Iterator):
 
         # Iterate through all of the samples, and set top hat widths to
         # their previous values
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample, topHatW in zip(
                     sampleBackground.samples, self.topHatWidths):
                 target = sample
                 target.topHatW = topHatW
 
-    def collectTopHatWidths(self):
+    def collectTopHatWidths(self, gudrunFile):
         """
         Iterate through all samples, collecting the
         width of top hat functions, for each sample that is being run.
@@ -446,12 +413,12 @@ class InelasticitySubtraction(Iterator):
         self.topHatWidths = []
 
         # Iterate over samples, saving their top hat widths
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
                     self.topHatWidths.append(sample.topHatW)
 
-    def setSelfScatteringFiles(self, scale):
+    def setSelfScatteringFiles(self, scale, gudrunFile, prevOutput):
         """
         Alters file extensions of self scattering files for samples being run.
         If the scale selected is the Q-scale, then set self scattering file
@@ -464,23 +431,21 @@ class InelasticitySubtraction(Iterator):
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
         # relevant to the specified scale
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
                     filename = target.dataFiles[0]
-                    prevOutput = (
-                        self.gudrunFile.gudrunOutput.output(
+                    targetFile = (
+                        prevOutput.output(
                             sample.name, filename, suffix)
-                        if self.gudrunFile.gudrunOutput else ""
+                        if prevOutput else ""
                     )
                     target.fileSelfScattering = (
-                        os.path.join(
-                            prevOutput,
-                        )
+                        targetFile
                     )
 
-    def wavelengthIteration(self):
+    def wavelengthIteration(self, gudrunFile):
         """
         Performs one iteration on the wavelength scale.
         If the iteration is the first iteration,
@@ -500,26 +465,26 @@ class InelasticitySubtraction(Iterator):
         if self.iterationCount == 0:
             # Disable subtracting of wavelength binned data.
             # Collect the top hat widths and Q range and step size.
-            self.gudrunFile.instrument.subWavelengthBinnedData = False
-            self.collectTopHatWidths()
-            self.collectQRange()
+            gudrunFile.instrument.subWavelengthBinnedData = False
+            self.collectTopHatWidths(gudrunFile)
+            self.collectQRange(gudrunFile)
         else:
             # Enable subtracting of wavelength binned data
-            self.gudrunFile.instrument.subWavelengthBinnedData = True
+            gudrunFile.instrument.subWavelengthBinnedData = True
 
         # Set the min, max and step size on the X scale
         # To the min, max and step size on the wavelength scale
         # Set the correct scale, zero top hat widths and
         # alter data file suffixes.
-        self.applyWavelengthRanges()
-        self.enableLogarithmicBinning()
-        self.gudrunFile.instrument.scaleSelection = (
+        self.applyWavelengthRanges(gudrunFile)
+        self.enableLogarithmicBinning(gudrunFile)
+        gudrunFile.instrument.scaleSelection = (
             Scales.WAVELENGTH
         )
-        self.zeroTopHatWidths()
-        self.setSelfScatteringFiles(Scales.WAVELENGTH)
+        self.zeroTopHatWidths(gudrunFile)
+        self.setSelfScatteringFiles(Scales.WAVELENGTH, gudrunFile)
 
-    def QIteration(self):
+    def QIteration(self, gudrunFile):
         """
         Performs one iteration on the Q scale.
         Enables subtracting of wavelength-binned data.
@@ -531,45 +496,34 @@ class InelasticitySubtraction(Iterator):
         """
         self.iterationType = "QIteration"
         # Enable subtracting of wavelength binned data
-        self.gudrunFile.instrument.subWavelengthBinnedData = True
+        gudrunFile.instrument.subWavelengthBinnedData = True
         # Set the min, max and step size on the X scale
         # To the min, max and step size on the Q scale
         # Set the correct scale, reset top hat widths
         # alter data file suffixes.
-        self.applyQRange()
-        self.disableLogarithmicBinning()
-        self.gudrunFile.instrument.scaleSelection = Scales.Q
-        self.resetTopHatWidths()
-        self.setSelfScatteringFiles(Scales.Q)
+        self.applyQRange(gudrunFile)
+        self.disableLogarithmicBinning(gudrunFile)
+        gudrunFile.instrument.scaleSelection = Scales.Q
+        self.resetTopHatWidths(gudrunFile)
+        self.setSelfScatteringFiles(Scales.Q, gudrunFile)
 
-    def performIteration(self):
+    def performIteration(self, gudrunFile):
         if self.iterationType == "QIteration":
-            self.wavelengthIteration()
+            self.wavelengthIteration(gudrunFile)
             self.iterationCount += 1
         else:
-            self.QIteration()
+            self.QIteration(gudrunFile)
             self.nCurrent += 1
 
-    def organiseOutput(self):
+    def organiseOutput(self, gudrunFile):
         """
         This organises the output of the iteration.
         """
         overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
-        return self.gudrunFile.organiseOutput(
+        return gudrunFile.organiseOutput(
             head=f"{self.iterationType}_{self.iterationCount}",
             overwrite=overwrite)
-
-    def iterate(self):
-        """
-        Perform n iterations on both
-        the wavelength scale and Q scale.
-        """
-        for _ in range(self.nTotal * 2):
-            self.performIteration()
-            self.gudrunFile.dcs(iterator=self)
-            self.gudrunOutputs.append(self.gudrunFile.gudrunOutput)
-            time.sleep(1)
 
 
 def gss(
@@ -673,7 +627,7 @@ class Composition():
     name = "IterateByComposition"
 
     def __init__(self, gudrunFile):
-        self.gudrunFile = gudrunFile
+        gudrunFile = gudrunFile
         self.components = []
         self.ratio = 0
         self.nTotal = 0
@@ -723,7 +677,7 @@ class Composition():
     """
 
     def processSingleComponent(self, x, sampleBackground):
-        self.gudrunFile.sampleBackgrounds = [sampleBackground]
+        gudrunFile.sampleBackgrounds = [sampleBackground]
 
         x = abs(x)
         weightedComponents = [
@@ -737,13 +691,13 @@ class Composition():
             component.ratio = x
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.dcs(iterator=self)
+        gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
 
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.gudrunOutput.gudFile(
+                gudrunFile.gudrunOutput.gudFile(
                     name=sampleBackground.samples[0].name)
             )
         )
@@ -769,7 +723,7 @@ class Composition():
     """
 
     def processTwoComponents(self, x, sampleBackground, totalMolecules):
-        self.gudrunFile.sampleBackgrounds = [sampleBackground]
+        gudrunFile.sampleBackgrounds = [sampleBackground]
         x = abs(x)
         wcA = wcB = None
         for weightedComponent in (
@@ -785,13 +739,13 @@ class Composition():
             wcB.ratio = abs(totalMolecules - x)
 
         sampleBackground.samples[0].composition.translate()
-        self.gudrunFile.dcs(iterator=self)
+        gudrunFile.dcs(iterator=self)
 
         time.sleep(1)
 
         gudFile = GudFile(
             os.path.join(
-                self.gudrunFile.gudrunOutput.gudFile(
+                gudrunFile.gudrunOutput.gudFile(
                     name=sampleBackground.samples[0].name)
             )
         )
@@ -826,7 +780,7 @@ class Composition():
         if not self.components or not self.ratio:
             return None
         # Only include samples that are marked for analysis.
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
                     sb = deepcopy(sampleBackground)
@@ -856,5 +810,5 @@ class Composition():
         """
         This organises the output of the iteration.
         """
-        gudrunOutput = self.gudrunFile.organiseOutput()
+        gudrunOutput = gudrunFile.organiseOutput()
         return gudrunOutput
