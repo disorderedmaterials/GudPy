@@ -41,11 +41,10 @@ class OutputHandler:
     """Class to organise output files
     """
 
-    def __init__(self, gudrunFile, dirName: str):
-        self.gudrunFile = gudrunFile
+    def __init__(self, procDir: str, dirName: str):
         self.dirName = dirName
         # Directory where files are outputted and process was run (temp)
-        self.procDir = self.gudrunFile.instrument.GudrunInputFileDir
+        self.procDir = procDir
         # Make sure it is a temporary directory
         assert (self.procDir.startswith(tempfile.gettempdir()))
         # Get the output directory
@@ -113,7 +112,7 @@ class GudrunOutputHandler(OutputHandler):
         """
 
         super().__init__(
-            gudrunFile,
+            gudrunFile.instrument.GudrunInputFileDir,
             "Gudrun",
         )
 
