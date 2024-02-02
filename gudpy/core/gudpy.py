@@ -161,15 +161,15 @@ class GudPy:
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:"
-                f"{self.purge.sdout}"
+                f"{self.purge.error}"
             )
 
     def runGudrun(self):
         exitcode = self.gudrun.gudrun(self.gudrunFile)
         if exitcode:
             raise exc.GudrunException(
-                "Purge failed to run with the following output:"
-                f"{self.gudrun.sdout}"
+                "Gudrun failed to run with the following output:"
+                f"{self.gudrun.error}"
             )
 
 
@@ -259,22 +259,28 @@ class Purge(Process):
 
 
 class Gudrun(Process):
-    def __init__(self, iterator: iterators.Iterator = None):
-        self.PROCESS = "gudrun_dcs"
-        self.iterator = iterator
-        self.gudrunOutput = handlers.GudrunOutput()
+    def __init__(self):
+        self.PROCESS: str = "gudrun_dcs"
+        self.gudrunOutput: handlers.GudrunOutput = None
         super().__init__(self.PROCESS)
 
     def organiseOutput(
-            self, gudrunFile: GudrunFile, head: str = "",
-            overwrite: bool = True):
+        self, gudrunFile: GudrunFile,
+        head: str = "",
+        overwrite: bool = True
+    ) -> handlers.GudrunOutput:
+
         outputHandler = handlers.GudrunOutputHandler(
             self, gudrunFile=gudrunFile, head=head, overwrite=overwrite
         )
         gudrunOutput = outputHandler.organiseOutput()
         return gudrunOutput
 
-    def gudrun(self, gudrunFile: GudrunFile):
+    def gudrun(
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator = None
+    ) -> int:
         self._prepareRun()
         self._checkBinary()
 
@@ -304,13 +310,59 @@ class Gudrun(Process):
                 if gudrun.stderr:
                     return 1
 
-            if self.iterator is not None:
-                self.gudrunOutput = self.iterator.organiseOutput(gudrunFile)
+            if iterator is not None:
+                self.gudrunOutput = iterator.organiseOutput(gudrunFile)
             else:
                 self.gudrunOutput = self.organiseOutput(gudrunFile)
             gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
 
         return 0
+
+
+class GudrunIterator:
+    def __init__(
+        self,
+        iterator: iterators.Iterator,
+        gudrunFile: GudrunFile
+    ):
+
+        # Create a copy of gudrun file
+        self.gudrunFile = copy.deepcopy(gudrunFile)
+        self.iterator = iterator
+        self.gudrunObjects = []
+        self.defaultRun = None
+
+        for _ in range(iterator.nTotal):
+            self.gudrunObjects.append(Gudrun())
+
+    def _nextIteration(self):
+        print(f"Iteration number: {self.iterator.nCurrent}")
+
+    def iterate(self):
+        prevOutput = None
+
+        # If the iterator requires a prelimenary run
+        if self.iterator.requireDefault:
+            self.defaultRun = Gudrun()
+            exitcode = self.defaultRun.gudrun(self.gudrunFile, self.iterator)
+            if exitcode:  # An exit code != 0 indicates failure
+                raise exc.GudrunException(
+                    "Gudrun failed to run with the following output:"
+                    f"{self.defaultRun.error}"
+                )
+            prevOutput = self.defaultRun.gudrunOutput
+
+        # Iterate through gudrun objects
+        for gudrun in self.gudrunObjects:
+            gudrun.gudrun(self.gudrunFile, self.iterator)
+            exitcode = self.iterator.performIteration(
+                self.gudrunFile, prevOutput)
+            if exitcode:
+                raise exc.GudrunException(
+                    "Gudrun failed to run with the following output:"
+                    f"{self.gudrun.error}"
+                )
+            self._nextIteration()
 
 
 class RunContainersAsSamples:
