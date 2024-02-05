@@ -10,6 +10,7 @@ from core import utils
 from core import enums
 from core import exception as exc
 from core import iterators
+from core import instrument, beam, normalisation, composition
 
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
@@ -21,11 +22,11 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 class Parameters:
     def __init__(self):
-        self.instrument = Instrument()
-        self.beam = Beam()
-        self.normalisation = Normalisation()
+        self.instrument = instrument.Instrument()
+        self.beam = beam.Beam()
+        self.normalisation = normalisation.Normalisation()
         self.sampleBackgrounds = []
-        self.components = Components(components=[])
+        self.components = composition.Components(components=[])
 
 
 class GudPy:
@@ -46,6 +47,7 @@ class GudPy:
         self.purge = Purge()
         self.gudrun = Gudrun()
         self.gudrunIterator = None
+        self.compositionIterator = None
         self.gudrunOutput = None
         self.purgeOutput = None
 
@@ -181,6 +183,17 @@ class GudPy:
                 f"{self.gudrun.error}"
             )
         self.gudrunFile = self.gudrunIterator.gudrunFile
+
+    def iterateComposition(self, iterator: iterators.Composition):
+        self.compositionIterator = CompositionIterator(
+            iterator, self.gudrunFile)
+        exitcode = self.gudrunIterator.iterate()
+        if exitcode:
+            raise exc.GudrunException(
+                "Gudrun failed to run with the following output:"
+                f"{self.gudrun.error}"
+            )
+        self.gudrunFile = self.compositionIterator.gudrunFile
 
 
 class Process:
