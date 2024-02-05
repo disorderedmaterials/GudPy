@@ -4,7 +4,6 @@ import sys
 import subprocess
 import shutil
 import copy
-import typing as typ
 
 from core import config
 from core import utils
@@ -46,6 +45,7 @@ class GudPy:
         self.gudrunFile = None
         self.purge = Purge()
         self.gudrun = Gudrun()
+        self.gudrunIterator = None
         self.gudrunOutput = None
         self.purgeOutput = None
 
@@ -171,6 +171,16 @@ class GudPy:
                 "Gudrun failed to run with the following output:"
                 f"{self.gudrun.error}"
             )
+
+    def iterateGudrun(self, iterator: iterators.Iterator):
+        self.gudrunIterator = GudrunIterator(iterator, self.gudrunFile)
+        exitcode = self.gudrunIterator.iterate()
+        if exitcode:
+            raise exc.GudrunException(
+                "Gudrun failed to run with the following output:"
+                f"{self.gudrun.error}"
+            )
+        self.gudrunFile = self.gudrunIterator.gudrunFile
 
 
 class Process:
@@ -338,7 +348,7 @@ class GudrunIterator:
     def _nextIteration(self):
         print(f"Iteration number: {self.iterator.nCurrent}")
 
-    def iterate(self):
+    def iterate(self) -> int:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
@@ -346,23 +356,49 @@ class GudrunIterator:
             self.defaultRun = Gudrun()
             exitcode = self.defaultRun.gudrun(self.gudrunFile, self.iterator)
             if exitcode:  # An exit code != 0 indicates failure
-                raise exc.GudrunException(
-                    "Gudrun failed to run with the following output:"
-                    f"{self.defaultRun.error}"
-                )
+                return exitcode
             prevOutput = self.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
         for gudrun in self.gudrunObjects:
-            gudrun.gudrun(self.gudrunFile, self.iterator)
-            exitcode = self.iterator.performIteration(
-                self.gudrunFile, prevOutput)
+            self.iterator.performIteration(self.gudrunFile, prevOutput)
+            exitcode = gudrun.gudrun(self.gudrunFile, self.iterator)
             if exitcode:
-                raise exc.GudrunException(
-                    "Gudrun failed to run with the following output:"
-                    f"{self.gudrun.error}"
-                )
+                return exitcode
+
+            prevOutput = gudrun.gudrunOutput
             self._nextIteration()
+
+        return 0
+
+
+class CompositionIterator(GudrunIterator):
+    def __init__(
+        self,
+        iterator: iterators.Composition,
+        gudrunFile: GudrunFile
+    ):
+        self.result = None
+        super().__init__(iterator, gudrunFile)
+
+    def iterate(self) -> int:
+        prevOutput = None
+
+        for gudrun in self.gudrunObjects:
+            if self.iterator.result:
+                self.result = self.iterator.result
+                return 0
+
+            gudrunFile = self.iterator.performIteration(
+                self.gudrunFile, prevOutput)
+
+            exitcode = gudrun.gudrun(gudrunFile, self.iterator)
+            if exitcode:
+                return exitcode
+
+            prevOutput = gudrun.gudrunOutput
+
+        return 0
 
 
 class RunContainersAsSamples:

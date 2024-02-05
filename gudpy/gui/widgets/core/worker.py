@@ -29,17 +29,12 @@ class GudPyGUI(QObject, gudpy.GudPy):
             format=format, config=config,
         )
 
-        self.purge = PurgeWorker()
-        self.gudrun = GudrunWorker()
+        self.purge = None
+        self.gudrun = None
+        self.gudrunIterator = None
 
-    def processProgress(self, stdout):
-        progress = self.progressIncrementDCS(self.gudrunFile, stdout)
-        if isinstance(self.iterator, iterators.InelasticitySubtraction):
-            progress /= 2
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
-            progress if progress <= 100 else 100
-        )
+        self.output = ""
+        self.outputIterations = {}
 
 
 class Worker(QThread):
@@ -107,6 +102,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
     def __init__(self, gudrunFile: GudrunFile, iterator: Iterator):
         super().__init__(iterator=iterator)
         self.gudrunFile = gudrunFile
+        self.progress = 0
 
         # Number of GudPy objects
         self.markers = (
@@ -127,7 +123,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
 
     def _progress(self):
         stepSize = math.ceil(100 / self.markers)
-        progress = stepSize * sum([
+        self.progress += stepSize * sum([
             self.stdout.count("Got to: INSTRUMENT"),
             self.stdout.count("Got to: BEAM"),
             self.stdout.count("Got to: NORMALISATION"),
@@ -136,127 +132,78 @@ class GudrunWorker(Worker, gudpy.Gudrun):
             self.stdout.count("Got to: CONTAINER"),
         ])
         if isinstance(self.iterator, iterators.InelasticitySubtraction):
-            progress /= 2
-        return progress
+            self.progress /= 2
+        return self.progress
 
     def run(self):
         exitcode = super(GudrunWorker, self).gudrun(self.gudrunFile)
         self.finished.emit(exitcode)
 
 
-class CompositionWorker(QObject):
-    finished = Signal(Sample, Sample)
-    started = Signal(Sample)
+class GudrunIteratorWorker(QThread, gudpy.GudrunIterator):
     nextIteration = Signal(int)
-    errorOccured = Signal(str)
+    outputChanged = Signal(str)
+    progress = Signal(int)
+    finished = Signal(int)
 
-    def __init__(self, args, kwargs, sample, gudrunFile):
-        self.args = args
-        self.kwargs = kwargs
-        self.sample = sample
-        self.updatedSample = None
-        self.errored = False
-        self.gudrunFile = gudrunFile
-        super(CompositionWorker, self).__init__()
-
-    def work(self):
-        self.started.emit(self.sample)
-        # perform golden-section search.
-        iterators.gss(
-            self.costup,
-            *self.args,
-            **self.kwargs,
-            startIterFunc=self.nextIteration.emit
-        )
-        if not self.errored:
-            # If an error occurs emit appropiate signal.
-            self.finished.emit(self.sample, self.updatedSample)
-
-    def costup(
-        self, x, gudrunFile, sampleBackground,
-        components, totalMolecules=None
+    def __init__(
+        self,
+        iterator: iterators.Iterator,
+        gudrunFile: GudrunFile
     ):
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        self.gudrunObjects = []
+        self.output = ""
 
-        if QThread.currentThread().isInterruptionRequested():
-            return None
-        gf = deepcopy(gudrunFile)
-        gf.sampleBackgrounds = [sampleBackground]
+        for _ in range(iterator.nTotal):
+            worker = GudrunWorker(self.gudrunFile, self.iterator)
+            self.worker.outputChanged.connect(self._outputChanged)
+            self.worker.progress.connect(self._progress)
+            self.gudrunObjects.append(worker)
 
-        # Prevent negative x.
-        x = abs(x)
+    def _outputChanged(self, output):
+        self.output += output
+        self.outputChanged.emit(output)
 
-        if len(components) == 1:
-            # Determine instances where target components are used.
-            weightedComponents = [
-                wc for wc in sampleBackground.samples[0]
-                .composition.weightedComponents
-                for c in components
-                if c.eq(wc.component)
-            ]
-            for component in weightedComponents:
-                component.ratio = x
+    def _progress(self, progress):
+        self.progress.emit(progress)
 
-        elif len(components) == 2:
-            wcA = wcB = None
-            # Determine instances where target components are used.
-            for weightedComponent in (
-                sampleBackground.samples[0].composition.weightedComponents
-            ):
-                if weightedComponent.component.eq(components[0]):
-                    wcA = weightedComponent
-                elif weightedComponent.component.eq(components[1]):
-                    wcB = weightedComponent
+    def _nextIteration(self):
+        self.output = ""
+        self.nextIteration.emit(self.iterator.nCurrent)
 
-            if wcA and wcB:
-                # Ensure combined ratio == totalMolecules.
-                wcA.ratio = x
-                wcB.ratio = abs(totalMolecules - x)
+    def run(self):
+        exitcode = super(GudrunIteratorWorker, self).iterate()
+        self.finished.emit(exitcode)
 
-        # Update composition
-        sampleBackground.samples[0].composition.translate()
-        self.updatedSample = sampleBackground.samples[0]
 
-        # Set up process and execute.
-        outpath = os.path.join(
-            gf.instrument.GudrunInputFileDir,
-            "gudpy.txt"
-        )
-        self.proc, func, args = gf.dcs(path=outpath, headless=False)
-        func(*args)
-        self.proc.setWorkingDirectory(gf.instrument.GudrunInputFileDir)
-        self.proc.start()
-        # Block until process is finished.
-        self.proc.waitForFinished(-1)
-        # Read from stdout.
-        if not self.proc:
-            return None
-        data = self.proc.readAllStandardOutput()
-        result = bytes(data).decode("utf8")
+class CompositionWorker(QThread, gudpy.CompositionIterator):
+    def __init__(
+        self,
+        iterator: iterators.Composition,
+        gudrunFile: GudrunFile
+    ):
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        self.gudrunObjects = []
+        self.output = ""
 
-        # Check for errors.
-        ERROR_KWDS = [
-            "does not exist",
-            "error",
-            "Error"
-        ]
-        if [KWD for KWD in ERROR_KWDS if KWD in result]:
-            self.errorOccured.emit(result)
-            self.errored = True
-            return None
+        for _ in range(iterator.nTotal):
+            worker = GudrunWorker(self.gudrunFile, self.iterator)
+            self.worker.outputChanged.connect(self._outputChanged)
+            self.worker.progress.connect(self._progress)
+            self.gudrunObjects.append(worker)
 
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            gudrunFile.instrument.dataFileType,
-            "gud"
-        )
+    def _outputChanged(self, output):
+        self.output += output
+        self.outputChanged.emit(output)
 
-        gudFile = GudFile(
-            os.path.join(
-                gudrunFile.instrument.GudrunInputFileDir, gudPath
-            )
-        )
+    def _progress(self, progress):
+        self.progress.emit(progress)
 
-        # Determine cost.
-        if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
-            return 0
-        else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+    def _nextIteration(self):
+        self.output = ""
+        self.nextIteration.emit(self.iterator.nCurrent)
+
+    def run(self):
+        exitcode = super(CompositionWorker, self).iterate()
+        self.finished.emit(exitcode)

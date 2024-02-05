@@ -1,7 +1,6 @@
-import time
-import os
 from copy import deepcopy
 import math
+from enum import Enum
 
 from core.gud_file import GudFile
 from core.enums import Scales
@@ -59,9 +58,11 @@ class Iterator():
         self.iterationType = self.name
         self.requireDefault = False
 
-    def performIteration(self,
-                         gudrunFile: GudrunFile,
-                         prevOutput: handlers.GudrunOutput):
+    def performIteration(
+        self,
+        gudrunFile: GudrunFile,
+        prevOutput: handlers.GudrunOutput
+    ):
         """
         Performs a single iteration of the current workflow.
 
@@ -588,7 +589,7 @@ def calculateTotalMolecules(components, sample):
     return total
 
 
-class Composition():
+class Composition(Iterator):
     """
     Class to represent a Composition Iterator.
     This class is used for iteratively tweaking composition
@@ -626,14 +627,73 @@ class Composition():
 
     name = "IterateByComposition"
 
-    def __init__(self, gudrunFile):
-        gudrunFile = gudrunFile
-        self.components = []
-        self.ratio = 0
-        self.nTotal = 0
+    class Mode(Enum):
+        SINGLE = 1
+        DOUBLE = 2
+
+    def __init__(
+        self,
+        gudrunFile,
+        mode: Mode = Mode.SINGLE,
+        startBound=1e-2,
+        endBound=10,
+        nTotal=10,
+        rtol=10,
+        ratio=1,
+        components=[],
+    ):
+        self.originalGudrunFile = gudrunFile
+        self.mode = mode
         self.nCurrent = 0
-        self.iterationType = self.name
-        self.nWeightedComponents = 0
+        self.newCenter = None
+        self.newCenterOutput = None
+
+        self.ratio = ratio
+        self.components = [c for c in components if c]
+
+        if len(self.components) == 1:
+            self.mode = Composition.Mode.SINGLE
+        else:
+            self.mode = Composition.Mode.DOUBLE
+
+        self.bounds = [startBound, self.ratio, endBound]
+        self.nTotal = nTotal
+        self.rtol = rtol
+
+        self.sampleArgs = [{
+            "sample": None,
+            "background": None,
+            "molecules": None,
+        }]
+
+        self.updatedSample = None
+        self.currentCenter = 0
+        self.result = None
+
+        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                if sample.runThisSample:
+                    if [
+                        wc for wc in sample.composition.weightedComponents
+                        if self.components[0].eq(wc.component)
+                    ]:
+                        sb = deepcopy(sampleBackground)
+                        sb.samples = [deepcopy(sample)]
+                        if self.mode == Composition.Mode.SINGLE:
+                            self.sampleArgs.append({
+                                "sample": sample,
+                                "background": sb,
+                                "molecules": None,
+                            })
+                        elif self.mode == Composition.Mode.DOUBLE:
+                            self.sampleArgs.append({
+                                "sample": sample,
+                                "background": sb,
+                                "molecules": self.calculateTotalMolecules(
+                                    self.components,
+                                    sample
+                                )
+                            })
 
     """
     Sets component and ratio.
@@ -665,150 +725,110 @@ class Composition():
         self.components = [c for c in components if c]
         self.ratio = ratio
 
-    """
-    Cost function for processing a single component.
+    def costUp(
+        self,
+        x,
+        sampleArgs,
+        gudrunFile
+    ):
+        # Prevent negative x
+        x = math.abs(x)
 
-    Parameters
-    ----------
-    x : float
-        Chosen ratio.
-    sampleBackground : SampleBackground
-        Target Sample Background.
-    """
+        if self.mode == Composition.Mode.SINGLE:
+            # Determine instances where target components are used.
+            weightedComponents = [
+                wc for wc in sampleArgs["background"].samples[0]
+                .composition.weightedComponents
+                for c in self.components
+                if c.eq(wc.component)
+            ]
+            for component in weightedComponents:
+                component.ratio = x
 
-    def processSingleComponent(self, x, sampleBackground):
-        gudrunFile.sampleBackgrounds = [sampleBackground]
+        elif self.mode == Composition.Mode.SINGLE:
+            wcA = wcB = None
+            # Determine instances where target components are used.
+            for weightedComponent in (
+                sampleArgs[
+                    "background"
+                ].samples[0].composition.weightedComponents
+            ):
+                if weightedComponent.component.eq(self.components[0]):
+                    wcA = weightedComponent
+                elif weightedComponent.component.eq(self.components[1]):
+                    wcB = weightedComponent
 
-        x = abs(x)
-        weightedComponents = [
-            wc for wc in (
-                sampleBackground.samples[0].composition.weightedComponents
-            )
-            for c in self.components
-            if c.eq(wc.component)
-        ]
-        for component in weightedComponents:
-            component.ratio = x
+            if wcA and wcB:
+                # Ensure combined ratio == totalMolecules.
+                wcA.ratio = x
+                wcB.ratio = abs(sampleArgs["molecules"] - x)
 
-        sampleBackground.samples[0].composition.translate()
-        gudrunFile.dcs(iterator=self)
+        sampleArgs["background"].samples[0].composition.translate()
+        self.updatedSample = sampleArgs["background"].samples[0]
 
-        time.sleep(1)
+        gudrunFile.sampleBackgrounds = [sampleArgs["background"]]
+        return gudrunFile
 
-        gudFile = GudFile(
-            os.path.join(
-                gudrunFile.gudrunOutput.gudFile(
-                    name=sampleBackground.samples[0].name)
-            )
-        )
-
-        self.nCurrent += 1
-
+    def determineCost(self, gudFile: GudFile):
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
-            return (gudFile.expectedDCS - gudFile.averageLevelMergedDCS)**2
+            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
-    """
-    Cost function for processing two components.
+    def iterateCurrentCenter(self, gudrunFile: GudrunFile) -> GudrunFile:
+        sampleArgs = self.sampleArgs[self.nCurrent]
+        gudrunFileCopy = deepcopy(gudrunFile)
+        return self.costUp(self.bounds[1], sampleArgs, gudrunFileCopy)
 
-    Parameters
-    ----------
-    x : float
-        Chosen ratio.
-    sampleBackground : SampleBackground
-        Target Sample Background.
-    totalMolecules : float
-        Sum of molecules of both components.
-    """
+    def iterateNewPotentialCenter(self, gudrunFile: GudrunFile):
+        sampleArgs = self.sampleArgs[self.nCurrent]
+        gudrunFileCopy = deepcopy(gudrunFile)
 
-    def processTwoComponents(self, x, sampleBackground, totalMolecules):
-        gudrunFile.sampleBackgrounds = [sampleBackground]
-        x = abs(x)
-        wcA = wcB = None
-        for weightedComponent in (
-            sampleBackground.samples[0].composition.weightedComponents
+        # Calculate a potential centre = c + 2 - GR * (upper-c)
+        self.newCenter = self.bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * \
+            (self.bounds[2] - self.bounds[1])
+
+        self.isNewCenterCalculated = True
+
+        # If the new centre evaluates to less than the current
+        return self.costUp(self.newCenter, sampleArgs, gudrunFileCopy)
+
+    def performIteration(
+        self,
+        gudrunFile: GudrunFile,
+        prevOutput: handlers.GudrunOutput
+    ):
+        if (
+            (abs(self.bounds[2] - self.bounds[0]) /
+             min([abs(self.bounds[0]), abs(self.bounds[2])]))
+            < (self.rtol / 100)**2
         ):
-            if weightedComponent.component.eq(self.components[0]):
-                wcA = weightedComponent
-            elif weightedComponent.component.eq(self.components[1]):
-                wcB = weightedComponent
+            self.result = (self.bounds[2] + self.bounds[1]) / 2
+            return
 
-        if wcA and wcB:
-            wcA.ratio = x
-            wcB.ratio = abs(totalMolecules - x)
+        if self.newCenterOutput and prevOutput:
+            gudFileCurrentCenter = prevOutput.gudFile(
+                sample=self.sampleArgs[self.nCurrent]["background"
+                                                      ].samples[0].name)
+            gudFileNewCenter = self.newCenterOutput.gudFile(
+                sample=self.sampleArgs[self.nCurrent]["background"
+                                                      ].samples[0].name)
+            currentCost = self.determineCost(gudFileCurrentCenter)
+            newCost = self.determineCost(gudFileNewCenter)
 
-        sampleBackground.samples[0].composition.translate()
-        gudrunFile.dcs(iterator=self)
+            if newCost < currentCost:
+                # Swap them, making the previous centre the new lower bound.
+                self.bounds = [self.bounds[1], self.newCenter, self.bounds[2]]
+            else:
+                # Otherwise, swap and reverse.
+                self.bounds = [self.newCenter, self.bounds[1], self.bounds[0]]
 
-        time.sleep(1)
-
-        gudFile = GudFile(
-            os.path.join(
-                gudrunFile.gudrunOutput.gudFile(
-                    name=sampleBackground.samples[0].name)
-            )
-        )
-
-        self.nCurrent += 1
-
-        if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
-            return 0
+            self.nCurrent += 1
+            self.newCenterOutput = None
+            return self.iterateCurrentCenter(gudrunFile)
         else:
-            return abs(
-                gudFile.expectedDCS - gudFile.averageLevelMergedDCS
-            ) / min(
-                [
-                    abs(gudFile.averageLevelMergedDCS),
-                    abs(gudFile.expectedDCS)
-                ]
-            )
-
-    """
-    This method is the core of the CompositionIterato.
-    It performs n iterations of tweaking by the ratio of component(s).
-
-    Parameters
-    ----------
-    n : int
-        Number of iterations to perform.
-    rtol : float
-        Relative tolerance
-    """
-
-    def iterate(self, n=10, rtol=10.):
-        if not self.components or not self.ratio:
-            return None
-        # Only include samples that are marked for analysis.
-        for sampleBackground in gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
-                if sample.runThisSample:
-                    sb = deepcopy(sampleBackground)
-                    sb.samples = [sample]
-                    if len(self.components) == 1:
-                        self.maxIterations = n
-                        self.rtol = rtol
-                        # Perform golden-section search.
-                        self.gss(
-                            self.processSingleComponent,
-                            [1e-2, self.ratio, 10], 0,
-                            args=(sb,)
-                        )
-                    elif len(self.components) == 2:
-                        totalMolecules = self.calculateTotalMolecules(sample)
-                        # Perform golden-section search.
-                        self.gss(
-                            self.processTwoComponents,
-                            [1e-2, self.ratio, 10], 0,
-                            args=(sb, totalMolecules,)
-                        )
+            self.newCenterOutput = prevOutput
+            return self.iterateNewPotentialCenter(gudrunFile)
 
     def gss(self, f, bounds, n, args=()):
         return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
-
-    def organiseOutput(self):
-        """
-        This organises the output of the iteration.
-        """
-        gudrunOutput = gudrunFile.organiseOutput()
-        return gudrunOutput
