@@ -50,7 +50,7 @@ from gui.widgets.dialogs.missing_files_dialog import MissingFilesDialog
 from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
-from gui.widgets.dialogs.composition_acceptance_dialog import (
+from gudpy.gui.widgets.dialogs.composition_acceptance import (
     CompositionAcceptanceDialog,
 )
 from gui.widgets.dialogs.batch_processing_dialog import BatchProcessingDialog
@@ -121,7 +121,7 @@ class GudPyMainWindow(QMainWindow):
         Loads an input file.
     saveInputFile()
         Saves the current GudPy file.
-    updateGeometries()
+    updateGeometries(gudrunFile)()
         Updates geometries across objects.
     updateCompositions()
         Updates compositions across objects
@@ -197,101 +197,101 @@ class GudPyMainWindow(QMainWindow):
         loader.registerCustomWidget(BatchProcessingDialog)
         loader.registerCustomWidget(ExponentialSpinBox)
         loader.registerCustomWidget(GudPyChartView)
-        self.mainWidget = loader.load(uifile)
+        self.ui = loader.load(uifile)
 
-        self.mainWidget.statusBar_ = QStatusBar(self)
-        self.mainWidget.statusBarWidget = QWidget(self.mainWidget.statusBar_)
-        self.mainWidget.statusBarLayout = QHBoxLayout(
-            self.mainWidget.statusBarWidget
+        self.ui.statusBar_ = QStatusBar(self)
+        self.ui.statusBarWidget = QWidget(self.ui.statusBar_)
+        self.ui.statusBarLayout = QHBoxLayout(
+            self.ui.statusBarWidget
         )
-        self.mainWidget.currentTaskLabel = QLabel(
-            self.mainWidget.statusBarWidget
+        self.ui.currentTaskLabel = QLabel(
+            self.ui.statusBarWidget
         )
-        self.mainWidget.currentTaskLabel.setText("No task running.")
-        self.mainWidget.currentTaskLabel.setSizePolicy(
+        self.ui.currentTaskLabel.setText("No task running.")
+        self.ui.currentTaskLabel.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
-        self.mainWidget.stopTaskButton = QToolButton(
-            self.mainWidget.statusBarWidget
+        self.ui.stopTaskButton = QToolButton(
+            self.ui.statusBarWidget
         )
-        self.mainWidget.stopTaskButton.setIcon(QIcon(":/icons/stop"))
-        self.mainWidget.stopTaskButton.clicked.connect(self.stopProc)
-        self.mainWidget.stopTaskButton.setEnabled(False)
+        self.ui.stopTaskButton.setIcon(QIcon(":/icons/stop"))
+        self.ui.stopTaskButton.clicked.connect(self.stopProc)
+        self.ui.stopTaskButton.setEnabled(False)
 
-        self.mainWidget.stopTaskButton.setSizePolicy(
+        self.ui.stopTaskButton.setSizePolicy(
             QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         )
 
-        self.mainWidget.progressBar = QProgressBar(
-            self.mainWidget.statusBarWidget
+        self.ui.progressBar = QProgressBar(
+            self.ui.statusBarWidget
         )
-        self.mainWidget.progressBar.setSizePolicy(
+        self.ui.progressBar.setSizePolicy(
             QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         )
-        self.mainWidget.progressBar.setTextVisible(False)
-        self.mainWidget.statusBarLayout.addWidget(
-            self.mainWidget.currentTaskLabel
+        self.ui.progressBar.setTextVisible(False)
+        self.ui.statusBarLayout.addWidget(
+            self.ui.currentTaskLabel
         )
-        self.mainWidget.statusBarLayout.addWidget(
-            self.mainWidget.stopTaskButton
+        self.ui.statusBarLayout.addWidget(
+            self.ui.stopTaskButton
         )
-        self.mainWidget.statusBarLayout.addWidget(self.mainWidget.progressBar)
-        self.mainWidget.statusBarWidget.setLayout(
-            self.mainWidget.statusBarLayout
+        self.ui.statusBarLayout.addWidget(self.ui.progressBar)
+        self.ui.statusBarWidget.setLayout(
+            self.ui.statusBarLayout
         )
-        self.mainWidget.statusBar_.addWidget(self.mainWidget.statusBarWidget)
-        self.mainWidget.setStatusBar(self.mainWidget.statusBar_)
+        self.ui.statusBar_.addWidget(self.ui.statusBarWidget)
+        self.ui.setStatusBar(self.ui.statusBar_)
 
-        self.mainWidget.beamPlot = QChartView(self.mainWidget)
-        self.mainWidget.beamPlot.setRenderHint(QPainter.Antialiasing)
+        self.ui.beamPlot = QChartView(self.ui)
+        self.ui.beamPlot.setRenderHint(QPainter.Antialiasing)
 
-        self.mainWidget.beamProfileLayout.insertWidget(
-            1, self.mainWidget.beamPlot
-        )
-
-        self.mainWidget.beamChart = BeamChart()
-
-        self.mainWidget.beamPlot.setChart(self.mainWidget.beamChart)
-
-        self.mainWidget.sampleTopPlot = GudPyChartView(self.mainWidget)
-
-        self.mainWidget.topPlotLayout.addWidget(self.mainWidget.sampleTopPlot)
-
-        self.mainWidget.sampleBottomPlot = GudPyChartView(self.mainWidget)
-
-        self.mainWidget.bottomPlotLayout.addWidget(
-            self.mainWidget.sampleBottomPlot
+        self.ui.beamProfileLayout.insertWidget(
+            1, self.ui.beamPlot
         )
 
-        self.mainWidget.bottomSamplePlotFrame.setVisible(False)
+        self.ui.beamChart = BeamChart()
 
-        self.mainWidget.containerTopPlot = GudPyChartView(self.mainWidget)
+        self.ui.beamPlot.setChart(self.ui.beamChart)
 
-        self.mainWidget.topContainerPlotLayout.addWidget(
-            self.mainWidget.containerTopPlot
+        self.ui.sampleTopPlot = GudPyChartView(self.ui)
+
+        self.ui.topPlotLayout.addWidget(self.ui.sampleTopPlot)
+
+        self.ui.sampleBottomPlot = GudPyChartView(self.ui)
+
+        self.ui.bottomPlotLayout.addWidget(
+            self.ui.sampleBottomPlot
         )
 
-        self.mainWidget.containerBottomPlot = GudPyChartView(self.mainWidget)
+        self.ui.bottomSamplePlotFrame.setVisible(False)
 
-        self.mainWidget.bottomContainerPlotLayout.addWidget(
-            self.mainWidget.containerBottomPlot
+        self.ui.containerTopPlot = GudPyChartView(self.ui)
+
+        self.ui.topContainerPlotLayout.addWidget(
+            self.ui.containerTopPlot
         )
 
-        self.mainWidget.bottomContainerPlotFrame.setVisible(False)
+        self.ui.containerBottomPlot = GudPyChartView(self.ui)
 
-        self.mainWidget.allSampleTopPlot = GudPyChartView(self.mainWidget)
-
-        self.mainWidget.topAllPlotLayout.addWidget(
-            self.mainWidget.allSampleTopPlot
+        self.ui.bottomContainerPlotLayout.addWidget(
+            self.ui.containerBottomPlot
         )
 
-        self.mainWidget.allSampleBottomPlot = GudPyChartView(self.mainWidget)
+        self.ui.bottomContainerPlotFrame.setVisible(False)
 
-        self.mainWidget.bottomAllPlotLayout.addWidget(
-            self.mainWidget.allSampleBottomPlot
+        self.ui.allSampleTopPlot = GudPyChartView(self.ui)
+
+        self.ui.topAllPlotLayout.addWidget(
+            self.ui.allSampleTopPlot
         )
 
-        self.mainWidget.bottomPlotFrame.setVisible(False)
+        self.ui.allSampleBottomPlot = GudPyChartView(self.ui)
+
+        self.ui.bottomAllPlotLayout.addWidget(
+            self.ui.allSampleBottomPlot
+        )
+
+        self.ui.bottomPlotFrame.setVisible(False)
 
         for plotMode in [
             plotMode
@@ -304,173 +304,74 @@ class GudPyMainWindow(QMainWindow):
                 PlotModes.SF_RDF_CANS,
             ]
         ]:
-            self.mainWidget.allPlotComboBox.addItem(plotMode.name, plotMode)
+            self.ui.allPlotComboBox.addItem(plotMode.name, plotMode)
 
-        self.mainWidget.allPlotComboBox.currentIndexChanged.connect(
+        self.ui.allPlotComboBox.currentIndexChanged.connect(
             self.handleAllPlotModeChanged
         )
 
         for plotMode in [
             plotMode for plotMode in PlotModes if "(Cans)" not in plotMode.name
         ]:
-            self.mainWidget.plotComboBox.addItem(plotMode.name, plotMode)
+            self.ui.plotComboBox.addItem(plotMode.name, plotMode)
 
-        self.mainWidget.plotComboBox.currentIndexChanged.connect(
+        self.ui.plotComboBox.currentIndexChanged.connect(
             self.handleSamplePlotModeChanged
         )
 
         for plotMode in [
             plotMode for plotMode in PlotModes if "(Cans)" in plotMode.name
         ]:
-            self.mainWidget.containerPlotComboBox.addItem(
+            self.ui.containerPlotComboBox.addItem(
                 plotMode.name, plotMode
             )
 
-        self.mainWidget.containerPlotComboBox.currentIndexChanged.connect(
+        self.ui.containerPlotComboBox.currentIndexChanged.connect(
             self.handleContainerPlotModeChanged
         )
 
-        self.mainWidget.setWindowTitle("GudPy")
-        self.mainWidget.show()
-        self.instrumentSlots = InstrumentSlots(self.mainWidget, self)
-        self.beamSlots = BeamSlots(self.mainWidget, self)
-        self.componentSlots = ComponentSlots(self.mainWidget, self)
-        self.normalisationSlots = NormalisationSlots(self.mainWidget, self)
+        self.ui.setWindowTitle("GudPy")
+        self.ui.show()
+
+        self.instrumentSlots = InstrumentSlots(self.ui, self)
+        self.beamSlots = BeamSlots(self.ui, self)
+        self.componentSlots = ComponentSlots(self.ui, self)
+        self.normalisationSlots = NormalisationSlots(self.ui, self)
         self.sampleBackgroundSlots = SampleBackgroundSlots(
-            self.mainWidget, self
+            self.ui, self
         )
-        self.sampleSlots = SampleSlots(self.mainWidget, self)
-        self.containerSlots = ContainerSlots(self.mainWidget, self)
-        self.outputSlots = OutputSlots(self.mainWidget, self)
-        self.mainWidget.runPurge.triggered.connect(
-            lambda: self.runPurge(self.gudrunFile, dialog=True)
-        )
-        self.mainWidget.runGudrun.triggered.connect(
-            lambda: self.runGudrun(self.gudrunFile, self.procFinished)
-        )
-
-        self.mainWidget.iterateInelasticitySubtractions.triggered.connect(
-            lambda: self.iterateGudrun(
-                InelasticitySubtractionIterationDialog,
-                "InelasticitySubtractionsDialog",
-            )
-        )
-
-        self.mainWidget.iterateTweakFactor.triggered.connect(
-            lambda: self.iterateGudrun(
-                TweakFactorIterationDialog, "iterateTweakFactorDialog"
-            )
-        )
-
-        self.mainWidget.iterateDensity.triggered.connect(
-            lambda: self.iterateGudrun(
-                DensityIterationDialog, "iterateDensityDialog"
-            )
-        )
-
-        self.mainWidget.iterateThickness.triggered.connect(
-            lambda: self.iterateGudrun(
-                ThicknessIterationDialog, "iterateThicknessDialog"
-            )
-        )
-
-        self.mainWidget.iterateRadius.triggered.connect(
-            lambda: self.iterateGudrun(
-                RadiusIterationDialog, "iterateRadiusDialog"
-            )
-        )
-
-        self.mainWidget.iterateComposition.triggered.connect(
-            lambda: self.iterateGudrun(
-                CompositionIterationDialog, "iterateCompositionDialog"
-            )
-        )
-
-        self.mainWidget.runContainersAsSamples.triggered.connect(
-            self.runContainersAsSamples
-        )
-
-        self.mainWidget.runFilesIndividually.triggered.connect(
-            self.runFilesIndividually
-        )
-
-        self.mainWidget.batchProcessing.triggered.connect(self.batchProcessing)
-
-        self.mainWidget.checkFilesExist.triggered.connect(
-            lambda: self.checkFilesExist_(True)
-        )
-
-        self.mainWidget.save.triggered.connect(self.saveInputFile)
-
-        self.mainWidget.saveAs.triggered.connect(self.saveAs)
-
-        self.mainWidget.exportInputFile.triggered.connect(self.exportInputFile)
-
-        self.mainWidget.viewLiveInputFile.triggered.connect(self.viewInput)
-
-        self.mainWidget.insertSampleBackground.triggered.connect(
-            self.mainWidget.objectTree.insertSampleBackground
-        )
-
-        self.mainWidget.insertSample.triggered.connect(
-            self.mainWidget.objectTree.insertSample
-        )
-
-        self.mainWidget.insertDefaultContainer.triggered.connect(
-            self.mainWidget.objectTree.insertContainer
-        )
+        self.sampleSlots = SampleSlots(self.ui, self)
+        self.containerSlots = ContainerSlots(self.ui, self)
+        self.outputSlots = OutputSlots(self.ui, self)
 
         actionMap = {
-            name: lambda: self.mainWidget.objectTree.insertContainer(
+            name: lambda: self.ui.objectTree.insertContainer(
                 container=Container(config=path)
             )
             for name, path in config.containerConfigurations.items()
         }
         insertContainerFromTemplate = QMenu(
-            "From Template..", self.mainWidget.insertContainerMenu
+            "From Template..", self.ui.insertContainerMenu
         )
         for name, action in actionMap.items():
             insertContainerFromTemplate.addAction(name, action)
 
-        self.mainWidget.insertContainerMenu.addMenu(
+        self.ui.insertContainerMenu.addMenu(
             insertContainerFromTemplate
         )
 
-        self.mainWidget.copy.triggered.connect(self.mainWidget.objectTree.copy)
-        self.mainWidget.cut.triggered.connect(self.mainWidget.objectTree.cut)
-        self.mainWidget.paste.triggered.connect(
-            self.mainWidget.objectTree.paste
-        )
-        self.mainWidget.delete_.triggered.connect(
-            self.mainWidget.objectTree.del_
-        )
-
-        self.mainWidget.loadInputFile.triggered.connect(self.loadInputFile_)
-
-        self.mainWidget.loadProject.triggered.connect(self.loadProject_)
-
-        self.mainWidget.new_.triggered.connect(self.newInputFile)
-
-        self.mainWidget.objectStack.currentChanged.connect(
-            self.updateComponents
-        )
-
-        self.mainWidget.exportArchive.triggered.connect(self.export)
-
-        self.mainWidget.exit.triggered.connect(self.exit_)
-
         self.setActionsEnabled(False)
-        self.mainWidget.tabWidget.setVisible(False)
+        self.ui.tabWidget.setVisible(False)
         self.setWindowModified(False)
 
     def processStopped(self):
         self.setControlsEnabled(True)
-        self.mainWidget.progressBar.setValue(0)
-        self.mainWidget.currentTaskLabel.setText("No task running.")
+        self.ui.progressBar.setValue(0)
+        self.ui.currentTaskLabel.setText("No task running.")
 
     def processStarted(self):
         self.setControlsEnabled(False)
-        self.mainWidget.progressBar.setValue(0)
+        self.ui.progressBar.setValue(0)
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
@@ -490,7 +391,7 @@ class GudPyMainWindow(QMainWindow):
                 lastModified = fileInfo.lastModified()
 
                 if autoLastModified > lastModified:
-                    messageBox = QMessageBox(self.mainWidget)
+                    messageBox = QMessageBox(self.ui)
                     messageBox.setWindowTitle("Autosave found")
                     messageBox.setText(
                         f"Found autosaved file: {os.path.abspath(f)}.\n"
@@ -516,8 +417,8 @@ class GudPyMainWindow(QMainWindow):
             gudrunFile = GudrunFile(
                 loadFile=gudrunFile.path,
                 format=gudrunFile.format)
-        self.mainWidget.gudrunFile = gudrunFile
-        self.mainWidget.tabWidget.setVisible(True)
+        self.ui.gudrunFile = gudrunFile
+        self.ui.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(gudrunFile.instrument)
         self.beamSlots.setBeam(gudrunFile.beam)
         self.componentSlots.setComponents(gudrunFile.components)
@@ -542,37 +443,37 @@ class GudPyMainWindow(QMainWindow):
                         .containers[0]
                     )
         self.setActionsEnabled(True)
-        self.mainWidget.objectTree.buildTree(gudrunFile, self)
-        self.mainWidget.objectTree.model().dataChanged.connect(
+        self.ui.objectTree.buildTree(gudrunFile, self)
+        self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        self.updateResults()
+        self.updateResults(gudrunFile)
         self.widgetsRefreshing = False
 
     def handleObjectsChanged(self):
         if not self.widgetsRefreshing:
             self.setModified()
 
-    def updateGeometries(self):
+    def updateGeometries(self, gudrunFile):
         """
         Iteratively updates geometries of objects,
         where the Geometry is SameAsBeam.
         """
-        if self.gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
+        if gudrunFile.normalisation.geometry == Geometry.SameAsBeam:
             self.normalisationSlots.widgetsRefreshing = True
-            self.mainWidget.geometryInfoStack.setCurrentIndex(
+            self.ui.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
             self.normalisationSlots.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
-            self.gudrunFile.sampleBackgrounds
+            gudrunFile.sampleBackgrounds
         ):
             for j, sample in enumerate(sampleBackground.samples):
-                self.gudrunFile.sampleBackgrounds[i].samples[
+                gudrunFile.sampleBackgrounds[i].samples[
                     j
                 ].geometry = config.geometry
                 for k in range(len(sample.containers)):
-                    sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    sample = gudrunFile.sampleBackgrounds[i].samples[j]
                     sample.containers[k].geometry = config.geometry
 
     def updateCompositions(self):
@@ -580,26 +481,26 @@ class GudPyMainWindow(QMainWindow):
         Iteratively shares compositions between objects,
         for copying and pasting compositions between eachother.
         """
-        self.mainWidget.normalisationCompositionTable.farmCompositions()
-        self.mainWidget.sampleCompositionTable.farmCompositions()
-        self.mainWidget.sampleRatioCompositionTable.farmCompositions()
-        self.mainWidget.containerCompositionTable.farmCompositions()
+        self.ui.normalisationCompositionTable.farmCompositions()
+        self.ui.sampleCompositionTable.farmCompositions()
+        self.ui.sampleRatioCompositionTable.farmCompositions()
+        self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
-        if self.mainWidget.objectStack.currentIndex() == 5 and isinstance(
-            self.mainWidget.objectTree.currentObject(), Sample
+        if self.ui.objectStack.currentIndex() == 5 and isinstance(
+            self.ui.objectTree.currentObject(), Sample
         ):
             try:
                 topPlot, bottomPlot, gudFile = self.results[
-                    self.mainWidget.objectTree.currentObject()
+                    self.ui.objectTree.currentObject()
                 ]
             except KeyError:
                 self.updateSamples()
                 topPlot, bottomPlot, gudFile = self.results[
-                    self.mainWidget.objectTree.currentObject()
+                    self.ui.objectTree.currentObject()
                 ]
-            self.mainWidget.sampleTopPlot.setChart(topPlot)
-            self.mainWidget.sampleBottomPlot.setChart(bottomPlot)
+            self.ui.sampleTopPlot.setChart(topPlot)
+            self.ui.sampleBottomPlot.setChart(bottomPlot)
 
             plotsMap = {
                 PlotModes.SF: 0,
@@ -612,54 +513,54 @@ class GudPyMainWindow(QMainWindow):
             }
 
             if (
-                self.mainWidget.objectTree.currentObject()
+                self.ui.objectTree.currentObject()
                 in self.plotModes.keys()
             ):
-                self.mainWidget.plotComboBox.setCurrentIndex(
+                self.ui.plotComboBox.setCurrentIndex(
                     plotsMap[
                         self.plotModes[
-                            self.mainWidget.objectTree.currentObject()
+                            self.ui.objectTree.currentObject()
                         ]
                     ]
                 )
             else:
-                self.mainWidget.plotComboBox.setCurrentIndex(0)
+                self.ui.plotComboBox.setCurrentIndex(0)
 
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
-                self.mainWidget.dcsLabel.setText(f"DCS Level: {dcsLevel}")
-                self.mainWidget.resultLabel.setText(gudFile.output)
+                self.ui.dcsLabel.setText(f"DCS Level: {dcsLevel}")
+                self.ui.resultLabel.setText(gudFile.output)
                 if gudFile.err:
-                    self.mainWidget.resultLabel.setStyleSheet(
+                    self.ui.resultLabel.setStyleSheet(
                         "background-color: red"
                     )
                 else:
-                    self.mainWidget.resultLabel.setStyleSheet(
+                    self.ui.resultLabel.setStyleSheet(
                         "background-color: green"
                     )
 
                 tweakFactor = gudFile.suggestedTweakFactor
-                self.mainWidget.suggestedTweakFactorLabel.setText(
+                self.ui.suggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
             else:
-                self.mainWidget.dcsLabel.setText("DCS Level")
-                self.mainWidget.resultLabel.setText("Error")
-                self.mainWidget.resultLabel.setStyleSheet("")
-                self.mainWidget.suggestedTweakFactorLabel.setText(
+                self.ui.dcsLabel.setText("DCS Level")
+                self.ui.resultLabel.setText("Error")
+                self.ui.resultLabel.setStyleSheet("")
+                self.ui.suggestedTweakFactorLabel.setText(
                     "Suggested Tweak Factor"
                 )
-        elif self.mainWidget.objectStack.currentIndex() == 6 and isinstance(
-            self.mainWidget.objectTree.currentObject(), Container
+        elif self.ui.objectStack.currentIndex() == 6 and isinstance(
+            self.ui.objectTree.currentObject(), Container
         ):
             try:
                 topPlot, bottomPlot, gudFile = self.results[
-                    self.mainWidget.objectTree.currentObject()
+                    self.ui.objectTree.currentObject()
                 ]
             except KeyError:
                 self.updateSamples()
                 topPlot, bottomPlot, gudFile = self.results[
-                    self.mainWidget.objectTree.currentObject()
+                    self.ui.objectTree.currentObject()
                 ]
             if sum(
                 [
@@ -667,12 +568,12 @@ class GudPyMainWindow(QMainWindow):
                     *[s.count() for s in bottomPlot.series()],
                 ]
             ):
-                self.mainWidget.containerSplitter.setSizes([2, 1])
+                self.ui.containerSplitter.setSizes([2, 1])
             else:
-                self.mainWidget.containerSplitter.setSizes([1, 0])
+                self.ui.containerSplitter.setSizes([1, 0])
 
-            self.mainWidget.containerTopPlot.setChart(topPlot)
-            self.mainWidget.containerBottomPlot.setChart(bottomPlot)
+            self.ui.containerTopPlot.setChart(topPlot)
+            self.ui.containerBottomPlot.setChart(bottomPlot)
 
             plotsMap = {
                 PlotModes.SF_CANS: 0,
@@ -685,48 +586,48 @@ class GudPyMainWindow(QMainWindow):
             }
 
             if (
-                self.mainWidget.objectTree.currentObject()
+                self.ui.objectTree.currentObject()
                 in self.plotModes.keys()
             ):
-                self.mainWidget.plotComboBox.setCurrentIndex(
+                self.ui.plotComboBox.setCurrentIndex(
                     plotsMap[
                         self.plotModes[
-                            self.mainWidget.objectTree.currentObject()
+                            self.ui.objectTree.currentObject()
                         ]
                     ]
                 )
             else:
-                self.mainWidget.plotComboBox.setCurrentIndex(0)
+                self.ui.plotComboBox.setCurrentIndex(0)
 
             if gudFile:
                 dcsLevel = gudFile.averageLevelMergedDCS
-                self.mainWidget.containerDcsLabel.setText(
+                self.ui.containerDcsLabel.setText(
                     f"DCS Level: {dcsLevel}"
                 )
-                self.mainWidget.containerResultLabel.setText(gudFile.output)
+                self.ui.containerResultLabel.setText(gudFile.output)
                 if gudFile.err:
-                    self.mainWidget.containerResultLabel.setStyleSheet(
+                    self.ui.containerResultLabel.setStyleSheet(
                         "background-color: red"
                     )
                 else:
-                    self.mainWidget.containerResultLabel.setStyleSheet(
+                    self.ui.containerResultLabel.setStyleSheet(
                         "background-color: green"
                     )
 
                 tweakFactor = gudFile.suggestedTweakFactor
-                self.mainWidget.containerSuggestedTweakFactorLabel.setText(
+                self.ui.containerSuggestedTweakFactorLabel.setText(
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
 
-    def updateSamples(self):
+    def updateSamples(self, gudrunFile):
         samples = [
-            *self.mainWidget.objectTree.getSamples(),
-            *self.mainWidget.objectTree.getContainers(),
+            *self.ui.objectTree.getSamples(),
+            *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(self.gudrunFile)
+            topChart = GudPyChart(gudrunFile)
             topChart.addSample(sample)
-            bottomChart = GudPyChart(self.gudrunFile)
+            bottomChart = GudPyChart(gudrunFile)
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
@@ -746,108 +647,60 @@ class GudPyMainWindow(QMainWindow):
             if len(sample.dataFiles):
                 path = breplace(
                     sample.dataFiles[0],
-                    self.gudrunFile.instrument.dataFileType,
+                    gudrunFile.instrument.dataFileType,
                     "gud",
                 )
                 if not os.path.exists(path):
                     path = os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir, path
+                        gudrunFile.instrument.GudrunInputFileDir, path
                     )
             gf = GudFile(path) if path and os.path.exists(path) else None
             self.results[sample] = [topChart, bottomChart, gf]
 
-    def updateAllSamples(self):
+    def updateAllSamples(self, gudrunFile):
         samples = [
-            *self.mainWidget.objectTree.getSamples(),
-            *self.mainWidget.objectTree.getContainers(),
+            *self.ui.objectTree.getSamples(),
+            *self.ui.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(self.gudrunFile)
+        allTopChart = GudPyChart(gudrunFile)
         allTopChart.addSamples(samples)
         allTopChart.plot(
-            self.mainWidget.allPlotComboBox.itemData(
-                self.mainWidget.allPlotComboBox.currentIndex()
+            self.ui.allPlotComboBox.itemData(
+                self.ui.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(self.gudrunFile)
+        allBottomChart = GudPyChart(gudrunFile)
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
-        self.mainWidget.allSampleTopPlot.setChart(allTopChart)
-        self.mainWidget.allSampleBottomPlot.setChart(allBottomChart)
+        self.ui.allSampleTopPlot.setChart(allTopChart)
+        self.ui.allSampleBottomPlot.setChart(allBottomChart)
 
-    def updateResults(self):
-        self.updateSamples()
-        self.updateAllSamples()
+    def updateResults(self, gudrunFile):
+        self.updateSamples(gudrunFile)
+        self.updateAllSamples(gudrunFile)
         self.focusResult()
 
-    def updateComponents(self):
+    def updateComponents(self, gudrunFile):
         """
         Updates geometries and compositions.
         """
-        self.updateGeometries()
+        self.updateGeometries(gudrunFile)
         self.updateCompositions()
         self.focusResult()
 
-    def makeProc(
-        self,
-        cmd,
-        slot,
-        dir_=None,
-        func=None,
-        args=None,
-        started=None,
-        finished=None,
-    ):
-        if not started:
-            started = self.procStarted
-        if not finished:
-            finished = self.procFinished
-        if not dir_:
-            dir_ = self.gudrunFile.instrument.GudrunInputFileDir
-
-        self.proc = cmd
-        self.proc.readyReadStandardOutput.connect(slot)
-        self.proc.started.connect(started)
-        self.proc.finished.connect(finished)
-        self.proc.setWorkingDirectory(dir_)
-        if func:
-            func(*args)
-        self.proc.start()
-
-    def runContainersAsSamples(self):
-        if not self.prepareRun():
-            self.cleanupRun()
-            return False
-
-        runContainersAsSamples = RunContainersAsSamples(self.gudrunFile)
-        runContainersAsSamples.convertContainers()
-
-        self.runGudrun(
-            runContainersAsSamples.gudrunFile,
-            self.procFinished)
-
-    def runFilesIndividually(self):
-        if not self.prepareRun():
-            self.cleanupRun()
-            return False
-        runIndividualFiles = RunIndividualFiles(self.gudrunFile)
-
-        self.runGudrun(
-            runIndividualFiles.gudrunFile,
-            self.procFinished)
-
     def sendError(self, error: str):
         QtWidgets.QMessageBox.critical(
-            self.mainWidget, "GudPy Error", str(error))
+            self.ui, "GudPy Error", str(error))
 
     def sendWarning(self, warning: str):
         QtWidgets.QMessageBox.warning(
-            self.mainWidget,
+            self.ui,
             "GudPy Warning",
             warning
         )
 
     def iterationResultsDialog(self, results):
-        messageBox = QMessageBox(self.mainWidget)
+        messageBox = QMessageBox(self.ui)
         messageBox.setWindowTitle("GudPy Iteration Results")
         results = '\n'.join(
             [f"{key}: {value}" for key, value in results.items()])
@@ -855,35 +708,20 @@ class GudPyMainWindow(QMainWindow):
         messageBox.exec()
 
     def purgeOptionsMessageBox(self, text):
-        messageBox = QMessageBox(self.mainWidget)
+        messageBox = QMessageBox(self.ui)
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
         messageBox.addButton(QMessageBox.Yes)
         messageBox.addButton(QMessageBox.No)
         messageBox.addButton(QMessageBox.Cancel)
-        messageBox.addButton(QMessageBox.Yes)
-        messageBox.exec()
-
-        if result == QMessageBox.Yes:
-            # Run Purge and queue Gudrun after
-            self.runPurge(self.gudrunFile, dialog=True, finished=(
-                lambda: self.runGudrun(
-                    self.gudrunFile, self.procFinished
-                )))
-            return False
-        elif result == QMessageBox.No:
-            return True
-        elif result == QMessageBox.Cancel:
-            return False
-        else:
-            return False
+        return messageBox.exec()
 
     def batchProcessing(self):
         if not self.prepareRun():
             self.cleanupRun()
             return False
         batchProcessingDialog = BatchProcessingDialog(
-            self.gudrunFile, self.mainWidget
+            gudrunFile, self.ui
         )
         batchProcessingDialog.widget.exec()
         if not batchProcessingDialog.batchProcessor:
@@ -895,8 +733,8 @@ class GudPyMainWindow(QMainWindow):
             self.numberIterations = batchProcessingDialog.numberIterations
             self.currentIteration = 0
             self.batchProcessor = batchProcessingDialog.batchProcessor
-            self.mainWidget.currentTaskLabel.setText(self.text)
-            self.mainWidget.stopTaskButton.setEnabled(True)
+            self.ui.currentTaskLabel.setText(self.text)
+            self.ui.stopTaskButton.setEnabled(True)
             self.nextBatchProcess()
 
     def batchProcessFinished(self):
@@ -915,7 +753,7 @@ class GudPyMainWindow(QMainWindow):
                 )
                 self.proc.finished.connect(self.batchProcessFinished)
                 self.proc.setWorkingDirectory(
-                    self.gudrunFile.instrument.GudrunInputFileDir
+                    gudrunFile.instrument.GudrunInputFileDir
                 )
                 func(*args)
                 self.proc.start()
@@ -948,8 +786,8 @@ class GudPyMainWindow(QMainWindow):
             )
             return
         progress /= self.numberIterations
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
+        progress += self.ui.progressBar.value()
+        self.ui.progressBar.setValue(
             progress if progress <= 100 else 100
         )
 
@@ -958,9 +796,9 @@ class GudPyMainWindow(QMainWindow):
         self.queue = Queue()
         self.proc = None
         self.text = "No task running."
-        self.mainWidget.currentTaskLabel.setText(self.text)
-        self.mainWidget.progressBar.setValue(0)
-        self.mainWidget.stopTaskButton.setEnabled(False)
+        self.ui.currentTaskLabel.setText(self.text)
+        self.ui.progressBar.setValue(0)
+        self.ui.stopTaskButton.setEnabled(False)
         self.outputSlots.setOutput(
             self.outputBatches,
             "gudrun_dcs",
@@ -969,261 +807,93 @@ class GudPyMainWindow(QMainWindow):
         self.outputBatches = {}
         self.output = ""
 
-    def finishedCompositionIteration(self, originalSample, updatedSample):
-        self.compositionMap[originalSample] = updatedSample
-        self.mainWidget.progressBar.setValue(
-            int((self.iterator.nCurrent / self.iterator.nTotal) * 100)
-        )
-        self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
-        self.cleanupRun()
-        if not self.queue.empty():
-            self.nextCompositionIteration()
-        else:
-            self.finishedCompositionIterations()
-
-    def finishedCompositionIterations(self):
-        for original, new in self.compositionMap.items():
-            dialog = CompositionAcceptanceDialog(
-                new, self.gudrunFile, self.mainWidget)
-            result = dialog.widget.exec()
-            if result:
-                original.composition = new.composition
-                if self.sampleSlots.sample == original:
-                    self.sampleSlots.setSample(original)
-
-    def startedCompositionIteration(self, sample):
-        self.mainWidget.currentTaskLabel.setText(
-            f"{self.text}" f" ({sample.name})"
-        )
-
-    def errorCompositionIteration(self, output):
-        QMessageBox.critical(
-            self.mainWidget,
-            "GudPy Error",
-            "An error occured whilst iterating by composition."
-            " Please check the output to see what went wrong.",
-        )
-        self.cleanupRun()
-        self.outputSlots.setOutput(
-            output, "gudrun_dcs", gudrunFile=self.gudrunFile
-        )
-
-    def progressCompositionIteration(self, currentIteration):
-        self.iterator.nCurrent += 1
-        progress = (self.iterator.nCurrent / self.iterator.nTotal)
-        self.mainWidget.progressBar.setValue(int(progress * 100))
-
-    def nextCompositionIteration(self):
-        if not self.prepareRun():
-            self.cleanupRun()
-            return False
-        args, kwargs, sample = self.queue.get()
-        self.worker = CompositionWorker(args, kwargs, sample, self.gudrunFile)
-        self.worker.started.connect(self.startedCompositionIteration)
-        self.workerThread = QThread()
-        self.worker.moveToThread(self.workerThread)
-        self.worker.finished.connect(self.workerThread.quit)
-        self.worker.nextIteration.connect(self.progressCompositionIteration)
-        self.workerThread.started.connect(self.worker.work)
-        self.workerThread.start()
-        self.worker.errorOccured.connect(self.errorCompositionIteration)
-        self.worker.errorOccured.connect(self.workerThread.quit)
-        self.worker.finished.connect(self.finishedCompositionIteration)
-
-    def iterateByComposition(self):
-        if not self.iterator.components:
-            self.setControlsEnabled(True)
-            return
-        elif self.queue.empty():
-            QMessageBox.warning(
-                self.mainWidget,
-                "GudPy Warning",
-                "No iterations were queued."
-                " It's likely no Samples selected for analysis"
-                " use the Component(s) selected for iteration.",
-            )
-            self.setControlsEnabled(True)
-        else:
-            self.compositionMap = {}
-            self.nextCompositionIteration()
-
-    def iterateGudrun(self, dialog, name):
-        """
-        Iteratively runs Gudrun dcs and applies a change depending on which
-        parameter is iterated. The first iteration is a default iteration in
-        which no parameters are altered.
-
-        Parameters
-        ----------
-        dialog : IterationDialog
-            Dialog to be run to get user information
-        name : str
-            Name of dialog
-        """
-        iterationDialog = dialog(name, self.gudrunFile, self.mainWidget)
-        iterationDialog.widget.exec()
-        if not iterationDialog.iterator:
-            self.setControlsEnabled(True)
-        else:
-            self.queue = iterationDialog.queue
-            self.iterator = iterationDialog.iterator
-            self.currentIteration = 0
-            self.text = iterationDialog.text
-            self.outputIterations = {}
-            if isinstance(self.iterator, iterators.CompositionIterator):
-                self.iterator.nTotal = iterationDialog.numberIterations
-                self.iterateByComposition()
-            else:
-                self.nextIterableProc()
-            self.mainWidget.stopTaskButton.setEnabled(True)
-
-    def nextIteration(self):
-        self.cleanupRun
-        if self.error:
-            self.procFinished(9, QProcess.NormalExit)
-            return
-        if self.iterator.nCurrent != -1:
-            # If this is not the default run
-            self.outputIterations[
-                f"{self.iterator.iterationType} {self.iterator.nCurrent}"
-            ] = self.output
-        else:
-            self.outputIterations["Default"] = self.output
-        self.outputSlots.setOutput(
-            self.outputIterations, "gudrun_dcs",
-            gudrunFile=self.iterator.gudrunFile
-        )
-        if not self.queue.empty():
-            self.nextIterableProc()
-        else:
-            self.procFinished(0, QProcess.NormalExit)
-        self.output = ""
-
-    def nextIterableProc(self):
-        if not self.prepareRun():
-            self.cleanupRun()
-            return False
-        if self.queue.empty():
-            return
-        iterInfo = f" {self.iterator.nCurrent + 1}/{self.iterator.nTotal}" if (
-            self.iterator.nCurrent != -1
-        ) else "- Default run"
-        # Set progress bar
-        self.mainWidget.currentTaskLabel.setText(f"{self.text} {iterInfo}")
-        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
-        self.iterator.performIteration()
-        self.runGudrun(self.iterator.gudrunFile,
-                       self.nextIteration, self.iterator)
-
-    def iterationStarted(self):
-        self.mainWidget.currentTaskLabel.setText(
-            f"{self.text}"
-            f" {(self.numberIterations + 1) - self.queue.qsize()}"
-            + f"/{self.numberIterations + 1}"
-        )
-        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
-
-    def progressIteration(self):
-        progress = self.progressIncrementDCS(self.gudrunFile)
-        if progress == -1:
-            self.error = (
-                f"An error occurred. See the following traceback"
-                f" from gudrun_dcs\n{self.error}"
-            )
-            return
-        progress /= self.numberIterations
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
-            progress if progress <= 100 else 100
-        )
-
     def autosave(self):
         if (
-            self.gudrunFile
-            and self.gudrunFile.path
+            gudrunFile
+            and gudrunFile.path
             and not self.proc
             and not self.workerThread
         ):
             autosavePath = os.path.join(
-                self.gudrunFile.projectDir,
-                self.gudrunFile.filename + ".autosave")
-            self.gudrunFile.write_out(path=autosavePath, overwrite=True)
+                gudrunFile.projectDir,
+                gudrunFile.filename + ".autosave")
+            gudrunFile.write_out(path=autosavePath, overwrite=True)
 
     def setModified(self):
         if not self.modified:
-            if self.gudrunFile.path:
+            if gudrunFile.path:
                 self.modified = True
-                self.mainWidget.setWindowModified(True)
-                self.mainWidget.save.setEnabled(True)
+                self.ui.setWindowModified(True)
+                self.ui.save.setEnabled(True)
         if not self.proc:
             self.timer.start(30000)
 
     def setUnModified(self):
-        self.mainWidget.setWindowModified(False)
+        self.ui.setWindowModified(False)
         self.modified = False
-        self.mainWidget.save.setEnabled(False)
+        self.ui.save.setEnabled(False)
 
     def setControlsEnabled(self, state):
-        self.mainWidget.instrumentPage.setEnabled(state)
-        self.mainWidget.beamPage.setEnabled(state)
-        self.mainWidget.componentPage.setEnabled(state)
-        self.mainWidget.normalisationPage.setEnabled(state)
-        self.mainWidget.sampleTab.setEnabled(state)
-        self.mainWidget.advancedTab.setEnabled(state)
-        self.mainWidget.containerPage.setEnabled(state)
-        self.mainWidget.sampleBackgroundPage.setEnabled(state)
-        self.mainWidget.objectTree.setContextEnabled(state)
-        self.mainWidget.objectTree.model().setEnabled(state)
+        self.ui.instrumentPage.setEnabled(state)
+        self.ui.beamPage.setEnabled(state)
+        self.ui.componentPage.setEnabled(state)
+        self.ui.normalisationPage.setEnabled(state)
+        self.ui.sampleTab.setEnabled(state)
+        self.ui.advancedTab.setEnabled(state)
+        self.ui.containerPage.setEnabled(state)
+        self.ui.sampleBackgroundPage.setEnabled(state)
+        self.ui.objectTree.setContextEnabled(state)
+        self.ui.objectTree.model().setEnabled(state)
         self.setTreeActionsEnabled(state)
 
-        self.mainWidget.runPurge.setEnabled(state)
-        self.mainWidget.runGudrun.setEnabled(state)
-        self.mainWidget.iterateGudrun.setEnabled(state)
-        self.mainWidget.runFilesIndividually.setEnabled(state)
-        self.mainWidget.batchProcessing.setEnabled(state)
-        self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(
-            state & self.modified & len(self.gudrunFile.path) > 0
-            if self.gudrunFile.path
+        self.ui.runPurge.setEnabled(state)
+        self.ui.runGudrun.setEnabled(state)
+        self.ui.iterateGudrun.setEnabled(state)
+        self.ui.runFilesIndividually.setEnabled(state)
+        self.ui.batchProcessing.setEnabled(state)
+        self.ui.viewLiveInputFile.setEnabled(state)
+        self.ui.save.setEnabled(
+            state & self.modified & len(gudrunFile.path) > 0
+            if gudrunFile.path
             else False
         )
-        self.mainWidget.exportInputFile.setEnabled(state)
-        self.mainWidget.saveAs.setEnabled(state)
-        self.mainWidget.loadInputFile.setEnabled(state)
-        self.mainWidget.loadProject.setEnabled(state)
-        self.mainWidget.exportArchive.setEnabled(state)
-        self.mainWidget.new_.setEnabled(state)
-        self.mainWidget.checkFilesExist.setEnabled(state)
-        self.mainWidget.runFilesIndividually.setEnabled(state)
-        self.mainWidget.runContainersAsSamples.setEnabled(state)
+        self.ui.exportInputFile.setEnabled(state)
+        self.ui.saveAs.setEnabled(state)
+        self.ui.loadInputFile.setEnabled(state)
+        self.ui.loadProject.setEnabled(state)
+        self.ui.exportArchive.setEnabled(state)
+        self.ui.new_.setEnabled(state)
+        self.ui.checkFilesExist.setEnabled(state)
+        self.ui.runFilesIndividually.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(state)
 
     def setActionsEnabled(self, state):
         self.setTreeActionsEnabled(state)
 
-        self.mainWidget.runPurge.setEnabled(state)
-        self.mainWidget.runGudrun.setEnabled(state)
-        self.mainWidget.iterateGudrun.setEnabled(state)
-        self.mainWidget.runFilesIndividually.setEnabled(state)
-        self.mainWidget.checkFilesExist.setEnabled(state)
-        self.mainWidget.runFilesIndividually.setEnabled(state)
-        self.mainWidget.runContainersAsSamples.setEnabled(state)
-        self.mainWidget.batchProcessing.setEnabled(state)
-        self.mainWidget.viewLiveInputFile.setEnabled(state)
-        self.mainWidget.save.setEnabled(state & self.modified)
-        self.mainWidget.exportInputFile.setEnabled(state)
-        self.mainWidget.exportArchive.setEnabled(state)
+        self.ui.runPurge.setEnabled(state)
+        self.ui.runGudrun.setEnabled(state)
+        self.ui.iterateGudrun.setEnabled(state)
+        self.ui.runFilesIndividually.setEnabled(state)
+        self.ui.checkFilesExist.setEnabled(state)
+        self.ui.runFilesIndividually.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(state)
+        self.ui.batchProcessing.setEnabled(state)
+        self.ui.viewLiveInputFile.setEnabled(state)
+        self.ui.save.setEnabled(state & self.modified)
+        self.ui.exportInputFile.setEnabled(state)
+        self.ui.exportArchive.setEnabled(state)
 
     def setTreeActionsEnabled(self, state):
-        self.mainWidget.insertSampleBackground.setEnabled(state)
-        self.mainWidget.insertSample.setEnabled(state)
-        self.mainWidget.insertContainerMenu.setEnabled(state)
-        self.mainWidget.copy.setEnabled(state)
-        self.mainWidget.cut.setEnabled(state)
-        self.mainWidget.paste.setEnabled(state)
-        self.mainWidget.delete_.setEnabled(state)
+        self.ui.insertSampleBackground.setEnabled(state)
+        self.ui.insertSample.setEnabled(state)
+        self.ui.insertContainerMenu.setEnabled(state)
+        self.ui.copy.setEnabled(state)
+        self.ui.cut.setEnabled(state)
+        self.ui.paste.setEnabled(state)
+        self.ui.delete_.setEnabled(state)
 
     def progressDCS(self, stdout):
-        progress = self.progressIncrementDCS(self.gudrunFile, stdout)
+        progress = self.progressIncrementDCS(gudrunFile, stdout)
         if progress == -1:
             self.queue = Queue()
             self.error = (
@@ -1241,60 +911,60 @@ class GudPyMainWindow(QMainWindow):
                 f"An error occurred. See the following traceback"
                 f" from purge_det\n{self.error}"
             )
-            self.gudrunFile.purged = False
+            gudrunFile.purged = False
             self.cleanupRun()
             return
-        progress += self.mainWidget.progressBar.value()
-        self.mainWidget.progressBar.setValue(
+        progress += self.ui.progressBar.value()
+        self.ui.progressBar.setValue(
             progress if progress <= 100 else 100
         )
 
         if finished:
-            self.gudrunFile.purged = True
-            thresh = self.gudrunFile.instrument.goodDetectorThreshold
+            gudrunFile.purged = True
+            thresh = gudrunFile.instrument.goodDetectorThreshold
             if thresh and detectors < thresh:
                 self.warning = (
                     f"{detectors} detectors made it through the purge."
                     " The acceptable minimum for "
-                    f"{self.gudrunFile.instrument.name.name} is {thresh}"
+                    f"{gudrunFile.instrument.name.name} is {thresh}"
                 )
-            self.mainWidget.goodDetectorsLabel.setText(
+            self.ui.goodDetectorsLabel.setText(
                 f"Number of Good Detectors: {detectors}"
             )
             self.cleanupRun()
 
     def procStarted(self):
-        self.mainWidget.currentTaskLabel.setText(
+        self.ui.currentTaskLabel.setText(
             self.worker.PROCESS
         )
-        self.mainWidget.stopTaskButton.setEnabled(True)
-        self.previousProcTitle = self.mainWidget.currentTaskLabel.text()
+        self.ui.stopTaskButton.setEnabled(True)
+        self.previousProcTitle = self.ui.currentTaskLabel.text()
         self.output = ""
 
     def procFinished(self):
-        if "purge_det" not in self.mainWidget.currentTaskLabel.text():
+        if "purge_det" not in self.ui.currentTaskLabel.text():
             try:
                 self.updateResults()
             except ParserException:
                 QMessageBox.warning(
-                    self.mainWidget,
+                    self.ui,
                     "GudPy Warning",
                     "The process did not entirely finish,"
                     " please check your parameters.",
                 )
             self.outputSlots.setOutput(
-                output, "gudrun_dcs", gudrunFile=self.gudrunFile
+                output, "gudrun_dcs", gudrunFile=gudrunFile
             )
         else:
             self.outputSlots.setOutput(
-                output, "purge_det", gudrunFile=self.gudrunFile
+                output, "purge_det", gudrunFile=gudrunFile
             )
         self.outputIterations = {}
         self.output = ""
         if self.queue.empty():
             if self.warning:
                 QMessageBox.warning(
-                    self.mainWidget, "GudPy Warning", repr(self.warning)
+                    self.ui, "GudPy Warning", repr(self.warning)
                 )
                 self.warning = ""
             self.cleanupRun()
@@ -1313,69 +983,69 @@ class GudPyMainWindow(QMainWindow):
             self.workerThread.requestInterruption()
 
     def viewInput(self):
-        self.currentState = str(self.gudrunFile)
-        viewInputDialog = ViewInputDialog(self.gudrunFile, self)
+        self.currentState = str(gudrunFile)
+        viewInputDialog = ViewInputDialog(gudrunFile, self)
         viewInputDialog.widget.exec_()
 
     def handleAllPlotModeChanged(self, index):
-        plotMode = self.mainWidget.allPlotComboBox.itemData(index)
+        plotMode = self.ui.allPlotComboBox.itemData(index)
         self.plotModes["All"] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
-                self.mainWidget.allSampleTopPlot.chart().plot, top
+                self.ui.allSampleTopPlot.chart().plot, top
             )
             self.handlePlotModeChanged(
-                self.mainWidget.allSampleBottomPlot.chart().plot, bottom
+                self.ui.allSampleBottomPlot.chart().plot, bottom
             )
-            self.mainWidget.bottomPlotFrame.setVisible(True)
-            self.mainWidget.allPlotSplitter.setSizes([1, 1])
+            self.ui.bottomPlotFrame.setVisible(True)
+            self.ui.allPlotSplitter.setSizes([1, 1])
         else:
             self.handlePlotModeChanged(
-                self.mainWidget.allSampleTopPlot.chart().plot, plotMode
+                self.ui.allSampleTopPlot.chart().plot, plotMode
             )
-            self.mainWidget.bottomPlotFrame.setVisible(False)
-            self.mainWidget.allPlotSplitter.setSizes([1, 0])
+            self.ui.bottomPlotFrame.setVisible(False)
+            self.ui.allPlotSplitter.setSizes([1, 0])
 
     def handleSamplePlotModeChanged(self, index):
-        plotMode = self.mainWidget.plotComboBox.itemData(index)
-        self.plotModes[self.mainWidget.objectTree.currentObject()] = plotMode
+        plotMode = self.ui.plotComboBox.itemData(index)
+        self.plotModes[self.ui.objectTree.currentObject()] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
-                self.mainWidget.sampleTopPlot.chart().plot, top
+                self.ui.sampleTopPlot.chart().plot, top
             )
             self.handlePlotModeChanged(
-                self.mainWidget.sampleBottomPlot.chart().plot, bottom
+                self.ui.sampleBottomPlot.chart().plot, bottom
             )
-            self.mainWidget.bottomSamplePlotFrame.setVisible(True)
-            self.mainWidget.samplePlotSplitter.setSizes([1, 1])
+            self.ui.bottomSamplePlotFrame.setVisible(True)
+            self.ui.samplePlotSplitter.setSizes([1, 1])
         else:
             self.handlePlotModeChanged(
-                self.mainWidget.sampleTopPlot.chart().plot, plotMode
+                self.ui.sampleTopPlot.chart().plot, plotMode
             )
-            self.mainWidget.bottomSamplePlotFrame.setVisible(False)
-            self.mainWidget.samplePlotSplitter.setSizes([1, 0])
+            self.ui.bottomSamplePlotFrame.setVisible(False)
+            self.ui.samplePlotSplitter.setSizes([1, 0])
 
     def handleContainerPlotModeChanged(self, index):
-        plotMode = self.mainWidget.plotComboBox.itemData(index)
-        self.plotModes[self.mainWidget.objectTree.currentObject()] = plotMode
+        plotMode = self.ui.plotComboBox.itemData(index)
+        self.plotModes[self.ui.objectTree.currentObject()] = plotMode
         if self.isPlotModeSplittable(plotMode):
             top, bottom = self.splitPlotMode(plotMode)
             self.handlePlotModeChanged(
-                self.mainWidget.containerTopPlot.chart().plot, top
+                self.ui.containerTopPlot.chart().plot, top
             )
             self.handlePlotModeChanged(
-                self.mainWidget.containerBottomPlot.chart().plot, bottom
+                self.ui.containerBottomPlot.chart().plot, bottom
             )
-            self.mainWidget.bottomContainerPlotFrame.setVisible(True)
-            self.mainWidget.containerPlotSplitter.setSizes([1, 1])
+            self.ui.bottomContainerPlotFrame.setVisible(True)
+            self.ui.containerPlotSplitter.setSizes([1, 1])
         else:
             self.handlePlotModeChanged(
-                self.mainWidget.containerTopPlot.chart().plot, plotMode
+                self.ui.containerTopPlot.chart().plot, plotMode
             )
-            self.mainWidget.bottomContainerPlotFrame.setVisible(False)
-            self.mainWidget.containerPlotSplitter.setSizes([1, 0])
+            self.ui.bottomContainerPlotFrame.setVisible(False)
+            self.ui.containerPlotSplitter.setSizes([1, 0])
 
     @abstractmethod
     def isPlotModeSplittable(self, plotMode):
@@ -1390,13 +1060,13 @@ class GudPyMainWindow(QMainWindow):
 
     def onException(self, cls, exception, tb):
         QMessageBox.critical(
-            self.mainWidget,
+            self.ui,
             "GudPy Error",
             f"{''.join(traceback.format_exception(cls, exception, tb))}",
         )
 
     def export(self):
-        exportDialog = ExportDialog(self.gudrunFile, self)
+        exportDialog = ExportDialog(gudrunFile, self)
         exportDialog.widget.exec()
 
     def cleanup(self):
