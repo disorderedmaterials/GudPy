@@ -3,7 +3,7 @@ import math
 from enum import Enum
 
 from core.gud_file import GudFile
-from core.enums import Scales
+from core.enums import Scales, IterationModes
 from core.gudrun_file import GudrunFile
 import core.output_file_handler as handlers
 
@@ -27,7 +27,7 @@ class Iterator():
     ----------
     performIteration()
         Performs a single iteration.
-    applyCoefficientToAttribute(object, coefficient)
+    applyCoefficientToAttribute(sample, coefficient)
         To be overriden by sub-classes.
     iterate()
         Perform n iterations of iterating by tweak factor.
@@ -40,7 +40,7 @@ class Iterator():
     def __init__(self, nTotal):
         """
         Constructs all the necessary attributes for the
-        Iterator object.
+        Iterator sample.
 
         Parameters
         ----------
@@ -57,6 +57,7 @@ class Iterator():
         self.nCurrent = -1
         self.iterationType = self.name
         self.requireDefault = False
+        self.result = {}
 
     def performIteration(
         self,
@@ -89,16 +90,16 @@ class Iterator():
                     sample, coefficient, prevOutput)
         self.nCurrent += 1
 
-    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
+    def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         """
         Stub method to be overriden by sub-classes.
         The idea is that this method applies the 'coefficient'
-        to a class-specific attribute of 'object'.
+        to a class-specific attribute of 'sample'.
 
         Parameters
         ----------
-        object : Sample
-            Target object.
+        sample : Sample
+            Target sample.
         coefficient : float
             Coefficient to use.
         """
@@ -132,11 +133,17 @@ class Radius(Iterator):
     """
     name = "IterateByRadius"
 
-    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
+    def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         if self.targetRadius == "inner":
-            object.innerRadius *= coefficient
+            sample.innerRadius *= coefficient
+            self.result = {
+                "Inner Radius": sample.innerRadius
+            }
         elif self.targetRadius == "outer":
-            object.outerRadius *= coefficient
+            sample.outerRadius *= coefficient
+            self.result = {
+                "Outer Radius": sample.outerRadius
+            }
 
     def setTargetRadius(self, targetRadius):
         self.targetRadius = targetRadius
@@ -163,13 +170,18 @@ class Thickness(Iterator):
 
     name = "IterateByThickness"
 
-    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
+    def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         # Determine a new total thickness.
-        totalThickness = object.upstreamThickness + object.downstreamThickness
+        totalThickness = sample.upstreamThickness + sample.downstreamThickness
         totalThickness *= coefficient
         # Assign the new thicknesses.
-        object.downstreamThickness = totalThickness / 2
-        object.upstreamThickness = totalThickness / 2
+        sample.downstreamThickness = totalThickness / 2
+        sample.upstreamThickness = totalThickness / 2
+
+        self.result = {
+            "Downstream Thickness": sample.downstreamThickness,
+            "Upstream Thickness": sample.upstreamThickness
+        }
 
 
 class TweakFactor(Iterator):
@@ -222,6 +234,7 @@ class TweakFactor(Iterator):
                 )
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
+                self.result[sample.name] = tweakFactor
         self.nCurrent += 1
 
 
@@ -242,20 +255,21 @@ class Density(Iterator):
     """
     name = "IterateByDensity"
 
-    def applyCoefficientToAttribute(self, object, coefficient, prevOutput):
+    def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         """
         Multiplies a sample's density by a given coefficient.
         Overrides the implementation from the base class.
 
         Parameters
         ----------
-        object : Sample
-            Target object.
+        sample : Sample
+            Target sample.
         coefficient : float
             Coefficient to use.
         """
         # Apply the coefficient to the density.
-        object.density *= coefficient
+        sample.density *= coefficient
+        self.result["Density"] = sample.density
 
 
 class InelasticitySubtraction(Iterator):
@@ -315,7 +329,7 @@ class InelasticitySubtraction(Iterator):
     def __init__(self, gudrunFile, nTotal):
         """
         Constructs all the necessary attributes for the
-        InelasticitySubtraction object.
+        InelasticitySubtraction sample.
 
         Parameters
         ----------
@@ -527,57 +541,6 @@ class InelasticitySubtraction(Iterator):
             overwrite=overwrite)
 
 
-def gss(
-    f, bounds, n, maxN, rtol, args=(),
-    startIterFunc=None, endIterFunc=None
-):
-    if startIterFunc:
-        startIterFunc(n)
-    if n >= maxN:
-        return bounds[1]
-
-    if (
-        (abs(bounds[2] - bounds[0]) / min([abs(bounds[0]), abs(bounds[2])]))
-        < (rtol / 100)**2
-    ):
-        if endIterFunc:
-            endIterFunc(n)
-        return (bounds[2] + bounds[1]) / 2
-
-    # Calculate a potential centre = c + 2 - GR * (upper-c)
-    d = bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * (bounds[2] - bounds[1])
-
-    # If the new centre evaluates to less than the current
-    fd1 = f(d, *args)
-    if fd1 is None:
-        if endIterFunc:
-            endIterFunc(n)
-        return None
-    fd2 = f(bounds[1], *args)
-    if fd2 is None:
-        if endIterFunc:
-            endIterFunc(n)
-        return None
-    if fd1 < fd2:
-        # Swap them, making the previous centre the new lower bound.
-        bounds = [bounds[1], d, bounds[2]]
-        if endIterFunc:
-            endIterFunc(n)
-        return gss(
-            f, bounds, n + 1, maxN, rtol,
-            args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
-        )
-    # Otherwise, swap and reverse.
-    else:
-        bounds = [d, bounds[1], bounds[0]]
-        if endIterFunc:
-            endIterFunc()
-        return gss(
-            f, bounds, n + 1, maxN, rtol,
-            args=args, startIterFunc=startIterFunc, endIterFunc=endIterFunc
-        )
-
-
 def calculateTotalMolecules(components, sample):
     # Sum molecules in sample composition, belongiong to components.
     total = 0
@@ -589,7 +552,7 @@ def calculateTotalMolecules(components, sample):
     return total
 
 
-class Composition(Iterator):
+class Composition():
     """
     Class to represent a Composition Iterator.
     This class is used for iteratively tweaking composition
@@ -669,6 +632,7 @@ class Composition(Iterator):
         self.updatedSample = None
         self.currentCenter = 0
         self.result = None
+        self.compositionMap = {}
 
         for sampleBackground in self.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
@@ -765,6 +729,7 @@ class Composition(Iterator):
 
         sampleArgs["background"].samples[0].composition.translate()
         self.updatedSample = sampleArgs["background"].samples[0]
+        self.compositionMap[sampleArgs["sample"]] = self.updatedSample
 
         gudrunFile.sampleBackgrounds = [sampleArgs["background"]]
         return gudrunFile
@@ -829,6 +794,3 @@ class Composition(Iterator):
         else:
             self.newCenterOutput = prevOutput
             return self.iterateNewPotentialCenter(gudrunFile)
-
-    def gss(self, f, bounds, n, args=()):
-        return gss(f, bounds, n, self.maxIterations, self.rtol, args=args)
