@@ -10,24 +10,16 @@ from PySide6.QtCore import (
     QThread,
     QProcess,
 )
-from PySide6.QtGui import QPainter, QIcon
-from PySide6.QtUiTools import QUiLoader
+
 from PySide6.QtWidgets import (
     QDialogButtonBox,
     QFileDialog,
-    QHBoxLayout,
-    QLabel,
-    QMainWindow,
     QMessageBox,
-    QProgressBar,
-    QSizePolicy,
-    QStatusBar,
-    QWidget,
-    QMenu,
-    QToolButton,
 )
 
-from core import enums
+from gui.widgets.core.main_window import GudPyMainWindow
+import gui.widgets.dialogs.iteration_dialog as iterators
+from core import enums, worker, dialogs
 from core import exception as exc
 from core import gudpy as gp
 
@@ -45,7 +37,6 @@ class GudPyController(QtCore.QObject):
         self.modified = False
         self.clipboard = None
         self.iterator = None
-        self.queue = Queue()
         self.results = {}
         self.allPlots = []
         self.plotModes = {}
@@ -64,6 +55,111 @@ class GudPyController(QtCore.QObject):
         self.timer.timeout.connect(self.autosave)
 
         self.purged = False
+
+        self.mainWidget.ui.runPurge.triggered.connect(
+            lambda: self.runPurge(dialog=True)
+        )
+        self.mainWidget.ui.runGudrun.triggered.connect(self.runGudrun)
+
+        self.mainWidget.ui.iterateInelasticitySubtractions.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.InelasticitySubtractionIterationDialog,
+                "InelasticitySubtractionsDialog",
+            )
+        )
+
+        self.mainWidget.ui.iterateTweakFactor.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.TweakFactorIterationDialog,
+                "iterateTweakFactorDialog"
+            )
+        )
+
+        self.mainWidget.ui.iterateDensity.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.DensityIterationDialog, "iterateDensityDialog"
+            )
+        )
+
+        self.mainWidget.ui.iterateThickness.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.ThicknessIterationDialog, "iterateThicknessDialog"
+            )
+        )
+
+        self.mainWidget.ui.iterateRadius.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.RadiusIterationDialog, "iterateRadiusDialog"
+            )
+        )
+
+        self.mainWidget.ui.iterateComposition.triggered.connect(
+            lambda: self.iterateGudrun(
+                iterators.CompositionIterationDialog,
+                "iterateCompositionDialog"
+            )
+        )
+
+        self.mainWidget.ui.runContainersAsSamples.triggered.connect(
+            self.runContainersAsSamples
+        )
+
+        self.mainWidget.ui.runFilesIndividually.triggered.connect(
+            self.runFilesIndividually
+        )
+
+        self.mainWidget.ui.batchProcessing.triggered.connect(
+            self.batchProcessing)
+
+        self.mainWidget.ui.checkFilesExist.triggered.connect(
+            lambda: self.checkFilesExist_(True)
+        )
+
+        self.mainWidget.ui.save.triggered.connect(self.saveInputFile)
+
+        self.mainWidget.ui.saveAs.triggered.connect(self.saveAs)
+
+        self.mainWidget.ui.exportInputFile.triggered.connect(
+            self.exportInputFile)
+
+        self.mainWidget.ui.viewLiveInputFile.triggered.connect(self.viewInput)
+
+        self.mainWidget.ui.insertSampleBackground.triggered.connect(
+            self.mainWidget.ui.objectTree.insertSampleBackground
+        )
+
+        self.mainWidget.ui.insertSample.triggered.connect(
+            self.mainWidget.ui.objectTree.insertSample
+        )
+
+        self.mainWidget.ui.insertDefaultContainer.triggered.connect(
+            self.mainWidget.ui.objectTree.insertContainer
+        )
+
+        self.mainWidget.ui.copy.triggered.connect(
+            self.mainWidget.ui.objectTree.copy)
+        self.mainWidget.ui.cut.triggered.connect(
+            self.mainWidget.ui.objectTree.cut)
+        self.mainWidget.ui.paste.triggered.connect(
+            self.mainWidget.ui.objectTree.paste
+        )
+        self.mainWidget.ui.delete_.triggered.connect(
+            self.mainWidget.ui.objectTree.del_
+        )
+
+        self.mainWidget.ui.loadInputFile.triggered.connect(self.loadInputFile)
+
+        self.mainWidget.ui.loadProject.triggered.connect(self.loadProject)
+
+        self.mainWidget.ui.new_.triggered.connect(self.newInputFile)
+
+        self.mainWidget.ui.objectStack.currentChanged.connect(
+            lambda: self.updateComponents(self.gudpy.gudrunFile)
+        )
+
+        self.mainWidget.ui.exportArchive.triggered.connect(self.export)
+
+        self.mainWidget.ui.exit.triggered.connect(self.exit_)
 
     def tryLoadAutosaved(self, path):
         dir_ = os.path.dirname(path)
@@ -132,9 +228,9 @@ class GudPyController(QtCore.QObject):
             except IOError:
                 self.mainWidget.sendError("Could not open file.")
 
-            self.updateWidgets()
+            self.updateWidgets(self.gudpy.gudrunFile)
             self.mainWidget.setWindowTitle(
-                f"GudPy - {self.gudrunFile.filename}[*]")
+                f"GudPy - {self.gudpy.gudrunFile.filename}[*]")
 
     def loadFromProject(self):
         """Load from previous GudPy project
@@ -150,7 +246,7 @@ class GudPyController(QtCore.QObject):
 
         self.updateWidgets()
         self.mainWidget.setWindowTitle(
-            f"GudPy - {self.gudrunFile.filename}[*]")
+            f"GudPy - {self.gudpy.gudrunFile.filename}[*]")
 
     def newProject(self):
         save = QtWidgets.QMessageBox.question(
@@ -251,13 +347,12 @@ class GudPyController(QtCore.QObject):
     """
 
     def updateProgressBar(self, progress):
-        progress += self.mainWidget.progressBar.value()
         self.mainWidget.progressBar.setValue(
             progress if progress <= 100 else 100
         )
 
     def checkFilesExist_(self, showSuccessDialog: bool = False):
-        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        result = GudPyFileLibrary(self.gudpy.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
                                                        for r in result[1]):
             undefined = [
@@ -282,58 +377,56 @@ class GudPyController(QtCore.QObject):
         if not self.checkFilesExist_():
             return False
 
-        if not self.gudrunFile.checkNormDataFiles():
-            self.mainWidget.sendWarning("Please specify normalisation data files.")
+        if not self.gudpy.gudrunFile.checkNormDataFiles():
+            self.mainWidget.sendWarning(
+                "Please specify normalisation data files.")
             return False
 
         if not self.checkSaveLocation():
             dirname, _ = QFileDialog.getSaveFileName(
                 self.mainWidget,
                 "Choose save location",
-                (os.path.dirname(self.gudrunFile.loadFile)
-                 if self.gudrunFile.loadFile else "")
+                (os.path.dirname(self.gudpy.gudrunFile.loadFile)
+                 if self.gudpy.gudrunFile.loadFile else "")
             )
-            self.gudrunFile.setSaveLocation(dirname)
+            self.gudpy.gudrunFile.setSaveLocation(dirname)
         self.mainWidget.processStarted()
         return True
 
     def checkPurge(self):
         if not self.purged and os.path.exists(
             os.path.join(
-                self.gudrunFile.projectDir, "Purge", "purge_det.dat"
+                self.gudpy.gudrunFile.projectDir, "Purge", "purge_det.dat"
             )
         ):
             purgeResult = self.mainWidget.purgeOptionsMessageBox(
                 "purge_det.dat found, but wasn't run in this session. "
                 "Run Purge?",
             )
-        elif not self.gudrunFile.purged:
+        elif not self.purged:
             purgeResult = self.mainWidget.purgeOptionsMessageBox(
                 "It looks like you may not have purged detectors. Run Purge?",
             )
-        else:
-            purgeResult = True
+
         return purgeResult
 
-    def runPurge(self, finished=None, dialog=False) -> bool:
-        if dialog:
-            self.mainWidget.setControlsEnabled(False)
-            purgeDialog = dialogs.PurgeDialog(gudrunFile, self)
-            result = purgeDialog.widget.exec_()
-
-            if (purgeDialog.cancelled or result == QDialogButtonBox.No):
-                self.mainWidget.setControlsEnabled(True)
-                return False
+    def runPurge(self) -> bool:
+        self.mainWidget.setControlsEnabled(False)
+        purgeDialog = dialogs.PurgeDialog(self.gudpy.gudrunFile, self)
+        result = purgeDialog.widget.exec_()
+        if (purgeDialog.cancelled or result == QDialogButtonBox.No):
+            self.mainWidget.setControlsEnabled(True)
+            return False
 
         if not self.prepareRun():
             self.mainWidget.processStopped()
             return False
-        
+
         self.gudpy.purge = worker.PurgeWorker(self.gudpy.purgeFile)
-        self.gudpy.purge.outputChanged.connect(self.outputSlots.setOutputStream)
+        self.gudpy.purge.outputChanged.connect(
+            self.outputSlots.setOutputStream)
         self.gudpy.purge.progress.connect(self.updateProgressBar)
         self.gudpy.purge.finished.connect(self.purgeFinished)
-
         self.gudpy.purge.start()
 
     def purgeFinished(self, exitcode):
@@ -350,58 +443,147 @@ class GudPyController(QtCore.QObject):
         thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
         if thresh and self.gudpy.purge.detectors < thresh:
             self.mainWidget.sendWarning(
-                f"{self.detectors} detectors made it through the purge."
+                f"{self.gudpy.purge.detectors} "
+                "detectors made it through the purge.\n"
                 " The acceptable minimum for "
-                f"{self.gudpy.gudrunFile.instrument.name.name} is {thresh}"
+                f"{self.gudpy.gudrunFile.instrument.name} is {thresh}"
             )
         self.mainWidget.goodDetectorsLabel.setText(
             f"Number of Good Detectors: {self.detectors}"
         )
         self.outputSlots.setOutput(
-                self.gudpy.purge.stdout, "purge_det", gudrunFile=self.gudpy.gudrunFile
+            self.gudpy.purge.stdout, "purge_det",
+            gudrunFile=self.gudpy.gudrunFile
         )
 
-    def runGudrun(self, iterator=None):
-        if not self.prepareRun() or not self.checkPurge():
+    def runGudrun(self, gudrunFile=None):
+        if not self.prepareRun():
             self.mainWidget.processStopped()
-            return False
+            return
 
-        self.gudpy.gudrun = worker.GudrunWorker(self.gudpy.gudrunFile, iterator)
-        self.gudpy.gudrun.outputChanged.connect(self.outputSlots.setOutputStream)
+        if not gudrunFile:
+            gudrunFile = self.gudpy.gudrunFile
+
+        self.gudpy.gudrun = worker.GudrunWorker(gudrunFile)
+        self.gudpy.gudrun.outputChanged.connect(
+            self.outputSlots.setOutputStream)
         self.gudpy.gudrun.progress.connect(self.updateProgressBar)
         self.gudpy.gudrun.finished.connect(self.gudrunFinished)
+
+        if not self.purged:
+            purgeResult = self.checkPurge()
+            if purgeResult == QMessageBox.Yes:
+                self.runPurge()
+                self.gudpy.purge.finished.connect(
+                    self.gudpy.gudrun.start()
+                )
+                return
+            elif purgeResult == QMessageBox.Cancel:
+                self.gudpy.gudrun = None
+                return
 
         self.gudpy.gudrun.start()
 
     def gudrunFinished(self, exitcode):
+        if self.gudpy.gudrunIterator:
+            if exitcode != 0:
+                self.mainWidget.sendError(
+                    f"Gudrun Iteration failed with the following output: "
+                    f"\n{self.gudpy.gudrunIterator.error}"
+                )
+                return
+
+            self.gudpy.outputIterations[
+                f"{self.gudpy.gudrunIterator.iterationType}"
+                f" {self.gudpy.gudrunIterator.nCurrent}"
+            ] = self.gudpy.gudrun.stdout
+            self.outputSlots.setOutput(self.gudpy.outputIterations)
+            self.sampleSlots.setSample(self.sampleSlots.sample)
+            self.gudpy.gudrunIterator = None
+
+            self.mainWidget.iterationResultsDialog(
+                self.gudpy.gudrunIterator.results)
+
+            self.mainWidget.updateWidgets(
+                gudrunFile=self.gudpy.gudrunIterator.gudrunFile)
+        else:
+            if exitcode != 0:
+                self.mainWidget.sendError(
+                    f"Gudrun failed with the following output: "
+                    f"\n{self.gudpy.gudrun.error}"
+                )
+                return
+            self.outputSlots.setOutput(self.gudpy.gudrun.output)
+            self.mainWidget.updateWidgets(
+                gudrunFile=self.gudpy.gudrun.gudrunFile)
+
+    def iterateGudrun(self, dialog, name) -> bool:
+        iterationDialog = dialog(name, self.gudpy.gudrunFile, self.mainWidget)
+        iterationDialog.widget.exec()
+        if not iterationDialog.iterator:
+            self.mainWidget.processStopped()
+            return False
+
+        if not self.prepareRun() or not self.checkPurge():
+            self.mainWidget.processStopped()
+            return False
+
+        if isinstance(iterationDialog,
+                      dialogs.iteration_dialog.CompositionIterationDialog):
+            self.gudpy.gudrunIterator = worker.CompositionWorker(
+                iterationDialog.iterator, self.gudpy.gudrunFile)
+            self.gudpy.gudrunIterator.finished.connect(
+                self.compositionIterationFinished)
+        else:
+            self.gudpy.gudrunIterator = worker.GudrunIteratorWorker(
+                iterationDialog.iterator, self.gudpy.gudrunFile)
+            self.gudpy.gudrunIterator.finished.connect(self.gudrunFinished)
+
+        self.gudpy.gudrunIterator.outputChanged.connect(
+            self.outputSlots.setOutputStream)
+        self.gudpy.gudrunIterator.progress.connect(self.updateProgressBar)
+        self.gudpy.gudrunIterator.nextIteration.connect(self.gudrunFinished)
+        self.gudpy.gudrunIterator.finishised.connect(
+            self.mainWidget.processStopped)
+        self.gudpy.gudrunIterator.start()
+
+    def compositionIterationFinished(self, exitcode):
         if exitcode != 0:
-            self.mainWidget.sendError(
-                f"Gudrun failed with the following output: "
-                f"\n{self.gudpy.gudrun.error}"
-            )
+            self.gudrunFinished(exitcode)
             return
 
-        if self.gudpy.iterator:
-            self.outputIterations[
-                f"{self.gudpy.iterator.iterationType} {self.gudpy.iterator.nCurrent}"
-            ] = self.gudpy.gudrun.stdout
-            self.sampleSlots.setSample(self.sampleSlots.sample)
-            self.gudpy.iterator = None
-    
-        self.outputSlots.setOutput(
-            self.gudpy.gudrun.stdout, "gudrun_dcs", gudrunFile=self.gudpy.gudrunFile
+        for original, new in self.gudrunIterator.compositionMap.items():
+            d = dialogs.composition_acceptance.CompositionAcceptanceDialog(
+                new, self.gudrunIterator.gudrunFile, self.mainWidget.ui)
+            result = d.widget.exec()
+            if result:
+                original.composition = new.composition
+                if self.sampleSlots.sample == original:
+                    self.sampleSlots.setSample(original)
+
+    def runContainersAsSamples(self):
+        if not self.prepareRun():
+            self.mainWidget.processStopped()
+            return
+
+        gudrunFile = self.gudpy.runModes.convertContainersToSample(
+            self.gudpy.gudrunFile
         )
+        self.runGudrun(gudrunFile=gudrunFile)
 
+    def runFilesIndividually(self):
+        if not self.prepareRun():
+            self.mainWidget.processStopped()
+            return
 
+        gudrunFile = self.gudpy.runModes.partition(self.gudpy.gudrunFile)
+        self.runGudrun(gudrunFile=gudrunFile)
 
- 
-
-
-""" 
+    """
 
     COMMUNICATION
 
-"""
+    """
 
     def exit_(self):
         """
@@ -415,5 +597,5 @@ class GudPyController(QtCore.QObject):
         )
 
         if result == QtWidgets.QMessageBox.Yes:
-            self.gudrunFile.save()
+            self.gudpy.gudrunFile.save()
         sys.exit(0)
