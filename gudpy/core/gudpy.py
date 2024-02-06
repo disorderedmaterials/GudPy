@@ -4,6 +4,7 @@ import sys
 import subprocess
 import shutil
 import copy
+import typing as typ
 
 from core import config
 from core import utils
@@ -46,8 +47,9 @@ class GudPy:
         self.gudrunFile = None
         self.purge = Purge()
         self.gudrun = Gudrun()
+        self.runModes = RunModes()
+
         self.gudrunIterator = None
-        self.compositionIterator = None
         self.gudrunOutput = None
         self.purgeOutput = None
 
@@ -166,8 +168,10 @@ class GudPy:
                 f"{self.purge.error}"
             )
 
-    def runGudrun(self):
-        exitcode = self.gudrun.gudrun(self.gudrunFile)
+    def runGudrun(self, gudrunFile=None):
+        if not gudrunFile:
+            gudrunFile = self.gudrunFile
+        exitcode = self.gudrun.gudrun(gudrunFile)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
@@ -185,7 +189,7 @@ class GudPy:
         self.gudrunFile = self.gudrunIterator.gudrunFile
 
     def iterateComposition(self, iterator: iterators.Composition):
-        self.compositionIterator = CompositionIterator(
+        self.gudrunIterator = CompositionIterator(
             iterator, self.gudrunFile)
         exitcode = self.gudrunIterator.iterate()
         if exitcode:
@@ -193,7 +197,15 @@ class GudPy:
                 "Gudrun failed to run with the following output:"
                 f"{self.gudrun.error}"
             )
-        self.gudrunFile = self.compositionIterator.gudrunFile
+        self.gudrunFile = self.gudrunIterator.gudrunFile
+
+    def runContainersAsSample(self):
+        gudrunFile = self.runModes.convertContainersToSample(self.gudrunFile)
+        self.runGudrun(gudrunFile=gudrunFile)
+
+    def runFilesIndividually(self):
+        gudrunFile = self.runModes.partition(self.gudrunFile)
+        self.runGudrun(gudrunFile=gudrunFile)
 
 
 class Process:
@@ -282,9 +294,10 @@ class Purge(Process):
 
 
 class Gudrun(Process):
-    def __init__(self):
+    def __init__(
+        self,
+    ):
         self.PROCESS: str = "gudrun_dcs"
-        self.gudrunOutput: handlers.GudrunOutput = None
         super().__init__(self.PROCESS)
 
     def organiseOutput(
@@ -302,7 +315,6 @@ class Gudrun(Process):
     def gudrun(
         self,
         gudrunFile: GudrunFile,
-        iterator: iterators.Iterator = None
     ) -> int:
         self._prepareRun()
         self._checkBinary()
@@ -333,11 +345,8 @@ class Gudrun(Process):
                 if gudrun.stderr:
                     return 1
 
-            if iterator is not None:
-                self.gudrunOutput = iterator.organiseOutput(gudrunFile)
-            else:
-                self.gudrunOutput = self.organiseOutput(gudrunFile)
-            gudrunFile.setGudrunDir(gudrunFile.gudrunOutput.path)
+            self.gudrunOutput = self.organiseOutput(gudrunFile)
+            gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         return 0
 
@@ -356,7 +365,9 @@ class GudrunIterator:
         self.defaultRun = None
 
         for _ in range(iterator.nTotal):
-            self.gudrunObjects.append(Gudrun())
+            self.gudrunObjects.append(Gudrun(
+                organiseOutput=self.iterator.organiseOutput
+            ))
 
     def _nextIteration(self):
         print(f"Iteration number: {self.iterator.nCurrent}")
@@ -391,8 +402,12 @@ class CompositionIterator(GudrunIterator):
         iterator: iterators.Composition,
         gudrunFile: GudrunFile
     ):
-        self.result = None
+        iterator.nTotal *= 2
         super().__init__(iterator, gudrunFile)
+
+        self.result = None
+        self.compositionMap = None
+        self.currentIteration = 0
 
     def iterate(self) -> int:
         prevOutput = None
@@ -400,6 +415,7 @@ class CompositionIterator(GudrunIterator):
         for gudrun in self.gudrunObjects:
             if self.iterator.result:
                 self.result = self.iterator.result
+                self.compositionMap = self.iterator.compositionMap
                 return 0
 
             gudrunFile = self.iterator.performIteration(
@@ -411,25 +427,263 @@ class CompositionIterator(GudrunIterator):
 
             prevOutput = gudrun.gudrunOutput
 
-        return 0
+            if self.currentIteration != self.iterator.nCurrent:
+                # Will be called every other iteration of this loop
+                self._nextIteration()
+                self.currentIteration += 1
+
+        self.error = (
+            "No iterations were queued."
+            " It's likely no Samples selected for analysis"
+            " use the Component(s) selected for iteration."
+        )
+        return 1
 
 
-class RunContainersAsSamples:
+class RunModes:
 
-    def __init__(self, gudrunFile):
-
-        self.gudrunFile = copy.deepcopy(gudrunFile)
-
-    def convertContainers(self):
+    def convertContainersToSample(self, gudrunFile: GudrunFile):
+        newGudrunFile = copy.deepcopy(gudrunFile)
         containersAsSamples = []
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 for container in sample.containers:
                     containersAsSamples.append(
                         container.convertToSample()
                     )
-            sampleBackground.samples = containersAsSamples
+            newGudrunFile.sampleBackground.samples = containersAsSamples
+        return newGudrunFile
 
-    def runContainersAsSamples(self, path='', headless=False):
-        self.convertContainers()
-        return self.gudrunFile.dcs(path=path, headless=headless)
+    def partition(self, gudrunFile):
+        newGudrunFile = copy.deepcopy(gudrunFile)
+        # Deepcopy the sample backgrounds.
+        sampleBackgrounds = copy.deepcopy(gudrunFile.sampleBackgrounds)
+        # Clear the original list.
+        newGudrunFile.sampleBackgrounds = []
+
+        # Enumerate through all sample backgrounds
+        # For each sample, create a copy for each
+        # data file, and add it to the corresponding sample background.
+        for i, sampleBackground in enumerate(sampleBackgrounds):
+            samples = copy.deepcopy(sampleBackground.samples)
+            sampleBackgrounds[i].samples = []
+
+            for sample in samples:
+                if sample.runThisSample:
+                    for dataFile in sample.dataFiles:
+                        childSample = copy.deepcopy(sample)
+
+                        # Only run one data file.
+                        childSample.dataFiles = (
+                            DataFiles([dataFile], childSample.name)
+                        )
+                        childSample.name = f"{childSample.name} [{dataFile}]"
+
+                        # Append sample
+                        sampleBackgrounds[i].samples.append(childSample)
+
+        # Update gudrunFile to use the newly constructed sample background.
+        newGudrunFile.sampleBackgrounds = sampleBackgrounds
+        return newGudrunFile
+
+
+class BatchProcessing:
+    def __init___(
+            self,
+            gudrunFile: GudrunFile,
+            gudrun: Gudrun = None,
+            gudrunIterator: GudrunIterator = None
+    ):
+        self.gudrunFile = gudrunFile
+        self.gudrun = gudrun
+        self.gudrunIterator = gudrunIterator
+
+    def batch(self, batchSize, stepSize, separateFirstBatch, offset=0):
+        if not separateFirstBatch:
+            batch = copy.deepcopy(self.gudrunFile)
+            batch.sampleBackgrounds = []
+            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+                batchedSampleBackground = copy.deepcopy(sampleBackground)
+                batchedSampleBackground.samples = []
+                maxDataFiles = max(
+                    [
+                        len(sample.dataFiles)
+                        for sample in sampleBackground.samples
+                    ]
+                )
+                for sample in sampleBackground.samples:
+                    for i in range(offset, maxDataFiles, stepSize):
+                        batchedSample = copy.deepcopy(sample)
+                        batchedSample.dataFiles.dataFiles = sample.dataFiles[
+                            i: i + batchSize
+                        ]
+                        batchedSampleBackground.samples.append(batchedSample)
+                batch.sampleBackgrounds.append(batchedSampleBackground)
+
+            return batch
+
+        else:
+            first = copy.deepcopy(self.gudrunFile)
+            first.sampleBackgrounds = []
+            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+                batchedSampleBackground = copy.deepcopy(sampleBackground)
+                batchedSampleBackground.samples = []
+                for sample in sampleBackground.samples:
+                    batchedSample = copy.deepcopy(sample)
+                    batchedSample.dataFiles.dataFiles = (
+                        sample.dataFiles[:batchSize]
+                    )
+                    batchedSampleBackground.samples.append(batchedSample)
+                first.sampleBackgrounds.append(batchedSampleBackground)
+            return (
+                first,
+                self.batch(batchSize, stepSize, False, offset=stepSize)
+            )
+
+    def canConverge(self, batch, rtol):
+        if rtol == 0.0:
+            return False
+        for sampleBackground in batch.sampleBackgrounds:
+            for sample in sampleBackground.samples:
+                if abs(batch.determineError(sample)) > rtol:
+                    return False
+        return True
+
+    def checkConvergenceAndPropogate(self, current, next, rtol, iterationMode):
+        if self.canConverge(current, rtol):
+            self.propogateResults(current, next, iterationMode)
+            return True, True
+        return False, True
+
+    def writeDiagnosticsFile(self, path, batch, iterationMode):
+        with open(path, "w", encoding="utf-8") as fp:
+            for sampleBackground in batch.sampleBackgrounds:
+                for i, sample in enumerate(sampleBackground.samples):
+                    fp.write(f"Batch {i} {sample.name}\n")
+                    fp.write(f"{str(sample.dataFiles)}\n")
+                    fp.write(f"Error: {batch.determineError(sample)}%\n")
+                    if iterationMode == enums.IterationModes.TWEAK_FACTOR:
+                        fp.write(f"Tweak Factor: {sample.sampleTweakFactor}\n")
+                    elif iterationMode == enums.IterationModes.THICKNESS:
+                        fp.write(
+                            f"Upstream / Downstream Thickness: "
+                            f"{sample.upstreamThickness} "
+                            f"{sample.downstreamThickness}\n"
+                        )
+                    elif iterationMode == enums.IterationModes.INNER_RADIUS:
+                        fp.write(f"Inner Radius: {sample.innerRadius}\n")
+                    elif iterationMode == enums.IterationModes.OUTER_RADIUS:
+                        fp.write(f"Outer Radius: {sample.outerRadius}\n")
+                    elif iterationMode == enums.IterationModes.DENSITY:
+                        fp.write(f"Density: {sample.density}\n")
+
+    def propogateResults(self, current, next, iterationMode):
+        for (
+            sampleBackgroundA, sampleBackgroundB
+        ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
+            for (
+                sampleA, sampleB
+            ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
+                if iterationMode == enums.IterationModes.TWEAK_FACTOR:
+                    sampleB.sampleTweakFactor = sampleA.sampleTweakFactor
+                elif iterationMode == enums.IterationModes.THICKNESS:
+                    sampleB.upstreamThickness = sampleA.upstreamThickness
+                    sampleB.downstreamThickness = sampleA.downstreamThickness
+                elif iterationMode == enums.IterationModes.INNER_RADIUS:
+                    sampleB.innerRadius = sampleA.innerRadius
+                elif iterationMode == enums.IterationModes.OUTER_RADIUS:
+                    sampleB.outerRadius = sampleA.outerRadius
+                elif iterationMode == enums.IterationModes.DENSITY:
+                    sampleB.density = sampleA.density
+
+    def organiseOutput(
+        self, gudrunFile: GudrunFile,
+        head: str = "",
+        overwrite: bool = True
+    ) -> handlers.GudrunOutput:
+
+        outputHandler = handlers.GudrunOutputHandler(
+            self, gudrunFile=gudrunFile, head=head, overwrite=overwrite
+        )
+        gudrunOutput = outputHandler.organiseOutput()
+        return gudrunOutput
+
+    def process(
+        self,
+        batchSize=1,
+        stepSize=1,
+        headless=True,
+        iterationMode=enums.IterationModes.NONE,
+        rtol=0.0,
+        maxIterations=1,
+        propogateFirstBatch=False
+    ):
+        if propogateFirstBatch:
+            initial, self.batchedGudrunFile = self.batch(
+                batchSize, stepSize, propogateFirstBatch
+            )
+        else:
+            self.batchedGudrunFile = self.batch(
+                batchSize, stepSize, propogateFirstBatch
+            )
+
+        if iterationMode == enums.IterationModes.TWEAK_FACTOR:
+            iteratorType = iterators.TweakFactorIterator
+            dirText = "IterateByTweakFactor"
+        elif iterationMode == enums.IterationModes.THICKNESS:
+            iteratorType = iterators.ThicknessIterator
+            dirText = "IterateByThickness"
+        elif iterationMode == enums.IterationModes.INNER_RADIUS:
+            iteratorType = iterators.RadiusIterator
+            dirText = "IterateByInnerRadius"
+            targetRadius = "inner"
+        elif iterationMode == enums.IterationModes.OUTER_RADIUS:
+            iteratorType = iterators.RadiusIterator
+            dirText = "IterateByOuterRadius"
+            targetRadius = "outer"
+        elif iterationMode == enums.IterationModes.DENSITY:
+            iteratorType = iterators.DensityIterator
+            dirText = "IterateByDensity"
+
+        if iterationMode == enums.IterationModes.NONE:
+            self.gudrun.gudrun(self.batchedGudrunFile)
+            self.writeDiagnosticsFile(
+                os.path.join(
+                    self.batchedGudrunFile.path()
+                ),
+                self.batchedGudrunFile,
+                iterationMode
+            )
+
+        else:
+            if propogateFirstBatch:
+                iterator = iteratorType(self.batchedGudrunFile)
+                if isinstance(iterator, iterators.RadiusIterator):
+                    self.iterator.setTargetRadius(targetRadius)
+
+                self.gudrunIterator = GudrunIt
+
+                for i in range(maxIterations):
+                    initial.process(headless=headless)
+                    iterator.performIteration(i)
+                    initial.organiseOutput(
+                        head=os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            "FIRST_BATCH",
+                            f"{dirText}_{i+1}"
+                        )
+                    )
+                    self.writeDiagnosticsFile(
+                        os.path.join(
+                            self.gudrunFile.instrument.GudrunInputFileDir,
+                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
+                            "FIRST_BATCH",
+                            "batch_processing_diagnostics.txt"
+                        )
+                    )
+                    if self.canConverge(initial, rtol):
+                        break
+                self.propogateResults(
+                    initial, self.batchedGudrunFile, iterationMode
+                )
