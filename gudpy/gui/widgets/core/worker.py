@@ -1,15 +1,11 @@
 import os
 import math
-from copy import deepcopy
-import typing as typ
 from PySide6.QtCore import QObject, Signal, QThread
 
 from core import gudpy
-from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.iterators import Iterator
-from core.sample import Sample
 from core import iterators, enums, config, utils
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -28,10 +24,6 @@ class GudPyGUI(QObject, gudpy.GudPy):
             projectDir=projectDir, loadFile=loadFile,
             format=format, config=config,
         )
-
-        self.purge = None
-        self.gudrun = None
-        self.gudrunIterator = None
 
         self.output = ""
         self.outputIterations = {}
