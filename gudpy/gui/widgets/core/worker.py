@@ -13,41 +13,25 @@ from core import iterators, enums, config, utils
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-class GudPyGUI(QObject, gudpy.GudPy):
-    def __init__(
-        self,
-        projectDir: str = "",
-        loadFile: str = "",
-        format: enums.Format = enums.Format.YAML,
-        config: bool = False,
-    ):
-
-        super().__init__(
-            projectDir=projectDir, loadFile=loadFile,
-            format=format, config=config,
-        )
-
-        self.output = ""
-        self.outputIterations = {}
-
-
 class Worker(QThread):
     outputChanged = Signal(str)
-    progress = Signal(int)
+    progress = Signal(int, str)
     finished = Signal(int)
 
     def __init___(self):
         super().__init__()
+        self.name = ""
 
     def _outputChanged(self, output):
         self.output += output
         self.outputChanged.emit(output)
-        self.progress.emit(self._progress())
+        self.progress.emit(self._progress(), self.name)
 
 
 class PurgeWorker(Worker, gudpy.Purge):
     def __init__(self, purgeFile: PurgeFile, gudrunFile: GudrunFile):
         super().__init__()
+        self.name = "Purge"
         self.purgeFile = purgeFile
         self.detectors = None
         self.dataFiles = [self.gudrunFile.instrument.groupFileName]
@@ -95,6 +79,7 @@ class PurgeWorker(Worker, gudpy.Purge):
 class GudrunWorker(Worker, gudpy.Gudrun):
     def __init__(self, gudrunFile: GudrunFile, iterator: Iterator):
         super().__init__(iterator=iterator)
+        self.name = "Gudrun"
         self.gudrunFile = gudrunFile
         self.progress = 0
 
@@ -137,10 +122,11 @@ class GudrunWorker(Worker, gudpy.Gudrun):
 class IteratorBaseWorker():
     nextIteration = Signal(int)
     outputChanged = Signal(str)
-    progress = Signal(int)
+    progress = Signal(int, str)
     finished = Signal(int)
 
-    def __init__(self):
+    def __init__(self, iterator):
+        self.name = iterator.name
         self.gudrunObjects = []
         self.output = ""
         self.error = ""
@@ -150,7 +136,7 @@ class IteratorBaseWorker():
         self.outputChanged.emit(output)
 
     def _progress(self, progress):
-        self.progress.emit(progress)
+        self.progress.emit(progress, self.name)
 
     def _nextIteration(self, nCurrent):
         self.output = ""
@@ -212,6 +198,7 @@ class BatchWorker(QThread, IteratorBaseWorker, gudpy.BatchProcessing):
             rtol=rtol,
             separateFirstBatch=separateFirstBatch
         )
+        self.name = "Batch Processing " + iterator.name if iterator else ""
 
         # Iterate through gudrun iterators and connect the signals
         for gudrunIterator in self.gudrunIterators.items():
