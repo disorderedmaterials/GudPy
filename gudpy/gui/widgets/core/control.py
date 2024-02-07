@@ -63,41 +63,27 @@ class GudPyController(QtCore.QObject):
 
         self.mainWidget.ui.iterateInelasticitySubtractions.triggered.connect(
             lambda: self.iterateGudrun(
-                iterators.InelasticitySubtractionIterationDialog,
-                "InelasticitySubtractionsDialog",
-            )
+                iterators.InelasticitySubtractionIterationDialog)
         )
 
         self.mainWidget.ui.iterateTweakFactor.triggered.connect(
-            lambda: self.iterateGudrun(
-                iterators.TweakFactorIterationDialog,
-                "iterateTweakFactorDialog"
-            )
+            lambda: self.iterateGudrun(iterators.TweakFactorIterationDialog)
         )
 
         self.mainWidget.ui.iterateDensity.triggered.connect(
-            lambda: self.iterateGudrun(
-                iterators.DensityIterationDialog, "iterateDensityDialog"
-            )
+            lambda: self.iterateGudrun(iterators.DensityIterationDialog)
         )
 
         self.mainWidget.ui.iterateThickness.triggered.connect(
-            lambda: self.iterateGudrun(
-                iterators.ThicknessIterationDialog, "iterateThicknessDialog"
-            )
+            lambda: self.iterateGudrun(iterators.ThicknessIterationDialog)
         )
 
         self.mainWidget.ui.iterateRadius.triggered.connect(
-            lambda: self.iterateGudrun(
-                iterators.RadiusIterationDialog, "iterateRadiusDialog"
-            )
+            lambda: self.iterateGudrun(iterators.RadiusIterationDialog)
         )
 
         self.mainWidget.ui.iterateComposition.triggered.connect(
-            lambda: self.iterateGudrun(
-                iterators.CompositionIterationDialog,
-                "iterateCompositionDialog"
-            )
+            lambda: self.iterateGudrun(iterators.CompositionIterationDialog)
         )
 
         self.mainWidget.ui.runContainersAsSamples.triggered.connect(
@@ -518,11 +504,15 @@ class GudPyController(QtCore.QObject):
                 gudrunFile=self.gudpy.gudrun.gudrunFile)
 
     def iterateGudrun(self, dialog, name) -> bool:
-        iterationDialog = dialog(name, self.gudpy.gudrunFile, self.mainWidget)
-        iterationDialog.widget.exec()
-        if not iterationDialog.iterator:
-            self.mainWidget.processStopped()
-            return False
+        iterationDialog = dialog(
+            name, self.mainWidget, gudrunFile=self.gudpy.gudrunFile)
+        kwargs = iterationDialog.widget.exec()
+
+        # If it is a Composition iteration, the gudrunFile must be specified
+        if iterationDialog.iteratorType == iterators.Composition:
+            kwargs["gudrunFile"] = self.gudpy.gudrunFile
+
+        self.gudpy.iterator = iterationDialog.iteratorType(**kwargs)
 
         if not self.prepareRun() or not self.checkPurge():
             self.mainWidget.processStopped()
