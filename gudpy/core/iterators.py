@@ -133,6 +133,11 @@ class Radius(Iterator):
     """
     name = "IterateByRadius"
 
+    def __init__(self, nTotal, target="inner"):
+        super().__init__(nTotal)
+        self.iterationMode = None
+        self.setTargetRadius(target)
+
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         if self.targetRadius == "inner":
             sample.innerRadius *= coefficient
@@ -147,6 +152,10 @@ class Radius(Iterator):
 
     def setTargetRadius(self, targetRadius):
         self.targetRadius = targetRadius
+        if self.targetRadius == "inner":
+            self.iterationMode = IterationModes.INNER_RADIUS
+        if self.targetRadius == "outer":
+            self.iterationMode = IterationModes.OUTER_RADIUS
 
 
 class Thickness(Iterator):
@@ -169,6 +178,10 @@ class Thickness(Iterator):
     """
 
     name = "IterateByThickness"
+
+    def __init__(self, nTotal):
+        super().__init__(nTotal)
+        self.iterationMode = IterationModes.THICKNESS
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         # Determine a new total thickness.
@@ -208,6 +221,10 @@ class TweakFactor(Iterator):
     """
 
     name = "IterateByTweakFactor"
+
+    def __init__(self, nTotal):
+        super().__init__(nTotal)
+        self.iterationMode = IterationModes.TWEAK_FACTOR
 
     def performIteration(self, gudrunFile, prevOutput):
         """
@@ -254,6 +271,10 @@ class Density(Iterator):
         Multiplies a sample's density by a given coefficient.
     """
     name = "IterateByDensity"
+
+    def __init__(self, nTotal):
+        super().__init__(nTotal)
+        self.iterationMode = IterationModes.DENSITY
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         """
@@ -326,7 +347,7 @@ class InelasticitySubtraction(Iterator):
 
     name = "IterateByInelasticitySubtraction"
 
-    def __init__(self, gudrunFile, nTotal):
+    def __init__(self, nTotal):
         """
         Constructs all the necessary attributes for the
         InelasticitySubtraction sample.
@@ -336,7 +357,8 @@ class InelasticitySubtraction(Iterator):
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
-        super().__init__(gudrunFile, nTotal)
+        super().__init__(nTotal)
+        self.iterationMode = IterationModes.INELASTICITY
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
         # Individual iterations
@@ -658,36 +680,6 @@ class Composition():
                                     sample
                                 )
                             })
-
-    """
-    Sets component and ratio.
-
-    Parameters
-    ----------
-    component : Component
-        Component to set.
-    ratio : int, optional
-        Ratio of component.
-    """
-
-    def setComponent(self, component, ratio=1):
-        self.components = [component]
-        self.ratio = ratio
-
-    """
-    Sets components and ratio.
-
-    Parameters
-    ----------
-    components : Component[]
-        Components to set.
-    ratio : int, optional
-        Ratio of component.
-    """
-
-    def setComponents(self, components, ratio=1):
-        self.components = [c for c in components if c]
-        self.ratio = ratio
 
     def costUp(
         self,
