@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import traceback
+import typing as typ
 
 from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets
 from PySide6.QtCore import (
@@ -16,9 +17,11 @@ from PySide6.QtWidgets import (
 )
 
 from gui.widgets.core.main_window import GudPyMainWindow
-from core import file_library
+from core.purge_file import PurgeFile
+from core import file_library, enums
 import gui.widgets.dialogs.iteration_dialog as iterators
-from core import enums, worker, dialogs
+from gui.widgets.core import worker
+from gui.widgets import dialogs
 from core import exception as exc
 from core import gudpy as gp
 
@@ -37,10 +40,7 @@ class GudPyController(QtCore.QObject):
 
         self.workerThread = None
 
-        self.initComponents()
         self.timer = QTimer(self)
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.autosave)
 
         self.connectUiSlots()
 
@@ -79,11 +79,15 @@ class GudPyController(QtCore.QObject):
         self.mainWidget.ui.checkFilesExist.triggered.connect(
             lambda: self.checkFilesExist_(True)
         )
-        self.mainWidget.ui.save.triggered.connect(self.saveInputFile)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.autosave)
+        self.mainWidget.ui.stopTaskButton.clicked.connect(self.stopProcess)
+        self.mainWidget.ui.save.triggered.connect(self.save)
         self.mainWidget.ui.saveAs.triggered.connect(self.saveAs)
         self.mainWidget.ui.exportInputFile.triggered.connect(
             self.exportInputFile)
-        self.mainWidget.ui.viewLiveInputFile.triggered.connect(self.viewInput)
+        self.mainWidget.ui.viewLiveInputFile.triggered.connect(
+            self.mainWidget.viewInput)
         self.mainWidget.ui.insertSampleBackground.triggered.connect(
             self.mainWidget.ui.objectTree.insertSampleBackground
         )
@@ -103,9 +107,9 @@ class GudPyController(QtCore.QObject):
         self.mainWidget.ui.delete_.triggered.connect(
             self.mainWidget.ui.objectTree.del_
         )
-        self.mainWidget.ui.loadInputFile.triggered.connect(self.loadInputFile)
-        self.mainWidget.ui.loadProject.triggered.connect(self.loadProject)
-        self.mainWidget.ui.new_.triggered.connect(self.newInputFile)
+        self.mainWidget.ui.loadInputFile.triggered.connect(self.loadFromFile)
+        self.mainWidget.ui.loadProject.triggered.connect(self.loadFromProject)
+        self.mainWidget.ui.new_.triggered.connect(self.newProject)
         self.mainWidget.ui.objectStack.currentChanged.connect(
             lambda: self.mainWidget.updateComponents(self.gudpy.gudrunFile)
         )
@@ -347,7 +351,7 @@ class GudPyController(QtCore.QObject):
     def connectProcessSignals(
         self,
         process: QtCore.QThread,
-        onFinish: typ.Function = None
+        onFinish: typ.Callable = None
     ):
         self.workerThread = process
         self.gudpy.process.outputChanged.connect(
@@ -386,6 +390,7 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.processStopped()
             return False
 
+        self.gudpy.purgeFile = PurgeFile(self.gudpy.gudrunFile)
         self.gudpy.purge = worker.PurgeWorker(self.gudpy.purgeFile)
         self.connectProcessSignals(
             process=self.gudpy.purge, onFinish=self.purgeFinished

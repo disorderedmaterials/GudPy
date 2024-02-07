@@ -6,7 +6,6 @@ from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets, QtCharts
 
 from core.container import Container
 from core.sample import Sample
-from gui.widgets.dialogs.export import ExportDialog
 
 from gui.widgets.dialogs.iteration_dialog import (
     CompositionIterationDialog,
@@ -19,13 +18,13 @@ from gui.widgets.dialogs.iteration_dialog import (
 
 from gui.widgets.dialogs.purge_dialog import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
-from gui.widgets.dialogs.io import MissingFilesDialog
 from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance import (
     CompositionAcceptanceDialog,
 )
+from gui.widgets.dialogs.io import MissingFilesDialog, ExportDialog
 from gui.widgets.dialogs.batch import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
@@ -111,9 +110,6 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.plotModes = {}
 
         self.initComponents()
-        self.timer = QtCore.QTimer(self)
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.autosave)
 
         self.instrumentSlots = InstrumentSlots(self.ui, self)
         self.beamSlots = BeamSlots(self.ui, self)
@@ -190,7 +186,6 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             self.ui.statusBarWidget
         )
         self.ui.stopTaskButton.setIcon(QtGui.QIcon(":/icons/stop"))
-        self.ui.stopTaskButton.clicked.connect(self.stopProc)
         self.ui.stopTaskButton.setEnabled(False)
 
         self.ui.stopTaskButton.setSizePolicy(
@@ -633,11 +628,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.focusResult()
 
     def sendError(self, error: str):
-        QtWidgets.QtWidgets.QMessageBox.critical(
+        QtWidgets.QMessageBox.critical(
             self.ui, "GudPy Error", str(error))
 
     def sendWarning(self, warning: str):
-        QtWidgets.QtWidgets.QMessageBox.warning(
+        QtWidgets.QMessageBox.warning(
             self.ui,
             "GudPy Warning",
             warning

@@ -24,17 +24,7 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 class GudPy:
     def __init__(
         self,
-        projectDir: str = "",
-        loadFile: str = "",
-        format: enums.Format = enums.Format.YAML,
-        config: bool = False,
     ):
-
-        if not projectDir and not loadFile:
-            raise RuntimeError(
-                "No project directory or load file specified"
-            )
-
         self.gudrunFile: GudrunFile = None
         self.purgeFile = None
 
@@ -49,14 +39,6 @@ class GudPy:
 
         self.projectDir = ""
         self.autosaveLocation = ""
-
-        if projectDir:
-            self.loadFromProject(projectDir)
-        elif loadFile:
-            self.loadFromFile(loadFile, format=format, config=config)
-
-        if self.gudrunFile:
-            self.purgeFile = PurgeFile(self.gudrunFile)
 
     def loadFromFile(
         self,
@@ -158,6 +140,7 @@ class GudPy:
         return (undefined, unresolved)
 
     def runPurge(self):
+        self.purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(self.gudrunFile)
         if exitcode:
             raise exc.PurgeException(
@@ -412,7 +395,7 @@ class GudrunIterator:
         gudrunFile: GudrunFile,
         gudrun: Gudrun,
         prevOutput: handlers.GudrunOutput
-    ) -> tuple(int, str):  # (exitcode, error)
+    ) -> typ.Tuple[int, str]:  # (exitcode, error)
         self.iterator.performIteration(gudrunFile, prevOutput)
         exitcode = gudrun.gudrun(gudrunFile, self.iterator)
         if exitcode:
@@ -456,7 +439,7 @@ class CompositionIterator(GudrunIterator):
         self.compositionMap = None
         self.currentIteration = 0
 
-    def iterate(self) -> tuple(int, str):
+    def iterate(self) -> typ.Tuple[int, str]:
         prevOutput = None
 
         for gudrun in self.gudrunObjects:
@@ -568,9 +551,8 @@ class BatchProcessing():
                 )
             }
 
-    def batch(self, gudrunFile: GudrunFile, separateFirstBatch: bool) -> tuple(
-        typ.Union[GudrunFile, None], GudrunFile
-    ):
+    def batch(self, gudrunFile: GudrunFile, separateFirstBatch: bool
+              ) -> typ.Tuple[typ.Union[GudrunFile, None], GudrunFile]:
         if not separateFirstBatch:
             batch = copy.deepcopy(gudrunFile)
             batch.sampleBackgrounds = []
