@@ -59,6 +59,7 @@ class GudPy:
         self.data = Parameters()
 
         self.projectDir = ""
+        self.autosaveLocation = ""
 
         if projectDir:
             self.loadFromProject(projectDir)
@@ -122,6 +123,9 @@ class GudPy:
     def setSaveLocation(self, projectDir: str):
         self.projectDir = projectDir
         self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
+        self.autosaveLocation = (
+            f"{os.path.basename(projectDir)}.autosave"
+        )
 
     def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
         if not path:
