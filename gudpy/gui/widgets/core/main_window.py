@@ -6,7 +6,7 @@ from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets, QtCharts
 
 from core.container import Container
 from core.sample import Sample
-from gudpy.gui.widgets.dialogs.export import ExportDialog
+from gui.widgets.dialogs.export import ExportDialog
 
 from gui.widgets.dialogs.iteration_dialog import (
     CompositionIterationDialog,
@@ -19,14 +19,14 @@ from gui.widgets.dialogs.iteration_dialog import (
 
 from gui.widgets.dialogs.purge_dialog import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
-from gudpy.gui.widgets.dialogs.io import MissingFilesDialog
+from gui.widgets.dialogs.io import MissingFilesDialog
 from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
 from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
-from gudpy.gui.widgets.dialogs.composition_acceptance import (
+from gui.widgets.dialogs.composition_acceptance import (
     CompositionAcceptanceDialog,
 )
-from gudpy.gui.widgets.dialogs.batch import BatchProcessingDialog
+from gui.widgets.dialogs.batch import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
 
@@ -56,7 +56,7 @@ from gui.widgets.slots.sample_slots import SampleSlots
 from gui.widgets.slots.output_slots import OutputSlots
 # from gui.widgets.resources import resources_rc  # noqa
 from core import enums
-from core.gudrun_file import self.gudrunFile
+from core.gudrun_file import GudrunFile
 from core import config
 from core.gud_file import GudFile
 from core import utils
@@ -71,7 +71,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
     Attributes
     ----------
-    self.gudrunFile : self.gudrunFile
+    self.gudrunFile : GudrunFile
         self.gudrunFile object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
@@ -357,13 +357,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         messageBox.addButton(QtWidgets.QMessageBox.Yes)
         return messageBox.exec()
 
-    def updateWidgets(self, fromFile=False):
+    def updateWidgets(self):
         self.widgetsRefreshing = True
-        if fromFile:
-            self.gudrunFile = self.gudrunFile(
-                loadFile=self.gudrunFile.path,
-                format=self.gudrunFile.format)
-        self.ui.self.gudrunFile = self.gudrunFile
         self.ui.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
         self.beamSlots.setBeam(self.gudrunFile.beam)
@@ -393,7 +388,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        self.updateResults(self.gudrunFile)
+        self.updateResults()
         self.widgetsRefreshing = False
 
     def handleObjectsChanged(self):
@@ -403,7 +398,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
     def updateGeometries(self):
         """
         Iteratively updates geometries of objects,
-        where the enums.Geometry is SameAsBeam.
+        where the geometry is SameAsBeam.
         """
         if (
             self.gudrunFile.normalisation.enums.Geometry ==
@@ -411,7 +406,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         ):
             self.normalisationSlots.widgetsRefreshing = True
             self.ui.enums.GeometryInfoStack.setCurrentIndex(
-                config.enums.Geometry.value
+                config.geometry.value
             )
             self.normalisationSlots.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
@@ -420,10 +415,10 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             for j, sample in enumerate(sampleBackground.samples):
                 self.gudrunFile.sampleBackgrounds[i].samples[
                     j
-                ].enums.Geometry = config.enums.Geometry
+                ].eometry = config.geometry
                 for k in range(len(sample.containers)):
                     sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
-                    sample.containers[k].enums.Geometry = config.enums.Geometry
+                    sample.containers[k].geometry = config.geometry
 
     def updateCompositions(self):
         """

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from PySide6.QtCore import QModelIndex, Qt
-from gudpy.core.element import Element
-from gudpy.core.isotopes import Sears91
+from core.element import Element
+from core.isotopes import Sears91
 
 from gui.widgets.tables.gudpy_tables import GudPyTableModel
 from gui.widgets.tables.beam_profile_table import BeamProfileModel

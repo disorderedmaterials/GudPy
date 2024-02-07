@@ -21,15 +21,6 @@ from core.file_library import GudPyFileLibrary
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-class Parameters:
-    def __init__(self):
-        self.instrument = instrument.Instrument()
-        self.beam = beam.Beam()
-        self.normalisation = normalisation.Normalisation()
-        self.sampleBackgrounds = []
-        self.components = composition.Components(components=[])
-
-
 class GudPy:
     def __init__(
         self,
@@ -55,8 +46,6 @@ class GudPy:
 
         self.gudrunOutput = None
         self.purgeOutput = None
-
-        self.data = Parameters()
 
         self.projectDir = ""
         self.autosaveLocation = ""
