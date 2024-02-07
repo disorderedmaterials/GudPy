@@ -104,7 +104,8 @@ ITERATION_MODES = {
     2: ["Thickness", "THICKNESS"],
     3: ["Inner Radius", "INNER_RADIUS"],
     4: ["Outer Radius", "OUTER_RADIUS"],
-    5: ["Density", "DENSITY"]
+    5: ["Density", "DENSITY"],
+    6: ["Inelasticity Subtraction", "INELASTICITY"]
 }
 
 IterationModes = enumFromDict("IterationModes", ITERATION_MODES)

@@ -44,12 +44,15 @@ class GudPy:
                 "No project directory or load file specified"
             )
 
-        self.gudrunFile = None
-        self.purge = Purge()
-        self.gudrun = Gudrun()
-        self.runModes = RunModes()
+        self.gudrunFile: GudrunFile = None
+        self.purgeFile = None
 
-        self.gudrunIterator = None
+        self.purge: Purge = None
+        self.gudrun: Gudrun = None
+        self.runModes: RunModes = None
+        self.gudrunIterator: GudrunIterator = None
+        self.batchProcessor: BatchProcessing = None
+
         self.gudrunOutput = None
         self.purgeOutput = None
 
@@ -59,10 +62,11 @@ class GudPy:
 
         if projectDir:
             self.loadFromProject(projectDir)
-        else:
+        elif loadFile:
             self.loadFromFile(loadFile, format=format, config=config)
 
-        self.purgeFile = PurgeFile(self.gudrunFile)
+        if self.gudrunFile:
+            self.purgeFile = PurgeFile(self.gudrunFile)
 
     def loadFromFile(
         self,
@@ -207,6 +211,29 @@ class GudPy:
         gudrunFile = self.runModes.partition(self.gudrunFile)
         self.runGudrun(gudrunFile=gudrunFile)
 
+    def batchProcessing(
+        self,
+        iterator: iterators.Iterator,
+        batchSize=1,
+        stepSize=1,
+        offset: int = 0,
+        rtol=0.0,
+        separateFirstBatch=False
+    ):
+        self.batchProcessor = BatchProcessing(
+            gudrunFile=self.gudrunFile,
+            iterator=iterator,
+            batchSize=batchSize,
+            stepSize=stepSize,
+            offset=offset,
+            rtol=rtol,
+            separateFirstBatch=separateFirstBatch
+        )
+        try:
+            self.batchProcessor.process()
+        except exc.GudrunException as e:
+            raise e
+
 
 class Process:
     def __init__(self, process: str):
@@ -215,6 +242,7 @@ class Process:
 
         self.stdout = ""
         self.error = ""
+        self.exitcode = 0
 
         # Find binary
         if hasattr(sys, '_MEIPASS'):
@@ -232,6 +260,7 @@ class Process:
 
     def _checkBinary(self):
         if not os.path.exists(self.BINARY_PATH):
+            self.exitcode = 1
             raise FileNotFoundError(f"Missing {self.PROCESS} binary")
 
     def _prepareRun(self):
@@ -247,6 +276,7 @@ class Process:
         ]
         if [KWD for KWD in ERROR_KWDS if KWD in line]:
             self.error += line
+            self.exitcode = 1
             return True
 
         return False
@@ -282,20 +312,21 @@ class Purge(Process):
                 for line in purge.stdout:
                     self._outputChanged(line.decode("utf8"))
                     if self._checkError(line):
-                        return 1
+                        return self.exitcode
                 if purge.stderr:
-                    self._errorOccured(
-                        purge.stderr.decode("utf8"))
-                    return 1
+                    self.error = purge.stderr.decode("utf8")
+                    self.exitcode = 1
+                    return self.exitcode
 
             self.purgeOutput = purgeFile.organiseOutput(tmp)
 
-        return 0
+        self.exitcode = 0
+        return self.exitcode
 
 
 class Gudrun(Process):
     def __init__(
-        self,
+        self
     ):
         self.PROCESS: str = "gudrun_dcs"
         super().__init__(self.PROCESS)
@@ -315,6 +346,7 @@ class Gudrun(Process):
     def gudrun(
         self,
         gudrunFile: GudrunFile,
+        iterator: iterators.Iterator = None
     ) -> int:
         self._prepareRun()
         self._checkBinary()
@@ -340,22 +372,28 @@ class Gudrun(Process):
             ) as gudrun:
                 for line in gudrun.stdout:
                     if self._checkError(line):
-                        return 1
+                        return self.exitcode
                     self._outputChanged(line.decode("utf8"))
                 if gudrun.stderr:
-                    return 1
+                    self.error = gudrun.stderr.decode("utf8")
+                    self.exitcode = 1
+                    return self.exitcode
 
-            self.gudrunOutput = self.organiseOutput(gudrunFile)
+            if iterator:
+                self.gudrunOutput = iterator.organiseOutput()
+            else:
+                self.gudrunOutput = self.organiseOutput()
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
-        return 0
+        self.exitcode = 0
+        return self.exitcode
 
 
 class GudrunIterator:
     def __init__(
         self,
+        gudrunFile: GudrunFile,
         iterator: iterators.Iterator,
-        gudrunFile: GudrunFile
     ):
 
         # Create a copy of gudrun file
@@ -365,35 +403,51 @@ class GudrunIterator:
         self.defaultRun = None
 
         for _ in range(iterator.nTotal):
-            self.gudrunObjects.append(Gudrun(
-                organiseOutput=self.iterator.organiseOutput
-            ))
+            self.gudrunObjects.append(Gudrun())
 
     def _nextIteration(self):
         print(f"Iteration number: {self.iterator.nCurrent}")
+
+    def defaultIteration(self, gudrunFile):
+        self.defaultRun = Gudrun()
+        exitcode = self.defaultRun.gudrun(gudrunFile, self.iterator)
+        if exitcode:  # An exit code != 0 indicates failure
+            return exitcode
+
+    def singleIteration(
+        self,
+        gudrunFile: GudrunFile,
+        gudrun: Gudrun,
+        prevOutput: handlers.GudrunOutput
+    ) -> tuple(int, str):  # (exitcode, error)
+        self.iterator.performIteration(gudrunFile, prevOutput)
+        exitcode = gudrun.gudrun(gudrunFile, self.iterator)
+        if exitcode:
+            return (exitcode, gudrun.error)
+
+        self._nextIteration(self.iterator.nCurrent)
+        return 0
 
     def iterate(self) -> int:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
-            self.defaultRun = Gudrun()
-            exitcode = self.defaultRun.gudrun(self.gudrunFile, self.iterator)
+            exitcode = self.defaultIteration(self.gudrunFile)
             if exitcode:  # An exit code != 0 indicates failure
-                return exitcode
+                return (exitcode, self.defaultIteration.error)
             prevOutput = self.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
         for gudrun in self.gudrunObjects:
-            self.iterator.performIteration(self.gudrunFile, prevOutput)
-            exitcode = gudrun.gudrun(self.gudrunFile, self.iterator)
-            if exitcode:
-                return exitcode
+            exitcode = self.singleIteration(
+                self.gudrunFile, gudrun, prevOutput)
+            if exitcode:  # An exit code != 0 indicates failure
+                return (exitcode, gudrun.error)
 
             prevOutput = gudrun.gudrunOutput
-            self._nextIteration()
 
-        return 0
+        return (0,)
 
 
 class CompositionIterator(GudrunIterator):
@@ -409,21 +463,19 @@ class CompositionIterator(GudrunIterator):
         self.compositionMap = None
         self.currentIteration = 0
 
-    def iterate(self) -> int:
+    def iterate(self) -> tuple(int, str):
         prevOutput = None
 
         for gudrun in self.gudrunObjects:
             if self.iterator.result:
                 self.result = self.iterator.result
                 self.compositionMap = self.iterator.compositionMap
-                return 0
+                return (0, )
 
-            gudrunFile = self.iterator.performIteration(
-                self.gudrunFile, prevOutput)
-
-            exitcode = gudrun.gudrun(gudrunFile, self.iterator)
-            if exitcode:
-                return exitcode
+            exitcode = self.singleIteration(
+                self.gudrunFile, gudrun, prevOutput)
+            if exitcode:  # An exit code != 0 indicates failure
+                return (exitcode, gudrun.error)
 
             prevOutput = gudrun.gudrunOutput
 
@@ -432,16 +484,15 @@ class CompositionIterator(GudrunIterator):
                 self._nextIteration()
                 self.currentIteration += 1
 
-        self.error = (
+        error = (
             "No iterations were queued."
             " It's likely no Samples selected for analysis"
             " use the Component(s) selected for iteration."
         )
-        return 1
+        return (1, error)
 
 
 class RunModes:
-
     def convertContainersToSample(self, gudrunFile: GudrunFile):
         newGudrunFile = copy.deepcopy(gudrunFile)
         containersAsSamples = []
@@ -487,22 +538,50 @@ class RunModes:
         return newGudrunFile
 
 
-class BatchProcessing:
+class BatchProcessing():
     def __init___(
-            self,
-            gudrunFile: GudrunFile,
-            gudrun: Gudrun = None,
-            gudrunIterator: GudrunIterator = None
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator = None,
+        batchSize=1,
+        stepSize=1,
+        offset: int = 0,
+        rtol=0.0,
+        separateFirstBatch=False
     ):
-        self.gudrunFile = gudrunFile
-        self.gudrun = gudrun
-        self.gudrunIterator = gudrunIterator
+        self.iterator = iterator
+        self.iterationMode = None
 
-    def batch(self, batchSize, stepSize, separateFirstBatch, offset=0):
+        self.BATCH_SIZE = batchSize
+        self.STEP_SIZE = stepSize
+        self.OFFSET = offset
+        self.RTOL = rtol
+
+        self.separateFirstBatch = separateFirstBatch
+
+        self.firstBatch, self.batchedGudrunFile = self.batch(
+            separateFirstBatch=self.separateFirstBatch,
+            gudrunFile=gudrunFile
+        )
+
+        if self.iterator:
+            self.iterationMode = self.iterator.iterationMode
+            self.gudrunIterators = {
+                "FIRST": GudrunIterator(
+                    self.firstBatch, copy.deepcopy(iterator)
+                ) if self.separateFirstBatch else None,
+                "REST": GudrunIterator(
+                    self.batchedGudrunFile, copy.deepcopy(iterator)
+                )
+            }
+
+    def batch(self, gudrunFile: GudrunFile, separateFirstBatch: bool) -> tuple(
+        typ.Union[GudrunFile, None], GudrunFile
+    ):
         if not separateFirstBatch:
-            batch = copy.deepcopy(self.gudrunFile)
+            batch = copy.deepcopy(gudrunFile)
             batch.sampleBackgrounds = []
-            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sampleBackground in gudrunFile.sampleBackgrounds:
                 batchedSampleBackground = copy.deepcopy(sampleBackground)
                 batchedSampleBackground.samples = []
                 maxDataFiles = max(
@@ -512,178 +591,192 @@ class BatchProcessing:
                     ]
                 )
                 for sample in sampleBackground.samples:
-                    for i in range(offset, maxDataFiles, stepSize):
+                    for i in range(self.OFFSET, maxDataFiles, self.STEP_SIZE):
                         batchedSample = copy.deepcopy(sample)
                         batchedSample.dataFiles.dataFiles = sample.dataFiles[
-                            i: i + batchSize
+                            i: i + self.BATCH_SIZE
                         ]
                         batchedSampleBackground.samples.append(batchedSample)
                 batch.sampleBackgrounds.append(batchedSampleBackground)
 
-            return batch
+            return (None, batch)
 
         else:
-            first = copy.deepcopy(self.gudrunFile)
+            first = copy.deepcopy(gudrunFile)
             first.sampleBackgrounds = []
-            for sampleBackground in self.gudrunFile.sampleBackgrounds:
+            for sampleBackground in gudrunFile.sampleBackgrounds:
                 batchedSampleBackground = copy.deepcopy(sampleBackground)
                 batchedSampleBackground.samples = []
                 for sample in sampleBackground.samples:
                     batchedSample = copy.deepcopy(sample)
                     batchedSample.dataFiles.dataFiles = (
-                        sample.dataFiles[:batchSize]
+                        sample.dataFiles[:self.BATCH_SIZE]
                     )
                     batchedSampleBackground.samples.append(batchedSample)
                 first.sampleBackgrounds.append(batchedSampleBackground)
             return (
                 first,
-                self.batch(batchSize, stepSize, False, offset=stepSize)
+                self.batch(separateFirstBatch=False)
             )
 
-    def canConverge(self, batch, rtol):
-        if rtol == 0.0:
+    def canConverge(self, batch):
+        if self.RTOL == 0.0:
             return False
         for sampleBackground in batch.sampleBackgrounds:
             for sample in sampleBackground.samples:
-                if abs(batch.determineError(sample)) > rtol:
+                if abs(batch.determineError(sample)) > self.RTOL:
                     return False
         return True
 
-    def checkConvergenceAndPropogate(self, current, next, rtol, iterationMode):
-        if self.canConverge(current, rtol):
-            self.propogateResults(current, next, iterationMode)
-            return True, True
-        return False, True
-
-    def writeDiagnosticsFile(self, path, batch, iterationMode):
+    def writeDiagnosticsFile(self, path, batch):
         with open(path, "w", encoding="utf-8") as fp:
             for sampleBackground in batch.sampleBackgrounds:
                 for i, sample in enumerate(sampleBackground.samples):
                     fp.write(f"Batch {i} {sample.name}\n")
                     fp.write(f"{str(sample.dataFiles)}\n")
                     fp.write(f"Error: {batch.determineError(sample)}%\n")
-                    if iterationMode == enums.IterationModes.TWEAK_FACTOR:
+                    if self.iterationMode == enums.IterationModes.TWEAK_FACTOR:
                         fp.write(f"Tweak Factor: {sample.sampleTweakFactor}\n")
-                    elif iterationMode == enums.IterationModes.THICKNESS:
+                    elif self.iterationMode == enums.IterationModes.THICKNESS:
                         fp.write(
                             f"Upstream / Downstream Thickness: "
                             f"{sample.upstreamThickness} "
                             f"{sample.downstreamThickness}\n"
                         )
-                    elif iterationMode == enums.IterationModes.INNER_RADIUS:
+                    elif (
+                        self.iterationMode == enums.IterationModes.INNER_RADIUS
+                    ):
                         fp.write(f"Inner Radius: {sample.innerRadius}\n")
-                    elif iterationMode == enums.IterationModes.OUTER_RADIUS:
+                    elif (
+                        self.iterationMode == enums.IterationModes.OUTER_RADIUS
+                    ):
                         fp.write(f"Outer Radius: {sample.outerRadius}\n")
-                    elif iterationMode == enums.IterationModes.DENSITY:
+                    elif self.iterationMode == enums.IterationModes.DENSITY:
                         fp.write(f"Density: {sample.density}\n")
 
-    def propogateResults(self, current, next, iterationMode):
+    def propogateResults(self, current, next):
         for (
             sampleBackgroundA, sampleBackgroundB
         ) in zip(current.sampleBackgrounds, next.sampleBackgrounds):
             for (
                 sampleA, sampleB
             ) in zip(sampleBackgroundA.samples, sampleBackgroundB.samples):
-                if iterationMode == enums.IterationModes.TWEAK_FACTOR:
+                if self.iterationMode == enums.IterationModes.TWEAK_FACTOR:
                     sampleB.sampleTweakFactor = sampleA.sampleTweakFactor
-                elif iterationMode == enums.IterationModes.THICKNESS:
+                elif self.iterationMode == enums.IterationModes.THICKNESS:
                     sampleB.upstreamThickness = sampleA.upstreamThickness
                     sampleB.downstreamThickness = sampleA.downstreamThickness
-                elif iterationMode == enums.IterationModes.INNER_RADIUS:
+                elif self.iterationMode == enums.IterationModes.INNER_RADIUS:
                     sampleB.innerRadius = sampleA.innerRadius
-                elif iterationMode == enums.IterationModes.OUTER_RADIUS:
+                elif self.iterationMode == enums.IterationModes.OUTER_RADIUS:
                     sampleB.outerRadius = sampleA.outerRadius
-                elif iterationMode == enums.IterationModes.DENSITY:
+                elif self.iterationMode == enums.IterationModes.DENSITY:
                     sampleB.density = sampleA.density
 
-    def organiseOutput(
-        self, gudrunFile: GudrunFile,
-        head: str = "",
-        overwrite: bool = True
-    ) -> handlers.GudrunOutput:
-
-        outputHandler = handlers.GudrunOutputHandler(
-            self, gudrunFile=gudrunFile, head=head, overwrite=overwrite
+    def bactchProcess(
+        self,
+        gudrun,
+        batchSize,
+        iterator=None
+    ):
+        self.batchedGudrunFile.projectDir = (os.path.join(
+            self.batchedGudrunFile.projectDir,
+            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
+        ))
+        exitcode = gudrun.gudrun(GudrunFile, iterator)
+        self.writeDiagnosticsFile(
+            os.path.join(
+                self.batchedGudrunFile.path(),
+                "batch_processing_diagnostics.txt",
+            ),
+            self.batchedGudrunFile,
+            self.iterationMode
         )
-        gudrunOutput = outputHandler.organiseOutput()
-        return gudrunOutput
+        return (exitcode, gudrun.error)
+
+    def iterate(
+        self,
+        gudrunIterator: GudrunIterator,
+        batchedFile: GudrunFile,
+        outputFolder: str
+    ) -> int:
+
+        prevOutput = None
+
+        batchedFile.projectDir = os.path.join(
+            batchedFile.projectDir,
+            f"BATCH_PROCESSING_BATCH_SIZE{self.BATCH_SIZE}",
+            outputFolder
+        )
+        gudrunIterator.gudrunFile = batchedFile
+
+        # If the iterator requires a prelimenary run
+        if gudrunIterator.iterator.requireDefault:
+            exitcode, error = self.gudrunIterators[-1].defaultIteration(
+                batchedFile)
+            if exitcode:  # An exit code != 0 indicates failure
+                return (exitcode, error)
+            prevOutput = gudrunIterator.defaultRun.gudrunOutput
+
+        # Iterate through gudrun objects
+        for i, gudrun in enumerate(gudrunIterator.gudrunObjects):
+            if self.canConverge(batchedFile, self.RTOL):
+                # Keep only the processed objects in the list
+                gudrunIterator.gudrunObjects = gudrunIterator.gudrunObjects[:i]
+                return (0, )
+
+            exitcode = gudrunIterator.singleIteration(
+                batchedFile, gudrun, prevOutput)
+
+            self.writeDiagnosticsFile(
+                os.path.join(
+                    batchedFile.path(),
+                    "batch_processing_diagnostics.txt"
+                )
+            )
+
+            if exitcode:
+                return (exitcode, gudrun.error)
+
+            prevOutput = gudrun.gudrunOutput
+
+        return (0, )
 
     def process(
         self,
-        batchSize=1,
-        stepSize=1,
-        headless=True,
-        iterationMode=enums.IterationModes.NONE,
-        rtol=0.0,
-        maxIterations=1,
-        propogateFirstBatch=False
     ):
-        if propogateFirstBatch:
-            initial, self.batchedGudrunFile = self.batch(
-                batchSize, stepSize, propogateFirstBatch
-            )
-        else:
-            self.batchedGudrunFile = self.batch(
-                batchSize, stepSize, propogateFirstBatch
-            )
-
-        if iterationMode == enums.IterationModes.TWEAK_FACTOR:
-            iteratorType = iterators.TweakFactorIterator
-            dirText = "IterateByTweakFactor"
-        elif iterationMode == enums.IterationModes.THICKNESS:
-            iteratorType = iterators.ThicknessIterator
-            dirText = "IterateByThickness"
-        elif iterationMode == enums.IterationModes.INNER_RADIUS:
-            iteratorType = iterators.RadiusIterator
-            dirText = "IterateByInnerRadius"
-            targetRadius = "inner"
-        elif iterationMode == enums.IterationModes.OUTER_RADIUS:
-            iteratorType = iterators.RadiusIterator
-            dirText = "IterateByOuterRadius"
-            targetRadius = "outer"
-        elif iterationMode == enums.IterationModes.DENSITY:
-            iteratorType = iterators.DensityIterator
-            dirText = "IterateByDensity"
-
-        if iterationMode == enums.IterationModes.NONE:
-            self.gudrun.gudrun(self.batchedGudrunFile)
-            self.writeDiagnosticsFile(
-                os.path.join(
-                    self.batchedGudrunFile.path()
-                ),
-                self.batchedGudrunFile,
-                iterationMode
-            )
+        if self.iterationMode == enums.IterationModes.NONE:
+            return self.bactchProcess(Gudrun(), self.BATCH_SIZE)
 
         else:
-            if propogateFirstBatch:
-                iterator = iteratorType(self.batchedGudrunFile)
-                if isinstance(iterator, iterators.RadiusIterator):
-                    self.iterator.setTargetRadius(targetRadius)
-
-                self.gudrunIterator = GudrunIt
-
-                for i in range(maxIterations):
-                    initial.process(headless=headless)
-                    iterator.performIteration(i)
-                    initial.organiseOutput(
-                        head=os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir,
-                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                            "FIRST_BATCH",
-                            f"{dirText}_{i+1}"
-                        )
+            if self.separateFirstBatch:
+                exitcode, error = self.iterate(
+                    gudrunIterator=self.gudrunIterators["FIRST"],
+                    gudrunFile=self.firstBatch,
+                    outputFolder="FIRST_BATCH"
+                )
+                if exitcode:
+                    raise exc.GudrunException(
+                        "Batch Processing failed with the following output: "
+                        f"{error}"
                     )
-                    self.writeDiagnosticsFile(
-                        os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir,
-                            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
-                            "FIRST_BATCH",
-                            "batch_processing_diagnostics.txt"
-                        )
-                    )
-                    if self.canConverge(initial, rtol):
-                        break
+
                 self.propogateResults(
-                    initial, self.batchedGudrunFile, iterationMode
+                    self.firstBatch, self.batchedGudrunFile
+                )
+
+            iterator = copy.deepcopy(self.iterator)
+            self.gudrunIterators.append(GudrunIterator(
+                self.batchedGudrunFile,
+                iterator
+            ))
+            exitcode, error = self.iterate(
+                gudrunIterator=self.gudrunIterators["REST"],
+                gudrunFile=self.batchedGudrunFile,
+                outputFolder="REST"
+            )
+            if exitcode:
+                raise exc.GudrunException(
+                    "Batch Processing failed with the following output: "
+                    f"{error}"
                 )

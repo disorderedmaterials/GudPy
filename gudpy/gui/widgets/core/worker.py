@@ -1,8 +1,10 @@
 import os
 import math
 from PySide6.QtCore import QObject, Signal, QThread
+import copy
 
 from core import gudpy
+import core.exception as exc
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.iterators import Iterator
@@ -132,20 +134,41 @@ class GudrunWorker(Worker, gudpy.Gudrun):
         self.finished.emit(exitcode)
 
 
-class GudrunIteratorWorker(QThread, gudpy.GudrunIterator):
+class IteratorBaseWorker():
     nextIteration = Signal(int)
     outputChanged = Signal(str)
     progress = Signal(int)
     finished = Signal(int)
 
+    def __init__(self):
+        self.gudrunObjects = []
+        self.output = ""
+        self.error = ""
+
+    def _outputChanged(self, output):
+        self.output += output
+        self.outputChanged.emit(output)
+
+    def _progress(self, progress):
+        self.progress.emit(progress)
+
+    def _nextIteration(self, nCurrent):
+        self.output = ""
+        self.nextIteration.emit(nCurrent)
+
+    def run(self):
+        exitcode, error = super().iterate()
+        self.error = error
+        self.finished.emit(exitcode)
+
+
+class GudrunIteratorWorker(QThread, IteratorBaseWorker, gudpy.GudrunIterator):
     def __init__(
         self,
         iterator: iterators.Iterator,
         gudrunFile: GudrunFile
     ):
         super().__init__(iterator=iterator, gudrunFile=gudrunFile)
-        self.gudrunObjects = []
-        self.output = ""
 
         for _ in range(iterator.nTotal):
             worker = GudrunWorker(self.gudrunFile, self.iterator)
@@ -153,31 +176,14 @@ class GudrunIteratorWorker(QThread, gudpy.GudrunIterator):
             self.worker.progress.connect(self._progress)
             self.gudrunObjects.append(worker)
 
-    def _outputChanged(self, output):
-        self.output += output
-        self.outputChanged.emit(output)
 
-    def _progress(self, progress):
-        self.progress.emit(progress)
-
-    def _nextIteration(self):
-        self.output = ""
-        self.nextIteration.emit(self.iterator.nCurrent)
-
-    def run(self):
-        exitcode = super(GudrunIteratorWorker, self).iterate()
-        self.finished.emit(exitcode)
-
-
-class CompositionWorker(QThread, gudpy.CompositionIterator):
+class CompositionWorker(QThread, IteratorBaseWorker, gudpy.CompositionIterator):
     def __init__(
         self,
         iterator: iterators.Composition,
         gudrunFile: GudrunFile
     ):
         super().__init__(iterator=iterator, gudrunFile=gudrunFile)
-        self.gudrunObjects = []
-        self.output = ""
 
         for _ in range(iterator.nTotal):
             worker = GudrunWorker(self.gudrunFile, self.iterator)
@@ -185,17 +191,47 @@ class CompositionWorker(QThread, gudpy.CompositionIterator):
             self.worker.progress.connect(self._progress)
             self.gudrunObjects.append(worker)
 
-    def _outputChanged(self, output):
-        self.output += output
-        self.outputChanged.emit(output)
 
-    def _progress(self, progress):
-        self.progress.emit(progress)
+class BatchWorker(QThread, IteratorBaseWorker, gudpy.BatchProcessing):
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator = None,
+        batchSize=1,
+        stepSize=1,
+        offset: int = 0,
+        rtol=0.0,
+        separateFirstBatch=False
+    ):
+        super().__init__(
+            gudrunFile=gudrunFile,
+            iterator=iterator,
+            batchSize=batchSize,
+            stepSize=stepSize,
+            offset=offset,
+            rtol=rtol,
+            separateFirstBatch=separateFirstBatch
+        )
 
-    def _nextIteration(self):
-        self.output = ""
-        self.nextIteration.emit(self.iterator.nCurrent)
+        # Iterate through gudrun iterators and connect the signals
+        for gudrunIterator in self.gudrunIterators.items():
+            if not gudrunIterator:
+                continue
+            # Create GudrunWorker objects to replace Gudrun objects
+            gudrunIterator.gudrunObjects = []
+            for _ in range(self.iterator.nTotal):
+                worker = GudrunWorker(
+                    self.firstBatch,
+                    gudrunIterator.iterator
+                )
+                self.worker.outputChanged.connect(self._outputChanged)
+                self.worker.progress.connect(self._progress)
+                gudrunIterator.append(worker)
 
     def run(self):
-        exitcode = super(CompositionWorker, self).iterate()
-        self.finished.emit(exitcode)
+        try:
+            self.process()
+            self.finished.emit(0)
+        except exc.GudrunException as e:
+            self.error = str(e)
+            self.finished.emit(1)
