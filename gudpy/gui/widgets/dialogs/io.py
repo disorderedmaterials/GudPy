@@ -104,9 +104,6 @@ class ExportDialog(QDialog):
         self.initComponents()
         self.loadFilesList()
 
-        if not self.gudrunFile.checkSaveLocation():
-            self.widget.exportButton.setEnabled(False)
-
     def initComponents(self):
         """
         Loads the UI file for the ExportDialog object.

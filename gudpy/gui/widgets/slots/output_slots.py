@@ -6,7 +6,7 @@ class OutputSlots():
 
     def setOutputStream(self, stdout):
         self.widget.outputTextEdit.append(
-            stdout
+            "".join(stdout.split("\n"))
         )
 
     def setOutput(self, output, task, gudrunFile=None, keyMap=None):

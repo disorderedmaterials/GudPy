@@ -172,7 +172,7 @@ class GudPyFileLibrary:
         if not exportTo:
             exportTo = os.path.join(
                 self.gudrunFile.projectDir,
-                Path(self.gudrunFile.path).stem + ".zip",
+                Path(self.gudrunFile.path()).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:

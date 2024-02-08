@@ -28,7 +28,7 @@ from core.enums import (
     MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
-from core import config
+from core import config as cfg
 from core.gudpy_yaml import YAML
 from core.exception import ParserException, YAMLException
 from core.gud_file import GudFile
@@ -151,6 +151,11 @@ class GudrunFile:
         self.filename = None
         self.stream = None
 
+        self.instrument = Instrument()
+        self.normalisation = Normalisation()
+        self.beam = Beam()
+        self.sampleBackgrounds = SampleBackground()
+
         if loadFile:
             self.setGudrunDir(os.path.dirname(loadFile))
 
@@ -169,7 +174,10 @@ class GudrunFile:
         return result
 
     def path(self):
-        return os.path.join(self.projectDir, self.filename)
+        if not self.projectDir:
+            return None
+        else:
+            return os.path.join(self.projectDir, self.filename)
 
     def checkNormDataFiles(self):
         return (len(self.normalisation.dataFiles)
@@ -500,7 +508,7 @@ class GudrunFile:
             self.beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
 
             # Set the global geometry.
-            config.geometry = self.beam.sampleGeometry
+            cfg.geometry = self.beam.sampleGeometry
 
             # Ignore the number of beam values.
             self.consumeTokens(1)
@@ -683,7 +691,7 @@ class GudrunFile:
             if (
                 (
                     self.normalisation.geometry == Geometry.SameAsBeam
-                    and config.geometry == Geometry.FLATPLATE
+                    and cfg.geometry == Geometry.FLATPLATE
                 )
                     or self.normalisation.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -848,6 +856,7 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
+            sample.name = sample.name.replace(" ", "_")
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -903,7 +912,7 @@ class GudrunFile:
             if (
                 (
                     sample.geometry == Geometry.SameAsBeam
-                    and config.geometry == Geometry.FLATPLATE
+                    and cfg.geometry == Geometry.FLATPLATE
                 )
                     or sample.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -1105,7 +1114,7 @@ class GudrunFile:
             if (
                 (
                     container.geometry == Geometry.SameAsBeam
-                    and config.geometry == Geometry.FLATPLATE
+                    and cfg.geometry == Geometry.FLATPLATE
                 )
                     or container.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
@@ -1269,7 +1278,7 @@ class GudrunFile:
                         "SAMPLE",
                         [s.name for s in sampleBackground.samples],
                         sep="",
-                        incFirst=True)
+                        incFirst=True).replace(" ", "_")
                 sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and firstword(line) == "CONTAINER":
                 container = self.makeParse("CONTAINER")
@@ -1321,7 +1330,7 @@ class GudrunFile:
                     self.components,
                     self.normalisation,
                     self.sampleBackgrounds,
-                    config.GUI
+                    cfg.GUI
                 ) = self.yaml.parseYaml(path)
             except YAMLException as e:
                 raise ParserException(e)
@@ -1404,18 +1413,18 @@ class GudrunFile:
 
         LINEBREAK = "\n\n"
         header = (
-            f"'{config.spc2}'{config.spc2}'{config.spc10}'"
-            f"{config.spc2}'{os.path.sep}'{LINEBREAK}"
+            f"'{cfg.spc2}'{cfg.spc2}'{cfg.spc10}'"
+            f"{cfg.spc2}'{os.path.sep}'{LINEBREAK}"
         )
         instrument = (
-            f"INSTRUMENT{config.spc10}{{\n\n"
+            f"INSTRUMENT{cfg.spc10}{{\n\n"
             + str(self.instrument)
             + LINEBREAK
             + "}"
         )
-        beam = f"BEAM{config.spc10}{{\n\n" + str(self.beam) + LINEBREAK + "}"
+        beam = f"BEAM{cfg.spc10}{{\n\n" + str(self.beam) + LINEBREAK + "}"
         normalisation = (
-            f"NORMALISATION{config.spc10}{{\n\n"
+            f"NORMALISATION{cfg.spc10}{{\n\n"
             + str(self.normalisation)
             + LINEBREAK
             + "}"
@@ -1424,9 +1433,9 @@ class GudrunFile:
             [str(x) for x in self.sampleBackgrounds]
         ).rstrip()
         footer = (
-            f"\n\n\nEND{config.spc10}"
+            f"\n\n\nEND{cfg.spc10}"
             f"\n1\nDate and time last written:  "
-            f"{time.strftime('%Y%m%d %H:%M:%S')}{config.spc10}"
+            f"{time.strftime('%Y%m%d %H:%M:%S')}{cfg.spc10}"
             f"\nN"
         )
 
@@ -1450,9 +1459,6 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
-        if not self.checkSaveLocation():
-            return False
-
         if not path:
             path = self.path()
 

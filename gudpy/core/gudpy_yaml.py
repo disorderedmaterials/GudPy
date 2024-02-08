@@ -37,9 +37,9 @@ class YAML:
         self.path = path
         try:
             parsedYAML = self.constructClasses(self.yamlToDict(path))
-        except YAMLError:
+        except YAMLError as e:
             # Exception caused by yaml parsing library
-            raise YAMLException("Invalid YAML file")
+            raise YAMLException(f"Invalid YAML file: {str(e)}")
         except YAMLException as e:
             # Exception caused by invalid arguments
             raise YAMLException(e)
@@ -182,6 +182,7 @@ class YAML:
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
                     self.maskYAMLDicttoClass(sample, sampleyaml)
+                    sample.name = sample.name.replace(" ", "_")
                     cls.samples.append(sample)
 
             elif isinstance(cls, Sample) and k == "containers":

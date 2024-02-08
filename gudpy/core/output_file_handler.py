@@ -24,24 +24,30 @@ class GudrunOutput:
         return [so.gudFile for so in self.sampleOutputs.values()]
 
     def gudFile(self, idx: int = None, *, name: str = None) -> str:
-        if idx is not None:
-            asList = list(self.sampleOutputs.values())
-            return asList[idx].gudFile
-        elif name is not None:
-            return self.sampleOutputs[name].gudFile
+        try:
+            if idx is not None:
+                asList = list(self.sampleOutputs.values())
+                return asList[idx].gudFile
+            elif name is not None:
+                return self.sampleOutputs[name].gudFile
+        except KeyError:
+            return None
 
     def output(self, name: str, dataFile: str, type: str) -> str:
-        if type in GudrunOutputHandler.outputExts:
-            return (self.sampleOutputs[name].outputs[dataFile][type])
-        else:
-            return (self.sampleOutputs[name].diagnostics[dataFile][type])
+        try:
+            if type in GudrunOutputHandler.outputExts:
+                return (self.sampleOutputs[name].outputs[dataFile][type])
+            else:
+                return (self.sampleOutputs[name].diagnostics[dataFile][type])
+        except KeyError:
+            return None
 
 
 class OutputHandler:
     """Class to organise output files
     """
 
-    def __init__(self, procDir: str, dirName: str):
+    def __init__(self, procDir: str, projectDir: str, dirName: str):
         self.dirName = dirName
         # Directory where files are outputted and process was run (temp)
         self.procDir = procDir
@@ -49,7 +55,7 @@ class OutputHandler:
         assert (self.procDir.startswith(tempfile.gettempdir()))
         # Get the output directory
         self.outputDir = os.path.join(
-            self.gudrunFile.projectDir,
+            projectDir,
             self.dirName
         )
 
@@ -96,7 +102,12 @@ class GudrunOutputHandler(OutputHandler):
         ".sample"
     ]
 
-    def __init__(self, gudrunFile, head="", overwrite=True):
+    def __init__(
+        self,
+        gudrunFile,
+        head: str = "",
+        overwrite=True
+    ):
         """
         Initialise `GudrunOutputHandler`
 
@@ -113,6 +124,7 @@ class GudrunOutputHandler(OutputHandler):
 
         super().__init__(
             gudrunFile.instrument.GudrunInputFileDir,
+            gudrunFile.projectDir,
             "Gudrun",
         )
 
@@ -124,6 +136,7 @@ class GudrunOutputHandler(OutputHandler):
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
+        self.gudrunFile = gudrunFile
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
