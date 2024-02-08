@@ -16,11 +16,11 @@ from gui.widgets.dialogs.iteration_dialog import (
     TweakFactorIterationDialog,
 )
 
-from gui.widgets.dialogs.purge_dialog import PurgeDialog
+from gui.widgets.dialogs.purge import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
 from gui.widgets.dialogs.composition_dialog import CompositionDialog
 from gui.widgets.dialogs.view_output_dialog import ViewOutputDialog
-from gui.widgets.dialogs.configuration_dialog import ConfigurationDialog
+from gui.widgets.dialogs.configuration import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance import (
     CompositionAcceptanceDialog,
 )
@@ -84,7 +84,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         Loads an input file.
     saveInputFile()
         Saves the current GudPy file.
-    updateGeometries(self.gudrunFile)()
+    updateGeometries()
         Updates geometries across objects.
     updateCompositions()
         Updates compositions across objects
@@ -93,18 +93,18 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         Exits
     """
 
-    def __init__(self, gudrunFile):
+    def __init__(self):
         """
         Constructs all the necessary attributes for the GudPyMainWindow object.
         Calls initComponents() to load the UI file.
         """
         super().__init__()
 
-        self.gudrunFile = gudrunFile
-
+        self.gudrunFile = None
         self.modified = False
         self.clipboard = None
         self.results = {}
+        self.gudrunOutput = None
 
         self.allPlots = []
         self.plotModes = {}
@@ -121,6 +121,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.sampleSlots = SampleSlots(self.ui, self)
         self.containerSlots = ContainerSlots(self.ui, self)
         self.outputSlots = OutputSlots(self.ui, self)
+
+        self.timer = QtCore.QTimer(self)
 
     def initComponents(self):
         """
@@ -214,6 +216,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         )
         self.ui.statusBar_.addWidget(self.ui.statusBarWidget)
         self.ui.setStatusBar(self.ui.statusBar_)
+
+        self.ui.plotTab.setEnabled(False)
 
         self.ui.beamPlot = QtCharts.QChartView(self.ui)
         self.ui.beamPlot.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -331,10 +335,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.progressBar.setValue(0)
         self.ui.currentTaskLabel.setText("No task running.")
 
-    def processStarted(self, taskName):
+    def processStarted(self):
         self.setControlsEnabled(False)
         self.ui.progressBar.setValue(0)
-        self.ui.currentTaskLabel.setText(taskName)
 
     def autosaveMessage(
             self, autosavePath: str, autoDate: str, currDate: str
@@ -352,7 +355,13 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         messageBox.addButton(QtWidgets.QMessageBox.Yes)
         return messageBox.exec()
 
-    def updateWidgets(self):
+    def handleObjectsChanged(self):
+        if not self.widgetsRefreshing:
+            self.setModified()
+
+    def updateWidgets(self, gudrunFile, gudrunOutput=None):
+        self.gudrunFile = gudrunFile
+        self.ui.gudrunFile = gudrunFile
         self.widgetsRefreshing = True
         self.ui.tabWidget.setVisible(True)
         self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
@@ -383,12 +392,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        self.updateResults()
+        if gudrunOutput:
+            self.updateResults(gudrunOutput)
         self.widgetsRefreshing = False
-
-    def handleObjectsChanged(self):
-        if not self.widgetsRefreshing:
-            self.setModified()
 
     def updateGeometries(self):
         """
@@ -396,11 +402,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         where the geometry is SameAsBeam.
         """
         if (
-            self.gudrunFile.normalisation.enums.Geometry ==
+            self.gudrunFile.normalisation.geometry ==
             enums.Geometry.SameAsBeam
         ):
             self.normalisationSlots.widgetsRefreshing = True
-            self.ui.enums.GeometryInfoStack.setCurrentIndex(
+            self.ui.geometryInfoStack.setCurrentIndex(
                 config.geometry.value
             )
             self.normalisationSlots.widgetsRefreshing = False
@@ -410,7 +416,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             for j, sample in enumerate(sampleBackground.samples):
                 self.gudrunFile.sampleBackgrounds[i].samples[
                     j
-                ].eometry = config.geometry
+                ].geometry = config.geometry
                 for k in range(len(sample.containers)):
                     sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
                     sample.containers[k].geometry = config.geometry
@@ -426,18 +432,17 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
+        if not self.gudrunOutput:
+            return
+
+        self.updateSamples()
+
         if self.ui.objectStack.currentIndex() == 5 and isinstance(
             self.ui.objectTree.currentObject(), Sample
         ):
-            try:
-                topPlot, bottomPlot, gudFile = self.results[
-                    self.ui.objectTree.currentObject()
-                ]
-            except KeyError:
-                self.updateSamples()
-                topPlot, bottomPlot, gudFile = self.results[
-                    self.ui.objectTree.currentObject()
-                ]
+            topPlot, bottomPlot, gudFile = self.results[
+                self.ui.objectTree.currentObject()
+            ]
             self.ui.sampleTopPlot.setChart(topPlot)
             self.ui.sampleBottomPlot.setChart(bottomPlot)
 
@@ -492,15 +497,13 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         elif self.ui.objectStack.currentIndex() == 6 and isinstance(
             self.ui.objectTree.currentObject(), Container
         ):
-            try:
-                topPlot, bottomPlot, gudFile = self.results[
-                    self.ui.objectTree.currentObject()
-                ]
-            except KeyError:
-                self.updateSamples()
-                topPlot, bottomPlot, gudFile = self.results[
-                    self.ui.objectTree.currentObject()
-                ]
+            topPlot, bottomPlot, gudFile = self.results[
+                self.ui.objectTree.currentObject()
+            ]
+            self.updateSamples()
+            topPlot, bottomPlot, gudFile = self.results[
+                self.ui.objectTree.currentObject()
+            ]
             if sum(
                 [
                     *[s.count() for s in topPlot.series()],
@@ -559,14 +562,17 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 )
 
     def updateSamples(self):
+        if not self.gudrunOutput:
+            return
+
         samples = [
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(self.gudrunFile)
+            topChart = GudPyChart(self.gudrunOutput)
             topChart.addSample(sample)
-            bottomChart = GudPyChart(self.gudrunFile)
+            bottomChart = GudPyChart(self.gudrunOutput)
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
@@ -582,18 +588,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 bottomChart.plot(bottom)
             else:
                 topChart.plot(plotMode)
-            path = None
-            if len(sample.dataFiles):
-                path = utils.breplace(
-                    sample.dataFiles[0],
-                    self.gudrunFile.instrument.dataFileType,
-                    "gud",
-                )
-                if not os.path.exists(path):
-                    path = os.path.join(
-                        self.gudrunFile.instrument.GudrunInputFileDir, path
-                    )
-            gf = GudFile(path) if path and os.path.exists(path) else None
+            gf = self.gudrunOutput.gudFile(name=sample.name)
             self.results[sample] = [topChart, bottomChart, gf]
 
     def updateAllSamples(self):
@@ -601,29 +596,31 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(self.gudrunFile)
+        allTopChart = GudPyChart(self.gudrunOutput)
         allTopChart.addSamples(samples)
         allTopChart.plot(
             self.ui.allPlotComboBox.itemData(
                 self.ui.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(self.gudrunFile)
+        allBottomChart = GudPyChart(self.gudrunOutput)
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.ui.allSampleTopPlot.setChart(allTopChart)
         self.ui.allSampleBottomPlot.setChart(allBottomChart)
 
-    def updateResults(self):
-        self.updateSamples(self.gudrunFile)
-        self.updateAllSamples(self.gudrunFile)
+    def updateResults(self, gudrunOutput):
+        self.ui.plotTab.setEnabled(True)
+        self.gudrunOutput = gudrunOutput
+        self.updateSamples()
+        self.updateAllSamples()
         self.focusResult()
 
     def updateComponents(self):
         """
         Updates geometries and compositions.
         """
-        self.updateGeometries(self.gudrunFile)
+        self.updateGeometries()
         self.updateCompositions()
         self.focusResult()
 
@@ -657,12 +654,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
     def setModified(self):
         if not self.modified:
-            if self.gudrunFile.path:
+            if self.gudrunFile.path():
                 self.modified = True
                 self.ui.setWindowModified(True)
                 self.ui.save.setEnabled(True)
-        if not self.proc:
-            self.timer.start(30000)
+        self.timer.start(30000)
 
     def setUnModified(self):
         self.ui.setWindowModified(False)
@@ -689,8 +685,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.batchProcessing.setEnabled(state)
         self.ui.viewLiveInputFile.setEnabled(state)
         self.ui.save.setEnabled(
-            state & self.modified & len(self.gudrunFile.path) > 0
-            if self.gudrunFile.path
+            state & self.modified
+            if self.gudrunFile.path()
             else False
         )
         self.ui.exportInputFile.setEnabled(state)
