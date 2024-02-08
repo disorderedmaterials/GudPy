@@ -23,7 +23,7 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 class GudPy:
     def __init__(
-        self,
+        self
     ):
         self.gudrunFile: GudrunFile = None
         self.purgeFile = None
@@ -54,9 +54,6 @@ class GudPy:
             format=format,
             config=config
         )
-
-        if not config:
-            self.setSaveLocation(self.projectDir)
 
     def loadFromProject(self, projectDir: str):
         loadFile = ""
@@ -96,9 +93,9 @@ class GudPy:
 
     def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
         if not path:
-            path = self.gudrunFile.path()()
-        self.gudrunFile.save(path=path,
-                             format=format)
+            path = self.gudrunFile.path()
+        if path:
+            self.gudrunFile.save(path=path, format=format)
 
     def saveAs(self, targetDir: str):
         if os.path.exists(targetDir):
@@ -118,8 +115,10 @@ class GudPy:
                 os.path.join(oldDir, "Gudrun"),
                 os.path.join(targetDir, "Gudrun")
             )
-        self.gudrunFile.save(path=self.gudrunFile.path()(),
+        self.gudrunFile.filename = os.path.basename(targetDir)
+        self.gudrunFile.save(path=self.gudrunFile.path(),
                              format=enums.Format.YAML)
+        self.loadFromProject(targetDir)
 
     def checkFilesExist(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
@@ -153,25 +152,27 @@ class GudPy:
                 "Gudrun failed to run with the following output:"
                 f"{self.gudrun.error}"
             )
+        self.gudrunOutput = self.gudrun.gudrunOutput
 
     def iterateGudrun(self, iterator: iterators.Iterator):
         self.gudrunIterator = GudrunIterator(iterator, self.gudrunFile)
-        exitcode = self.gudrunIterator.iterate()
+        exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
-                f"{self.gudrun.error}"
+                f"{error}"
             )
         self.gudrunFile = self.gudrunIterator.gudrunFile
+        self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
         self.gudrunIterator = CompositionIterator(
             iterator, self.gudrunFile)
-        exitcode = self.gudrunIterator.iterate()
+        exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
-                f"{self.gudrun.error}"
+                f"{error}"
             )
         self.gudrunFile = self.gudrunIterator.gudrunFile
 
@@ -376,6 +377,8 @@ class GudrunIterator:
         self.iterator = iterator
         self.gudrunObjects = []
         self.defaultRun = None
+        self.exitcode = (0,)
+        self.gudrunOutput = None
 
         for _ in range(iterator.nTotal):
             self.gudrunObjects.append(Gudrun())
@@ -385,9 +388,7 @@ class GudrunIterator:
 
     def defaultIteration(self, gudrunFile):
         self.defaultRun = Gudrun()
-        exitcode = self.defaultRun.gudrun(gudrunFile, self.iterator)
-        if exitcode:  # An exit code != 0 indicates failure
-            return exitcode
+        return self.defaultRun.gudrun(gudrunFile, self.iterator)
 
     def singleIteration(
         self,
@@ -398,19 +399,20 @@ class GudrunIterator:
         self.iterator.performIteration(gudrunFile, prevOutput)
         exitcode = gudrun.gudrun(gudrunFile, self.iterator)
         if exitcode:
-            return (exitcode, gudrun.error)
-
+            return exitcode
+        self.gudrunOutput = gudrun.gudrunOutput
         self._nextIteration(self.iterator.nCurrent)
         return 0
 
-    def iterate(self) -> int:
+    def iterate(self) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.defaultIteration(self.gudrunFile)
             if exitcode:  # An exit code != 0 indicates failure
-                return (exitcode, self.defaultIteration.error)
+                self.exitcode = (exitcode, self.defaultIteration.error)
+                return self.exitcode
             prevOutput = self.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
@@ -418,11 +420,13 @@ class GudrunIterator:
             exitcode = self.singleIteration(
                 self.gudrunFile, gudrun, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
-                return (exitcode, gudrun.error)
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
 
             prevOutput = gudrun.gudrunOutput
 
-        return (0,)
+        self.exitcode = (0,)
+        return self.exitcode
 
 
 class CompositionIterator(GudrunIterator):
@@ -445,12 +449,14 @@ class CompositionIterator(GudrunIterator):
             if self.iterator.result:
                 self.result = self.iterator.result
                 self.compositionMap = self.iterator.compositionMap
-                return (0, )
+                self.exitcode = (0, )
+                return self.exitcode
 
             exitcode = self.singleIteration(
                 self.gudrunFile, gudrun, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
-                return (exitcode, gudrun.error)
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
 
             prevOutput = gudrun.gudrunOutput
 
@@ -464,7 +470,8 @@ class CompositionIterator(GudrunIterator):
             " It's likely no Samples selected for analysis"
             " use the Component(s) selected for iteration."
         )
-        return (1, error)
+        self.exitcode = (1, error)
+        return self.exitcode
 
 
 class RunModes:
@@ -513,7 +520,7 @@ class RunModes:
         return newGudrunFile
 
 
-class BatchProcessing():
+class BatchProcessing:
     def __init___(
         self,
         gudrunFile: GudrunFile,
@@ -526,6 +533,7 @@ class BatchProcessing():
     ):
         self.iterator = iterator
         self.iterationMode = None
+        self.exitcode = (0,)
 
         self.BATCH_SIZE = batchSize
         self.STEP_SIZE = stepSize
@@ -666,7 +674,8 @@ class BatchProcessing():
             self.batchedGudrunFile,
             self.iterationMode
         )
-        return (exitcode, gudrun.error)
+        self.exitcode = (exitcode, gudrun.error)
+        return self.exitcode
 
     def iterate(
         self,
@@ -689,7 +698,8 @@ class BatchProcessing():
             exitcode, error = self.gudrunIterators[-1].defaultIteration(
                 batchedFile)
             if exitcode:  # An exit code != 0 indicates failure
-                return (exitcode, error)
+                self.exitcode = (exitcode, error)
+                return self.exitcode
             prevOutput = gudrunIterator.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
@@ -697,7 +707,8 @@ class BatchProcessing():
             if self.canConverge(batchedFile, self.RTOL):
                 # Keep only the processed objects in the list
                 gudrunIterator.gudrunObjects = gudrunIterator.gudrunObjects[:i]
-                return (0, )
+                self.exitcode = (0, )
+                return self.exitcode
 
             exitcode = gudrunIterator.singleIteration(
                 batchedFile, gudrun, prevOutput)
@@ -710,11 +721,13 @@ class BatchProcessing():
             )
 
             if exitcode:
-                return (exitcode, gudrun.error)
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
 
             prevOutput = gudrun.gudrunOutput
 
-        return (0, )
+        self.exitcode = (0, )
+        return self.exitcode
 
     def process(
         self,

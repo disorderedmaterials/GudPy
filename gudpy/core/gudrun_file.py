@@ -154,7 +154,14 @@ class GudrunFile:
         self.instrument = Instrument()
         self.normalisation = Normalisation()
         self.beam = Beam()
-        self.sampleBackgrounds = SampleBackground()
+        self.sampleBackgrounds = []
+        self.components = Components()
+
+        if not projectDir or loadFile:
+            raise RuntimeError(
+                "GudrunFile needs to be initialised with either"
+                "a project directory or load file specified"
+            )
 
         if loadFile:
             self.setGudrunDir(os.path.dirname(loadFile))

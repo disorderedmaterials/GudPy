@@ -262,7 +262,7 @@ class GudPyController(QtCore.QObject):
             return
 
         try:
-            self.gudpy(dirname)
+            self.gudpy.saveAs(dirname)
         except IsADirectoryError as e:
             self.mainWidget.sendError(e)
 
