@@ -26,10 +26,7 @@ class SamplePlotConfig():
             )
             hasMintData = False
 
-            if os.path.exists(mintPath):
-                hasMintData = True
-            elif os.path.exists(os.path.join(self.inputDir, mintPath)):
-                mintPath = os.path.join(self.inputDir, mintPath)
+            if mintPath and os.path.exists(mintPath):
                 hasMintData = True
 
             self.mint01DataSet = Mint01Plot(mintPath, hasMintData)
@@ -47,10 +44,7 @@ class SamplePlotConfig():
             )
             hasMdcsData = False
 
-            if os.path.exists(mdcsPath):
-                hasMdcsData = True
-            elif os.path.exists(os.path.join(self.inputDir, mdcsPath)):
-                mdcsPath = os.path.join(self.inputDir, mdcsPath)
+            if mdcsPath and os.path.exists(mdcsPath):
                 hasMdcsData = True
 
             self.mdcs01DataSet = Mdcs01Plot(mdcsPath, hasMdcsData)
@@ -66,10 +60,7 @@ class SamplePlotConfig():
             )
             hasDCSData = False
 
-            if os.path.exists(gudPath):
-                hasDCSData = True
-            elif os.path.exists(os.path.join(self.inputDir, gudPath)):
-                gudPath = os.path.join(self.inputDir, gudPath)
+            if gudPath and os.path.exists(gudPath):
                 hasDCSData = True
 
             self.dcsLevel = DCSLevel(gudPath, hasDCSData)
@@ -91,10 +82,7 @@ class SamplePlotConfig():
             )
             hasMdorData = False
 
-            if os.path.exists(mdorPath):
-                hasMdorData = True
-            elif os.path.exists(os.path.join(self.inputDir, mdorPath)):
-                mdorPath = os.path.join(self.inputDir, mdorPath)
+            if mdorPath and os.path.exists(mdorPath):
                 hasMdorData = True
 
             self.mdor01DataSet = Mdor01Plot(mdorPath, hasMdorData)
@@ -112,10 +100,7 @@ class SamplePlotConfig():
             )
             hasMgorData = False
 
-            if os.path.exists(mgorPath):
-                hasMgorData = True
-            elif os.path.exists(os.path.join(self.inputDir, mgorPath)):
-                mgorPath = os.path.join(self.inputDir, mgorPath)
+            if mgorPath and os.path.exists(mgorPath):
                 hasMgorData = True
 
             self.mgor01DataSet = Mgor01Plot(mgorPath, hasMgorData)
