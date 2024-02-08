@@ -363,6 +363,10 @@ class GudPyChartView(QChartView):
             chart.label.show()
         return super().setChart(chart)
 
+    def chart(self):
+        chart = super().chart()
+        return chart
+
     def resizeEvent(self, event):
         if isinstance(self.chart(), GudPyChart):
             self.chart().label.setPos(
