@@ -26,6 +26,7 @@ class ViewInputDialog(QDialog):
     save():
         Saves the input file and updates the UI appropiately.
     """
+
     def __init__(self, gudrunFile, parent):
         super(ViewInputDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
@@ -51,7 +52,7 @@ class ViewInputDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
-        self.widget.setWindowTitle(self.gudrunFile.path)
+        self.widget.setWindowTitle(self.gudrunFile.path())
         self.widget.saveAndCloseButton.clicked.connect(self.save)
         self.widget.closeButton.clicked.connect(self.widget.close)
         self.widget.textEdit.setText(str(self.gudrunFile))
@@ -66,7 +67,7 @@ class ViewInputDialog(QDialog):
         """
         Saves the input file and updates the UI appropiately.
         """
-        with open(self.gudrunFile.path, "w", encoding="utf-8") as fp:
+        with open(self.gudrunFile.path(), "w", encoding="utf-8") as fp:
             fp.write(self.widget.textEdit.toPlainText())
         self.widget.close()
         self.parent.updateFromFile()

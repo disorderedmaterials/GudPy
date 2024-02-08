@@ -15,17 +15,18 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 class Worker(QThread):
     outputChanged = Signal(str)
-    progress = Signal(int, str)
+    progressChanged = Signal(int, str)
     finished = Signal(int)
 
-    def __init___(self):
+    def __init__(self):
         super().__init__()
         self.name = ""
+        self.output = ""
 
     def _outputChanged(self, output):
         self.output += output
         self.outputChanged.emit(output)
-        self.progress.emit(self._progress(), self.name)
+        self.progressChanged.emit(self._progress(), self.name)
 
 
 class PurgeWorker(Worker, gudpy.Purge):
@@ -34,17 +35,18 @@ class PurgeWorker(Worker, gudpy.Purge):
         self.name = "Purge"
         self.purgeFile = purgeFile
         self.detectors = None
-        self.dataFiles = [self.gudrunFile.instrument.groupFileName]
+        self.dataFileType = gudrunFile.instrument.dataFileType
+        self.dataFiles = [gudrunFile.instrument.groupFileName]
 
-        self.appendDfs(self.gudrunFile.normalisation.dataFiles[0])
-        self.appendDfs(self.gudrunFile.normalisation.dataFilesBg[0])
-        self.appendDfs([df for sb in self.gudrunFile.sampleBackgrounds
+        self.appendDfs(gudrunFile.normalisation.dataFiles[0])
+        self.appendDfs(gudrunFile.normalisation.dataFilesBg[0])
+        self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
                         for df in sb.dataFiles])
-        if not self.gudrunFile.purgeFile.excludeSampleAndCan:
-            self.appendDfs([df for sb in self.gudrunFile.sampleBackgrounds
+        if not gudrunFile.purgeFile.excludeSampleAndCan:
+            self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
                             for s in sb.samples for df in s.dataFiles
                             if s.runThisSample])
-            self.appendDfs([df for sb in self.gudrunFile.sampleBackgrounds
+            self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
                             for s in sb.samples for c in s.containers
                             for df in c.dataFiles if s.runThisSample])
 
@@ -52,7 +54,7 @@ class PurgeWorker(Worker, gudpy.Purge):
         stepSize = math.ceil(100 / len(self.dataFiles))
         progress = 0
         for df in self.dataFiles:
-            if df in self.stdout:
+            if df in self.output:
                 progress += stepSize
         return progress
 
@@ -61,7 +63,7 @@ class PurgeWorker(Worker, gudpy.Purge):
             dfs = [dfs]
         for df in dfs:
             self.dataFiles.append(
-                df.replace(self.gudrunFile.instrument.dataFileType, "grp")
+                df.replace(self.dataFileType, "grp")
             )
 
     def run(self):
@@ -70,17 +72,13 @@ class PurgeWorker(Worker, gudpy.Purge):
         if exitcode != 0:
             return
 
-        # Find the number of detectors
-        for line in self.stdout.split("\n"):
-            if "spectra in" in line and self.dataFiles[-1] in line:
-                self.detectors = utils.nthint(line, 0)
-
 
 class GudrunWorker(Worker, gudpy.Gudrun):
-    def __init__(self, gudrunFile: GudrunFile, iterator: Iterator):
-        super().__init__(iterator=iterator)
+    def __init__(self, gudrunFile: GudrunFile, iterator: Iterator = None):
+        super().__init__()
         self.name = "Gudrun"
         self.gudrunFile = gudrunFile
+        self.iterator = iterator
         self.progress = 0
 
         # Number of GudPy objects
@@ -103,19 +101,20 @@ class GudrunWorker(Worker, gudpy.Gudrun):
     def _progress(self):
         stepSize = math.ceil(100 / self.markers)
         self.progress += stepSize * sum([
-            self.stdout.count("Got to: INSTRUMENT"),
-            self.stdout.count("Got to: BEAM"),
-            self.stdout.count("Got to: NORMALISATION"),
-            self.stdout.count("Got to: SAMPLE BACKGROUND"),
-            self.stdout.count("Finished merging data for sample"),
-            self.stdout.count("Got to: CONTAINER"),
+            self.output.count("Got to: INSTRUMENT"),
+            self.output.count("Got to: BEAM"),
+            self.output.count("Got to: NORMALISATION"),
+            self.output.count("Got to: SAMPLE BACKGROUND"),
+            self.output.count("Finished merging data for sample"),
+            self.output.count("Got to: CONTAINER"),
         ])
         if isinstance(self.iterator, iterators.InelasticitySubtraction):
             self.progress /= 2
         return self.progress
 
     def run(self):
-        exitcode = super(GudrunWorker, self).gudrun(self.gudrunFile)
+        exitcode = super(GudrunWorker, self).gudrun(
+            self.gudrunFile, self.iterator)
         self.finished.emit(exitcode)
 
 
