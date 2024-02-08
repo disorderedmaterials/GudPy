@@ -1,17 +1,15 @@
 import os
-from shutil import copyfile
 from unittest import TestCase
 
 from core.exception import ParserException
 from core.gud_file import GudFile
-from core.gudrun_file import GudrunFile
-from core.enums import Format
 from core import gudpy
 
 
 class TestParseGudFile(TestCase):
 
     def setUp(self) -> None:
+        self.gudpy = gudpy.GudPy()
         self.expectedGudFileA = {
             "path": "NIMROD00016608_H2O_in_N9.gud",
             "name": "NIMROD00016608_H2O_in_N9.gud",
@@ -220,7 +218,7 @@ class TestParseGudFile(TestCase):
 
         self.keepsakes = os.listdir()
 
-        path = "TestData/NIMROD-water/water.txt"
+        path = "TestData/NIMROD-water/good_water"
 
         if os.name == "nt":
             from pathlib import Path
@@ -232,28 +230,25 @@ class TestParseGudFile(TestCase):
                 + "/"
                 + path
             )
-        self.g = GudrunFile(dirpath, format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile(
-            os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
-            format=Format.TXT
+        for f in os.listdir(dirpath):
+            self.keepsakes.append(f)
+
+        self.gudpy.loadFromProject(
+            os.path.abspath(dirpath)
         )
 
         from pathlib import Path
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
-        g.instrument.dataFileDir = str(dataFileDir) + "/"
-
-        g.write_out(self.g.loadFile, overwrite=True)
-        self.g = g
-        g.write_out(self.g.loadFile, overwrite=True)
+        self.gudpy.gudrunFile.instrument.dataFileDir = str(dataFileDir) + "/"
         return super().setUp()
 
     def tearDown(self) -> None:
-
         [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
+        [os.remove(f) for f in os.listdir(self.gudpy.projectDir)
+         if f not in self.keepsakes]
         return super().tearDown()
 
     def testEmptyPath(self):
@@ -272,22 +267,16 @@ class TestParseGudFile(TestCase):
         self.assertRaises(ParserException, GudFile, invalid_path)
 
     def testValidPath(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(0)
+            self.gudpy.gudrun.gudrunOutput.gudFile(0)
         )
         self.assertIsInstance(gf, GudFile)
 
     def testLoadGudFileA(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(0)
+            self.gudpy.gudrun.gudrunOutput.gudFile(0)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -326,13 +315,9 @@ class TestParseGudFile(TestCase):
                         raise e
 
     def testLoadGudFileB(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
-
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(1)
+            self.gudpy.gudrun.gudrunOutput.gudFile(1)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -371,12 +356,9 @@ class TestParseGudFile(TestCase):
                     )
 
     def testLoadGudFileC(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(2)
+            self.gudpy.gudrun.gudrunOutput.gudFile(2)
         )
 
         self.assertIsInstance(gf, GudFile)
@@ -415,14 +397,10 @@ class TestParseGudFile(TestCase):
                         raise e
 
     def testLoadGudFileD(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(3)
+            self.gudpy.gudrun.gudrunOutput.gudFile(3)
         )
-
         self.assertIsInstance(gf, GudFile)
 
         gudAttrsDict = gf.__dict__
@@ -459,12 +437,9 @@ class TestParseGudFile(TestCase):
                         raise e
 
     def testWriteGudFileA(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(3)
+            self.gudpy.gudrun.gudrunOutput.gudFile(0)
         )
         gf.write_out()
         gf1 = GudFile(gf.OUTPATH)
@@ -485,12 +460,9 @@ class TestParseGudFile(TestCase):
             self.assertEqual(v1, v2)
 
     def testWriteGudFileB(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        gudpy.gudrun(g)
+        self.gudpy.runGudrun()
         gf = GudFile(
-            g.gudrunOutput.gudFile(3)
+            self.gudpy.gudrun.gudrunOutput.gudFile(1)
         )
         gf.write_out()
         gf1 = GudFile(gf.OUTPATH)
