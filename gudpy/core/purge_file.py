@@ -295,7 +295,3 @@ class PurgeFile():
                     )
                 ]
             )
-
-    def organiseOutput(self):
-        outputHandler = OutputHandler(self.gudrunFile, "Purge")
-        outputHandler.organiseOutput()
