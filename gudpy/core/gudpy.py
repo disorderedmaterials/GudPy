@@ -46,9 +46,6 @@ class GudPy:
         format: enums.Format,
         config: bool = False
     ):
-        if not config:
-            self.setSaveLocation(self.projectDir)
-
         if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
@@ -57,6 +54,9 @@ class GudPy:
             format=format,
             config=config
         )
+
+        if not config:
+            self.setSaveLocation(self.projectDir)
 
     def loadFromProject(self, projectDir: str):
         loadFile = ""
@@ -83,24 +83,20 @@ class GudPy:
         self.loadFromFile(loadFile, format=enums.Format.YAML)
         self.setSaveLocation(projectDir)
 
-        if os.path.exists(os.path.join(projectDir, "Purge")):
-            self.purgeOutput = os.path.join(projectDir, "Purge")
-        if os.path.exists(os.path.join(projectDir, "Gudrun")):
-            self.gudrun.gudrunOutput.path = os.path.join(projectDir, "Gudrun")
-
     def checkSaveLocation(self):
         return bool(self.projectDir)
 
     def setSaveLocation(self, projectDir: str):
         self.projectDir = projectDir
         self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
+        self.gudrunFile.projectDir = projectDir
         self.autosaveLocation = (
             f"{os.path.basename(projectDir)}.autosave"
         )
 
     def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
         if not path:
-            path = self.gudrunFile.path()
+            path = self.gudrunFile.path()()
         self.gudrunFile.save(path=path,
                              format=format)
 
@@ -122,7 +118,7 @@ class GudPy:
                 os.path.join(oldDir, "Gudrun"),
                 os.path.join(targetDir, "Gudrun")
             )
-        self.gudrunFile.save(path=self.gudrunFile.path(),
+        self.gudrunFile.save(path=self.gudrunFile.path()(),
                              format=enums.Format.YAML)
 
     def checkFilesExist(self):
@@ -216,7 +212,7 @@ class Process:
         self.PROCESS = process
         self.BINARY_PATH = ""
 
-        self.stdout = ""
+        self.output = ""
         self.error = ""
         self.exitcode = 0
 
@@ -232,16 +228,12 @@ class Process:
             )
 
     def _outputChanged(self, output: str):
-        self.stdout += output
+        self.output += output
 
     def _checkBinary(self):
         if not os.path.exists(self.BINARY_PATH):
             self.exitcode = 1
             raise FileNotFoundError(f"Missing {self.PROCESS} binary")
-
-    def _prepareRun(self):
-        self.stdout = ""
-        self.error = ""
 
     def _checkError(self, line: str):
         # Check for errors.
@@ -265,12 +257,15 @@ class Purge(Process):
         self.detectors = None
         super().__init__(self.PROCESS)
 
-    def organiseOutput(self, procDir: str):
-        outputHandler = handlers.OutputHandler(procDir, "Purge")
-        outputHandler.organiseOutput()
+    def organiseOutput(self, procDir: str, projectDir: str):
+        outputHandler = handlers.OutputHandler(
+            procDir,
+            projectDir,
+            "Purge"
+        )
+        return outputHandler.organiseOutput()
 
     def purge(self, purgeFile: PurgeFile):
-        self._prepareRun()
         self._checkBinary()
         self.purgeOutput = ""
 
@@ -286,15 +281,19 @@ class Purge(Process):
                 stderr=subprocess.STDOUT
             ) as purge:
                 for line in purge.stdout:
-                    self._outputChanged(line.decode("utf8"))
+                    line = "\n".join(line.decode("utf8").split("\n"))
+                    self._outputChanged(line)
                     if self._checkError(line):
                         return self.exitcode
+                    if "spectra in" in line:
+                        self.detectors = utils.nthint(line, 0)
                 if purge.stderr:
                     self.error = purge.stderr.decode("utf8")
                     self.exitcode = 1
                     return self.exitcode
 
-            self.purgeOutput = purgeFile.organiseOutput(tmp)
+            self.purgeOutput = self.organiseOutput(
+                tmp, purgeFile.gudrunFile.projectDir)
 
         self.exitcode = 0
         return self.exitcode
@@ -314,7 +313,7 @@ class Gudrun(Process):
     ) -> handlers.GudrunOutput:
 
         outputHandler = handlers.GudrunOutputHandler(
-            self, gudrunFile=gudrunFile, head=head, overwrite=overwrite
+            gudrunFile=gudrunFile, head=head, overwrite=overwrite
         )
         gudrunOutput = outputHandler.organiseOutput()
         return gudrunOutput
@@ -324,14 +323,13 @@ class Gudrun(Process):
         gudrunFile: GudrunFile,
         iterator: iterators.Iterator = None
     ) -> int:
-        self._prepareRun()
         self._checkBinary()
 
         with tempfile.TemporaryDirectory() as tmp:
             gudrunFile.setGudrunDir(tmp)
             path = os.path.join(
                 tmp,
-                gudrunFile.outpath
+                gudrunFile.OUTPATH
             )
             gudrunFile.save(
                 path=os.path.join(
@@ -347,9 +345,10 @@ class Gudrun(Process):
                 stderr=subprocess.STDOUT
             ) as gudrun:
                 for line in gudrun.stdout:
+                    line = "\n".join(line.decode("utf8").split("\n"))
                     if self._checkError(line):
                         return self.exitcode
-                    self._outputChanged(line.decode("utf8"))
+                    self._outputChanged(line)
                 if gudrun.stderr:
                     self.error = gudrun.stderr.decode("utf8")
                     self.exitcode = 1
@@ -358,7 +357,7 @@ class Gudrun(Process):
             if iterator:
                 self.gudrunOutput = iterator.organiseOutput()
             else:
-                self.gudrunOutput = self.organiseOutput()
+                self.gudrunOutput = self.organiseOutput(gudrunFile)
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
