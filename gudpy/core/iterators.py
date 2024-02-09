@@ -109,8 +109,10 @@ class Iterator():
         """
         This organises the output of the iteration.
         """
-        gudrunOutput = gudrunFile.organiseOutput()
-        return gudrunOutput
+        outputHandler = handlers.GudrunOutputHandler(
+            gudrunFile=gudrunFile
+        )
+        return outputHandler.organiseOutput()
 
 
 class Radius(Iterator):
@@ -482,7 +484,7 @@ class InelasticitySubtraction(Iterator):
                         targetFile
                     )
 
-    def wavelengthIteration(self, gudrunFile):
+    def wavelengthIteration(self, gudrunFile, prevOutput):
         """
         Performs one iteration on the wavelength scale.
         If the iteration is the first iteration,
@@ -519,7 +521,7 @@ class InelasticitySubtraction(Iterator):
             Scales.WAVELENGTH
         )
         self.zeroTopHatWidths(gudrunFile)
-        self.setSelfScatteringFiles(Scales.WAVELENGTH, gudrunFile)
+        self.setSelfScatteringFiles(Scales.WAVELENGTH, gudrunFile, prevOutput)
 
     def QIteration(self, gudrunFile):
         """
@@ -544,9 +546,9 @@ class InelasticitySubtraction(Iterator):
         self.resetTopHatWidths(gudrunFile)
         self.setSelfScatteringFiles(Scales.Q, gudrunFile)
 
-    def performIteration(self, gudrunFile):
+    def performIteration(self, gudrunFile, prevOutput):
         if self.iterationType == "QIteration":
-            self.wavelengthIteration(gudrunFile)
+            self.wavelengthIteration(gudrunFile, prevOutput)
             self.iterationCount += 1
         else:
             self.QIteration(gudrunFile)
@@ -558,9 +560,12 @@ class InelasticitySubtraction(Iterator):
         """
         overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
-        return gudrunFile.organiseOutput(
+        outputHandler = handlers.GudrunOutputHandler(
+            gudrunFile=gudrunFile,
             head=f"{self.iterationType}_{self.iterationCount}",
-            overwrite=overwrite)
+            overwrite=overwrite
+        )
+        return outputHandler.organiseOutput()
 
 
 def calculateTotalMolecules(components, sample):

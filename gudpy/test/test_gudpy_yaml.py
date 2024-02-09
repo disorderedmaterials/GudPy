@@ -17,7 +17,7 @@ class TestYAML(TestCase):
 
         gudpy2 = gudpy.GudPy()
         gudpy2.loadFromFile(
-            path="test/TestData/NIMROD-water/water.yaml",
+            loadFile="test/TestData/NIMROD-water/water.yaml",
             format=Format.YAML
         )
         gf2 = gudpy2.gudrunFile

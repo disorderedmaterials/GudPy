@@ -146,6 +146,7 @@ class GudPy:
     def runGudrun(self, gudrunFile=None):
         if not gudrunFile:
             gudrunFile = self.gudrunFile
+        self.gudrun = Gudrun()
         exitcode = self.gudrun.gudrun(gudrunFile)
         if exitcode:
             raise exc.GudrunException(
@@ -235,7 +236,9 @@ class Process:
     def _checkBinary(self):
         if not os.path.exists(self.BINARY_PATH):
             self.exitcode = 1
-            raise FileNotFoundError(f"Missing {self.PROCESS} binary")
+            raise FileNotFoundError(
+                f"Missing {self.PROCESS} binary"
+                " in location {self.BINARY_PATH}")
 
     def _checkError(self, line: str):
         # Check for errors.

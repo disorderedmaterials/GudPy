@@ -22,7 +22,7 @@ class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
 
         emptyPath = ""
-        self.assertRaises(FileNotFoundError, GudrunFile, loadFile=emptyPath)
+        self.assertRaises(RuntimeError, GudrunFile, loadFile=emptyPath)
 
     def testInvalidPath(self):
 

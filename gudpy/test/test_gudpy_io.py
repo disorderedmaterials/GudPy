@@ -668,7 +668,7 @@ class TestGudPyIO(TestCase):
             loadFile=self.gPath,
             format=Format.TXT
         )
-        self.g = self.gudrun.gudrunFile
+        self.g = self.gudpy.gudrunFile
         return super().setUp()
 
     def tearDown(self) -> None:
