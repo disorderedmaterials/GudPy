@@ -11,10 +11,9 @@ from core import iterators
 
 class IterationDialog(QDialog):
 
-    def __init__(self, name, gudrunFile, parent):
+    def __init__(self, gudrunFile, parent):
         super(IterationDialog, self).__init__(parent=parent)
         self.gudrunFile = gudrunFile
-        self.name = name
         self.numberIterations = 1
         self.iteratorType = iterators.Iterator
         self.text = ""
@@ -63,22 +62,22 @@ class IterationDialog(QDialog):
 class DensityIterationDialog(IterationDialog):
     def __init__(self, parent):
         self.name = "iterateDensityDialog"
-        self.iteratorType = iterators.DensityIterator
-        super().__init__(self.name, parent)
+        self.iteratorType = iterators.Density
+        super().__init__(parent)
 
 
 class InelasticitySubtractionIterationDialog(IterationDialog):
     def __init__(self, parent):
         self.name = "InelasticitySubtractionsDialog"
         self.iteratorType = iterators.InelasticitySubtraction
-        super().__init__(self.name, parent)
+        super().__init__(parent)
 
 
 class RadiusIterationDialog(IterationDialog):
     def __init__(self, parent):
         self.name = "iterateRadiusDialog"
-        self.iteratorType = iterators.RadiusIterator
-        super().__init__(self.name, parent)
+        self.iteratorType = iterators.Radius
+        super().__init__(parent)
 
     def initComponents(self):
         super().initComponents()
@@ -97,8 +96,8 @@ class RadiusIterationDialog(IterationDialog):
 class ThicknessIterationDialog(IterationDialog):
     def __init__(self, parent):
         self.name = "iterateThicknessDialog"
-        self.iteratorType = iterators.ThicknessIterator
-        super().__init__(self.name, parent)
+        self.iteratorType = iterators.Thickness
+        super().__init__(parent)
 
     def initComponents(self):
         super().initComponents()
@@ -110,8 +109,8 @@ class ThicknessIterationDialog(IterationDialog):
 class TweakFactorIterationDialog(IterationDialog):
     def __init__(self, parent):
         self.name = "iterateTweakFactorDialog"
-        self.iterator = iterators.TweakFactorIterator
-        super().__init__(self.name, parent)
+        self.iterator = iterators.TweakFactor
+        super().__init__(parent)
 
 
 class CompositionIterationDialog(IterationDialog):
@@ -120,8 +119,8 @@ class CompositionIterationDialog(IterationDialog):
         self.components = [None, None]
         self.rtol = 0.
         self.mode = iterators.Comosition.Mode.SINGLE
-        self.iteratorType = iterators.CompositionIterator
-        super().__init__(self.name, parent)
+        self.iteratorType = iterators.Composition
+        super().__init__(parent)
 
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()

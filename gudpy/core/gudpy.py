@@ -169,7 +169,7 @@ class GudPy:
         self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
-        self.gudrunIterator = CompositionIterator(
+        self.gudrunIterator = iterators.CompositionIterator(
             iterator, self.gudrunFile, purgeLocation=self.purgeOutput)
         exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
