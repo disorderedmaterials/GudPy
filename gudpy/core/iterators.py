@@ -661,7 +661,7 @@ class Composition():
         self.result = None
         self.compositionMap = {}
 
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample:
                     if [
