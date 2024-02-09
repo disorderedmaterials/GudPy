@@ -160,7 +160,7 @@ class GudrunFile:
         if not projectDir or loadFile:
             raise RuntimeError(
                 "GudrunFile needs to be initialised with either"
-                "a project directory or load file specified"
+                " a project directory or load file specified"
             )
 
         if loadFile:

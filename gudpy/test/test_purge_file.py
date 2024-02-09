@@ -21,7 +21,7 @@ class TestPurgeFile(TestCase):
                 + "/"
                 + path
             )
-        self.gudpy = gudpy.Gudpy()
+        self.gudpy = gudpy.GudPy()
         self.keepsakes = os.listdir()
         copyfile(dirpath, "test/TestData/NIMROD-water/good_water.txt")
         self.gudpy.loadFromFile(

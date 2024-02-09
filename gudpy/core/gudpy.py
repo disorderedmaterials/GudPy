@@ -76,7 +76,7 @@ class GudPy:
             raise FileNotFoundError(
                 "Could not find GudPy input file within the project")
 
-        self.loadFromFile(loadFile, format=enums.Format.YAML)
+        self.loadFromFile(loadFile=loadFile, format=enums.Format.YAML)
         self.setSaveLocation(projectDir)
 
     def checkSaveLocation(self):

@@ -612,7 +612,7 @@ class TestGudPyIO(TestCase):
             }
         }
 
-        self.gudpy = gudpy.Gudpy()
+        self.gudpy = gudpy.GudPy()
 
         self.goodInstrument = Instrument()
         self.goodInstrument.__dict__ = self.expectedInstrument
