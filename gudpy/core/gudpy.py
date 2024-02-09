@@ -6,7 +6,6 @@ import shutil
 import copy
 import typing as typ
 
-from core import config
 from core import utils
 from core import enums
 from core import exception as exc
@@ -225,9 +224,7 @@ class Process:
                 sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
         else:
             self.BINARY_PATH = utils.resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"{self.PROCESS}{SUFFIX}"
+                "bin", f"{self.PROCESS}{SUFFIX}"
             )
 
     def _outputChanged(self, output: str):
