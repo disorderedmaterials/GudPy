@@ -1,14 +1,13 @@
 import os
 import math
-from PySide6.QtCore import QObject, Signal, QThread
-import copy
+from PySide6.QtCore import Signal, QThread
 
 from core import gudpy
 import core.exception as exc
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.iterators import Iterator
-from core import iterators, enums, config, utils
+from core import iterators, config
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
