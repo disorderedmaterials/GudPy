@@ -72,7 +72,7 @@ class TestGudPyWorkflows(TestCase):
 
             actualMintFile = ("test/TestData/water-ref/plain/"
                               f"{mintFilename}.mint01")
-            actualData = open(self.gudpy.gudrunFile.gudrunOutput.sampleOutputs[
+            actualData = open(self.gudpy.gudrunOutput.sampleOutputs[
                 sample.name].outputs[sample.dataFiles[0]][".mint01"],
                 "r", encoding="utf-8"
             ).readlines()[10:]

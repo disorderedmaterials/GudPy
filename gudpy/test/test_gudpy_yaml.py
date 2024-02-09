@@ -27,9 +27,9 @@ class TestYAML(TestCase):
         gf2.instrument.GudrunInputFileDir = os.path.abspath(
             gf2.instrument.GudrunInputFileDir)
 
-        self.self.assertDictEqual(
+        self.assertDictEqual(
             gf1.instrument.__dict__, gf2.instrument.__dict__)
-        self.self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
+        self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
 
         normalisationDataFilesA = gf1.normalisation.__dict__.pop("dataFiles")
         normalisationDataFilesBgA = gf1.normalisation.__dict__.pop(
