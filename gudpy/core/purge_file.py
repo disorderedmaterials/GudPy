@@ -7,7 +7,6 @@ from PySide6.QtCore import QProcess
 from core.enums import Instruments
 from core.utils import resolve, spacify, numifyBool
 from core import config
-from core.output_file_handler import OutputHandler
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 

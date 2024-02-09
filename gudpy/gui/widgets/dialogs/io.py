@@ -1,9 +1,10 @@
 from core.file_library import GudPyFileLibrary
-from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
+from PySide6.QtWidgets import (
+    QDialog, QFileDialog, QMessageBox, QListWidget, QLabel
+)
 import sys
 import os
 from PySide6.QtCore import QFile
-from PySide6.QtWidgets import QDialog, QListWidget, QLabel
 from PySide6.QtUiTools import QUiLoader
 
 
