@@ -24,7 +24,7 @@ from gui.widgets.dialogs.configuration import ConfigurationDialog
 from gui.widgets.dialogs.composition_acceptance import (
     CompositionAcceptanceDialog,
 )
-from gui.widgets.dialogs.io import MissingFilesDialog, ExportDialog
+from gui.widgets.dialogs.io import ExportDialog, MissingFilesDialog
 from gui.widgets.dialogs.batch import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
 from gui.widgets.core.output_tree import OutputTreeView
@@ -162,6 +162,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         loader.registerCustomWidget(PurgeDialog)
         loader.registerCustomWidget(ViewInputDialog)
         loader.registerCustomWidget(ViewOutputDialog)
+        loader.registerCustomWidget(MissingFilesDialog)
         loader.registerCustomWidget(ExportDialog)
         loader.registerCustomWidget(CompositionDialog)
         loader.registerCustomWidget(ConfigurationDialog)
