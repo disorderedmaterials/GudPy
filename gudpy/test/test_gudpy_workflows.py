@@ -65,14 +65,14 @@ class TestGudPyWorkflows(TestCase):
         dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
         self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
 
-        for sample in self.g.sampleBackgrounds[0].samples:
+        for sample in self.gudpy.gudrunFile.sampleBackgrounds[0].samples:
             mintFilename = (
                 os.path.splitext(sample.dataFiles[0])[0]
             )
 
             actualMintFile = ("test/TestData/water-ref/plain/"
                               f"{mintFilename}.mint01")
-            actualData = open(self.g.gudrunOutput.sampleOutputs[
+            actualData = open(self.gudpy.gudrunFile.gudrunOutput.sampleOutputs[
                 sample.name].outputs[sample.dataFiles[0]][".mint01"],
                 "r", encoding="utf-8"
             ).readlines()[10:]
@@ -232,7 +232,7 @@ class TestGudPyWorkflows(TestCase):
 
             for sample in [
                 x
-                for x in self.g.sampleBackgrounds[0].samples
+                for x in self.gudpy.gudrunFile.sampleBackgrounds[0].samples
                 if x.runThisSample
             ]:
                 dataFilename = (

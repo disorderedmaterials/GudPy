@@ -21,7 +21,7 @@ class GudFile:
     ----------
     path : str
         Path to the file.
-    outpath : str
+    OUTPATH : str
         Path to write to, when not overwriting the initial file.
     name : str
         'Name' of the GudFile - this is usually the same as the filename.
@@ -104,11 +104,11 @@ class GudFile:
 
         self.path = path
 
-        # Construct the outpath
+        # Construct the OUTPATH
         fname = os.path.basename(self.path)
         ref_fname = "gudpy_{}".format(fname)
         dir = os.path.dirname(os.path.abspath(self.path))
-        self.outpath = f"{dir}{os.path.sep}{ref_fname}"
+        self.OUTPATH = f"{dir}{os.path.sep}{ref_fname}"
         self.name = ""
         self.title = ""
         self.author = ""
@@ -370,7 +370,7 @@ class GudFile:
         None
         """
         if not overwrite:
-            f = open(self.outpath, "w", encoding="utf-8")
+            f = open(self.OUTPATH, "w", encoding="utf-8")
         else:
             f = open(self.path, "w", encoding="utf-8")
         f.write(str(self))

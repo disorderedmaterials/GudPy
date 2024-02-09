@@ -1495,7 +1495,7 @@ class TestGudPyIO(TestCase):
 
         gudrunFile = GudrunFile(loadFile=os.path.join(
             self.g.instrument.GudrunInputFileDir,
-            self.g.outpath
+            self.g.OUTPATH
         ), format=Format.TXT)
         self.assertEqual(
             self.expectedSampleA["exponentialValues"],

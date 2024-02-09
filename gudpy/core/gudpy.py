@@ -138,7 +138,7 @@ class GudPy:
         exitcode = self.purge.purge(self.gudrunFile)
         if exitcode:
             raise exc.PurgeException(
-                "Purge failed to run with the following output:"
+                "Purge failed to run with the following output:\n"
                 f"{self.purge.error}"
             )
 
@@ -149,7 +149,7 @@ class GudPy:
         exitcode = self.gudrun.gudrun(gudrunFile)
         if exitcode:
             raise exc.GudrunException(
-                "Gudrun failed to run with the following output:"
+                "Gudrun failed to run with the following output:\n"
                 f"{self.gudrun.error}"
             )
         self.gudrunOutput = self.gudrun.gudrunOutput
@@ -745,7 +745,7 @@ class BatchProcessing:
                 )
                 if exitcode:
                     raise exc.GudrunException(
-                        "Batch Processing failed with the following output: "
+                        "Batch Processing failed with the following output:\n"
                         f"{error}"
                     )
 
@@ -765,6 +765,6 @@ class BatchProcessing:
             )
             if exitcode:
                 raise exc.GudrunException(
-                    "Batch Processing failed with the following output: "
+                    "Batch Processing failed with the following output:\n"
                     f"{error}"
                 )
