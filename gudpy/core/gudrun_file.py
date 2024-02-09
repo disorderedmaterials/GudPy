@@ -157,7 +157,7 @@ class GudrunFile:
         self.sampleBackgrounds = []
         self.components = Components()
 
-        if not projectDir or loadFile:
+        if not projectDir and not loadFile:
             raise RuntimeError(
                 "GudrunFile needs to be initialised with either"
                 " a project directory or load file specified"
