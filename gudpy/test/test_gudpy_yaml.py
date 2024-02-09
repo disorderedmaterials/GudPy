@@ -1,26 +1,35 @@
 from unittest import TestCase
 import os
 
-from core.gudrun_file import GudrunFile
+from core import gudpy
 from core.enums import Format
 
 
 class TestYAML(TestCase):
     def testYAML(self):
+        gudpy1 = gudpy.GudPy()
+        gudpy1.loadFromFile(
+            loadFile="test/TestData/NIMROD-water/water.txt",
+            format=Format.TXT
+        )
+        gudpy1.save(path="test/TestData/NIMROD-water/water.yaml")
+        gf1 = gudpy1.gudrunFile
 
-        gf1 = GudrunFile(
-            "test/TestData/NIMROD-water/water.txt",
-            format=Format.TXT)
-        gf1.write_yaml("test/TestData/NIMROD-water/water.yaml")
-        gf2 = GudrunFile("test/TestData/NIMROD-water/water.yaml")
+        gudpy2 = gudpy.GudPy()
+        gudpy2.loadFromFile(
+            path="test/TestData/NIMROD-water/water.yaml",
+            format=Format.YAML
+        )
+        gf2 = gudpy2.gudrunFile
 
         gf1.instrument.GudrunInputFileDir = os.path.abspath(
             gf1.instrument.GudrunInputFileDir)
         gf2.instrument.GudrunInputFileDir = os.path.abspath(
             gf2.instrument.GudrunInputFileDir)
 
-        self.assertDictEqual(gf1.instrument.__dict__, gf2.instrument.__dict__)
-        self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
+        self.self.assertDictEqual(
+            gf1.instrument.__dict__, gf2.instrument.__dict__)
+        self.self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
 
         normalisationDataFilesA = gf1.normalisation.__dict__.pop("dataFiles")
         normalisationDataFilesBgA = gf1.normalisation.__dict__.pop(
