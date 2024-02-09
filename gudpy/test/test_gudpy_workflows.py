@@ -7,7 +7,6 @@ import math
 from core.composition import Composition, Component
 from core import iterators
 from core.gud_file import GudFile
-from core.enums import Format
 from core import gudpy
 
 

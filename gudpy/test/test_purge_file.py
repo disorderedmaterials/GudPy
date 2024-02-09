@@ -2,8 +2,6 @@ import os
 from unittest import TestCase
 from shutil import copyfile
 
-
-from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.enums import Format
 from core import gudpy
