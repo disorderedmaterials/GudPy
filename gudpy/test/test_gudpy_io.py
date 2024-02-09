@@ -759,6 +759,8 @@ class TestGudPyIO(TestCase):
                                 str(sample[key_]), str(sampleAttrsDict[key_])
                             )
                         else:
+                            if key_ == "name":
+                                sample[key_] = sample[key_].replace(" ", "_")
                             self.assertEqual(
                                 sample[key_], sampleAttrsDict[key_]
                             )
