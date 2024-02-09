@@ -25,7 +25,6 @@ class TestGudrunClasses(TestCase):
         self.assertRaises(RuntimeError, GudrunFile, loadFile=emptyPath)
 
     def testInvalidPath(self):
-
         invalidPath = "invalid_path"
         self.assertRaises(ParserException, GudrunFile, loadFile=invalidPath)
 

@@ -370,14 +370,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleA = {
-            "name": "H2O, Can N9",
+            "name": "H2O,_Can_N9",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016608_H2O_in_N9.raw",
                     "NIMROD00016610_H2O_in_N9.raw",
                 ],
-                "H2O, Can N9",
+                "H2O,_Can_N9",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -425,14 +425,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleB = {
-            "name": "D2O, Can N10",
+            "name": "D2O,_Can_N10",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016609_D2O_in_N10.raw",
                     "NIMROD00016611_D2O_in_N10.raw",
                 ],
-                "D2O, Can N10",
+                "D2O,_Can_N10",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -480,14 +480,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleC = {
-            "name": "HDO, Can N6",
+            "name": "HDO,_Can_N6",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016741_HDO_in_N6.raw",
                     "NIMROD00016743_HDO_in_N6.raw",
                 ],
-                "HDO, Can N6",
+                "HDO,_Can_N6",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -536,14 +536,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleD = {
-            "name": "Null Water, Can N8",
+            "name": "Null_Water,_Can_N8",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016742_NullWater_in_N8.raw",
                     "NIMROD00016744_NullWater_in_N8.raw",
                 ],
-                "Null Water, Can N8",
+                "Null_Water,_Can_N8",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
