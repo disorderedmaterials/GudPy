@@ -11,9 +11,8 @@ from core import iterators
 
 class IterationDialog(QDialog):
 
-    def __init__(self, gudrunFile, parent):
+    def __init__(self, parent):
         super(IterationDialog, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
         self.numberIterations = 1
         self.iteratorType = iterators.Iterator
         self.text = ""
@@ -60,21 +59,21 @@ class IterationDialog(QDialog):
 
 
 class DensityIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, _):
         self.name = "iterateDensityDialog"
         self.iteratorType = iterators.Density
         super().__init__(parent)
 
 
 class InelasticitySubtractionIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, _):
         self.name = "InelasticitySubtractionsDialog"
         self.iteratorType = iterators.InelasticitySubtraction
         super().__init__(parent)
 
 
 class RadiusIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, _):
         self.name = "iterateRadiusDialog"
         self.iteratorType = iterators.Radius
         super().__init__(parent)
@@ -94,7 +93,7 @@ class RadiusIterationDialog(IterationDialog):
 
 
 class ThicknessIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, _):
         self.name = "iterateThicknessDialog"
         self.iteratorType = iterators.Thickness
         super().__init__(parent)
@@ -107,15 +106,16 @@ class ThicknessIterationDialog(IterationDialog):
 
 
 class TweakFactorIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, _):
         self.name = "iterateTweakFactorDialog"
         self.iterator = iterators.TweakFactor
         super().__init__(parent)
 
 
 class CompositionIterationDialog(IterationDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, gudrunFile):
         self.name = "iterateCompositionDialog"
+        self.gudrunFile = gudrunFile
         self.components = [None, None]
         self.rtol = 0.
         self.mode = iterators.Comosition.Mode.SINGLE
