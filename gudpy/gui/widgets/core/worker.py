@@ -161,7 +161,8 @@ class GudrunIteratorWorker(QThread, IteratorBaseWorker, gudpy.GudrunIterator):
             self.gudrunObjects.append(worker)
 
 
-class CompositionWorker(QThread, IteratorBaseWorker, gudpy.CompositionIterator):
+class CompositionWorker(
+        QThread, IteratorBaseWorker, gudpy.CompositionIterator):
     def __init__(
         self,
         iterator: iterators.Composition,
