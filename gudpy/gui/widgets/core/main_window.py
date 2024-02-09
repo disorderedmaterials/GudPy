@@ -55,10 +55,8 @@ from gui.widgets.slots.sample_slots import SampleSlots
 from gui.widgets.slots.output_slots import OutputSlots
 # from gui.widgets.resources import resources_rc  # noqa
 from core import enums
-from core.gudrun_file import GudrunFile
 from core import config
 from core.gud_file import GudFile
-from core import utils
 
 
 class GudPyMainWindow(QtWidgets.QMainWindow):
