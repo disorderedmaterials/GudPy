@@ -7357,7 +7357,6 @@
     <addaction name="iterateGudrun"/>
     <addaction name="checkFilesExist"/>
     <addaction name="separator"/>
-    <addaction name="runNexusProcessing"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -7586,32 +7585,6 @@
   <action name="batchProcessing">
    <property name="text">
     <string>Batch Processing</string>
-   </property>
-  </action>
-  <action name="runNexusProcessing">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>NeXus Processing</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+N</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-   <property name="iconVisibleInMenu">
-    <bool>false</bool>
-   </property>
-   <property name="shortcutVisibleInContextMenu">
-    <bool>false</bool>
    </property>
   </action>
  </widget>
