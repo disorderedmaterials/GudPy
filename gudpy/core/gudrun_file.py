@@ -1478,6 +1478,7 @@ class GudrunFile:
             self.write_yaml(path=f"{os.path.splitext(path)[0]}.yaml")
 
     def write_yaml(self, path):
+        self.yaml = YAML()
         self.yaml.writeYAML(self, path)
 
     def write_out(self, path='', overwrite=False, writeParameters=True):
