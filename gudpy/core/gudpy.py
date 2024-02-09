@@ -135,7 +135,7 @@ class GudPy:
     def runPurge(self):
         self.purge = Purge()
         self.purgeFile = PurgeFile(self.gudrunFile)
-        exitcode = self.purge.purge(self.gudrunFile)
+        exitcode = self.purge.purge(self.purgeFile)
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
