@@ -4,11 +4,7 @@ import sys
 import traceback
 import typing as typ
 
-from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets
-from PySide6.QtCore import (
-    QFileInfo,
-    QTimer,
-)
+from PySide6 import QtCore, QtWidgets
 
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -121,10 +117,10 @@ class GudPyController(QtCore.QObject):
         for f in os.listdir(projectDir):
             if f == self.gudpy.autosaveLocation:
                 path = os.path.join(projectDir, f)
-                autoFileInfo = QFileInfo(path)
+                autoFileInfo = QtCore.QFileInfo(path)
                 autoDate = autoFileInfo.lastModified()
 
-                fileInfo = QFileInfo(self.gudpy.gudrunFile.path())
+                fileInfo = QtCore.QFileInfo(self.gudpy.gudrunFile.path())
                 currentDate = fileInfo.lastModified()
 
                 if autoDate > currentDate:
