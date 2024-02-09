@@ -441,7 +441,8 @@ class GudPyController(QtCore.QObject):
         if not gudrunFile:
             gudrunFile = self.gudpy.gudrunFile
 
-        self.gudpy.gudrun = worker.GudrunWorker(gudrunFile)
+        self.gudpy.gudrun = worker.GudrunWorker(
+            gudrunFile, purgeLocation=self.gudpy.purgeOutput)
         self.connectProcessSignals(
             process=self.gudpy.gudrun, onFinish=self.gudrunFinished
         )
@@ -479,7 +480,8 @@ class GudPyController(QtCore.QObject):
         # If Composition iterator, initialise Composition Worker
         if isinstance(self.gudpy.iterator, iterators.Composition):
             self.gudpy.gudrunIterator = worker.CompositionWorker(
-                self.gudpy.iterator, self.gudpy.gudrunFile)
+                self.gudpy.iterator, self.gudpy.gudrunFile,
+                purgeLocation=self.gudpy.purgeOutput)
             self.connectProcessSignals(
                 process=self.gudpy.gudrunIterator,
                 onFinish=self.compositionIterationFinished
@@ -487,7 +489,8 @@ class GudPyController(QtCore.QObject):
         # Else use standard GudrunIteratorWorker
         else:
             self.gudpy.gudrunIterator = worker.GudrunIteratorWorker(
-                self.gudpy.iterator, self.gudpy.gudrunFile)
+                self.gudpy.iterator, self.gudpy.gudrunFile,
+                purgeLocation=self.gudpy.purgeOutput)
             self.connectProcessSignals(
                 process=self.gudpy.gudrunIterator,
                 onFinish=self.gudrunFinished
@@ -570,6 +573,7 @@ class GudPyController(QtCore.QObject):
         )
         self.gudrunIterator = worker.BatchWorker(
             gudrunFile=self.gudpy.gudrunFile,
+            purgeLocation=self.gudpy.purgeOutput,
             iterator=dialog.iterator,
             batchSize=dialog.batchSize,
             stepSize=dialog.stepSize,

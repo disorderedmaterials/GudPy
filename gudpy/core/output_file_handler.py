@@ -2,8 +2,10 @@ import os
 import shutil
 import typing
 from dataclasses import dataclass
-import core.utils as utils
 import tempfile
+
+import core.utils as utils
+from core.gudrun_file import GudrunFile
 
 
 @dataclass
@@ -104,9 +106,9 @@ class GudrunOutputHandler(OutputHandler):
 
     def __init__(
         self,
-        gudrunFile,
+        gudrunFile: GudrunFile,
         head: str = "",
-        overwrite=True
+        overwrite: bool = True
     ):
         """
         Initialise `GudrunOutputHandler`
@@ -156,7 +158,7 @@ class GudrunOutputHandler(OutputHandler):
                     if s.runThisSample and len(s.dataFiles)]:
                 self.samples.append(sample)
 
-    def organiseOutput(self):
+    def organiseOutput(self, exclude: list[str] = []):
         """Organises Gudrun outputs
 
         Returns
@@ -170,7 +172,7 @@ class GudrunOutputHandler(OutputHandler):
         # Create sample folders
         sampleOutputs = self._createSampleDir(self.tempOutDir)
         # Create additonal output folders
-        inputFilePath = self._createAddOutDir(self.tempOutDir)
+        inputFilePath = self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
         if self.overwrite and os.path.exists(self.outputDir):
@@ -185,7 +187,7 @@ class GudrunOutputHandler(OutputHandler):
                             sampleOutputs=sampleOutputs
                             )
 
-    def _createNormDir(self, dest):
+    def _createNormDir(self, dest: str):
         """
         Creates directories for normalisation background
         and normalisation outputs.
@@ -205,7 +207,7 @@ class GudrunOutputHandler(OutputHandler):
                               os.path.join(dest,
                                            "NormalisationBackground"))
 
-    def _createSampleBgDir(self, dest):
+    def _createSampleBgDir(self, dest: str):
         """
         Creates output directory for sample backgrounds
 
@@ -227,7 +229,7 @@ class GudrunOutputHandler(OutputHandler):
                         f"SampleBackground{count + 1}")
                 )
 
-    def _createSampleDir(self, dest):
+    def _createSampleDir(self, dest: str):
         """
         Creates output directory for each sample
 
@@ -306,7 +308,7 @@ class GudrunOutputHandler(OutputHandler):
                     )
         return sampleOutputs
 
-    def _createAddOutDir(self, dest):
+    def _createAddOutDir(self, dest: str, exclude: list[str] = []):
         """
         Copy over all files that haven't been copied over,
         as specified in `copiedFiles`
@@ -327,13 +329,13 @@ class GudrunOutputHandler(OutputHandler):
         for f in os.listdir(self.gudrunDir):
             if f == self.gudrunFile.OUTPATH:
                 inputFile = os.path.join(
-                    self.outputDir, "AdditionalOutputs", f)
+                    self.outputDir, f)
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
                     os.path.join(addDir, f)
                 )
 
-            elif f not in self.copiedFiles:
+            elif f not in self.copiedFiles and f not in exclude:
                 try:
                     shutil.copyfile(
                         os.path.join(self.gudrunDir, f),
