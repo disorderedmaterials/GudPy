@@ -105,14 +105,14 @@ class Iterator():
         """
         pass
 
-    def organiseOutput(self, gudrunFile):
+    def organiseOutput(self, gudrunFile, exclude=[]):
         """
         This organises the output of the iteration.
         """
         outputHandler = handlers.GudrunOutputHandler(
-            gudrunFile=gudrunFile
+            gudrunFile=gudrunFile,
         )
-        return outputHandler.organiseOutput()
+        return outputHandler.organiseOutput(exclude=exclude)
 
 
 class Radius(Iterator):
@@ -554,7 +554,7 @@ class InelasticitySubtraction(Iterator):
             self.QIteration(gudrunFile)
             self.nCurrent += 1
 
-    def organiseOutput(self, gudrunFile):
+    def organiseOutput(self, gudrunFile, exclude=[]):
         """
         This organises the output of the iteration.
         """
@@ -565,7 +565,7 @@ class InelasticitySubtraction(Iterator):
             head=f"{self.iterationType}_{self.iterationCount}",
             overwrite=overwrite
         )
-        return outputHandler.organiseOutput()
+        return outputHandler.organiseOutput(exclude=exclude)
 
 
 def calculateTotalMolecules(components, sample):
