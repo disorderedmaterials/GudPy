@@ -238,7 +238,7 @@ class Process:
             self.exitcode = 1
             raise FileNotFoundError(
                 f"Missing {self.PROCESS} binary"
-                " in location {self.BINARY_PATH}")
+                f" in location {self.BINARY_PATH}")
 
     def _checkError(self, line: str):
         # Check for errors.
