@@ -464,7 +464,7 @@ class GudPyController(QtCore.QObject):
 
     def iterateGudrun(self, dialog) -> bool:
         iterationDialog = dialog(
-            self.mainWidget, gudrunFile=self.gudpy.gudrunFile)
+            self.mainWidget, self.gudpy.gudrunFile)
         kwargs = iterationDialog.widget.exec()
 
         # If it is a Composition iteration, the gudrunFile must be specified
