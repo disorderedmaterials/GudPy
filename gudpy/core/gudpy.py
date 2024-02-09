@@ -117,7 +117,7 @@ class GudPy:
         self.gudrunFile.filename = os.path.basename(targetDir)
         self.gudrunFile.save(path=self.gudrunFile.path(),
                              format=enums.Format.YAML)
-        self.loadFromProject(targetDir)
+        self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
@@ -134,6 +134,7 @@ class GudPy:
         return (undefined, unresolved)
 
     def runPurge(self):
+        self.purge = Purge()
         self.purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(self.gudrunFile)
         if exitcode:
@@ -154,7 +155,8 @@ class GudPy:
         self.gudrunOutput = self.gudrun.gudrunOutput
 
     def iterateGudrun(self, iterator: iterators.Iterator):
-        self.gudrunIterator = GudrunIterator(iterator, self.gudrunFile)
+        self.gudrunIterator = GudrunIterator(
+            gudrunFile=self.gudrunFile, iterator=iterator)
         exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(

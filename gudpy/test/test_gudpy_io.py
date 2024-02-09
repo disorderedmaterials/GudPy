@@ -660,11 +660,11 @@ class TestGudPyIO(TestCase):
 
         self.gPath = "test/TestData/NIMROD-water/good_water.txt"
 
-        self.gudrun.gudrunFile.write_out(
+        self.gudpy.gudrunFile.write_out(
             self.gPath,
             overwrite=True
         )
-        self.gudrun.loadFromFile(
+        self.gudpy.loadFromFile(
             loadFile=self.gPath,
             format=Format.TXT
         )

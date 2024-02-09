@@ -237,7 +237,7 @@ class TestParseGudFile(TestCase):
             self.keepsakes.append(f)
 
         self.gudpy.loadFromProject(
-            loadfile=os.path.abspath(dirpath)
+            projectDir == os.path.abspath(dirpath)
         )
 
         from pathlib import Path

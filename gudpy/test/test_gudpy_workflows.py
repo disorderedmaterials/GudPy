@@ -21,7 +21,7 @@ class TestGudPyWorkflows(TestCase):
 
         self.keepsakes = os.listdir()
 
-        self.gudpy.loadFromProject(path)
+        self.gudpy.loadFromProject(projectDir=path)
 
         from pathlib import Path
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
