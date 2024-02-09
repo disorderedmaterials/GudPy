@@ -11,12 +11,11 @@ from core import utils
 from core import enums
 from core import exception as exc
 from core import iterators
-from core import instrument, beam, normalisation, composition
-
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
+from core import data_files
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -508,7 +507,7 @@ class RunModes:
 
                         # Only run one data file.
                         childSample.dataFiles = (
-                            DataFiles([dataFile], childSample.name)
+                            data_files.DataFiles([dataFile], childSample.name)
                         )
                         childSample.name = f"{childSample.name} [{dataFile}]"
 
