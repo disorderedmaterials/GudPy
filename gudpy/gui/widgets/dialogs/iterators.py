@@ -18,6 +18,7 @@ class IterationDialog(QDialog):
         self.text = ""
         self.loadUI()
         self.initComponents()
+        self.params = {}
 
     def initComponents(self):
         self.widget.numberIterationsSpinBox.valueChanged.connect(
@@ -50,7 +51,7 @@ class IterationDialog(QDialog):
 
     def iterate(self):
         self.widget.close()
-        return {
+        self.params = {
             "nTotal": self.numberIterations
         }
 
@@ -214,7 +215,7 @@ class CompositionIterationDialog(IterationDialog):
 
     def iterate(self):
         self.widget.close()
-        return {
+        self.params = {
             "gudrunFile": None,
             "mode": self.mode,
             "nTotal": self.numberIterations,

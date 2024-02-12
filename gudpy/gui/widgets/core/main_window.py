@@ -7,7 +7,7 @@ from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets, QtCharts
 from core.container import Container
 from core.sample import Sample
 
-from gui.widgets.dialogs.iteration_dialog import (
+from gui.widgets.dialogs.iterators import (
     CompositionIterationDialog,
     DensityIterationDialog,
     InelasticitySubtractionIterationDialog,
