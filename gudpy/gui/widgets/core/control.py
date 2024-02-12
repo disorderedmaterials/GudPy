@@ -31,8 +31,6 @@ class GudPyController(QtCore.QObject):
         super().__init__()
         self.gudpy = gp.GudPy()
         self.mainWidget = GudPyMainWindow()
-        self.output = ""
-        self.outputIterations = {}
         self.purged = False
 
         self.workerThread = None
@@ -62,7 +60,7 @@ class GudPyController(QtCore.QObject):
         )
         self.mainWidget.ui.iterateComposition.triggered.connect(
             lambda: self.iterateGudrun(
-                dialogs.dialogs.iterators.CompositionIterationDialog)
+                dialogs.iterators.CompositionIterationDialog)
         )
         self.mainWidget.ui.runContainersAsSamples.triggered.connect(
             self.runContainersAsSamples
@@ -470,14 +468,14 @@ class GudPyController(QtCore.QObject):
         iterationDialog = dialog(
             self.mainWidget, self.gudpy.gudrunFile)
         iterationDialog.widget.exec()
-
+        if not iterationDialog.params:
+            return
         # If it is a Composition iteration, the gudrunFile must be specified
         if iterationDialog.iteratorType == iterators.Composition:
             iterationDialog.params["gudrunFile"] = self.gudpy.gudrunFile
 
         self.gudpy.iterator = iterationDialog.iteratorType(
             **iterationDialog.params)
-
         if not self.prepareRun():
             self.mainWidget.processStopped()
             return False
@@ -500,7 +498,6 @@ class GudPyController(QtCore.QObject):
                 process=self.gudpy.gudrunIterator,
                 onFinish=self.gudrunFinished
             )
-        self.gudpy.gudrunIterator.nextIteration.connect(self.gudrunFinished)
         self.workerThread = self.gudpy.gudrunIterator
         if not self.checkPurge():
             self.workerThread = None
@@ -509,26 +506,26 @@ class GudPyController(QtCore.QObject):
     def gudrunFinished(self, exitcode):
         self.workerThread = None
         if self.gudpy.gudrunIterator:
-            if exitcode != 0:
+            if self.gudpy.gudrunIterator.exitcode[0] != 0:
                 self.mainWidget.sendError(
                     f"Gudrun Iteration failed with the following output: "
                     f"\n{self.gudpy.gudrunIterator.error}"
                 )
                 return
 
-            self.gudpy.outputIterations[
-                f"{self.gudpy.gudrunIterator.name}"
-                f" {self.gudpy.gudrunIterator.nCurrent}"
-            ] = self.gudpy.gudrun.output
             self.mainWidget.outputSlots.setOutput(
-                self.gudpy.outputIterations,
+                self.gudpy.gudrunIterator.output,
                 f"Gudrun {self.gudpy.gudrunIterator.name}")
-            self.mainWidget.sampleSlots.setSample(self.sampleSlots.sample)
-            self.gudpy.gudrunIterator = None
-
+            self.mainWidget.sampleSlots.setSample(
+                self.mainWidget.sampleSlots.sample)
             self.mainWidget.iterationResultsDialog(
-                self.gudpy.gudrunIterator.results)
-        else:
+                self.gudpy.gudrunIterator.name,
+                self.gudpy.gudrunIterator.result)
+            self.mainWidget.updateWidgets(
+                gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
+                gudrunOutput=self.gudpy.gudrunIterator.gudrunOutput
+            )
+        elif self.gudpy.gudrun:
             if exitcode != 0:
                 self.mainWidget.sendError(
                     f"Gudrun failed with the following output: "
@@ -537,11 +534,11 @@ class GudPyController(QtCore.QObject):
                 return
             self.mainWidget.outputSlots.setOutput(
                 self.gudpy.gudrun.output, "Gudrun")
-
-        self.mainWidget.updateWidgets(
-            gudrunFile=self.gudpy.gudrun.gudrunFile,
-            gudrunOutput=self.gudpy.gudrun.gudrunOutput
-        )
+            self.mainWidget.updateWidgets(
+                gudrunFile=self.gudpy.gudrunFile,
+                gudrunOutput=self.gudpy.gudrun.gudrunOutput
+            )
+        self.mainWidget.processStopped()
 
     def compositionIterationFinished(self, exitcode):
         if exitcode != 0:
@@ -554,8 +551,8 @@ class GudPyController(QtCore.QObject):
             result = d.widget.exec()
             if result:
                 original.composition = new.composition
-                if self.sampleSlots.sample == original:
-                    self.sampleSlots.setSample(original)
+                if self.mainWidget.sampleSlots.sample == original:
+                    self.mainWidget.sampleSlots.setSample(original)
 
     def runContainersAsSamples(self):
         if not self.prepareRun():

@@ -35,8 +35,6 @@ class Iterator():
         To be overriden by sub-classes.
     """
 
-    name = ""
-
     def __init__(self, nTotal):
         """
         Constructs all the necessary attributes for the
@@ -53,6 +51,7 @@ class Iterator():
         requireDefault : bool
 
         """
+        self.name = ""
         self.nTotal = nTotal
         self.nCurrent = -1
         self.iterationType = self.name
@@ -133,10 +132,9 @@ class Radius(Iterator):
     setTargetRadius
         Sets the target radius attribute.
     """
-    name = "IterateByRadius"
 
     def __init__(self, nTotal, target="inner"):
-        super().__init__(nTotal)
+        super().__init__(nTotal, name="IterateByRadius")
         self.iterationMode = None
         self.setTargetRadius(target)
 
@@ -179,10 +177,9 @@ class Thickness(Iterator):
         Organises the output of the iteration.
     """
 
-    name = "IterateByThickness"
-
     def __init__(self, nTotal):
         super().__init__(nTotal)
+        self.name = "IterateByThickness"
         self.iterationMode = IterationModes.THICKNESS
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
@@ -222,10 +219,9 @@ class TweakFactor(Iterator):
         Perform n iterations of iterating by tweak factor.
     """
 
-    name = "IterateByTweakFactor"
-
     def __init__(self, nTotal):
         super().__init__(nTotal)
+        self.name = "IterateByTweakFactor"
         self.iterationMode = IterationModes.TWEAK_FACTOR
 
     def performIteration(self, gudrunFile, prevOutput):
@@ -272,10 +268,10 @@ class Density(Iterator):
     applyCoefficientToAttribute
         Multiplies a sample's density by a given coefficient.
     """
-    name = "IterateByDensity"
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
+        self.name = "IterateByDensity"
         self.iterationMode = IterationModes.DENSITY
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
@@ -347,8 +343,6 @@ class InelasticitySubtraction(Iterator):
         Perform n iterations on the wavelength scale and Q scale.
     """
 
-    name = "IterateByInelasticitySubtraction"
-
     def __init__(self, nTotal):
         """
         Constructs all the necessary attributes for the
@@ -360,6 +354,7 @@ class InelasticitySubtraction(Iterator):
             Input GudrunFile that we will be using for iterating.
         """
         super().__init__(nTotal)
+        self.name = "IterateByInelasticitySubtraction"
         self.iterationMode = IterationModes.INELASTICITY
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
@@ -615,8 +610,6 @@ class Composition():
         Performs n iterations using cost function f, args and bounds.
     """
 
-    name = "IterateByComposition"
-
     class Mode(Enum):
         SINGLE = 1
         DOUBLE = 2
@@ -632,6 +625,7 @@ class Composition():
         ratio=1,
         components=[],
     ):
+        self.name = "IterateByComposition"
         self.originalGudrunFile = gudrunFile
         self.mode = mode
         self.nCurrent = 0

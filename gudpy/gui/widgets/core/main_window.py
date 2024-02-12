@@ -635,10 +635,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             warning
         )
 
-    def iterationResultsDialog(self, results):
+    def iterationResultsDialog(self, results, name):
         messageBox = QtWidgets.QMessageBox(self.ui)
         messageBox.setWindowTitle("GudPy Iteration Results")
-        results = '\n'.join(
+        text = name
+        text += '\n'.join(
             [f"{key}: {value}" for key, value in results.items()])
         messageBox.setText(results)
         messageBox.exec()

@@ -169,7 +169,7 @@ class GudPy:
         self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
-        self.gudrunIterator = iterators.CompositionIterator(
+        self.gudrunIterator = iterators.Composition(
             iterator, self.gudrunFile, purgeLocation=self.purgeOutput)
         exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
@@ -393,18 +393,17 @@ class GudrunIterator:
 
         # Create a copy of gudrun file
         self.gudrunFile = copy.deepcopy(gudrunFile)
+        self.name = iterator.name
         self.purgeLocation = purgeLocation
         self.iterator = iterator
         self.gudrunObjects = []
         self.defaultRun = None
         self.exitcode = (0,)
         self.gudrunOutput = None
+        self.result = {}
 
         for _ in range(iterator.nTotal):
             self.gudrunObjects.append(Gudrun())
-
-    def _nextIteration(self):
-        print(f"Iteration number: {self.iterator.nCurrent}")
 
     def defaultIteration(self, gudrunFile):
         self.defaultRun = Gudrun()
@@ -422,7 +421,6 @@ class GudrunIterator:
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
-        self._nextIteration(self.iterator.nCurrent)
         return 0
 
     def iterate(self) -> typ.Tuple[int, str]:
@@ -446,7 +444,9 @@ class GudrunIterator:
 
             prevOutput = gudrun.gudrunOutput
 
-        self.exitcode = (0,)
+        self.result = self.iterator.result
+
+        self.exitcode = (0, "")
         return self.exitcode
 
 
@@ -460,7 +460,7 @@ class CompositionIterator(GudrunIterator):
         iterator.nTotal *= 2
         super().__init__(iterator, gudrunFile, purgeLocation)
 
-        self.result = None
+        self.result = {}
         self.compositionMap = None
         self.currentIteration = 0
 
@@ -484,7 +484,6 @@ class CompositionIterator(GudrunIterator):
 
             if self.currentIteration != self.iterator.nCurrent:
                 # Will be called every other iteration of this loop
-                self._nextIteration()
                 self.currentIteration += 1
 
         error = (
