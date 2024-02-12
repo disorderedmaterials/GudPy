@@ -25,7 +25,7 @@ class Worker(QThread):
     def _outputChanged(self, output):
         self.output += output
         self.outputChanged.emit(output)
-        self.progressChanged.emit(self._progress(), self.name)
+        self.progressChanged.emit(self._progressChanged(), self.name)
 
 
 class PurgeWorker(Worker, gudpy.Purge):
@@ -49,7 +49,7 @@ class PurgeWorker(Worker, gudpy.Purge):
                             for s in sb.samples for c in s.containers
                             for df in c.dataFiles if s.runThisSample])
 
-    def _progress(self):
+    def _progressChanged(self):
         stepSize = math.ceil(100 / len(self.dataFiles))
         progress = 0
         for df in self.dataFiles:
@@ -103,7 +103,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
                 for sampleBackground in self.gudrunFile.sampleBackgrounds
             ]))
 
-    def _progress(self):
+    def _progressChanged(self):
         stepSize = math.ceil(100 / self.markers)
         self.progress += stepSize * sum([
             self.output.count("Got to: INSTRUMENT"),
@@ -124,13 +124,17 @@ class GudrunWorker(Worker, gudpy.Gudrun):
         self.finished.emit(exitcode)
 
 
-class IteratorBaseWorker():
+class IteratorBaseWorker(gudpy.GudrunIterator):
     nextIteration = Signal(int)
     outputChanged = Signal(str)
-    progress = Signal(int, str)
+    progressChanged = Signal(int, str)
     finished = Signal(int)
 
-    def __init__(self, iterator):
+    def __init__(self, iterator, gudrunFile, purgeLocation=""):
+        super().__init__(
+            gudrunFile=gudrunFile, iterator=iterator,
+            purgeLocation=purgeLocation
+        )
         self.name = iterator.name
         self.gudrunObjects = []
         self.output = ""
@@ -140,8 +144,8 @@ class IteratorBaseWorker():
         self.output += output
         self.outputChanged.emit(output)
 
-    def _progress(self, progress):
-        self.progress.emit(progress, self.name)
+    def _progressChanged(self, progress):
+        self.progressChanged.emit(progress, self.name)
 
     def _nextIteration(self, nCurrent):
         self.output = ""
@@ -153,7 +157,7 @@ class IteratorBaseWorker():
         self.finished.emit(exitcode)
 
 
-class GudrunIteratorWorker(QThread, IteratorBaseWorker, gudpy.GudrunIterator):
+class GudrunIteratorWorker(QThread, IteratorBaseWorker):
     def __init__(
         self,
         iterator: iterators.Iterator,
@@ -162,12 +166,12 @@ class GudrunIteratorWorker(QThread, IteratorBaseWorker, gudpy.GudrunIterator):
     ):
         super().__init__(
             iterator=iterator, gudrunFile=gudrunFile,
-            purgeLocation=purgeLocation)
-
+            purgeLocation=purgeLocation
+        )
         for _ in range(iterator.nTotal):
             worker = GudrunWorker(self.gudrunFile, self.iterator)
-            self.worker.outputChanged.connect(self._outputChanged)
-            self.worker.progress.connect(self._progress)
+            worker.outputChanged.connect(self._outputChanged)
+            worker.progressChanged.connect(self._progressChanged)
             self.gudrunObjects.append(worker)
 
 
@@ -181,12 +185,12 @@ class CompositionWorker(
     ):
         super().__init__(
             iterator=iterator,
-            gudrunFile=gudrunFile, purgeLocation=purgeLocation)
-
+            gudrunFile=gudrunFile, purgeLocation=purgeLocation
+        )
         for _ in range(iterator.nTotal):
             worker = GudrunWorker(self.gudrunFile, self.iterator)
-            self.worker.outputChanged.connect(self._outputChanged)
-            self.worker.progress.connect(self._progress)
+            worker.outputChanged.connect(self._outputChanged)
+            worker.progressChanged.connect(self._progressChanged)
             self.gudrunObjects.append(worker)
 
 
@@ -225,8 +229,8 @@ class BatchWorker(QThread, IteratorBaseWorker, gudpy.BatchProcessing):
                     self.firstBatch,
                     gudrunIterator.iterator
                 )
-                self.worker.outputChanged.connect(self._outputChanged)
-                self.worker.progress.connect(self._progress)
+                worker.outputChanged.connect(self._outputChanged)
+                worker.progressChanged.connect(self._progressChanged)
                 gudrunIterator.append(worker)
 
     def run(self):
