@@ -372,7 +372,8 @@ class Gudrun(Process):
                     return self.exitcode
 
             if iterator:
-                self.gudrunOutput = iterator.organiseOutput(exclude=purgeFiles)
+                self.gudrunOutput = iterator.organiseOutput(
+                    gudrunFile, exclude=purgeFiles)
             else:
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
