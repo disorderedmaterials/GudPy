@@ -124,7 +124,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
         self.finished.emit(exitcode)
 
 
-class IteratorBaseWorker(gudpy.GudrunIterator):
+class IteratorBaseWorker(QThread, gudpy.GudrunIterator):
     nextIteration = Signal(int)
     outputChanged = Signal(str)
     progressChanged = Signal(int, str)
@@ -152,12 +152,13 @@ class IteratorBaseWorker(gudpy.GudrunIterator):
         self.nextIteration.emit(nCurrent)
 
     def run(self):
+        print("iteratorbaseworker run")
         exitcode, error = super().iterate()
         self.error = error
         self.finished.emit(exitcode)
 
 
-class GudrunIteratorWorker(QThread, IteratorBaseWorker):
+class GudrunIteratorWorker(IteratorBaseWorker):
     def __init__(
         self,
         iterator: iterators.Iterator,
@@ -175,8 +176,7 @@ class GudrunIteratorWorker(QThread, IteratorBaseWorker):
             self.gudrunObjects.append(worker)
 
 
-class CompositionWorker(
-        QThread, IteratorBaseWorker, gudpy.CompositionIterator):
+class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
     def __init__(
         self,
         iterator: iterators.Composition,
@@ -194,7 +194,7 @@ class CompositionWorker(
             self.gudrunObjects.append(worker)
 
 
-class BatchWorker(QThread, IteratorBaseWorker, gudpy.BatchProcessing):
+class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
     def __init__(
         self,
         gudrunFile: GudrunFile,

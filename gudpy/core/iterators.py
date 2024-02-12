@@ -79,7 +79,7 @@ class Iterator():
                 if s.runThisSample and len(s.dataFiles)
             ]:
                 gudFile = GudFile(
-                    gudrunFile.gudrunOutput.gudFile(name=sample.name)
+                    prevOutput.gudFile(name=sample.name)
                 )
                 # Calculate coefficient: actualDCSLevel / expectedDCSLevel
                 coefficient = (
