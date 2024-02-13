@@ -105,7 +105,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
 
     def _progressChanged(self):
         stepSize = math.ceil(100 / self.markers)
-        self.progress += stepSize * sum([
+        self.progress = stepSize * sum([
             self.output.count("Got to: INSTRUMENT"),
             self.output.count("Got to: BEAM"),
             self.output.count("Got to: NORMALISATION"),

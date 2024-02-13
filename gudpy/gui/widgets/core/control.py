@@ -304,12 +304,6 @@ class GudPyController(QtCore.QObject):
 
     """
 
-    def updateProgressBar(self, progress: int, taskName: str):
-        self.mainWidget.ui.progressBar.setValue(
-            progress if progress <= 100 else 100
-        )
-        self.mainWidget.ui.currentTaskLabel.setText(taskName)
-
     def checkFilesExist_(self, showSuccessDialog: bool = False):
         result = file_library.GudPyFileLibrary(
             self.gudpy.gudrunFile).checkFilesExist()
@@ -361,7 +355,8 @@ class GudPyController(QtCore.QObject):
         self.workerThread = process
         self.workerThread.outputChanged.connect(
             self.mainWidget.outputSlots.setOutputStream)
-        self.workerThread.progressChanged.connect(self.updateProgressBar)
+        self.workerThread.progressChanged.connect(
+            self.mainWidget.updateProgressBar)
         self.workerThread.finished.connect(
             self.mainWidget.processStopped)
         if onFinish:

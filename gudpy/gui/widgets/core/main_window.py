@@ -560,6 +560,12 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                     f"Suggested Tweak Factor: {tweakFactor}"
                 )
 
+    def updateProgressBar(self, progress: int, taskName: str):
+        self.ui.progressBar.setValue(
+            progress if progress <= 100 else 100
+        )
+        self.ui.currentTaskLabel.setText(taskName)
+
     def updateSamples(self):
         if not self.gudrunOutput:
             return
