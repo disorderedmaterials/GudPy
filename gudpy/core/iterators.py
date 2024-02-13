@@ -77,6 +77,7 @@ class Iterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
+                print(sample.name, prevOutput.sampleOutputs[sample.name])
                 gudFile = GudFile(
                     prevOutput.gudFile(name=sample.name)
                 )
@@ -585,9 +586,9 @@ class InelasticitySubtraction(Iterator):
             head=f"{self.iterationType}_{self.iterationCount}",
             overwrite=overwrite
         )
-        self.gudrunOutputs.append(
-            outputHandler.organiseOutput(exclude=exclude))
-        return self.gudrunOutputs
+        output = outputHandler.organiseOutput(exclude=exclude)
+        self.gudrunOutputs.append(output)
+        return output
 
 
 def calculateTotalMolecules(components, sample):
