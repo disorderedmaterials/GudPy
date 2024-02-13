@@ -247,7 +247,8 @@ class TestParseGudFile(TestCase):
 
     def tearDown(self) -> None:
         [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
-        [os.remove(f) for f in os.listdir(self.gudpy.projectDir)
+        [os.remove(os.path.join(self.gudpy.projectDir, f))
+         for f in os.listdir(self.gudpy.projectDir)
          if f not in self.keepsakes]
         return super().tearDown()
 
