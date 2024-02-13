@@ -169,7 +169,7 @@ class GudPy:
         self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
-        self.gudrunIterator = iterators.Composition(
+        self.gudrunIterator = CompositionIterator(
             iterator, self.gudrunFile, purgeLocation=self.purgeOutput)
         exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
@@ -218,7 +218,7 @@ class Process:
 
         self.output = ""
         self.error = ""
-        self.exitcode = 0
+        self.exitcode = 1
 
         # Find binary
         if hasattr(sys, '_MEIPASS'):
@@ -398,7 +398,7 @@ class GudrunIterator:
         self.iterator = iterator
         self.gudrunObjects = []
         self.defaultRun = None
-        self.exitcode = (0,)
+        self.exitcode = (1, "Operation incomplete")
         self.gudrunOutput = None
         self.result = {}
 
@@ -556,8 +556,7 @@ class BatchProcessing:
         self.iterator = iterator
         self.purgeLocation = purgeLocation
         self.iterationMode = None
-        self.exitcode = (0,)
-
+        self.exitcode = (1, "Operation incomplete")
         self.BATCH_SIZE = batchSize
         self.STEP_SIZE = stepSize
         self.OFFSET = offset

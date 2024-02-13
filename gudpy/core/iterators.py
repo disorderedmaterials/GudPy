@@ -55,7 +55,7 @@ class Iterator():
         self.nTotal = nTotal
         self.nCurrent = -1
         self.iterationType = self.name
-        self.requireDefault = False
+        self.requireDefault = True
         self.result = {}
 
     def performIteration(
@@ -134,19 +134,24 @@ class Radius(Iterator):
     """
 
     def __init__(self, nTotal, target="inner"):
-        super().__init__(nTotal, name="IterateByRadius")
+        super().__init__(nTotal, name="Radius")
         self.iterationMode = None
         self.setTargetRadius(target)
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
+        if not self.result.get(sample.name, ""):
+            self.result[sample.name]["Old"] = {
+                f"{self.targetRadius.upper()} Radius": sample.innerRadius
+                if self.targetRadius == "inner" else sample.outerRadius
+            }
         if self.targetRadius == "inner":
             sample.innerRadius *= coefficient
-            self.result = {
+            self.result[sample.name]["New"] = {
                 "Inner Radius": sample.innerRadius
             }
         elif self.targetRadius == "outer":
             sample.outerRadius *= coefficient
-            self.result = {
+            self.result[sample.name]["New"] = {
                 "Outer Radius": sample.outerRadius
             }
 
@@ -179,10 +184,15 @@ class Thickness(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "IterateByThickness"
+        self.name = "thickness"
         self.iterationMode = IterationModes.THICKNESS
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
+        if not self.result.get(sample.name, ""):
+            self.result[sample.name]["Old"] = {
+                "Downstream Thickness": sample.downstreamThickness,
+                "Upstream Thickness": sample.upstreamThickness
+            }
         # Determine a new total thickness.
         totalThickness = sample.upstreamThickness + sample.downstreamThickness
         totalThickness *= coefficient
@@ -190,7 +200,7 @@ class Thickness(Iterator):
         sample.downstreamThickness = totalThickness / 2
         sample.upstreamThickness = totalThickness / 2
 
-        self.result = {
+        self.result[sample.name] = {
             "Downstream Thickness": sample.downstreamThickness,
             "Upstream Thickness": sample.upstreamThickness
         }
@@ -221,7 +231,7 @@ class TweakFactor(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "IterateByTweakFactor"
+        self.name = "tweakfactor"
         self.iterationMode = IterationModes.TWEAK_FACTOR
 
     def performIteration(self, gudrunFile, prevOutput):
@@ -244,11 +254,17 @@ class TweakFactor(Iterator):
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
+                if not self.result.get(sample.name, ""):
+                    self.result[sample.name] = {}
+                    self.result[sample.name]["Old"] = {
+                        "Tweak Factor": sample.sampleTweakFactor
+                    }
                 gudFile = GudFile(
                     prevOutput.gudFile(name=sample.name)
                 )
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
+
                 self.result[sample.name] = tweakFactor
         self.nCurrent += 1
 
@@ -271,7 +287,7 @@ class Density(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "IterateByDensity"
+        self.name = "density"
         self.iterationMode = IterationModes.DENSITY
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
@@ -287,8 +303,12 @@ class Density(Iterator):
             Coefficient to use.
         """
         # Apply the coefficient to the density.
+        if not self.result.get(sample.name, ""):
+            self.result[sample.name]["Old"] = {
+                "Density": sample.density
+            }
         sample.density *= coefficient
-        self.result["Density"] = sample.density
+        self.result[sample.name] = {"Density": sample.density}
 
 
 class InelasticitySubtraction(Iterator):
@@ -354,7 +374,7 @@ class InelasticitySubtraction(Iterator):
             Input GudrunFile that we will be using for iterating.
         """
         super().__init__(nTotal)
-        self.name = "IterateByInelasticitySubtraction"
+        self.name = "inelasticity subtraction"
         self.iterationMode = IterationModes.INELASTICITY
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
@@ -560,7 +580,9 @@ class InelasticitySubtraction(Iterator):
             head=f"{self.iterationType}_{self.iterationCount}",
             overwrite=overwrite
         )
-        return outputHandler.organiseOutput(exclude=exclude)
+        self.gudrunOutputs.append(
+            outputHandler.organiseOutput(exclude=exclude))
+        return self.gudrunOutputs
 
 
 def calculateTotalMolecules(components, sample):
@@ -625,7 +647,7 @@ class Composition():
         ratio=1,
         components=[],
     ):
-        self.name = "IterateByComposition"
+        self.name = "composition"
         self.originalGudrunFile = gudrunFile
         self.mode = mode
         self.nCurrent = 0
