@@ -60,7 +60,9 @@ class PurgeWorker(QObject):
                         purge.stderr.decode("utf8").rstrip("\n"))
                     return
 
-            self.gudrunFile.purgeFile.organiseOutput()
+            self.gudrunFile.purgeOutput = (
+                self.gudrunFile.purgeFile.organiseOutput()
+            )
 
         self.gudrunFile.setGudrunDir(
             self.gudrunFile.projectDir)
@@ -97,7 +99,7 @@ class GudrunWorker(QObject):
             return
 
         with tempfile.TemporaryDirectory() as tmp:
-            path = self.gudrunFile.outpath
+            path = self.gudrunFile.OUTPATH
             self.gudrunFile.setGudrunDir(tmp)
             path = os.path.join(
                 tmp,

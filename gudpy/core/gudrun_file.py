@@ -56,7 +56,7 @@ class GudrunFile:
     ----------
     path : str
         Path to the file.
-    outpath : str
+    OUTPATH : str
         Path to write to, when not overwriting the initial file.
     instrument : Instrument
         Instrument object extracted from the input file.
@@ -130,7 +130,13 @@ class GudrunFile:
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
-    def __init__(self, path=None, format=Format.YAML, config_=False):
+    def __init__(
+        self,
+        path=None,
+        projectDir=None,
+        format=Format.YAML,
+        config_=False
+    ):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -140,6 +146,8 @@ class GudrunFile:
         ----------
         path : str
             Path to the file.
+        projectDir : str
+            Path to the project folder
         format : Format enum
             Format of the file
         config_ : bool
@@ -150,7 +158,7 @@ class GudrunFile:
         self.format = format
 
         # Construct the outpath of generated input file
-        self.outpath = "gudpy.txt"
+        self.OUTPATH = "gudpy.txt"
 
         self.components = Components(components=[])
         self.gudrunOutput = None
@@ -161,22 +169,57 @@ class GudrunFile:
         self.loadFile = path
         self.path = None
 
-        self.projectDir = None
+        self.projectDir = projectDir
         self.filename = None
         self.purged = False
         self.stream = None
         self.purgeFile = PurgeFile(self)
         self.nexus_processing = NexusProcessing(self)
 
-        if self.loadFile:
-            self.setGudrunDir(os.path.dirname(self.loadFile))
-            self.projectDir = os.path.join(
-                os.path.dirname(self.loadFile),
-                os.path.splitext(os.path.basename(self.loadFile))[0]
-            )
-            self.setSaveLocation(self.projectDir)
+        self.gudrunOutput = None
+        self.purgeOutput = None
 
-        self.parse(self.loadFile, config_=config_)
+        if projectDir:
+            if os.path.exists(os.path.join(
+                projectDir,
+                f"{os.path.basename(projectDir)}.yaml"
+            )):
+                # If default file exists
+                self.path = os.path.join(
+                    projectDir,
+                    f"{os.path.basename(projectDir)}.yaml"
+                )
+            else:
+                # Try to find yaml files
+                for f in os.listdir(projectDir):
+                    if os.path.splitext(f)[1] == ".yaml":
+                        # If file is yaml
+                        self.path = os.path.join(projectDir, f)
+            if not self.path:
+                raise FileNotFoundError(
+                    "Could not find GudPy input file within the project")
+
+            self.setSaveLocation(projectDir)
+            self.parse(self.path)
+
+            if os.path.exists(os.path.join(projectDir, "Purge")):
+                self.purgeOutput = os.path.join(projectDir, "Purge")
+
+            if os.path.exists(os.path.join(projectDir, "Gudrun")):
+                self.purgeOutput = os.path.join(projectDir, "Purge")
+
+        elif self.loadFile:
+            if not config_:
+                self.setGudrunDir(os.path.dirname(self.loadFile))
+                self.setSaveLocation(os.path.join(
+                    os.path.dirname(self.loadFile),
+                    os.path.splitext(os.path.basename(self.loadFile))[0]
+                ))
+            self.parse(self.loadFile, config_=config_)
+
+        else:
+            raise FileNotFoundError(
+                "No project directory or load file specified")
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)
@@ -1474,6 +1517,8 @@ class GudrunFile:
         )
 
     def save(self, path='', format=None):
+        if not self.checkSaveLocation():
+            return False
 
         if not path:
             path = self.path
@@ -1514,20 +1559,20 @@ class GudrunFile:
         elif not overwrite:
             assert (not os.path.exists(os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
+                    self.OUTPATH)
             ))
             f = open(
                 os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath
+                    self.OUTPATH
                 ), "w", encoding="utf-8")
         else:
             if not self.path:
                 self.path = os.path.join(
                     self.instrument.GudrunInputFileDir,
-                    self.outpath)
+                    self.OUTPATH)
             f = open(self.path, "w", encoding="utf-8")
-        if os.path.basename(f.name) == self.outpath:
+        if os.path.basename(f.name) == self.OUTPATH:
             for sampleBackground in self.sampleBackgrounds:
                 sampleBackground.writeAllSamples = False
         f.write(str(self))
@@ -1574,7 +1619,7 @@ class GudrunFile:
             Can access stdout/stderr from this.
         """
 
-        path = f"./{self.outpath}"
+        path = f"./{self.OUTPATH}"
 
         if headless:
             with tempfile.TemporaryDirectory() as tmp:

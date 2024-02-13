@@ -293,7 +293,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "result", "outpath", "err"]:
+            if key in ["path", "groups", "stream", "result", "OUTPATH", "err"]:
                 continue
             if key == "groupsTable":
 
@@ -338,7 +338,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "err", "outpath", "result"]:
+            if key in ["path", "groups", "stream", "err", "OUTPATH", "result"]:
                 continue
             if key == "groupsTable":
 
@@ -382,7 +382,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "err", "outpath", "result"]:
+            if key in ["path", "groups", "stream", "err", "OUTPATH", "result"]:
                 continue
             if key == "groupsTable":
 
@@ -426,7 +426,7 @@ class TestParseGudFile(TestCase):
 
         gudAttrsDict = gf.__dict__
         for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "result", "outpath", "err"]:
+            if key in ["path", "groups", "stream", "result", "OUTPATH", "err"]:
                 continue
             if key == "groupsTable":
 
@@ -466,16 +466,16 @@ class TestParseGudFile(TestCase):
             g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
-        gf1 = GudFile(gf.outpath)
+        gf1 = GudFile(gf.OUTPATH)
 
         dicA = gf.__dict__
-        dicA.pop("outpath")
+        dicA.pop("OUTPATH")
         dicA.pop("path")
         dicA.pop("result")
         dicA.pop("err")
 
         dicB = gf1.__dict__
-        dicB.pop("outpath")
+        dicB.pop("OUTPATH")
         dicB.pop("path")
         dicB.pop("result")
         dicB.pop("err")
@@ -492,16 +492,16 @@ class TestParseGudFile(TestCase):
             g.gudrunOutput.gudFile(3)
         )
         gf.write_out()
-        gf1 = GudFile(gf.outpath)
+        gf1 = GudFile(gf.OUTPATH)
 
         dicA = gf.__dict__
-        dicA.pop("outpath")
+        dicA.pop("OUTPATH")
         dicA.pop("path")
         dicA.pop("result")
         dicA.pop("err")
 
         dicB = gf1.__dict__
-        dicB.pop("outpath")
+        dicB.pop("OUTPATH")
         dicB.pop("path")
         dicB.pop("result")
         dicB.pop("err")
