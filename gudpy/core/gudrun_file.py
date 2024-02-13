@@ -1519,6 +1519,7 @@ class GudrunFile:
                     self.instrument.GudrunInputFileDir,
                     self.OUTPATH)
             f = open(path, "w", encoding="utf-8")
+          
         if os.path.basename(f.name) == self.OUTPATH:
             for sampleBackground in self.sampleBackgrounds:
                 sampleBackground.writeAllSamples = False

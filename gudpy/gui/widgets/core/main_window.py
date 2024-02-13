@@ -648,6 +648,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         messageBox = QtWidgets.QMessageBox(self.ui)
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
+
         messageBox.addButton(QtWidgets.QMessageBox.Yes)
         messageBox.addButton(QtWidgets.QMessageBox.No)
         messageBox.addButton(QtWidgets.QMessageBox.Cancel)
