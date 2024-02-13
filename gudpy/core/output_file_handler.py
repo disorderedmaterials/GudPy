@@ -410,6 +410,10 @@ class GudrunOutputHandler(OutputHandler):
         outputs = {}
         diagnostics = {}
         for f in os.listdir(self.gudrunDir):
+            if f == 'NIMROD00016608_H2O_in_N9.gudw':
+                with open(
+                        os.path.join(self.gudrunDir, f), "r", encoding="utf8"):
+                    print(f.read())
             # If the file has the same name as requested filename
             fn, ext = os.path.splitext(f)
             if fn == fname:

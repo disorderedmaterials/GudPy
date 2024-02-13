@@ -245,8 +245,10 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualData = open(
-                    self.gudpy.gudrunOutput[
-                        len(self.gudpy.gudrunOutput) - 1
+                    self.gudpy.gudrunIterator.iterator.gudrunOutput[
+                        len(
+                            self.gudpy.gudrunIterator.iterator.gudrunOutput
+                        ) - 1
                     ].output(
                         sample.name, sample.dataFiles[0], ".mint01"),
                     "r", encoding="utf-8"
@@ -276,8 +278,10 @@ class TestGudPyWorkflows(TestCase):
                 )
 
                 actualData = open(
-                    self.gudpy.gudrunOutput[
-                        len(self.gudpy.gudrunOutput) - 2
+                    self.gudpy.gudrunIterator.iterator.gudrunOutput[
+                        len(
+                            self.gudpy.gudrunIterator.iterator.gudrunOutput
+                        ) - 2
                     ].output(
                         sample.name, sample.dataFiles[0], ".msubw01"),
                     "r", encoding="utf-8"
