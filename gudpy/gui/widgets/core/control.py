@@ -519,8 +519,8 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.sampleSlots.setSample(
                 self.mainWidget.sampleSlots.sample)
             self.mainWidget.iterationResultsDialog(
-                self.gudpy.gudrunIterator.name,
-                self.gudpy.gudrunIterator.result)
+                self.gudpy.gudrunIterator.result,
+                self.gudpy.gudrunIterator.name)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
                 gudrunOutput=self.gudpy.gudrunIterator.gudrunOutput

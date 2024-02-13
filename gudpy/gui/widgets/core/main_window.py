@@ -636,13 +636,56 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         )
 
     def iterationResultsDialog(self, results, name):
-        messageBox = QtWidgets.QMessageBox(self.ui)
-        messageBox.setWindowTitle("GudPy Iteration Results")
-        text = name
-        text += '\n'.join(
-            [f"{key}: {value}" for key, value in results.items()])
-        messageBox.setText(results)
-        messageBox.exec()
+        dialog = QtWidgets.QDialog(self.ui)
+        dialog.setWindowTitle("GudPy Iteration Results")
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(QtWidgets.QLabel(
+            name.capitalize() + " Iteration Results"))
+
+        resultsTable = QtWidgets.QTableWidget(dialog)
+        resultsTable.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+        )
+        resultsTable.verticalHeader().hide()
+
+        labels = ["Sample"]
+        for sample, sampleResults in results.items():
+            if labels == ["Sample"]:
+                # Get list of keys for header
+                labels += ["Starting " +
+                           k for k in sampleResults["Old"].keys()]
+                labels += ["New " + k for k in sampleResults["New"].keys()]
+                resultsTable.setColumnCount(len(labels))
+                resultsTable.setHorizontalHeaderLabels(labels)
+
+            currentRow = resultsTable.rowCount()
+            resultsTable.insertRow(currentRow)
+            resultsTable.setItem(
+                currentRow, 0, QtWidgets.QTableWidgetItem(sample))
+
+            for col, (_, value) in enumerate(sampleResults["Old"].items()):
+                col = col + 1
+                resultsTable.setItem(
+                    currentRow, col, QtWidgets.QTableWidgetItem(str(value)))
+
+            for col, (_, value) in enumerate(sampleResults["New"].items()):
+                col = col + len(sampleResults["Old"].keys()) + 1
+                resultsTable.setItem(
+                    currentRow, col, QtWidgets.QTableWidgetItem(str(value)))
+
+        layout.addWidget(resultsTable)
+        okButton = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok)
+        layout.addWidget(okButton)
+        okButton.accepted.connect(dialog.close)
+        dialog.setLayout(layout)
+
+        # Resize dialog to fit the table
+        tableWidth = resultsTable.horizontalHeader().length()
+        tableWidth += 50
+        dialogWidth = tableWidth
+        dialog.resize(dialogWidth, 400)
+
+        dialog.exec()
 
     def purgeOptionsMessageBox(self, text):
         messageBox = QtWidgets.QMessageBox(self.ui)

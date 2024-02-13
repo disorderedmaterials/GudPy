@@ -140,8 +140,9 @@ class Radius(Iterator):
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         if not self.result.get(sample.name, ""):
+            self.result[sample.name] = {}
             self.result[sample.name]["Old"] = {
-                f"{self.targetRadius.upper()} Radius": sample.innerRadius
+                f"{self.targetRadius.capitalize()} Radius": sample.innerRadius
                 if self.targetRadius == "inner" else sample.outerRadius
             }
         if self.targetRadius == "inner":
@@ -189,6 +190,7 @@ class Thickness(Iterator):
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         if not self.result.get(sample.name, ""):
+            self.result[sample.name] = {}
             self.result[sample.name]["Old"] = {
                 "Downstream Thickness": sample.downstreamThickness,
                 "Upstream Thickness": sample.upstreamThickness
@@ -200,7 +202,7 @@ class Thickness(Iterator):
         sample.downstreamThickness = totalThickness / 2
         sample.upstreamThickness = totalThickness / 2
 
-        self.result[sample.name] = {
+        self.result[sample.name]["New"] = {
             "Downstream Thickness": sample.downstreamThickness,
             "Upstream Thickness": sample.upstreamThickness
         }
@@ -265,7 +267,9 @@ class TweakFactor(Iterator):
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
 
-                self.result[sample.name] = tweakFactor
+                self.result[sample.name]["New"] = {
+                    "Tweak Factor": tweakFactor
+                }
         self.nCurrent += 1
 
 
@@ -304,11 +308,12 @@ class Density(Iterator):
         """
         # Apply the coefficient to the density.
         if not self.result.get(sample.name, ""):
+            self.result[sample.name] = {}
             self.result[sample.name]["Old"] = {
                 "Density": sample.density
             }
         sample.density *= coefficient
-        self.result[sample.name] = {"Density": sample.density}
+        self.result[sample.name]["New"] = {"Density": sample.density}
 
 
 class InelasticitySubtraction(Iterator):

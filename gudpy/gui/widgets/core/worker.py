@@ -153,7 +153,7 @@ class IteratorBaseWorker(QThread, gudpy.GudrunIterator):
     def _progressChanged(self, progress):
         self.progressChanged.emit(
             progress,
-            f"{self.name} - "
+            f"Iterate by {self.name} - "
             f"{self.iterator.nCurrent + 1}/{self.iterator.nTotal}"
         )
 
