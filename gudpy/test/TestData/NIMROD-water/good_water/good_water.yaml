@@ -1,6 +1,6 @@
 Instrument:
   name: NIMROD
-  dataFileDir: /TestData/NIMROD-water/raw/
+  dataFileDir: TestData/NIMROD-water/raw/
   dataFileType: raw
   detectorCalibrationFileName: StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat
   columnNoPhiVals: 4
