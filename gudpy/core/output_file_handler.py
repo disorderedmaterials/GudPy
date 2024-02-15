@@ -33,7 +33,7 @@ class GudrunOutput:
             elif name is not None:
                 return self.sampleOutputs[name].gudFile
         except KeyError:
-            return None
+            return ""
 
     def output(self, name: str, dataFile: str, type: str) -> str:
         try:

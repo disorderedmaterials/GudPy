@@ -384,6 +384,7 @@ class GudPyController(QtCore.QObject):
                 self.workerThread.start()
             )
         elif purgeResult == QMessageBox.No:
+            self.workerThread.purgeLocation = ""
             self.workerThread.start()
         else:
             self.mainWidget.processStopped()

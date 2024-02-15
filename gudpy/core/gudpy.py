@@ -136,6 +136,7 @@ class GudPy:
         self.purge = Purge()
         self.purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(self.purgeFile)
+        self.purgeOutput = self.purge.purgeOutput
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
@@ -170,7 +171,8 @@ class GudPy:
 
     def iterateComposition(self, iterator: iterators.Composition):
         self.gudrunIterator = CompositionIterator(
-            iterator, self.gudrunFile, purgeLocation=self.purgeOutput)
+            iterator=iterator, gudrunFile=self.gudrunFile,
+            purgeLocation=self.purgeOutput)
         exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(
@@ -458,7 +460,7 @@ class CompositionIterator(GudrunIterator):
         purgeLocation: str = ""
     ):
         iterator.nTotal *= 2
-        super().__init__(iterator, gudrunFile, purgeLocation)
+        super().__init__(gudrunFile, iterator, purgeLocation)
 
         self.result = {}
         self.compositionMap = None

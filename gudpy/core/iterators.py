@@ -602,7 +602,7 @@ def calculateTotalMolecules(components, sample):
     return total
 
 
-class Composition():
+class Composition(Iterator):
     """
     Class to represent a Composition Iterator.
     This class is used for iteratively tweaking composition
@@ -672,11 +672,7 @@ class Composition():
         self.nTotal = nTotal
         self.rtol = rtol
 
-        self.sampleArgs = [{
-            "sample": None,
-            "background": None,
-            "molecules": None,
-        }]
+        self.sampleArgs = []
 
         self.updatedSample = None
         self.currentCenter = 0
@@ -715,7 +711,7 @@ class Composition():
         gudrunFile
     ):
         # Prevent negative x
-        x = math.abs(x)
+        x = abs(x)
 
         if self.mode == Composition.Mode.SINGLE:
             # Determine instances where target components are used.
@@ -791,12 +787,12 @@ class Composition():
             return
 
         if self.newCenterOutput and prevOutput:
-            gudFileCurrentCenter = prevOutput.gudFile(
-                sample=self.sampleArgs[self.nCurrent]["background"
-                                                      ].samples[0].name)
-            gudFileNewCenter = self.newCenterOutput.gudFile(
-                sample=self.sampleArgs[self.nCurrent]["background"
-                                                      ].samples[0].name)
+            gudFileCurrentCenter = GudFile(prevOutput.gudFile(
+                name=self.sampleArgs[self.nCurrent]["background"
+                                                    ].samples[0].name))
+            gudFileNewCenter = GudFile(self.newCenterOutput.gudFile(
+                name=self.sampleArgs[self.nCurrent]["background"
+                                                    ].samples[0].name))
             currentCost = self.determineCost(gudFileCurrentCenter)
             newCost = self.determineCost(gudFileNewCenter)
 
