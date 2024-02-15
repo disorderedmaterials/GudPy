@@ -1,5 +1,4 @@
 import os
-import shutil
 from copy import deepcopy
 from unittest import TestCase
 import re
