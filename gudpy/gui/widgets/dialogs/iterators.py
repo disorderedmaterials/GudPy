@@ -72,7 +72,7 @@ class DensityIterationDialog(IterationDialog):
 class InelasticitySubtractionIterationDialog(IterationDialog):
     def __init__(self, parent, _):
         super().__init__(
-            name="InelasticitySubtractionsDialog",
+            name="iterateInelasticitySubtractionsDialog",
             iteratorType=iterators.InelasticitySubtraction,
             parent=parent
         )
@@ -125,15 +125,15 @@ class TweakFactorIterationDialog(IterationDialog):
 
 class CompositionIterationDialog(IterationDialog):
     def __init__(self, parent, gudrunFile):
+        self.gudrunFile = gudrunFile
+        self.components = [None, None]
+        self.rtol = 0.
+        self.mode = iterators.Composition.Mode.SINGLE
         super().__init__(
             name="IterateCompositionDialog",
             iteratorType=iterators.Composition,
             parent=parent
         )
-        self.gudrunFile = gudrunFile
-        self.components = [None, None]
-        self.rtol = 0.
-        self.mode = iterators.Comosition.Mode.SINGLE
 
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
@@ -188,7 +188,7 @@ class CompositionIterationDialog(IterationDialog):
         if state:
             self.enableItems(self.widget.firstComponentComboBox)
             self.components[1] = None
-            self.mode = iterators.Comosition.Mode.SINGLE
+            self.mode = iterators.Composition.Mode.SINGLE
         else:
             other = self.widget.secondComponentComboBox.model().item(
                 self.widget.firstComponentComboBox.currentIndex()
@@ -197,7 +197,7 @@ class CompositionIterationDialog(IterationDialog):
                 self.widget.secondComponentComboBox,
                 other
             )
-            self.mode = iterators.Comosition.Mode.DOUBLE
+            self.mode = iterators.Composition.Mode.DOUBLE
         self.widget.secondComponentComboBox.setEnabled(not state)
         self.widget.secondComponentComboBox.setCurrentIndex(-1)
 

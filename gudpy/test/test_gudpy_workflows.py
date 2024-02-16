@@ -200,6 +200,7 @@ class TestGudPyWorkflows(TestCase):
     def testIterateByComposition(self):
         with GudPyContext() as gudpy:
             g = deepcopy(gudpy.gudrunFile)
+            gudpy.runPurge()
             g.sampleBackgrounds[0].samples[0].runThisSample = False
             g.sampleBackgrounds[0].samples[2].runThisSample = False
             g.sampleBackgrounds[0].samples[3].runThisSample = False
@@ -227,18 +228,19 @@ class TestGudPyWorkflows(TestCase):
                 components=[h2]
             )
             gudpy.iterateComposition(iterator)
+            newComp = iterator.updatedSample.composition
             self.assertAlmostEqual(
-                sample.composition.weightedComponents[0].ratio, 2, 1
+                newComp.weightedComponents[0].ratio, 2, 1
             )
 
             self.assertEqual(
-                sample.composition.weightedComponents[1].ratio, 1
+                newComp.weightedComponents[1].ratio, 1
             )
 
     def testGudPyIterateBySubtractingWavelength(self):
         with GudPyContext() as gudpy:
             for i in range(1, 4):
-                gudpy.runPurge
+                gudpy.runPurge()
                 inelasitictyIterator = (
                     iterators.InelasticitySubtraction(i)
                 )
@@ -289,9 +291,9 @@ class TestGudPyWorkflows(TestCase):
                     )
 
                     actualData = open(
-                        gudpy.gudrunIterator.iterator.gudrunOutput[
+                        gudpy.gudrunIterator.iterator.gudrunOutputs[
                             len(
-                                gudpy.gudrunIterator.iterator.gudrunOutput
+                                gudpy.gudrunIterator.iterator.gudrunOutputs
                             ) - 2
                         ].output(
                             sample.name, sample.dataFiles[0], ".msubw01"),
