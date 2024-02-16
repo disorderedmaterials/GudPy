@@ -62,7 +62,7 @@ class Iterator():
         self,
         gudrunFile: GudrunFile,
         prevOutput: handlers.GudrunOutput
-    ):
+    ) -> GudrunFile:
         """
         Performs a single iteration of the current workflow.
 
@@ -77,7 +77,6 @@ class Iterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
-                print(sample.name, prevOutput.sampleOutputs[sample.name])
                 gudFile = GudFile(
                     prevOutput.gudFile(name=sample.name)
                 )
@@ -89,6 +88,7 @@ class Iterator():
                 self.applyCoefficientToAttribute(
                     sample, coefficient, prevOutput)
         self.nCurrent += 1
+        return gudrunFile
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
         """
@@ -237,7 +237,7 @@ class TweakFactor(Iterator):
         self.name = "tweakfactor"
         self.iterationMode = IterationModes.TWEAK_FACTOR
 
-    def performIteration(self, gudrunFile, prevOutput):
+    def performIteration(self, gudrunFile, prevOutput) -> GudrunFile:
         """
         Performs a single iteration of the current workflow.
 
@@ -272,6 +272,7 @@ class TweakFactor(Iterator):
                     "Tweak Factor": tweakFactor
                 }
         self.nCurrent += 1
+        return gudrunFile
 
 
 class Density(Iterator):
@@ -379,6 +380,7 @@ class InelasticitySubtraction(Iterator):
         gudrunFile : GudrunFile
             Input GudrunFile that we will be using for iterating.
         """
+        nTotal *= 2
         super().__init__(nTotal)
         self.name = "inelasticity subtraction"
         self.iterationMode = IterationModes.INELASTICITY
@@ -478,7 +480,7 @@ class InelasticitySubtraction(Iterator):
                 if sample.runThisSample:
                     self.topHatWidths.append(sample.topHatW)
 
-    def setSelfScatteringFiles(self, scale, gudrunFile, prevOutput):
+    def setSelfScatteringFiles(self, scale, gudrunFile, prevOutput=None):
         """
         Alters file extensions of self scattering files for samples being run.
         If the scale selected is the Q-scale, then set self scattering file
@@ -544,7 +546,7 @@ class InelasticitySubtraction(Iterator):
         self.zeroTopHatWidths(gudrunFile)
         self.setSelfScatteringFiles(Scales.WAVELENGTH, gudrunFile, prevOutput)
 
-    def QIteration(self, gudrunFile):
+    def QIteration(self, gudrunFile, prevOutput):
         """
         Performs one iteration on the Q scale.
         Enables subtracting of wavelength-binned data.
@@ -565,15 +567,16 @@ class InelasticitySubtraction(Iterator):
         self.disableLogarithmicBinning(gudrunFile)
         gudrunFile.instrument.scaleSelection = Scales.Q
         self.resetTopHatWidths(gudrunFile)
-        self.setSelfScatteringFiles(Scales.Q, gudrunFile)
+        self.setSelfScatteringFiles(Scales.Q, gudrunFile, prevOutput)
 
     def performIteration(self, gudrunFile, prevOutput):
         if self.iterationType == "QIteration":
             self.wavelengthIteration(gudrunFile, prevOutput)
             self.iterationCount += 1
         else:
-            self.QIteration(gudrunFile)
+            self.QIteration(gudrunFile, prevOutput)
             self.nCurrent += 1
+        return gudrunFile
 
     def organiseOutput(self, gudrunFile, exclude=[]):
         """
@@ -668,7 +671,6 @@ class Composition(Iterator):
         else:
             self.mode = Composition.Mode.DOUBLE
 
-        self.bounds = [startBound, self.ratio, endBound]
         self.nTotal = nTotal
         self.rtol = rtol
 
@@ -676,7 +678,6 @@ class Composition(Iterator):
 
         self.updatedSample = None
         self.currentCenter = 0
-        self.result = None
         self.compositionMap = {}
 
         for sampleBackground in gudrunFile.sampleBackgrounds:
@@ -693,6 +694,7 @@ class Composition(Iterator):
                                 "sample": sample,
                                 "background": sb,
                                 "molecules": None,
+                                "bounds": [startBound, self.ratio, endBound]
                             })
                         elif self.mode == Composition.Mode.DOUBLE:
                             self.sampleArgs.append({
@@ -701,13 +703,15 @@ class Composition(Iterator):
                                 "molecules": self.calculateTotalMolecules(
                                     self.components,
                                     sample
-                                )
+                                ),
+                                "bounds": [startBound, self.ratio, endBound]
                             })
+        print(self.sampleArgs)
 
     def costUp(
         self,
         x,
-        sampleArgs,
+        sampleArg,
         gudrunFile
     ):
         # Prevent negative x
@@ -716,7 +720,7 @@ class Composition(Iterator):
         if self.mode == Composition.Mode.SINGLE:
             # Determine instances where target components are used.
             weightedComponents = [
-                wc for wc in sampleArgs["background"].samples[0]
+                wc for wc in sampleArg["background"].samples[0]
                 .composition.weightedComponents
                 for c in self.components
                 if c.eq(wc.component)
@@ -724,11 +728,11 @@ class Composition(Iterator):
             for component in weightedComponents:
                 component.ratio = x
 
-        elif self.mode == Composition.Mode.SINGLE:
+        elif self.mode == Composition.Mode.DOUBLE:
             wcA = wcB = None
             # Determine instances where target components are used.
             for weightedComponent in (
-                sampleArgs[
+                sampleArg[
                     "background"
                 ].samples[0].composition.weightedComponents
             ):
@@ -740,13 +744,13 @@ class Composition(Iterator):
             if wcA and wcB:
                 # Ensure combined ratio == totalMolecules.
                 wcA.ratio = x
-                wcB.ratio = abs(sampleArgs["molecules"] - x)
+                wcB.ratio = abs(sampleArg["molecules"] - x)
 
-        sampleArgs["background"].samples[0].composition.translate()
-        self.updatedSample = sampleArgs["background"].samples[0]
-        self.compositionMap[sampleArgs["sample"]] = self.updatedSample
+        sampleArg["background"].samples[0].composition.translate()
+        self.updatedSample = sampleArg["background"].samples[0]
+        self.compositionMap[sampleArg["sample"]] = self.updatedSample
 
-        gudrunFile.sampleBackgrounds = [sampleArgs["background"]]
+        gudrunFile.sampleBackgrounds = [sampleArg["background"]]
         return gudrunFile
 
     def determineCost(self, gudFile: GudFile):
@@ -755,57 +759,56 @@ class Composition(Iterator):
         else:
             return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
 
-    def iterateCurrentCenter(self, gudrunFile: GudrunFile) -> GudrunFile:
-        sampleArgs = self.sampleArgs[self.nCurrent]
+    def iterateCurrentCenter(
+            self, gudrunFile: GudrunFile, sampleArg) -> GudrunFile:
         gudrunFileCopy = deepcopy(gudrunFile)
-        return self.costUp(self.bounds[1], sampleArgs, gudrunFileCopy)
+        return self.costUp(sampleArg["bounds"][1], sampleArg, gudrunFileCopy)
 
-    def iterateNewPotentialCenter(self, gudrunFile: GudrunFile):
-        sampleArgs = self.sampleArgs[self.nCurrent]
+    def iterateNewPotentialCenter(self, gudrunFile: GudrunFile, sampleArg):
         gudrunFileCopy = deepcopy(gudrunFile)
+        bounds = sampleArg["bounds"]
 
         # Calculate a potential centre = c + 2 - GR * (upper-c)
-        self.newCenter = self.bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * \
-            (self.bounds[2] - self.bounds[1])
-
-        self.isNewCenterCalculated = True
+        self.newCenter = bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * \
+            (bounds[2] - bounds[1])
 
         # If the new centre evaluates to less than the current
-        return self.costUp(self.newCenter, sampleArgs, gudrunFileCopy)
+        return self.costUp(self.newCenter, sampleArg, gudrunFileCopy)
 
     def performIteration(
         self,
         gudrunFile: GudrunFile,
+        sampleArg: dict,
         prevOutput: handlers.GudrunOutput
-    ):
+    ) -> GudrunFile:
+        bounds = sampleArg["bounds"]
         if (
-            (abs(self.bounds[2] - self.bounds[0]) /
-             min([abs(self.bounds[0]), abs(self.bounds[2])]))
+            (abs(bounds[2] - bounds[0]) /
+             min([abs(bounds[0]), abs(bounds[2])]))
             < (self.rtol / 100)**2
         ):
-            self.result = (self.bounds[2] + self.bounds[1]) / 2
+            sampleArg["result"] = (
+                (bounds[2] + bounds[1]) / 2)
             return
 
         if self.newCenterOutput and prevOutput:
+            print(prevOutput)
             gudFileCurrentCenter = GudFile(prevOutput.gudFile(
-                name=self.sampleArgs[self.nCurrent]["background"
-                                                    ].samples[0].name))
+                name=sampleArg["background"].samples[0].name))
             gudFileNewCenter = GudFile(self.newCenterOutput.gudFile(
-                name=self.sampleArgs[self.nCurrent]["background"
-                                                    ].samples[0].name))
+                name=sampleArg["background"].samples[0].name))
             currentCost = self.determineCost(gudFileCurrentCenter)
             newCost = self.determineCost(gudFileNewCenter)
 
             if newCost < currentCost:
                 # Swap them, making the previous centre the new lower bound.
-                self.bounds = [self.bounds[1], self.newCenter, self.bounds[2]]
+                sampleArg["bounds"] = [bounds[1], self.newCenter, bounds[2]]
             else:
                 # Otherwise, swap and reverse.
-                self.bounds = [self.newCenter, self.bounds[1], self.bounds[0]]
-
+                sampleArg["bounds"] = [self.newCenter, bounds[1], bounds[0]]
             self.nCurrent += 1
             self.newCenterOutput = None
-            return self.iterateCurrentCenter(gudrunFile)
+            return self.iterateCurrentCenter(gudrunFile, sampleArg)
         else:
             self.newCenterOutput = prevOutput
-            return self.iterateNewPotentialCenter(gudrunFile)
+            return self.iterateNewPotentialCenter(gudrunFile, sampleArg)

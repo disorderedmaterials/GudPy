@@ -418,8 +418,8 @@ class GudrunIterator:
         gudrun: Gudrun,
         prevOutput: handlers.GudrunOutput
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(gudrunFile, self.purgeLocation, self.iterator)
+        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
+        exitcode = gudrun.gudrun(modGfFile, self.purgeLocation, self.iterator)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
@@ -452,48 +452,74 @@ class GudrunIterator:
         return self.exitcode
 
 
-class CompositionIterator(GudrunIterator):
+class CompositionIterator():
     def __init__(
         self,
         iterator: iterators.Composition,
         gudrunFile: GudrunFile,
         purgeLocation: str = ""
     ):
-        iterator.nTotal *= 2
-        super().__init__(gudrunFile, iterator, purgeLocation)
-
+        self.gudrunFile = copy.deepcopy(gudrunFile)
+        self.iterator = iterator
+        self.purgeLocation = purgeLocation
+        self.gudrunIterators = []
         self.result = {}
         self.compositionMap = None
         self.currentIteration = 0
 
-    def iterate(self) -> typ.Tuple[int, str]:
-        prevOutput = None
+        # Create iterator for each sample
+        for _ in iterator.sampleArgs:
+            self.gudrunIterators.append(GudrunIterator(
+                gudrunFile=gudrunFile, iterator=iterator,
+                purgeLocation=purgeLocation
+            ))
 
-        for gudrun in self.gudrunObjects:
-            if self.iterator.result:
-                self.result = self.iterator.result
-                self.compositionMap = self.iterator.compositionMap
-                self.exitcode = (0, )
-                return self.exitcode
+    def singleIteration(
+        self,
+        gudrunFile: GudrunFile,
+        gudrun: Gudrun,
+        sampleArg: dict,
+        prevOutput: handlers.GudrunOutput
+    ) -> typ.Tuple[int, str]:  # (exitcode, error)
+        modGudrunFile = self.iterator.performIteration(
+            gudrunFile, sampleArg, prevOutput)
+        exitcode = gudrun.gudrun(
+            modGudrunFile, self.purgeLocation, self.iterator)
+        if exitcode:
+            return exitcode
+        return 0
 
-            exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, prevOutput)
-            if exitcode:  # An exit code != 0 indicates failure
-                self.exitcode = (exitcode, gudrun.error)
-                return self.exitcode
+    def iterate(self):
+        for sampleArg, gudrunIterator in zip(
+            self.iterator.sampleArgs, self.gudrunIterators
+        ):
+            prevOutput = None
+            for gudrun in gudrunIterator.gudrunObjects:
+                if sampleArg.get("result", ""):
+                    self.result[sampleArg["sample"].name] = sampleArg["result"]
+                    break
+                exitcode = self.singleIteration(
+                    gudrunFile=self.gudrunFile, gudrun=gudrun,
+                    sampleArg=sampleArg, prevOutput=prevOutput)
+                if exitcode:  # An exit code != 0 indicates failure
+                    self.exitcode = (exitcode, gudrun.error)
+                    return self.exitcode
 
-            prevOutput = gudrun.gudrunOutput
+                prevOutput = gudrun.gudrunOutput
 
-            if self.currentIteration != self.iterator.nCurrent:
-                # Will be called every other iteration of this loop
-                self.currentIteration += 1
+            # If max iterations are reached set result as current center
+            if not self.result.get(sampleArg["sample"].name, ""):
+                self.result[sampleArg["sample"].name] = sampleArg["bounds"][1]
 
         error = (
             "No iterations were queued."
             " It's likely no Samples selected for analysis"
             " use the Component(s) selected for iteration."
         )
-        self.exitcode = (1, error)
+        if not self.result:
+            self.exitcode = (1, error)
+        else:
+            self.exitcode = (0, "")
         return self.exitcode
 
 
