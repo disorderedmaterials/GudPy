@@ -5,13 +5,14 @@ from dataclasses import dataclass
 import tempfile
 
 import core.utils as utils
+from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
 
 
 @dataclass
 class SampleOutput:
     sampleFile: str
-    gudFile: str
+    gudFile: GudFile
     outputs: typing.Dict[str, typing.Dict[str, str]]
     diagnostics: typing.Dict[str, typing.Dict[str, str]]
 
@@ -25,7 +26,7 @@ class GudrunOutput:
     def gudFiles(self) -> list[str]:
         return [so.gudFile for so in self.sampleOutputs.values()]
 
-    def gudFile(self, idx: int = None, *, name: str = None) -> str:
+    def gudFile(self, idx: int = None, *, name: str = None) -> GudFile:
         try:
             if idx is not None:
                 asList = list(self.sampleOutputs.values())
@@ -33,7 +34,7 @@ class GudrunOutput:
             elif name is not None:
                 return self.sampleOutputs[name].gudFile
         except KeyError:
-            return ""
+            return None
 
     def output(self, name: str, dataFile: str, type: str) -> str:
         try:
@@ -265,16 +266,16 @@ class GudrunOutputHandler(OutputHandler):
             )
             # Move datafiles to sample folder
             for idx, dataFile in enumerate(sample.dataFiles):
-                out, diag = self._copyOutputsByExt(
+                out, diag, gf = self._copyOutputsByExt(
                     dataFile,
                     samplePath,
                     sample.name.replace(" ", "_")
                 )
+                if idx == 0:
+                    gudFile = gf
                 sampleOutput[dataFile] = out
                 sampleDiag[dataFile] = diag
-                if idx == 0:
-                    gudFile = (out[".gud"]
-                               if ".gud" in out else "")
+
             # Copy over .sample file
             if os.path.exists(os.path.join(
                     self.gudrunDir, sample.pathName())):
@@ -409,11 +410,9 @@ class GudrunOutputHandler(OutputHandler):
 
         outputs = {}
         diagnostics = {}
+        gudFile = None
+
         for f in os.listdir(self.gudrunDir):
-            if f == 'NIMROD00016608_H2O_in_N9.gudw':
-                with open(
-                        os.path.join(self.gudrunDir, f), "r", encoding="utf8"):
-                    print(f)
             # If the file has the same name as requested filename
             fn, ext = os.path.splitext(f)
             if fn == fname:
@@ -426,6 +425,8 @@ class GudrunOutputHandler(OutputHandler):
                 # Set dir depending on file extension
                 dir = outDir if ext in self.outputExts else diagDir
                 if dir == outDir:
+                    if ext == ".gud":
+                        gudFile = GudFile(os.path.join(self.gudrunDir, f))
                     outputs[ext] = os.path.join(
                         self.outputDir, folderName, fname, "Outputs", f)
                 else:
@@ -436,4 +437,4 @@ class GudrunOutputHandler(OutputHandler):
                     os.path.join(dir, f)
                 )
                 self.copiedFiles.append(f)
-        return (outputs, diagnostics)
+        return (outputs, diagnostics, gudFile)

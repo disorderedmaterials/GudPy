@@ -595,7 +595,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 topChart.plot(plotMode)
             gf = self.gudrunOutput.gudFile(name=sample.name)
             self.results[sample] = [
-                topChart, bottomChart, GudFile(gf) if gf else None]
+                topChart, bottomChart, gf if gf else None]
 
     def updateAllSamples(self):
         samples = [

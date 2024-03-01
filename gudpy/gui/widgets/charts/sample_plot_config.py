@@ -55,15 +55,16 @@ class SamplePlotConfig():
                 self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
 
             # gud data, for dcs level.
-            gudPath = self.gudrunOutput.gudFile(
-                name=self.sample.name,
+            gudFile = self.gudrunOutput.gudFile(
+                name=self.sample.name
             )
             hasDCSData = False
 
-            if gudPath and os.path.exists(gudPath):
+            if gudFile and os.path.exists(gudFile.path):
                 hasDCSData = True
-
-            self.dcsLevel = DCSLevel(gudPath, hasDCSData)
+                self.dcsLevel = DCSLevel(gudFile.path, hasDCSData)
+            else:
+                self.dcsLevel = DCSLevel("", hasDCSData)
             if hasMdcsData:
                 self.dcsLevel.extend(
                     [p.x() for p in self.mdcs01Series.points()]
