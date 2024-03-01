@@ -8,7 +8,7 @@ from core.gudrun_file import GudrunFile
 import core.output_file_handler as handlers
 
 
-class Iterator():
+class Iterator:
     """
     Class to represent an Iterator.
     This class is used for iteratively tweaking a parameter by a coefficient.
@@ -53,7 +53,7 @@ class Iterator():
         """
         self.name = ""
         self.nTotal = nTotal
-        self.nCurrent = -1
+        self.nCurrent = 0
         self.iterationType = self.name
         self.requireDefault = True
         self.result = {}
@@ -67,9 +67,7 @@ class Iterator():
         Performs a single iteration of the current workflow.
 
         """
-        if self.nCurrent == -1:
-            self.nCurrent += 1
-            return
+
         # Iterate through all samples that are being run,
         # applying the coefficient to the target parameter.
         for sampleBackground in gudrunFile.sampleBackgrounds:
@@ -77,9 +75,7 @@ class Iterator():
                 s for s in sampleBackground.samples
                 if s.runThisSample and len(s.dataFiles)
             ]:
-                gudFile = GudFile(
-                    prevOutput.gudFile(name=sample.name)
-                )
+                gudFile = prevOutput.gudFile(name=sample.name)
                 # Calculate coefficient: actualDCSLevel / expectedDCSLevel
                 coefficient = (
                     gudFile.averageLevelMergedDCS / gudFile.expectedDCS
@@ -246,9 +242,6 @@ class TweakFactor(Iterator):
         _n : int
             Iteration number.
         """
-        if self.nCurrent == -1:
-            self.nCurrent += 1
-            return
 
         # Iterate through all samples,
         # updating their tweak factor from the output of gudrun_dcs.
@@ -262,9 +255,7 @@ class TweakFactor(Iterator):
                     self.result[sample.name]["Old"] = {
                         "Tweak Factor": sample.sampleTweakFactor
                     }
-                gudFile = GudFile(
-                    prevOutput.gudFile(name=sample.name)
-                )
+                gudFile = prevOutput.gudFile(name=sample.name)
                 tweakFactor = float(gudFile.suggestedTweakFactor)
                 sample.sampleTweakFactor = tweakFactor
 
@@ -661,7 +652,7 @@ class Composition(Iterator):
         self.mode = mode
         self.nCurrent = 0
         self.newCenter = None
-        self.newCenterOutput = None
+        self.gudFileNewCenter = None
 
         self.ratio = ratio
         self.components = [c for c in components if c]
@@ -706,7 +697,6 @@ class Composition(Iterator):
                                 ),
                                 "bounds": [startBound, self.ratio, endBound]
                             })
-        print(self.sampleArgs)
 
     def costUp(
         self,
@@ -719,13 +709,11 @@ class Composition(Iterator):
 
         if self.mode == Composition.Mode.SINGLE:
             # Determine instances where target components are used.
-            weightedComponents = [
+            for component in [
                 wc for wc in sampleArg["background"].samples[0]
                 .composition.weightedComponents
-                for c in self.components
-                if c.eq(wc.component)
-            ]
-            for component in weightedComponents:
+                for c in self.components if c.eq(wc.component)
+            ]:
                 component.ratio = x
 
         elif self.mode == Composition.Mode.DOUBLE:
@@ -757,30 +745,38 @@ class Composition(Iterator):
         if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
             return 0
         else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+            if self.mode == Composition.Mode.SINGLE:
+                return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+            else:
+                return abs(
+                    gudFile.expectedDCS - gudFile.averageLevelMergedDCS
+                ) / min(
+                    [
+                        abs(gudFile.averageLevelMergedDCS),
+                        abs(gudFile.expectedDCS)
+                    ]
+                )
 
     def iterateCurrentCenter(
             self, gudrunFile: GudrunFile, sampleArg) -> GudrunFile:
-        gudrunFileCopy = deepcopy(gudrunFile)
-        return self.costUp(sampleArg["bounds"][1], sampleArg, gudrunFileCopy)
+        return self.costUp(sampleArg["bounds"][1], sampleArg, gudrunFile)
 
     def iterateNewPotentialCenter(self, gudrunFile: GudrunFile, sampleArg):
-        gudrunFileCopy = deepcopy(gudrunFile)
         bounds = sampleArg["bounds"]
 
         # Calculate a potential centre = c + 2 - GR * (upper-c)
-        self.newCenter = bounds[1] + (2 - (1 + math.sqrt(5)) / 2) * \
-            (bounds[2] - bounds[1])
+        self.newCenter = (bounds[1] + (2 - (1 + math.sqrt(5)) / 2)
+                          * (bounds[2] - bounds[1]))
 
         # If the new centre evaluates to less than the current
-        return self.costUp(self.newCenter, sampleArg, gudrunFileCopy)
+        return self.costUp(self.newCenter, sampleArg, gudrunFile)
 
-    def performIteration(
+    def compareCost(
         self,
-        gudrunFile: GudrunFile,
         sampleArg: dict,
-        prevOutput: handlers.GudrunOutput
-    ) -> GudrunFile:
+        currentCenterGudFile: GudFile,
+        newCenterGudFile: GudFile,
+    ):
         bounds = sampleArg["bounds"]
         if (
             (abs(bounds[2] - bounds[0]) /
@@ -791,24 +787,14 @@ class Composition(Iterator):
                 (bounds[2] + bounds[1]) / 2)
             return
 
-        if self.newCenterOutput and prevOutput:
-            print(prevOutput)
-            gudFileCurrentCenter = GudFile(prevOutput.gudFile(
-                name=sampleArg["background"].samples[0].name))
-            gudFileNewCenter = GudFile(self.newCenterOutput.gudFile(
-                name=sampleArg["background"].samples[0].name))
-            currentCost = self.determineCost(gudFileCurrentCenter)
-            newCost = self.determineCost(gudFileNewCenter)
-
-            if newCost < currentCost:
-                # Swap them, making the previous centre the new lower bound.
-                sampleArg["bounds"] = [bounds[1], self.newCenter, bounds[2]]
-            else:
-                # Otherwise, swap and reverse.
-                sampleArg["bounds"] = [self.newCenter, bounds[1], bounds[0]]
-            self.nCurrent += 1
-            self.newCenterOutput = None
-            return self.iterateCurrentCenter(gudrunFile, sampleArg)
+        # If both new center and current center have been iterated,
+        # Calculate the cost, change bounds and reset process
+        currentCost = self.determineCost(currentCenterGudFile)
+        newCost = self.determineCost(newCenterGudFile)
+        if newCost < currentCost:
+            # Swap them, making the previous centre the new lower bound.
+            sampleArg["bounds"] = [bounds[1], self.newCenter, bounds[2]]
         else:
-            self.newCenterOutput = prevOutput
-            return self.iterateNewPotentialCenter(gudrunFile, sampleArg)
+            # Otherwise, swap and reverse.
+            sampleArg["bounds"] = [self.newCenter, bounds[1], bounds[0]]
+        self.nCurrent += 1

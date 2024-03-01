@@ -462,52 +462,53 @@ class CompositionIterator():
         self.gudrunFile = copy.deepcopy(gudrunFile)
         self.iterator = iterator
         self.purgeLocation = purgeLocation
-        self.gudrunIterators = []
+        self.gudrunObjects = []
         self.result = {}
         self.compositionMap = None
         self.currentIteration = 0
 
-        # Create iterator for each sample
-        for _ in iterator.sampleArgs:
-            self.gudrunIterators.append(GudrunIterator(
-                gudrunFile=gudrunFile, iterator=iterator,
-                purgeLocation=purgeLocation
-            ))
-
-    def singleIteration(
-        self,
-        gudrunFile: GudrunFile,
-        gudrun: Gudrun,
-        sampleArg: dict,
-        prevOutput: handlers.GudrunOutput
-    ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        modGudrunFile = self.iterator.performIteration(
-            gudrunFile, sampleArg, prevOutput)
-        exitcode = gudrun.gudrun(
-            modGudrunFile, self.purgeLocation, self.iterator)
-        if exitcode:
-            return exitcode
-        return 0
-
     def iterate(self):
-        for sampleArg, gudrunIterator in zip(
-            self.iterator.sampleArgs, self.gudrunIterators
-        ):
-            prevOutput = None
-            for gudrun in gudrunIterator.gudrunObjects:
+        for sampleArg in self.iterator.sampleArgs:
+            self.gudrunObjects.append((Gudrun(), Gudrun()))
+            for gudrunNC, gudrunCC in self.gudrunObjects:
+                # Run the new center
+                newCenter = self.iterator.iterateNewPotentialCenter(
+                    self.gudrunFile, sampleArg)
+                exitcode = gudrunNC.gudrun(
+                    newCenter, self.purgeLocation, self.iterator)
+                if exitcode:  # An exit code != 0 indicates failure
+                    self.exitcode = (exitcode, gudrunNC.error)
+                    return self.exitcode
+
+                # Run the current center
+                currentCenter = self.iterator.iterateCurrentCenter(
+                    self.gudrunFile, sampleArg)
+                exitcode = gudrunCC.gudrun(
+                    gudrunFile=currentCenter,
+                    purgeLocation=self.purgeLocation,
+                    iterator=self.iterator)
+                if exitcode:  # An exit code != 0 indicates failure
+                    self.exitcode = (exitcode, gudrunCC.error)
+                    return self.exitcode
+
+                # Compare the cost of the two centers
+                self.iterator.compareCost(
+                    sampleArg=sampleArg,
+                    currentCenterGudFile=gudrunCC.gudrunOutput.gudFile(
+                        name=sampleArg["background"].samples[0].name),
+                    newCenterGudFile=gudrunNC.gudrunOutput.gudFile(
+                        name=sampleArg["background"].samples[0].name)
+                )
+
+                # Check if result has been achieved
                 if sampleArg.get("result", ""):
                     self.result[sampleArg["sample"].name] = sampleArg["result"]
                     break
-                exitcode = self.singleIteration(
-                    gudrunFile=self.gudrunFile, gudrun=gudrun,
-                    sampleArg=sampleArg, prevOutput=prevOutput)
-                if exitcode:  # An exit code != 0 indicates failure
-                    self.exitcode = (exitcode, gudrun.error)
-                    return self.exitcode
+                # If the iterator has not reached max iterations, continue loop
+                if not self.iterator.nCurrent == self.iterator.nTotal - 1:
+                    self.gudrunObjects.append((Gudrun(), Gudrun()))
 
-                prevOutput = gudrun.gudrunOutput
-
-            # If max iterations are reached set result as current center
+            # If max iterations are reached, set result as current center
             if not self.result.get(sampleArg["sample"].name, ""):
                 self.result[sampleArg["sample"].name] = sampleArg["bounds"][1]
 
