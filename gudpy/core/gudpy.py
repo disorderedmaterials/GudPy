@@ -44,6 +44,22 @@ class GudPy:
         format: enums.Format,
         config: bool = False
     ):
+        """Loads GudPy from an input file
+
+        Parameters
+        ----------
+        loadFile : str
+            Path of input file to load from
+        format : enums.Format
+            Format of the input file (YAML or TXT)
+        config : bool, optional
+            If loading from preset config, by default False
+
+        Raises
+        ------
+        FileNotFoundError
+            Raised if input file does not exist
+        """
         if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
@@ -54,6 +70,19 @@ class GudPy:
         )
 
     def loadFromProject(self, projectDir: str):
+        """Loads GudPy from a project directory
+
+        Parameters
+        ----------
+        projectDir : str
+            Path to GudPy project folder
+
+        Raises
+        ------
+        FileNotFoundError
+            Raised if there is no YAML input file in the
+            project directory
+        """
         loadFile = ""
 
         if os.path.exists(os.path.join(
@@ -79,9 +108,23 @@ class GudPy:
         self.setSaveLocation(projectDir)
 
     def checkSaveLocation(self):
+        """Checks if user has set the save location
+
+        Returns
+        -------
+        bool
+            If the save location is set or not
+        """
         return bool(self.projectDir)
 
     def setSaveLocation(self, projectDir: str):
+        """Sets the save location
+
+        Parameters
+        ----------
+        projectDir : str
+            Path to the desired save location of project
+        """
         self.projectDir = projectDir
         self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
         self.gudrunFile.projectDir = projectDir
@@ -90,12 +133,34 @@ class GudPy:
         )
 
     def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
+        """Saves current GudPy input file
+
+        Parameters
+        ----------
+        path : str, optional
+            Path to desired save location, by default ""
+        format : enums.Format, optional
+            Desired format of save file, by default enums.Format.YAML
+        """
         if not path:
             path = self.gudrunFile.path()
         if path:
             self.gudrunFile.save(path=path, format=format)
 
     def saveAs(self, targetDir: str):
+        """Save GudPy project to a new location, set current
+        project to the new location.
+
+        Parameters
+        ----------
+        targetDir : str
+            Target path to new save location
+
+        Raises
+        ------
+        IsADirectoryError
+            Raised if the requested save location already exists
+        """
         if os.path.exists(targetDir):
             raise IsADirectoryError("Cannot be an existing directory")
 
@@ -119,6 +184,17 @@ class GudPy:
         self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
+        """Check if all file parameters submitted exists and that
+        all required paths are provided
+
+        Returns
+        -------
+        Tuple [List[str], List[str]]
+            Returns a tuple of two lists:
+                Undefined files: Paths required by Gudrun that have not
+                been provided
+                Unresolved files: Paths sumbitted that do not exist
+        """
         result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
                                                        for r in result[1]):
@@ -133,9 +209,17 @@ class GudPy:
         return (undefined, unresolved)
 
     def runPurge(self):
+        """Runs purge_det binary to purge detectors in data
+
+        Raises
+        ------
+        exc.PurgeException
+            Raised if purge_det failed to execute
+        """
         self.purge = Purge()
         self.purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(self.purgeFile)
+        self.gudrunFile.save()
         self.purgeOutput = self.purge.purgeOutput
         if exitcode:
             raise exc.PurgeException(
@@ -143,7 +227,19 @@ class GudPy:
                 f"{self.purge.error}"
             )
 
-    def runGudrun(self, gudrunFile=None):
+    def runGudrun(self, gudrunFile: GudrunFile = None):
+        """Runs gudrun_dcs binary
+
+        Parameters
+        ----------
+        gudrunFile : GudrunFile, optional
+            GudrunFile object to input to gudrun_dcs, by default None
+
+        Raises
+        ------
+        exc.GudrunException
+            Raised if gudrun_dcs failed to execute
+        """
         if not gudrunFile:
             gudrunFile = self.gudrunFile
         self.gudrun = Gudrun()
@@ -157,6 +253,21 @@ class GudPy:
         self.gudrunOutput = self.gudrun.gudrunOutput
 
     def iterateGudrun(self, iterator: iterators.Iterator):
+        """Runs gudrun_dcs iteratively while tweaking parameters
+
+        Parameters
+        ----------
+        iterator : iterators.Iterator
+            Iterator to use
+
+        Raises
+        ------
+        exc.GudrunException
+            Raised if gudrun_dcs failed to execute
+        """
+        if isinstance(iterator, iterators.Composition):
+            self.iterateComposition(iterator)
+            return
         self.gudrunIterator = GudrunIterator(
             gudrunFile=self.gudrunFile, purgeLocation=self.purgeOutput,
             iterator=iterator)
@@ -170,6 +281,18 @@ class GudPy:
         self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
+        """Runs gudrun_dcs iteratively while tweaking the composition
+
+        Parameters
+        ----------
+        iterator : iterators.Composition
+            Composition iterator to use
+
+        Raises
+        ------
+        exc.GudrunException
+            Raised if gudrun_dcs failed to execute
+        """
         self.gudrunIterator = CompositionIterator(
             iterator=iterator, gudrunFile=self.gudrunFile,
             purgeLocation=self.purgeOutput)
@@ -182,22 +305,49 @@ class GudPy:
         self.gudrunFile = self.gudrunIterator.gudrunFile
 
     def runContainersAsSample(self):
+        """Run gudrun_dcs but convert all containers to samples
+        """
         gudrunFile = self.runModes.convertContainersToSample(self.gudrunFile)
         self.runGudrun(gudrunFile=gudrunFile)
 
     def runFilesIndividually(self):
+        """Run gudrun_dcs but partition all data files
+        """
         gudrunFile = self.runModes.partition(self.gudrunFile)
         self.runGudrun(gudrunFile=gudrunFile)
 
     def batchProcessing(
         self,
-        iterator: iterators.Iterator,
+        iterator: iterators.Iterator = None,
         batchSize=1,
         stepSize=1,
         offset: int = 0,
         rtol=0.0,
         separateFirstBatch=False
     ):
+        """Run gudrun_dcs using batch processing
+
+        Parameters
+        ----------
+        iterator : iterators.Iterator, optional
+            Iterator to apply, by default None
+        batchSize : int, optional
+            Size of batch, by default 1
+        stepSize : int, optional
+            Step size to use, by default 1
+        offset : int, optional
+            Offset to use, by default 0
+        rtol : float, optional
+            Relative tolerance to use, by default 0.0
+        separateFirstBatch : bool, optional
+            Whether or not to separate the first batch,
+            by default False
+
+        Raises
+        ------
+        exc.GudrunException
+            Raised if gudrun_dcs failed to execute
+        """
         self.batchProcessor = BatchProcessing(
             gudrunFile=self.gudrunFile,
             iterator=iterator,
