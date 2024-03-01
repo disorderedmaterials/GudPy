@@ -91,7 +91,8 @@ class OutputTreeModel(QAbstractItemModel):
                     s = deepcopy(sample)
                     s.output = index + start
 
-                    if len(self.data_[idx]["outputs"]) != 1:
+                    # If iterator output
+                    if len(self.data_.keys()) != 1:
                         prev.output = "".join(
                             output.splitlines(keepends=True)
                             [prev.output:index + start - 1]
