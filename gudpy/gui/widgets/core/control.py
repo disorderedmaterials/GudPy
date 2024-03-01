@@ -71,7 +71,7 @@ class GudPyController(QtCore.QObject):
         self.mainWidget.ui.batchProcessing.triggered.connect(
             self.runBatchProcessing)
         self.mainWidget.ui.checkFilesExist.triggered.connect(
-            lambda: self.checkFilesExist_(True)
+            lambda: self.checkFilesExist(True)
         )
         self.mainWidget.timer.setSingleShot(True)
         self.mainWidget.timer.timeout.connect(self.autosave)
@@ -157,7 +157,9 @@ class GudPyController(QtCore.QObject):
             filter = "YAML (*.yaml)"
         fmt = filters[filter]
         try:
-            self.gudpy.loadFromFile(loadFile=filename, format=fmt)
+            gudpy = gp.GudPy()
+            gudpy.loadFromFile(loadFile=filename, format=fmt)
+            self.gudpy = gudpy
         except (FileNotFoundError, exc.ParserException) as e:
             self.mainWidget.sendError(e)
             return
@@ -182,14 +184,15 @@ class GudPyController(QtCore.QObject):
             autosave = self.tryLoadAutosaved(projectDir)
             if autosave:
                 filename = autosave
-                self.gudpy.loadFromFile(loadFile=filename)
+                gudpy = gp.GudPy()
+                gudpy.loadFromFile(loadFile=filename)
+                self.gudpy = gudpy
         except (FileNotFoundError, exc.ParserException) as e:
             self.mainWidget.sendError(e)
             return
         except IOError:
             self.mainWidget.sendError("Could not open file.")
             return
-
         self.mainWidget.updateWidgets(self.gudpy.gudrunFile)
         self.mainWidget.setWindowTitle(
             f"GudPy - {self.gudpy.gudrunFile.filename}[*]")
@@ -209,7 +212,8 @@ class GudPyController(QtCore.QObject):
         result = configurationDialog.widget.exec()
 
         if not configurationDialog.cancelled and result:
-            self.gudpy = gp.GudPy(
+            self.gudpy = gp.GudPy()
+            self.gudpy.loadFromFile(
                 loadFile=configurationDialog.configuration,
                 format=enums.Format.TXT,
                 config=True
@@ -304,7 +308,7 @@ class GudPyController(QtCore.QObject):
 
     """
 
-    def checkFilesExist_(self, showSuccessDialog: bool = False):
+    def checkFilesExist(self, showSuccessDialog: bool = False):
         result = file_library.GudPyFileLibrary(
             self.gudpy.gudrunFile).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
@@ -328,7 +332,7 @@ class GudPyController(QtCore.QObject):
         return True
 
     def prepareRun(self):
-        if not self.checkFilesExist_():
+        if not self.checkFilesExist():
             return False
 
         if not self.gudpy.gudrunFile.checkNormDataFiles():
@@ -336,14 +340,8 @@ class GudPyController(QtCore.QObject):
                 "Please specify normalisation data files.")
             return False
 
-        if not self.gudpy.checkSaveLocation():
-            dirname, _ = QFileDialog.getSaveFileName(
-                self.mainWidget,
-                "Choose save location",
-                (os.path.dirname(self.gudpy.gudrunFile.loadFile)
-                 if self.gudpy.gudrunFile.loadFile else "")
-            )
-            self.gudpy.gudrunFile.setSaveLocation(dirname)
+        if not self.gudpy.checkSaveLocation() and not self.setSaveLocation():
+            return False
         self.mainWidget.processStarted()
         return True
 
@@ -373,6 +371,8 @@ class GudPyController(QtCore.QObject):
                 "purge_det.dat found, but wasn't run in this session. "
                 "Run Purge?",
             )
+            if purgeResult == QMessageBox.No:
+                self.workerThread.purgeLocation = ""
         elif not self.purged:
             purgeResult = self.mainWidget.purgeOptionsMessageBox(
                 "It looks like you may not have purged detectors. Run Purge?",
@@ -384,7 +384,6 @@ class GudPyController(QtCore.QObject):
                 self.workerThread.start()
             )
         elif purgeResult == QMessageBox.No:
-            self.workerThread.purgeLocation = ""
             self.workerThread.start()
         else:
             self.mainWidget.processStopped()
@@ -426,6 +425,7 @@ class GudPyController(QtCore.QObject):
             )
             return
 
+        self.gudpy.purgeOutput = self.gudpy.purge.purgeOutput
         thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
         if thresh and self.gudpy.purge.detectors < thresh:
             self.mainWidget.sendWarning(
@@ -456,6 +456,7 @@ class GudPyController(QtCore.QObject):
             process=self.gudpy.gudrun, onFinish=self.gudrunFinished
         )
         self.workerThread = self.gudpy.gudrun
+
         if not self.checkPurge():
             self.gudpy.gudrun = None
             self.workerThread = None
@@ -500,8 +501,7 @@ class GudPyController(QtCore.QObject):
             self.gudpy.gudrunIterator = None
 
     def gudrunFinished(self, exitcode):
-        self.workerThread = None
-        if self.gudpy.gudrunIterator:
+        if self.workerThread == self.gudpy.gudrunIterator:
             if self.gudpy.gudrunIterator.exitcode[0] != 0:
                 self.mainWidget.sendError(
                     f"Gudrun Iteration failed with the following output: "
@@ -521,7 +521,7 @@ class GudPyController(QtCore.QObject):
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
                 gudrunOutput=self.gudpy.gudrunIterator.gudrunOutput
             )
-        elif self.gudpy.gudrun:
+        elif self.workerThread == self.gudpy.gudrun:
             if exitcode != 0:
                 self.mainWidget.sendError(
                     f"Gudrun failed with the following output: "
@@ -535,6 +535,7 @@ class GudPyController(QtCore.QObject):
                 gudrunOutput=self.gudpy.gudrun.gudrunOutput
             )
         self.mainWidget.processStopped()
+        self.workerThread = None
 
     def compositionIterationFinished(self, exitcode):
         if exitcode != 0:
