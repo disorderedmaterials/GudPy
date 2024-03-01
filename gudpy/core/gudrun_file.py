@@ -148,6 +148,7 @@ class GudrunFile:
         self.OUTPATH = "gudpy.txt"
         self.gudrunOutput = None
         self.projectDir = projectDir
+        self.loadFile = loadFile
         self.filename = None
         self.stream = None
 
