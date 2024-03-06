@@ -29,11 +29,13 @@ class GudPyController(QtCore.QObject):
         Calls initComponents() to load the UI file.
         """
         super().__init__()
-        self.gudpy = gp.GudPy()
-        self.mainWidget = GudPyMainWindow()
-        self.purged = False
+        self.gudpy: gp.GudPy = gp.GudPy()
+        self.mainWidget: QtWidgets.QMainWindow = GudPyMainWindow()
+        self.purged: bool = False
 
-        self.workerThread = None
+        # Current process thread running
+        self.workerThread: QtCore.QThread = None
+
         self.connectUiSlots()
 
     def connectUiSlots(self):
@@ -331,7 +333,43 @@ class GudPyController(QtCore.QObject):
             )
         return True
 
-    def prepareRun(self):
+    def connectProcessSignals(
+        self,
+        process: QtCore.QThread,
+        onFinish: typ.Callable
+    ):
+        process.started.connect(self.mainWidget.processStarted)
+        process.outputChanged.connect(
+            self.mainWidget.outputSlots.setOutputStream)
+        process.progressChanged.connect(
+            self.mainWidget.updateProgressBar)
+        process.finished.connect(
+            self.mainWidget.processStopped)
+        process.finished.connect(onFinish)
+
+    def createPurgeProcess(self) -> bool:
+        if not self.prepareRun():
+            return False
+        self.mainWidget.setControlsEnabled(False)
+        purgeDialog = dialogs.purge.PurgeDialog(
+            self.gudpy.gudrunFile, self.mainWidget)
+        result = purgeDialog.widget.exec_()
+        if (purgeDialog.cancelled or result == QDialogButtonBox.No):
+            self.mainWidget.setControlsEnabled(True)
+            return False
+
+        self.gudpy.purgeFile = PurgeFile(self.gudpy.gudrunFile)
+        self.gudpy.purge = worker.PurgeWorker(
+            purgeFile=self.gudpy.purgeFile,
+            gudrunFile=self.gudpy.gudrunFile,
+        )
+        self.connectProcessSignals(
+            process=self.gudpy.purge, onFinish=self.purgeFinished
+        )
+
+        return True
+
+    def prepareRun(self) -> bool:
         if not self.checkFilesExist():
             return False
 
@@ -342,81 +380,50 @@ class GudPyController(QtCore.QObject):
 
         if not self.gudpy.checkSaveLocation() and not self.setSaveLocation():
             return False
-        self.mainWidget.processStarted()
+
         return True
 
-    def connectProcessSignals(
-        self,
-        process: QtCore.QThread,
-        onFinish: typ.Callable = None
-    ):
-        self.workerThread = process
-        self.workerThread.outputChanged.connect(
-            self.mainWidget.outputSlots.setOutputStream)
-        self.workerThread.progressChanged.connect(
-            self.mainWidget.updateProgressBar)
-        self.workerThread.finished.connect(
-            self.mainWidget.processStopped)
-        if onFinish:
-            self.workerThread.finished.connect(onFinish)
-
-    def checkPurge(self):
-        purgeResult = QMessageBox.No
-        if not self.purged and os.path.exists(
-            os.path.join(
-                self.gudpy.projectDir, "Purge", "purge_det.dat"
-            )
-        ):
-            purgeResult = self.mainWidget.purgeOptionsMessageBox(
-                "purge_det.dat found, but wasn't run in this session. "
-                "Run Purge?",
-            )
-            if purgeResult == QMessageBox.No:
-                self.workerThread.purgeLocation = ""
-        elif not self.purged:
-            purgeResult = self.mainWidget.purgeOptionsMessageBox(
-                "It looks like you may not have purged detectors. Run Purge?",
-            )
-
-        if purgeResult == QMessageBox.Yes:
-            self.runPurge()
-            self.gudpy.purge.finished.connect(
-                self.workerThread.start()
-            )
-        elif purgeResult == QMessageBox.No:
+    def startProcess(self) -> None:
+        if isinstance(self.workerThread, gp.Purge):
             self.workerThread.start()
-        else:
-            self.mainWidget.processStopped()
-            return False
-        return True
+            return
+
+        # Check purge if process has purge attribute
+        if not self.gudpy.purge:
+            purgeResult = QMessageBox.No
+            if os.path.exists(
+                os.path.join(
+                    self.gudpy.projectDir, "Purge", "purge_det.dat"
+                )
+            ):
+                purgeResult = self.mainWidget.purgeOptionsMessageBox(
+                    "purge_det.dat found, but wasn't run in this session. "
+                    "Run Purge?",
+                )
+            else:
+                purgeResult = self.mainWidget.purgeOptionsMessageBox(
+                    "It looks like you may not have purged detectors."
+                    "Run Purge?",
+                )
+
+            if purgeResult == QMessageBox.Yes:
+                if self.createPurgeProcess():
+                    self.gudpy.purge.start()
+                    self.gudpy.purge.finished.connect(self.startProcess)
+                    return
+            else:
+                self.mainWidget.processStopped()
+                return
+        self.workerThread.setPurgeLocation(self.gudpy.purge)
+        self.workerThread.start()
 
     def runPurge(self) -> bool:
-        self.mainWidget.setControlsEnabled(False)
-        purgeDialog = dialogs.purge.PurgeDialog(
-            self.gudpy.gudrunFile, self.mainWidget)
-        result = purgeDialog.widget.exec_()
-        if (purgeDialog.cancelled or result == QDialogButtonBox.No):
-            self.mainWidget.setControlsEnabled(True)
-            return False
-
-        if not self.prepareRun():
-            self.mainWidget.processStopped()
-            return False
-
-        self.gudpy.purgeFile = PurgeFile(self.gudpy.gudrunFile)
-        self.gudpy.purge = worker.PurgeWorker(
-            purgeFile=self.gudpy.purgeFile,
-            gudrunFile=self.gudpy.gudrunFile
-        )
-        self.connectProcessSignals(
-            process=self.gudpy.purge, onFinish=self.purgeFinished
-        )
-        self.gudpy.purge.start()
+        if self.createPurgeProcess():
+            self.workerThread = self.gudpy.purge
+            self.startProcess()
 
     def purgeFinished(self, exitcode):
         self.purged = True
-        self.mainWidget.processStopped()
-        self.workerThread = None
 
         if exitcode != 0:
             self.mainWidget.sendError(
@@ -425,7 +432,6 @@ class GudPyController(QtCore.QObject):
             )
             return
 
-        self.gudpy.purgeOutput = self.gudpy.purge.purgeOutput
         thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
         if thresh and self.gudpy.purge.detectors < thresh:
             self.mainWidget.sendWarning(
@@ -442,30 +448,31 @@ class GudPyController(QtCore.QObject):
             gudrunFile=self.gudpy.gudrunFile
         )
 
-    def runGudrun(self, gudrunFile=None):
-        if not self.prepareRun():
-            self.mainWidget.processStopped()
-            return
+        if isinstance(self.workerThread, gp.Purge):
+            self.workerThread = None
 
+    def runGudrun(self, gudrunFile=None):
         if not gudrunFile:
             gudrunFile = self.gudpy.gudrunFile
 
-        self.gudpy.gudrun = worker.GudrunWorker(
-            gudrunFile, purgeLocation=self.gudpy.purgeOutput)
+        if not self.prepareRun():
+            return
+
+        self.gudpy.gudrun = worker.GudrunWorker(gudrunFile)
         self.connectProcessSignals(
             process=self.gudpy.gudrun, onFinish=self.gudrunFinished
         )
+
         self.workerThread = self.gudpy.gudrun
+        self.startProcess()
 
-        if not self.checkPurge():
-            self.gudpy.gudrun = None
-            self.workerThread = None
-
-    def iterateGudrun(self, dialog) -> bool:
+    def iterateGudrun(self, dialog):
         iterationDialog = dialog(
             self.mainWidget, self.gudpy.gudrunFile)
         iterationDialog.widget.exec()
         if not iterationDialog.params:
+            return
+        if not self.prepareRun():
             return
         # If it is a Composition iteration, the gudrunFile must be specified
         if iterationDialog.iteratorType == iterators.Composition:
@@ -473,15 +480,11 @@ class GudPyController(QtCore.QObject):
 
         self.gudpy.iterator = iterationDialog.iteratorType(
             **iterationDialog.params)
-        if not self.prepareRun():
-            self.mainWidget.processStopped()
-            return False
 
         # If Composition iterator, initialise Composition Worker
-        if isinstance(self.gudpy.iterator, iterators.Composition):
+        if iterationDialog.iteratorType == iterators.Composition:
             self.gudpy.gudrunIterator = worker.CompositionWorker(
-                self.gudpy.iterator, self.gudpy.gudrunFile,
-                purgeLocation=self.gudpy.purgeOutput)
+                self.gudpy.iterator, self.gudpy.gudrunFile)
             self.connectProcessSignals(
                 process=self.gudpy.gudrunIterator,
                 onFinish=self.compositionIterationFinished
@@ -489,16 +492,14 @@ class GudPyController(QtCore.QObject):
         # Else use standard GudrunIteratorWorker
         else:
             self.gudpy.gudrunIterator = worker.GudrunIteratorWorker(
-                self.gudpy.iterator, self.gudpy.gudrunFile,
-                purgeLocation=self.gudpy.purgeOutput)
+                self.gudpy.iterator, self.gudpy.gudrunFile)
             self.connectProcessSignals(
                 process=self.gudpy.gudrunIterator,
                 onFinish=self.gudrunFinished
             )
+
         self.workerThread = self.gudpy.gudrunIterator
-        if not self.checkPurge():
-            self.workerThread = None
-            self.gudpy.gudrunIterator = None
+        self.startProcess()
 
     def gudrunFinished(self, exitcode):
         if self.workerThread == self.gudpy.gudrunIterator:
@@ -511,12 +512,12 @@ class GudPyController(QtCore.QObject):
 
             self.mainWidget.outputSlots.setOutput(
                 self.gudpy.gudrunIterator.output,
-                f"Gudrun {self.gudpy.gudrunIterator.name}")
+                f"Gudrun {self.gudpy.gudrunIterator.iterator.name}")
             self.mainWidget.sampleSlots.setSample(
                 self.mainWidget.sampleSlots.sample)
             self.mainWidget.iterationResultsDialog(
                 self.gudpy.gudrunIterator.result,
-                self.gudpy.gudrunIterator.name)
+                self.gudpy.gudrunIterator.iterator.name)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
                 gudrunOutput=self.gudpy.gudrunIterator.gudrunOutput
@@ -534,7 +535,6 @@ class GudPyController(QtCore.QObject):
                 gudrunFile=self.gudpy.gudrunFile,
                 gudrunOutput=self.gudpy.gudrun.gudrunOutput
             )
-        self.mainWidget.processStopped()
         self.workerThread = None
 
     def compositionIterationFinished(self, exitcode):
@@ -553,9 +553,7 @@ class GudPyController(QtCore.QObject):
 
     def runContainersAsSamples(self):
         if not self.prepareRun():
-            self.mainWidget.processStopped()
             return
-
         gudrunFile = self.gudpy.runModes.convertContainersToSample(
             self.gudpy.gudrunFile
         )
@@ -563,19 +561,18 @@ class GudPyController(QtCore.QObject):
 
     def runFilesIndividually(self):
         if not self.prepareRun():
-            self.mainWidget.processStopped()
             return
-
         gudrunFile = self.gudpy.runModes.partition(self.gudpy.gudrunFile)
         self.runGudrun(gudrunFile=gudrunFile)
 
     def runBatchProcessing(self):
+        if not self.prepareRun():
+            return
         dialog = dialogs.batch.BatchProcessingDialog(
             self.mainWidget
         )
-        self.gudrunIterator = worker.BatchWorker(
+        self.gudpy.gudrunIterator = worker.BatchWorker(
             gudrunFile=self.gudpy.gudrunFile,
-            purgeLocation=self.gudpy.purgeOutput,
             iterator=dialog.iterator,
             batchSize=dialog.batchSize,
             stepSize=dialog.stepSize,
@@ -589,9 +586,7 @@ class GudPyController(QtCore.QObject):
             onFinish=self.gudrunFinished
         )
         self.workerThread = self.gudpy.gudrunIterator
-        if not self.checkPurge():
-            self.gudpy.gudrunIterator = None
-            self.workerThread = None
+        self.startProcess()
 
     def stopProcess(self):
         if self.workerThread:
@@ -618,6 +613,7 @@ class GudPyController(QtCore.QObject):
         """
         Exits GudPy - questions user if they want to save on exit or not.
         """
+        self.cleanup()
         result = QtWidgets.QMessageBox.question(
             self.mainWidget,
             "",
