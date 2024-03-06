@@ -93,10 +93,11 @@ class OutputTreeModel(QAbstractItemModel):
 
                     # If iterator output
                     if len(self.data_.keys()) != 1:
-                        prev.output = "".join(
-                            output.splitlines(keepends=True)
-                            [prev.output:index + start - 1]
-                        )
+                        if prev:
+                            prev.output = "".join(
+                                output.splitlines(keepends=True)
+                                [prev.output:index + start - 1]
+                            )
 
                     prev = s
                     self.data_[idx]["outputs"].append(s)
