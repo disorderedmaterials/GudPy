@@ -921,7 +921,8 @@ class TestGudPyIO(TestCase):
                     compareString(
                         fileContent,
                         "\n".join(
-                            str(gudpy.gudrunFile).splitlines(keepends=True)[:-5])),
+                            str(gudpy.gudrunFile).splitlines(
+                                keepends=True)[:-5])),
                     True
                 )
                 self.assertEqual(
