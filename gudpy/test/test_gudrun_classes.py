@@ -18,7 +18,6 @@ from core.enums import (
 
 
 class TestGudrunClasses(TestCase):
-
     def testEmptyPath(self):
 
         emptyPath = ""

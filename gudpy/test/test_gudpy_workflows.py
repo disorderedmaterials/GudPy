@@ -9,7 +9,7 @@ import traceback
 from core.composition import Composition, Component
 from core import iterators
 from core.gud_file import GudFile
-from core import gudpy
+from core import gudpy as gp
 
 
 class GudPyContext:
@@ -19,7 +19,7 @@ class GudPyContext:
         path = os.path.join(
             testDir, "TestData/NIMROD-water/good_water")
 
-        self.gudpy = gudpy.GudPy()
+        self.gudpy = gp.GudPy()
 
         self.gudpy.loadFromProject(projectDir=path)
         self.gudpy.saveAs(os.path.join(

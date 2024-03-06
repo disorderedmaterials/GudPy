@@ -4,11 +4,10 @@ from unittest import TestCase
 from core.exception import ParserException
 from core.gud_file import GudFile
 from core import gudpy
-from test_gudpy_workflows import GudPyContext
+from test.test_gudpy_workflows import GudPyContext
 
 
 class TestParseGudFile(TestCase):
-
     def setUp(self) -> None:
         self.gudpy = gudpy.GudPy()
         self.expectedGudFileA = {
@@ -279,14 +278,14 @@ class TestParseGudFile(TestCase):
     def loadGudFile(self, index):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
-            gf = self.gudpy.gudrun.gudrunOutput.gudFile(index)
+            gf = gudpy.gudrun.gudrunOutput.gudFile(index)
 
             self.assertIsInstance(gf, GudFile)
 
             gudAttrsDict = gf.__dict__
             for key in gudAttrsDict.keys():
                 if key in [
-                        "path", "groups", "stream", "err", "OUTPATH", "result"]:
+                        "fname", "path", "groups", "stream", "err", "result"]:
                     continue
                 if key == "groupsTable":
 
@@ -334,18 +333,21 @@ class TestParseGudFile(TestCase):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
             gf = gudpy.gudrun.gudrunOutput.gudFile(0)
-
-            gf.write_out()
-            gf1 = GudFile(gf.OUTPATH)
+            path = os.path.join(
+                gudpy.projectDir,
+                gf.fname
+            )
+            gf.write_out(path)
+            gf1 = GudFile(path)
 
             dicA = gf.__dict__
-            dicA.pop("OUTPATH")
+            dicA.pop("fname")
             dicA.pop("path")
             dicA.pop("result")
             dicA.pop("err")
 
             dicB = gf1.__dict__
-            dicB.pop("OUTPATH")
+            dicB.pop("fname")
             dicB.pop("path")
             dicB.pop("result")
             dicB.pop("err")
@@ -357,17 +359,21 @@ class TestParseGudFile(TestCase):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
             gf = gudpy.gudrun.gudrunOutput.gudFile(1)
-            gf.write_out()
-            gf1 = GudFile(gf.OUTPATH)
+            path = os.path.join(
+                gudpy.projectDir,
+                gf.fname
+            )
+            gf.write_out(path)
+            gf1 = GudFile(path)
 
             dicA = gf.__dict__
-            dicA.pop("OUTPATH")
+            dicA.pop("fname")
             dicA.pop("path")
             dicA.pop("result")
             dicA.pop("err")
 
             dicB = gf1.__dict__
-            dicB.pop("OUTPATH")
+            dicB.pop("fname")
             dicB.pop("path")
             dicB.pop("result")
             dicB.pop("err")
