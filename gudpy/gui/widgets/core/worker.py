@@ -66,7 +66,7 @@ class PurgeWorker(Worker, gudpy.Purge):
             )
 
     def run(self):
-        exitcode = super(PurgeWorker, self).purge(self.purgeFile)
+        exitcode = self.purge(self.purgeFile)
         self.finished.emit(exitcode)
         if exitcode != 0:
             return
@@ -123,7 +123,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
         self.finished.emit(exitcode)
 
 
-class IteratorBaseWorker(QThread, gudpy.GudrunIterator):
+class IteratorBaseWorker(QThread):
     outputChanged = Signal(str)
     progressChanged = Signal(int, str)
     finished = Signal(int)
@@ -139,14 +139,17 @@ class IteratorBaseWorker(QThread, gudpy.GudrunIterator):
         self.output = {}
         self.error = ""
 
-        for _ in range(iterator.nTotal):
+        for _ in range(iterator.nTotal
+                       + (1 if iterator.requireDefault else 0)):
             worker = GudrunWorker(gudrunFile, iterator)
             worker.outputChanged.connect(self._outputChanged)
             worker.progressChanged.connect(self._progressChanged)
             self.gudrunObjects.append(worker)
 
     def _outputChanged(self, output):
-        idx = f"{self.name} {self.iterator.nCurrent + 1}"
+        idx = (f"{self.iterator.name} {self.iterator.nCurrent}"
+               if self.iterator.nCurrent != 0
+               or not self.iterator.requireDefault else "Default run")
         currentOutput = self.output.get(idx, "")
         self.output[idx] = currentOutput + output
         self.outputChanged.emit(output)
@@ -154,17 +157,19 @@ class IteratorBaseWorker(QThread, gudpy.GudrunIterator):
     def _progressChanged(self, progress):
         self.progressChanged.emit(
             progress,
-            f"Iterate by {self.name} - "
-            f"{self.iterator.nCurrent + 1}/{self.iterator.nTotal}"
+            f"Iterate by {self.iterator.name} - "
+            f"{self.iterator.nCurrent}/{self.iterator.nTotal}"
+            if self.iterator.nCurrent != 0
+            or not self.iterator.requireDefault else "Gudrun - Default run"
         )
 
     def run(self):
-        exitcode, error = super().iterate()
+        exitcode, error = self.iterate(purge=self.purge)
         self.error = error
         self.finished.emit(exitcode)
 
 
-class GudrunIteratorWorker(IteratorBaseWorker):
+class GudrunIteratorWorker(IteratorBaseWorker, gudpy.GudrunIterator):
     def __init__(
         self,
         iterator: iterators.Iterator,
@@ -216,10 +221,7 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
             # Create GudrunWorker objects to replace Gudrun objects
             gudrunIterator.gudrunObjects = []
             for _ in range(self.iterator.nTotal):
-                worker = GudrunWorker(
-                    self.firstBatch,
-                    gudrunIterator.iterator
-                )
+                worker = GudrunWorker(self.firstBatch, gudrunIterator.iterator)
                 worker.outputChanged.connect(self._outputChanged)
                 worker.progressChanged.connect(self._progressChanged)
                 gudrunIterator.append(worker)
