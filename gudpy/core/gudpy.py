@@ -151,9 +151,8 @@ class GudPy:
         """
         if not path:
             path = self.gudrunFile.path()
-        if path:
-            self.originalGudrunFile.save()
-            self.gudrunFile.save(path=path, format=format)
+        self.originalGudrunFile.save(path=path)
+        self.gudrunFile.save(path=path, format=format)
 
     def saveAs(self, targetDir: str):
         """Save GudPy project to a new location, set current
@@ -283,7 +282,7 @@ class GudPy:
 
         self.gudrunIterator = GudrunIterator(
             gudrunFile=self.gudrunFile, iterator=iterator)
-        exitcode, error = self.gudrunIterator.iterate()
+        exitcode, error = self.gudrunIterator.iterate(purge=self.purge)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
@@ -308,7 +307,7 @@ class GudPy:
         self.prepareRun()
         self.gudrunIterator = CompositionIterator(
             iterator=iterator, gudrunFile=self.gudrunFile)
-        exitcode, error = self.gudrunIterator.iterate()
+        exitcode, error = self.gudrunIterator.iterate(purge=self.purge)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
@@ -492,7 +491,7 @@ class Gudrun(Process):
         purge: Purge = None,
         iterator: iterators.Iterator = None
     ) -> int:
-        self._checkBinary()
+        self.checkBinary()
         if not purge:
             print("WARNING: Gudrun running without purge.")
         with tempfile.TemporaryDirectory() as tmp:
@@ -518,7 +517,7 @@ class Gudrun(Process):
             ) as gudrun:
                 for line in gudrun.stdout:
                     line = "\n".join(line.decode("utf8").split("\n"))
-                    if self._checkError(line):
+                    if self.checkError(line):
                         return self.exitcode
                     self._outputChanged(line)
                 if gudrun.stderr:
