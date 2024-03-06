@@ -23,6 +23,7 @@ class GudPy:
     def __init__(
         self
     ):
+        self.originalGudrunFile: GudrunFile = None
         self.gudrunFile: GudrunFile = None
         self.purgeFile = None
 
@@ -68,6 +69,12 @@ class GudPy:
             format=format,
             config=config
         )
+
+        self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
+        self.originalGudrunFile.filename = "original"
+
+        self.projectDir == ""
+        self.autosaveLocation = ""
 
     def loadFromProject(self, projectDir: str):
         """Loads GudPy from a project directory
@@ -128,6 +135,7 @@ class GudPy:
         self.projectDir = projectDir
         self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
         self.gudrunFile.projectDir = projectDir
+        self.originalGudrunFile.projectDir = projectDir
         self.autosaveLocation = (
             f"{os.path.basename(projectDir)}.autosave"
         )
@@ -145,6 +153,7 @@ class GudPy:
         if not path:
             path = self.gudrunFile.path()
         if path:
+            self.originalGudrunFile.save()
             self.gudrunFile.save(path=path, format=format)
 
     def saveAs(self, targetDir: str):
