@@ -396,14 +396,14 @@ class Process:
     def _outputChanged(self, output: str):
         self.output += output
 
-    def _checkBinary(self):
+    def checkBinary(self):
         if not os.path.exists(self.BINARY_PATH):
             self.exitcode = 1
             raise FileNotFoundError(
                 f"Missing {self.PROCESS} binary"
                 f" in location {self.BINARY_PATH}")
 
-    def _checkError(self, line: str):
+    def checkError(self, line: str):
         # Check for errors.
         ERROR_KWDS = [
             "does not exist",
@@ -435,7 +435,7 @@ class Purge(Process):
         return outputHandler.organiseOutput()
 
     def purge(self, purgeFile: PurgeFile):
-        self._checkBinary()
+        self.checkBinary()
 
         with tempfile.TemporaryDirectory() as tmp:
             purgeFile.write_out(os.path.join(
@@ -451,7 +451,7 @@ class Purge(Process):
                 for line in purge.stdout:
                     line = "\n".join(line.decode("utf8").split("\n"))
                     self._outputChanged(line)
-                    if self._checkError(line):
+                    if self.checkError(line):
                         return self.exitcode
                     if "spectra in" in line:
                         self.detectors = utils.nthint(line, 0)
