@@ -131,7 +131,8 @@ class Radius(Iterator):
     """
 
     def __init__(self, nTotal, target="inner"):
-        super().__init__(nTotal, name="Radius")
+        super().__init__(nTotal)
+        self.name = f"Radius {target}"
         self.iterationMode = None
         self.setTargetRadius(target)
 
@@ -182,7 +183,7 @@ class Thickness(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "thickness"
+        self.name = "Thickness"
         self.iterationMode = IterationModes.THICKNESS
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
@@ -230,7 +231,7 @@ class TweakFactor(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "tweakfactor"
+        self.name = "TweakFactor"
         self.iterationMode = IterationModes.TWEAK_FACTOR
 
     def performIteration(self, gudrunFile, prevOutput) -> GudrunFile:
@@ -284,7 +285,7 @@ class Density(Iterator):
 
     def __init__(self, nTotal):
         super().__init__(nTotal)
-        self.name = "density"
+        self.name = "Density"
         self.iterationMode = IterationModes.DENSITY
 
     def applyCoefficientToAttribute(self, sample, coefficient, prevOutput):
@@ -373,7 +374,7 @@ class InelasticitySubtraction(Iterator):
         """
         nTotal *= 2
         super().__init__(nTotal)
-        self.name = "inelasticity subtraction"
+        self.name = "Inelasticity Subtraction"
         self.iterationMode = IterationModes.INELASTICITY
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
@@ -381,13 +382,17 @@ class InelasticitySubtraction(Iterator):
         self.iterationCount = 0
         # If a default iteration is required
         self.requireDefault = False
-        # Iteration pair
-        self.nCurrent = 0
+        self.nCurrent = 1
         self.topHatWidths = []
         self.QMax = 0.
         self.QMin = 0.
         self.QStep = 0.
         self.gudrunOutputs = []
+
+    def setIteration(self, iterType):
+        self.iterationType = iterType
+        name = "Inelasticity Subtraction"
+        self.name = f"{name} ({iterType})"
 
     def enableLogarithmicBinning(self, gudrunFile):
         """
@@ -513,7 +518,7 @@ class InelasticitySubtraction(Iterator):
         the extensions of the self scattering files to .mint01.
         Then, write out the gudrunFile and call gudrun_dcs.
         """
-        self.iterationType = "WavelengthIteration"
+        self.setIteration("WavelengthIteration")
         # First iteration
         if self.iterationCount == 0:
             # Disable subtracting of wavelength binned data.
@@ -547,7 +552,7 @@ class InelasticitySubtraction(Iterator):
         the extensions of the self scattering files to .msubw01.
         Then, write out the gudrunFile and call gudrun_dcs.
         """
-        self.iterationType = "QIteration"
+        self.setIteration("QIteration")
         # Enable subtracting of wavelength binned data
         gudrunFile.instrument.subWavelengthBinnedData = True
         # Set the min, max and step size on the X scale
@@ -647,7 +652,9 @@ class Composition(Iterator):
         ratio=1,
         components=[],
     ):
-        self.name = "composition"
+        super().__init__(nTotal)
+        self.requireDefault = False
+        self.name = "Composition"
         self.originalGudrunFile = gudrunFile
         self.mode = mode
         self.nCurrent = 0
@@ -662,7 +669,6 @@ class Composition(Iterator):
         else:
             self.mode = Composition.Mode.DOUBLE
 
-        self.nTotal = nTotal
         self.rtol = rtol
 
         self.sampleArgs = []
