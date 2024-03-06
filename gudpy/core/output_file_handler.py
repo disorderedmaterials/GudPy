@@ -176,9 +176,11 @@ class GudrunOutputHandler(OutputHandler):
         inputFilePath = self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
-        if self.overwrite and os.path.exists(self.outputDir):
+        if self.overwrite and os.path.exists(
+                os.path.join(self.gudrunFile.projectDir, "Gudrun")):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
+                shutil.move(os.path.join(self.gudrunFile.projectDir, "Gudrun"),
+                            os.path.join(tmp, "prev"))
 
         # Move over folders to output directory
         shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
@@ -256,7 +258,7 @@ class GudrunOutputHandler(OutputHandler):
         # Create sample folders within background folders
         for sample in self.samples:
             sampleFile = ""
-            gudFile = ""
+            gudFile = None
             sampleOutput = {}
             sampleDiag = {}
 
