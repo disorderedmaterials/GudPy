@@ -56,7 +56,6 @@ from gui.widgets.slots.output_slots import OutputSlots
 # from gui.widgets.resources import resources_rc  # noqa
 from core import enums
 from core import config
-from core.gud_file import GudFile
 
 
 class GudPyMainWindow(QtWidgets.QMainWindow):
@@ -642,6 +641,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         )
 
     def iterationResultsDialog(self, results, name):
+        if not results:
+            return
         dialog = QtWidgets.QDialog(self.ui)
         dialog.setWindowTitle("GudPy Iteration Results")
         layout = QtWidgets.QVBoxLayout()
@@ -694,7 +695,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         dialog.exec()
 
     def purgeOptionsMessageBox(self, text):
-        messageBox = QtWidgets.QMessageBox(self.ui)
+        messageBox = QtWidgets.QMessageBox(self)
         messageBox.setWindowTitle("GudPy Warning")
         messageBox.setText(text)
 
