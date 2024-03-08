@@ -200,15 +200,16 @@ class GudPyController(QtCore.QObject):
             f"GudPy - {self.gudpy.gudrunFile.filename}[*]")
 
     def newProject(self):
-        save = QtWidgets.QMessageBox.question(
-            self.mainWidget,
-            "GudPy",
-            "Would you like to save current project?"
-        )
-        if save == QtWidgets.QMessageBox.Yes:
-            if not self.setSaveLocation():
-                return
-            self.gudpy.save()
+        if self.gudpy.gudrunFile:
+            save = QtWidgets.QMessageBox.question(
+                self.mainWidget,
+                "GudPy",
+                "Would you like to save current project?"
+            )
+            if save == QtWidgets.QMessageBox.Yes:
+                if not self.setSaveLocation():
+                    return
+                self.gudpy.save()
 
         configurationDialog = dialogs.configuration.ConfigurationDialog(self)
         result = configurationDialog.widget.exec()
