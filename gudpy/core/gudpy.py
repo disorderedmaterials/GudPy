@@ -435,7 +435,6 @@ class Purge(Process):
 
     def purge(self, purgeFile: PurgeFile):
         self.checkBinary()
-
         with tempfile.TemporaryDirectory() as tmp:
             purgeFile.write_out(os.path.join(
                 tmp,

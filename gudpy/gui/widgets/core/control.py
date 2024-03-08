@@ -415,7 +415,7 @@ class GudPyController(QtCore.QObject):
             else:
                 self.mainWidget.processStopped()
                 return
-        self.workerThread.setPurgeLocation(self.gudpy.purge)
+        self.workerThread.purge = self.gudpy.purge
         self.workerThread.start()
 
     def runPurge(self) -> bool:
