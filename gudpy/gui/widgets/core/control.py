@@ -211,7 +211,8 @@ class GudPyController(QtCore.QObject):
                     return
                 self.gudpy.save()
 
-        configurationDialog = dialogs.configuration.ConfigurationDialog(self)
+        configurationDialog = dialogs.configuration.ConfigurationDialog(
+            self.mainWidget)
         result = configurationDialog.widget.exec()
 
         if not configurationDialog.cancelled and result:
@@ -221,8 +222,7 @@ class GudPyController(QtCore.QObject):
                 format=enums.Format.TXT,
                 config=True
             )
-
-        self.mainWidget.updateWidgets(self.gudpy.gudrunFile)
+            self.mainWidget.updateWidgets(self.gudpy.gudrunFile)
 
     def setSaveLocation(self, saveAs=False):
         """Function to let the user choose where the project is saved to
