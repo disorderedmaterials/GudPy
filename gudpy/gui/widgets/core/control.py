@@ -204,7 +204,7 @@ class GudPyController(QtCore.QObject):
             save = QtWidgets.QMessageBox.question(
                 self.mainWidget,
                 "GudPy",
-                "Would you like to save current project?"
+                "Would you like to save the current project?"
             )
             if save == QtWidgets.QMessageBox.Yes:
                 if not self.setSaveLocation():
