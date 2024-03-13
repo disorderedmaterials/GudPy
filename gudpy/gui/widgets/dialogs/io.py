@@ -11,7 +11,7 @@ from PySide6.QtUiTools import QUiLoader
 class MissingFilesDialog(QDialog):
     """
     Class to represent the MissingFilesDialog. Inherits QDialog.
-    This is the dialog window opened when a user wishes to iterate Gudrun.
+    This is the dialog window opened when a user wishes to run a process.
 
     ...
 

@@ -249,7 +249,7 @@ class GudPyController(QtCore.QObject):
 
     def save(self):
         # Check if save location has been set
-        # override project input file or force save location to be chose
+        # Override project input file or force save location to be chosen
         if not self.gudpy.checkSaveLocation():
             # Check if save location has been specified
             # If not, call save dialog
