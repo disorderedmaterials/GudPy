@@ -615,13 +615,14 @@ class GudPyController(QtCore.QObject):
         Exits GudPy - questions user if they want to save on exit or not.
         """
         self.cleanup()
-        result = QtWidgets.QMessageBox.question(
-            self.mainWidget,
-            "",
-            "Do you want to save before exiting?",
-            QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes,
-        )
+        if self.mainWidget.modified:
+            result = QtWidgets.QMessageBox.question(
+                self.mainWidget,
+                "",
+                "Do you want to save before exiting?",
+                QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes,
+            )
 
-        if result == QtWidgets.QMessageBox.Yes:
-            self.gudpy.gudrunFile.save()
+            if result == QtWidgets.QMessageBox.Yes:
+                self.gudpy.gudrunFile.save()
         sys.exit(0)
