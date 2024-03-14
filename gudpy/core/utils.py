@@ -26,7 +26,7 @@ def firstword(string):
 def replace_unwanted_chars(string):
     unwanted = [" "]
     for char in unwanted:
-        string.replace(char, "_")
+        string = string.replace(char, "_")
     return string
 
 

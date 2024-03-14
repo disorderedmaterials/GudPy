@@ -866,6 +866,7 @@ class GudrunFile:
                 .replace("SAMPLE", "").strip()
             )
             sample.name = utils.replace_unwanted_chars(sample.name)
+            print(sample.name)
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -1283,13 +1284,12 @@ class GudrunFile:
             elif "SAMPLE" in line and firstword(line) == "SAMPLE":
                 sample = self.makeParse("SAMPLE")
                 if not sample.name:
-                    sample.name = uniquifyName(
-                        utils.replace_unwanted_chars(
-                            "SAMPLE",
-                            [s.name for s in sampleBackground.samples],
-                            sep="",
-                            incFirst=True)
-                    )
+                    sample.name = utils.replace_unwanted_chars(uniquifyName(
+                        "SAMPLE",
+                        [s.name for s in sampleBackground.samples],
+                        sep="",
+                        incFirst=True
+                    ))
                 sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and firstword(line) == "CONTAINER":
                 container = self.makeParse("CONTAINER")
