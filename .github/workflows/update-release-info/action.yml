@@ -1,0 +1,39 @@
+name: Update Release Info
+description: Update current release version on external sites
+
+inputs:
+  repository:
+    type: string
+    default: disorderedmaterials/GudPy
+  createPR:
+    type: boolean
+    default: true
+  releaseVersion:
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Checkout Develop
+    uses: actions/checkout@v3
+    with:
+      ref: develop
+
+  - name: Update Release Information
+    shell: bash
+    run: ./changeversion release -s ${{ inputs.releaseVersion }}
+
+
+  - name: Create Update PR
+    if: ${{ inputs.createPR == 'true' }}
+    uses: peter-evans/create-pull-request@v4
+    with:
+      base: develop
+      add-paths: |
+        README.md
+      commit-message: Update release version info.
+      delete-branch: true
+      branch: automation/update-current-release-to-${{ inputs.releaseVersion }}
+      title: Update website release info (v${{ inputs.releaseVersion }})
+      reviewers: trisyoungs

@@ -1,0 +1,384 @@
+Instrument:
+  name: NIMROD
+  dataFileDir: /Users/noella/Documents/dev/gp-test/raw/
+  dataFileType: raw
+  detectorCalibrationFileName: StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat
+  columnNoPhiVals: 4
+  groupFileName: StartupFiles/NIMROD/NIMROD84modules+9monitors+LAB5Oct2012Groups.dat
+  deadtimeConstantsFileName: StartupFiles/NIMROD/NIMRODdeadtimeNone.cor
+  spectrumNumbersForIncidentBeamMonitor: [4, 5]
+  wavelengthRangeForMonitorNormalisation: [0, 0]
+  spectrumNumbersForTransmissionMonitor: [8, 9]
+  incidentMonitorQuietCountConst: 0.0001
+  transmissionMonitorQuietCountConst: 0.0001
+  channelNosSpikeAnalysis: [0, 0]
+  spikeAnalysisAcceptanceFactor: 5.0
+  wavelengthMin: 0.05
+  wavelengthMax: 12.0
+  wavelengthStep: 0.1
+  NoSmoothsOnMonitor: 200
+  XMin: 0.05
+  XMax: 12.0
+  XStep: -0.025
+  useLogarithmicBinning: false
+  groupingParameterPanel: []
+  groupsAcceptanceFactor: 1.0
+  mergePower: 4
+  subSingleAtomScattering: false
+  mergeWeights: By Channel
+  incidentFlightPath: 20.0
+  spectrumNumberForOutputDiagnosticFiles: 0
+  neutronScatteringParametersFile: StartupFiles/NIMROD/sears91_gudrun.dat
+  scaleSelection: Q
+  subWavelengthBinnedData: true
+  logarithmicStepSize: 0.04
+  hardGroupEdges: true
+  nxsDefinitionFile: ''
+Beam:
+  sampleGeometry: FLATPLATE
+  beamProfileValues: [1.0, 1.0]
+  stepSizeAbsorption: 0.05
+  stepSizeMS: 0.2
+  noSlices: 100
+  angularStepForCorrections: 10
+  incidentBeamLeftEdge: -1.5
+  incidentBeamRightEdge: 1.5
+  incidentBeamTopEdge: 1.5
+  incidentBeamBottomEdge: -1.5
+  scatteredBeamLeftEdge: -2.1
+  scatteredBeamRightEdge: 2.1
+  scatteredBeamTopEdge: 2.1
+  scatteredBeamBottomEdge: -2.1
+  filenameIncidentBeamSpectrumParams: StartupFiles/NIMROD/spectrum000.dat
+  overallBackgroundFactor: 1.0
+  sampleDependantBackgroundFactor: 0.0
+  shieldingAttenuationCoefficient: 0.0
+Components:
+- name: Component
+  elements:
+  - {atomicSymbol: H, massNo: 0, abundance: 1.0}
+Normalisation:
+  periodNumber: 1
+  dataFiles:
+    dataFiles: [NIMROD00016702_V.raw]
+    name: NORMALISATION
+  periodNumberBg: 1
+  dataFilesBg:
+    dataFiles: [NIMROD00016698_EmptyInst.raw, NIMROD00016703_EmptyInst.raw]
+    name: NORMALISATION BACKGROUND
+  forceCalculationOfCorrections: true
+  composition:
+    type_: Normalisation
+    elements:
+    - {atomicSymbol: V, massNo: 0, abundance: 1.0}
+    weightedComponents: []
+  geometry: SameAsBeam
+  upstreamThickness: 0.15
+  downstreamThickness: 0.15
+  angleOfRotation: 0.0
+  sampleWidth: 5.0
+  innerRadius: 0.0
+  outerRadius: 0.0
+  sampleHeight: 0.0
+  density: 0.0721
+  densityUnits: atoms/Å^3
+  tempForNormalisationPC: 200.0
+  totalCrossSectionSource: TABLES
+  crossSectionFilename: ''
+  normalisationDifferentialCrossSectionFile: '*'
+  lowerLimitSmoothedNormalisation: 0.01
+  normalisationDegreeSmoothing: 1.0
+  minNormalisationSignalBR: 0.0
+SampleBackgrounds:
+- periodNumber: 1
+  dataFiles:
+    dataFiles: [NIMROD00016698_EmptyInst.raw, NIMROD00016703_EmptyInst.raw]
+    name: SAMPLE BACKGROUND
+  samples:
+  - name: H2O,_Can_N9
+    periodNumber: 1
+    dataFiles:
+      dataFiles: [NIMROD00016608_H2O_in_N9.raw, NIMROD00016610_H2O_in_N9.raw]
+      name: H2O,_Can_N9
+    forceCalculationOfCorrections: true
+    composition:
+      type_: Sample
+      elements:
+      - {atomicSymbol: H, massNo: 0, abundance: 2.0}
+      - {atomicSymbol: O, massNo: 0, abundance: 1.0}
+      weightedComponents: []
+    geometry: FLATPLATE
+    upstreamThickness: 0.05
+    downstreamThickness: 0.05
+    angleOfRotation: 0.0
+    sampleWidth: 5.0
+    innerRadius: 0.0
+    outerRadius: 0.0
+    sampleHeight: 0.0
+    density: 0.1
+    densityUnits: atoms/Å^3
+    tempForNormalisationPC: 0.0
+    totalCrossSectionSource: TRANSMISSION
+    crossSectionFilename: ''
+    sampleTweakFactor: 1.0
+    topHatW: 0.0
+    FTMode: Subtract Average (Qmin)
+    minRadFT: 0.8
+    grBroadening: 0.1
+    resonanceValues: []
+    exponentialValues:
+    - [0.0, 1.5, 0]
+    normalisationCorrectionFactor: 1.0
+    fileSelfScattering: 
+      /Users/noella/Documents/dev/gp-test/water/Gudrun/WavelengthIteration_2/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.msubw01
+    normaliseTo: Nothing
+    maxRadFT: 50.0
+    outputUnits: barns/atom/sr
+    powerForBroadening: 0.5
+    stepSize: 0.03
+    runThisSample: true
+    scatteringFraction: 1.0
+    attenuationCoefficient: 0.0
+    containers:
+    - name: N9
+      periodNumber: 1
+      dataFiles:
+        dataFiles: [NIMROD00016694_Empty_N9.raw, NIMROD00016699_Empty_N9.raw, NIMROD00016704_Empty_N9.raw]
+        name: N9
+      composition:
+        type_: Container
+        elements:
+        - {atomicSymbol: Ti, massNo: 0, abundance: 7.16}
+        - {atomicSymbol: Zr, massNo: 0, abundance: 3.438}
+        weightedComponents: []
+      geometry: FLATPLATE
+      upstreamThickness: 0.1
+      downstreamThickness: 0.1
+      angleOfRotation: 0.0
+      sampleWidth: 5.0
+      innerRadius: 0.0
+      outerRadius: 0.0
+      sampleHeight: 0.0
+      density: 0.0542
+      densityUnits: atoms/Å^3
+      totalCrossSectionSource: TABLES
+      crossSectionFilename: ''
+      tweakFactor: 1.0
+      scatteringFraction: 1.0
+      attenuationCoefficient: 0.0
+  - name: D2O,_Can_N10
+    periodNumber: 1
+    dataFiles:
+      dataFiles: [NIMROD00016609_D2O_in_N10.raw, NIMROD00016611_D2O_in_N10.raw]
+      name: D2O,_Can_N10
+    forceCalculationOfCorrections: true
+    composition:
+      type_: Sample
+      elements:
+      - {atomicSymbol: H, massNo: 2, abundance: 2.0}
+      - {atomicSymbol: O, massNo: 0, abundance: 1.0}
+      weightedComponents: []
+    geometry: FLATPLATE
+    upstreamThickness: 0.05
+    downstreamThickness: 0.05
+    angleOfRotation: 0.0
+    sampleWidth: 5.0
+    innerRadius: 0.0
+    outerRadius: 0.0
+    sampleHeight: 0.0
+    density: 0.1
+    densityUnits: atoms/Å^3
+    tempForNormalisationPC: 0.0
+    totalCrossSectionSource: TRANSMISSION
+    crossSectionFilename: ''
+    sampleTweakFactor: 1.0
+    topHatW: 0.0
+    FTMode: Subtract Average (Qmin)
+    minRadFT: 0.8
+    grBroadening: 0.0
+    resonanceValues: []
+    exponentialValues:
+    - [0.0, 1.5, 0]
+    normalisationCorrectionFactor: 1.0
+    fileSelfScattering: 
+      /Users/noella/Documents/dev/gp-test/water/Gudrun/WavelengthIteration_2/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.msubw01
+    normaliseTo: Nothing
+    maxRadFT: 50.0
+    outputUnits: barns/atom/sr
+    powerForBroadening: 0.0
+    stepSize: 0.03
+    runThisSample: true
+    scatteringFraction: 1.0
+    attenuationCoefficient: 0.0
+    containers:
+    - name: N10
+      periodNumber: 1
+      dataFiles:
+        dataFiles: [NIMROD00016695_Empty_N10.raw, NIMROD00016700_Empty_N10.raw, NIMROD00016705_Empty_N10.raw]
+        name: N10
+      composition:
+        type_: Container
+        elements:
+        - {atomicSymbol: Ti, massNo: 0, abundance: 7.16}
+        - {atomicSymbol: Zr, massNo: 0, abundance: 3.438}
+        weightedComponents: []
+      geometry: FLATPLATE
+      upstreamThickness: 0.1
+      downstreamThickness: 0.1
+      angleOfRotation: 0.0
+      sampleWidth: 5.0
+      innerRadius: 0.0
+      outerRadius: 0.0
+      sampleHeight: 0.0
+      density: 0.0542
+      densityUnits: atoms/Å^3
+      totalCrossSectionSource: TABLES
+      crossSectionFilename: ''
+      tweakFactor: 1.0
+      scatteringFraction: 1.0
+      attenuationCoefficient: 0.0
+  - name: HDO,_Can_N6
+    periodNumber: 1
+    dataFiles:
+      dataFiles: [NIMROD00016741_HDO_in_N6.raw, NIMROD00016743_HDO_in_N6.raw]
+      name: HDO,_Can_N6
+    forceCalculationOfCorrections: true
+    composition:
+      type_: Sample
+      elements:
+      - {atomicSymbol: H, massNo: 0, abundance: 1.0}
+      - {atomicSymbol: O, massNo: 0, abundance: 1.0}
+      - {atomicSymbol: H, massNo: 2, abundance: 1.0}
+      weightedComponents: []
+    geometry: FLATPLATE
+    upstreamThickness: 0.05
+    downstreamThickness: 0.05
+    angleOfRotation: 0.0
+    sampleWidth: 5.0
+    innerRadius: 0.0
+    outerRadius: 0.0
+    sampleHeight: 0.0
+    density: 0.1
+    densityUnits: atoms/Å^3
+    tempForNormalisationPC: 0.0
+    totalCrossSectionSource: TRANSMISSION
+    crossSectionFilename: ''
+    sampleTweakFactor: 1.0
+    topHatW: 0.0
+    FTMode: Subtract Average (Qmin)
+    minRadFT: 0.8
+    grBroadening: 0.1
+    resonanceValues: []
+    exponentialValues:
+    - [0.0, 1.5, 0]
+    normalisationCorrectionFactor: 1.0
+    fileSelfScattering: 
+      /Users/noella/Documents/dev/gp-test/water/Gudrun/WavelengthIteration_2/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.msubw01
+    normaliseTo: Nothing
+    maxRadFT: 50.0
+    outputUnits: barns/atom/sr
+    powerForBroadening: 0.5
+    stepSize: 0.03
+    runThisSample: true
+    scatteringFraction: 1.0
+    attenuationCoefficient: 0.0
+    containers:
+    - name: N6
+      periodNumber: 1
+      dataFiles:
+        dataFiles: [NIMROD00014908_Empty_N6.raw]
+        name: N6
+      composition:
+        type_: Container
+        elements:
+        - {atomicSymbol: Ti, massNo: 0, abundance: 7.16}
+        - {atomicSymbol: Zr, massNo: 0, abundance: 3.438}
+        weightedComponents: []
+      geometry: FLATPLATE
+      upstreamThickness: 0.1
+      downstreamThickness: 0.1
+      angleOfRotation: 0.0
+      sampleWidth: 5.0
+      innerRadius: 0.0
+      outerRadius: 0.0
+      sampleHeight: 0.0
+      density: 0.0542
+      densityUnits: atoms/Å^3
+      totalCrossSectionSource: TABLES
+      crossSectionFilename: ''
+      tweakFactor: 1.0
+      scatteringFraction: 1.0
+      attenuationCoefficient: 0.0
+  - name: Null_Water,_Can_N8
+    periodNumber: 1
+    dataFiles:
+      dataFiles: [NIMROD00016742_NullWater_in_N8.raw, NIMROD00016744_NullWater_in_N8.raw]
+      name: Null_Water,_Can_N8
+    forceCalculationOfCorrections: true
+    composition:
+      type_: Sample
+      elements:
+      - {atomicSymbol: H, massNo: 0, abundance: 1.281}
+      - {atomicSymbol: O, massNo: 0, abundance: 1.0}
+      - {atomicSymbol: H, massNo: 2, abundance: 0.7185}
+      weightedComponents: []
+    geometry: FLATPLATE
+    upstreamThickness: 0.05
+    downstreamThickness: 0.05
+    angleOfRotation: 0.0
+    sampleWidth: 5.0
+    innerRadius: 0.0
+    outerRadius: 0.0
+    sampleHeight: 0.0
+    density: 0.1
+    densityUnits: atoms/Å^3
+    tempForNormalisationPC: 0.0
+    totalCrossSectionSource: TRANSMISSION
+    crossSectionFilename: ''
+    sampleTweakFactor: 1.0
+    topHatW: 0.0
+    FTMode: Subtract Average (Qmin)
+    minRadFT: 0.8
+    grBroadening: 0.1
+    resonanceValues: []
+    exponentialValues:
+    - [0.0, 1.5, 0]
+    normalisationCorrectionFactor: 1.0
+    fileSelfScattering: 
+      /Users/noella/Documents/dev/gp-test/water/Gudrun/WavelengthIteration_2/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.msubw01
+    normaliseTo: Nothing
+    maxRadFT: 50.0
+    outputUnits: barns/atom/sr
+    powerForBroadening: 0.5
+    stepSize: 0.03
+    runThisSample: true
+    scatteringFraction: 1.0
+    attenuationCoefficient: 0.0
+    containers:
+    - name: N8
+      periodNumber: 1
+      dataFiles:
+        dataFiles: [NIMROD00016994_Empty_N8.raw]
+        name: N8
+      composition:
+        type_: Container
+        elements:
+        - {atomicSymbol: Ti, massNo: 0, abundance: 7.16}
+        - {atomicSymbol: Zr, massNo: 0, abundance: 3.438}
+        weightedComponents: []
+      geometry: FLATPLATE
+      upstreamThickness: 0.1
+      downstreamThickness: 0.1
+      angleOfRotation: 0.0
+      sampleWidth: 5.0
+      innerRadius: 0.0
+      outerRadius: 0.0
+      sampleHeight: 0.0
+      density: 0.0542
+      densityUnits: atoms/Å^3
+      totalCrossSectionSource: TABLES
+      crossSectionFilename: ''
+      tweakFactor: 1.0
+      scatteringFraction: 1.0
+      attenuationCoefficient: 0.0
+GUI: {useComponents: false}

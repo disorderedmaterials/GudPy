@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - 'release/*'
+    - '*'
 
 jobs:
 
@@ -64,3 +65,9 @@ jobs:
       env:
         HARBOR_USER: ${{ secrets.HARBOR_USER }}
         HARBOR_SECRET: ${{ secrets.HARBOR_SECRET }}
+    - name: Update Version Information
+      uses: "./.github/workflows/update-release-info"
+      with:
+        createPR: ${{ ! endsWith(github.ref, 'pre') }}
+        releaseVersion: ${{ env.gudPyVersion }}
+
