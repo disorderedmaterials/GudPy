@@ -6,6 +6,7 @@ from copy import deepcopy
 import tempfile
 import traceback
 
+from core import utils
 from core.exception import ParserException
 from core.utils import spacify, numifyBool
 from core.gudrun_file import GudrunFile
@@ -785,8 +786,9 @@ class TestGudPyIO(TestCase):
                                 )
                             else:
                                 if key_ == "name":
-                                    sample[key_] = sample[key_].replace(
-                                        " ", "_")
+                                    sample[key_] = (
+                                        utils.replace_unwanted_chars(
+                                            sample[key_]))
                                 self.assertEqual(
                                     sample[key_], sampleAttrsDict[key_]
                                 )

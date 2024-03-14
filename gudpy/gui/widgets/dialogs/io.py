@@ -1,4 +1,3 @@
-from core.file_library import GudPyFileLibrary
 from PySide6.QtWidgets import (
     QDialog, QFileDialog, QMessageBox, QListWidget, QLabel
 )
@@ -6,6 +5,9 @@ import sys
 import os
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
+
+from core import utils
+from core.file_library import GudPyFileLibrary
 
 
 class MissingFilesDialog(QDialog):
@@ -154,7 +156,8 @@ class ExportDialog(QDialog):
                         "mint01"
                     )
                 )
-                namedAfterSample = sample.name.replace(" ", "_").translate(
+                namedAfterSample = utils.replace_unwanted_chars(
+                    sample.name).translate(
                     {ord(x): '' for x in r'/\!*~,&|[]'}
                 ) + ".mint01"
 
