@@ -22,6 +22,7 @@ class CompositionDialog(QDialog):
     initComponents():
         Loads the UI file for the CompositionDialog
     """
+
     def __init__(self, parent, component):
         super(CompositionDialog, self).__init__(parent=parent)
         self.component = component

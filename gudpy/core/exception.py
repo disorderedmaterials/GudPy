@@ -8,3 +8,11 @@ class ChemicalFormulaParserException(Exception):
 
 class YAMLException(Exception):
     pass
+
+
+class GudrunException(Exception):
+    pass
+
+
+class PurgeException(Exception):
+    pass

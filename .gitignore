@@ -46,3 +46,4 @@ resources_rc.py
 *.vanrat
 /.vs
 /env/Scripts
+.env

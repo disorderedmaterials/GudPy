@@ -3,8 +3,10 @@ from enum import Enum
 from unittest import TestCase
 import random
 from copy import deepcopy
-from shutil import copyfile
+import tempfile
+import traceback
 
+from core import utils
 from core.exception import ParserException
 from core.utils import spacify, numifyBool
 from core.gudrun_file import GudrunFile
@@ -22,6 +24,45 @@ from core.enums import (
     MergeWeights, NormalisationType, OutputUnits,
     Geometry, Format
 )
+from core import gudpy as gp
+
+
+class GudPyContext:
+    def __init__(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        testDir = os.path.dirname(__file__)
+        path = os.path.join(
+            testDir, "TestData/NIMROD-water/water.txt"
+        )
+
+        self.gudpy = gp.GudPy()
+
+        self.gudpy.loadFromFile(
+            loadFile=path,
+            format=Format.TXT
+        )
+
+        gPath = os.path.join(self.tempdir.name, "good_water.txt")
+        self.gudpy.gudrunFile.write_out(gPath, overwrite=True)
+
+        self.gudpy.loadFromFile(
+            loadFile=gPath,
+            format=Format.TXT
+        )
+
+        self.gudpy.setSaveLocation(os.path.join(
+            self.tempdir.name, "good_water"
+        ))
+
+    def __enter__(self):
+        return self.gudpy
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self.tempdir.cleanup()
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_value, tb)
+            return False
+        return True
 
 
 class TestGudPyIO(TestCase):
@@ -370,14 +411,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleA = {
-            "name": "H2O, Can N9",
+            "name": "H2O,_Can_N9",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016608_H2O_in_N9.raw",
                     "NIMROD00016610_H2O_in_N9.raw",
                 ],
-                "H2O, Can N9",
+                "H2O,_Can_N9",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -425,14 +466,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleB = {
-            "name": "D2O, Can N10",
+            "name": "D2O,_Can_N10",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016609_D2O_in_N10.raw",
                     "NIMROD00016611_D2O_in_N10.raw",
                 ],
-                "D2O, Can N10",
+                "D2O,_Can_N10",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -480,14 +521,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleC = {
-            "name": "HDO, Can N6",
+            "name": "HDO,_Can_N6",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016741_HDO_in_N6.raw",
                     "NIMROD00016743_HDO_in_N6.raw",
                 ],
-                "HDO, Can N6",
+                "HDO,_Can_N6",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -536,14 +577,14 @@ class TestGudPyIO(TestCase):
         ]
 
         self.expectedSampleD = {
-            "name": "Null Water, Can N8",
+            "name": "Null_Water,_Can_N8",
             "periodNumber": 1,
             "dataFiles": DataFiles(
                 [
                     "NIMROD00016742_NullWater_in_N8.raw",
                     "NIMROD00016744_NullWater_in_N8.raw",
                 ],
-                "Null Water, Can N8",
+                "Null_Water,_Can_N8",
             ),
             "forceCalculationOfCorrections": True,
             "composition": Composition(
@@ -634,8 +675,6 @@ class TestGudPyIO(TestCase):
             0
         ].__dict__ = self.expectedContainerA
 
-        self.g = GudrunFile(dirpath, format=Format.TXT)
-
         self.dicts = [
             self.expectedInstrument,
             self.expectedBeam,
@@ -652,13 +691,6 @@ class TestGudPyIO(TestCase):
         ]
 
         self.keepsakes = os.listdir()
-
-        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-
-        g.write_out(self.g.loadFile, overwrite=True)
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -667,255 +699,275 @@ class TestGudPyIO(TestCase):
         return super().tearDown()
 
     def testLoadGudrunFile(self):
+        with GudPyContext() as gudpy:
+            self.assertIsInstance(gudpy.gudrunFile, GudrunFile)
 
-        self.assertIsInstance(self.g, GudrunFile)
+            instrumentAttrsDict = gudpy.gudrunFile.instrument.__dict__
 
-        instrumentAttrsDict = self.g.instrument.__dict__
-
-        for key in instrumentAttrsDict.keys():
-            pathKeys = ["GudrunInputFileDir", "dataFileDir"]
-            if key in pathKeys:
-                # Ignore the paths as they vary
-                continue
-            else:
-                self.assertEqual(
-                    self.expectedInstrument[key], instrumentAttrsDict[key]
-                )
-
-        beamAttrsDict = self.g.beam.__dict__
-
-        for key in beamAttrsDict.keys():
-            self.assertEqual(self.expectedBeam[key], beamAttrsDict[key])
-
-        normalisationAttrsDict = self.g.normalisation.__dict__
-
-        for key in normalisationAttrsDict.keys():
-            if isinstance(
-                normalisationAttrsDict[key], (DataFiles, Composition)
-            ):
-                self.assertEqual(
-                    str(self.expectedNormalisation[key]),
-                    str(normalisationAttrsDict[key]),
-                )
-            else:
-                self.assertEqual(
-                    self.expectedNormalisation[key],
-                    normalisationAttrsDict[key],
-                )
-
-        self.assertEqual(len(self.g.sampleBackgrounds), 1)
-
-        sampleBackgroundsAttrsDict = self.g.sampleBackgrounds[0].__dict__
-
-        for key in sampleBackgroundsAttrsDict.keys():
-            if key == "samples":
-                for i, sample in enumerate(self.expectedSampleBackground[key]):
-                    sampleAttrsDict = (
-                        deepcopy(
-                            self.g.sampleBackgrounds[0].samples[i].__dict__
-                        )
+            for key in instrumentAttrsDict.keys():
+                pathKeys = ["GudrunInputFileDir", "dataFileDir"]
+                if key in pathKeys:
+                    # Ignore the paths as they vary
+                    continue
+                else:
+                    self.assertEqual(
+                        self.expectedInstrument[key], instrumentAttrsDict[key]
                     )
-                    for key_ in sampleAttrsDict.keys():
 
-                        if key_ == "containers":
-                            for j, container in enumerate(sample[key_]):
-                                containerAttrsDict = (
-                                    self.g.sampleBackgrounds[0]
-                                    .samples[i]
-                                    .containers[j]
-                                    .__dict__
+            beamAttrsDict = gudpy.gudrunFile.beam.__dict__
+
+            for key in beamAttrsDict.keys():
+                self.assertEqual(self.expectedBeam[key], beamAttrsDict[key])
+
+            normalisationAttrsDict = gudpy.gudrunFile.normalisation.__dict__
+
+            for key in normalisationAttrsDict.keys():
+                if isinstance(
+                    normalisationAttrsDict[key], (DataFiles, Composition)
+                ):
+                    self.assertEqual(
+                        str(self.expectedNormalisation[key]),
+                        str(normalisationAttrsDict[key]),
+                    )
+                else:
+                    self.assertEqual(
+                        self.expectedNormalisation[key],
+                        normalisationAttrsDict[key],
+                    )
+
+            self.assertEqual(len(gudpy.gudrunFile.sampleBackgrounds), 1)
+
+            sampleBackgroundsAttrsDict = (
+                gudpy.gudrunFile.sampleBackgrounds[0].__dict__)
+
+            for key in sampleBackgroundsAttrsDict.keys():
+                if key == "samples":
+                    for i, sample in enumerate(
+                            self.expectedSampleBackground[key]):
+                        sampleAttrsDict = (
+                            deepcopy(
+                                gudpy.gudrunFile.sampleBackgrounds[
+                                    0].samples[i].__dict__
+                            )
+                        )
+                        for key_ in sampleAttrsDict.keys():
+
+                            if key_ == "containers":
+                                for j, container in enumerate(sample[key_]):
+                                    containerAttrsDict = (
+                                        gudpy.gudrunFile.sampleBackgrounds[0]
+                                        .samples[i]
+                                        .containers[j]
+                                        .__dict__
+                                    )
+
+                                    for _key in containerAttrsDict.keys():
+
+                                        if isinstance(
+                                            container[_key],
+                                            (DataFiles, Composition),
+                                        ):
+                                            self.assertEqual(
+                                                str(container[_key]),
+                                                str(containerAttrsDict[_key]),
+                                            )
+                                        else:
+                                            self.assertEqual(
+                                                container[_key],
+                                                containerAttrsDict[_key],
+                                            )
+
+                            elif isinstance(
+                                sample[key_], (DataFiles, Composition)
+                            ):
+                                self.assertEqual(
+                                    str(sample[key_]), str(
+                                        sampleAttrsDict[key_])
+                                )
+                            else:
+                                if key_ == "name":
+                                    sample[key_] = (
+                                        utils.replace_unwanted_chars(
+                                            sample[key_]))
+                                self.assertEqual(
+                                    sample[key_], sampleAttrsDict[key_]
                                 )
 
-                                for _key in containerAttrsDict.keys():
-
-                                    if isinstance(
-                                        container[_key],
-                                        (DataFiles, Composition),
-                                    ):
-                                        self.assertEqual(
-                                            str(container[_key]),
-                                            str(containerAttrsDict[_key]),
-                                        )
-                                    else:
-                                        self.assertEqual(
-                                            container[_key],
-                                            containerAttrsDict[_key],
-                                        )
-
-                        elif isinstance(
-                            sample[key_], (DataFiles, Composition)
-                        ):
-                            self.assertEqual(
-                                str(sample[key_]), str(sampleAttrsDict[key_])
-                            )
-                        else:
-                            self.assertEqual(
-                                sample[key_], sampleAttrsDict[key_]
-                            )
-
-            elif isinstance(sampleBackgroundsAttrsDict[key], DataFiles):
-                self.assertEqual(
-                    str(self.expectedSampleBackground[key]),
-                    str(sampleBackgroundsAttrsDict[key]),
-                )
-            else:
-                self.assertEqual(
-                    self.expectedSampleBackground[key],
-                    sampleBackgroundsAttrsDict[key],
-                )
+                elif isinstance(sampleBackgroundsAttrsDict[key], DataFiles):
+                    self.assertEqual(
+                        str(self.expectedSampleBackground[key]),
+                        str(sampleBackgroundsAttrsDict[key]),
+                    )
+                else:
+                    self.assertEqual(
+                        self.expectedSampleBackground[key],
+                        sampleBackgroundsAttrsDict[key],
+                    )
 
     def testWriteGudrunFile(self):
-        self.g.write_out(self.g.loadFile, overwrite=True)
-        with open(
-            self.g.loadFile,
-            encoding="utf-8"
-        ) as f:
-            outlines = "\n".join(f.readlines()[:-5])
-            self.assertEqual(
-                outlines, "\n".join(str(self.g).splitlines(keepends=True)[:-5])
-            )
-
-        def valueInLines(value, lines):
-            if isinstance(value, str):
-                self.assertTrue(value in lines)
-            elif isinstance(value, (list, tuple)):
-                if len(value) == 0:
-                    return
-                elif isinstance(value[0], dict):
-                    for val in value:
-                        for val_ in val.values():
-                            valueInLines(val_, lines)
-                elif isinstance(value[0], (list, tuple)):
-                    for val in value:
-                        self.assertTrue(
-                            spacify(val) in lines
-                            or spacify(val, num_spaces=2) in lines
-                        )
-                else:
-                    self.assertTrue(
-                        spacify(value) in lines
-                        or spacify(value, num_spaces=2) in lines
-                        or spacify([int(x) for x in value]) in lines
-                        or spacify(
-                            [int(x) for x in value], num_spaces=2
-                        ) in lines
-                    )
-            elif isinstance(value, bool):
-                self.assertTrue(str(numifyBool(value)) in lines)
-            elif isinstance(value, Enum):
-                self.assertTrue(
-                    str(value.value) in lines
-                    or value.name in lines
+        with GudPyContext() as gudpy:
+            gudpy.gudrunFile.write_out(
+                gudpy.gudrunFile.loadFile, overwrite=True)
+            with open(
+                gudpy.gudrunFile.loadFile,
+                encoding="utf-8"
+            ) as f:
+                outlines = "\n".join(f.readlines()[:-5])
+                self.assertEqual(
+                    outlines, "\n".join(
+                        str(gudpy.gudrunFile).splitlines(keepends=True)[:-5])
                 )
-            else:
-                if "        " in str(value):
-                    self.assertTrue(str(value).split("        ")[0] in lines)
-                elif isinstance(value, str):
-                    self.assertTrue(
-                        str(value) in lines
-                        or str(int(value)) in lines
-                    )
 
-        for dic in self.dicts:
-            for value in dic.values():
-                if isinstance(value, list):
-                    for val in value:
-                        if isinstance(val, dict):
+            def valueInLines(value, lines):
+                if isinstance(value, str):
+                    self.assertTrue(value in lines)
+                elif isinstance(value, (list, tuple)):
+                    if len(value) == 0:
+                        return
+                    elif isinstance(value[0], dict):
+                        for val in value:
                             for val_ in val.values():
-                                valueInLines(val_, outlines)
-                        else:
-                            valueInLines(val, outlines)
+                                valueInLines(val_, lines)
+                    elif isinstance(value[0], (list, tuple)):
+                        for val in value:
+                            self.assertTrue(
+                                spacify(val) in lines
+                                or spacify(val, num_spaces=2) in lines
+                            )
+                    else:
+                        self.assertTrue(
+                            spacify(value) in lines
+                            or spacify(value, num_spaces=2) in lines
+                            or spacify([int(x) for x in value]) in lines
+                            or spacify(
+                                [int(x) for x in value], num_spaces=2
+                            ) in lines
+                        )
+                elif isinstance(value, bool):
+                    self.assertTrue(str(numifyBool(value)) in lines)
+                elif isinstance(value, Enum):
+                    self.assertTrue(
+                        str(value.value) in lines
+                        or value.name in lines
+                    )
                 else:
-                    valueInLines(value, outlines)
-        inlines = ""
-        with open(self.g.loadFile, encoding="utf-8") as f:
-            inlines = f.read()
-        for dic in self.dicts:
-            for value in dic.values():
-                if isinstance(value, list):
-                    for val in value:
-                        if isinstance(val, dict):
-                            for val_ in val.values():
-                                valueInLines(val_, inlines)
-                        else:
-                            valueInLines(val, inlines)
-                else:
-                    if (
-                        value == os.path.abspath("../bin")
-                        or value == os.path.sep
-                        or value == os.path.join("../bin", "StartupFiles")
-                        or value == self.g.instrument.GudrunInputFileDir
-                    ):
-                        continue
-                    valueInLines(value, inlines)
+                    if "        " in str(value):
+                        self.assertTrue(str(value).split(
+                            "        ")[0] in lines)
+                    elif isinstance(value, str):
+                        self.assertTrue(
+                            str(value) in lines
+                            or str(int(value)) in lines
+                        )
+
+            for dic in self.dicts:
+                for value in dic.values():
+                    if isinstance(value, list):
+                        for val in value:
+                            if isinstance(val, dict):
+                                for val_ in val.values():
+                                    valueInLines(val_, outlines)
+                            else:
+                                valueInLines(val, outlines)
+                    else:
+                        valueInLines(value, outlines)
+            inlines = ""
+            with open(gudpy.gudrunFile.loadFile, encoding="utf-8") as f:
+                inlines = f.read()
+            for dic in self.dicts:
+                for value in dic.values():
+                    if isinstance(value, list):
+                        for val in value:
+                            if isinstance(val, dict):
+                                for val_ in val.values():
+                                    valueInLines(val_, inlines)
+                            else:
+                                valueInLines(val, inlines)
+                    else:
+                        if (
+                            value == os.path.abspath("../bin")
+                            or value == os.path.sep
+                            or value == os.path.join("../bin", "StartupFiles")
+                            or value == (
+                                gudpy.gudrunFile.instrument.GudrunInputFileDir)
+                        ):
+                            continue
+                        valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):
-        self.g.write_out(self.g.loadFile, overwrite=True)
-        copyPath = os.path.join(
-            self.g.instrument.GudrunInputFileDir,
-            "copyGF.txt"
-        )
-        g1 = GudrunFile(
-            self.g.loadFile,
-            format=Format.TXT
-        )
-        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
-        g1.write_out(copyPath, overwrite=True)
-
-        def compareString(string1, string2):
-            return string1 == string2
-
-        with open(
-                copyPath,
-                "r",
-                encoding="utf-8"
-        ) as f:
-            fileContent = "\n".join(f.readlines()[:-5])
-            self.assertEqual(
-                compareString(
-                    fileContent,
-                    "\n".join(
-                        str(self.g).splitlines(keepends=True)[:-5])),
-                True
+        with GudPyContext() as gudpy:
+            gudpy.gudrunFile.write_out(
+                gudpy.gudrunFile.loadFile, overwrite=True)
+            copyPath = os.path.join(
+                gudpy.gudrunFile.instrument.GudrunInputFileDir,
+                "copyGF.txt"
             )
-            self.assertEqual(
-                compareString(
-                    fileContent,
-                    "\n".join(
-                        str(g1).splitlines(keepends=True)[:-5])),
-                True
+            g1 = GudrunFile(
+                loadFile=gudpy.gudrunFile.loadFile,
+                format=Format.TXT
             )
+            g1.instrument.GudrunInputFileDir = (
+                gudpy.gudrunFile.instrument.GudrunInputFileDir)
+            g1.write_out(copyPath, overwrite=True)
+
+            def compareString(string1, string2):
+                return string1 == string2
 
             with open(
-                os.path.join(
-                    self.g.loadFile
-                ),
-                encoding="utf-8"
-            ) as fg:
+                    copyPath,
+                    "r",
+                    encoding="utf-8"
+            ) as f:
+                fileContent = "\n".join(f.readlines()[:-5])
                 self.assertEqual(
-                    "\n".join(
-                        fg.readlines()[:-5]
-                    ),
-                    fileContent
+                    compareString(
+                        fileContent,
+                        "\n".join(
+                            str(gudpy.gudrunFile).splitlines(
+                                keepends=True)[:-5])),
+                    True
+                )
+                self.assertEqual(
+                    compareString(
+                        fileContent,
+                        "\n".join(
+                            str(g1).splitlines(keepends=True)[:-5])),
+                    True
                 )
 
+                with open(
+                    os.path.join(
+                        gudpy.gudrunFile.loadFile
+                    ),
+                    encoding="utf-8"
+                ) as fg:
+                    self.assertEqual(
+                        "\n".join(
+                            fg.readlines()[:-5]
+                        ),
+                        fileContent
+                    )
+
     def testReloadGudrunFile(self):
-        self.g.write_out(self.g.loadFile, overwrite=True)
-        g1 = GudrunFile(
-            self.g.loadFile,
-            format=Format.TXT
-        )
-        g1.instrument.GudrunInputFileDir = self.g.instrument.GudrunInputFileDir
-        self.assertEqual(
-            "\n".join(str(g1).splitlines(keepends=True)[:-5]),
-            "\n".join(str(self.g).splitlines(keepends=True)[:-5])
-        )
+        with GudPyContext() as gudpy:
+            gudpy.gudrunFile.write_out(
+                gudpy.gudrunFile.loadFile, overwrite=True)
+            g1 = GudrunFile(
+                loadFile=gudpy.gudrunFile.loadFile,
+                format=Format.TXT
+            )
+            g1.instrument.GudrunInputFileDir = (
+                gudpy.gudrunFile.instrument.GudrunInputFileDir)
+            self.assertEqual(
+                "\n".join(str(g1).splitlines(keepends=True)[:-5]),
+                "\n".join(str(gudpy.gudrunFile).splitlines(keepends=True)[:-5])
+            )
 
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w", encoding="utf-8")
         f.close()
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -935,7 +987,7 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -957,7 +1009,7 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -976,7 +1028,7 @@ class TestGudPyIO(TestCase):
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -995,7 +1047,7 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file supplied'
@@ -1009,7 +1061,7 @@ class TestGudPyIO(TestCase):
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1026,7 +1078,7 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1036,7 +1088,6 @@ class TestGudPyIO(TestCase):
         )
 
     def testLoadMissingInstrumentAttributesSeq(self):
-
         expectedInstrument = deepcopy(self.expectedInstrument)
         expectedInstrument.pop("XMax", None)
         expectedInstrument.pop("XStep", None)
@@ -1060,7 +1111,7 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1069,7 +1120,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingInstrumentAttributesRand(self):
-
         expectedInstrument = deepcopy(self.expectedInstrument)
         expectedInstrument.pop("XMax", None)
         expectedInstrument.pop("XStep", None)
@@ -1095,7 +1145,7 @@ class TestGudPyIO(TestCase):
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1104,7 +1154,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingBeamAttributesSeq(self):
-
         expectedBeam = deepcopy(self.expectedBeam)
         expectedBeam.pop("incidentBeamRightEdge", None)
         expectedBeam.pop("incidentBeamTopEdge", None)
@@ -1131,7 +1180,7 @@ class TestGudPyIO(TestCase):
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1140,7 +1189,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingBeamAttributesRand(self):
-
         expectedBeam = deepcopy(self.expectedBeam)
         expectedBeam.pop("incidentBeamRightEdge", None)
         expectedBeam.pop("incidentBeamTopEdge", None)
@@ -1152,7 +1200,7 @@ class TestGudPyIO(TestCase):
         expectedBeam.pop("noSlices", None)
         expectedBeam.pop("yamlignore", None)
 
-        for i in range(50):
+        for _ in range(50):
 
             key = random.choice(list(expectedBeam))
             j = list(expectedBeam).index(key)
@@ -1171,7 +1219,7 @@ class TestGudPyIO(TestCase):
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1180,7 +1228,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingNormalisationAttributesSeq(self):
-
         expectedNormalisation = deepcopy(self.expectedNormalisation)
         expectedNormalisation.pop("dataFiles", None)
         expectedNormalisation.pop("dataFilesBg", None)
@@ -1217,7 +1264,7 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1226,7 +1273,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingNormalisationAttributesRand(self):
-
         expectedNormalisation = deepcopy(self.expectedNormalisation)
         expectedNormalisation.pop("dataFiles", None)
         expectedNormalisation.pop("dataFilesBg", None)
@@ -1267,7 +1313,7 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Normalisation, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1292,7 +1338,7 @@ class TestGudPyIO(TestCase):
             )
             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
         with self.assertRaises(ParserException) as cm:
-            GudrunFile("test_data.txt", format=Format.TXT)
+            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
             self.assertEqual(
                 "Whilst parsing Sample Background, an exception occured."
                 " The input file is most likely of an incorrect format, "
@@ -1301,7 +1347,6 @@ class TestGudPyIO(TestCase):
             )
 
     def testLoadMissingSampleAttributesSeq(self):
-
         expectedSampleA = deepcopy(self.expectedSampleA)
         expectedSampleA.pop("name", None)
         expectedSampleA.pop("dataFiles", None)
@@ -1348,7 +1393,7 @@ class TestGudPyIO(TestCase):
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Sample, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1357,7 +1402,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingSampleAttributesRand(self):
-
         expectedSampleA = deepcopy(self.expectedSampleA)
         expectedSampleA.pop("name", None)
         expectedSampleA.pop("dataFiles", None)
@@ -1407,7 +1451,7 @@ class TestGudPyIO(TestCase):
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Sample, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1416,7 +1460,6 @@ class TestGudPyIO(TestCase):
                 )
 
     def testLoadMissingContainerAttributesSeq(self):
-
         expectedContainerA = deepcopy(self.expectedContainerA)
         expectedContainerA.pop("name", None)
         expectedContainerA.pop("dataFiles", None)
@@ -1468,7 +1511,7 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Container, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1477,21 +1520,23 @@ class TestGudPyIO(TestCase):
                 )
 
     def testAppendExponentialValues(self):
-        # Remove last element of exponential values list
-        self.g.sampleBackgrounds[0].samples[0].exponentialValues[0].pop()
-        self.g.write_out()
+        with GudPyContext() as gudpy:
+            # Remove last element of exponential values list
+            gudpy.gudrunFile.sampleBackgrounds[
+                0].samples[0].exponentialValues[0].pop()
+            gudpy.gudrunFile.write_out()
 
-        gudrunFile = GudrunFile(os.path.join(
-            self.g.instrument.GudrunInputFileDir,
-            self.g.OUTPATH
-        ), format=Format.TXT)
-        self.assertEqual(
-            self.expectedSampleA["exponentialValues"],
-            gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
-        )
+            gudrunFile = GudrunFile(loadFile=os.path.join(
+                gudpy.gudrunFile.instrument.GudrunInputFileDir,
+                gudpy.gudrunFile.OUTPATH
+            ), format=Format.TXT)
+            # Test that a default value is appended
+            self.assertEqual(
+                self.expectedSampleA["exponentialValues"],
+                gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
+            )
 
     def testLoadMissingContainerAttributesRand(self):
-
         expectedContainerA = deepcopy(self.expectedContainerA)
         expectedContainerA.pop("name", None)
         expectedContainerA.pop("dataFiles", None)
@@ -1546,7 +1591,7 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with self.assertRaises(ParserException) as cm:
-                GudrunFile("test_data.txt", format=Format.TXT)
+                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
                 self.assertEqual(
                     "Whilst parsing Container, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1555,7 +1600,10 @@ class TestGudPyIO(TestCase):
                 )
 
     def testZeroExitGudrun(self):
-        g = GudrunFile(path="test/TestData/NIMROD-water/good_water.txt",
-                       format=Format.TXT)
-        result = g.dcs()
-        self.assertEqual(result.stderr, None)
+        with GudPyContext() as gudpy:
+            gudpy.loadFromFile(
+                loadFile=gudpy.gudrunFile.loadFile, format=Format.TXT)
+            gudpy.setSaveLocation(os.path.splitext(
+                gudpy.gudrunFile.loadFile)[0])
+            gudpy.runGudrun()
+            self.assertEqual(gudpy.gudrun.exitcode, 0)

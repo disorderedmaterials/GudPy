@@ -2,10 +2,9 @@ import os
 from unittest import TestCase
 from shutil import copyfile
 
-
-from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.enums import Format
+from core import gudpy
 
 
 class TestPurgeFile(TestCase):
@@ -22,17 +21,18 @@ class TestPurgeFile(TestCase):
                 + "/"
                 + path
             )
-        self.g = GudrunFile(dirpath, format=Format.TXT)
-
+        self.gudpy = gudpy.GudPy()
         self.keepsakes = os.listdir()
-
-        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
+        copyfile(dirpath, "test/TestData/NIMROD-water/good_water.txt")
+        self.gudpy.loadFromFile(
+            loadFile="test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        g.write_out(self.g.loadFile, overwrite=True)
-        self.g = g
+        self.gudpy.gudrunFile.write_out(
+            path="test/TestData/NIMROD-water/good_water.txt",
+            overwrite=True
+        )
+        self.g = self.gudpy.gudrunFile
         self.expectedPurgeFile = {
             "standardDeviation": (10, 10),
             "ignoreBad": True,

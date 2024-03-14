@@ -1,36 +1,25 @@
 import os
-from queue import Queue
 import sys
-from copy import deepcopy
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile, Qt
 from PySide6.QtUiTools import QUiLoader
 
 from core.enums import Geometry
 from core import config
-from core.iterators.composition import (
-    CompositionIterator, calculateTotalMolecules
-)
-from core.iterators.density import DensityIterator
-from core.iterators.inelasticity_subtraction import (
-    InelasticitySubtraction
-)
-from core.iterators.radius import RadiusIterator
-from core.iterators.thickness import ThicknessIterator
-from core.iterators.tweak_factor import TweakFactorIterator
+from core import iterators
 
 
 class IterationDialog(QDialog):
 
-    def __init__(self, name, gudrunFile, parent):
+    def __init__(self, name, iteratorType, parent):
         super(IterationDialog, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
-        self.name = name
         self.numberIterations = 1
-        self.iterator = None
+        self.name = name
+        self.iteratorType = iteratorType
         self.text = ""
         self.loadUI()
         self.initComponents()
+        self.params = {}
 
     def initComponents(self):
         self.widget.numberIterationsSpinBox.valueChanged.connect(
@@ -62,49 +51,40 @@ class IterationDialog(QDialog):
         self.widget = loader.load(uifile)
 
     def iterate(self):
-        pass
+        self.widget.close()
+        self.params = {
+            "nTotal": self.numberIterations
+        }
 
     def numberIterationsChanged(self, value):
         self.numberIterations = value
-
-    def enqueueTasks(self):
-        self.queue = Queue()
-        for _ in range(self.numberIterations + 1):
-            self.queue.put(
-                self.iterator.gudrunFile.dcs(headless=False)
-            )
 
 
 class DensityIterationDialog(IterationDialog):
-
-    def iterate(self):
-        self.iterator = DensityIterator(self.gudrunFile, self.numberIterations)
-        self.enqueueTasks()
-        self.text = "Iterate by Density"
-        self.widget.close()
+    def __init__(self, parent, _):
+        super().__init__(
+            name="iterateDensityDialog",
+            iteratorType=iterators.Density,
+            parent=parent
+        )
 
 
 class InelasticitySubtractionIterationDialog(IterationDialog):
-
-    def numberIterationsChanged(self, value):
-        self.numberIterations = value
-
-    def iterate(self):
-        self.iterator = InelasticitySubtraction(
-            self.gudrunFile, self.numberIterations)
-        self.enqueueTasks()
-        self.text = "Inelasticity subtractions"
-        self.widget.close()
-
-    def enqueueTasks(self):
-        self.queue = Queue()
-        for _ in range((self.numberIterations * 2)):
-            self.queue.put(
-                self.iterator.gudrunFile.dcs(headless=False)
-            )
+    def __init__(self, parent, _):
+        super().__init__(
+            name="iterateInelasticitySubtractionsDialog",
+            iteratorType=iterators.InelasticitySubtraction,
+            parent=parent
+        )
 
 
 class RadiusIterationDialog(IterationDialog):
+    def __init__(self, parent, _):
+        super().__init__(
+            name="IterateRadiusDialog",
+            iteratorType=iterators.Radius,
+            parent=parent
+        )
 
     def initComponents(self):
         super().initComponents()
@@ -113,14 +93,19 @@ class RadiusIterationDialog(IterationDialog):
         )
 
     def iterate(self):
-        self.iterator = RadiusIterator(self.gudrunFile, self.numberIterations)
-        self.iterator.setTargetRadius("inner")
-        self.enqueueTasks()
-        self.text = "Iterate by Radius"
         self.widget.close()
+        return {
+            "nTotal": self.numberIterations,
+        }
 
 
 class ThicknessIterationDialog(IterationDialog):
+    def __init__(self, parent, _):
+        super().__init__(
+            name="IterateThicknessDialog",
+            iteratorType=iterators.Thickness,
+            parent=parent
+        )
 
     def initComponents(self):
         super().initComponents()
@@ -128,30 +113,27 @@ class ThicknessIterationDialog(IterationDialog):
             config.geometry == Geometry.FLATPLATE
         )
 
-    def iterate(self):
-        self.iterator = ThicknessIterator(
-            self.gudrunFile, self.numberIterations)
-        self.enqueueTasks()
-        self.text = "Iterate by Thickness"
-        self.widget.close()
-
 
 class TweakFactorIterationDialog(IterationDialog):
-
-    def iterate(self):
-        self.iterator = TweakFactorIterator(
-            self.gudrunFile, self.numberIterations)
-        self.enqueueTasks()
-        self.text = "Iterate by Tweak Factor"
-        self.widget.close()
+    def __init__(self, parent, _):
+        super().__init__(
+            name="iterateTweakFactorDialog",
+            iteratorType=iterators.TweakFactor,
+            parent=parent
+        )
 
 
 class CompositionIterationDialog(IterationDialog):
-
-    def __init__(self, name, gudrunFile, parent):
+    def __init__(self, parent, gudrunFile):
+        self.gudrunFile = gudrunFile
         self.components = [None, None]
         self.rtol = 0.
-        super().__init__(name, gudrunFile, parent)
+        self.mode = iterators.Composition.Mode.SINGLE
+        super().__init__(
+            name="IterateCompositionDialog",
+            iteratorType=iterators.Composition,
+            parent=parent
+        )
 
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
@@ -206,6 +188,7 @@ class CompositionIterationDialog(IterationDialog):
         if state:
             self.enableItems(self.widget.firstComponentComboBox)
             self.components[1] = None
+            self.mode = iterators.Composition.Mode.SINGLE
         else:
             other = self.widget.secondComponentComboBox.model().item(
                 self.widget.firstComponentComboBox.currentIndex()
@@ -214,6 +197,7 @@ class CompositionIterationDialog(IterationDialog):
                 self.widget.secondComponentComboBox,
                 other
             )
+            self.mode = iterators.Composition.Mode.DOUBLE
         self.widget.secondComponentComboBox.setEnabled(not state)
         self.widget.secondComponentComboBox.setCurrentIndex(-1)
 
@@ -242,59 +226,11 @@ class CompositionIterationDialog(IterationDialog):
             self.widget.iterateButton.setEnabled(False)
 
     def iterate(self):
-        self.iterator = CompositionIterator(self.gudrunFile)
-        self.iterator.setComponents(self.components)
-        self.queue = Queue()
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
-                if sample.runThisSample:
-                    if [
-                        wc for wc in sample.composition.weightedComponents
-                        if self.components[0].eq(wc.component)
-                    ]:
-                        sb = deepcopy(sampleBackground)
-                        sb.samples = [deepcopy(sample)]
-                        if len(self.iterator.components) == 1:
-                            self.queue.put(
-                                (
-                                    (
-                                        [1e-2, self.iterator.ratio, 10],
-                                        0,
-                                        self.numberIterations,
-                                        self.rtol
-                                    ),
-                                    {
-                                        "args": (
-                                            self.gudrunFile,
-                                            sb,
-                                            self.iterator.components
-                                        )
-                                    },
-                                    sample
-                                )
-                            )
-                        elif len(self.iterator.components) == 2:
-                            self.queue.put(
-                                (
-                                    (
-                                        [1e-2, self.iterator.ratio, 10],
-                                        0,
-                                        self.numberIterations,
-                                        self.rtol
-                                    ),
-                                    {
-                                        "args": (
-                                            self.gudrunFile,
-                                            sb,
-                                            self.iterator.components,
-                                            calculateTotalMolecules(
-                                                self.iterator.components,
-                                                sample
-                                            )
-                                        )
-                                    },
-                                    sample
-                                )
-                            )
-        self.text = "Iterate by Composition"
         self.widget.close()
+        self.params = {
+            "gudrunFile": None,
+            "mode": self.mode,
+            "nTotal": self.numberIterations,
+            "rtol": self.rtol,
+            "components": self.components
+        }

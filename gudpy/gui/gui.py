@@ -1,24 +1,19 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-from gui.widgets.core.main_window import GudPyMainWindow
+from gui.widgets.core.control import GudPyController
 
 
 class GudPy(QApplication):
     def __init__(self, args):
         sys.hookedFrom = self
         super(GudPy, self).__init__(args)
-        self.initComponents()
-        self.gudrunFile = None
-        self.aboutToQuit.connect(self.mainWindow.cleanup)
+        self.gudpy = GudPyController()
+        self.aboutToQuit.connect(self.gudpy.cleanup)
         sys.exit(self.exec_())
 
-    def initComponents(self):
-
-        self.mainWindow = GudPyMainWindow()
-
     def onException(self, cls, exception, traceback):
-        self.mainWindow.onException(cls, exception, traceback)
+        self.gudpy.onException(cls, exception, traceback)
 
 
 def main(argv):

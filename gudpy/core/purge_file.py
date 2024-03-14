@@ -1,18 +1,13 @@
 import os
-import sys
-import subprocess
-import tempfile
 
-from PySide6.QtCore import QProcess
 from core.enums import Instruments
-from core.utils import resolve, spacify, numifyBool
+from core.utils import spacify, numifyBool
 from core import config
-from core.output_file_handler import OutputHandler
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-class PurgeFile():
+class PurgeFile:
     """
     Class to represent a PurgeFile.
 
@@ -218,84 +213,3 @@ class PurgeFile():
             f' (spec.bad, spike.dat)?\n'
             f'{dataFilesLines}'
         )
-
-    def purge(
-        self,
-        standardDeviation=(10, 10),
-        ignoreBad=True,
-        excludeSampleAndCan=True,
-        headless=True
-    ):
-        """
-        Write out the current state of the PurgeFile, then
-        purge detectors by calling purge_det on that file.
-
-        Parameters
-        ----------
-        standardDeviation: tuple(int, int), optional
-            Number of std deviations allowed above and below
-            the mean ratio and the range of std's allowed around the mean
-            standard deviation. Default is (10, 10)
-        ignoreBad : bool, optional
-            Ignore any existing bad spectrum files (spec.bad, spec.dat)?
-            Default is True.
-        excludeSampleAndCan : bool, optional
-            Exclude sample and container data files?
-        headless : bool
-            Should headless mode be used?
-        Returns
-        -------
-        subprocess.CompletedProcess
-            The result of calling purge_det using subprocess.run.
-            Can access stdout/stderr from this.
-        """
-        self.standardDeviation = standardDeviation
-        self.ignoreBad = ignoreBad
-        self.excludeSampleAndCan = excludeSampleAndCan
-        if headless:
-            with tempfile.TemporaryDirectory() as tmp:
-                self.gudrunFile.setGudrunDir(tmp)
-                purge_det = resolve("bin", f"purge_det{SUFFIX}")
-                self.write_out(os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
-                    "purge_det.dat"
-                ))
-                result = subprocess.run(
-                    [purge_det, "purge_det.dat"],
-                    cwd=tmp,
-                    capture_output=True,
-                    text=True
-                )
-                self.organiseOutput()
-            self.gudrunFile.setGudrunDir(
-                self.gudrunFile.projectDir)
-            return result
-        else:
-            if hasattr(sys, '_MEIPASS'):
-                purge_det = os.path.join(sys._MEIPASS, f"purge_det{SUFFIX}")
-            else:
-                purge_det = resolve(
-                    os.path.join(
-                        config.__rootdir__, "bin"
-                    ), f"purge_det{SUFFIX}"
-                )
-            if not os.path.exists(purge_det):
-                return FileNotFoundError()
-            proc = QProcess()
-            proc.setProgram(purge_det)
-            proc.setArguments([])
-            return (
-                proc,
-                self.write_out,
-                [
-                    os.path.join(
-                        self.gudrunFile.projectDir,
-                        "Purge",
-                        "purge_det.dat"
-                    )
-                ]
-            )
-
-    def organiseOutput(self):
-        outputHandler = OutputHandler(self.gudrunFile, "Purge")
-        outputHandler.organiseOutput()

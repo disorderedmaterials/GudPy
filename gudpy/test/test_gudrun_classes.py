@@ -18,16 +18,14 @@ from core.enums import (
 
 
 class TestGudrunClasses(TestCase):
-
     def testEmptyPath(self):
 
         emptyPath = ""
-        self.assertRaises(FileNotFoundError, GudrunFile, path=emptyPath)
+        self.assertRaises(RuntimeError, GudrunFile, loadFile=emptyPath)
 
     def testInvalidPath(self):
-
         invalidPath = "invalid_path"
-        self.assertRaises(ParserException, GudrunFile, path=invalidPath)
+        self.assertRaises(ParserException, GudrunFile, loadFile=invalidPath)
 
     def testInstrumentInitDataTypes(self):
 

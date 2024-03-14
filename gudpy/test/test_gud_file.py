@@ -1,16 +1,15 @@
 import os
-from shutil import copyfile
 from unittest import TestCase
 
 from core.exception import ParserException
 from core.gud_file import GudFile
-from core.gudrun_file import GudrunFile
-from core.enums import Format
+from core import gudpy
+from test.test_gudpy_workflows import GudPyContext
 
 
 class TestParseGudFile(TestCase):
-
     def setUp(self) -> None:
+        self.gudpy = gudpy.GudPy()
         self.expectedGudFileA = {
             "path": "NIMROD00016608_H2O_in_N9.gud",
             "name": "NIMROD00016608_H2O_in_N9.gud",
@@ -217,9 +216,14 @@ class TestParseGudFile(TestCase):
             "output": "-13.0%"
         }
 
+        self.expectedFiles = [
+            self.expectedGudFileA, self.expectedGudFileB,
+            self.expectedGudFileC, self.expectedGudFileD
+        ]
+
         self.keepsakes = os.listdir()
 
-        path = "TestData/NIMROD-water/water.txt"
+        path = "TestData/NIMROD-water/good_water"
 
         if os.name == "nt":
             from pathlib import Path
@@ -231,280 +235,148 @@ class TestParseGudFile(TestCase):
                 + "/"
                 + path
             )
-        self.g = GudrunFile(dirpath, format=Format.TXT)
 
         self.keepsakes = os.listdir()
 
-        copyfile(self.g.loadFile, "test/TestData/NIMROD-water/good_water.txt")
-        g = GudrunFile(
-            os.path.abspath("test/TestData/NIMROD-water/good_water.txt"),
-            format=Format.TXT
+        for f in os.listdir(dirpath):
+            self.keepsakes.append(f)
+
+        self.gudpy.loadFromProject(
+            projectDir=os.path.abspath(dirpath)
         )
 
         from pathlib import Path
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
-        g.instrument.dataFileDir = str(dataFileDir) + "/"
-
-        g.write_out(self.g.loadFile, overwrite=True)
-        self.g = g
-        g.write_out(self.g.loadFile, overwrite=True)
+        self.gudpy.gudrunFile.instrument.dataFileDir = str(dataFileDir) + "/"
         return super().setUp()
 
     def tearDown(self) -> None:
-
         [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
+        [os.remove(os.path.join(self.gudpy.projectDir, f))
+         for f in os.listdir(self.gudpy.projectDir)
+         if f not in self.keepsakes]
         return super().tearDown()
 
     def testEmptyPath(self):
-
         emptyPath = ""
         self.assertRaises(ParserException, GudFile, emptyPath)
 
     def testInvalidFileType(self):
-
         invalid_file_type = "NIMROD0001_H20_in_N9.txt"
         self.assertRaises(ParserException, GudFile, invalid_file_type)
 
     def testInvalidPath(self):
-
         invalid_path = "invalid_path.gud"
         self.assertRaises(ParserException, GudFile, invalid_path)
 
     def testValidPath(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(0)
-        )
-        self.assertIsInstance(gf, GudFile)
+        with GudPyContext() as gudpy:
+            gudpy.runGudrun()
+            gf = gudpy.gudrun.gudrunOutput.gudFile(0)
+            self.assertIsInstance(gf, GudFile)
 
-    def testLoadGudFileA(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(0)
-        )
+    def loadGudFile(self, index):
+        with GudPyContext() as gudpy:
+            gudpy.runGudrun()
+            gf = gudpy.gudrun.gudrunOutput.gudFile(index)
 
-        self.assertIsInstance(gf, GudFile)
+            self.assertIsInstance(gf, GudFile)
 
-        gudAttrsDict = gf.__dict__
-        for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "result", "OUTPATH", "err"]:
-                continue
-            if key == "groupsTable":
+            gudAttrsDict = gf.__dict__
+            for key in gudAttrsDict.keys():
+                if key in [
+                        "fname", "path", "groups", "stream", "err", "result"]:
+                    continue
+                if key == "groupsTable":
 
-                for rowA, rowB in zip(
-                    self.expectedGudFileA[key].split("\n"),
-                    gf.groupsTable.split("\n"),
-                ):
-                    for valueA, valueB in zip(rowA.split(), rowB.split()):
-                        self.assertAlmostEqual(float(valueA), float(valueB), 1)
-            elif key == "gradient":
-                self.assertAlmostEqual(
-                    self.expectedGudFileA[key],
-                    gudAttrsDict[key],
-                    1,
-                )
-            else:
-                try:
-                    self.assertEqual(
-                        self.expectedGudFileA[key], gudAttrsDict[key]
-                    )
-                except AssertionError as e:
-                    try:
-                        self.assertAlmostEqual(
-                            float(self.expectedGudFileA[key]),
-                            float(gudAttrsDict[key]),
-                            1,
-                        )
-                    except Exception:
-                        raise e
-
-    def testLoadGudFileB(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-
-        gf = GudFile(
-            g.gudrunOutput.gudFile(1)
-        )
-
-        self.assertIsInstance(gf, GudFile)
-
-        gudAttrsDict = gf.__dict__
-        for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "err", "OUTPATH", "result"]:
-                continue
-            if key == "groupsTable":
-
-                for rowA, rowB in zip(
-                    self.expectedGudFileB[key].split("\n"),
-                    gf.groupsTable.split("\n"),
-                ):
-                    for valueA, valueB in zip(rowA.split(), rowB.split()):
-                        self.assertAlmostEqual(float(valueA), float(valueB), 1)
-            elif key == "gradient":
-                self.assertAlmostEqual(
-                    self.expectedGudFileB[key],
-                    gudAttrsDict[key],
-                    1,
-                )
-            else:
-                try:
-                    float(self.expectedGudFileB[key])
-                except ValueError:
-                    self.assertEqual(
-                        self.expectedGudFileB[key],
-                        gudAttrsDict[key]
-                    )
-                else:
+                    for rowA, rowB in zip(
+                        self.expectedFiles[index][key].split("\n"),
+                        gf.groupsTable.split("\n"),
+                    ):
+                        for valueA, valueB in zip(rowA.split(), rowB.split()):
+                            self.assertAlmostEqual(
+                                float(valueA), float(valueB), 1)
+                elif key == "gradient":
                     self.assertAlmostEqual(
-                        float(self.expectedGudFileB[key]),
-                        float(gudAttrsDict[key]),
+                        self.expectedFiles[index][key],
+                        gudAttrsDict[key],
                         1,
                     )
+                else:
+                    try:
+                        float(self.expectedFiles[index][key])
+                    except ValueError:
+                        self.assertEqual(
+                            self.expectedFiles[index][key],
+                            gudAttrsDict[key]
+                        )
+                    else:
+                        self.assertAlmostEqual(
+                            float(self.expectedFiles[index][key]),
+                            float(gudAttrsDict[key]),
+                            1,
+                        )
+
+    def testLoadGudFileA(self):
+        self.loadGudFile(0)
+
+    def testLoadGudFileB(self):
+        self.loadGudFile(1)
 
     def testLoadGudFileC(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(2)
-        )
-
-        self.assertIsInstance(gf, GudFile)
-
-        gudAttrsDict = gf.__dict__
-        for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "err", "OUTPATH", "result"]:
-                continue
-            if key == "groupsTable":
-
-                for rowA, rowB in zip(
-                    self.expectedGudFileC[key].split("\n"),
-                    gf.groupsTable.split("\n"),
-                ):
-                    for valueA, valueB in zip(rowA.split(), rowB.split()):
-                        self.assertAlmostEqual(float(valueA), float(valueB), 1)
-            elif key == "gradient":
-                self.assertAlmostEqual(
-                    self.expectedGudFileC[key],
-                    gudAttrsDict[key],
-                    1,
-                )
-            else:
-                try:
-                    self.assertEqual(
-                        self.expectedGudFileC[key], gudAttrsDict[key]
-                    )
-                except AssertionError as e:
-                    try:
-                        self.assertAlmostEqual(
-                            float(self.expectedGudFileC[key]),
-                            float(gudAttrsDict[key]),
-                            1,
-                        )
-                    except Exception:
-                        raise e
+        self.loadGudFile(2)
 
     def testLoadGudFileD(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(3)
-        )
-
-        self.assertIsInstance(gf, GudFile)
-
-        gudAttrsDict = gf.__dict__
-        for key in gudAttrsDict.keys():
-            if key in ["path", "groups", "stream", "result", "OUTPATH", "err"]:
-                continue
-            if key == "groupsTable":
-
-                for rowA, rowB in zip(
-                    self.expectedGudFileD[key].split("\n"),
-                    gf.groupsTable.split("\n"),
-                ):
-                    for valueA, valueB in zip(rowA.split(), rowB.split()):
-                        self.assertAlmostEqual(float(valueA), float(valueB), 1)
-            elif key == "gradient":
-                self.assertAlmostEqual(
-                    self.expectedGudFileD[key],
-                    gudAttrsDict[key],
-                    1,
-                )
-            else:
-                try:
-                    self.assertEqual(
-                        self.expectedGudFileD[key], gudAttrsDict[key]
-                    )
-                except AssertionError as e:
-                    try:
-                        self.assertAlmostEqual(
-                            float(self.expectedGudFileD[key]),
-                            float(gudAttrsDict[key]),
-                            1,
-                        )
-                    except Exception:
-                        raise e
+        self.loadGudFile(3)
 
     def testWriteGudFileA(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(3)
-        )
-        gf.write_out()
-        gf1 = GudFile(gf.OUTPATH)
+        with GudPyContext() as gudpy:
+            gudpy.runGudrun()
+            gf = gudpy.gudrun.gudrunOutput.gudFile(0)
+            path = os.path.join(
+                gudpy.projectDir,
+                gf.fname
+            )
+            gf.write_out(path)
+            gf1 = GudFile(path)
 
-        dicA = gf.__dict__
-        dicA.pop("OUTPATH")
-        dicA.pop("path")
-        dicA.pop("result")
-        dicA.pop("err")
+            dicA = gf.__dict__
+            dicA.pop("fname")
+            dicA.pop("path")
+            dicA.pop("result")
+            dicA.pop("err")
 
-        dicB = gf1.__dict__
-        dicB.pop("OUTPATH")
-        dicB.pop("path")
-        dicB.pop("result")
-        dicB.pop("err")
+            dicB = gf1.__dict__
+            dicB.pop("fname")
+            dicB.pop("path")
+            dicB.pop("result")
+            dicB.pop("err")
 
-        for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
-            self.assertEqual(v1, v2)
+            for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
+                self.assertEqual(v1, v2)
 
     def testWriteGudFileB(self):
-        g = GudrunFile(
-            "test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-        g.dcs()
-        gf = GudFile(
-            g.gudrunOutput.gudFile(3)
-        )
-        gf.write_out()
-        gf1 = GudFile(gf.OUTPATH)
+        with GudPyContext() as gudpy:
+            gudpy.runGudrun()
+            gf = gudpy.gudrun.gudrunOutput.gudFile(1)
+            path = os.path.join(
+                gudpy.projectDir,
+                gf.fname
+            )
+            gf.write_out(path)
+            gf1 = GudFile(path)
 
-        dicA = gf.__dict__
-        dicA.pop("OUTPATH")
-        dicA.pop("path")
-        dicA.pop("result")
-        dicA.pop("err")
+            dicA = gf.__dict__
+            dicA.pop("fname")
+            dicA.pop("path")
+            dicA.pop("result")
+            dicA.pop("err")
 
-        dicB = gf1.__dict__
-        dicB.pop("OUTPATH")
-        dicB.pop("path")
-        dicB.pop("result")
-        dicB.pop("err")
+            dicB = gf1.__dict__
+            dicB.pop("fname")
+            dicB.pop("path")
+            dicB.pop("result")
+            dicB.pop("err")
 
-        for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
-            self.assertEqual(v1, v2)
+            for v1, v2 in zip(gf.__dict__.values(), gf1.__dict__.values()):
+                self.assertEqual(v1, v2)

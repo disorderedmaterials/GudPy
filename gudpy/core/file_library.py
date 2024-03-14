@@ -2,6 +2,7 @@ import os
 from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 
+from core import utils
 from core.enums import CrossSectionSource
 
 
@@ -172,7 +173,7 @@ class GudPyFileLibrary:
         if not exportTo:
             exportTo = os.path.join(
                 self.gudrunFile.projectDir,
-                Path(self.gudrunFile.path).stem + ".zip",
+                Path(self.gudrunFile.path()).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
@@ -183,7 +184,8 @@ class GudPyFileLibrary:
                             self.gudrunFile.instrument.dataFileType, "mint01"
                         ),
                     )
-                safeSampleName = sample.name.replace(" ", "_").translate(
+                safeSampleName = utils.replace_unwanted_chars(
+                    sample.name).translate(
                     {ord(x): "" for x in r"/\!*~,&|[]"}
                 )
                 if os.path.exists(path):

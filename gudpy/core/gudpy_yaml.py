@@ -11,6 +11,7 @@ from core.data_files import DataFiles
 from core.element import Element
 from core.exception import YAMLException
 from core.gui_config import GUIConfig
+from core import utils
 
 from core.instrument import Instrument
 from core.beam import Beam
@@ -37,9 +38,9 @@ class YAML:
         self.path = path
         try:
             parsedYAML = self.constructClasses(self.yamlToDict(path))
-        except YAMLError:
+        except YAMLError as e:
             # Exception caused by yaml parsing library
-            raise YAMLException("Invalid YAML file")
+            raise YAMLException(f"Invalid YAML file: {str(e)}")
         except YAMLException as e:
             # Exception caused by invalid arguments
             raise YAMLException(e)
@@ -182,6 +183,7 @@ class YAML:
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
                     self.maskYAMLDicttoClass(sample, sampleyaml)
+                    sample.name = utils.replace_unwanted_chars(sample.name)
                     cls.samples.append(sample)
 
             elif isinstance(cls, Sample) and k == "containers":

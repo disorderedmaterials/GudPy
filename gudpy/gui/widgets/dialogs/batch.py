@@ -5,16 +5,16 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 
-from core.run_batch_files import BatchProcessor
 from core.enums import Geometry, IterationModes
 from core import config
+from core import iterators
 
 
 class BatchProcessingDialog(QDialog):
 
-    def __init__(self, gudrunFile, parent):
+    def __init__(self, parent):
         super(BatchProcessingDialog, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
+        self.iterator = None
         self.batchProcessor = None
         self.batchSize = 1
         self.stepSize = 1
@@ -125,6 +125,19 @@ class BatchProcessingDialog(QDialog):
     def iterateByChanged(self, index):
         self.iterateBy = self.widget.iterateByComboBox.itemData(index)
 
+        if self.iterateBy == IterationModes.TWEAK_FACTOR:
+            self.iterator = iterators.TweakFactor()
+        elif self.iterateBy == IterationModes.THICKNESS:
+            self.iterator = iterators.Thickness()
+        elif self.iterateBy == IterationModes.INNER_RADIUS:
+            self.iterator = iterators.Radius()
+            self.iterator.setTargetRadius("inner")
+        elif self.iterateBy == IterationModes.OUTER_RADIUS:
+            self.iterator = iterators.Radius()
+            self.iterator.setTargetRadius("outer")
+        elif self.iterateBy == IterationModes.DENSITY:
+            self.iterator = iterators.Density()
+
     def useConvergenceToleranceToggled(self, state):
         self.useRtol = state
         self.widget.convergenceToleranceSpinBox.setEnabled(state)
@@ -137,24 +150,3 @@ class BatchProcessingDialog(QDialog):
 
     def propogateFirstBatchToggled(self, state):
         self.propogateFirstBatch = state
-
-    def process(self):
-        self.queue = Queue()
-        self.batchProcessor = BatchProcessor(self.gudrunFile)
-        for task in self.batchProcessor.process(
-            batchSize=self.batchSize,
-            stepSize=self.stepSize,
-            headless=False,
-            iterationMode=self.iterateBy,
-            rtol=self.rtol if self.useRtol else 0.0,
-            maxIterations=self.numberIterations,
-            propogateFirstBatch=self.propogateFirstBatch
-        ):
-            self.queue.put(task)
-            self.text = (
-                f"Batch Processing "
-                f"(IterationMode={self.iterateBy.name} "
-                f"BatchSize={self.batchSize} "
-                f"StepSize={self.stepSize})"
-            )
-            self.widget.close()

@@ -8,14 +8,15 @@ from core.container import Container
 from gui.widgets.charts.sample_plot_config import SamplePlotConfig
 from gui.widgets.charts.enums import PlotModes, SeriesTypes
 from gui.widgets.charts.enums import Axes
+import core.output_file_handler as handlers
 
 
 class GudPyChart(QChart):
 
-    def __init__(self, gudrunFile, parent=None):
+    def __init__(self, gudrunOutput: handlers.GudrunOutput, parent=None):
 
         super().__init__(parent)
-        self.inputDir = gudrunFile.instrument.GudrunInputFileDir
+        self.gudrunOutput = gudrunOutput
 
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
         self.legend().setAlignment(Qt.AlignRight)
@@ -134,7 +135,8 @@ class GudPyChart(QChart):
             else:
                 offsetY = 0
             plotConfig = SamplePlotConfig(
-                sample, self.inputDir,
+                sample,
+                self.gudrunOutput,
                 offsetX,
                 offsetY,
                 self

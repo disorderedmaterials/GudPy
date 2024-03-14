@@ -65,7 +65,6 @@ class GudPyChartView(QChartView):
         # Enable Antialiasing.
         self.setRenderHint(QPainter.Antialiasing)
         self.clipboard = QClipboard(self.parent())
-
         self.previousPos = 0
 
     def wheelEvent(self, event):
@@ -363,6 +362,10 @@ class GudPyChartView(QChartView):
             )
             chart.label.show()
         return super().setChart(chart)
+
+    def chart(self):
+        chart = super().chart()
+        return chart
 
     def resizeEvent(self, event):
         if isinstance(self.chart(), GudPyChart):

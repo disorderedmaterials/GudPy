@@ -741,7 +741,7 @@ class GudPyTreeView(QTreeView):
         self.parent.setTreeActionsEnabled(False)
         type_ = type(modelIndex.internalPointer())
         index, setter = indexMap[type_]
-        self.parent.mainWidget.objectStack.setCurrentIndex(index)
+        self.parent.ui.objectStack.setCurrentIndex(index)
         self.parent.updateComponents()
         if setter:
             setter(modelIndex.internalPointer())
@@ -749,20 +749,20 @@ class GudPyTreeView(QTreeView):
             modelIndex.internalPointer(),
             (Instrument, Beam, Components, Normalisation, SampleBackground)
         ):
-            self.parent.mainWidget.insertSampleBackground.setEnabled(True)
+            self.parent.ui.insertSampleBackground.setEnabled(True)
         if isinstance(
             modelIndex.internalPointer(), (SampleBackground, Sample)
         ):
-            self.parent.mainWidget.insertSample.setEnabled(True)
+            self.parent.ui.insertSample.setEnabled(True)
         if isinstance(modelIndex.internalPointer(), (Sample, Container)):
-            self.parent.mainWidget.insertContainerMenu.setEnabled(True)
+            self.parent.ui.insertContainerMenu.setEnabled(True)
 
         if self.model() and isinstance(self.currentObject(), (
             SampleBackground, Sample, Container)
         ):
-            self.parent.mainWidget.copy.setEnabled(True)
-            self.parent.mainWidget.cut.setEnabled(True)
-            self.parent.mainWidget.delete_.setEnabled(True)
+            self.parent.ui.copy.setEnabled(True)
+            self.parent.ui.cut.setEnabled(True)
+            self.parent.ui.delete_.setEnabled(True)
 
         # If the clipboard can be pasted under the current object.
         # Sample backgrounds default to append if this is not the case.
@@ -786,7 +786,7 @@ class GudPyTreeView(QTreeView):
             )
             and self.clipboard
         ):
-            self.parent.mainWidget.paste.setEnabled(True)
+            self.parent.ui.paste.setEnabled(True)
 
     def currentObject(self):
         """
@@ -980,7 +980,7 @@ class GudPyTreeView(QTreeView):
 
         if action in actionMap.keys():
             self.insertContainer(
-                container=Container(config_=actionMap[action])
+                container=Container(config=actionMap[action])
             )
 
     def insertSampleBackground(self, sampleBackground=None):

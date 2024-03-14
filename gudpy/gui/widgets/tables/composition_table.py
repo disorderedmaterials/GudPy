@@ -31,6 +31,7 @@ class CompositionModel(GudPyTableModel):
     data(index, role)
         Returns data at a specific index.
     """
+
     def __init__(self, data, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
@@ -242,16 +243,16 @@ class CompositionTable(QTableView):
         """
         ancestor = self.parent
         while not isinstance(ancestor, QMainWindow):
-            ancestor = ancestor.parent
+            ancestor = ancestor.parent()
             if callable(ancestor):
                 ancestor = ancestor()
         self.compositions.clear()
         self.compositions = [
-                (
-                    "Normalisation",
-                    deepcopy(ancestor.gudrunFile.normalisation.composition)
-                )
-            ]
+            (
+                "Normalisation",
+                deepcopy(ancestor.gudrunFile.normalisation.composition)
+            )
+        ]
         for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample != self.parentObject:

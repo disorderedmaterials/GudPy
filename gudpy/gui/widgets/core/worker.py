@@ -1,252 +1,235 @@
 import os
-import tempfile
-from copy import deepcopy
-from PySide6.QtCore import QObject, Signal, QThread
-import subprocess
-import sys
+import math
+from PySide6.QtCore import Signal, QThread
 
-from core import config
-from core.gud_file import GudFile
-import core.utils as utils
-from core.sample import Sample
-from core import enums
-from core.iterators.composition import gss
+from core import gudpy
+import core.exception as exc
+from core.gudrun_file import GudrunFile
+from core.purge_file import PurgeFile
+from core.iterators import Iterator
+from core import iterators, config
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
-class PurgeWorker(QObject):
-    started = Signal(int)
-    errorOccured = Signal(str)
+class Worker(QThread):
     outputChanged = Signal(str)
+    progressChanged = Signal(int, str)
     finished = Signal(int)
 
-    def __init__(self, gudrunFile):
+    def __init__(self):
         super().__init__()
-        self.gudrunFile = gudrunFile
-        self.PROCESS = "purge_det"
+        self.name = ""
+        self.output = ""
 
-    def purge(self):
-        self.started.emit(1)
+    def _outputChanged(self, output):
+        self.output += output
+        self.outputChanged.emit(output)
+        self.progressChanged.emit(self._progressChanged(), self.name)
 
-        if hasattr(sys, '_MEIPASS'):
-            purge_det = os.path.join(sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
-        else:
-            purge_det = utils.resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"{self.PROCESS}{SUFFIX}"
+
+class PurgeWorker(Worker, gudpy.Purge):
+    def __init__(self, purgeFile: PurgeFile, gudrunFile: GudrunFile):
+        super().__init__()
+        self.name = "Purge"
+        self.purgeFile = purgeFile
+        self.detectors = None
+        self.dataFileType = gudrunFile.instrument.dataFileType
+        self.dataFiles = [gudrunFile.instrument.groupFileName]
+
+        self.appendDataFiless(gudrunFile.normalisation.dataFiles[0])
+        self.appendDataFiless(gudrunFile.normalisation.dataFilesBg[0])
+        self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+                               for df in sb.dataFiles])
+        if not purgeFile.excludeSampleAndCan:
+            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+                                   for s in sb.samples for df in s.dataFiles
+                                   if s.runThisSample])
+            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+                                   for s in sb.samples for c in s.containers
+                                   for df in c.dataFiles if s.runThisSample])
+
+    def _progressChanged(self):
+        stepSize = math.ceil(100 / len(self.dataFiles))
+        progress = 0
+        for df in self.dataFiles:
+            if df in self.output:
+                progress += stepSize
+        return progress
+
+    def appendDataFiless(self, dfs):
+        if isinstance(dfs, str):
+            dfs = [dfs]
+        for df in dfs:
+            self.dataFiles.append(
+                df.replace(self.dataFileType, "grp")
             )
-        if not os.path.exists(purge_det):
-            self.errorOccured.emit("MISSING_BINARY")
+
+    def run(self):
+        exitcode = self.purge(self.purgeFile)
+        self.finished.emit(exitcode)
+        if exitcode != 0:
             return
 
-        with tempfile.TemporaryDirectory() as tmp:
-            self.gudrunFile.setGudrunDir(tmp)
-            self.gudrunFile.purgeFile.write_out(os.path.join(
-                self.gudrunFile.instrument.GudrunInputFileDir,
-                f"{self.PROCESS}.dat"
-            ))
 
-            with subprocess.Popen(
-                [purge_det, f"{self.PROCESS}.dat"], cwd=tmp,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            ) as purge:
-                for line in purge.stdout:
-                    self.outputChanged.emit(line.decode("utf8").rstrip("\n"))
-                if purge.stderr:
-                    self.errorOccured.emit(
-                        purge.stderr.decode("utf8").rstrip("\n"))
-                    return
-
-            self.gudrunFile.purgeOutput = (
-                self.gudrunFile.purgeFile.organiseOutput()
-            )
-
-        self.gudrunFile.setGudrunDir(
-            self.gudrunFile.projectDir)
-
-        self.finished.emit(1)
-
-
-class GudrunWorker(QObject):
-    started = Signal(int)
-    outputChanged = Signal(str)
-    nextIteration = Signal(int)
-    errorOccured = Signal(str)
-    finished = Signal(int)
-
-    def __init__(self, gudrunFile, iterator):
+class GudrunWorker(Worker, gudpy.Gudrun):
+    def __init__(
+            self,
+            gudrunFile: GudrunFile,
+            iterator: Iterator = None
+    ):
         super().__init__()
+        self.name = "Gudrun"
         self.gudrunFile = gudrunFile
         self.iterator = iterator
-        self.PROCESS = "gudrun_dcs"
+        self.purge = None
+        self.progress = 0
 
-    def gudrun(self):
-        self.started.emit(1)
+        # Number of GudPy objects
+        self.markers = (
+            config.NUM_GUDPY_CORE_OBJECTS - 1
+            + len(self.gudrunFile.sampleBackgrounds) + sum([sum([
+                len([
+                    sample
+                    for sample in sampleBackground.samples
+                    if sample.runThisSample
+                ]),
+                *[
+                    len(sample.containers)
+                    for sample in sampleBackground.samples
+                    if sample.runThisSample
+                ]])
+                for sampleBackground in self.gudrunFile.sampleBackgrounds
+            ]))
 
-        if hasattr(sys, '_MEIPASS'):
-            gudrun_dcs = os.path.join(sys._MEIPASS, f"{self.PROCESS}{SUFFIX}")
-        else:
-            gudrun_dcs = utils.resolve(
-                os.path.join(
-                    config.__rootdir__, "bin"
-                ), f"{self.PROCESS}{SUFFIX}"
-            )
-        if not os.path.exists(gudrun_dcs):
-            self.errorOccured.emit("MISSING_BINARY")
-            return
+    def _progressChanged(self):
+        stepSize = math.ceil(100 / self.markers)
+        self.progress = stepSize * sum([
+            self.output.count("Got to: INSTRUMENT"),
+            self.output.count("Got to: BEAM"),
+            self.output.count("Got to: NORMALISATION"),
+            self.output.count("Got to: SAMPLE BACKGROUND"),
+            self.output.count("Finished merging data for sample"),
+            self.output.count("Got to: CONTAINER"),
+        ])
+        if isinstance(self.iterator, iterators.InelasticitySubtraction):
+            self.progress /= 2
+        return self.progress
 
-        with tempfile.TemporaryDirectory() as tmp:
-            path = self.gudrunFile.OUTPATH
-            self.gudrunFile.setGudrunDir(tmp)
-            path = os.path.join(
-                tmp,
-                path
-            )
-            self.gudrunFile.save(
-                path=os.path.join(
-                    self.gudrunFile.projectDir,
-                    f"{self.gudrunFile.filename}"
-                ),
-                format=enums.Format.YAML
-            )
-            self.gudrunFile.write_out(path)
-            with subprocess.Popen(
-                [gudrun_dcs, path], cwd=tmp,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            ) as gudrun:
-                for line in gudrun.stdout:
-                    self.outputChanged.emit(line.decode("utf8").rstrip("\n"))
-                if gudrun.stderr:
-                    self.errorOccured.emit(
-                        gudrun.stderr.decode("utf8").rstrip("\n"))
-                    return
-
-            if self.iterator is not None:
-                self.gudrunFile.gudrunOutput = self.iterator.organiseOutput()
-            else:
-                self.gudrunFile.gudrunOutput = self.gudrunFile.organiseOutput()
-            self.gudrunFile.setGudrunDir(self.gudrunFile.gudrunOutput.path)
-
-        self.finished.emit(1)
+    def run(self):
+        exitcode = self.gudrun(
+            gudrunFile=self.gudrunFile,
+            purge=self.purge, iterator=self.iterator)
+        self.finished.emit(exitcode)
 
 
-class CompositionWorker(QObject):
-    finished = Signal(Sample, Sample)
-    started = Signal(Sample)
-    nextIteration = Signal(int)
-    errorOccured = Signal(str)
+class IteratorBaseWorker(QThread):
+    outputChanged = Signal(str)
+    progressChanged = Signal(int, str)
+    finished = Signal(int)
 
-    def __init__(self, args, kwargs, sample, gudrunFile):
-        self.args = args
-        self.kwargs = kwargs
-        self.sample = sample
-        self.updatedSample = None
-        self.errored = False
-        self.gudrunFile = gudrunFile
-        super(CompositionWorker, self).__init__()
-
-    def work(self):
-        self.started.emit(self.sample)
-        # perform golden-section search.
-        gss(
-            self.costup,
-            *self.args,
-            **self.kwargs,
-            startIterFunc=self.nextIteration.emit
-        )
-        if not self.errored:
-            # If an error occurs emit appropiate signal.
-            self.finished.emit(self.sample, self.updatedSample)
-
-    def costup(
-        self, x, gudrunFile, sampleBackground,
-        components, totalMolecules=None
+    def __init__(
+            self,
+            iterator: iterators.Iterator,
+            gudrunFile: GudrunFile,
     ):
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        self.gudrunObjects = []
+        self.purge = None
+        self.output = {}
+        self.error = ""
 
-        if QThread.currentThread().isInterruptionRequested():
-            return None
-        gf = deepcopy(gudrunFile)
-        gf.sampleBackgrounds = [sampleBackground]
+        for _ in range(iterator.nTotal
+                       + (1 if iterator.requireDefault else 0)):
+            worker = GudrunWorker(gudrunFile, iterator)
+            worker.outputChanged.connect(self._outputChanged)
+            worker.progressChanged.connect(self._progressChanged)
+            self.gudrunObjects.append(worker)
 
-        # Prevent negative x.
-        x = abs(x)
+    def _outputChanged(self, output):
+        idx = (f"{self.iterator.name} {self.iterator.nCurrent}"
+               if self.iterator.nCurrent != 0
+               or not self.iterator.requireDefault else "Default run")
+        currentOutput = self.output.get(idx, "")
+        self.output[idx] = currentOutput + output
+        self.outputChanged.emit(output)
 
-        if len(components) == 1:
-            # Determine instances where target components are used.
-            weightedComponents = [
-                wc for wc in sampleBackground.samples[0]
-                .composition.weightedComponents
-                for c in components
-                if c.eq(wc.component)
-            ]
-            for component in weightedComponents:
-                component.ratio = x
-
-        elif len(components) == 2:
-            wcA = wcB = None
-            # Determine instances where target components are used.
-            for weightedComponent in (
-                sampleBackground.samples[0].composition.weightedComponents
-            ):
-                if weightedComponent.component.eq(components[0]):
-                    wcA = weightedComponent
-                elif weightedComponent.component.eq(components[1]):
-                    wcB = weightedComponent
-
-            if wcA and wcB:
-                # Ensure combined ratio == totalMolecules.
-                wcA.ratio = x
-                wcB.ratio = abs(totalMolecules - x)
-
-        # Update composition
-        sampleBackground.samples[0].composition.translate()
-        self.updatedSample = sampleBackground.samples[0]
-
-        # Set up process and execute.
-        outpath = os.path.join(
-            gf.instrument.GudrunInputFileDir,
-            "gudpy.txt"
-        )
-        self.proc, func, args = gf.dcs(path=outpath, headless=False)
-        func(*args)
-        self.proc.setWorkingDirectory(gf.instrument.GudrunInputFileDir)
-        self.proc.start()
-        # Block until process is finished.
-        self.proc.waitForFinished(-1)
-        # Read from stdout.
-        if not self.proc:
-            return None
-        data = self.proc.readAllStandardOutput()
-        result = bytes(data).decode("utf8")
-
-        # Check for errors.
-        ERROR_KWDS = [
-            "does not exist",
-            "error",
-            "Error"
-        ]
-        if [KWD for KWD in ERROR_KWDS if KWD in result]:
-            self.errorOccured.emit(result)
-            self.errored = True
-            return None
-
-        gudPath = sampleBackground.samples[0].dataFiles[0].replace(
-            gudrunFile.instrument.dataFileType,
-            "gud"
+    def _progressChanged(self, progress):
+        self.progressChanged.emit(
+            progress,
+            f"Iterate by {self.iterator.name} - "
+            f"{self.iterator.nCurrent}/{self.iterator.nTotal}"
+            if self.iterator.nCurrent != 0
+            or not self.iterator.requireDefault else "Gudrun - Default run"
         )
 
-        gudFile = GudFile(
-            os.path.join(
-                gudrunFile.instrument.GudrunInputFileDir, gudPath
-            )
-        )
+    def run(self):
+        exitcode, error = self.iterate(purge=self.purge)
+        self.error = error
+        self.finished.emit(exitcode)
 
-        # Determine cost.
-        if gudFile.averageLevelMergedDCS == gudFile.expectedDCS:
-            return 0
-        else:
-            return (gudFile.expectedDCS-gudFile.averageLevelMergedDCS)**2
+
+class GudrunIteratorWorker(IteratorBaseWorker, gudpy.GudrunIterator):
+    def __init__(
+        self,
+        iterator: iterators.Iterator,
+        gudrunFile: GudrunFile,
+    ):
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+
+
+class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
+    def __init__(
+        self,
+        iterator: iterators.Composition,
+        gudrunFile: GudrunFile,
+    ):
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+
+    def run(self):
+        exitcode, error = self.iterate(purge=self.purge)
+        self.error = error
+        self.finished.emit(exitcode)
+
+
+class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator = None,
+        batchSize=1,
+        stepSize=1,
+        offset: int = 0,
+        rtol=0.0,
+        separateFirstBatch=False
+    ):
+        super().__init__(
+            gudrunFile=gudrunFile,
+            iterator=iterator,
+            batchSize=batchSize,
+            stepSize=stepSize,
+            offset=offset,
+            rtol=rtol,
+            separateFirstBatch=separateFirstBatch
+        )
+        self.name = "Batch Processing " + iterator.name if iterator else ""
+
+        # Iterate through gudrun iterators and connect the signals
+        for gudrunIterator in self.gudrunIterators.items():
+            if not gudrunIterator:
+                continue
+            # Create GudrunWorker objects to replace Gudrun objects
+            gudrunIterator.gudrunObjects = []
+            for _ in range(self.iterator.nTotal):
+                worker = GudrunWorker(self.firstBatch, gudrunIterator.iterator)
+                worker.outputChanged.connect(self._outputChanged)
+                worker.progressChanged.connect(self._progressChanged)
+                gudrunIterator.append(worker)
+
+    def run(self):
+        try:
+            self.process(purge=self.purge)
+            self.finished.emit(0)
+        except exc.GudrunException as e:
+            self.error = str(e)
+            self.finished.emit(1)
