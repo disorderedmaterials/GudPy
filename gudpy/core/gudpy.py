@@ -446,16 +446,16 @@ class Purge(Process):
                 [self.BINARY_PATH, f"{self.PROCESS}.dat"], cwd=tmp,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
-            ) as purge:
-                for line in purge.stdout:
+            ) as purgeProcess:
+                for line in purgeProcess.stdout:
                     line = "\n".join(line.decode("utf8").split("\n"))
                     self._outputChanged(line)
                     if self.checkError(line):
                         return self.exitcode
                     if "spectra in" in line:
                         self.detectors = utils.nthint(line, 0)
-                if purge.stderr:
-                    self.error = purge.stderr.decode("utf8")
+                if purgeProcess.stderr:
+                    self.error = purgeProcess.stderr.decode("utf8")
                     self.exitcode = 1
                     return self.exitcode
 
