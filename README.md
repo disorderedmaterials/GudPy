@@ -16,7 +16,7 @@ Requires `python>=3.8` and `pip`.
 2. Download the latest [Gudrun binaries and startup files](https://github.com/disorderedmaterials/Gudrun/releases), and unzip/untar into the `bin` directory.
 4. `python3 -m pip install -r requirements.txt`
 5. Manually compile the resources: `pyside6-rcc gudpy/gui/widgets/resources/resources.qrc > gudpy/gui/widgets/resources/resources_rc.py`
-6. `python3 gudpy`
+6. To launch the GUI: `python3 gudpy.gudpy_gui.py`
 
 ## Additional functionality
 ### Components
