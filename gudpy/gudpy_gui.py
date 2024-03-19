@@ -10,7 +10,7 @@ class GudPy(QApplication):
         super(GudPy, self).__init__(args)
         self.gudpy = GudPyController()
         self.aboutToQuit.connect(self.gudpy.cleanup)
-        sys.exit(self.exec_())
+        sys.exit(self.exec())
 
     def onException(self, cls, exception, traceback):
         self.gudpy.onException(cls, exception, traceback)
