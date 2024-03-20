@@ -2,14 +2,13 @@ from abc import abstractmethod
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import QPoint, QPointF
 
+from core import data
 from core.gud_file import GudFile
 
 
-class Point():
+class GuiPoint(data.Point):
     def __init__(self, x, y, err):
-        self.x = x
-        self.y = y
-        self.err = err
+        super().__init__(x=x, y=y, err=err)
 
     def toQPointF(self):
         return QPointF(self.x, self.y)
@@ -18,27 +17,10 @@ class Point():
         return QPoint(self.x, self.y)
 
 
-class GudPyPlot():
+class GudPyPlot(data.DataSet):
     # mint01 / mdcs01 / mdor01 / mgor01 / dcs
     def __init__(self, path, exists):
-        if not exists:
-            self.dataSet = None
-        else:
-            self.dataSet = self.constructDataSet(path)
-
-    @abstractmethod
-    def constructDataSet(self, path):
-        dataSet = []
-        with open(path, "r", encoding="utf-8") as fp:
-            for dataLine in fp.readlines():
-
-                # Ignore commented lines.
-                if dataLine[0] == "#":
-                    continue
-
-                x, y, err, *__ = [float(n) for n in dataLine.split()]
-                dataSet.append(Point(x, y, err))
-        return dataSet
+        super().__init__(path=path, exists=exists)
 
     def toQPointList(self):
         return [x.toQPoint() for x in self.dataSet] if self.dataSet else None
