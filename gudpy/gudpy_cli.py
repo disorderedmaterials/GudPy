@@ -6,16 +6,6 @@ from core import gudpy as gp
 from core import enums
 from core import config
 
-# Top hat width
-# Log binning: -5 -10 -20 (could go each -5 to -20)
-# Not log binning: between +1 to +5 (Whole integers)
-# N of inelasticity iterations
-# Can be different for every sample
-# Water data (No inelasticity subtraction - 1, 2, 3 N)
-#
-# GudPy: An Update
-# Unleashing GudPy for the Masses
-
 
 def loadProject(ctx, project):
     if not project:
