@@ -1,5 +1,7 @@
 # GudPy
 
+### Last Release: 0.5.0
+
 Python-based Batch Processing and Alternative GUI for the Gudrun software by A. K. Soper (https://github.com/disorderedmaterials/Gudrun).
 
 GudPy offers a range of additional functionality unavailable in the Gudrun Java GUI, whilst also making some existing functionality/workflows easier to perform/carry-out. For further reference, you can visit the Gudrun manual.
