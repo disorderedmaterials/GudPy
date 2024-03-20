@@ -37,17 +37,17 @@ class PurgeWorker(Worker, gudpy.Purge):
         self.dataFileType = gudrunFile.instrument.dataFileType
         self.dataFiles = [gudrunFile.instrument.groupFileName]
 
-        self.appendDfs(gudrunFile.normalisation.dataFiles[0])
-        self.appendDfs(gudrunFile.normalisation.dataFilesBg[0])
-        self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
-                        for df in sb.dataFiles])
+        self.appendDataFiles(gudrunFile.normalisation.dataFiles[0])
+        self.appendDataFiles(gudrunFile.normalisation.dataFilesBg[0])
+        self.appendDataFiles([df for sb in gudrunFile.sampleBackgrounds
+                              for df in sb.dataFiles])
         if not purgeFile.excludeSampleAndCan:
-            self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
-                            for s in sb.samples for df in s.dataFiles
-                            if s.runThisSample])
-            self.appendDfs([df for sb in gudrunFile.sampleBackgrounds
-                            for s in sb.samples for c in s.containers
-                            for df in c.dataFiles if s.runThisSample])
+            self.appendDataFiles([df for sb in gudrunFile.sampleBackgrounds
+                                  for s in sb.samples for df in s.dataFiles
+                                  if s.runThisSample])
+            self.appendDataFiles([df for sb in gudrunFile.sampleBackgrounds
+                                  for s in sb.samples for c in s.containers
+                                  for df in c.dataFiles if s.runThisSample])
 
     def _progressChanged(self):
         stepSize = math.ceil(100 / len(self.dataFiles))
@@ -57,7 +57,7 @@ class PurgeWorker(Worker, gudpy.Purge):
                 progress += stepSize
         return progress
 
-    def appendDfs(self, dfs):
+    def appendDataFiles(self, dfs):
         if isinstance(dfs, str):
             dfs = [dfs]
         for df in dfs:

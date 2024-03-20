@@ -20,8 +20,14 @@ def boolifyNum(num):
 
 
 def firstword(string):
-
     return string.split(" ")[0]
+
+
+def replace_unwanted_chars(string):
+    unwanted = [" "]
+    for char in unwanted:
+        string = string.replace(char, "_")
+    return string
 
 
 def extract_ints_from_string(string):

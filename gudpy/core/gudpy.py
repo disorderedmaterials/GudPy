@@ -435,7 +435,6 @@ class Purge(Process):
 
     def purge(self, purgeFile: PurgeFile):
         self.checkBinary()
-
         with tempfile.TemporaryDirectory() as tmp:
             purgeFile.write_out(os.path.join(
                 tmp,
@@ -493,7 +492,12 @@ class Gudrun(Process):
     ) -> int:
         self.checkBinary()
         if not purge:
-            print("WARNING: Gudrun running without purge.")
+            print(
+                "\n=========================================================="
+                "\n=========================================================="
+                "\n\nWARNING: Gudrun running without purge.\n\n"
+                "\n=========================================================="
+                "\n==========================================================")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
             if purge:

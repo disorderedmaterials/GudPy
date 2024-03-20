@@ -28,6 +28,7 @@ from core.enums import (
     MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
+from core import utils
 from core import config as cfg
 from core.gudpy_yaml import YAML
 from core.exception import ParserException, YAMLException
@@ -864,7 +865,8 @@ class GudrunFile:
                 str(self.getNextToken()[:-2]).strip()
                 .replace("SAMPLE", "").strip()
             )
-            sample.name = sample.name.replace(" ", "_")
+            sample.name = utils.replace_unwanted_chars(sample.name)
+            print(sample.name)
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -1282,11 +1284,12 @@ class GudrunFile:
             elif "SAMPLE" in line and firstword(line) == "SAMPLE":
                 sample = self.makeParse("SAMPLE")
                 if not sample.name:
-                    sample.name = uniquifyName(
+                    sample.name = utils.replace_unwanted_chars(uniquifyName(
                         "SAMPLE",
                         [s.name for s in sampleBackground.samples],
                         sep="",
-                        incFirst=True).replace(" ", "_")
+                        incFirst=True
+                    ))
                 sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and firstword(line) == "CONTAINER":
                 container = self.makeParse("CONTAINER")

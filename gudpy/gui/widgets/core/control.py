@@ -204,7 +204,7 @@ class GudPyController(QtCore.QObject):
             save = QtWidgets.QMessageBox.question(
                 self.mainWidget,
                 "GudPy",
-                "Would you like to save current project?"
+                "Would you like to save the current project?"
             )
             if save == QtWidgets.QMessageBox.Yes:
                 if not self.setSaveLocation():
@@ -249,7 +249,7 @@ class GudPyController(QtCore.QObject):
 
     def save(self):
         # Check if save location has been set
-        # override project input file or force save location to be chose
+        # Override project input file or force save location to be chosen
         if not self.gudpy.checkSaveLocation():
             # Check if save location has been specified
             # If not, call save dialog
@@ -620,13 +620,14 @@ class GudPyController(QtCore.QObject):
         Exits GudPy - questions user if they want to save on exit or not.
         """
         self.cleanup()
-        result = QtWidgets.QMessageBox.question(
-            self.mainWidget,
-            "",
-            "Do you want to save before exiting?",
-            QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes,
-        )
+        if self.mainWidget.modified:
+            result = QtWidgets.QMessageBox.question(
+                self.mainWidget,
+                "",
+                "Do you want to save before exiting?",
+                QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes,
+            )
 
-        if result == QtWidgets.QMessageBox.Yes:
-            self.gudpy.gudrunFile.save()
+            if result == QtWidgets.QMessageBox.Yes:
+                self.gudpy.gudrunFile.save()
         sys.exit(0)

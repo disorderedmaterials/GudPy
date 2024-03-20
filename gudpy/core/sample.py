@@ -5,6 +5,7 @@ from core.enums import (
     CrossSectionSource, FTModes, UnitsOfDensity,
     NormalisationType, OutputUnits, Geometry
 )
+from core import utils
 from core import config
 
 
@@ -148,7 +149,7 @@ class Sample:
         }
 
     def pathName(self):
-        return self.name.replace(" ", "_").translate(
+        return utils.replace_unwanted_chars(self.name).translate(
             {ord(x): '' for x in r'/\!*~,&|[]'}
         ) + ".sample"
 

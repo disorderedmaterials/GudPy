@@ -11,6 +11,7 @@ from core.data_files import DataFiles
 from core.element import Element
 from core.exception import YAMLException
 from core.gui_config import GUIConfig
+from core import utils
 
 from core.instrument import Instrument
 from core.beam import Beam
@@ -182,7 +183,7 @@ class YAML:
                 for sampleyaml in yamldict[k]:
                     sample = Sample()
                     self.maskYAMLDicttoClass(sample, sampleyaml)
-                    sample.name = sample.name.replace(" ", "_")
+                    sample.name = utils.replace_unwanted_chars(sample.name)
                     cls.samples.append(sample)
 
             elif isinstance(cls, Sample) and k == "containers":

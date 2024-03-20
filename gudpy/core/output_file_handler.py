@@ -264,14 +264,14 @@ class GudrunOutputHandler(OutputHandler):
 
             samplePath = os.path.join(
                 dest,
-                sample.name.replace(" ", "_")
+                utils.replace_unwanted_chars(sample.name)
             )
             # Move datafiles to sample folder
             for idx, dataFile in enumerate(sample.dataFiles):
                 out, diag, gf = self._copyOutputsByExt(
                     dataFile,
                     samplePath,
-                    sample.name.replace(" ", "_")
+                    utils.replace_unwanted_chars(sample.name)
                 )
                 if idx == 0:
                     gudFile = gf
@@ -291,7 +291,7 @@ class GudrunOutputHandler(OutputHandler):
             # Path to sample file output
             sampleFile = os.path.join(
                 self.outputDir,
-                sample.name.replace(" ", "_"),
+                utils.replace_unwanted_chars(sample.name),
                 sample.pathName())
 
             sampleOutputs[sample.name] = SampleOutput(
@@ -301,7 +301,7 @@ class GudrunOutputHandler(OutputHandler):
             for container in sample.containers:
                 containerPath = os.path.join(
                     samplePath,
-                    (container.name.replace(" ", "_")
+                    (utils.replace_unwanted_chars(container.name)
                      if container.name != "CONTAINER"
                      else "Container"))
                 for dataFile in container.dataFiles:
