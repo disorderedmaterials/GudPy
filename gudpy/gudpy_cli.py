@@ -1,42 +1,34 @@
 import click
 import os
 import sys
+import ast
+import shutil
 
 from core import gudpy as gp
 from core import enums
 from core import config
+from core import optimise as opt
+from core import data
+from core import utils
+
+
+# Top hat width
+# Log binning: -5 -10 -20 (could go each -5 to -20)
+# Not log binning: between +1 to +5 (Whole integers)
+# N of inelasticity iterations
+# Can be different for every sample
+# Water data (No inelasticity subtraction - 1, 2, 3 N)
+#
+# GudPy: An Update
+# Unleashing GudPy for the Masses
 
 
 def loadProject(ctx, project):
     if not project:
-        project = click.prompt("Path to project", type=click.Path())
-        return
+        return echoError("No project directory specified")
     ctx.obj = gp.GudPy()
     ctx.obj.loadFromProject(project)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               f" GudPy project sucessfuly loaded at {project}")
-
-
-def loadFile(ctx, value):
-    file, format = value
-    if not file:
-        file = click.prompt("Path to load file", type=click.Path())
-    if not format:
-        format = click.prompt(
-            "File type",
-            click.Tuple([click.Path(), click.Choice(["yaml", "txt"])]))
-        if format == "yaml":
-            format = enums.Format.YAML
-        elif format == "txt":
-            format = enums.Format.TXT
-        else:
-            return
-    if not file or format:
-        return
-    ctx.obj = gp.GudPy()
-    ctx.obj.loadFromGudrunFile(file)
-    click.echo(click.style(u"\u2714", fg="green", bold=True) +
-               f" GudPy input file {file} sucessfuly loaded")
+    echoTick(f"GudPy project sucessfuly loaded at {project}")
 
 
 def loadConfig(ctx, cfg):
@@ -55,33 +47,42 @@ def loadConfig(ctx, cfg):
         return
 
     ctx.obj = gp.GudPy()
-    ctx.obj.loadFromGudrunFile(cfg, config=True)
+    ctx.obj.loadFromFile(cfg, enums.Format.TXT, config=True)
 
 
 def echoIndent(text):
     click.echo("    " + text)
 
 
+def echoTick(text):
+    echoIndent(click.style(u"\u2714 ", fg="green", bold=True) + text)
+
+
 def echoWarning(text):
     click.secho("  (!) " + f"WARNING: {text}\n",
-                fg='yellow', bold=True)
+                fg="yellow", bold=True)
 
 
 def echoProcess(name):
-    click.secho("\n  " + f">>  {name}\n", bold=True, fg='cyan')
+    click.secho("\n  " + f">>  {name}\n", bold=True, fg="cyan")
+
+
+def echoError(msg):
+    click.secho("  (X) " + f"ERROR: {msg}",
+                fg="red", bold=True)
+    return 1
 
 
 @click.group()
+def cli():
+    pass
+
+
+@cli.group()
 @click.option(
     "--project", "-p",
     type=click.Path(exists=True),
     help="Loads from a project"
-)
-@click.option(
-    "--file", "-f",
-    type=click.Tuple([click.Path(exists=True), click.Choice(["yaml", "txt"])]),
-    nargs=2,
-    help="Loads from a file"
 )
 @click.option(
     "--config",
@@ -89,7 +90,7 @@ def echoProcess(name):
     help="Loads from a config file"
 )
 @click.pass_context
-def cli(ctx, project, file, config):
+def gudpy(ctx, project, config):
     click.echo("============================================================"
                "============================================================")
     click.secho("                                                       "
@@ -99,9 +100,8 @@ def cli(ctx, project, file, config):
                "\n")
 
     if project:
-        loadProject(ctx, project)
-    elif file:
-        loadFile(ctx, file)
+        if loadProject(ctx, project):
+            sys.exit()
     elif config:
         loadConfig(ctx, config)
     else:
@@ -110,25 +110,32 @@ def cli(ctx, project, file, config):
             "See --help for options.", err=True)
 
 
-@cli.command()
+@gudpy.command()
 @click.option(
     "--verbose", "-v",
     is_flag=True,
     default=False,
     help="Run processes verbosely, displaying the output"
 )
+@click.option(
+    "--purge",
+    is_flag=True,
+    default=False,
+    help="Purge detectors before running"
+)
 @click.pass_context
-def gudrun(ctx, verbose):
+def gudrun(ctx, verbose, p):
     echoProcess("gudrun_dcs")
+    if p:
+        purge(ctx, verbose)
     ctx.obj.runGudrun()
     if verbose:
         click.echo_via_pager(ctx.obj.gudrun.output)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               " Gudrun Complete")
-    echoIndent(f"  Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
+    echoTick("Gudrun Complete")
+    echoTick(f"Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
 
 
-@cli.command()
+@gudpy.command()
 @click.option(
     "--verbose", "-v",
     is_flag=True,
@@ -141,8 +148,7 @@ def purge(ctx, verbose):
     ctx.obj.runPurge()
     if verbose:
         click.echo_via_pager(ctx.obj.purge.output)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               " Purge Complete")
+    echoTick(" Purge Complete")
     echoIndent("Number of Good Detectors: " +
                click.style(f"{ctx.obj.purge.detectors}", bold=True))
     thresh = ctx.obj.gudrunFile.instrument.goodDetectorThreshold
@@ -152,5 +158,201 @@ def purge(ctx, verbose):
             f"{thresh}", fg="yellow", bold=True)
 
 
-if __name__ == '__main__':
+@gudpy.command()
+@click.option(
+    "--sample",
+    type=str
+)
+@click.argument(
+    "attribute",
+    type=str
+)
+@click.argument(
+    "value",
+    type=str
+)
+@click.argument(
+    "path",
+    type=click.Path()
+)
+@click.pass_context
+def edit(ctx, sample, attribute, value, path):
+    echoProcess("Modifying GudrunFile")
+
+    targetObj = None
+    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+        for s in sbg.samples:
+            if s.name == sample:
+                targetObj = s
+
+    if sample and targetObj is None:
+        return echoError("No sample found")
+    elif not sample:
+        targetObj = ctx.obj.gudrunFile
+
+    if not hasattr(targetObj, attribute):
+        return echoError(f"Invalid Attribute: {attribute}")
+    literalValue = ast.literal_eval(value)
+    attr = targetObj.__dict__[attribute]
+
+    if not isinstance(literalValue, type(attr)):
+        return echoError(
+            f"Value is of incorrect type. {attribute} is of type {type(attr)}"
+        )
+
+    setattr(targetObj, attribute, literalValue)
+
+    projectDir = utils.makeDir(path)
+    ctx.obj.setSaveLocation(projectDir)
+    ctx.obj.save()
+
+    echoTick(
+        f"{attribute} have been set to: {targetObj.__dict__[attribute]}"
+    )
+    echoTick(f"Updated GudPy Project saved to {projectDir}")
+
+
+@gudpy.command()
+@click.option(
+    "--verbose", "-v",
+    is_flag=True,
+    default=False,
+    help="Run processes verbosely, displaying the output"
+)
+@click.argument(
+    "simulationData",
+    type=click.Path(exists=True),
+    nargs=1
+)
+@click.argument(
+    "samplename",
+    type=str,
+    nargs=1
+)
+@click.option(
+    "--niters", "-n",
+    type=int,
+    help="Number of calls for optimisation"
+)
+@click.option(
+    "--output", "-o",
+    type=click.Path(exists=False),
+    help="Location to create new project"
+)
+@click.option(
+    "--method",
+    type=click.Choice(["bayesian", "simplex"]),
+    default="bayesian",
+    help="Optimisation method to use"
+)
+@click.pass_context
+def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
+    echoProcess("Bayesian Optimisation")
+    dir = output if output else os.path.join(
+        ctx.obj.projectDir,
+        f"BayesianOptimisation_{samplename}"
+    )
+    ctx.obj.setSaveLocation(dir)
+    echoProcess("gudrun_dcs")
+    ctx.obj.runGudrun()
+
+    sample = None
+    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+        for s in sbg.samples:
+            if s.name == samplename:
+                sample = s
+
+    if sample is None:
+        return echoError("No sample found")
+
+    sampleData = ctx.obj.gudrunOutput.output(
+        name=sample.name,
+        dataFile=sample.dataFiles[0],
+        type=".mint01"
+    )
+
+    if not sampleData:
+        return echoError(
+            f"No data found associated with sample '{sample.name}'")
+
+    opti = opt.BayesianOptimisation(
+        gudrunFile=ctx.obj.gudrunFile,
+        targetSample=sample,
+        simulation=simulationdata,
+        actual=sampleData,
+        limit=2.0,
+        verbose=verbose
+    )
+
+    initError = data.meanSquaredError(opti.actual, opti.simulation)
+    initValues = sample.exponentialValues
+    echoIndent(f"Initial MSE: {round(initError, 5)}\n")
+
+    mse = None
+    optExponents = None
+    if method == "bayesian":
+        mse, optExponents = opti.optimise(ncalls=niters)
+    else:
+        mse, optExponents = opti.gradientDescent(maxiter=niters)
+
+    if not mse or not optExponents:
+        return echoError("Optimisation unsuccessful")
+
+    echoTick("Optimisation complete")
+
+    if mse > initError:
+        echoTick("Best values already achieved.")
+        optExponents = initValues
+        mse = initError
+
+    echoTick(f"Optimum exponentialValues: {optExponents}")
+    echoTick(f"MSE: {mse}")
+
+    sample.exponentialValues = optExponents
+
+    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+        for s in sbg.samples:
+            if s.name == samplename:
+                print(s.exponentialValues)
+
+    echoProcess("gudrun_dcs")
+    ctx.obj.runGudrun()
+    shutil.copyfile(
+        ctx.obj.gudrun.gudrunOutput.output(
+            name=sample.name,
+            dataFile=sample.dataFiles[0],
+            type=".mint01"
+        ),
+        os.path.join(
+            ctx.obj.projectDir,
+            f"{sample.name}_optimised.mint01"
+        )
+    )
+    echoTick("Gudrun Complete")
+    echoTick("New mintfile avaliable at " +
+             os.path.join(
+                 ctx.obj.projectDir,
+                 f"{sample.name}_optimised.mint01"
+             ))
+
+
+@cli.command()
+@click.argument(
+    'data1',
+    type=click.Path(exists=True)
+)
+@click.argument(
+    'data2',
+    type=click.Path(exists=True)
+)
+def mse(data1, data2):
+    echoProcess("Mean Squared Error")
+    d1 = data.NpDataSet(data1, 2.0)
+    d2 = data.NpDataSet(data2, 2.0)
+    err = data.meanSquaredError(d1, d2)
+
+    echoIndent(str(round(err, 5)))
+
+
+if __name__ == "__main__":
     cli()
