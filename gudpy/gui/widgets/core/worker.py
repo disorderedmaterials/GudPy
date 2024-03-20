@@ -76,12 +76,14 @@ class GudrunWorker(Worker, gudpy.Gudrun):
     def __init__(
             self,
             gudrunFile: GudrunFile,
+            purge: PurgeWorker = None,
             iterator: Iterator = None
     ):
         super().__init__()
         self.name = "Gudrun"
         self.gudrunFile = gudrunFile
         self.iterator = iterator
+        self.purge = purge
         self.purge = None
         self.progress = 0
 
@@ -129,13 +131,14 @@ class IteratorBaseWorker(QThread):
     finished = Signal(int)
 
     def __init__(
-            self,
-            iterator: iterators.Iterator,
-            gudrunFile: GudrunFile,
+        self,
+        iterator: iterators.Iterator,
+        gudrunFile: GudrunFile,
+        purge: PurgeWorker = None,
     ):
         super().__init__(iterator=iterator, gudrunFile=gudrunFile)
         self.gudrunObjects = []
-        self.purge = None
+        self.purge = purge
         self.output = {}
         self.error = ""
 
@@ -174,8 +177,9 @@ class GudrunIteratorWorker(IteratorBaseWorker, gudpy.GudrunIterator):
         self,
         iterator: iterators.Iterator,
         gudrunFile: GudrunFile,
+        purge: PurgeWorker = None,
     ):
-        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile, purge=purge)
 
 
 class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
@@ -183,8 +187,9 @@ class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
         self,
         iterator: iterators.Composition,
         gudrunFile: GudrunFile,
+        purge: PurgeWorker = None,
     ):
-        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        super().__init__(iterator=iterator, gudrunFile=gudrunFile, purge=purge)
 
     def run(self):
         exitcode, error = self.iterate(purge=self.purge)
@@ -196,6 +201,7 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
     def __init__(
         self,
         gudrunFile: GudrunFile,
+        purge: PurgeWorker = None,
         iterator: iterators.Iterator = None,
         batchSize=1,
         stepSize=1,
@@ -205,6 +211,7 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
     ):
         super().__init__(
             gudrunFile=gudrunFile,
+            purge=purge,
             iterator=iterator,
             batchSize=batchSize,
             stepSize=stepSize,
