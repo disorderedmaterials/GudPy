@@ -29,3 +29,12 @@ class DataSet():
                 x, y, err, *__ = [float(n) for n in dataLine.split()]
                 dataSet.append(Point(x, y, err))
         return dataSet
+
+
+def calcError(d1: DataSet, d2: DataSet) -> DataSet:
+    err = DataSet("", exists=False)
+    err.dataSet = []
+    for p1, p2 in zip(d1.dataSet, d2.dataSet):
+        errPoint = p1.x - p2.x
+        err.dataSet.append(Point(p1.x, errPoint, 0))
+    return err
