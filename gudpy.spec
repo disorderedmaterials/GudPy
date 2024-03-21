@@ -50,7 +50,7 @@ exe = EXE(pyz_cli,
           a_cli.scripts,
           [],
           exclude_binaries=True,
-          name='cli',
+          name=f'GudPy-CLI-{VERSION}',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -74,10 +74,10 @@ coll = COLLECT(exe,
                a_cli.datas,
                strip=False,
                upx=True,
-               name='gudpy')
+               name=f'GudPy-{VERSION}')
 
 # Now bundle everything in one folder
 app = BUNDLE(coll,
-             name='gudpy.app',
+             name=f'GudPy-{VERSION}.app',
              icon=None,
              bundle_identifier=None)
