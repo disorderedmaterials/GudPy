@@ -6,6 +6,7 @@ import shutil
 import copy
 import typing as typ
 
+import gudpy_cli as cli
 from core import utils
 from core import enums
 from core import exception as exc
@@ -488,16 +489,12 @@ class Gudrun(Process):
         self,
         gudrunFile: GudrunFile,
         purge: Purge = None,
-        iterator: iterators.Iterator = None
+        iterator: iterators.Iterator = None,
+        save: bool = True
     ) -> int:
         self.checkBinary()
         if not purge:
-            print(
-                "\n=========================================================="
-                "\n=========================================================="
-                "\n\nWARNING: Gudrun running without purge.\n\n"
-                "\n=========================================================="
-                "\n==========================================================")
+            cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
             if purge:
@@ -535,14 +532,14 @@ class Gudrun(Process):
             else:
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
-
-            gudrunFile.save(
-                path=os.path.join(
-                    gudrunFile.projectDir,
-                    f"{gudrunFile.filename}"
-                ),
-                format=enums.Format.YAML
-            )
+            if save:
+                gudrunFile.save(
+                    path=os.path.join(
+                        gudrunFile.projectDir,
+                        f"{gudrunFile.filename}"
+                    ),
+                    format=enums.Format.YAML
+                )
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
@@ -577,22 +574,23 @@ class GudrunIterator:
         gudrunFile: GudrunFile,
         gudrun: Gudrun,
         purge: Purge,
-        prevOutput: handlers.GudrunOutput
+        prevOutput: handlers.GudrunOutput,
+        save=True
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
         modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge) -> typ.Tuple[int, str]:
+    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator)
+                self.gudrunFile, purge, self.iterator, save)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -604,7 +602,7 @@ class GudrunIterator:
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput)
+                self.gudrunFile, gudrun, purge, prevOutput, save)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode

@@ -5,6 +5,7 @@ import sys
 from core import gudpy as gp
 from core import enums
 from core import config
+from core import optimise as opt
 
 
 def loadProject(ctx, project):
@@ -63,11 +64,16 @@ def echoIndent(text):
     click.echo("    " + text)
 
 
+def echoWarning(text):
+    click.secho("  (!) " + f"WARNING: {text}\n",
+                fg='yellow', bold=True)
+
+
 def echoProcess(name):
     click.secho("\n  " + f">>  {name}\n", bold=True, fg='cyan')
 
 
-@click.command()
+@click.group()
 @click.option(
     "--project", "-p",
     type=click.Path(exists=True),
@@ -84,26 +90,8 @@ def echoProcess(name):
     type=click.Choice(["NIMROD2012", "SANDALS2011"]),
     help="Loads from a config file"
 )
-@click.option(
-    "--purge",
-    is_flag=True,
-    default=False,
-    help="Run purge_det"
-)
-@click.option(
-    "--gudrun",
-    is_flag=True,
-    default=False,
-    help="Run gudrun_dcs"
-)
-@click.option(
-    "--verbose", "-v",
-    is_flag=True,
-    default=False,
-    help="Run processes verbosely, displaying the output"
-)
 @click.pass_context
-def cli(ctx, project, file, config, purge, gudrun, verbose):
+def cli(ctx, project, file, config):
     click.echo("============================================================"
                "============================================================")
     click.secho("                                                       "
@@ -123,31 +111,47 @@ def cli(ctx, project, file, config, purge, gudrun, verbose):
             "Error: no project path, file or config provided. "
             "See --help for options.", err=True)
 
-    if purge:
-        echoProcess("purge_det")
-        ctx.obj.runPurge()
-        if verbose:
-            click.echo_via_pager(ctx.obj.purge.output)
-        echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-                   " Purge Complete")
-        echoIndent("Number of Good Detectors: " +
-                   click.style(f"{ctx.obj.purge.detectors}", bold=True))
 
-        thresh = ctx.obj.gudrunFile.instrument.goodDetectorThreshold
-        if thresh and ctx.obj.purge.detectors < thresh:
-            click.secho(
-                f"WARNING: The acceptable minimum for Good Detectors is"
-                f"{thresh}", fg="yellow", bold=True)
+@cli.command()
+@click.option(
+    "--verbose", "-v",
+    is_flag=True,
+    default=False,
+    help="Run processes verbosely, displaying the output"
+)
+@click.pass_context
+def gudrun(ctx, verbose):
+    echoProcess("gudrun_dcs")
+    ctx.obj.runGudrun()
+    if verbose:
+        click.echo_via_pager(ctx.obj.gudrun.output)
+    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
+               " Gudrun Complete")
+    echoIndent(f"  Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
 
-    if gudrun:
-        echoProcess("gudrun_dcs")
-        ctx.obj.runGudrun()
-        if verbose:
-            click.echo_via_pager(ctx.obj.gudrun.output)
 
-        echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-                   " Gudrun Complete")
-        echoIndent(f"  Outputs avaliable at {project}/Gudrun")
+@cli.command()
+@click.option(
+    "--verbose", "-v",
+    is_flag=True,
+    default=False,
+    help="Run processes verbosely, displaying the output"
+)
+@click.pass_context
+def purge(ctx, verbose):
+    echoProcess("purge_det")
+    ctx.obj.runPurge()
+    if verbose:
+        click.echo_via_pager(ctx.obj.purge.output)
+    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
+               " Purge Complete")
+    echoIndent("Number of Good Detectors: " +
+               click.style(f"{ctx.obj.purge.detectors}", bold=True))
+    thresh = ctx.obj.gudrunFile.instrument.goodDetectorThreshold
+    if thresh and ctx.obj.purge.detectors < thresh:
+        click.secho(
+            f"WARNING: The acceptable minimum for Good Detectors is"
+            f"{thresh}", fg="yellow", bold=True)
 
 
 if __name__ == '__main__':
