@@ -2,6 +2,7 @@ import click
 import os
 import sys
 
+from core import iterators
 from core import gudpy as gp
 from core import enums
 from core import config
@@ -89,8 +90,14 @@ def echoProcess(name):
     type=click.Choice(["NIMROD2012", "SANDALS2011"]),
     help="Loads from a config file"
 )
+@click.option(
+    "--verbose", "-v",
+    is_flag=True,
+    default=False,
+    help="Run processes verbosely, displaying the output"
+)
 @click.pass_context
-def cli(ctx, project, file, config):
+def cli(ctx, project, file, config, verbose):
     click.echo("============================================================"
                "============================================================")
     click.secho("                                                       "
@@ -110,19 +117,15 @@ def cli(ctx, project, file, config):
             "Error: no project path, file or config provided. "
             "See --help for options.", err=True)
 
+    ctx.obj.verbose = verbose
+
 
 @cli.command()
-@click.option(
-    "--verbose", "-v",
-    is_flag=True,
-    default=False,
-    help="Run processes verbosely, displaying the output"
-)
 @click.pass_context
-def gudrun(ctx, verbose):
+def gudrun(ctx):
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
-    if verbose:
+    if ctx.obj.verbose:
         click.echo_via_pager(ctx.obj.gudrun.output)
     echoIndent(click.style(u"\u2714", fg="green", bold=True) +
                " Gudrun Complete")
@@ -130,17 +133,11 @@ def gudrun(ctx, verbose):
 
 
 @cli.command()
-@click.option(
-    "--verbose", "-v",
-    is_flag=True,
-    default=False,
-    help="Run processes verbosely, displaying the output"
-)
 @click.pass_context
-def purge(ctx, verbose):
+def purge(ctx):
     echoProcess("purge_det")
     ctx.obj.runPurge()
-    if verbose:
+    if ctx.obj.verbose:
         click.echo_via_pager(ctx.obj.purge.output)
     echoIndent(click.style(u"\u2714", fg="green", bold=True) +
                " Purge Complete")
@@ -151,6 +148,25 @@ def purge(ctx, verbose):
         click.secho(
             f"WARNING: The acceptable minimum for Good Detectors is"
             f"{thresh}", fg="yellow", bold=True)
+
+
+@cli.command()
+@click.argument(
+    "n",
+    nargs=1,
+    type=int
+)
+@click.pass_context
+def iterate_inelasticity(ctx, n):
+    echoProcess("Wavelength Inelasiticity Subtraction Iterator")
+
+    iterator = iterators.InelasticitySubtraction(n)
+    ctx.obj.iterateGudrun(iterator)
+    if ctx.obj.verbose:
+        click.echo_via_pager(ctx.obj.gudrunIterator.output)
+    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
+               " Iterator Complete")
+    echoIndent(f"  Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
 
 
 if __name__ == '__main__':
