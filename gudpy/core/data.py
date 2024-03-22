@@ -1,8 +1,7 @@
-from abc import abstractmethod
 
 
 class Point():
-    def __init__(self, x, y, err):
+    def __init__(self, x, y, err=0.0):
         self.x = x
         self.y = y
         self.err = err
@@ -16,7 +15,6 @@ class DataSet():
         else:
             self.dataSet = self.constructDataSet(path)
 
-    @abstractmethod
     def constructDataSet(self, path):
         dataSet = []
         with open(path, "r", encoding="utf-8") as fp:
@@ -26,8 +24,14 @@ class DataSet():
                 if dataLine[0] == "#":
                     continue
 
-                x, y, err, *__ = [float(n) for n in dataLine.split()]
-                dataSet.append(Point(x, y, err))
+                splitLine = [float(n) for n in dataLine.split()]
+                if len(splitLine) > 2:
+                    x, y, err, *__ = splitLine
+                    dataSet.append(Point(x, y, err))
+                else:
+                    x, y = splitLine
+                    dataSet.append(Point(x, y))
+
         return dataSet
 
 
@@ -38,3 +42,13 @@ def calcError(d1: DataSet, d2: DataSet) -> DataSet:
         errPoint = p1.x - p2.x
         err.dataSet.append(Point(p1.x, errPoint, 0))
     return err
+
+
+def meanSquaredError(d1: DataSet, d2: DataSet) -> float:
+    # for p1, p2 in zip(d1.dataSet, d2.dataSet):
+    # print(p1.y, p2.y)
+    # print((p1.y - p2.y)**2)
+
+    return sum((p1.y - p2.y)**2
+               for p1, p2 in zip(d1.dataSet, d2.dataSet)
+               ) / len(d1.dataSet)
