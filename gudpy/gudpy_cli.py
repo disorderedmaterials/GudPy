@@ -5,7 +5,6 @@ import sys
 from core import gudpy as gp
 from core import enums
 from core import config
-from core import optimise as opt
 
 
 def loadProject(ctx, project):
