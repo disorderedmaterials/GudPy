@@ -14,8 +14,7 @@ def loadProject(ctx, project):
         return
     ctx.obj = gp.GudPy()
     ctx.obj.loadFromProject(project)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               f" GudPy project sucessfuly loaded at {project}")
+    echoTick(f" GudPy project sucessfuly loaded at {project}")
 
 
 def loadFile(ctx, value):
@@ -61,7 +60,13 @@ def loadConfig(ctx, cfg):
 
 
 def echoIndent(text):
-    click.echo("    " + text)
+    click.echo("     -  " + text)
+
+
+def echoTick(text):
+    click.echo("   " +
+               click.style(u"\u2714", fg="green", bold=True) +
+               f" {text}")
 
 
 def echoWarning(text):
@@ -98,7 +103,8 @@ def echoProcess(name):
 )
 @click.pass_context
 def cli(ctx, project, file, config, verbose):
-    click.echo("============================================================"
+    click.echo("\n"
+               "============================================================"
                "============================================================")
     click.secho("                                                       "
                 "GudPy v0.5.0", bold=True)
@@ -120,53 +126,63 @@ def cli(ctx, project, file, config, verbose):
     ctx.obj.verbose = verbose
 
 
-@cli.command()
+@cli.command(name="gudrun")
 @click.pass_context
-def gudrun(ctx):
-    echoProcess("gudrun_dcs")
-    ctx.obj.runGudrun()
-    if ctx.obj.verbose:
-        click.echo_via_pager(ctx.obj.gudrun.output)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               " Gudrun Complete")
-    echoIndent(f"  Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
-
-
-@cli.command()
-@click.pass_context
-def purge(ctx):
+def run_purge(ctx, *args):
     echoProcess("purge_det")
     ctx.obj.runPurge()
     if ctx.obj.verbose:
         click.echo_via_pager(ctx.obj.purge.output)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               " Purge Complete")
+    echoTick("Purge Complete")
     echoIndent("Number of Good Detectors: " +
                click.style(f"{ctx.obj.purge.detectors}", bold=True))
     thresh = ctx.obj.gudrunFile.instrument.goodDetectorThreshold
     if thresh and ctx.obj.purge.detectors < thresh:
-        click.secho(
-            f"WARNING: The acceptable minimum for Good Detectors is"
-            f"{thresh}", fg="yellow", bold=True)
+        echoWarning(f"The acceptable minimum for Good Detectors is {thresh}")
+    echoIndent(f"Outputs avaliable at {ctx.obj.projectDir}/Purge\n")
+
+
+@cli.command(name="gudrun")
+@click.option(
+    "--purge",
+    is_flag=True,
+    default=False,
+)
+@click.pass_context
+def run_gudrun(ctx, purge):
+    if purge:
+        ctx.invoke(run_purge, ctx)
+    echoProcess("gudrun_dcs")
+    ctx.obj.runGudrun()
+    if ctx.obj.verbose:
+        click.echo_via_pager(ctx.obj.gudrun.output)
+    echoTick("Gudrun Complete")
+    echoIndent(f"Outputs avaliable at {ctx.obj.projectDir}/Gudrun\n")
 
 
 @cli.command()
+@click.option(
+    "--purge",
+    is_flag=True,
+    default=False,
+)
 @click.argument(
     "n",
     nargs=1,
     type=int
 )
 @click.pass_context
-def iterate_inelasticity(ctx, n):
+def iterate_inelasticity(ctx, purge, n):
+    if purge:
+        purge(ctx)
     echoProcess("Wavelength Inelasiticity Subtraction Iterator")
 
     iterator = iterators.InelasticitySubtraction(n)
     ctx.obj.iterateGudrun(iterator)
     if ctx.obj.verbose:
         click.echo_via_pager(ctx.obj.gudrunIterator.output)
-    echoIndent(click.style(u"\u2714", fg="green", bold=True) +
-               " Iterator Complete")
-    echoIndent(f"  Outputs avaliable at {ctx.obj.projectDir}/Gudrun")
+    echoTick("Iterator Complete")
+    echoIndent(f"Outputs avaliable at {ctx.obj.projectDir}/Gudrun\n")
 
 
 if __name__ == '__main__':
