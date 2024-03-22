@@ -619,7 +619,7 @@ class InelasiticityIterator(GudrunIterator):
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator)
+                self.gudrunFile, purge, self.iterator, save)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
