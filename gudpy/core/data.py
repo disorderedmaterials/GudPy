@@ -1,4 +1,7 @@
 import numpy
+<< << << < HEAD
+== == == =
+>>>>>> > f6709be(Implement Bayesian Optimisation)
 
 
 class Point():
