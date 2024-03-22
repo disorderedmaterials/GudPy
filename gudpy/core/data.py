@@ -9,13 +9,13 @@ class Point():
 
 class DataSet():
     # mint01 / mdcs01 / mdor01 / mgor01 / dcs
-    def __init__(self, path, exists):
+    def __init__(self, path, exists, lim=None):
         if not exists:
             self.dataSet = None
         else:
-            self.dataSet = self.constructDataSet(path)
+            self.dataSet = self.constructDataSet(path, lim)
 
-    def constructDataSet(self, path):
+    def constructDataSet(self, path, lim=None):
         dataSet = []
         with open(path, "r", encoding="utf-8") as fp:
             for dataLine in fp.readlines():
@@ -27,9 +27,13 @@ class DataSet():
                 splitLine = [float(n) for n in dataLine.split()]
                 if len(splitLine) > 2:
                     x, y, err, *__ = splitLine
+                    if lim and x > lim:
+                        return
                     dataSet.append(Point(x, y, err))
                 else:
                     x, y = splitLine
+                    if lim and x > lim:
+                        return
                     dataSet.append(Point(x, y))
 
         return dataSet

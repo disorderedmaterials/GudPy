@@ -23,8 +23,8 @@ class BayesianOptimisation:
     ) -> None:
         self.gudrunFile = gudrunFile
         self.sample = targetSample
-        self.expected = data.DataSet(expected, True)
-        self.actual = data.DataSet(actual, True)
+        self.expected = data.DataSet(expected, True, 0.5)
+        self.actual = data.DataSet(actual, True, 0.5)
         self.gudrunIterator = None
 
     def tweakParameters(self, nIterations):
@@ -48,7 +48,7 @@ class BayesianOptimisation:
 
         cli.echoIndent(mintFile)
 
-        self.actual = data.DataSet(mintFile, True)
+        self.actual = data.DataSet(mintFile, True, 0.5)
         error = data.meanSquaredError(self.actual, self.expected)
 
         cli.echoIndent(f"MSE: {error}")
