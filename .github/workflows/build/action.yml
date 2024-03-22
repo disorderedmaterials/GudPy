@@ -51,4 +51,4 @@ runs:
     if: runner.os == 'Windows'
     shell: bash
     run: |
-      mv dist/GudPy-GUI-${{ env.gudPyVersion }} dist/GudPy-${{ env.gudPyVersion }}-Windows
+      mv dist/GudPy-${{ env.gudPyVersion }} dist/GudPy-${{ env.gudPyVersion }}-Windows
