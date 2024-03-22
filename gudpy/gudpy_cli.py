@@ -12,7 +12,6 @@ from core import data
 from core import utils
 
 
-
 def loadProject(ctx, project):
     if not project:
         return echoError("No project directory specified")
