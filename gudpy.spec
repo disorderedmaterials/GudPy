@@ -69,6 +69,7 @@ gui_exe = EXE(pyz_gui,
               console=False )
 
 coll = COLLECT(exe,
+               gui_exe,
                a_cli.binaries,
                a_cli.zipfiles,
                a_cli.datas,
