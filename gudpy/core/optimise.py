@@ -96,13 +96,9 @@ class BayesianOptimisation:
         self.actual = data.DataSet(mintFile, True, self.LIMIT)
         error = data.meanSquaredError(self.actual, self.simulation)
 
-        cli.echoIndent(f"MSE: {error}")
-        return error
-
     def optimise(self, ncalls=15):
         paramSpace = [
             skopt.space.Real(0, 3, name='amplitdute1'),
-            skopt.space.Real(0, 5, name='decay1'),
             skopt.space.Real(0, 3, name='amplitdute2'),
             skopt.space.Real(0, 5, name='decay2'),
         ]
