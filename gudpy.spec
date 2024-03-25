@@ -8,88 +8,77 @@ binaries = [
 block_cipher = None
 import sys
 
-main = os.path.join('gudpy', '__main__.py')
-pathex = [main, 'gudpy']
+main_cli = os.path.join('gudpy', 'gudpy_cli.py')
+main_gui = os.path.join('gudpy', 'gudpy_gui.py')
 data = [(os.path.join("bin", "StartupFiles"), os.path.join("bin", "StartupFiles")), (os.path.join("bin", "configs"), os.path.join("bin", "configs"))]
 ui = [(os.path.join("gudpy", "gui", "widgets", "ui_files"), "ui_files"), (os.path.join("gudpy", "gui", "widgets", "resources"), "resources")]
 datas = [*data, *ui]
 
-if sys.platform == "darwin":
-    a = Analysis([main],
-                pathex=pathex,
-                binaries=binaries,
-                datas=datas,
-                hiddenimports=[],
-                hookspath=[],
-                hooksconfig={},
-                runtime_hooks=[],
-                excludes=[],
-                win_no_prefer_redirects=False,
-                win_private_assemblies=False,
-                cipher=block_cipher,
-                noarchive=False)
-    pyz = PYZ(a.pure, a.zipped_data,
-                cipher=block_cipher)
-else:
-    a = Analysis([main],
-                pathex=pathex,
-                binaries=binaries,
-                datas=datas,
-                hiddenimports=[],
-                hookspath=[],
-                hooksconfig={},
-                runtime_hooks=[],
-                excludes=[],
-                win_no_prefer_redirects=False,
-                win_private_assemblies=False,
-                cipher=block_cipher,
-                noarchive=False)
-    pyz = PYZ(a.pure, a.zipped_data,
-                cipher=block_cipher)
+a_cli = Analysis([main_cli],
+             pathex=[main_cli, 'gudpy'],
+             binaries=[],
+             datas=data,
+             hiddenimports=[],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=['gui'],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher,
+             noarchive=False)
 
-exe = EXE(pyz,
-          a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,  
+a_gui = Analysis([main_gui],
+                 pathex=[main_gui, 'gudpy'],
+                 binaries=[],
+                 datas=datas,
+                 hiddenimports=[],
+                 hookspath=[],
+                 runtime_hooks=[],
+                 excludes=[],
+                 win_no_prefer_redirects=False,
+                 win_private_assemblies=False,
+                 cipher=block_cipher,
+                 noarchive=False)
+
+pyz_cli = PYZ(a_cli.pure, a_cli.zipped_data,
+             cipher=block_cipher)
+
+pyz_gui = PYZ(a_gui.pure, a_gui.zipped_data,
+             cipher=block_cipher)
+
+exe = EXE(pyz_cli,
+          a_cli.scripts,
           [],
-          name=f'GudPy-{VERSION}',
+          exclude_binaries=True,
+          name=f'GudPy-CLI-{VERSION}',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          upx_exclude=[],
-          runtime_tmpdir=None,
-          console=False,
-          disable_windowed_traceback=False,
-          target_arch=None,
-          codesign_identity=None,
-          entitlements_file=None )
+          console=True )
 
-if sys.platform == "darwin":
-    app = BUNDLE(exe,
-                name=f'GudPy-{VERSION}.app')
-elif os.name == "nt":
-    exe1 = EXE(pyz,
-            a.scripts,
-            [],
-            exclude_binaries=True,
-            name=f'GudPy-{VERSION}',
-            debug=False,
-            bootloader_ignore_signals=False,
-            strip=False,
-            upx=True,
-            console=False,
-            disable_windowed_traceback=False,
-            target_arch=None,
-            codesign_identity=None,
-            entitlements_file=None )
-    coll = COLLECT(exe1,
-                a.binaries,
-                a.zipfiles,
-                a.datas, 
-                strip=False,
-                upx=True,
-                upx_exclude=[],
-                name=f'GudPy-{VERSION}')
-    
+gui_exe = EXE(pyz_gui,
+              a_gui.scripts,
+              [],
+              exclude_binaries=True,
+              name=f'GudPy-GUI-{VERSION}',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=False )
+
+coll = COLLECT(exe,
+               gui_exe,
+               a_cli.binaries,
+               a_cli.zipfiles,
+               a_cli.datas,
+               strip=False,
+               upx=True,
+               name=f'GudPy-{VERSION}')
+
+# Now bundle everything in one folder
+app = BUNDLE(coll,
+             name=f'GudPy-{VERSION}.app',
+             icon=None,
+             bundle_identifier=None)

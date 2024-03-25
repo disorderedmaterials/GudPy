@@ -16,7 +16,7 @@ class GudPy(QApplication):
         self.gudpy.onException(cls, exception, traceback)
 
 
-def main(argv):
+def gui(argv):
     GudPy(argv)
 
 
@@ -24,5 +24,5 @@ def excepthook(cls, exception, traceback):
     sys.hookedFrom.onException(cls, exception, traceback)
 
 
-if __name__ == "__main__":
-    main(sys.argv)
+if __name__ == '__main__':
+    gui(sys.argv)

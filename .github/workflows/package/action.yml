@@ -25,7 +25,8 @@ runs:
     if: runner.os == 'Windows'
     shell: bash
     run: |
-      7z a dist/GudPy-${{ env.gudPyVersion }}-Windows.zip dist/GudPy-${{ env.gudPyVersion }}/
+      ls dist
+      7z a dist/GudPy-${{ env.gudPyVersion }}-Windows.zip dist/GudPy-${{ env.gudPyVersion }}-Windows/
 
   - name: Upload Artifacts (Windows)
     if: runner.os == 'Windows'
@@ -34,7 +35,6 @@ runs:
       name: Packages
       path: |
         dist/GudPy-*-Windows.zip
-        dist/GudPy-*-Windows.exe
 
   - name: Install singularity
     if: runner.os == 'Linux'
