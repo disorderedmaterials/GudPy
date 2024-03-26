@@ -1,5 +1,10 @@
 # GudPy
 
+_Last Release: 0.5.0, Monday 18th March 2024_
+
+_Release Build::_ [![Release Build Status](https://github.com/disorderedmaterials/GudPy/actions/workflows/release.yml/badge.svg)](https://github.com/disorderedmaterials/GudPy/actions/workflows/release.yml)
+_Development Build::_ [![Development Build Status](https://github.com/disorderedmaterials/GudPy/actions/workflows/continuous.yml/badge.svg)](https://github.com/disorderedmaterials/GudPy/actions/workflows/continuous.yml)
+
 Python-based Batch Processing and Alternative GUI for the Gudrun software by A. K. Soper (https://github.com/disorderedmaterials/Gudrun).
 
 GudPy offers a range of additional functionality unavailable in the Gudrun Java GUI, whilst also making some existing functionality/workflows easier to perform/carry-out. For further reference, you can visit the Gudrun manual.
