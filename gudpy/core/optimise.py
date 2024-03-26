@@ -5,7 +5,6 @@ from scipy.optimize import minimize
 
 import gudpy_cli as cli
 from core import data
-from core import iterators
 from core import gudpy
 from core import utils
 from core.gudrun_file import GudrunFile
@@ -72,26 +71,30 @@ class BayesianOptimisation:
             cli.echoIndent(f"MSE: {error}\n")
         return error
 
-    def tweakParameters(self, nIterations):
-        cli.echoIndent(f"Iteration count: {nIterations}")
+    def tweakExponent(self, exponents):
+        cli.echoIndent("Running parameters: " + str(exponents))
 
-        iterator = iterators.InelasticitySubtraction(nIterations[0])
-        self.gudrunIterator = gudpy.GudrunIterator(
-            self.gudrunFile,
-            iterator,
+        Amplitude1, Decay1 = exponents[:2]
+        Amplitude2, Decay2 = exponents[:2]
+
+        self.sample.exponentialValues = []
+        self.sample.exponentialValues.append(
+            [Amplitude1, Decay1, 0.0]
         )
-        self.gudrunIterator.iterate(purge=None, save=False)
+        self.sample.exponentialValues.append(
+            [Amplitude2, Decay2, 0.0]
+        )
 
         error = data.meanSquaredError(self.actual, self.simulation)
         print(f"init error {error}")
 
-        mintFile = self.gudrunIterator.gudrunOutput.output(
+        mintFile = self.gudrun.gudrunOutput.output(
             name=self.sample.name,
             dataFile=self.sample.dataFiles[0],
             type=".mint01"
         )
 
-        cli.echoIndent(mintFile)
+        self.actual = data.NpDataSet(mintFile, self.LIMIT)
 
         self.actual = data.DataSet(mintFile, True, self.LIMIT)
         error = data.meanSquaredError(self.actual, self.simulation)
