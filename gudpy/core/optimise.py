@@ -5,6 +5,7 @@ from scipy.optimize import minimize
 
 import gudpy_cli as cli
 from core import data
+from core import iterators
 from core import gudpy
 from core import utils
 from core.gudrun_file import GudrunFile
