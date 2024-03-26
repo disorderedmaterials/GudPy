@@ -27,7 +27,7 @@ runs:
 
   - name: Create Update PR
     if: ${{ inputs.createPR == 'true' }}
-    uses: peter-evans/create-pull-request@v4
+    uses: peter-evans/create-pull-request@v6
     with:
       base: develop
       add-paths: |
