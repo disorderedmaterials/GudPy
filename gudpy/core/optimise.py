@@ -1,8 +1,12 @@
 import skopt
+import os
+import tempfile
 
 import gudpy_cli as cli
 from core import data
+from core import iterators
 from core import gudpy
+from core import utils
 from core.gudrun_file import GudrunFile
 from core.sample import Sample
 
@@ -63,6 +67,33 @@ class BayesianOptimisation:
         cli.echoIndent(f"MSE: {error}\n")
         return error
 
+    def tweakParameters(self, nIterations):
+        cli.echoIndent(f"Iteration count: {nIterations}")
+
+        iterator = iterators.InelasticitySubtraction(nIterations[0])
+        self.gudrunIterator = gudpy.GudrunIterator(
+            self.gudrunFile,
+            iterator,
+        )
+        self.gudrunIterator.iterate(purge=None, save=False)
+
+        error = data.meanSquaredError(self.actual, self.simulation)
+        print(f"init error {error}")
+
+        mintFile = self.gudrunIterator.gudrunOutput.output(
+            name=self.sample.name,
+            dataFile=self.sample.dataFiles[0],
+            type=".mint01"
+        )
+
+        cli.echoIndent(mintFile)
+
+        self.actual = data.DataSet(mintFile, True, self.LIMIT)
+        error = data.meanSquaredError(self.actual, self.simulation)
+
+        cli.echoIndent(f"MSE: {error}")
+        return error
+
     def optimise(self, ncalls=15):
         paramSpace = [
             skopt.space.Real(0, 2, name='amplitdute1'),
@@ -71,8 +102,12 @@ class BayesianOptimisation:
             skopt.space.Real(0, 1, name='decay2'),
         ]
 
-        result = skopt.gp_minimize(
-            self.tweakExponent, paramSpace, n_calls=ncalls
-        )
+        with tempfile.TemporaryDirectory() as tmp:
+            dir = os.path.join(tmp, "Optimisation")
+            utils.makeDir(os.path.join(dir))
+            self.gudrunFile.projectDir = dir
+            result = skopt.gp_minimize(
+                self.tweakExponent, paramSpace, n_calls=ncalls
+            )
 
         return result
