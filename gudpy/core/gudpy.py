@@ -477,7 +477,7 @@ class Gudrun(Process):
         iterator: iterators.Iterator = None,
     ) -> int:
         self.checkBinary()
-        if not purge:
+        if not purge and not suppress:
             cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
