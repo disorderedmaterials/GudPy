@@ -465,7 +465,7 @@ class Gudrun(Process):
         iterator: iterators.Iterator = None,
     ) -> int:
         self.checkBinary()
-        if not purge:
+        if not purge and not suppress:
             cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
@@ -498,10 +498,10 @@ class Gudrun(Process):
                     self.exitcode = 1
                     return self.exitcode
 
-            if iterator:
+            if iterator and save:
                 self.gudrunOutput = iterator.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
-            else:
+            elif save:
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
