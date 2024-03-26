@@ -2,6 +2,7 @@ import click
 import os
 import sys
 import ast
+import shutil
 
 from core import gudpy as gp
 from core import enums
@@ -219,17 +220,19 @@ def edit(ctx, sample, attribute, value, path):
     type=int,
     help="Number of calls for optimisation"
 )
+@click.option(
+    "--output", "-o",
+    type=click.Path(exists=False),
+    help="Location to create new project"
+)
 @click.pass_context
-def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls):
+def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls, output):
     echoProcess("Bayesian Optimisation")
-
-    ctx.obj.setSaveLocation(
-        os.path.join(
-            ctx.obj.projectDir,
-            "BayesianOptimisation"
-        )
+    dir = output if output else os.path.join(
+        ctx.obj.projectDir,
+        f"BayesianOptimisation_{sample}"
     )
-
+    ctx.obj.setSaveLocation(dir)
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
 
@@ -246,7 +249,8 @@ def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls):
         gudrunFile=ctx.obj.gudrunFile,
         targetSample=samp,
         simulation=simulationdata,
-        actual=actualdata
+        actual=actualdata,
+        limit=2.0
     )
 
     initError = data.meanSquaredError(opti.actual, opti.simulation)
@@ -263,12 +267,22 @@ def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls):
 
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
+    shutil.copyfile(
+        ctx.obj.gudrun.gudrunOutput.output(
+            name=sample,
+            dataFile=samp.dataFiles[0],
+            type=".mint01"
+        ),
+        os.path.join(
+            ctx.obj.projectDir,
+            f"{sample}_optimised.mint01"
+        )
+    )
     echoTick("Gudrun Complete")
     echoTick("New mintfile avaliable at " +
-             ctx.obj.gudrun.gudrunOutput.output(
-                 name=sample,
-                 dataFile=samp.dataFiles[0],
-                 type=".mint01"
+             os.path.join(
+                 ctx.obj.projectDir,
+                 f"{sample}_optimised.mint01"
              ))
 
 
