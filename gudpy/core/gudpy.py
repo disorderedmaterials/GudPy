@@ -478,6 +478,11 @@ class Gudrun(Process):
         gudrunFile: GudrunFile,
         purge: Purge = None,
         iterator: iterators.Iterator = None,
+        << << << < HEAD
+        == == == =
+        save: bool = True,
+        suppress: bool = False,
+        >>>>>> > e725a61(Add suppress/save options to gudrun)
     ) -> int:
         self.checkBinary()
         if not purge and not suppress:
