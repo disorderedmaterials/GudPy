@@ -1,15 +1,14 @@
+from core import utils
+from core import data
+from core import optimise as opt
+from core import config
+from core import enums
+from core import gudpy as gp
+
 import click
 import os
 import sys
 import ast
-import shutil
-
-from core import gudpy as gp
-from core import enums
-from core import config
-from core import optimise as opt
-from core import data
-from core import utils
 
 
 def loadProject(ctx, project):
@@ -214,114 +213,70 @@ def edit(ctx, sample, attribute, value, path):
     nargs=1
 )
 @click.argument(
-    "samplename",
+    "actualData",
+    type=click.Path(exists=True),
+    nargs=1
+)
+@click.argument(
+    "sample",
     type=str,
     nargs=1
 )
 @click.option(
-    "--niters", "-n",
+    "--ncalls", "-n",
     type=int,
     help="Number of calls for optimisation"
 )
-@click.option(
-    "--output", "-o",
-    type=click.Path(exists=False),
-    help="Location to create new project"
-)
-@click.option(
-    "--method",
-    type=click.Choice(["bayesian", "simplex"]),
-    default="bayesian",
-    help="Optimisation method to use"
-)
 @click.pass_context
-def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
+def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls):
     echoProcess("Bayesian Optimisation")
-    dir = output if output else os.path.join(
-        ctx.obj.projectDir,
-        f"BayesianOptimisation_{samplename}"
+
+    ctx.obj.setSaveLocation(
+        os.path.join(
+            ctx.obj.projectDir,
+            "BayesianOptimisation"
+        )
     )
-    ctx.obj.setSaveLocation(dir)
+
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
 
-    sample = None
+    samp = None
     for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
         for s in sbg.samples:
-            if s.name == samplename:
-                sample = s
+            if s.name == sample:
+                samp = s
 
-    if sample is None:
-        return echoError("No sample found")
-
-    sampleData = ctx.obj.gudrunOutput.output(
-        name=sample.name,
-        dataFile=sample.dataFiles[0],
-        type=".mint01"
-    )
-
-    if not sampleData:
-        return echoError(
-            f"No data found associated with sample '{sample.name}'")
+    if samp is None:
+        echoIndent("No sample found")
 
     opti = opt.BayesianOptimisation(
         gudrunFile=ctx.obj.gudrunFile,
-        targetSample=sample,
+        targetSample=samp,
         simulation=simulationdata,
-        actual=sampleData,
-        limit=2.0,
-        verbose=verbose
+        actual=actualdata
     )
 
     initError = data.meanSquaredError(opti.actual, opti.simulation)
-    initValues = sample.exponentialValues
     echoIndent(f"Initial MSE: {round(initError, 5)}\n")
 
-    mse = None
-    optExponents = None
-    if method == "bayesian":
-        mse, optExponents = opti.optimise(ncalls=niters)
-    else:
-        mse, optExponents = opti.gradientDescent(maxiter=niters)
-
-    if not mse or not optExponents:
-        return echoError("Optimisation unsuccessful")
+    result = opti.optimise(ncalls=ncalls)
+    optExponents = [result.x[0:2] + [0.0], result.x[2:] + [0.0]]
 
     echoTick("Optimisation complete")
-
-    if mse > initError:
-        echoTick("Best values already achieved.")
-        optExponents = initValues
-        mse = initError
-
     echoTick(f"Optimum exponentialValues: {optExponents}")
-    echoTick(f"MSE: {mse}")
+    echoTick(f"New MSE: {round(result.fun, 5)}")
 
-    sample.exponentialValues = optExponents
-
-    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
-        for s in sbg.samples:
-            if s.name == samplename:
-                print(s.exponentialValues)
+    samp.exponentialValues = optExponents
 
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
-    shutil.copyfile(
-        ctx.obj.gudrun.gudrunOutput.output(
-            name=sample.name,
-            dataFile=sample.dataFiles[0],
-            type=".mint01"
-        ),
-        os.path.join(
-            ctx.obj.projectDir,
-            f"{sample.name}_optimised.mint01"
-        )
-    )
     echoTick("Gudrun Complete")
     echoTick("New mintfile avaliable at " +
-             os.path.join(
-                 ctx.obj.projectDir,
-                 f"{sample.name}_optimised.mint01"
+             ctx.obj.gudrun.gudrunOutput.output(
+                 name=sample,
+                 dataFile=samp.dataFiles[0],
+                 type=".mint01"
              ))
 
 

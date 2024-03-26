@@ -2,7 +2,6 @@ import skopt
 
 import gudpy_cli as cli
 from core import data
-from core import iterators
 from core import gudpy
 from core.gudrun_file import GudrunFile
 from core.sample import Sample
@@ -18,48 +17,62 @@ class BayesianOptimisation:
             self,
             gudrunFile: GudrunFile,
             targetSample: Sample,
-            expected: str,
-            actual: str
+            simulation: str,
+            actual: str,
+            limit: float = 0.5
     ) -> None:
+        self.LIMIT = limit
         self.gudrunFile = gudrunFile
         self.sample = targetSample
-        self.expected = data.DataSet(expected, True, 0.5)
-        self.actual = data.DataSet(actual, True, 0.5)
+        self.simulation = data.NpDataSet(simulation, self.LIMIT)
+        self.actual = data.NpDataSet(actual, self.LIMIT)
+
         self.gudrunIterator = None
+        self.gudrun = gudpy.Gudrun()
 
-    def tweakParameters(self, nIterations):
-        cli.echoIndent(f"Iteration count: {nIterations}")
+    def tweakExponent(self, exponents):
+        cli.echoIndent("Running parameters: " + str(exponents))
 
-        iterator = iterators.InelasticitySubtraction(nIterations[0])
-        self.gudrunIterator = gudpy.GudrunIterator(
-            self.gudrunFile,
-            iterator,
+        Amplitude1, Decay1 = exponents[:2]
+        Amplitude2, Decay2 = exponents[:2]
+
+        self.sample.exponentialValues = []
+        self.sample.exponentialValues.append(
+            [Amplitude1, Decay1, 0.0]
         )
-        self.gudrunIterator.iterate(purge=None, save=False)
+        self.sample.exponentialValues.append(
+            [Amplitude2, Decay2, 0.0]
+        )
 
-        error = data.meanSquaredError(self.actual, self.expected)
-        print(f"init error {error}")
+        self.gudrun.gudrun(
+            gudrunFile=self.gudrunFile,
+            purge=None,
+            suppress=True
+        )
 
-        mintFile = self.gudrunIterator.gudrunOutput.output(
+        mintFile = self.gudrun.gudrunOutput.output(
             name=self.sample.name,
             dataFile=self.sample.dataFiles[0],
             type=".mint01"
         )
 
-        cli.echoIndent(mintFile)
+        self.actual = data.NpDataSet(mintFile, self.LIMIT)
 
-        self.actual = data.DataSet(mintFile, True, 0.5)
-        error = data.meanSquaredError(self.actual, self.expected)
+        error = data.meanSquaredError(self.actual, self.simulation)
 
-        cli.echoIndent(f"MSE: {error}")
+        cli.echoIndent(f"MSE: {error}\n")
         return error
 
-    def optimise(self):
-        cli.echoProcess("Bayesian Optimisation")
+    def optimise(self, ncalls=15):
+        paramSpace = [
+            skopt.space.Real(0, 2, name='amplitdute1'),
+            skopt.space.Real(1, 3, name='decay1'),
+            skopt.space.Real(0, 0.5, name='amplitude2'),
+            skopt.space.Real(0, 1, name='decay2'),
+        ]
 
-        paramRanges = [skopt.space.Integer(1, 3, name='nIterations')]
         result = skopt.gp_minimize(
-            self.tweakParameters, paramRanges
+            self.tweakExponent, paramSpace, n_calls=ncalls
         )
 
-        print(result)
+        return result
