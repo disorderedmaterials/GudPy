@@ -103,6 +103,7 @@ class BayesianOptimisation:
     def optimise(self, ncalls=15):
         paramSpace = [
             skopt.space.Real(0, 3, name='amplitdute1'),
+            skopt.space.Real(0, 5, name='decay1'),
             skopt.space.Real(0, 3, name='amplitdute2'),
             skopt.space.Real(0, 5, name='decay2'),
         ]
