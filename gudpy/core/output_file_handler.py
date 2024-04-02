@@ -13,6 +13,7 @@ from core.gudrun_file import GudrunFile
 class SampleOutput:
     sampleFile: str
     gudFile: GudFile
+    mint: str
     outputs: typing.Dict[str, typing.Dict[str, str]]
     diagnostics: typing.Dict[str, typing.Dict[str, str]]
 
@@ -259,6 +260,7 @@ class GudrunOutputHandler(OutputHandler):
         for sample in self.samples:
             sampleFile = ""
             gudFile = None
+            mintFile = None
             sampleOutput = {}
             sampleDiag = {}
 
@@ -268,13 +270,14 @@ class GudrunOutputHandler(OutputHandler):
             )
             # Move datafiles to sample folder
             for idx, dataFile in enumerate(sample.dataFiles):
-                out, diag, gf = self._copyOutputsByExt(
+                out, diag, gf, mf = self._copyOutputsByExt(
                     dataFile,
                     samplePath,
                     utils.replace_unwanted_chars(sample.name)
                 )
                 if idx == 0:
                     gudFile = gf
+                    mintFile = mf
                 sampleOutput[dataFile] = out
                 sampleDiag[dataFile] = diag
 
@@ -295,7 +298,7 @@ class GudrunOutputHandler(OutputHandler):
                 sample.pathName())
 
             sampleOutputs[sample.name] = SampleOutput(
-                sampleFile, gudFile, sampleOutput, sampleDiag)
+                sampleFile, gudFile, mintFile, sampleOutput, sampleDiag)
 
             # Create container folders within sample folder
             for container in sample.containers:
@@ -413,6 +416,7 @@ class GudrunOutputHandler(OutputHandler):
         outputs = {}
         diagnostics = {}
         gudFile = None
+        mintFile = None
 
         for f in os.listdir(self.gudrunDir):
             # If the file has the same name as requested filename
@@ -429,6 +433,8 @@ class GudrunOutputHandler(OutputHandler):
                 if dir == outDir:
                     if ext == ".gud":
                         gudFile = GudFile(os.path.join(self.gudrunDir, f))
+                    if ext == ".mint01":
+                        mintFile = os.path.join(self.gudrunDir, f)
                     outputs[ext] = os.path.join(
                         self.outputDir, folderName, fname, "Outputs", f)
                 else:
@@ -439,4 +445,4 @@ class GudrunOutputHandler(OutputHandler):
                     os.path.join(dir, f)
                 )
                 self.copiedFiles.append(f)
-        return (outputs, diagnostics, gudFile)
+        return (outputs, diagnostics, gudFile, mintFile)
