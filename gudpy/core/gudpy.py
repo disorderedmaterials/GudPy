@@ -258,7 +258,10 @@ class GudPy:
         if not gudrunFile:
             gudrunFile = self.gudrunFile
         self.gudrun = Gudrun()
-        exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
+        exitcode = self.gudrun.gudrun(
+            gudrunFile=gudrunFile,
+            purge=self.purge
+        )
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:\n"
