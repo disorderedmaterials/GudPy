@@ -1,6 +1,7 @@
 import skopt
 import os
 import tempfile
+from scipy.optimize import minimize
 
 import gudpy_cli as cli
 from core import data
@@ -23,22 +24,25 @@ class BayesianOptimisation:
             targetSample: Sample,
             simulation: str,
             actual: str,
-            limit: float = 0.5
+            limit: float = 0.5,
+            verbose=False
     ) -> None:
         self.LIMIT = limit
         self.gudrunFile = gudrunFile
         self.sample = targetSample
         self.simulation = data.NpDataSet(simulation, self.LIMIT)
         self.actual = data.NpDataSet(actual, self.LIMIT)
+        self.verbose = verbose
 
         self.gudrunIterator = None
         self.gudrun = gudpy.Gudrun()
 
     def tweakExponent(self, exponents):
-        cli.echoIndent("Running parameters: " + str(exponents))
+        if self.verbose:
+            cli.echoIndent("Running parameters: " + str(exponents))
 
         Amplitude1, Decay1 = exponents[:2]
-        Amplitude2, Decay2 = exponents[:2]
+        Amplitude2, Decay2 = exponents[2:4]
 
         self.sample.exponentialValues = []
         self.sample.exponentialValues.append(
@@ -64,7 +68,8 @@ class BayesianOptimisation:
 
         error = data.meanSquaredError(self.actual, self.simulation)
 
-        cli.echoIndent(f"MSE: {error}\n")
+        if self.verbose:
+            cli.echoIndent(f"MSE: {error}\n")
         return error
 
     def tweakParameters(self, nIterations):
@@ -96,10 +101,10 @@ class BayesianOptimisation:
 
     def optimise(self, ncalls=15):
         paramSpace = [
-            skopt.space.Real(0, 2, name='amplitdute1'),
-            skopt.space.Real(1, 3, name='decay1'),
-            skopt.space.Real(0, 0.5, name='amplitude2'),
-            skopt.space.Real(0, 1, name='decay2'),
+            skopt.space.Real(0, 3, name='amplitdute1'),
+            skopt.space.Real(0, 5, name='decay1'),
+            skopt.space.Real(0, 3, name='amplitdute2'),
+            skopt.space.Real(0, 5, name='decay2'),
         ]
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -109,5 +114,31 @@ class BayesianOptimisation:
             result = skopt.gp_minimize(
                 self.tweakExponent, paramSpace, n_calls=ncalls
             )
+            mse = round(result.fun, 5)
+            optExponents = [result.x[0:2] + [0.0],
+                            result.x[2:] + [0.0]]
 
-        return result
+        return mse, optExponents
+
+    def gradientDescent(self, maxiter=15):
+        cli.echoIndent("Gradient Descent")
+        initial = [el for sl in self.sample.exponentialValues
+                   for el in sl[:-1]]
+        initial.extend([0.0] * (4 - len(initial)))
+        print(initial)
+        bounds = [(0, 3), (0, 3), (0, 3), (0, 3)]
+        with tempfile.TemporaryDirectory() as tmp:
+            dir = os.path.join(tmp, "Optimisation")
+            utils.makeDir(os.path.join(dir))
+            self.gudrunFile.projectDir = dir
+            result = minimize(
+                fun=self.tweakExponent,
+                x0=initial,
+                bounds=bounds,
+                method='Nelder-Mead',
+                options={"maxiter": maxiter}
+            )
+        mse = round(result.fun, 5)
+        result.x = result.x.tolist()
+        optExponents = [result.x[0:2] + [0.0], result.x[2:] + [0.0]]
+        return mse, optExponents
