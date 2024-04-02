@@ -19,11 +19,7 @@ class SamplePlotConfig():
     def constructDataSets(self, offsetX, offsetY):
         if len(self.sample.dataFiles):
             # mint01 dataset.
-            mintPath = self.gudrunOutput.output(
-                name=self.sample.name,
-                dataFile=self.sample.dataFiles[0],
-                type=".mint01"
-            )
+            mintPath = self.gudrunOutput.sampleOutputs[self.sample.name].mint
             hasMintData = False
 
             if mintPath and os.path.exists(mintPath):
