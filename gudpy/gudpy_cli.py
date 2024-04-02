@@ -214,17 +214,12 @@ def edit(ctx, sample, attribute, value, path):
     nargs=1
 )
 @click.argument(
-    "actualData",
-    type=click.Path(exists=True),
-    nargs=1
-)
-@click.argument(
-    "sample",
+    "samplename",
     type=str,
     nargs=1
 )
 @click.option(
-    "--ncalls", "-n",
+    "--niters", "-n",
     type=int,
     help="Number of calls for optimisation"
 )
@@ -233,64 +228,100 @@ def edit(ctx, sample, attribute, value, path):
     type=click.Path(exists=False),
     help="Location to create new project"
 )
+@click.option(
+    "--method",
+    type=click.Choice(["bayesian", "simplex"]),
+    default="bayesian",
+    help="Optimisation method to use"
+)
 @click.pass_context
-def optimise(ctx, verbose, simulationdata, actualdata, sample, ncalls, output):
+def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
     echoProcess("Bayesian Optimisation")
     dir = output if output else os.path.join(
         ctx.obj.projectDir,
-        f"BayesianOptimisation_{sample}"
+        f"BayesianOptimisation_{samplename}"
     )
     ctx.obj.setSaveLocation(dir)
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
 
-    samp = None
+    sample = None
     for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
         for s in sbg.samples:
-            if s.name == sample:
-                samp = s
+            if s.name == samplename:
+                sample = s
 
-    if samp is None:
-        echoIndent("No sample found")
+    if sample is None:
+        return echoError("No sample found")
+
+    sampleData = ctx.obj.gudrunOutput.output(
+        name=sample.name,
+        dataFile=sample.dataFiles[0],
+        type=".mint01"
+    )
+
+    if not sampleData:
+        return echoError(
+            f"No data found associated with sample '{sample.name}'")
 
     opti = opt.BayesianOptimisation(
         gudrunFile=ctx.obj.gudrunFile,
-        targetSample=samp,
+        targetSample=sample,
         simulation=simulationdata,
-        actual=actualdata,
-        limit=2.0
+        actual=sampleData,
+        limit=2.0,
+        verbose=verbose
     )
 
     initError = data.meanSquaredError(opti.actual, opti.simulation)
+    initValues = sample.exponentialValues
     echoIndent(f"Initial MSE: {round(initError, 5)}\n")
 
-    result = opti.optimise(ncalls=ncalls)
-    optExponents = [result.x[0:2] + [0.0], result.x[2:] + [0.0]]
+    mse = None
+    optExponents = None
+    if method == "bayesian":
+        mse, optExponents = opti.optimise(ncalls=niters)
+    else:
+        mse, optExponents = opti.gradientDescent(maxiter=niters)
+
+    if not mse or optExponents:
+        return echoError("Optimisation unsuccessful")
 
     echoTick("Optimisation complete")
-    echoTick(f"Optimum exponentialValues: {optExponents}")
-    echoTick(f"New MSE: {round(result.fun, 5)}")
 
-    samp.exponentialValues = optExponents
+    if mse > initError:
+        echoTick("Best values already achieved.")
+        optExponents = initValues
+        mse = initError
+
+    echoTick(f"Optimum exponentialValues: {optExponents}")
+    echoTick(f"MSE: {mse}")
+
+    sample.exponentialValues = optExponents
+
+    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+        for s in sbg.samples:
+            if s.name == samplename:
+                print(s.exponentialValues)
 
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
     shutil.copyfile(
         ctx.obj.gudrun.gudrunOutput.output(
-            name=sample,
-            dataFile=samp.dataFiles[0],
+            name=sample.name,
+            dataFile=sample.dataFiles[0],
             type=".mint01"
         ),
         os.path.join(
             ctx.obj.projectDir,
-            f"{sample}_optimised.mint01"
+            f"{sample.name}_optimised.mint01"
         )
     )
     echoTick("Gudrun Complete")
     echoTick("New mintfile avaliable at " +
              os.path.join(
                  ctx.obj.projectDir,
-                 f"{sample}_optimised.mint01"
+                 f"{sample.name}_optimised.mint01"
              ))
 
 
