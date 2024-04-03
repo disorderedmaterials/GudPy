@@ -7,6 +7,7 @@ import tempfile
 import core.utils as utils
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
+from data import GudrunParameters
 
 
 @dataclass
@@ -108,7 +109,8 @@ class GudrunOutputHandler(OutputHandler):
 
     def __init__(
         self,
-        gudrunFile: GudrunFile,
+        params: GudrunParameters,
+        projectDir: str,
         head: str = "",
         overwrite: bool = True
     ):
@@ -117,7 +119,7 @@ class GudrunOutputHandler(OutputHandler):
 
         Parameters
         ----------
-        gudrunFile : GudrunFile
+        params : params
             Gudrun file object that defines run parameters
         head : str, optional
             Where to branch outputs, if desired, by default ""
@@ -127,8 +129,8 @@ class GudrunOutputHandler(OutputHandler):
         """
 
         super().__init__(
-            gudrunFile.instrument.GudrunInputFileDir,
-            gudrunFile.projectDir,
+            params.instrument.GudrunInputFileDir,
+            projectDir,
             "Gudrun",
         )
 
@@ -140,7 +142,7 @@ class GudrunOutputHandler(OutputHandler):
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
-        self.gudrunFile = gudrunFile
+        self.params = params
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
@@ -154,7 +156,7 @@ class GudrunOutputHandler(OutputHandler):
         self.copiedFiles = []
 
         # Generating paths
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in self.params.sampleBackgrounds:
             for sample in [
                     s for s in sampleBackground.samples
                     if s.runThisSample and len(s.dataFiles)]:
@@ -178,9 +180,9 @@ class GudrunOutputHandler(OutputHandler):
 
         # If overwrite, move previous directory
         if self.overwrite and os.path.exists(
-                os.path.join(self.gudrunFile.projectDir, "Gudrun")):
+                os.path.join(self.params.projectDir, "Gudrun")):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(os.path.join(self.gudrunFile.projectDir, "Gudrun"),
+                shutil.move(os.path.join(self.params.projectDir, "Gudrun"),
                             os.path.join(tmp, "prev"))
 
         # Move over folders to output directory
@@ -202,11 +204,11 @@ class GudrunOutputHandler(OutputHandler):
             Path to target output directory
         """
         # Create normalisation folders and move datafiles
-        for normFile in self.gudrunFile.normalisation.dataFiles:
+        for normFile in self.params.normalisation.dataFiles:
             self._copyOutputs(
                 normFile, os.path.join(
                     dest, "Normalisation"))
-        for normBgFile in self.gudrunFile.normalisation.dataFilesBg:
+        for normBgFile in self.params.normalisation.dataFilesBg:
             self._copyOutputs(normBgFile,
                               os.path.join(dest,
                                            "NormalisationBackground"))
@@ -222,7 +224,7 @@ class GudrunOutputHandler(OutputHandler):
         """
         # Iterate through all sample backgrounds
         for count, sampleBackground in enumerate(
-                self.gudrunFile.sampleBackgrounds):
+                self.params.sampleBackgrounds):
             # Move all datafiles into their sample background folder
             # Creates the folder if there is none
             for dataFile in sampleBackground.dataFiles:
@@ -333,7 +335,7 @@ class GudrunOutputHandler(OutputHandler):
         inputFile = ""
 
         for f in os.listdir(self.gudrunDir):
-            if f == self.gudrunFile.OUTPATH:
+            if f == GudrunFile.OUTPATH:
                 inputFile = os.path.join(
                     self.outputDir, f)
                 shutil.copyfile(

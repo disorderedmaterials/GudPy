@@ -15,8 +15,8 @@ class PurgeFile:
 
     Attributes
     ----------
-    gudrunFile : GudrunFile
-        Parent GudrunFile that we are creating the PurgeFile from.
+    gudrunParams : gudrunParams
+        Parent gudrunParams that we are creating the PurgeFile from.
     excludeSampleAndCan : bool
         Exclude sample and container data files?
     standardDeviation : tuple(int, int)
@@ -35,7 +35,7 @@ class PurgeFile:
 
     def __init__(
             self,
-            gudrunFile,
+            gudrunParams,
             standardDeviation=(10, 10),
             ignoreBad=True,
             excludeSampleAndCan=True,
@@ -45,10 +45,10 @@ class PurgeFile:
 
         Parameters
         ----------
-        gudrunFile : GudrunFile
-            Parent GudrunFile that we are creating the PurgeFile from.
+        gudrunParams : gudrunParams
+            Parent gudrunParams that we are creating the PurgeFile from.
         """
-        self.gudrunFile = gudrunFile
+        self.gudrunParams = gudrunParams
         self.excludeSampleAndCan = excludeSampleAndCan
         self.standardDeviation = standardDeviation
         self.ignoreBad = ignoreBad
@@ -90,62 +90,62 @@ class PurgeFile:
         """
         HEADER = f"'  '  '          '  '{os.path.sep}'\n\n"
 
-        baseDirectory = self.gudrunFile.instrument.GudrunStartFolder
+        baseDirectory = self.gudrunParams.instrument.GudrunStartFolder
 
         instrumentLine = Instruments(
-            self.gudrunFile.instrument.name.value
+            self.gudrunParams.instrument.name.value
         ).name
 
         detCalibrationFileLine = os.path.join(
             baseDirectory,
-            self.gudrunFile.instrument.detectorCalibrationFileName
+            self.gudrunParams.instrument.detectorCalibrationFileName
         )
 
         groupFileLine = os.path.join(
             baseDirectory,
-            self.gudrunFile.instrument.groupFileName
+            self.gudrunParams.instrument.groupFileName
         )
 
         spectrumNumbersLine = spacify(
-            self.gudrunFile.instrument.spectrumNumbersForIncidentBeamMonitor
+            self.gudrunParams.instrument.spectrumNumbersForIncidentBeamMonitor
         )
 
         channelNosLine = spacify(
-            self.gudrunFile.instrument.channelNosSpikeAnalysis, num_spaces=2
+            self.gudrunParams.instrument.channelNosSpikeAnalysis, num_spaces=2
         )
 
         groupsAcceptanceFactorLine = (
-            self.gudrunFile.instrument.groupsAcceptanceFactor
+            self.gudrunParams.instrument.groupsAcceptanceFactor
         )
 
         nxsDefinitionFilePath = os.path.join(
             baseDirectory,
-            self.gudrunFile.instrument.nxsDefinitionFile
+            self.gudrunParams.instrument.nxsDefinitionFile
         )
 
         nxsDefinitionFileLine = (
             f"{nxsDefinitionFilePath}{config.spc10}"
             f"NeXus definition file\n"
-            if self.gudrunFile.instrument.dataFileType in ["nxs", "NXS"]
+            if self.gudrunParams.instrument.dataFileType in ["nxs", "NXS"]
             else
             ""
         )
 
         normalisationDataFiles = [
-            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumber}"
+            f"{df}{config.spc2}{self.gudrunParams.normalisation.periodNumber}"
             f"{config.spc10}"
-            for df in self.gudrunFile.normalisation.dataFiles
+            for df in self.gudrunParams.normalisation.dataFiles
         ]
 
         normalisationDataFilesBg = [
-            f"{df}{config.spc2}{self.gudrunFile.normalisation.periodNumberBg}"
+            f"{df}{config.spc2}{self.gudrunParams.normalisation.periodNumberBg}"
             f"{config.spc10}"
-            for df in self.gudrunFile.normalisation.dataFilesBg
+            for df in self.gudrunParams.normalisation.dataFilesBg
         ]
 
         sampleBackgroundDataFiles = [
             f"{df}{config.spc2}{sampleBackground.periodNumber}"
-            for sampleBackground in self.gudrunFile.sampleBackgrounds
+            for sampleBackground in self.gudrunParams.sampleBackgrounds
             for df in sampleBackground.dataFiles
         ]
 
@@ -154,7 +154,7 @@ class PurgeFile:
         else:
             sampleDataFiles = [
                 f"{df}{config.spc2}{sample.periodNumber}"
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sampleBackground in self.gudrunParams.sampleBackgrounds
                 for sample in sampleBackground.samples
                 for df in sample.dataFiles
                 if sample.runThisSample
@@ -165,7 +165,7 @@ class PurgeFile:
         else:
             containerDataFiles = [
                 f"{df}{config.spc2}{container.periodNumber}"
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sampleBackground in self.gudrunParams.sampleBackgrounds
                 for sample in sampleBackground.samples
                 for container in sample.containers
                 for df in container.dataFiles
@@ -188,9 +188,9 @@ class PurgeFile:
             f'{HEADER}'
             f'{instrumentLine}{config.spc10}'
             f'Instrument name\n'
-            f'{self.gudrunFile.instrument.GudrunInputFileDir}{config.spc10}'
+            f'{self.gudrunParams.instrument.GudrunInputFileDir}{config.spc10}'
             f'Gudrun input file directory:\n'
-            f'{self.gudrunFile.instrument.dataFileDir}{config.spc10}'
+            f'{self.gudrunParams.instrument.dataFileDir}{config.spc10}'
             f'Data file directory\n'
             f'{detCalibrationFileLine}{config.spc10}'
             f'Detector calibration file name\n'

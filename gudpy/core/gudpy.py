@@ -14,6 +14,7 @@ from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
+from data import GudrunParameters, GudPyData
 from core import data_files
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -23,37 +24,23 @@ class GudPy:
     def __init__(
         self
     ):
-        self.originalGudrunFile: GudrunFile = None
-        self.gudrunFile: GudrunFile = None
-        self.purgeFile = None
+        self.data = GudPyData()
 
         self.purge: Purge = None
         self.gudrun: Gudrun = None
-        self.runModes: RunModes = None
         self.gudrunIterator: GudrunIterator = None
         self.batchProcessor: BatchProcessing = None
 
-        self.gudrunOutput = None
-
-        self.projectDir = ""
-        self.autosaveLocation = ""
-
-    def loadFromFile(
+    def loadFromGudrunFile(
         self,
         loadFile: str,
-        format: enums.Format,
-        config: bool = False
-    ):
+    ) -> None:
         """Loads GudPy from an input file
 
         Parameters
         ----------
         loadFile : str
             Path of input file to load from
-        format : enums.Format
-            Format of the input file (YAML or TXT)
-        config : bool, optional
-            If loading from preset config, by default False
 
         Raises
         ------
@@ -63,57 +50,22 @@ class GudPy:
         if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
-        self.gudrunFile = GudrunFile(
-            loadFile=loadFile,
-            format=format,
-            config=config
-        )
+        self.data = GudPyData()
+        self.data.importGudrunFile(loadFile)
 
-        self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
-        self.originalGudrunFile.filename = "original"
-
-        self.projectDir == ""
-        self.autosaveLocation = ""
-
-    def loadFromProject(self, projectDir: str):
+    def loadFromProject(self, projectDir: str) -> None:
         """Loads GudPy from a project directory
 
         Parameters
         ----------
         projectDir : str
             Path to GudPy project folder
-
-        Raises
-        ------
-        FileNotFoundError
-            Raised if there is no YAML input file in the
-            project directory
         """
-        loadFile = ""
-
-        if os.path.exists(os.path.join(
-            projectDir,
-            f"{os.path.basename(projectDir)}.yaml"
-        )):
-            # If default file exists
-            loadFile = os.path.join(
-                projectDir,
-                f"{os.path.basename(projectDir)}.yaml"
-            )
-        else:
-            # Try to find yaml files
-            for f in os.listdir(projectDir):
-                if os.path.splitext(f)[1] == ".yaml":
-                    # If file is yaml
-                    loadFile = os.path.join(projectDir, f)
-        if not loadFile:
-            raise FileNotFoundError(
-                "Could not find GudPy input file within the project")
-
-        self.loadFromFile(loadFile=loadFile, format=enums.Format.YAML)
+        self.data = GudPyData()
+        self.data.importProject(projectDir)
         self.setSaveLocation(projectDir)
 
-    def checkSaveLocation(self):
+    def checkSaveLocation(self) -> bool:
         """Checks if user has set the save location
 
         Returns
@@ -121,9 +73,9 @@ class GudPy:
         bool
             If the save location is set or not
         """
-        return bool(self.projectDir)
+        return bool(self.data.projectDir)
 
-    def setSaveLocation(self, projectDir: str):
+    def setSaveLocation(self, projectDir: str) -> None:
         """Sets the save location
 
         Parameters
@@ -131,15 +83,13 @@ class GudPy:
         projectDir : str
             Path to the desired save location of project
         """
-        self.projectDir = projectDir
-        self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
-        self.gudrunFile.projectDir = projectDir
-        self.originalGudrunFile.projectDir = projectDir
-        self.autosaveLocation = (
+        self.data.filename = f"{os.path.basename(projectDir)}.yaml"
+        self.data.projectDir = projectDir
+        self.data.autosaveLocation = (
             f"{os.path.basename(projectDir)}.autosave"
         )
 
-    def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
+    def save(self) -> None:
         """Saves current GudPy input file
 
         Parameters
@@ -149,12 +99,9 @@ class GudPy:
         format : enums.Format, optional
             Desired format of save file, by default enums.Format.YAML
         """
-        if not path:
-            path = self.gudrunFile.path()
-        self.originalGudrunFile.save(path=path)
-        self.gudrunFile.save(path=path, format=format)
+        self.data.writeYAMLFile()
 
-    def saveAs(self, targetDir: str):
+    def saveAs(self, targetDir: str) -> None:
         """Save GudPy project to a new location, set current
         project to the new location.
 
@@ -171,7 +118,7 @@ class GudPy:
         if os.path.exists(targetDir):
             raise IsADirectoryError("Cannot be an existing directory")
 
-        oldDir = self.projectDir
+        oldDir = self.data.projectDir
         self.setSaveLocation(targetDir)
         os.makedirs(targetDir)
 
@@ -185,12 +132,14 @@ class GudPy:
                 os.path.join(oldDir, "Gudrun"),
                 os.path.join(targetDir, "Gudrun")
             )
-        self.gudrunFile.filename = os.path.basename(targetDir)
-        self.gudrunFile.save(path=self.gudrunFile.path(),
-                             format=enums.Format.YAML)
+        self.data.filename = os.path.basename(targetDir)
+        self.data.writeYAMLFile()
         self.loadFromProject(projectDir=targetDir)
 
-    def checkFilesExist(self):
+    def exportAsGudrunFile(self, path) -> None:
+        self.data.exportGudrunFile(path)
+
+    def checkFilesExist(self) -> typ.Tuple[list[str], list[str]]:
         """Check if all file parameters submitted exists and that
         all required paths are provided
 
@@ -202,7 +151,7 @@ class GudPy:
                 been provided
                 Unresolved files: Paths sumbitted that do not exist
         """
-        result = GudPyFileLibrary(self.gudrunFile).checkFilesExist()
+        result = GudPyFileLibrary(self.data.gudrunParams).checkFilesExist()
         if not all(r[0] for r in result[0]) or not all(r[0]
                                                        for r in result[1]):
             undefined = [
@@ -215,12 +164,12 @@ class GudPy:
 
         return (undefined, unresolved)
 
-    def prepareRun(self):
+    def prepareRun(self) -> None:
         if not self.checkSaveLocation():
             raise RuntimeError("No save location specified."
                                "Use GudPy.setSaveLocation(<path>)")
 
-    def runPurge(self):
+    def runPurge(self) -> None:
         """Runs purge_det binary to purge detectors in data
 
         Raises
@@ -230,42 +179,40 @@ class GudPy:
         """
         self.prepareRun()
         self.purge = Purge()
-        self.purgeFile = PurgeFile(self.gudrunFile)
-        exitcode = self.purge.purge(self.purgeFile)
-        self.gudrunFile.save()
+        exitcode = self.purge.purge(params=self.data.gudrunParams)
+        self.save()
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
                 f"{self.purge.error}"
             )
 
-    def runGudrun(self, gudrunFile: GudrunFile = None):
+    def runGudrun(self, params: GudrunParameters = None) -> None:
         """Runs gudrun_dcs binary
 
         Parameters
         ----------
-        gudrunFile : GudrunFile, optional
-            GudrunFile object to input to gudrun_dcs, by default None
+        params : GudrunParameters, optional
+            Parameters to input to gudrun_dcs, by default None
 
         Raises
         ------
         exc.GudrunException
             Raised if gudrun_dcs failed to execute
         """
+        if not params:
+            params = self.data.gudrunParams
         self.prepareRun()
-
-        if not gudrunFile:
-            gudrunFile = self.gudrunFile
         self.gudrun = Gudrun()
-        exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
+        exitcode = self.gudrun.gudrun(params)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:\n"
                 f"{self.gudrun.error}"
             )
-        self.gudrunOutput = self.gudrun.gudrunOutput
+        self.save()
 
-    def iterateGudrun(self, iterator: iterators.Iterator):
+    def iterateGudrun(self, iterator: iterators.Iterator) -> None:
         """Runs gudrun_dcs iteratively while tweaking parameters
 
         Parameters
@@ -281,17 +228,17 @@ class GudPy:
         self.prepareRun()
 
         self.gudrunIterator = GudrunIterator(
-            gudrunFile=self.gudrunFile, iterator=iterator)
-        exitcode, error = self.gudrunIterator.iterate(purge=self.purge)
+            params=self.data.gudrunParams, iterator=iterator)
+        exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
                 f"{error}"
             )
-        self.gudrunFile = self.gudrunIterator.gudrunFile
-        self.gudrunOutput = self.gudrunIterator.gudrunOutput
+        self.data.gudrunParams = self.gudrunIterator.params
+        self.data.gudrunOutput = self.gudrunIterator.gudrunOutput
 
-    def iterateComposition(self, iterator: iterators.Composition):
+    def iterateComposition(self, iterator: iterators.Composition) -> None:
         """Runs gudrun_dcs iteratively while tweaking the composition
 
         Parameters
@@ -306,26 +253,29 @@ class GudPy:
         """
         self.prepareRun()
         self.gudrunIterator = CompositionIterator(
-            iterator=iterator, gudrunFile=self.gudrunFile)
-        exitcode, error = self.gudrunIterator.iterate(purge=self.purge)
+            params=self.data.gudrunParams, iterator=iterator,
+            projectDir=self.data.projectDir
+        )
+        exitcode, error = self.gudrunIterator.iterate()
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:"
                 f"{error}"
             )
-        self.gudrunFile = self.gudrunIterator.gudrunFile
+        self.data.gudrunParams = self.gudrunIterator.params
 
-    def runContainersAsSample(self):
+    def runContainersAsSample(self) -> None:
         """Run gudrun_dcs but convert all containers to samples
         """
-        gudrunFile = self.runModes.convertContainersToSample(self.gudrunFile)
-        self.runGudrun(gudrunFile=gudrunFile)
+        gudrunParams = self.runModes.convertContainersToSample(
+            self.data.gudrunParams)
+        self.runGudrun(gudrunParams)
 
-    def runFilesIndividually(self):
+    def runFilesIndividually(self) -> None:
         """Run gudrun_dcs but partition all data files
         """
-        gudrunFile = self.runModes.partition(self.gudrunFile)
-        self.runGudrun(gudrunFile=gudrunFile)
+        gudrunParams = self.runModes.partition(self.data.gudrunParams)
+        self.runGudrun(gudrunParams)
 
     def batchProcessing(
         self,
@@ -335,7 +285,7 @@ class GudPy:
         offset: int = 0,
         rtol=0.0,
         separateFirstBatch=False
-    ):
+    ) -> None:
         """Run gudrun_dcs using batch processing
 
         Parameters
@@ -360,7 +310,7 @@ class GudPy:
             Raised if gudrun_dcs failed to execute
         """
         self.batchProcessor = BatchProcessing(
-            gudrunFile=self.gudrunFile,
+            params=self.data.gudrunParams,
             iterator=iterator,
             batchSize=batchSize,
             stepSize=stepSize,
@@ -369,7 +319,7 @@ class GudPy:
             separateFirstBatch=separateFirstBatch
         )
         try:
-            self.batchProcessor.process(purge=self.purge)
+            self.batchProcessor.process()
         except exc.GudrunException as e:
             raise e
 
@@ -392,17 +342,17 @@ class Process:
                 "bin", f"{self.PROCESS}{SUFFIX}"
             )
 
-    def _outputChanged(self, output: str):
+    def _outputChanged(self, output: str) -> None:
         self.output += output
 
-    def checkBinary(self):
+    def checkBinary(self) -> None:
         if not os.path.exists(self.BINARY_PATH):
             self.exitcode = 1
             raise FileNotFoundError(
                 f"Missing {self.PROCESS} binary"
                 f" in location {self.BINARY_PATH}")
 
-    def checkError(self, line: str):
+    def checkError(self, line: str) -> bool:
         # Check for errors.
         ERROR_KWDS = [
             "does not exist",
@@ -422,10 +372,10 @@ class Purge(Process):
     def __init__(self):
         self.PROCESS = "purge_det"
         self.detectors = None
-        self.purgeLocation = None
         super().__init__(self.PROCESS)
 
-    def organiseOutput(self, procDir: str, projectDir: str):
+    def organiseOutput(
+            self, procDir: str, projectDir: str) -> handlers.GudrunOutput:
         outputHandler = handlers.OutputHandler(
             procDir,
             projectDir,
@@ -433,8 +383,9 @@ class Purge(Process):
         )
         return outputHandler.organiseOutput()
 
-    def purge(self, purgeFile: PurgeFile):
+    def purge(self, params: GudrunParameters, projectDir: str = ""):
         self.checkBinary()
+        purgeFile = PurgeFile(params)
         with tempfile.TemporaryDirectory() as tmp:
             purgeFile.write_out(os.path.join(
                 tmp,
@@ -458,8 +409,8 @@ class Purge(Process):
                     self.exitcode = 1
                     return self.exitcode
 
-            self.purgeLocation = self.organiseOutput(
-                tmp, purgeFile.gudrunFile.projectDir)
+            if projectDir:
+                params.purgeLocation = self.organiseOutput(tmp, projectDir)
 
         self.exitcode = 0
         return self.exitcode
@@ -468,30 +419,33 @@ class Purge(Process):
 class Gudrun(Process):
     def __init__(self):
         self.PROCESS: str = "gudrun_dcs"
+        self.gudrunOutput = None
         super().__init__(self.PROCESS)
 
     def organiseOutput(
         self,
-        gudrunFile: GudrunFile,
+        params: GudrunParameters,
+        projectDir: str,
         exclude: list[str] = [],
         head: str = "",
         overwrite: bool = True
     ) -> handlers.GudrunOutput:
 
         outputHandler = handlers.GudrunOutputHandler(
-            gudrunFile=gudrunFile, head=head, overwrite=overwrite
+            params=params, projectDir=projectDir,
+            head=head, overwrite=overwrite
         )
         gudrunOutput = outputHandler.organiseOutput(exclude=exclude)
         return gudrunOutput
 
     def gudrun(
         self,
-        gudrunFile: GudrunFile,
-        purge: Purge = None,
-        iterator: iterators.Iterator = None
+        params: GudrunParameters,
+        iterator: iterators.Iterator = None,
+        projectDir: str = ""
     ) -> int:
         self.checkBinary()
-        if not purge:
+        if not params.purgeLocation:
             print(
                 "\n=========================================================="
                 "\n=========================================================="
@@ -500,20 +454,20 @@ class Gudrun(Process):
                 "\n==========================================================")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
-            if purge:
-                for f in os.listdir(purge.purgeLocation):
+            if params.purgeLocation:
+                for f in os.listdir(params.purgeLocation.purgeLocation):
                     shutil.copyfile(
-                        os.path.join(purge.purgeLocation, f),
+                        os.path.join(params.purgeLocation.purgeLocation, f),
                         os.path.join(tmp, f)
                     )
                     purgeFiles.append(os.path.join(tmp, f))
-
-            gudrunFile.setGudrunDir(tmp)
+            gudrunFile = GudrunFile()
+            params.setGudrunDir(tmp)
             path = os.path.join(
                 tmp,
-                gudrunFile.OUTPATH
+                GudrunFile.OUTPATH
             )
-            gudrunFile.write_out(path)
+            gudrunFile.writeGudrunFile(params, path)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
                 stdout=subprocess.PIPE,
@@ -531,19 +485,11 @@ class Gudrun(Process):
 
             if iterator:
                 self.gudrunOutput = iterator.organiseOutput(
-                    gudrunFile, exclude=purgeFiles)
+                    params, projectDir, exclude=purgeFiles)
             else:
                 self.gudrunOutput = self.organiseOutput(
-                    gudrunFile, exclude=purgeFiles)
-
-            gudrunFile.save(
-                path=os.path.join(
-                    gudrunFile.projectDir,
-                    f"{gudrunFile.filename}"
-                ),
-                format=enums.Format.YAML
-            )
-            gudrunFile.setGudrunDir(self.gudrunOutput.path)
+                    params, projectDir, exclude=purgeFiles)
+            params.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
         return self.exitcode
@@ -552,16 +498,18 @@ class Gudrun(Process):
 class GudrunIterator:
     def __init__(
         self,
-        gudrunFile: GudrunFile,
+        params: GudrunParameters,
         iterator: iterators.Iterator,
+        projectDir: str = ""
     ):
 
         # Create a copy of gudrun file
-        self.gudrunFile = copy.deepcopy(gudrunFile)
+        self.params = copy.deepcopy(params)
         self.iterator = iterator
         self.gudrunObjects = []
         self.exitcode = (1, "Operation incomplete")
         self.gudrunOutput = None
+        self.projectDir = projectDir
         self.result = {}
 
         for _ in range(
@@ -574,25 +522,23 @@ class GudrunIterator:
 
     def singleIteration(
         self,
-        gudrunFile: GudrunFile,
         gudrun: Gudrun,
-        purge: Purge,
         prevOutput: handlers.GudrunOutput
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
+        self.params = self.iterator.performIteration(self.params, prevOutput)
+        exitcode = gudrun.gudrun(self.params, self.iterator, self.projectDir)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge) -> typ.Tuple[int, str]:
+    def iterate(self) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator)
+                self.params, self.iterator, self.projectDir)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -603,8 +549,7 @@ class GudrunIterator:
             if gudrun.output:
                 # If object has already been run, skip
                 continue
-            exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput)
+            exitcode = self.singleIteration(gudrun, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
@@ -620,38 +565,40 @@ class GudrunIterator:
 class CompositionIterator:
     def __init__(
         self,
+        params: GudrunParameters,
         iterator: iterators.Composition,
-        gudrunFile: GudrunFile,
+        projectDir: str = ""
     ):
-        self.gudrunFile = copy.deepcopy(gudrunFile)
+        self.params = copy.deepcopy(params)
         self.iterator = iterator
         self.gudrunObjects = []
         self.result = {}
+        self.projectDir = projectDir
         self.compositionMap = None
         self.currentIteration = 0
 
-    def iterate(self, purge) -> typ.Tuple[int, str]:
+    def iterate(self) -> typ.Tuple[int, str]:
         for sampleArg in self.iterator.sampleArgs:
             self.gudrunObjects.append((Gudrun(), Gudrun()))
             for gudrunNC, gudrunCC in self.gudrunObjects:
                 # Run the new center
                 newCenter = self.iterator.iterateNewPotentialCenter(
-                    self.gudrunFile, sampleArg)
+                    self.params, sampleArg)
                 exitcode = gudrunNC.gudrun(
-                    gudrunFile=newCenter,
-                    purge=purge,
-                    iterator=self.iterator)
+                    params=newCenter,
+                    iterator=self.iterator,
+                    projectDir=self.projectDir)
                 if exitcode:  # An exit code != 0 indicates failure
                     self.exitcode = (exitcode, gudrunNC.error)
                     return self.exitcode
 
                 # Run the current center
                 currentCenter = self.iterator.iterateCurrentCenter(
-                    self.gudrunFile, sampleArg)
+                    self.params, sampleArg)
                 exitcode = gudrunCC.gudrun(
-                    gudrunFile=currentCenter,
-                    purge=purge,
-                    iterator=self.iterator)
+                    params=currentCenter,
+                    iterator=self.iterator,
+                    projectDir=self.projectDir)
                 if exitcode:  # An exit code != 0 indicates failure
                     self.exitcode = (exitcode, gudrunCC.error)
                     return self.exitcode
@@ -690,24 +637,25 @@ class CompositionIterator:
 
 
 class RunModes:
-    def convertContainersToSample(self, gudrunFile: GudrunFile):
-        newGudrunFile = copy.deepcopy(gudrunFile)
+    def convertContainersToSample(
+            self, params: GudrunParameters) -> GudrunParameters:
+        newParams = copy.deepcopy(params)
         containersAsSamples = []
-        for sampleBackground in gudrunFile.sampleBackgrounds:
+        for sampleBackground in params.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 for container in sample.containers:
                     containersAsSamples.append(
                         container.convertToSample()
                     )
-            newGudrunFile.sampleBackground.samples = containersAsSamples
-        return newGudrunFile
+            newParams.sampleBackground.samples = containersAsSamples
+        return newParams
 
-    def partition(self, gudrunFile):
-        newGudrunFile = copy.deepcopy(gudrunFile)
+    def partition(self, params: GudrunParameters) -> GudrunParameters:
+        newParams = copy.deepcopy(params)
         # Deepcopy the sample backgrounds.
-        sampleBackgrounds = copy.deepcopy(gudrunFile.sampleBackgrounds)
+        sampleBackgrounds = copy.deepcopy(params.sampleBackgrounds)
         # Clear the original list.
-        newGudrunFile.sampleBackgrounds = []
+        newParams.sampleBackgrounds = []
 
         # Enumerate through all sample backgrounds
         # For each sample, create a copy for each
@@ -730,16 +678,17 @@ class RunModes:
                         # Append sample
                         sampleBackgrounds[i].samples.append(childSample)
 
-        # Update gudrunFile to use the newly constructed sample background.
-        newGudrunFile.sampleBackgrounds = sampleBackgrounds
-        return newGudrunFile
+        # Update params to use the newly constructed sample background.
+        newParams.sampleBackgrounds = sampleBackgrounds
+        return newParams
 
 
 class BatchProcessing:
     def __init___(
         self,
-        gudrunFile: GudrunFile,
+        params: GudrunParameters,
         iterator: iterators.Iterator = None,
+        projectDir: str = "",
         batchSize=1,
         stepSize=1,
         offset: int = 0,
@@ -749,6 +698,7 @@ class BatchProcessing:
         self.iterator = iterator
         self.iterationMode = None
         self.exitcode = (1, "Operation incomplete")
+        self.projectDir = projectDir
         self.BATCH_SIZE = batchSize
         self.STEP_SIZE = stepSize
         self.OFFSET = offset
@@ -756,30 +706,32 @@ class BatchProcessing:
 
         self.separateFirstBatch = separateFirstBatch
 
-        self.firstBatch, self.batchedGudrunFile = self.batch(
+        self.firstBatch, self.batchedParams = self.batch(
             separateFirstBatch=self.separateFirstBatch,
-            gudrunFile=gudrunFile
+            params=params
         )
 
         if self.iterator:
             self.iterationMode = self.iterator.iterationMode
             self.gudrunIterators = {
                 "FIRST": GudrunIterator(
-                    self.firstBatch, self.purgeLocation, copy.deepcopy(
-                        iterator)
+                    self.firstBatch, copy.deepcopy(iterator), self.projectDir
                 ) if self.separateFirstBatch else None,
                 "REST": GudrunIterator(
-                    self.batchedGudrunFile, self.purgeLocation,
-                    copy.deepcopy(iterator)
+                    self.batchedParams, copy.deepcopy(
+                        iterator), self.projectDir
                 )
             }
 
-    def batch(self, gudrunFile: GudrunFile, separateFirstBatch: bool
-              ) -> typ.Tuple[typ.Union[GudrunFile, None], GudrunFile]:
+    def batch(self, params: GudrunParameters, separateFirstBatch: bool
+              ) -> typ.Tuple[
+        typ.Union[GudrunParameters, None],
+        GudrunParameters
+    ]:
         if not separateFirstBatch:
-            batch = copy.deepcopy(gudrunFile)
+            batch = copy.deepcopy(params)
             batch.sampleBackgrounds = []
-            for sampleBackground in gudrunFile.sampleBackgrounds:
+            for sampleBackground in params.sampleBackgrounds:
                 batchedSampleBackground = copy.deepcopy(sampleBackground)
                 batchedSampleBackground.samples = []
                 maxDataFiles = max(
@@ -800,9 +752,9 @@ class BatchProcessing:
             return (None, batch)
 
         else:
-            first = copy.deepcopy(gudrunFile)
+            first = copy.deepcopy(params)
             first.sampleBackgrounds = []
-            for sampleBackground in gudrunFile.sampleBackgrounds:
+            for sampleBackground in params.sampleBackgrounds:
                 batchedSampleBackground = copy.deepcopy(sampleBackground)
                 batchedSampleBackground.samples = []
                 for sample in sampleBackground.samples:
@@ -817,7 +769,7 @@ class BatchProcessing:
                 self.batch(separateFirstBatch=False)
             )
 
-    def canConverge(self, batch):
+    def canConverge(self, batch: GudrunParameters) -> bool:
         if self.RTOL == 0.0:
             return False
         for sampleBackground in batch.sampleBackgrounds:
@@ -826,7 +778,7 @@ class BatchProcessing:
                     return False
         return True
 
-    def writeDiagnosticsFile(self, path, batch):
+    def writeDiagnosticsFile(self, path: str, batch: GudrunParameters) -> None:
         with open(path, "w", encoding="utf-8") as fp:
             for sampleBackground in batch.sampleBackgrounds:
                 for i, sample in enumerate(sampleBackground.samples):
@@ -874,22 +826,16 @@ class BatchProcessing:
     def bactchProcess(
         self,
         gudrun: Gudrun,
-        purge: Purge,
         batchSize: int,
         iterator: iterators.Iterator = None,
-    ):
-        self.batchedGudrunFile.projectDir = (os.path.join(
-            self.batchedGudrunFile.projectDir,
-            f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
-        ))
-        exitcode = gudrun.gudrun(GudrunFile, purge, iterator)
+    ) -> typ.Tuple[int, str]:
+        batchDir = os.path.join(
+            self.projectDir, f"BATCH_PROCESSING_BATCH_SIZE{batchSize}")
+        exitcode = gudrun.gudrun(self.batchedParams, iterator, batchDir)
+
         self.writeDiagnosticsFile(
-            os.path.join(
-                self.batchedGudrunFile.path(),
-                "batch_processing_diagnostics.txt",
-            ),
-            self.batchedGudrunFile,
-            self.iterationMode
+            os.path.join(batchDir, "batch_processing_diagnostics.txt",),
+            self.batchedParams,
         )
         self.exitcode = (exitcode, gudrun.error)
         return self.exitcode
@@ -897,42 +843,41 @@ class BatchProcessing:
     def iterate(
         self,
         gudrunIterator: GudrunIterator,
-        batchedFile: GudrunFile,
+        batchedParams: GudrunParameters,
         outputFolder: str,
-    ) -> int:
+    ) -> typ.Tuple[int, str]:
         prevOutput = None
 
-        batchedFile.projectDir = os.path.join(
-            batchedFile.projectDir,
+        batchDir = os.path.join(
+            self.projectDir,
             f"BATCH_PROCESSING_BATCH_SIZE{self.BATCH_SIZE}",
             outputFolder
         )
-        gudrunIterator.gudrunFile = batchedFile
+        gudrunIterator.params = batchedParams
+        gudrunIterator.projectDir = batchDir
 
         # If the iterator requires a prelimenary run
         if gudrunIterator.iterator.requireDefault:
-            exitcode, error = self.gudrunIterators[-1].defaultIteration(
-                batchedFile)
+            exitcode, error = gudrunIterator.gudrunObjects[0].gudrun(
+                params=gudrunIterator.params, iterator=gudrunIterator.iterator,
+                projectDir=batchDir)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, error)
                 return self.exitcode
             prevOutput = gudrunIterator.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
-        for i, gudrun in enumerate(gudrunIterator.gudrunObjects):
-            if self.canConverge(batchedFile, self.RTOL):
+        for i, gudrun in enumerate(gudrunIterator.gudrunObjects[1:]):
+            if self.canConverge(gudrunIterator.params, self.RTOL):
                 # Keep only the processed objects in the list
                 gudrunIterator.gudrunObjects = gudrunIterator.gudrunObjects[:i]
                 self.exitcode = (0, )
                 return self.exitcode
 
-            exitcode = gudrunIterator.singleIteration(
-                batchedFile, gudrun, prevOutput)
+            exitcode = gudrunIterator.singleIteration(gudrun, prevOutput)
 
-            self.writeDiagnosticsFile(
-                os.path.join(batchedFile.path(),
-                             "batch_processing_diagnostics.txt")
-            )
+            self.writeDiagnosticsFile(os.path.join(
+                batchDir, "batch_processing_diagnostics.txt"))
 
             if exitcode:
                 self.exitcode = (exitcode, gudrun.error)
@@ -943,19 +888,15 @@ class BatchProcessing:
         self.exitcode = (0, )
         return self.exitcode
 
-    def process(
-        self,
-        purge: Purge
-    ):
+    def process(self) -> None:
         if self.iterationMode == enums.IterationModes.NONE:
-            return self.bactchProcess(
-                Gudrun(), self.BATCH_SIZE, purge=purge)
+            return self.bactchProcess(Gudrun(), self.BATCH_SIZE)
 
         else:
             if self.separateFirstBatch:
                 exitcode, error = self.iterate(
                     gudrunIterator=self.gudrunIterators["FIRST"],
-                    gudrunFile=self.firstBatch,
+                    batchedParams=self.firstBatch,
                     outputFolder="FIRST_BATCH"
                 )
                 if exitcode:
@@ -965,17 +906,16 @@ class BatchProcessing:
                     )
 
                 self.propogateResults(
-                    self.firstBatch, self.batchedGudrunFile
+                    self.firstBatch, self.batchedParams
                 )
 
             iterator = copy.deepcopy(self.iterator)
             self.gudrunIterators.append(GudrunIterator(
-                self.batchedGudrunFile,
-                iterator
+                self.batchedParams, iterator, self.projectDir
             ))
             exitcode, error = self.iterate(
                 gudrunIterator=self.gudrunIterators["REST"],
-                gudrunFile=self.batchedGudrunFile,
+                batchedParams=self.batchedParams,
                 outputFolder="REST"
             )
             if exitcode:

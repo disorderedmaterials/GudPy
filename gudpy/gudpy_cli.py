@@ -132,7 +132,7 @@ def purge(ctx, verbose):
     echoTick(" Purge Complete")
     echoIndent("Number of Good Detectors: " +
                click.style(f"{ctx.obj.purge.detectors}", bold=True))
-    thresh = ctx.obj.gudrunFile.instrument.goodDetectorThreshold
+    thresh = ctx.obj.data.gudrunParams.instrument.goodDetectorThreshold
     if thresh and ctx.obj.purge.detectors < thresh:
         click.secho(
             f"WARNING: The acceptable minimum for Good Detectors is"
@@ -158,10 +158,10 @@ def purge(ctx, verbose):
 )
 @click.pass_context
 def edit(ctx, sample, attribute, value, path):
-    echoProcess("Modifying GudrunFile")
+    echoProcess("Modifying Gudrun Parameters")
 
     targetObj = None
-    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+    for sbg in ctx.obj.data.gudrunParams.sampleBackgrounds:
         for s in sbg.samples:
             if s.name == sample:
                 targetObj = s
@@ -169,7 +169,7 @@ def edit(ctx, sample, attribute, value, path):
     if sample and targetObj is None:
         return echoError("No sample found")
     elif not sample:
-        targetObj = ctx.obj.gudrunFile
+        targetObj = ctx.obj.data.gudrunParams
 
     if not hasattr(targetObj, attribute):
         return echoError(f"Invalid Attribute: {attribute}")
@@ -238,7 +238,7 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
     ctx.obj.runGudrun()
 
     sample = None
-    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+    for sbg in ctx.obj.data.gudrunParams.sampleBackgrounds:
         for s in sbg.samples:
             if s.name == samplename:
                 sample = s
@@ -254,7 +254,7 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
             f"No data found associated with sample '{sample.name}'")
 
     opti = opt.BayesianOptimisation(
-        gudrunFile=ctx.obj.gudrunFile,
+        params=ctx.obj.data.gudrunParams,
         targetSample=sample,
         simulation=simulationdata,
         actual=sampleData,
@@ -288,7 +288,7 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
 
     sample.exponentialValues = optExponents
 
-    for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
+    for sbg in ctx.obj.data.gudrunParams.sampleBackgrounds:
         for s in sbg.samples:
             if s.name == samplename:
                 print(s.exponentialValues)

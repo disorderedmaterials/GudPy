@@ -24,48 +24,48 @@ class GudPyFileLibrary:
         Checks if the files and directories exist, in the current file system.
     """
 
-    def __init__(self, gudrunFile):
+    def __init__(self, params):
         """
         Constructs the lists of directories and files which
         the file system consists of.
 
         Parameters
         ----------
-        gudrunFile: GudrunFile
-            Input file to create file system from.
+        params: params
+            Data to create file system from.
         """
-        self.gudrunFile = gudrunFile
-        self.dataFileDir = gudrunFile.instrument.dataFileDir
-        self.fileDir = gudrunFile.instrument.GudrunStartFolder
-        dataFileType = gudrunFile.instrument.dataFileType
+        self.params = params
+        self.dataFileDir = params.instrument.dataFileDir
+        self.fileDir = params.instrument.GudrunStartFolder
+        dataFileType = params.instrument.dataFileType
 
         # Collect directories
         self.dirs = {
-            "Data file directory": gudrunFile.instrument.dataFileDir,
-            "Gudrun start folder": gudrunFile.instrument.GudrunStartFolder,
-            "Startup file folder": gudrunFile.instrument.startupFileFolder,
+            "Data file directory": params.instrument.dataFileDir,
+            "Gudrun start folder": params.instrument.GudrunStartFolder,
+            "Startup file folder": params.instrument.startupFileFolder,
         }
 
         # Collect files of static objects
         self.files = {
             "Detector Calibration File": (
-                gudrunFile.instrument.detectorCalibrationFileName
+                params.instrument.detectorCalibrationFileName
             ),
-            "Groups File": gudrunFile.instrument.groupFileName,
+            "Groups File": params.instrument.groupFileName,
             "Deadtime Constants File": (
-                gudrunFile.instrument.deadtimeConstantsFileName
+                params.instrument.deadtimeConstantsFileName
             ),
             "Scattering Lengths File": (
-                gudrunFile.instrument.neutronScatteringParametersFile
+                params.instrument.neutronScatteringParametersFile
             ),
             "Incident Beam Spectrum Parameters": (
-                gudrunFile.beam.filenameIncidentBeamSpectrumParams
+                params.beam.filenameIncidentBeamSpectrumParams
             ),
         }
 
         self.dataFiles = [
-            *gudrunFile.normalisation.dataFiles.dataFiles,
-            *gudrunFile.normalisation.dataFilesBg.dataFiles,
+            *params.normalisation.dataFiles.dataFiles,
+            *params.normalisation.dataFilesBg.dataFiles,
         ]
 
         # If NXS files are being used
@@ -73,23 +73,23 @@ class GudPyFileLibrary:
         if dataFileType.lower() == "nxs":
             self.files[
                 "NeXus Definition File"
-            ] = gudrunFile.instrument.nxsDefinitionFile
+            ] = params.instrument.nxsDefinitionFile
 
         # If the Total Cross Section Source of any object uses a file,
         # then we need to include that file.
-        if gudrunFile.normalisation.totalCrossSectionSource == (
+        if params.normalisation.totalCrossSectionSource == (
             CrossSectionSource.FILE
         ):
             self.files[
                 "Total cross section source"
-            ] = gudrunFile.normalisation.crossSectionFilename
+            ] = params.normalisation.crossSectionFilename
 
         # Iterate through SampleBackgrounds, Samples and Containers,
         # collecting their data files and if they are using
         # a file for the Total Cross Section Source, then collect
         # that file too.
 
-        for sampleBackground in gudrunFile.sampleBackgrounds:
+        for sampleBackground in params.sampleBackgrounds:
             self.dataFiles.extend(sampleBackground.dataFiles.dataFiles)
 
             for sample in sampleBackground.samples:
@@ -172,16 +172,16 @@ class GudPyFileLibrary:
     ):
         if not exportTo:
             exportTo = os.path.join(
-                self.gudrunFile.projectDir,
-                Path(self.gudrunFile.path()).stem + ".zip",
+                self.params.projectDir,
+                Path(self.params.path()).stem + ".zip",
             )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
                 if len(sample.dataFiles.dataFiles):
                     path = os.path.join(
-                        self.gudrunFile.projectDir,
+                        self.params.projectDir,
                         sample.dataFiles.dataFiles[0].replace(
-                            self.gudrunFile.instrument.dataFileType, "mint01"
+                            self.params.instrument.dataFileType, "mint01"
                         ),
                     )
                 safeSampleName = utils.replace_unwanted_chars(
@@ -196,12 +196,12 @@ class GudPyFileLibrary:
                     zipFile.write(path, arcname=os.path.basename(outpath))
                     if includeParams:
                         path = os.path.join(
-                            self.gudrunFile.projectDir,
+                            self.params.projectDir,
                             safeSampleName + ".sample",
                         )
                         if not os.path.exists(path):
                             sample.write_out(
-                                self.gudrunFile.projectDir
+                                self.params.projectDir
                             )
                         zipFile.write(path, arcname=os.path.basename(path))
 
