@@ -20,6 +20,17 @@ __root__ = (
     else os.path.join(__rootdir__, "bin", "configs", "containers")
 )
 
+configDir = (
+    os.path.join(sys._MEIPASS, "bin", "configs", "instruments")
+    if hasattr(sys, "_MEIPASS")
+    else os.path.join(
+        __rootdir__, "bin", "configs", "instruments"
+    )
+)
+
+NIMROD2012 = os.path.join(configDir, "NIMROD_84modules_2012.config")
+SANDALS2011 = os.path.join(configDir, "SANDALS_2011.config")
+
 containerConfigurations = {
     os.path.basename(path)
     .replace(".config", "")
