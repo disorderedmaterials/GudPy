@@ -2,6 +2,7 @@ import os
 import time
 import re
 from copy import deepcopy
+import typing as typ
 
 from core.utils import (
     extract_nums_from_string,
@@ -24,27 +25,19 @@ from core.composition import Component, Components, Composition
 from core.element import Element
 from core.data_files import DataFiles
 from core.enums import (
-    CrossSectionSource, Format, Instruments, FTModes, UnitsOfDensity,
+    CrossSectionSource, Instruments, FTModes, UnitsOfDensity,
     MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
 from core import utils
 from core import config as cfg
-from core.gudpy_yaml import YAML
-from core.exception import ParserException, YAMLException
-from core.gud_file import GudFile
+from core.exception import ParserException
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
 
 class GudrunFile:
     """
-    Class to represent a GudFile (files with .gud extension).
-    .gud files are outputted by gudrun_dcs, via merge_routines
-    each .gud file belongs to an individual sample.
-
-    ...
-
     Attributes
     ----------
     path : str
@@ -117,14 +110,9 @@ class GudrunFile:
     purge():
         Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
+    OUTPATH = "gudpy.txt"
 
-    def __init__(
-        self,
-        projectDir=None,
-        loadFile=None,
-        format=Format.YAML,
-        config=False
-    ):
+    def __init__(self):
         """
         Constructs all the necessary attributes for the GudrunFile object.
         Calls the GudrunFile's parse method,
@@ -142,55 +130,8 @@ class GudrunFile:
             If a new input file should be constructed from a config
         """
 
-        self.yaml = YAML()
-        self.format = format
-
         # Construct the outpath of generated input file
-        self.OUTPATH = "gudpy.txt"
-        self.gudrunOutput = None
-        self.projectDir = projectDir
-        self.loadFile = loadFile
-        self.filename = None
         self.stream = None
-
-        self.instrument = Instrument()
-        self.normalisation = Normalisation()
-        self.beam = Beam()
-        self.sampleBackgrounds = []
-        self.components = Components()
-
-        if not projectDir and not loadFile:
-            raise RuntimeError(
-                "GudrunFile needs to be initialised with either"
-                " a project directory or load file specified"
-            )
-
-        if loadFile:
-            self.setGudrunDir(os.path.dirname(loadFile))
-
-        if not config:
-            self.setGudrunDir(os.path.dirname(loadFile))
-
-        self.parse(loadFile, config=config)
-
-    def __deepcopy__(self, memo):
-        result = self.__class__.__new__(self.__class__)
-        memo[id(self)] = result
-        for k, v in self.__dict__.items():
-            if k == "yaml":
-                continue
-            setattr(result, k, deepcopy(v, memo))
-        return result
-
-    def path(self):
-        if not self.projectDir:
-            return None
-        else:
-            return os.path.join(self.projectDir, self.filename)
-
-    def checkNormDataFiles(self):
-        return (len(self.normalisation.dataFiles)
-                and len(self.normalisation.dataFilesBg))
 
     def getNextToken(self):
         """
@@ -264,7 +205,7 @@ class GudrunFile:
             self.getNextToken()
             line = self.peekNextToken()
 
-    def parseInstrument(self):
+    def parseInstrument(self) -> Instrument:
         """
         Intialises an Instrument object and assigns it to the
         instrument attribute.
@@ -280,63 +221,64 @@ class GudrunFile:
         None
         """
         try:
+            instrument = Instrument()
             self.consumeWhitespace()
 
             # For string attributes,
             # we simply extract the firstword in the line.
-            self.instrument.name = Instruments[firstword(self.getNextToken())]
+            instrument.name = Instruments[firstword(self.getNextToken())]
             self.consumeTokens(1)
-            self.instrument.dataFileDir = os.path.abspath(
+            instrument.dataFileDir = os.path.abspath(
                 firstword(self.getNextToken())) + os.path.sep
-            self.instrument.dataFileType = firstword(self.getNextToken())
-            self.instrument.detectorCalibrationFileName = (
+            instrument.dataFileType = firstword(self.getNextToken())
+            instrument.detectorCalibrationFileName = (
                 firstword(self.getNextToken())
             )
 
             # For single integer attributes,
             # we extract the zeroth int from the line.
-            self.instrument.columnNoPhiVals = nthint(self.getNextToken(), 0)
-            self.instrument.groupFileName = firstword(self.getNextToken())
-            self.instrument.deadtimeConstantsFileName = (
+            instrument.columnNoPhiVals = nthint(self.getNextToken(), 0)
+            instrument.groupFileName = firstword(self.getNextToken())
+            instrument.deadtimeConstantsFileName = (
                 firstword(self.getNextToken())
             )
 
             # For N integer attributes,
             # we extract the first N integers from the line.
-            self.instrument.spectrumNumbersForIncidentBeamMonitor = (
+            instrument.spectrumNumbersForIncidentBeamMonitor = (
                 extract_ints_from_string(self.getNextToken())
             )
 
             # For integer pair attributes,
             # we extract the first 2 integers from the line.
-            self.instrument.wavelengthRangeForMonitorNormalisation = (
+            instrument.wavelengthRangeForMonitorNormalisation = (
                 firstNFloats(self.getNextToken(), 2)
             )
 
             if all(
-                self.instrument.wavelengthRangeForMonitorNormalisation
+                instrument.wavelengthRangeForMonitorNormalisation
             ) == 0.0:
-                self.instrument.wavelengthRangeForMonitorNormalisation = [
+                instrument.wavelengthRangeForMonitorNormalisation = [
                     0, 0
                 ]
 
-            self.instrument.spectrumNumbersForTransmissionMonitor = (
+            instrument.spectrumNumbersForTransmissionMonitor = (
                 extract_ints_from_string(self.getNextToken())
             )
 
             # For single float attributes,
             # we extract the zeroth float from the line.
-            self.instrument.incidentMonitorQuietCountConst = (
+            instrument.incidentMonitorQuietCountConst = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.instrument.transmissionMonitorQuietCountConst = (
+            instrument.transmissionMonitorQuietCountConst = (
                 nthfloat(self.getNextToken(), 0)
             )
 
-            self.instrument.channelNosSpikeAnalysis = (
+            instrument.channelNosSpikeAnalysis = (
                 firstNInts(self.getNextToken(), 2)
             )
-            self.instrument.spikeAnalysisAcceptanceFactor = (
+            instrument.spikeAnalysisAcceptanceFactor = (
                 nthfloat(self.getNextToken(), 0)
             )
 
@@ -344,20 +286,20 @@ class GudrunFile:
             # Which consists of the first 3 floats
             # (min, max, step) in the line.
             wavelengthRange = firstNFloats(self.getNextToken(), 3)
-            self.instrument.wavelengthMin = wavelengthRange[0]
-            self.instrument.wavelengthMax = wavelengthRange[1]
-            self.instrument.wavelengthStep = wavelengthRange[2]
+            instrument.wavelengthMin = wavelengthRange[0]
+            instrument.wavelengthMax = wavelengthRange[1]
+            instrument.wavelengthStep = wavelengthRange[2]
 
-            self.instrument.NoSmoothsOnMonitor = nthint(self.getNextToken(), 0)
+            instrument.NoSmoothsOnMonitor = nthint(self.getNextToken(), 0)
 
             # Extract X range
             # Which consists of the first 3 floats
             # (min, max, step) in the line.
             XRange = firstNFloats(self.getNextToken(), 3)
 
-            self.instrument.XMin = XRange[0]
-            self.instrument.XMax = XRange[1]
-            self.instrument.XStep = XRange[2]
+            instrument.XMin = XRange[0]
+            instrument.XMax = XRange[1]
+            instrument.XStep = XRange[2]
 
             # Extract the grouping parameter panel.
             # Each row in the panel consists of the first 4 ints
@@ -371,65 +313,65 @@ class GudrunFile:
                 xMin = nthfloat(line, 1)
                 xMax = nthfloat(line, 2)
                 backgroundFactor = nthfloat(line, 3)
-                self.instrument.groupingParameterPanel.append(
+                instrument.groupingParameterPanel.append(
                     [group, xMin, xMax, backgroundFactor]
                 )
                 line = self.getNextToken()
 
-            self.instrument.groupsAcceptanceFactor = (
+            instrument.groupsAcceptanceFactor = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.instrument.mergePower = nthint(self.getNextToken(), 0)
+            instrument.mergePower = nthint(self.getNextToken(), 0)
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
-            self.instrument.subSingleAtomScattering = (
+            instrument.subSingleAtomScattering = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # For enumerated attributes, where the value  of the attribute is
             # the first integer in the line, and we must get the member,
             # we do this: Enum[Enum(value).name]
-            self.instrument.mergeWeights = (
+            instrument.mergeWeights = (
                 MergeWeights[MergeWeights(nthint(self.getNextToken(), 0)).name]
             )
-            self.instrument.incidentFlightPath = (
+            instrument.incidentFlightPath = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.instrument.spectrumNumberForOutputDiagnosticFiles = (
+            instrument.spectrumNumberForOutputDiagnosticFiles = (
                 nthint(self.getNextToken(), 0)
             )
 
-            self.instrument.neutronScatteringParametersFile = (
+            instrument.neutronScatteringParametersFile = (
                 firstword(self.getNextToken())
 
             )
-            self.instrument.scaleSelection = (
+            instrument.scaleSelection = (
                 Scales[Scales(nthint(self.getNextToken(), 0)).name]
             )
-            self.instrument.subWavelengthBinnedData = (
+            instrument.subWavelengthBinnedData = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
             self.consumeTokens(2)
-            self.instrument.logarithmicStepSize = (
+            instrument.logarithmicStepSize = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.instrument.hardGroupEdges = (
+            instrument.hardGroupEdges = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
 
             # If NeXus files are being used, then we expect a NeXus definition
             # file to be present, and extract it.
             if (
-                self.instrument.dataFileType == "NXS"
-                or self.instrument.dataFileType == "nxs"
+                instrument.dataFileType == "NXS"
+                or instrument.dataFileType == "nxs"
             ):
-                self.instrument.nxsDefinitionFile = (
+                instrument.nxsDefinitionFile = (
                     firstword(self.getNextToken())
                 )
 
             if self.config:
-                self.instrument.goodDetectorThreshold = nthint(
+                instrument.goodDetectorThreshold = nthint(
                     self.getNextToken(), 0
                 )
 
@@ -442,43 +384,45 @@ class GudrunFile:
 
             match = re.search(
                 pattern,
-                self.instrument.detectorCalibrationFileName
+                instrument.detectorCalibrationFileName
             )
 
             if match:
-                self.instrument.detectorCalibrationFileName = match.group()
+                instrument.detectorCalibrationFileName = match.group()
 
             match = re.search(
                 pattern,
-                self.instrument.groupFileName
+                instrument.groupFileName
             )
 
             if match:
-                self.instrument.groupFileName = match.group()
+                instrument.groupFileName = match.group()
 
             match = re.search(
                 pattern,
-                self.instrument.deadtimeConstantsFileName
+                instrument.deadtimeConstantsFileName
             )
 
             if match:
-                self.instrument.deadtimeConstantsFileName = match.group()
+                instrument.deadtimeConstantsFileName = match.group()
 
             match = re.search(
                 pattern,
-                self.instrument.neutronScatteringParametersFile
+                instrument.neutronScatteringParametersFile
             )
 
             if match:
-                self.instrument.neutronScatteringParametersFile = match.group()
+                instrument.neutronScatteringParametersFile = match.group()
 
             match = re.search(
                 pattern,
-                self.instrument.neutronScatteringParametersFile
+                instrument.neutronScatteringParametersFile
             )
 
             if match:
-                self.instrument.neutronScatteringParametersFile = match.group()
+                instrument.neutronScatteringParametersFile = match.group()
+
+            return instrument
 
         except Exception as e:
             raise ParserException(
@@ -488,7 +432,7 @@ class GudrunFile:
                 f"{str(e)}"
             ) from e
 
-    def parseBeam(self):
+    def parseBeam(self, params) -> Beam:
         """
         Intialises a Beam object and assigns it to the
         beam attribute.
@@ -506,7 +450,7 @@ class GudrunFile:
 
         try:
             # Initialise beam attribute to a new instance of Beam.
-            self.beam = Beam()
+            beam = Beam()
 
             self.consumeWhitespace()
 
@@ -514,49 +458,49 @@ class GudrunFile:
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            self.beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
+            beam.sampleGeometry = Geometry[firstword(self.getNextToken())]
 
             # Set the global geometry.
-            cfg.geometry = self.beam.sampleGeometry
+            cfg.geometry = beam.sampleGeometry
 
             # Ignore the number of beam values.
             self.consumeTokens(1)
 
             # For N float attributes,
             # we extract the first N floats from the line.
-            self.beam.beamProfileValues = (
+            beam.beamProfileValues = (
                 extract_floats_from_string(self.getNextToken())
             )
 
             # For single float attributes,
             # we extract the zeroth float from the line.
             range = self.getNextToken()
-            self.beam.stepSizeAbsorption = nthfloat(range, 0)
-            self.beam.stepSizeMS = nthfloat(range, 1)
-            self.beam.noSlices = nthint(range, 2)
-            self.beam.angularStepForCorrections = (
+            beam.stepSizeAbsorption = nthfloat(range, 0)
+            beam.stepSizeMS = nthfloat(range, 1)
+            beam.noSlices = nthint(range, 2)
+            beam.angularStepForCorrections = (
                 nthint(self.getNextToken(), 0)
             )
 
             # Extract the incident beam edges
             # relative to the centroid of the sample.
             incidentBeamEdges = self.getNextToken()
-            self.beam.incidentBeamLeftEdge = nthfloat(incidentBeamEdges, 0)
-            self.beam.incidentBeamRightEdge = nthfloat(incidentBeamEdges, 1)
-            self.beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 2)
-            self.beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 3)
+            beam.incidentBeamLeftEdge = nthfloat(incidentBeamEdges, 0)
+            beam.incidentBeamRightEdge = nthfloat(incidentBeamEdges, 1)
+            beam.incidentBeamBottomEdge = nthfloat(incidentBeamEdges, 2)
+            beam.incidentBeamTopEdge = nthfloat(incidentBeamEdges, 3)
 
             # Extract the scattered beam edges
             # relative to the centroid of the sample.
             scatteredBeamEdges = self.getNextToken()
-            self.beam.scatteredBeamLeftEdge = nthfloat(scatteredBeamEdges, 0)
-            self.beam.scatteredBeamRightEdge = nthfloat(scatteredBeamEdges, 1)
-            self.beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 2)
-            self.beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 3)
+            beam.scatteredBeamLeftEdge = nthfloat(scatteredBeamEdges, 0)
+            beam.scatteredBeamRightEdge = nthfloat(scatteredBeamEdges, 1)
+            beam.scatteredBeamBottomEdge = nthfloat(scatteredBeamEdges, 2)
+            beam.scatteredBeamTopEdge = nthfloat(scatteredBeamEdges, 3)
 
             # For string attributes,
             # we simply extract the firstword in the line.
-            self.beam.filenameIncidentBeamSpectrumParams = (
+            beam.filenameIncidentBeamSpectrumParams = (
                 firstword(self.getNextToken())
             )
 
@@ -566,24 +510,26 @@ class GudrunFile:
 
             match = re.search(
                 pattern,
-                self.beam.filenameIncidentBeamSpectrumParams
+                beam.filenameIncidentBeamSpectrumParams
             )
 
             if match:
-                self.beam.filenameIncidentBeamSpectrumParams = match.group()
+                beam.filenameIncidentBeamSpectrumParams = match.group()
 
-            self.beam.overallBackgroundFactor = (
+            beam.overallBackgroundFactor = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.beam.sampleDependantBackgroundFactor = (
+            beam.sampleDependantBackgroundFactor = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.beam.shieldingAttenuationCoefficient = (
+            beam.shieldingAttenuationCoefficient = (
                 nthfloat(self.getNextToken(), 0)
             )
 
             # Consume whitespace and the closing brace.
             self.consumeUpToDelim("}")
+
+            return beam
 
         except Exception as e:
             raise ParserException(
@@ -592,7 +538,7 @@ class GudrunFile:
                 "and some attributes were missing."
             ) from e
 
-    def parseNormalisation(self):
+    def parseNormalisation(self, params) -> Normalisation:
         """
         Intialises a Normalisation object and assigns it to the
         normalisation attribute.
@@ -611,7 +557,7 @@ class GudrunFile:
         try:
             # Initialise normalisation attribute
             # to a new instance of Normalisation.
-            self.normalisation = Normalisation()
+            normalisation = Normalisation()
 
             self.consumeWhitespace()
 
@@ -621,9 +567,9 @@ class GudrunFile:
             # and the 1st integer for the period number.
             dataFileInfo = self.getNextToken()
             numberOfFiles = nthint(dataFileInfo, 0)
-            self.normalisation.periodNumber = nthint(dataFileInfo, 1)
+            normalisation.periodNumber = nthint(dataFileInfo, 1)
 
-            # Extract data files
+            # Extract params files
             dataFiles = []
             for _ in range(numberOfFiles):
                 dataFiles.append(firstword(self.getNextToken()))
@@ -631,7 +577,7 @@ class GudrunFile:
             dataFiles.sort()
 
             # Create a DataFiles object from the dataFiles list constructed.
-            self.normalisation.dataFiles = (
+            normalisation.dataFiles = (
                 DataFiles(dataFiles, "NORMALISATION")
             )
 
@@ -642,9 +588,9 @@ class GudrunFile:
             # and the 1st integer for the background riod number.
             dataFileInfoBg = self.getNextToken()
             numberOfFilesBg = nthint(dataFileInfoBg, 0)
-            self.normalisation.periodNumberBg = nthint(dataFileInfoBg, 1)
+            normalisation.periodNumberBg = nthint(dataFileInfoBg, 1)
 
-            # Extract background data files
+            # Extract background params files
             dataFilesBg = []
             for j in range(numberOfFilesBg):
                 dataFilesBg.append(firstword(self.getNextToken()))
@@ -653,13 +599,13 @@ class GudrunFile:
             dataFilesBg.sort()
 
             # Create a DataFiles object from the dataFiles list constructed.
-            self.normalisation.dataFilesBg = (
+            normalisation.dataFilesBg = (
                 DataFiles(dataFilesBg, "NORMALISATION BACKGROUND")
             )
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
-            self.normalisation.forceCalculationOfCorrections = (
+            normalisation.forceCalculationOfCorrections = (
                 boolifyNum(nthint(self.getNextToken(), 0))
             )
 
@@ -684,7 +630,7 @@ class GudrunFile:
                 line = self.getNextToken()
 
             # Create a Composition object from the dataFiles list constructed.
-            self.normalisation.composition = (
+            normalisation.composition = (
                 Composition("Normalisation", elements=composition)
             )
 
@@ -692,36 +638,36 @@ class GudrunFile:
             # where the member name of the attribute is
             # the first 'word' in the line, and we must get the member,
             # we do this: Enum[memberName].
-            self.normalisation.geometry = (
+            normalisation.geometry = (
                 Geometry[firstword(self.getNextToken())]
             )
 
             # Is the geometry FLATPLATE?
             if (
                 (
-                    self.normalisation.geometry == Geometry.SameAsBeam
+                    normalisation.geometry == Geometry.SameAsBeam
                     and cfg.geometry == Geometry.FLATPLATE
                 )
-                    or self.normalisation.geometry == Geometry.FLATPLATE):
+                    or normalisation.geometry == Geometry.FLATPLATE):
                 # If is is FLATPLATE, then extract the upstream and downstream
                 # thickness, the angle of rotation and sample width.
                 thickness = self.getNextToken()
-                self.normalisation.upstreamThickness = nthfloat(thickness, 0)
-                self.normalisation.downstreamThickness = (
+                normalisation.upstreamThickness = nthfloat(thickness, 0)
+                normalisation.downstreamThickness = (
                     nthfloat(thickness, 1)
                 )
                 geometryInfo = self.getNextToken()
-                self.normalisation.angleOfRotation = nthfloat(geometryInfo, 0)
-                self.normalisation.sampleWidth = nthfloat(geometryInfo, 1)
+                normalisation.angleOfRotation = nthfloat(geometryInfo, 0)
+                normalisation.sampleWidth = nthfloat(geometryInfo, 1)
             else:
 
                 # Otherwise, it is CYLINDRICAL,
                 # then extract the inner and outer
                 # radii and the sample height.
                 radii = self.getNextToken()
-                self.normalisation.innerRadius = nthfloat(radii, 0)
-                self.normalisation.outerRadius = nthfloat(radii, 1)
-                self.normalisation.sampleHeight = (
+                normalisation.innerRadius = nthfloat(radii, 0)
+                normalisation.outerRadius = nthfloat(radii, 1)
+                normalisation.sampleHeight = (
                     nthfloat(self.getNextToken(), 0)
                 )
 
@@ -729,18 +675,18 @@ class GudrunFile:
             density = nthfloat(self.getNextToken(), 0)
 
             # Take the absolute value of the density - since it could be -ve.
-            self.normalisation.density = abs(density)
+            normalisation.density = abs(density)
 
             # Decide on the units of density.
             # -ve density means it is atomic (atoms/A^3)
             # +ve means it is chemical (gm/cm^3)
-            self.normalisation.densityUnits = (
+            normalisation.densityUnits = (
                 UnitsOfDensity.ATOMIC if
                 density < 0
                 else UnitsOfDensity.CHEMICAL
             )
 
-            self.normalisation.tempForNormalisationPC = (
+            normalisation.tempForNormalisationPC = (
                 nthfloat(self.getNextToken(), 0)
             )
             crossSectionSource = firstword(self.getNextToken())
@@ -748,26 +694,26 @@ class GudrunFile:
                 crossSectionSource == "TABLES"
                 or crossSectionSource == "TRANSMISSION"
             ):
-                self.normalisation.totalCrossSectionSource = (
+                normalisation.totalCrossSectionSource = (
                     CrossSectionSource[crossSectionSource]
                 )
             else:
-                self.normalisation.totalCrossSectionSource = (
+                normalisation.totalCrossSectionSource = (
                     CrossSectionSource.FILE
                 )
-                self.normalisation.crossSectionFilename = crossSectionSource
+                normalisation.crossSectionFilename = crossSectionSource
 
-            self.normalisation.normalisationDifferentialCrossSectionFile = (
+            normalisation.normalisationDifferentialCrossSectionFile = (
                 firstword(self.getNextToken())
             )
 
-            self.normalisation.lowerLimitSmoothedNormalisation = (
+            normalisation.lowerLimitSmoothedNormalisation = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.normalisation.normalisationDegreeSmoothing = (
+            normalisation.normalisationDegreeSmoothing = (
                 nthfloat(self.getNextToken(), 0)
             )
-            self.normalisation.minNormalisationSignalBR = (
+            normalisation.minNormalisationSignalBR = (
                 nthfloat(self.getNextToken(), 0)
             )
 
@@ -779,15 +725,17 @@ class GudrunFile:
 
             match = re.search(
                 pattern,
-                self.normalisation.
+                normalisation.
                 normalisationDifferentialCrossSectionFile
             )
 
             if match:
                 (
-                    self.normalisation.
+                    normalisation.
                     normalisationDifferentialCrossSectionFile
                 ) = match.group()
+
+            return normalisation
 
         except Exception as e:
             raise ParserException(
@@ -796,7 +744,7 @@ class GudrunFile:
                 "and some attributes were missing."
             ) from e
 
-    def parseSampleBackground(self):
+    def parseSampleBackground(self, _) -> SampleBackground:
         """
         Intialises a SampleBackground object.
         Parses the attributes of the SampleBackground from the input stream.
@@ -840,7 +788,7 @@ class GudrunFile:
                 "and some attributes were missing."
             ) from e
 
-    def parseSample(self):
+    def parseSample(self, _) -> Sample:
         """
         Intialises a Sample object.
         Parses the attributes of the Sample from the input stream.
@@ -876,7 +824,7 @@ class GudrunFile:
             numberOfFiles = nthint(dataFileInfo, 0)
             sample.periodNumber = nthint(dataFileInfo, 1)
 
-            # Extract data files
+            # Extract params files
             dataFiles = []
             for _ in range(numberOfFiles):
                 dataFiles.append(firstword(self.getNextToken()))
@@ -1046,7 +994,7 @@ class GudrunFile:
                 "and some attributes were missing."
             ) from e
 
-    def parseContainer(self):
+    def parseContainer(self, _) -> Container:
         """
         Intialises a Container object.
         Parses the attributes of the Container from the input stream.
@@ -1082,7 +1030,7 @@ class GudrunFile:
             numberOfFiles = nthint(dataFileInfo, 0)
             container.periodNumber = nthint(dataFileInfo, 1)
 
-            # Extract data files
+            # Extract params files
             dataFiles = []
             for _ in range(numberOfFiles):
                 dataFiles.append(firstword(self.getNextToken()))
@@ -1189,19 +1137,21 @@ class GudrunFile:
                 "and some attributes were missing."
             ) from e
 
-    def parseComponents(self):
+    def parseComponents(self, params) -> Components:
+        components = Components
         try:
             while self.stream:
                 component = self.parseComponent()
                 if component:
-                    self.components.addComponent(component)
+                    components.addComponent(component)
+            return components
         except Exception as e:
             raise ParserException(
                 "Whilst parsing Components, an exception occured."
                 " The input file is most likely of an incorrect format."
             ) from e
 
-    def parseComponent(self):
+    def parseComponent(self) -> Component:
         name = self.getNextToken().rstrip()
         component = Component(name)
         line = self.peekNextToken()
@@ -1217,45 +1167,7 @@ class GudrunFile:
             line = self.getNextToken()
         return component
 
-    def makeParse(self, key):
-        """
-        Calls a parsing function from a dictionary of parsing functions
-        by the input key.
-        Returns the result of the called parsing function.
-        Only use case is as a helper function during parsing.
-
-        Parameters
-        ----------
-        key : str
-            Parsing function to call
-            (INSTRUMENT/BEAM/NORMALISATION/SAMPLE BACKGROUND/SAMPLE/CONTAINER)
-        Returns
-        -------
-        NoneType
-            if parsing INSTRUMENT/BEAM/NORMALISATION
-        SampleBackground
-            if parsing SAMPLE BACKGROUND
-        Sample
-            if parsing Sample
-        Container
-            if parsing Container
-        None
-            if parsing Components
-        """
-
-        parsingFunctions = {
-            "INSTRUMENT": self.parseInstrument,
-            "BEAM": self.parseBeam,
-            "NORMALISATION": self.parseNormalisation,
-            "SAMPLE BACKGROUND": self.parseSampleBackground,
-            "SAMPLE": self.parseSample,
-            "CONTAINER": self.parseContainer,
-            "COMPONENTS": self.parseComponents
-        }
-        # Return the result of the parsing function that was called.
-        return parsingFunctions[key]()
-
-    def sampleBackgroundHelper(self):
+    def sampleBackgroundHelper(self) -> SampleBackground:
         """
         Helper method for parsing Sample Background and its
         Samples and their Containers.
@@ -1307,7 +1219,11 @@ class GudrunFile:
             line = self.peekNextToken()
         return sampleBackground
 
-    def parse(self, path, config=False):
+    def parse(
+            self, path, config=False
+        ) -> typ.Tuple[
+            Instrument, Beam, Normalisation,
+            list[SampleBackground], Components]:
         """
         Parse the GudrunFile from its path.
         Assign objects from the file to the attributes of the class.
@@ -1322,6 +1238,13 @@ class GudrunFile:
         None
         """
         self.config = config
+
+        instrument = None
+        beam = None
+        components = None
+        normalisation = None
+        sampleBackgrounds = []
+
         # Ensure only valid files are given.
         if not path:
             raise ParserException(
@@ -1332,83 +1255,72 @@ class GudrunFile:
                 "The path supplied is invalid.\
                  Cannot parse from an invalid path" + path
             )
-        if self.format == Format.YAML:
-            # YAML Files
-            try:
-                (
-                    self.instrument,
-                    self.beam,
-                    self.components,
-                    self.normalisation,
-                    self.sampleBackgrounds,
-                    cfg.GUI
-                ) = self.yaml.parseYaml(path)
-            except YAMLException as e:
-                raise ParserException(e)
-        else:
-            # TXT Files
-            parsing = ""
-            KEYWORDS = {
-                "INSTRUMENT": False,
-                "BEAM": False,
-                "NORMALISATION": False
-            }
 
-            # Decide the encoding
-            import chardet
-            with open(path, 'rb') as fp:
-                encoding = chardet.detect(fp.read())['encoding']
+        KEYWORDS = {
+            "INSTRUMENT": False,
+            "BEAM": False,
+            "NORMALISATION": False
+        }
+        # Decide the encoding
+        import chardet
+        with open(path, 'rb') as fp:
+            encoding = chardet.detect(fp.read())['encoding']
+        # Read the input stream into our attribute.
+        with open(path, encoding=encoding) as fp:
+            self.stream = fp.readlines()
+        # Here we go! Get the first token and begin parsing.
+        line = self.getNextToken()
 
-            # Read the input stream into our attribute.
-            with open(path, encoding=encoding) as fp:
-                self.stream = fp.readlines()
+        # Iterate through the file,
+        # parsing the Instrument, Beam and Normalisation.
+        while self.stream:
+            line = firstword(line)
+            if line == "INSTRUMENT":
+                instrument = self.parseInstrument(line)
+                KEYWORDS[line] = True
+            elif line == "BEAM":
+                beam = self.parseBeam(line)
+                KEYWORDS[line] = True
+            elif line == "NORMALISATION":
+                normalisation = self.parseNormalisation(line)
+                KEYWORDS[line] = True
 
-            # Here we go! Get the first token and begin parsing.
+        # If we didn't parse each one of the keywords, then panic.
+        if not all(KEYWORDS.values()) and not config:
+            raise ParserException((
+                'INSTRUMENT, BEAM and NORMALISATION'
+                ' were not parsed. It\'s possible the file'
+                ' supplied is of an incorrect format!'
+            ))
+        elif not KEYWORDS["INSTRUMENT"] and config:
+            raise ParserException((
+                'INSTRUMENT was not parsed. It\'s possible the file'
+                ' supplied is of an incorrect format!'
+            ))
+
+        # Ignore whitespace.
+        self.consumeWhitespace()
+        line = self.peekNextToken()
+
+        # Parse sample backgrounds, alongside their samples and containers.
+        while self.stream:
+            if "SAMPLE BACKGROUND" in line and "{" in line:
+                sampleBackgrounds.append(
+                    self.sampleBackgroundHelper()
+                )
+            elif "COMPONENTS:" in line:
+                components = self.parseComponents(line)
             line = self.getNextToken()
 
-            # Iterate through the file,
-            # parsing the Instrument, Beam and Normalisation.
-            while (
-                self.stream
-                and not all(value for value in KEYWORDS.values())
-            ):
-                if (
-                    firstword(line) in KEYWORDS.keys()
-                    and not KEYWORDS[firstword(line)]
-                ):
-                    parsing = firstword(line)
-                    self.makeParse(parsing)
-                    KEYWORDS[parsing] = True
-                line = self.getNextToken()
+        return (
+            instrument,
+            beam,
+            normalisation,
+            sampleBackgrounds,
+            components
+        )
 
-            # If we didn't parse each one of the keywords, then panic.
-            if not all(KEYWORDS.values()) and not config:
-                raise ParserException((
-                    'INSTRUMENT, BEAM and NORMALISATION'
-                    ' were not parsed. It\'s possible the file'
-                    ' supplied is of an incorrect format!'
-                ))
-            elif not KEYWORDS["INSTRUMENT"] and config:
-                raise ParserException((
-                    'INSTRUMENT was not parsed. It\'s possible the file'
-                    ' supplied is of an incorrect format!'
-                ))
-
-            # Ignore whitespace.
-            self.consumeWhitespace()
-            line = self.peekNextToken()
-
-            # Parse sample backgrounds, alongside their samples and containers.
-            while self.stream:
-                if "SAMPLE BACKGROUND" in line and "{" in line:
-                    self.sampleBackgrounds.append(
-                        self.sampleBackgroundHelper()
-                    )
-                elif "COMPONENTS:" in line:
-                    self.makeParse("COMPONENTS")
-                line = self.getNextToken()
-
-    def __str__(self):
+    def asString(self, params) -> str:
         """
         Returns the string representation of the GudrunFile object.
 
@@ -1429,19 +1341,19 @@ class GudrunFile:
         )
         instrument = (
             f"INSTRUMENT{cfg.spc10}{{\n\n"
-            + str(self.instrument)
+            + str(params.instrument)
             + LINEBREAK
             + "}"
         )
-        beam = f"BEAM{cfg.spc10}{{\n\n" + str(self.beam) + LINEBREAK + "}"
+        beam = f"BEAM{cfg.spc10}{{\n\n" + str(params.beam) + LINEBREAK + "}"
         normalisation = (
             f"NORMALISATION{cfg.spc10}{{\n\n"
-            + str(self.normalisation)
+            + str(params.normalisation)
             + LINEBREAK
             + "}"
         )
         sampleBackgrounds = "\n".join(
-            [str(x) for x in self.sampleBackgrounds]
+            [str(x) for x in params.sampleBackgrounds]
         ).rstrip()
         footer = (
             f"\n\n\nEND{cfg.spc10}"
@@ -1451,8 +1363,8 @@ class GudrunFile:
         )
 
         components = (
-            f"\n\nCOMPONENTS:\n{str(self.components)}"
-            if len(self.components.components)
+            f"\n\nCOMPONENTS:\n{str(params.components)}"
+            if len(params.components.components)
             else ""
         )
 
@@ -1469,23 +1381,8 @@ class GudrunFile:
             + components
         )
 
-    def save(self, path='', format=None):
-        if not path:
-            path = self.path()
-
-        if not format:
-            format = self.format
-        if format == Format.TXT:
-            self.write_out(
-                path=f"{os.path.splitext(path)[0]}.txt", overwrite=True)
-        elif format == Format.YAML:
-            self.write_yaml(path=f"{os.path.splitext(path)[0]}.yaml")
-
-    def write_yaml(self, path):
-        self.yaml = YAML()
-        self.yaml.writeYAML(self, path)
-
-    def write_out(self, path='', overwrite=False, writeParameters=True):
+    def writeGudrunFile(
+            self, params, path='', overwrite=False, writeParameters=True):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1509,29 +1406,29 @@ class GudrunFile:
             )
         elif not overwrite:
             assert (not os.path.exists(os.path.join(
-                    self.instrument.GudrunInputFileDir,
+                    params.instrument.GudrunInputFileDir,
                     self.OUTPATH)
             ))
             f = open(
                 os.path.join(
-                    self.instrument.GudrunInputFileDir,
+                    params.instrument.GudrunInputFileDir,
                     self.OUTPATH
                 ), "w", encoding="utf-8")
         else:
             if not self.path():
                 path = os.path.join(
-                    self.instrument.GudrunInputFileDir,
+                    params.instrument.GudrunInputFileDir,
                     self.OUTPATH)
             f = open(path, "w", encoding="utf-8")
 
         if os.path.basename(f.name) == self.OUTPATH:
-            for sampleBackground in self.sampleBackgrounds:
+            for sampleBackground in params.sampleBackgrounds:
                 sampleBackground.writeAllSamples = False
         f.write(str(self))
         f.close()
 
         if writeParameters:
-            for sb in self.sampleBackgrounds:
+            for sb in params.sampleBackgrounds:
                 for s in sb.samples:
                     if s.runThisSample:
                         gf = deepcopy(self)
@@ -1539,48 +1436,9 @@ class GudrunFile:
                         gf.sampleBackgrounds[0].samples = [deepcopy(s)]
                         gf.write_out(
                             path=os.path.join(
-                                self.instrument.GudrunInputFileDir,
+                                params.instrument.GudrunInputFileDir,
                                 s.pathName(),
                             ),
                             overwrite=True,
                             writeParameters=False
                         )
-
-    def setGudrunDir(self, dir):
-        self.instrument.GudrunInputFileDir = dir
-
-    def convertToSample(self, container, persist=False):
-
-        sample = container.convertToSample()
-
-        if persist:
-            for i, sampleBackground in enumerate(self.sampleBackgrounds):
-                for sample in sampleBackground.samples:
-                    if container in sample.containers:
-                        sample.containers.remove(container)
-                        break
-            self.sampleBackgrounds[i].append(sample)
-        return sample
-
-    def determineError(self, sample):
-        gudPath = sample.dataFiles[0].replace(
-            self.instrument.dataFileType,
-            "gud"
-        )
-        gudFile = GudFile(
-            os.path.join(
-                self.instrument.GudrunInputFileDir, gudPath
-            )
-        )
-        error = round(
-            (
-                1.0 - (gudFile.averageLevelMergedDCS / gudFile.expectedDCS)
-            ) * 100, 1
-        )
-        return error
-
-
-Container.getNextToken = GudrunFile.getNextToken
-Container.peekNextToken = GudrunFile.peekNextToken
-Container.consumeUpToDelim = GudrunFile.consumeUpToDelim
-Container.consumeWhitespace = GudrunFile.consumeWhitespace
