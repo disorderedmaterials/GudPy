@@ -10,6 +10,7 @@ from core.enums import CrossSectionSource
 from core.sample import Sample
 from core.exception import ParserException
 from core.utils import firstword, nthfloat, nthint
+from core.gudrun_file import GudrunFile
 
 
 class Container:
@@ -97,6 +98,11 @@ class Container:
         self.grBroadening = 0.
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
+
+        self.getNextToken = GudrunFile.getNextToken
+        self.peekNextToken = GudrunFile.peekNextToken
+        self.consumeUpToDelim = GudrunFile.consumeUpToDelim
+        self.consumeWhitespace = GudrunFile.consumeWhitespace
 
         self.yamlignore = {
             "runAsSample",
