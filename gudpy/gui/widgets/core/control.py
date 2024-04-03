@@ -374,7 +374,8 @@ class GudPyController(QtCore.QObject):
         if not self.checkFilesExist():
             return False
 
-        if not self.gudpy.gudrunFile.checkNormDataFiles():
+        if not (len(self.gudpy.gudrunFile.normalisation.dataFiles)
+                and len(self.gudpy.gudrunFile.normalisation.dataFilesBg)):
             self.mainWidget.sendWarning(
                 "Please specify normalisation data files.")
             return False
