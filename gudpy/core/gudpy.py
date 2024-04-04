@@ -14,7 +14,7 @@ from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
-from gudpy_data import GudrunParameters, GudPyData
+from core.gudpy_data import GudrunParameters, GudPyData
 from core import data_files
 
 SUFFIX = ".exe" if os.name == "nt" else ""
