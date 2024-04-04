@@ -4,7 +4,7 @@ from enum import Enum
 
 from core.gud_file import GudFile
 from core.enums import Scales, IterationModes
-from data import GudrunParameters
+from gudpy_data import GudrunParameters
 import core.output_file_handler as handlers
 
 
