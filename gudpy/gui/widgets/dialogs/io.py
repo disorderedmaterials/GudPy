@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QDialog, QFileDialog, QMessageBox, QListWidget, QLabel
+    QDialog, QFileDialog, QMessageBox, QListWidget, QLabel, QMainWindow
 )
 import sys
 import os
@@ -77,13 +77,13 @@ class MissingFilesDialog(QDialog):
 class ExportDialog(QDialog):
     """
     Class to represent the ExportDialog. Inherits QDialog.
-    This is the dialog window opened when a user wishes to export data.
+    This is the dialog window opened when a user wishes to export params.
 
     ...
 
     Attributes
     ----------
-    gudrunFile : GudrunFile
+    params : params
         Object associated with the dialog.
     Methods
     -------
@@ -101,9 +101,9 @@ class ExportDialog(QDialog):
         Allows exporting to a specific file.
     """
 
-    def __init__(self, gudrunFile, parent):
+    def __init__(self, params, parent):
         super(ExportDialog, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
+        self.params = params
         self.initComponents()
         self.loadFilesList()
 
@@ -143,16 +143,16 @@ class ExportDialog(QDialog):
             self.widget.close
         )
 
-    def loadFilesList(self, rename=False):
+    def loadFilesList(self, rename):
         self.widget.filesList.clear()
         for sample in [
-            s for sb in self.gudrunFile.sampleBackgrounds for s in sb.samples
+            s for sb in self.params.sampleBackgrounds for s in sb.samples
         ]:
-            if len(sample.dataFiles):
+            if len(sample.paramsFiles):
                 mintFile = (
-                    sample.dataFiles[0]
+                    sample.paramsFiles[0]
                     .replace(
-                        self.gudrunFile.instrument.dataFileType,
+                        self.params.instrument.paramsFileType,
                         "mint01"
                     )
                 )
@@ -162,9 +162,9 @@ class ExportDialog(QDialog):
                 ) + ".mint01"
 
                 if os.path.exists(os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir, mintFile
+                    self.params.instrument.GudrunInputFileDir, mintFile
                 )) or os.path.exists(os.path.join(
-                    self.gudrunFile.instrument.GudrunInputFileDir,
+                    self.params.instrument.GudrunInputFileDir,
                     namedAfterSample
                 )):
                     if rename:
@@ -175,14 +175,14 @@ class ExportDialog(QDialog):
         self.loadFilesList(rename=bool(state))
 
     def performExport(self, filename=None):
-        fl = GudPyFileLibrary(self.gudrunFile)
-        archive = fl.exportMintData(
+        fl = GudPyFileLibrary(self.params)
+        archive = fl.exportMintparams(
             [
                 s
-                for sb in self.gudrunFile.sampleBackgrounds
+                for sb in self.params.sampleBackgrounds
                 for s in sb.samples
             ],
-            renameDataFiles=self.widget.renameCheckBox.checkState(),
+            renameparamsFiles=self.widget.renameCheckBox.checkState(),
             exportTo=filename,
             includeParams=self.widget.includeParamsCheckBox.checkState()
         )

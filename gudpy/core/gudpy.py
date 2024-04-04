@@ -14,7 +14,7 @@ from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
-from data import GudrunParameters, GudPyData
+from gudpy_data import GudrunParameters, GudPyData
 from core import data_files
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -504,13 +504,13 @@ class GudrunIterator:
     ):
 
         # Create a copy of gudrun file
-        self.params = copy.deepcopy(params)
-        self.iterator = iterator
-        self.gudrunObjects = []
-        self.exitcode = (1, "Operation incomplete")
-        self.gudrunOutput = None
-        self.projectDir = projectDir
-        self.result = {}
+        self.params: GudrunParameters = copy.deepcopy(params)
+        self.iterator: iterators.Iterator = iterator
+        self.gudrunObjects: list[Gudrun] = []
+        self.exitcode: typ.Tuple[int, str] = (1, "Operation incomplete")
+        self.gudrunOutput: handlers.GudrunOutput = None
+        self.projectDir: str = projectDir
+        self.result: dict = {}
 
         for _ in range(
                 iterator.nTotal + (1 if iterator.requireDefault else 0)):

@@ -191,8 +191,8 @@ class SampleSlots():
             lambda: self.addFiles(
                 self.widget.sampleDataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+                f"{self.parent.gudrunParams.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunParams.instrument.dataFileType})",
             )
         )
         self.widget.removeSampleDataFileButton.clicked.connect(
@@ -386,8 +386,8 @@ class SampleSlots():
         self.sample.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
-                self.parent.gudrunFile.purged = False
+            if not self.parent.gudrunParams.purgeFile.excludeSampleAndCan:
+                self.parent.gudrunParams.purgeLocation = ""
 
     def handleForceCorrectionsSwitched(self, state):
         """
@@ -888,7 +888,7 @@ class SampleSlots():
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
             self.sample.dataFiles.dataFiles = (
                 self.widget.sampleDataFilesList.model().stringList()
             )
@@ -909,7 +909,7 @@ class SampleSlots():
         """
         files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
-            self.parent.gudrunFile.instrument.dataFileDir, regex
+            self.parent.gudrunParams.instrument.dataFileDir, regex
         )
         for file in files:
             if file:
@@ -966,7 +966,7 @@ class SampleSlots():
 
     def updateRatioCompositions(self):
         self.widget.sampleRatioCompositionTable.makeModel(
-            self.parent.gudrunFile,
+            self.parent.gudrunParams,
             self.sample.composition.weightedComponents,
             self.sample
         )
@@ -1149,7 +1149,7 @@ class SampleSlots():
             actualDcsLevel = nthfloat(self.widget.dcsLabel.text(), 2)
             try:
                 error = round(
-                        ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
+                    ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
                 )
             except ZeroDivisionError:
                 error = 100.

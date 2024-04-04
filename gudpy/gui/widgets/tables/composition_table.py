@@ -250,10 +250,10 @@ class CompositionTable(QTableView):
         self.compositions = [
             (
                 "Normalisation",
-                deepcopy(ancestor.gudrunFile.normalisation.composition)
+                deepcopy(ancestor.gudrunParams.normalisation.composition)
             )
         ]
-        for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
+        for sampleBackground in ancestor.gudrunParams.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample != self.parentObject:
                     self.compositions.append((sample.name, sample.composition))

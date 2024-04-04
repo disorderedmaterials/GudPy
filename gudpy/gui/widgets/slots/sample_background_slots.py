@@ -45,8 +45,8 @@ class SampleBackgroundSlots():
             lambda: self.addFiles(
                 self.widget.sampleBackgroundDataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+                f"{self.parent.gudrunParams.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunParams.instrument.dataFileType})",
             )
         )
         self.widget.removeSampleBackgroundDataFileButton.clicked.connect(
@@ -62,7 +62,7 @@ class SampleBackgroundSlots():
     def handleDataFilesAltered(self):
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
             self.sampleBackground.dataFiles.dataFiles = (
                 self.widget.sampleBackgroundDataFilesList.model().stringList()
             )
@@ -70,7 +70,7 @@ class SampleBackgroundSlots():
     def addFiles(self, target, title, regex):
         files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
-            self.parent.gudrunFile.instrument.dataFileDir, regex
+            self.parent.gudrunParams.instrument.dataFileDir, regex
         )
         for file in files:
             if file:

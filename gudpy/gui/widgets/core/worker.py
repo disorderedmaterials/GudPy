@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal, QThread
 
 from core import gudpy
 import core.exception as exc
-from core.gudrun_file import GudrunFile
+from core.gudpy_data import GudrunParameters
 from core.purge_file import PurgeFile
 from core.iterators import Iterator
 from core import iterators, config
@@ -29,23 +29,23 @@ class Worker(QThread):
 
 
 class PurgeWorker(Worker, gudpy.Purge):
-    def __init__(self, purgeFile: PurgeFile, gudrunFile: GudrunFile):
+    def __init__(self, purgeFile: PurgeFile, params: GudrunParameters):
         super().__init__()
         self.name = "Purge"
         self.purgeFile = purgeFile
         self.detectors = None
-        self.dataFileType = gudrunFile.instrument.dataFileType
-        self.dataFiles = [gudrunFile.instrument.groupFileName]
+        self.dataFileType = params.instrument.dataFileType
+        self.dataFiles = [params.instrument.groupFileName]
 
-        self.appendDataFiless(gudrunFile.normalisation.dataFiles[0])
-        self.appendDataFiless(gudrunFile.normalisation.dataFilesBg[0])
-        self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+        self.appendDataFiless(params.normalisation.dataFiles[0])
+        self.appendDataFiless(params.normalisation.dataFilesBg[0])
+        self.appendDataFiless([df for sb in params.sampleBackgrounds
                                for df in sb.dataFiles])
         if not purgeFile.excludeSampleAndCan:
-            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+            self.appendDataFiless([df for sb in params.sampleBackgrounds
                                    for s in sb.samples for df in s.dataFiles
                                    if s.runThisSample])
-            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+            self.appendDataFiless([df for sb in params.sampleBackgrounds
                                    for s in sb.samples for c in s.containers
                                    for df in c.dataFiles if s.runThisSample])
 
@@ -75,22 +75,21 @@ class PurgeWorker(Worker, gudpy.Purge):
 class GudrunWorker(Worker, gudpy.Gudrun):
     def __init__(
             self,
-            gudrunFile: GudrunFile,
-            purge: PurgeWorker = None,
-            iterator: Iterator = None
+            params: GudrunParameters,
+            projectDir: str,
+            iterator: Iterator = None,
     ):
         super().__init__()
         self.name = "Gudrun"
-        self.gudrunFile = gudrunFile
+        self.params = params
         self.iterator = iterator
-        self.purge = purge
-        self.purge = None
+        self.projectDir = projectDir
         self.progress = 0
 
         # Number of GudPy objects
         self.markers = (
             config.NUM_GUDPY_CORE_OBJECTS - 1
-            + len(self.gudrunFile.sampleBackgrounds) + sum([sum([
+            + len(self.params.sampleBackgrounds) + sum([sum([
                 len([
                     sample
                     for sample in sampleBackground.samples
@@ -101,7 +100,7 @@ class GudrunWorker(Worker, gudpy.Gudrun):
                     for sample in sampleBackground.samples
                     if sample.runThisSample
                 ]])
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
+                for sampleBackground in self.params.sampleBackgrounds
             ]))
 
     def _progressChanged(self):
@@ -120,8 +119,9 @@ class GudrunWorker(Worker, gudpy.Gudrun):
 
     def run(self):
         exitcode = self.gudrun(
-            gudrunFile=self.gudrunFile,
-            purge=self.purge, iterator=self.iterator)
+            params=self.params,
+            iterator=self.iterator,
+            projectDir=self.projectDir)
         self.finished.emit(exitcode)
 
 
@@ -132,19 +132,19 @@ class IteratorBaseWorker(QThread):
 
     def __init__(
         self,
-        iterator: iterators.Iterator,
-        gudrunFile: GudrunFile,
-        purge: PurgeWorker = None,
+        params: GudrunParameters,
+        projectDir: str,
+        iterator: iterators.Iterator
     ):
-        super().__init__(iterator=iterator, gudrunFile=gudrunFile)
+        super().__init__(
+            params=params, iterator=iterator, projectDir=projectDir)
         self.gudrunObjects = []
-        self.purge = purge
         self.output = {}
         self.error = ""
 
         for _ in range(iterator.nTotal
                        + (1 if iterator.requireDefault else 0)):
-            worker = GudrunWorker(gudrunFile, iterator)
+            worker = GudrunWorker(params, iterator)
             worker.outputChanged.connect(self._outputChanged)
             worker.progressChanged.connect(self._progressChanged)
             self.gudrunObjects.append(worker)
@@ -167,7 +167,7 @@ class IteratorBaseWorker(QThread):
         )
 
     def run(self):
-        exitcode, error = self.iterate(purge=self.purge)
+        exitcode, error = self.iterate()
         self.error = error
         self.finished.emit(exitcode)
 
@@ -175,24 +175,26 @@ class IteratorBaseWorker(QThread):
 class GudrunIteratorWorker(IteratorBaseWorker, gudpy.GudrunIterator):
     def __init__(
         self,
+        params: GudrunParameters,
         iterator: iterators.Iterator,
-        gudrunFile: GudrunFile,
-        purge: PurgeWorker = None,
+        projectDir: str
     ):
-        super().__init__(iterator=iterator, gudrunFile=gudrunFile, purge=purge)
+        super().__init__(
+            params=params, iterator=iterator, projectDir=projectDir)
 
 
 class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
     def __init__(
         self,
+        params: GudrunParameters,
         iterator: iterators.Composition,
-        gudrunFile: GudrunFile,
-        purge: PurgeWorker = None,
+        projectDir: str,
     ):
-        super().__init__(iterator=iterator, gudrunFile=gudrunFile, purge=purge)
+        super().__init__(
+            iterator=iterator, params=params, projectDir=projectDir)
 
     def run(self):
-        exitcode, error = self.iterate(purge=self.purge)
+        exitcode, error = self.iterate()
         self.error = error
         self.finished.emit(exitcode)
 
@@ -200,8 +202,8 @@ class CompositionWorker(IteratorBaseWorker, gudpy.CompositionIterator):
 class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
     def __init__(
         self,
-        gudrunFile: GudrunFile,
-        purge: PurgeWorker = None,
+        params: GudrunParameters,
+        projectDir: str,
         iterator: iterators.Iterator = None,
         batchSize=1,
         stepSize=1,
@@ -210,9 +212,9 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
         separateFirstBatch=False
     ):
         super().__init__(
-            gudrunFile=gudrunFile,
-            purge=purge,
+            params=params,
             iterator=iterator,
+            projectDir=projectDir,
             batchSize=batchSize,
             stepSize=stepSize,
             offset=offset,
@@ -235,7 +237,7 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
 
     def run(self):
         try:
-            self.process(purge=self.purge)
+            self.process()
             self.finished.emit(0)
         except exc.GudrunException as e:
             self.error = str(e)

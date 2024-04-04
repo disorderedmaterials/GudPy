@@ -27,7 +27,9 @@ class GudPyContext:
 
         from pathlib import Path
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
-        self.gudpy.gudrunFile.instrument.dataFileDir = str(dataFileDir) + "/"
+        self.gudpy.data.gudrunParams.instrument.dataFileDir = (
+            str(dataFileDir) + "/"
+        )
 
     def __enter__(self):
         return self.gudpy
@@ -43,7 +45,7 @@ class GudPyContext:
 class TestGudPyWorkflows(TestCase):
     def getGudFile(self, gudpy, sampleIndex) -> GudFile:
         return gudpy.gudrunOutput.sampleOutputs[
-            gudpy.gudrunFile.sampleBackgrounds[0].samples[
+            gudpy.data.gudrunParams.sampleBackgrounds[0].samples[
                 sampleIndex].name].gudFile
 
     def testGudPyDCS(self):
@@ -69,7 +71,7 @@ class TestGudPyWorkflows(TestCase):
             dcsLevelPercentage = float(dcsLevelPercentage.replace('%', ''))
             self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
 
-            for sample in gudpy.gudrunFile.sampleBackgrounds[0].samples:
+            for sample in gudpy.data.gudrunParams.sampleBackgrounds[0].samples:
                 mintFilename = (
                     os.path.splitext(sample.dataFiles[0])[0]
                 )
@@ -181,7 +183,7 @@ class TestGudPyWorkflows(TestCase):
 
     def testIterateByComposition(self):
         with GudPyContext() as gudpy:
-            g = deepcopy(gudpy.gudrunFile)
+            g = deepcopy(gudpy.data.gudrunParams)
             gudpy.runPurge()
             g.sampleBackgrounds[0].samples[0].runThisSample = False
             g.sampleBackgrounds[0].samples[2].runThisSample = False
@@ -200,11 +202,11 @@ class TestGudPyWorkflows(TestCase):
 
             sample.composition = composition
 
-            gudpy.gudrunFile = g
+            gudpy.data.gudrunParams = g
 
             gudpy.runPurge()
             iterator = iterators.Composition(
-                gudrunFile=g,
+                params=g,
                 nTotal=10,
                 rtol=3,
                 components=[h2]
@@ -227,11 +229,11 @@ class TestGudPyWorkflows(TestCase):
                     iterators.InelasticitySubtraction(i)
                 )
                 gudpy.iterateGudrun(inelasitictyIterator)
-                self.g = gudpy.gudrunFile
+                self.g = gudpy.data.gudrunParams
 
                 for sample in [
                     x
-                    for x in gudpy.gudrunFile.sampleBackgrounds[0].samples
+                    for x in self.g.sampleBackgrounds[0].samples
                     if x.runThisSample
                 ]:
                     dataFilename = (

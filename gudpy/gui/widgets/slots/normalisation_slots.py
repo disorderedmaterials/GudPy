@@ -135,8 +135,8 @@ class NormalisationSlots():
             lambda: self.addDataFiles(
                 self.widget.dataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+                f"{self.parent.gudrunParams.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunParams.instrument.dataFileType})",
             )
         )
 
@@ -150,8 +150,8 @@ class NormalisationSlots():
             lambda: self.addDataFiles(
                 self.widget.backgroundDataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+                f"{self.parent.gudrunParams.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunParams.instrument.dataFileType})",
             )
         )
 
@@ -274,7 +274,7 @@ class NormalisationSlots():
         self.normalisation.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
 
     def handlePeriodNoBgChanged(self, value):
         """
@@ -290,7 +290,7 @@ class NormalisationSlots():
         self.normalisation.periodNumberBg = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
 
     def handleGeometryChanged(self, index):
         """
@@ -575,9 +575,9 @@ class NormalisationSlots():
         cross section file name as such.
         """
         dir = os.path.join(
-            self.parent.gudrunFile.instrument.GudrunStartFolder,
-            self.parent.gudrunFile.instrument.startupFileFolder,
-            Instruments(self.parent.gudrunFile.instrument.name.value).name
+            self.parent.gudrunParams.instrument.GudrunStartFolder,
+            self.parent.gudrunParams.instrument.startupFileFolder,
+            Instruments(self.parent.gudrunParams.instrument.name.value).name
         )
         filename, _ = QFileDialog.getOpenFileName(
             self.widget, "Normalisation differential cross section file", dir
@@ -644,7 +644,7 @@ class NormalisationSlots():
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
             self.normalisation.dataFiles.dataFiles = (
                 self.widget.dataFilesList.model().stringList()
             )
@@ -658,7 +658,7 @@ class NormalisationSlots():
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
             self.normalisation.dataFilesBg.dataFiles = (
                 self.widget.backgroundDataFilesList.model().stringList()
             )
@@ -677,7 +677,7 @@ class NormalisationSlots():
         """
         files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
-            self.parent.gudrunFile.instrument.dataFileDir, regex
+            self.parent.gudrunParams.instrument.dataFileDir, regex
         )
         for file in files:
             if file:

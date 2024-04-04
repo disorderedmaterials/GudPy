@@ -1381,8 +1381,7 @@ class GudrunFile:
             + components
         )
 
-    def writeGudrunFile(
-            self, params, path='', overwrite=False, writeParameters=True):
+    def writeGudrunFile(self, params, path='', overwrite=False):
         """
         Writes out the string representation of the GudrunFile.
         If 'overwrite' is True, then the initial file is overwritten.
@@ -1426,19 +1425,3 @@ class GudrunFile:
                 sampleBackground.writeAllSamples = False
         f.write(str(self))
         f.close()
-
-        if writeParameters:
-            for sb in params.sampleBackgrounds:
-                for s in sb.samples:
-                    if s.runThisSample:
-                        gf = deepcopy(self)
-                        gf.sampleBackgrounds = [deepcopy(sb)]
-                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
-                        gf.write_out(
-                            path=os.path.join(
-                                params.instrument.GudrunInputFileDir,
-                                s.pathName(),
-                            ),
-                            overwrite=True,
-                            writeParameters=False
-                        )

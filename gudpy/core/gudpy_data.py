@@ -146,7 +146,8 @@ class GudPyData:
             params=self.gudrunParams,
             path=os.path.join(
                 self.gudrunParams.instrument.GudrunInputFileDir,
-                self.gudrunFile.OUTPATH)
+                self.gudrunFile.OUTPATH),
+            overwrite=True
         )
 
     def writeYAMLFile(self, path=''):
@@ -167,10 +168,11 @@ class GudPyData:
                 fp
             )
 
-    def exportGudrunFile(self, path, params):
+    def exportGudrunFile(self, path):
         self.gudrunFile.writeGudrunFile(
-            params=params,
-            path=path
+            params=self.gudrunParams,
+            path=path,
+            overwrite=True
         )
 
 # -------------------------- YAML Helpers --------------------------- #

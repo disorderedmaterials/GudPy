@@ -25,6 +25,7 @@ class RatioCompositionModel(GudPyTableModel):
     data(index, role)
         Returns data at a specific index.
     """
+
     def __init__(self, data, headers, parent):
         """
         Calls super().__init__ on the passed parameters.
@@ -132,9 +133,9 @@ class RatioCompositionDelegate(GudPyDelegate):
         Sets data at a specific index inside the model.
     """
 
-    def __init__(self, gudrunFile):
+    def __init__(self, gudrunParams):
         super(RatioCompositionDelegate, self).__init__()
-        self.components = gudrunFile.components
+        self.components = gudrunParams.components
 
     def createEditor(self, parent, option, index):
         """
@@ -245,7 +246,7 @@ class RatioCompositionTable(QTableView):
         self.compositions = []
         super(RatioCompositionTable, self).__init__(parent=parent)
 
-    def makeModel(self, gudrunFile, data, parentObject):
+    def makeModel(self, gudrunParams, data, parentObject):
         """
         Makes the model and the delegate based on the data.
         Collects all compositions.
@@ -254,14 +255,14 @@ class RatioCompositionTable(QTableView):
         data : list
             Data for model to use.
         """
-        self.gudrunFile = gudrunFile
+        self.gudrunParams = gudrunParams
         self.setModel(
             RatioCompositionModel(
                 data, ["Component", "Ratio"], self.parent
             )
         )
         self.setItemDelegate(
-            RatioCompositionDelegate(self.gudrunFile)
+            RatioCompositionDelegate(self.gudrunParams)
         )
         self.parentObject = parentObject
         self.modelChanged.emit()
@@ -270,9 +271,10 @@ class RatioCompositionTable(QTableView):
         """
         Inserts a row into the model.
         """
-        if len(self.gudrunFile.components.components):
+        if len(self.gudrunParams.components.components):
             self.model().insertRow(
-                WeightedComponent(self.gudrunFile.components.components[0], 1.)
+                WeightedComponent(
+                    self.gudrunParams.components.components[0], 1.)
             )
 
     def removeRow(self, rows):
@@ -297,7 +299,7 @@ class RatioCompositionTable(QTableView):
                 if callable(ancestor):
                     ancestor = ancestor()
             self.compositions.clear()
-            for sampleBackground in ancestor.gudrunFile.sampleBackgrounds:
+            for sampleBackground in ancestor.gudrunParams.sampleBackgrounds:
                 for sample in sampleBackground.samples:
                     if sample != self.parentObject:
                         self.compositions.append(
@@ -319,7 +321,7 @@ class RatioCompositionTable(QTableView):
             composition.weightedComponents
         )
         self.makeModel(
-            self.gudrunFile,
+            self.gudrunParams,
             composition.weightedComponents,
             self.parentObject
         )

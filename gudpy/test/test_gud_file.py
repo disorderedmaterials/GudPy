@@ -247,7 +247,8 @@ class TestParseGudFile(TestCase):
 
         from pathlib import Path
         dataFileDir = Path("test/TestData/NIMROD-water/raw").absolute()
-        self.gudpy.gudrunFile.instrument.dataFileDir = str(dataFileDir) + "/"
+        self.gudpy.data.gudrunParams.instrument.dataFileDir = str(
+            dataFileDir) + "/"
         return super().setUp()
 
     def tearDown(self) -> None:

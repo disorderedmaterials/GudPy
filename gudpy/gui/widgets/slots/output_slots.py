@@ -9,13 +9,13 @@ class OutputSlots():
             "".join(stdout.split("\n"))
         )
 
-    def setOutput(self, output, task, gudrunFile=None, keyMap=None):
-        if not gudrunFile:
-            gudrunFile = self.parent.gudrunFile
+    def setOutput(self, output, task, gudrunParams=None, keyMap=None):
+        if not gudrunParams:
+            gudrunParams = self.parent.data.gudrunParams
         self.output = output
         self.task = task
         self.widget.outputTree.buildTree(
-            gudrunFile, output, self, keyMap=keyMap
+            gudrunParams, output, self, keyMap=keyMap
         )
         self.widget.outputTextEdit.verticalScrollBar().setValue(
             self.widget.outputTextEdit.verticalScrollBar(

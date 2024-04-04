@@ -29,8 +29,8 @@ class GudPyTreeModel(QAbstractItemModel):
 
     Attributes
     ----------
-    gudrunFile : GudrunFile
-        GudrunFile object associated with the model.
+    gudrunParams : gudrunParams
+        gudrunParams object associated with the model.
     persistentIndexes : dict
         Dict of QPersistentIndexes,
         key is a GudPy object, value is a QPersistentIndex.
@@ -70,7 +70,7 @@ class GudPyTreeModel(QAbstractItemModel):
         Remove a row from an index.
     """
 
-    def __init__(self, parent, gudrunFile):
+    def __init__(self, parent, gudrunParams):
         """
         Constructs all the necessary attributes for the GudPyTreeModel object.
         Calls super()._init__ which calls the dunder init method
@@ -79,11 +79,11 @@ class GudPyTreeModel(QAbstractItemModel):
         ----------
         parent : QWidget
             Parent widget.
-        gudrunFile : GudrunFile
-            GudrunFile object for model to use.
+        gudrunParams : GudrunParameters
+            gudrunParams object for model to use.
         """
         super(GudPyTreeModel, self).__init__(parent)
-        self.gudrunFile = gudrunFile
+        self.params = gudrunParams
         self.persistentIndexes = {}
         self.sampleIcon = QIcon(":/icons/sample")
         self.containerIcon = QIcon(":/icons/container")
@@ -116,21 +116,21 @@ class GudPyTreeModel(QAbstractItemModel):
         elif not parent.isValid():
             # Invalid parent means we are at the top level.
             rows = {
-                0: self.gudrunFile.instrument, 1: self.gudrunFile.beam,
-                2: self.gudrunFile.components, 3: self.gudrunFile.normalisation
+                0: self.params.instrument, 1: self.params.beam,
+                2: self.params.components, 3: self.params.normalisation
             }
             # Instrument | Beam | Normalisation
             if row in rows.keys():
                 obj = rows[row]
             else:
-                obj = self.gudrunFile.sampleBackgrounds[
+                obj = self.params.sampleBackgrounds[
                     row - NUM_GUDPY_CORE_OBJECTS
                 ]
         elif parent.isValid() and not parent.parent().isValid():
             # Valid parent and invalid grandparent, means that the index
             # corresponds to a sample.
             obj = (
-                self.gudrunFile.sampleBackgrounds[
+                self.params.sampleBackgrounds[
                     parent.row() - NUM_GUDPY_CORE_OBJECTS
                 ]
                 .samples[row]
@@ -139,7 +139,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # Valid parent and grandparent means that the index
             # corresponds to a container.
             obj = (
-                self.gudrunFile.sampleBackgrounds[
+                self.params.sampleBackgrounds[
                     parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 ].samples[parent.row()].containers[row]
             )
@@ -196,15 +196,15 @@ class GudPyTreeModel(QAbstractItemModel):
             Parent object.
         """
         for i, sampleBackground in enumerate(
-            self.gudrunFile.sampleBackgrounds
+            self.params.sampleBackgrounds
         ):
             if isinstance(item, Sample):
                 if item in sampleBackground.samples:
-                    return self.gudrunFile.sampleBackgrounds[i]
+                    return self.params.sampleBackgrounds[i]
             elif isinstance(item, Container):
                 for j, sample in enumerate(sampleBackground.samples):
                     if item in sample.containers:
-                        return self.gudrunFile.sampleBackgrounds[i].samples[j]
+                        return self.params.sampleBackgrounds[i].samples[j]
 
     def data(self, index, role):
         """
@@ -287,7 +287,7 @@ class GudPyTreeModel(QAbstractItemModel):
         ):
             index.internalPointer().name = uniquifyName(
                 value,
-                [s.name for s in self.gudrunFile.sampleBackground.samples],
+                [s.name for s in self.params.sampleBackground.samples],
                 sep="",
                 incFirst=True)
             self.dataChanged.emit(index, index)
@@ -327,17 +327,17 @@ class GudPyTreeModel(QAbstractItemModel):
             # Instrument + Beam + Normalisation + N SampleBackgrounds
             return (
                 NUM_GUDPY_CORE_OBJECTS
-                + len(self.gudrunFile.sampleBackgrounds)
+                + len(self.params.sampleBackgrounds)
             )
         elif parent.isValid() and not parent.parent().isValid():
             # If the parent is valid, but the grandparent is invalid
             # Return the number of samples of the sample background.
             if (
                 parent.row() >= NUM_GUDPY_CORE_OBJECTS
-                and len(self.gudrunFile.sampleBackgrounds)
+                and len(self.params.sampleBackgrounds)
             ):
                 return len(
-                    self.gudrunFile.sampleBackgrounds[
+                    self.params.sampleBackgrounds[
                         parent.row() - NUM_GUDPY_CORE_OBJECTS
                     ].samples
                 )
@@ -351,7 +351,7 @@ class GudPyTreeModel(QAbstractItemModel):
             # If it is a leaf, then return the number of
             # containers for the sample.
             return len(
-                self.gudrunFile.sampleBackgrounds[
+                self.params.sampleBackgrounds[
                     parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 ].samples[parent.row()].containers
             )
@@ -477,17 +477,17 @@ class GudPyTreeModel(QAbstractItemModel):
             if isinstance(obj, SampleBackground):
                 # SampleBackground is top level, so the parent is the root.
                 parent = QModelIndex()
-                setter = self.gudrunFile.sampleBackgrounds.append
+                setter = self.params.sampleBackgrounds.append
             if isinstance(obj, Sample):
                 targetIndex = parent.row() - NUM_GUDPY_CORE_OBJECTS
                 setter = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex]
+                    self.params.sampleBackgrounds[targetIndex]
                     .samples.append
                 )
             elif isinstance(obj, Container):
                 targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 setter = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex]
+                    self.params.sampleBackgrounds[targetIndex]
                     .samples[parent.row()].containers.append
                 )
             # Since we are only inserting one row, start = end.
@@ -505,18 +505,18 @@ class GudPyTreeModel(QAbstractItemModel):
         elif validSiblings[type(obj)]:
             # We are inserting.
             if isinstance(obj, SampleBackground):
-                index = self.gudrunFile.sampleBackgrounds.index(parentObj)
+                index = self.params.sampleBackgrounds.index(parentObj)
                 # SampleBackground is top level, so the parent is the root.
                 parent = QModelIndex()
-                setter = self.gudrunFile.sampleBackgrounds.insert
+                setter = self.params.sampleBackgrounds.insert
             elif isinstance(obj, Sample):
                 targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
                 index = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex]
+                    self.params.sampleBackgrounds[targetIndex]
                     .samples.index(parentObj)
                 )
                 setter = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex]
+                    self.params.sampleBackgrounds[targetIndex]
                     .samples.insert
                 )
             elif isinstance(obj, Container):
@@ -524,11 +524,11 @@ class GudPyTreeModel(QAbstractItemModel):
                     parent.parent().parent().row() - NUM_GUDPY_CORE_OBJECTS
                 )
                 index = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex].
+                    self.params.sampleBackgrounds[targetIndex].
                     samples[parent.parent().row()].containers.index(parentObj)
                 )
                 setter = (
-                    self.gudrunFile.sampleBackgrounds[targetIndex].
+                    self.params.sampleBackgrounds[targetIndex].
                     samples[parent.parent().row()].containers.insert
                 )
             # Again, start = end.
@@ -559,16 +559,16 @@ class GudPyTreeModel(QAbstractItemModel):
         obj = index.internalPointer()
         # Decide on the remove function.
         if isinstance(obj, SampleBackground):
-            remove = self.gudrunFile.sampleBackgrounds.remove
+            remove = self.params.sampleBackgrounds.remove
         elif isinstance(obj, Sample):
             targetIndex = parent.row() - NUM_GUDPY_CORE_OBJECTS
             remove = (
-                self.gudrunFile.sampleBackgrounds[targetIndex].samples.remove
+                self.params.sampleBackgrounds[targetIndex].samples.remove
             )
         elif isinstance(obj, Container):
             targetIndex = parent.parent().row() - NUM_GUDPY_CORE_OBJECTS
             remove = (
-                self.gudrunFile.sampleBackgrounds[targetIndex]
+                self.params.sampleBackgrounds[targetIndex]
                 .samples[parent.row()].containers.remove
             )
         invalidated = []
@@ -615,8 +615,8 @@ class GudPyTreeView(QTreeView):
 
     Attributes
     ----------
-    gudrunFile : GudrunFile
-        GudrunFile object to build the tree from.
+    gudrunParams : gudrunParams
+        gudrunParams object to build the tree from.
     parent : QWidget
         Parent widget.
     model : QStandardItemModel
@@ -627,11 +627,11 @@ class GudPyTreeView(QTreeView):
         Is the context tree enabled?
     Methods
     -------
-    buildTree(gudrunFile, sibling)
-        Builds the tree view from the gudrunFile, pairing
+    buildTree(gudrunParams, sibling)
+        Builds the tree view from the gudrunParams, pairing
         the modelIndexes with pages of the sibling QStackedWidget.
     makeModel()
-        Creates the model for the tree view from the GudrunFile.
+        Creates the model for the tree view from the gudrunParams.
     currentChanged(current, previous)
         Slot method for current index being changed in the tree view.
     click(modelIndex)
@@ -645,17 +645,17 @@ class GudPyTreeView(QTreeView):
     contextMenuEvent(event)
         Creates context menu, for right clicking the table.
     insertSampleBackground_(sampleBackground)
-        Inserts a SampleBackground into the GudrunFile.
+        Inserts a SampleBackground into the gudrunParams.
     insertSample_(sample)
-        Inserts a Sample into the GudrunFile.
+        Inserts a Sample into the gudrunParams.
     insertContainer_(container)
-        Inserts a Container into the GudrunFile.
+        Inserts a Container into the gudrunParams.
     copy()
         Copies the current object to the clipboard.
     cut_()
         Cuts the current object to the clipboard.
     paste_()
-        Pastes the clipboard back into the GudrunFile.
+        Pastes the clipboard back into the gudrunParams.
     duplicate()
         Duplicates the current Sample.
     duplicateOnlySample()
@@ -679,19 +679,19 @@ class GudPyTreeView(QTreeView):
         self.clipboard = None
         self.contextMenuEnabled = True
 
-    def buildTree(self, gudrunFile, parent):
+    def buildTree(self, gudrunParams, parent):
         """
         Constructs all the necessary attributes for the GudPyTreeView object.
         Calls the makeModel method,
         to create a QStandardItemModel for the tree view.
         Parameters
         ----------
-        gudrunFile : GudrunFile
-            GudrunFile object to create the tree from.
+        gudrunParams : gudrunParams
+            gudrunParams object to create the tree from.
         sibling : QStackedWidget
             Sibling widget to communicate signals and slots to/from.
         """
-        self.gudrunFile = gudrunFile
+        self.params = gudrunParams
         self.parent = parent
         self.makeModel()
         self.setCurrentIndex(self.model().index(0, 0))
@@ -705,9 +705,9 @@ class GudPyTreeView(QTreeView):
     def makeModel(self):
         """
         Creates the QStandardItemModel to be used for the GudPyTreeView.
-        The model is constructed from the GudrunFile.
+        The model is constructed from the gudrunParams.
         """
-        self.model_ = GudPyTreeModel(self, self.gudrunFile)
+        self.model_ = GudPyTreeModel(self, self.params)
         self.setModel(self.model_)
 
     def currentChanged(self, current, previous):
@@ -985,7 +985,7 @@ class GudPyTreeView(QTreeView):
 
     def insertSampleBackground(self, sampleBackground=None):
         """
-        Inserts a SampleBackground into the GudrunFile.
+        Inserts a SampleBackground into the gudrunParams.
         Inserts it into the tree.
         Parameters
         ----------
@@ -998,7 +998,7 @@ class GudPyTreeView(QTreeView):
 
     def insertSample(self, sample=None):
         """
-        Inserts a Sample into the GudrunFile.
+        Inserts a Sample into the gudrunParams.
         Inserts it into the tree.
         Parameters
         ----------
@@ -1012,7 +1012,7 @@ class GudPyTreeView(QTreeView):
 
     def insertContainer(self, container=None):
         """
-        Inserts a Container into the GudrunFile.
+        Inserts a Container into the gudrunParams.
         Inserts it into the tree.
         Parameters
         ----------
@@ -1050,7 +1050,7 @@ class GudPyTreeView(QTreeView):
 
     def paste(self):
         """
-        Pastes the contents of the clipboard back into the GudrunFile.
+        Pastes the contents of the clipboard back into the gudrunParams.
         """
         if isinstance(self.clipboard, SampleBackground):
             self.insertSampleBackground(
@@ -1081,7 +1081,7 @@ class GudPyTreeView(QTreeView):
         Sets all samples status to 'selected'.
         Used for selecting / deselecting all samples
         """
-        for sampleBackground in self.gudrunFile.sampleBackgrounds:
+        for sampleBackground in self.params.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 sample.runThisSample = selected
         if not self.parent.widgetsRefreshing:

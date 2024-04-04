@@ -18,6 +18,7 @@ from core.element import Element
 from core.instrument import Instrument
 from core.normalisation import Normalisation
 from core.sample_background import SampleBackground
+from core.gudpy_data import GudPyData
 from core.sample import Sample
 from core.enums import (
     CrossSectionSource, FTModes, Instruments, Scales, UnitsOfDensity,
@@ -43,7 +44,7 @@ class GudPyContext:
         )
 
         gPath = os.path.join(self.tempdir.name, "good_water.txt")
-        self.gudpy.gudrunFile.write_out(gPath, overwrite=True)
+        self.gudpy.data.exportGudrunFile(gPath)
 
         self.gudpy.loadFromFile(
             loadFile=gPath,
@@ -700,9 +701,10 @@ class TestGudPyIO(TestCase):
 
     def testLoadGudrunFile(self):
         with GudPyContext() as gudpy:
-            self.assertIsInstance(gudpy.gudrunFile, GudrunFile)
+            self.assertIsInstance(gudpy.data, GudPyData)
+            gudrunParams = gudpy.data.gudrunParams
 
-            instrumentAttrsDict = gudpy.gudrunFile.instrument.__dict__
+            instrumentAttrsDict = gudrunParams.instrument.__dict__
 
             for key in instrumentAttrsDict.keys():
                 pathKeys = ["GudrunInputFileDir", "dataFileDir"]
@@ -714,12 +716,12 @@ class TestGudPyIO(TestCase):
                         self.expectedInstrument[key], instrumentAttrsDict[key]
                     )
 
-            beamAttrsDict = gudpy.gudrunFile.beam.__dict__
+            beamAttrsDict = gudrunParams.beam.__dict__
 
             for key in beamAttrsDict.keys():
                 self.assertEqual(self.expectedBeam[key], beamAttrsDict[key])
 
-            normalisationAttrsDict = gudpy.gudrunFile.normalisation.__dict__
+            normalisationAttrsDict = gudrunParams.normalisation.__dict__
 
             for key in normalisationAttrsDict.keys():
                 if isinstance(
@@ -735,10 +737,10 @@ class TestGudPyIO(TestCase):
                         normalisationAttrsDict[key],
                     )
 
-            self.assertEqual(len(gudpy.gudrunFile.sampleBackgrounds), 1)
+            self.assertEqual(len(gudrunParams.sampleBackgrounds), 1)
 
             sampleBackgroundsAttrsDict = (
-                gudpy.gudrunFile.sampleBackgrounds[0].__dict__)
+                gudrunParams.sampleBackgrounds[0].__dict__)
 
             for key in sampleBackgroundsAttrsDict.keys():
                 if key == "samples":
@@ -746,7 +748,7 @@ class TestGudPyIO(TestCase):
                             self.expectedSampleBackground[key]):
                         sampleAttrsDict = (
                             deepcopy(
-                                gudpy.gudrunFile.sampleBackgrounds[
+                                gudrunParams.sampleBackgrounds[
                                     0].samples[i].__dict__
                             )
                         )
@@ -755,7 +757,7 @@ class TestGudPyIO(TestCase):
                             if key_ == "containers":
                                 for j, container in enumerate(sample[key_]):
                                     containerAttrsDict = (
-                                        gudpy.gudrunFile.sampleBackgrounds[0]
+                                        gudrunParams.sampleBackgrounds[0]
                                         .samples[i]
                                         .containers[j]
                                         .__dict__
@@ -806,16 +808,17 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            gudpy.gudrunFile.write_out(
-                gudpy.gudrunFile.loadFile, overwrite=True)
+            gudrunParams = gudpy.data.gudrunParams
+            gudpy.data.exportGudrunFile(path=gudpy.data.loadFile)
             with open(
-                gudpy.gudrunFile.loadFile,
+                gudpy.data.loadFile,
                 encoding="utf-8"
             ) as f:
                 outlines = "\n".join(f.readlines()[:-5])
                 self.assertEqual(
                     outlines, "\n".join(
-                        str(gudpy.gudrunFile).splitlines(keepends=True)[:-5])
+                        gudpy.data.gudrunFile.asString(
+                            gudrunParams).splitlines(keepends=True)[:-5])
                 )
 
             def valueInLines(value, lines):
@@ -872,7 +875,7 @@ class TestGudPyIO(TestCase):
                     else:
                         valueInLines(value, outlines)
             inlines = ""
-            with open(gudpy.gudrunFile.loadFile, encoding="utf-8") as f:
+            with open(gudpy.data.loadFile, encoding="utf-8") as f:
                 inlines = f.read()
             for dic in self.dicts:
                 for value in dic.values():
@@ -889,26 +892,24 @@ class TestGudPyIO(TestCase):
                             or value == os.path.sep
                             or value == os.path.join("../bin", "StartupFiles")
                             or value == (
-                                gudpy.gudrunFile.instrument.GudrunInputFileDir)
+                                gudrunParams.instrument.GudrunInputFileDir)
                         ):
                             continue
                         valueInLines(value, inlines)
 
     def testRewriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            gudpy.gudrunFile.write_out(
-                gudpy.gudrunFile.loadFile, overwrite=True)
+            gudrunParams = gudpy.data.gudrunParams
+            gudpy.data.exportGudrunFile(path=gudpy.data.loadFile)
             copyPath = os.path.join(
-                gudpy.gudrunFile.instrument.GudrunInputFileDir,
+                gudrunParams.instrument.GudrunInputFileDir,
                 "copyGF.txt"
             )
-            g1 = GudrunFile(
-                loadFile=gudpy.gudrunFile.loadFile,
-                format=Format.TXT
-            )
-            g1.instrument.GudrunInputFileDir = (
-                gudpy.gudrunFile.instrument.GudrunInputFileDir)
-            g1.write_out(copyPath, overwrite=True)
+            g1 = GudPyData()
+            g1.importGudrunFile(gudpy.data.loadFile)
+            g1.gudrunParams.instrument.GudrunInputFileDir = (
+                gudrunParams.instrument.GudrunInputFileDir)
+            g1.exportGudrunFile(path=copyPath)
 
             def compareString(string1, string2):
                 return string1 == string2
@@ -923,7 +924,7 @@ class TestGudPyIO(TestCase):
                     compareString(
                         fileContent,
                         "\n".join(
-                            str(gudpy.gudrunFile).splitlines(
+                            str(gudrunParams).splitlines(
                                 keepends=True)[:-5])),
                     True
                 )
@@ -937,7 +938,7 @@ class TestGudPyIO(TestCase):
 
                 with open(
                     os.path.join(
-                        gudpy.gudrunFile.loadFile
+                        gudrunParams.loadFile
                     ),
                     encoding="utf-8"
                 ) as fg:
@@ -950,24 +951,25 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         with GudPyContext() as gudpy:
-            gudpy.gudrunFile.write_out(
-                gudpy.gudrunFile.loadFile, overwrite=True)
-            g1 = GudrunFile(
-                loadFile=gudpy.gudrunFile.loadFile,
-                format=Format.TXT
-            )
-            g1.instrument.GudrunInputFileDir = (
-                gudpy.gudrunFile.instrument.GudrunInputFileDir)
+            gudrunParams = gudpy.data.gudrunParams
+            gudpy.data.exportGudrunFile(path=gudpy.data.loadFile)
+            g1 = GudPyData()
+            g1.importGudrunFile(gudpy.data.loadFile)
+            g1.gudrunParams.instrument.GudrunInputFileDir = (
+                gudrunParams.instrument.GudrunInputFileDir)
+            gStr = gudpy.data.gudrunFile.asString(gudrunParams)
+            g1Str = gudpy.data.gudrunFile.asString(g1)
             self.assertEqual(
-                "\n".join(str(g1).splitlines(keepends=True)[:-5]),
-                "\n".join(str(gudpy.gudrunFile).splitlines(keepends=True)[:-5])
+                "\n".join(str(g1Str).splitlines(keepends=True)[:-5]),
+                "\n".join(str(gStr).splitlines(keepends=True)[:-5])
             )
 
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w", encoding="utf-8")
         f.close()
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -987,7 +989,8 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1009,7 +1012,8 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1028,7 +1032,8 @@ class TestGudPyIO(TestCase):
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1047,7 +1052,8 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file supplied'
@@ -1061,7 +1067,8 @@ class TestGudPyIO(TestCase):
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1078,7 +1085,8 @@ class TestGudPyIO(TestCase):
             )
 
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
         self.assertEqual((
             'INSTRUMENT, BEAM and NORMALISATION'
             ' were not parsed. It\'s possible the file'
@@ -1111,7 +1119,8 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1145,7 +1154,8 @@ class TestGudPyIO(TestCase):
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Instrument, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1180,7 +1190,8 @@ class TestGudPyIO(TestCase):
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1219,7 +1230,8 @@ class TestGudPyIO(TestCase):
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1264,7 +1276,8 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Beam, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1313,7 +1326,8 @@ class TestGudPyIO(TestCase):
                 )
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Normalisation, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1338,7 +1352,8 @@ class TestGudPyIO(TestCase):
             )
             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
         with self.assertRaises(ParserException) as cm:
-            GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(loadFile="test_data.txt")
             self.assertEqual(
                 "Whilst parsing Sample Background, an exception occured."
                 " The input file is most likely of an incorrect format, "
@@ -1393,7 +1408,8 @@ class TestGudPyIO(TestCase):
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
 
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Sample, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1511,7 +1527,8 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Container, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1521,19 +1538,22 @@ class TestGudPyIO(TestCase):
 
     def testAppendExponentialValues(self):
         with GudPyContext() as gudpy:
+            gudrunParams = gudpy.data.gudrunParams
             # Remove last element of exponential values list
-            gudpy.gudrunFile.sampleBackgrounds[
+            gudrunParams.sampleBackgrounds[
                 0].samples[0].exponentialValues[0].pop()
-            gudpy.gudrunFile.write_out()
+            gudpy.data.writeGudrunFile()
 
-            gudrunFile = GudrunFile(loadFile=os.path.join(
-                gudpy.gudrunFile.instrument.GudrunInputFileDir,
-                gudpy.gudrunFile.OUTPATH
-            ), format=Format.TXT)
+            g = GudPyData()
+            g.importGudrunFile(os.path.join(
+                gudrunParams.instrument.GudrunInputFileDir,
+                GudrunFile.OUTPATH))
+
             # Test that a default value is appended
             self.assertEqual(
                 self.expectedSampleA["exponentialValues"],
-                gudrunFile.sampleBackgrounds[0].samples[0].exponentialValues
+                g.data.gudrunParams.sampleBackgrounds[
+                    0].samples[0].exponentialValues
             )
 
     def testLoadMissingContainerAttributesRand(self):
@@ -1591,7 +1611,8 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with self.assertRaises(ParserException) as cm:
-                GudrunFile(loadFile="test_data.txt", format=Format.TXT)
+                g = GudPyData()
+                g.importGudrunFile(loadFile="test_data.txt")
                 self.assertEqual(
                     "Whilst parsing Container, an exception occured."
                     " The input file is most likely of an incorrect format, "
@@ -1602,8 +1623,8 @@ class TestGudPyIO(TestCase):
     def testZeroExitGudrun(self):
         with GudPyContext() as gudpy:
             gudpy.loadFromFile(
-                loadFile=gudpy.gudrunFile.loadFile, format=Format.TXT)
+                loadFile=gudpy.data.loadFile)
             gudpy.setSaveLocation(os.path.splitext(
-                gudpy.gudrunFile.loadFile)[0])
+                gudpy.data.loadFile)[0])
             gudpy.runGudrun()
             self.assertEqual(gudpy.gudrun.exitcode, 0)

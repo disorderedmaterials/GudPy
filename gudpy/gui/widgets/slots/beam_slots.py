@@ -414,9 +414,9 @@ class BeamSlots():
         """
         import os
         instrumentFilesDir = os.path.join(
-            self.parent.gudrunFile.instrument.GudrunStartFolder,
-            self.parent.gudrunFile.instrument.startupFileFolder,
-            Instruments(self.parent.gudrunFile.instrument.name.value).name
+            self.parent.gudrunParams.instrument.GudrunStartFolder,
+            self.parent.gudrunParams.instrument.startupFileFolder,
+            Instruments(self.parent.gudrunParams.instrument.name.value).name
         )
         filename, _ = QFileDialog.getOpenFileName(
             self.widget,

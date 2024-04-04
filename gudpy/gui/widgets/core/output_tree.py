@@ -7,20 +7,20 @@ from PySide6.QtCore import (
     Qt
 )
 
-from core.gudrun_file import GudrunFile
+from core.gudpy_data import GudrunParameters
 from core.instrument import Instrument
 from core.sample import Sample
 
 
 class OutputTreeModel(QAbstractItemModel):
 
-    def __init__(self, output, gudrunFile, keyMap=None, parent=None):
+    def __init__(self, output, gudrunParams, keyMap=None, parent=None):
         super().__init__(parent)
         if isinstance(output, str):
             output = {0: output}
         self.keyMap = keyMap
         self.output = output
-        self.gudrunFile = gudrunFile
+        self.params = gudrunParams
         self.map = {}
         self.refs = []
         self.data_ = {}
@@ -36,7 +36,7 @@ class OutputTreeModel(QAbstractItemModel):
 
     def setupData(self):
         for idx, [name, output] in enumerate(self.output.items()):
-            gf = deepcopy(self.gudrunFile)
+            gf = deepcopy(self.params)
             gf.name = name
             gf.output = output
             self.refs.append(gf)
@@ -48,7 +48,7 @@ class OutputTreeModel(QAbstractItemModel):
             ]
 
             if not offsets:
-                i = deepcopy(self.gudrunFile.instrument)
+                i = deepcopy(self.params.instrument)
                 i.output = output
                 i.name = "General"
                 self.data_[idx]["outputs"].append(i)
@@ -64,7 +64,7 @@ class OutputTreeModel(QAbstractItemModel):
                 ]
             )
 
-            instrument = deepcopy(self.gudrunFile.instrument)
+            instrument = deepcopy(self.params.instrument)
             instrument.output = "".join(
                 output.splitlines(keepends=True)
                 [0: sbindicies[0][0]]
@@ -83,7 +83,7 @@ class OutputTreeModel(QAbstractItemModel):
                 for sample, index in zip(
                     [
                         s for sb in
-                        self.gudrunFile.sampleBackgrounds
+                        self.params.sampleBackgrounds
                         for s in sb.samples
                         if s.runThisSample
                     ], indices
@@ -137,7 +137,7 @@ class OutputTreeModel(QAbstractItemModel):
     def parent(self, index):
         if not index.isValid():
             return QModelIndex()
-        if isinstance(index.internalPointer(), GudrunFile):
+        if isinstance(index.internalPointer(), GudrunParameters):
             return QModelIndex()
         elif isinstance(index.internalPointer(), (Instrument, Sample)):
             if len(self.data_.keys()) > 1:
@@ -158,7 +158,7 @@ class OutputTreeModel(QAbstractItemModel):
             else:
                 return 0
         parentObj = parent.internalPointer()
-        if isinstance(parentObj, GudrunFile):
+        if isinstance(parentObj, GudrunParameters):
             return len(
                 self.data_[
                     self.refs.index(
@@ -175,7 +175,7 @@ class OutputTreeModel(QAbstractItemModel):
             return None
         if role == Qt.DisplayRole or role == Qt.EditRole:
             obj = index.internalPointer()
-            if isinstance(obj, GudrunFile):
+            if isinstance(obj, GudrunParameters):
                 if self.keyMap:
                     return self.keyMap[obj.name]
                 else:
@@ -191,8 +191,8 @@ class OutputTreeView(QTreeView):
     def __init__(self, parent):
         super().__init__(parent)
 
-    def buildTree(self, gudrunFile, output, parent, keyMap=None):
-        self.gudrunFile = gudrunFile
+    def buildTree(self, params, output, parent, keyMap=None):
+        self.params = params
         self.output = output
         self.parent = parent
         self.keyMap = keyMap
@@ -203,7 +203,7 @@ class OutputTreeView(QTreeView):
 
     def makeModel(self):
         self.model_ = OutputTreeModel(
-            self.output, self.gudrunFile,
+            self.output, self.params,
             keyMap=self.keyMap, parent=self
         )
         self.setModel(self.model_)

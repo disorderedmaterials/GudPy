@@ -2,6 +2,7 @@ import os
 from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 
+from core.gudpy_data import GudrunParameters
 from core import utils
 from core.enums import CrossSectionSource
 
@@ -24,7 +25,7 @@ class GudPyFileLibrary:
         Checks if the files and directories exist, in the current file system.
     """
 
-    def __init__(self, params):
+    def __init__(self, params: GudrunParameters):
         """
         Constructs the lists of directories and files which
         the file system consists of.

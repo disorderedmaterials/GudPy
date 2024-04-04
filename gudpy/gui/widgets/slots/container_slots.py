@@ -170,8 +170,8 @@ class ContainerSlots():
             lambda: self.addFiles(
                 self.widget.containerDataFilesList,
                 "Add data files",
-                f"{self.parent.gudrunFile.instrument.dataFileType}"
-                f" (*.{self.parent.gudrunFile.instrument.dataFileType})",
+                f"{self.parent.gudrunParams.instrument.dataFileType}"
+                f" (*.{self.parent.gudrunParams.instrument.dataFileType})",
             )
         )
         self.widget.removeContainerDataFileButton.clicked.connect(
@@ -324,8 +324,8 @@ class ContainerSlots():
         self.container.periodNumber = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            if not self.parent.gudrunFile.purgeFile.excludeSampleAndCan:
-                self.parent.gudrunFile.purged = False
+            if not self.parent.gudrunParams.purgeFile.excludeSampleAndCan:
+                self.parent.gudrunParams.purgeLocation = ""
 
     def handleGeometryChanged(self, index):
         """
@@ -639,7 +639,7 @@ class ContainerSlots():
         """
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams.purgeLocation = ""
             self.container.dataFiles.dataFiles = (
                 self.widget.containerDataFilesList.model().stringList()
             )
@@ -660,7 +660,7 @@ class ContainerSlots():
         """
         files, _ = QFileDialog.getOpenFileNames(
             self.widget, title,
-            self.parent.gudrunFile.instrument.dataFileDir, regex
+            self.parent.gudrunParams.instrument.dataFileDir, regex
         )
         for file in files:
             if file:

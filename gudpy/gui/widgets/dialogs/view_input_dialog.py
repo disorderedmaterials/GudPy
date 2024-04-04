@@ -15,8 +15,8 @@ class ViewInputDialog(QDialog):
 
     Attributes
     ----------
-    gudrunFile : GudrunFile
-        GudrunFile object currently associated with the application.
+    gudpyData : GudPyData
+        GudrunParameters object currently associated with the application.
     parent : QWidget
         Parent widget.
     Methods
@@ -27,9 +27,9 @@ class ViewInputDialog(QDialog):
         Saves the input file and updates the UI appropiately.
     """
 
-    def __init__(self, gudrunFile, parent):
+    def __init__(self, gudpyData, parent):
         super(ViewInputDialog, self).__init__(parent=parent)
-        self.gudrunFile = gudrunFile
+        self.gudpyData = gudpyData
         self.parent = parent
         self.initComponents()
 
@@ -52,22 +52,22 @@ class ViewInputDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
-        self.widget.setWindowTitle(self.gudrunFile.path())
+        self.widget.setWindowTitle(self.gudpyData.path())
         self.widget.saveAndCloseButton.clicked.connect(self.save)
         self.widget.closeButton.clicked.connect(self.widget.close)
-        self.widget.textEdit.setText(str(self.gudrunFile))
+        self.widget.textEdit.setText(str(self.gudpyData))
         self.widget.textEdit.textChanged.connect(self.setChanged)
 
     def setChanged(self):
         self.widget.saveAndCloseButton.setEnabled(
-            self.widget.textEdit.toPlainText() != str(self.gudrunFile)
+            self.widget.textEdit.toPlainText() != str(self.gudpyData)
         )
 
     def save(self):
         """
         Saves the input file and updates the UI appropiately.
         """
-        with open(self.gudrunFile.path(), "w", encoding="utf-8") as fp:
+        with open(self.gudpyData.path(), "w", encoding="utf-8") as fp:
             fp.write(self.widget.textEdit.toPlainText())
         self.widget.close()
         self.parent.updateFromFile()

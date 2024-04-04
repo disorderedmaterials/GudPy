@@ -531,7 +531,7 @@ class InstrumentSlots:
             self.instrument.detectorCalibrationFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleGroupsFileChanged(self, text):
         """
@@ -551,7 +551,7 @@ class InstrumentSlots:
             self.instrument.groupFileName = text
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleDeadtimeFileChanged(self, text):
         """
@@ -781,7 +781,7 @@ class InstrumentSlots:
         ]
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleSpectrumNumbersTChanged(self, text):
         """
@@ -851,7 +851,7 @@ class InstrumentSlots:
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleChannelNoBChanged(self, value):
         """
@@ -870,7 +870,7 @@ class InstrumentSlots:
         )
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleSpikeAnalysisAcceptanceFactorChanged(self, value):
         """
@@ -887,7 +887,7 @@ class InstrumentSlots:
         self.instrument.spikeAnalysisAcceptanceFactor = value
         if not self.widgetsRefreshing:
             self.parent.setModified()
-            self.parent.gudrunFile.purged = False
+            self.parent.gudrunParams = ""
 
     def handleMinWavelengthChanged(self, value):
         """

@@ -19,7 +19,7 @@ class IterationDialog(QDialog):
         self.text = ""
         self.loadUI()
         self.initComponents()
-        self.params = {}
+        self.iteratorParams = {}
 
     def initComponents(self):
         self.widget.numberIterationsSpinBox.valueChanged.connect(
@@ -52,7 +52,7 @@ class IterationDialog(QDialog):
 
     def iterate(self):
         self.widget.close()
-        self.params = {
+        self.iteratorParams = {
             "nTotal": self.numberIterations
         }
 
@@ -124,8 +124,9 @@ class TweakFactorIterationDialog(IterationDialog):
 
 
 class CompositionIterationDialog(IterationDialog):
-    def __init__(self, parent, gudrunFile):
-        self.gudrunFile = gudrunFile
+    def __init__(self, parent, gudrunParams):
+        self.gudrunParams = gudrunParams
+        self.iteratorParams = None
         self.components = [None, None]
         self.rtol = 0.
         self.mode = iterators.Composition.Mode.SINGLE
@@ -137,15 +138,15 @@ class CompositionIterationDialog(IterationDialog):
 
     def loadFirstComponentsComboBox(self):
         self.widget.firstComponentComboBox.clear()
-        for component in self.gudrunFile.components.components:
+        for component in self.gudrunParams.components.components:
             self.widget.firstComponentComboBox.addItem(
                 component.name, component
             )
-        self.components[0] = self.gudrunFile.components.components[0]
+        self.components[0] = self.gudrunParams.components.components[0]
 
     def loadSecondComponentsComboBox(self):
         self.widget.secondComponentComboBox.clear()
-        for component in self.gudrunFile.components.components:
+        for component in self.gudrunParams.components.components:
             self.widget.secondComponentComboBox.addItem(
                 component.name, component
             )
@@ -172,7 +173,7 @@ class CompositionIterationDialog(IterationDialog):
         self.rtol = value
 
     def enableItems(self, comboBox):
-        for i in range(len(self.gudrunFile.components.components)):
+        for i in range(len(self.gudrunParams.components.components)):
             item = comboBox.model().item(i)
             if item:
                 item.setFlags(
@@ -217,7 +218,7 @@ class CompositionIterationDialog(IterationDialog):
         self.widget.singleComponentCheckBox.toggled.connect(
             self.toggleUseSingleComponent
         )
-        if len(self.gudrunFile.components.components):
+        if len(self.gudrunParams.components.components):
 
             self.loadFirstComponentsComboBox()
             self.loadSecondComponentsComboBox()
@@ -227,8 +228,8 @@ class CompositionIterationDialog(IterationDialog):
 
     def iterate(self):
         self.widget.close()
-        self.params = {
-            "gudrunFile": None,
+        self.iteratorParams = {
+            "gudrunParams": self.gudrunParams,
             "mode": self.mode,
             "nTotal": self.numberIterations,
             "rtol": self.rtol,

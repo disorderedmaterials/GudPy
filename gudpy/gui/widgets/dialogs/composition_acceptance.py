@@ -7,10 +7,10 @@ from PySide6.QtUiTools import QUiLoader
 
 class CompositionAcceptanceDialog(QDialog):
 
-    def __init__(self, sample, gudrunFile, parent):
+    def __init__(self, sample, gudrunParams, parent):
         super(CompositionAcceptanceDialog, self).__init__(parent=parent)
         self.sample = sample
-        self.gudrunFile = gudrunFile
+        self.gudrunParams = gudrunParams
         self.accepted_ = False
         self.initComponents()
 
@@ -44,7 +44,7 @@ class CompositionAcceptanceDialog(QDialog):
             f"New composition for {self.sample.name}. Accept?"
         )
         self.widget.newRatioCompositionTable.makeModel(
-            self.gudrunFile,
+            self.gudrunParams,
             self.sample.composition.weightedComponents,
             self.sample
         )

@@ -26,13 +26,12 @@ class TestPurgeFile(TestCase):
         copyfile(dirpath, "test/TestData/NIMROD-water/good_water.txt")
         self.gudpy.loadFromFile(
             loadFile="test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-
-        self.gudpy.gudrunFile.write_out(
-            path="test/TestData/NIMROD-water/good_water.txt",
-            overwrite=True
         )
-        self.g = self.gudpy.gudrunFile
+
+        self.gudpy.data.writeGudrunFile(
+            path="test/TestData/NIMROD-water/good_water.txt"
+        )
+        self.g = self.gudpy.data.gudrunParams
         self.expectedPurgeFile = {
             "standardDeviation": (10, 10),
             "ignoreBad": True,
@@ -58,7 +57,6 @@ class TestPurgeFile(TestCase):
             )
 
     def testWritePurgeFile(self):
-
         purge = PurgeFile(self.g)
         purge.write_out()
         with open("purge_det.dat", encoding="utf-8") as f:

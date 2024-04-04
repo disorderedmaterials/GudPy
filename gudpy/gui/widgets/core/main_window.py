@@ -6,6 +6,7 @@ from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets, QtCharts
 
 from core.container import Container
 from core.sample import Sample
+from core.gudpy_data import GudPyData
 
 from gui.widgets.dialogs.iterators import (
     CompositionIterationDialog,
@@ -67,8 +68,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
     Attributes
     ----------
-    self.gudrunFile : GudrunFile
-        self.gudrunFile object currently associated with the application.
+    gudrunParams : GudrunParams
+        GudrunParams object currently associated with the application.
     clipboard : SampleBackground | Sample | Container
         Stores copied objects.
     iterator : Iterator | iterators.CompositionIterator
@@ -97,7 +98,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         """
         super().__init__()
 
-        self.gudrunFile = None
+        self.gudrunParams = None
         self.modified = False
         self.clipboard = None
         self.results = {}
@@ -357,36 +358,38 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         if not self.widgetsRefreshing:
             self.setModified()
 
-    def updateWidgets(self, gudrunFile, gudrunOutput=None):
-        self.gudrunFile = gudrunFile
-        self.ui.gudrunFile = gudrunFile
+    def updateWidgets(self, gudrunParams: GudrunParameters, gudrunOutput=None):
+        self.gudrunParams = gudrunParams
+        self.ui.gudrunParams = gudrunParams
         self.widgetsRefreshing = True
         self.ui.tabWidget.setVisible(True)
-        self.instrumentSlots.setInstrument(self.gudrunFile.instrument)
-        self.beamSlots.setBeam(self.gudrunFile.beam)
-        self.componentSlots.setComponents(self.gudrunFile.components)
-        self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+        self.instrumentSlots.setInstrument(self.gudrunParams.instrument)
+        self.beamSlots.setBeam(self.gudrunParams.beam)
+        self.componentSlots.setComponents(self.gudrunParams.components)
+        self.normalisationSlots.setNormalisation(
+            self.gudrunParams.normalisation)
 
-        if len(self.gudrunFile.sampleBackgrounds):
+        if len(self.gudrunParams.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(
-                self.gudrunFile.sampleBackgrounds[0]
+                self.gudrunParams.sampleBackgrounds[0]
             )
 
-            if len(self.gudrunFile.sampleBackgrounds[0].samples):
+            if len(self.gudrunParams.sampleBackgrounds[0].samples):
                 self.sampleSlots.setSample(
-                    self.gudrunFile.sampleBackgrounds[0].samples[0]
+                    self.gudrunParams.sampleBackgrounds[0].samples[0]
                 )
 
                 if len(
-                    self.gudrunFile.sampleBackgrounds[0].samples[0].containers
+                    self.gudrunParams.sampleBackgrounds[
+                        0].samples[0].containers
                 ):
                     self.containerSlots.setContainer(
-                        self.gudrunFile.sampleBackgrounds[0]
+                        self.gudrunParams.sampleBackgrounds[0]
                         .samples[0]
                         .containers[0]
                     )
         self.setActionsEnabled(True)
-        self.ui.objectTree.buildTree(self.gudrunFile, self)
+        self.ui.objectTree.buildTree(self.gudrunParams, self)
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
@@ -400,7 +403,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         where the geometry is SameAsBeam.
         """
         if (
-            self.gudrunFile.normalisation.geometry ==
+            self.gudrunParams.normalisation.geometry ==
             enums.Geometry.SameAsBeam
         ):
             self.normalisationSlots.widgetsRefreshing = True
@@ -409,14 +412,14 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             )
             self.normalisationSlots.widgetsRefreshing = False
         for i, sampleBackground in enumerate(
-            self.gudrunFile.sampleBackgrounds
+            self.gudrunParams.sampleBackgrounds
         ):
             for j, sample in enumerate(sampleBackground.samples):
-                self.gudrunFile.sampleBackgrounds[i].samples[
+                self.gudrunParams.sampleBackgrounds[i].samples[
                     j
                 ].geometry = config.geometry
                 for k in range(len(sample.containers)):
-                    sample = self.gudrunFile.sampleBackgrounds[i].samples[j]
+                    sample = self.gudrunParams.sampleBackgrounds[i].samples[j]
                     sample.containers[k].geometry = config.geometry
 
     def updateCompositions(self):
@@ -706,7 +709,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
     def setModified(self):
         if not self.modified:
-            if self.gudrunFile.path():
+            if self.gudrunParams.path():
                 self.modified = True
                 self.ui.setWindowModified(True)
                 self.ui.save.setEnabled(True)
@@ -738,7 +741,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.viewLiveInputFile.setEnabled(state)
         self.ui.save.setEnabled(
             state & self.modified
-            if self.gudrunFile.path()
+            if self.gudrunParams.path()
             else False
         )
         self.ui.exportInputFile.setEnabled(state)
@@ -777,8 +780,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.delete_.setEnabled(state)
 
     def viewInput(self):
-        self.currentState = str(self.gudrunFile)
-        viewInputDialog = ViewInputDialog(self.gudrunFile, self)
+        self.currentState = str(self.gudrunParams)
+        viewInputDialog = ViewInputDialog(self.data, self)
         viewInputDialog.widget.exec_()
 
     def handleAllPlotModeChanged(self, index):

@@ -10,43 +10,43 @@ class TestYAML(TestCase):
         gudpy1 = gudpy.GudPy()
         gudpy1.loadFromFile(
             loadFile="test/TestData/NIMROD-water/water.txt",
-            format=Format.TXT
         )
-        gudpy1.save(path="test/TestData/NIMROD-water/water.yaml")
-        gf1 = gudpy1.gudrunFile
+        gudpy1.data.writeYAMLFile(path="test/TestData/NIMROD-water/water.yaml")
+        gData1 = gudpy1.data.gudrunParams
 
         gudpy2 = gudpy.GudPy()
         gudpy2.loadFromFile(
             loadFile="test/TestData/NIMROD-water/water.yaml",
-            format=Format.YAML
         )
-        gf2 = gudpy2.gudrunFile
+        gData2 = gudpy2.data.gudrunParams
 
-        gf1.instrument.GudrunInputFileDir = os.path.abspath(
-            gf1.instrument.GudrunInputFileDir)
-        gf2.instrument.GudrunInputFileDir = os.path.abspath(
-            gf2.instrument.GudrunInputFileDir)
+        gData1.instrument.GudrunInputFileDir = os.path.abspath(
+            gData1.instrument.GudrunInputFileDir)
+        gData2.instrument.GudrunInputFileDir = os.path.abspath(
+            gData2.instrument.GudrunInputFileDir)
 
         self.assertDictEqual(
-            gf1.instrument.__dict__, gf2.instrument.__dict__)
-        self.assertDictEqual(gf2.beam.__dict__, gf2.beam.__dict__)
+            gData1.instrument.__dict__, gData2.instrument.__dict__)
+        self.assertDictEqual(gData2.beam.__dict__, gData2.beam.__dict__)
 
-        normalisationDataFilesA = gf1.normalisation.__dict__.pop("dataFiles")
-        normalisationDataFilesBgA = gf1.normalisation.__dict__.pop(
+        normalisationDataFilesA = gData1.normalisation.__dict__.pop(
+            "dataFiles")
+        normalisationDataFilesBgA = gData1.normalisation.__dict__.pop(
             "dataFilesBg"
         )
-        normalisationCompositionA = gf1.normalisation.__dict__.pop(
+        normalisationCompositionA = gData1.normalisation.__dict__.pop(
             "composition"
         )
         normalisationElementsA = normalisationCompositionA.__dict__.pop(
             "elements"
         )
 
-        normalisationDataFilesB = gf2.normalisation.__dict__.pop("dataFiles")
-        normalisationDataFilesBgB = gf2.normalisation.__dict__.pop(
+        normalisationDataFilesB = gData2.normalisation.__dict__.pop(
+            "dataFiles")
+        normalisationDataFilesBgB = gData2.normalisation.__dict__.pop(
             "dataFilesBg"
         )
-        normalisationCompositionB = gf2.normalisation.__dict__.pop(
+        normalisationCompositionB = gData2.normalisation.__dict__.pop(
             "composition"
         )
         normalisationElementsB = normalisationCompositionB.__dict__.pop(
@@ -65,7 +65,7 @@ class TestYAML(TestCase):
             normalisationCompositionB.__dict__,
         )
         self.assertDictEqual(
-            gf1.normalisation.__dict__, gf2.normalisation.__dict__
+            gData1.normalisation.__dict__, gData2.normalisation.__dict__
         )
 
         for elementA, elementB in zip(
@@ -73,17 +73,17 @@ class TestYAML(TestCase):
         ):
             self.assertDictEqual(elementA.__dict__, elementB.__dict__)
 
-        sampleBackgroundDataFilesA = gf1.sampleBackgrounds[0].__dict__.pop(
+        sampleBackgroundDataFilesA = gData1.sampleBackgrounds[0].__dict__.pop(
             "dataFiles"
         )
-        sampleBackgroundSamplesA = gf1.sampleBackgrounds[0].__dict__.pop(
+        sampleBackgroundSamplesA = gData1.sampleBackgrounds[0].__dict__.pop(
             "samples"
         )
 
-        sampleBackgroundDataFilesB = gf2.sampleBackgrounds[0].__dict__.pop(
+        sampleBackgroundDataFilesB = gData2.sampleBackgrounds[0].__dict__.pop(
             "dataFiles"
         )
-        sampleBackgroundSamplesB = gf2.sampleBackgrounds[0].__dict__.pop(
+        sampleBackgroundSamplesB = gData2.sampleBackgrounds[0].__dict__.pop(
             "samples"
         )
 
@@ -92,8 +92,8 @@ class TestYAML(TestCase):
             sampleBackgroundDataFilesB.__dict__,
         )
         self.assertDictEqual(
-            gf1.sampleBackgrounds[0].__dict__,
-            gf2.sampleBackgrounds[0].__dict__,
+            gData1.sampleBackgrounds[0].__dict__,
+            gData2.sampleBackgrounds[0].__dict__,
         )
 
         for sampleA, sampleB in zip(

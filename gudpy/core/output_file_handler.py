@@ -7,7 +7,7 @@ import tempfile
 import core.utils as utils
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
-from data import GudrunParameters
+from core.gudpy_data import GudrunParameters
 
 
 @dataclass
