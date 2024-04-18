@@ -284,7 +284,7 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
     else:
         mse, optExponents = opti.gradientDescent(maxiter=niters)
 
-    if not mse or optExponents:
+    if not mse or not optExponents:
         return echoError("Optimisation unsuccessful")
 
     echoTick("Optimisation complete")
