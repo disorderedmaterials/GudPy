@@ -431,6 +431,7 @@ class GudPyController(QtCore.QObject):
                 "Purge failed with the following output: "
                 f"{self.gudpy.purge.error}"
             )
+            self.workerThread = None
             return
 
         thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
