@@ -39,10 +39,10 @@ From: ubuntu:22.04
 
 %runscript
     # If the container is executed, this line will be run.
-    python3.10 /opt/GudPy/gudpy
+    python3.10 /opt/GudPy/gudpy/gudpy_gui.py
 
 %apphelp GudPy
     GudPy GUI version.
 
 %apprun GudPy
-    python3 /opt/GudPy/gudpy
+    python3.10 /opt/GudPy/gudpy/gudpy_gui.py
