@@ -1020,11 +1020,17 @@ class GudPyTreeView(QTreeView):
         """
         if not sample:
             sample = Sample()
+            samples = []
+            if isinstance(self.currentObject(), Sample):
+                samples = [s.name for s in self.model().findParent(
+                    self.currentObject()).samples]
+            elif isinstance(self.currentObject(), SampleBackground):
+                samples = [s.name for s in self.currentObject().samples]
             sample.name = uniquifyName(
                 "SAMPLE",
-                [s.name for s in self.gudrunFile.sampleBackgrounds.samples],
-                sep="",
-                incFirst=True)  # for now, give a default name.
+                samples,
+                sep="_",
+                incFirst=False)  # for now, give a default name.
         self.insertRow(sample)
 
     def insertContainer(self, container=None):
