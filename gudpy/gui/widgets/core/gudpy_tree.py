@@ -275,7 +275,7 @@ class GudPyTreeModel(QAbstractItemModel):
         if not index.isValid():
             return False
         elif role == Qt.CheckStateRole and self.isSample(index):
-            if value == Qt.Checked:
+            if value == 2:
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
@@ -285,11 +285,24 @@ class GudPyTreeModel(QAbstractItemModel):
             role == Qt.EditRole
             and (self.isSample(index) or self.isContainer(index))
         ):
-            index.internalPointer().name = uniquifyName(
-                value,
-                [s.name for s in self.gudrunFile.sampleBackground.samples],
-                sep="",
-                incFirst=True)
+            if self.isSample(index):
+                index.internalPointer().name = uniquifyName(
+                    value,
+                    [s.name for s in self.findParent(
+                        index.internalPointer()).samples
+                        if s != index.internalPointer()
+                     ],
+                    sep="_",
+                    incFirst=False)
+            elif self.isContainer(index):
+                index.internalPointer().name = uniquifyName(
+                    value,
+                    [c.name for c in self.findParent(
+                        index.internalPointer()).containers
+                        if c != index.internalPointer()
+                     ],
+                    sep="_",
+                    incFirst=False)
             self.dataChanged.emit(index, index)
             return True
         else:
@@ -1007,7 +1020,11 @@ class GudPyTreeView(QTreeView):
         """
         if not sample:
             sample = Sample()
-            sample.name = "SAMPLE"  # for now, give a default name.
+            sample.name = uniquifyName(
+                "SAMPLE",
+                [s.name for s in self.gudrunFile.sampleBackgrounds.samples],
+                sep="",
+                incFirst=True)  # for now, give a default name.
         self.insertRow(sample)
 
     def insertContainer(self, container=None):
