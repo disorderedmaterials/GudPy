@@ -410,7 +410,7 @@ class GudPyController(QtCore.QObject):
             if purgeResult == QMessageBox.Yes:
                 if self.createPurgeProcess():
                     self.gudpy.purge.start()
-                    self.gudpy.purge.finished.connect(self.startProcess)
+                    self.gudpy.purge.finished.connect(self.purgeFinished)
                     return
             elif purgeResult != QMessageBox.No:
                 self.mainWidget.processStopped()
@@ -431,6 +431,7 @@ class GudPyController(QtCore.QObject):
                 "Purge failed with the following output: "
                 f"{self.gudpy.purge.error}"
             )
+            self.workerThread = None
             return
 
         thresh = self.gudpy.gudrunFile.instrument.goodDetectorThreshold
@@ -451,6 +452,8 @@ class GudPyController(QtCore.QObject):
 
         if isinstance(self.workerThread, gp.Purge):
             self.workerThread = None
+        if self.workerThread:
+            self.startProcess()
 
     def runGudrun(self, gudrunFile=None):
         if not gudrunFile:
