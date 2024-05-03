@@ -26,7 +26,7 @@ runs:
       chmod +x binaries-${{ env.gudrunTag }}-osx-fat/*
       mkdir binaries-${{ env.gudrunTag }}-linux
       mv binaries-${{ env.gudrunTag }}-osx-fat/* binaries-${{ env.gudrunTag }}-linux
-      zip -9rv ../gudrun-binaries.zip binaries-${{ env.gudrunTag }}-linux/
+      zip -9rv ../binaries-${{ env.gudrunTag }}-osx-fat binaries-${{ env.gudrunTag }}-linux/
   - name: Retrieve Externals (OSX)
     shell: bash
     if: runner.os == 'MacOS'
