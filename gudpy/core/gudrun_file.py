@@ -866,7 +866,6 @@ class GudrunFile:
                 .replace("SAMPLE", "").strip()
             )
             sample.name = utils.replace_unwanted_chars(sample.name)
-            print(sample.name)
             self.consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
