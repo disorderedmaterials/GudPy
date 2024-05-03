@@ -12,7 +12,6 @@ runs:
     if: runner.os == 'Linux'
     run: |
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-linux.zip > gudrun-binaries.zip
-      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-linux.zip > modex-binaries.zip
   - name: Build Externals (OSX)
     shell: bash
     if: runner.os == 'MacOS'
@@ -21,36 +20,14 @@ runs:
       brew update-reset
       brew install ninja
       # Retrieve Gudrun source
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > binaries-${{ env.gudrunTag }}-osx-fat.zip
-      unzip binaries-${{ env.gudrunTag }}-osx-fat.zip
-      chmod +x binaries-${{ env.gudrunTag }}-osx-fat/*
-      mkdir binaries-${{ env.gudrunTag }}-linux
-      mv binaries-${{ env.gudrunTag }}-osx-fat/* binaries-${{ env.gudrunTag }}-linux
-      zip -9rv ../binaries-${{ env.gudrunTag }}-osx-fat binaries-${{ env.gudrunTag }}-linux/
-  - name: Retrieve Externals (OSX)
-    shell: bash
-    if: runner.os == 'MacOS'
-    run: |
-      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-osx.zip > modex-binaries.zip
-  - name: Retrieve Externals (Windows)
-    shell: bash
-    if: runner.os == 'Windows'
-    run: |
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-windows.zip > gudrun-binaries.zip
-      curl -L https://github.com/disorderedmaterials/ModEx/releases/download/${{ env.modexTag }}/binaries-${{ env.modexTag }}-windows.zip > modex-binaries.zip
-  - name: Retrieve StartupFiles
-    shell: bash
-    run: |
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/startupFiles-${{ env.gudrunTag }}.zip > startupFiles.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > gudrun-binaries.zip
   - name: Assemble Directory
     shell: bash
     run: |
       if [ ! -e ${{ inputs.targetDir }} ]; then mkdir ${{ inputs.targetDir }}; fi
       unzip gudrun-binaries.zip
+      chmod +x gudrun-binaries/*
       mv binaries-${{ env.gudrunTag }}-*/* ${{ inputs.targetDir }}
-
-      unzip modex-binaries.zip
-      mv binaries-${{ env.modexTag }}-*/* ${{ inputs.targetDir }}
 
       unzip startupFiles.zip
       mv StartupFiles ${{ inputs.targetDir }}
