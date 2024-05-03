@@ -275,7 +275,7 @@ class GudPyTreeModel(QAbstractItemModel):
         if not index.isValid():
             return False
         elif role == Qt.CheckStateRole and self.isSample(index):
-            if value == 2:
+            if Qt.CheckState.Checked == Qt.CheckState(value):
                 index.internalPointer().runThisSample = True
             else:
                 index.internalPointer().runThisSample = False
