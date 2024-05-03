@@ -24,7 +24,7 @@ runs:
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > gudrun-binaries.zip
       unzip gudrun-binaries.zip
       mkdir binaries-${{ env.gudrunTag }}-linux
-      mv gudrun-binaries/* binaries-${{ env.gudrunTag }}-linux
+      mv binaries-${{ env.gudrunTag }}-osx-fat/* binaries-${{ env.gudrunTag }}-linux
       zip -9rv ../gudrun-binaries.zip binaries-${{ env.gudrunTag }}-linux/
   - name: Retrieve Externals (OSX)
     shell: bash
