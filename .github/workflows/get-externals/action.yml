@@ -36,8 +36,5 @@ runs:
       if [ ! -e ${{ inputs.targetDir }} ]; then mkdir ${{ inputs.targetDir }}; fi
       mv binaries-${{ env.gudrunTag }}-*/* ${{ inputs.targetDir }}
 
-      unzip modex-binaries.zip
-      mv binaries-${{ env.modexTag }}-*/* ${{ inputs.targetDir }}
-
       unzip startupFiles.zip
       mv StartupFiles ${{ inputs.targetDir }}
