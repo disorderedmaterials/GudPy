@@ -17,6 +17,7 @@ runs:
     shell: bash
     if: runner.os == 'MacOS'
     run: |
+      brew install zlib hdf5 gcc@11
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > gudrun-binaries.zip
       unzip gudrun-binaries
       chmod +x binaries-${{ env.gudrunTag }}-osx-fat/*
