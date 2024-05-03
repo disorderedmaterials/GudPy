@@ -22,9 +22,9 @@ runs:
       brew install ninja
       # Retrieve Gudrun source
       curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/-${{ env.gudrunTag }}/binaries--${{ env.gudrunTag }}-osx-fat.zip > gudrun.zip
-      tar -zxvf gudrun.zip
+      unzip gudrun.zip
       mkdir binaries-${{ env.gudrunTag }}-linux
-      mv gudrun.zip/* binaries-${{ env.gudrunTag }}-linux
+      mv gudrun/* binaries-${{ env.gudrunTag }}-linux
       zip -9rv ../gudrun-binaries.zip binaries-${{ env.gudrunTag }}-linux/
   - name: Retrieve Externals (OSX)
     shell: bash
