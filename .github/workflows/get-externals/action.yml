@@ -21,8 +21,9 @@ runs:
       brew update-reset
       brew install ninja
       # Retrieve Gudrun source
-      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > gudrun-binaries.zip
-      unzip gudrun-binaries.zip
+      curl -L https://github.com/disorderedmaterials/Gudrun/releases/download/${{ env.gudrunTag }}/binaries-${{ env.gudrunTag }}-osx-fat.zip > binaries-${{ env.gudrunTag }}-osx-fat.zip
+      unzip binaries-${{ env.gudrunTag }}-osx-fat.zip
+      chmod +x binaries-${{ env.gudrunTag }}-osx-fat/*
       mkdir binaries-${{ env.gudrunTag }}-linux
       mv binaries-${{ env.gudrunTag }}-osx-fat/* binaries-${{ env.gudrunTag }}-linux
       zip -9rv ../gudrun-binaries.zip binaries-${{ env.gudrunTag }}-linux/
