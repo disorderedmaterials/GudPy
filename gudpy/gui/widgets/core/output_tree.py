@@ -81,13 +81,7 @@ class OutputTreeModel(QAbstractItemModel):
                     enumerate(splicedOutput) if "Got to: SAMPLE" in l
                 ][1:]
                 for sample, index in zip(
-                    [
-                        s for sb in
-                        self.gudrunFile.sampleBackgrounds
-                        for s in sb.samples
-                        if s.runThisSample
-                    ], indices
-                ):
+                        self.gudrunFile.runSamples(), indices):
                     s = deepcopy(sample)
                     s.output = index + start
 

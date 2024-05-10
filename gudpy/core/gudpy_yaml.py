@@ -7,7 +7,7 @@ import os
 from core.composition import (
     Component, Components, Composition, WeightedComponent
 )
-from core.data_files import DataFiles
+from core.data_files import DataFile, DataFiles
 from core.element import Element
 from core.exception import YAMLException
 from core.gui_config import GUIConfig
@@ -23,7 +23,6 @@ from core import config
 
 
 class YAML:
-
     def __init__(self):
         self.yaml = self.getYamlModule()
 
@@ -95,18 +94,17 @@ class YAML:
         for k, v in yamldict.items():
             if not hasattr(cls, k):
                 # If attribute is not valid
-                raise YAMLException(
-                    f"Invalid attribute '{k}' given to '{type(cls).__name__}'")
+                print(f"Ignoring depreciated attribute '{k}'"
+                      f"given to '{type(cls).__name__}'")
+                continue
 
             if isinstance(cls.__dict__[k], Enum):
                 setattr(cls, k, type(cls.__dict__[k])[v])
 
             elif isinstance(cls.__dict__[k], DataFiles):
-                setattr(
-                    cls, k,
-                    DataFiles(
-                        [v_ for v_ in v["dataFiles"]], v["name"])
-                )
+                for df in v["_dataFiles"]:
+                    dataFile = DataFile(df["filename"])
+                    self.maskYAMLDicttoClass(dataFile, df)
 
             elif (
                 isinstance(
@@ -233,7 +231,7 @@ class YAML:
         elif isinstance(var, (
             Instrument, Beam, Components, Normalisation,
             SampleBackground, Sample, Container, WeightedComponent,
-            Component, Composition, Element, DataFiles, GUIConfig
+            Component, Composition, Element, DataFiles, DataFile, GUIConfig
         )):
             return {
                 k: self.toYaml(v)
@@ -243,8 +241,15 @@ class YAML:
 
     @abstractmethod
     def toBuiltin(self, yamlvar):
+        if yamlvar is None:
+            return None
         if isinstance(yamlvar, (list, tuple)):
             return [self.toBuiltin(v) for v in yamlvar]
+        elif (yamlvar.__class__.__module__ ==
+              "ruamel.yaml.comments.CommentedMap"):
+            dict = {}
+            for k, v in yamlvar.items():
+                dict[k] = v
         elif yamlvar.__class__.__module__ == "builtins":
             return yamlvar
         elif yamlvar.__class__.__module__ == "ruamel.yaml.scalarfloat":

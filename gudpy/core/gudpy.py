@@ -485,6 +485,13 @@ class Gudrun(Process):
         gudrunOutput = outputHandler.organiseOutput(exclude=exclude)
         return gudrunOutput
 
+    def obtainDependencies(
+        fileSelfScattering,
+        gudrunFile: GudrunFile
+    ):
+        if gudrunFile.instrument.subWavelengthBinnedData:
+            return
+
     def gudrun(
         self,
         gudrunFile: GudrunFile,
@@ -568,6 +575,67 @@ class GudrunIterator:
         # If the iterator requires a prelimenary run
         if iterator.requireDefault:
             self.gudrunObjects.append(Gudrun())
+
+    def singleIteration(
+        self,
+        gudrunFile: GudrunFile,
+        gudrun: Gudrun,
+        purge: Purge,
+        prevOutput: handlers.GudrunOutput,
+        save=True
+    ) -> typ.Tuple[int, str]:  # (exitcode, error)
+        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
+        if exitcode:
+            return exitcode
+        self.gudrunOutput = gudrun.gudrunOutput
+        return 0
+
+    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
+        prevOutput = None
+
+        # If the iterator requires a prelimenary run
+        if self.iterator.requireDefault:
+            exitcode = self.gudrunObjects[0].gudrun(
+                self.gudrunFile, purge, self.iterator, save)
+            if exitcode:  # An exit code != 0 indicates failure
+                self.exitcode = (exitcode, self.gudrunObjects[0].error)
+                return self.exitcode
+            prevOutput = self.gudrunObjects[0].gudrunOutput
+
+        # Iterate through gudrun objects
+        for gudrun in self.gudrunObjects:
+            if gudrun.output:
+                # If object has already been run, skip
+                continue
+            exitcode = self.singleIteration(
+                self.gudrunFile, gudrun, purge, prevOutput, save)
+            if exitcode:  # An exit code != 0 indicates failure
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
+
+            prevOutput = gudrun.gudrunOutput
+
+        self.result = self.iterator.result
+
+        self.exitcode = (0, "")
+        return self.exitcode
+
+
+class InelasiticityIterator(GudrunIterator):
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator,
+    ):
+
+        super().__init__(
+            gudrunFile=gudrunFile,
+            iterator=iterator
+        )
+
+    def copyDCS(self, prevOutput):
+        return
 
     def singleIteration(
         self,

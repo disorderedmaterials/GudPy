@@ -27,7 +27,7 @@ class SampleSlots():
 
         # Populate the data files list.
         self.widget.sampleDataFilesList.makeModel(
-            self.sample.dataFiles.dataFiles
+            self.sample.dataFiles.dataFilenames
         )
 
         self.widget.sampleDataFilesList.model().dataChanged.connect(
@@ -889,7 +889,7 @@ class SampleSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.sample.dataFiles.dataFiles = (
+            self.sample.dataFiles.setFiles(
                 self.widget.sampleDataFilesList.model().stringList()
             )
 
@@ -1149,7 +1149,7 @@ class SampleSlots():
             actualDcsLevel = nthfloat(self.widget.dcsLabel.text(), 2)
             try:
                 error = round(
-                        ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
+                    ((actualDcsLevel - dcsLevel) / actualDcsLevel)*100, 1
                 )
             except ZeroDivisionError:
                 error = 100.

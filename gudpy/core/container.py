@@ -113,6 +113,8 @@ class Container:
         if config:
             self.parseFromConfig(config)
 
+        self.outputFolder = ""
+
     def __str__(self):
         """
         Returns the string representation of the Container object.

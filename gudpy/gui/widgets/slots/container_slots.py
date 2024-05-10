@@ -26,7 +26,7 @@ class ContainerSlots():
 
         # Populate the data files list.
         self.widget.containerDataFilesList.makeModel(
-            self.container.dataFiles.dataFiles
+            self.container.dataFiles.dataFilenames
         )
 
         self.widget.containerDataFilesList.model().dataChanged.connect(
@@ -640,7 +640,7 @@ class ContainerSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.container.dataFiles.dataFiles = (
+            self.container.dataFiles.setFiles(
                 self.widget.containerDataFilesList.model().stringList()
             )
 

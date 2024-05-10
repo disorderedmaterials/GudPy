@@ -182,6 +182,12 @@ class GudrunFile:
             setattr(result, k, deepcopy(v, memo))
         return result
 
+    def runSamples(self):
+        return [
+            s for sb in self.sampleBackgrounds
+            for s in sb.samples
+            if s.runThisSample]
+
     def path(self):
         if not self.projectDir:
             return None
@@ -1478,7 +1484,10 @@ class GudrunFile:
             self.write_out(
                 path=f"{os.path.splitext(path)[0]}.txt", overwrite=True)
         elif format == Format.YAML:
-            self.write_yaml(path=f"{os.path.splitext(path)[0]}.yaml")
+            if self.path():
+                filepath = os.path.join(
+                    self.path(), f"{os.path.splitext(path)[0]}.yaml")
+                self.write_yaml(filepath)
 
     def write_yaml(self, path):
         self.yaml = YAML()
