@@ -3,7 +3,6 @@ from enum import Enum
 from ruamel.yaml import YAML as yaml
 from ruamel.yaml import YAMLError
 import os
-import typing as typ
 
 from core.composition import (
     Component, Components, Composition, WeightedComponent
@@ -20,127 +19,138 @@ from core.sample_background import SampleBackground
 from core.sample import Sample
 from core.container import Container
 from core.gudrun_file import GudrunFile
+from core.io.txt_parser import GudrunFileParser
 from core import config
-import core.enums as enums
 
 
-class YamlParser:
+class GudpyIO:
     def __init__(self):
-        self.yaml = self.getYamlModule()
+        # Construct the outpath of generated input file
+        self.projectDir = ""
+        self.loadFile = ""
+        self.autosaveLocation = ""
+
+        self.yaml = self._getYamlModule()
+        self.gudrunFileParser = GudrunFileParser()
 
     @property
-    def path(self, format: enums.Format):
-        if not self.projectDir or self.projectDir:
-            raise RuntimeError("Save location not set.")
-
-        if format == enums.Format.TXT:
-            return os.path.join(self.projectDir, f"{self.projectName}.txt")
-        elif format == enums.Format.YAML:
-            return os.path.join(self.projectDir, f"{self.projectName}.yaml")
-        else:
-            raise RuntimeError("Unsupported format.")
-
-    def save(self, path: str = '', format: enums.Format = None):
-        if not path:
-            path = self.path()
-
-        if not format:
-            format = self.format
-        if format == enums.Format.TXT:
-            self.write_out(
-                path=self.txtPath(), overwrite=True)
-        elif format == enums.Format.YAML:
-            if self.path():
-                self.write_yaml(self.yamlPath())
+    def projectName(self) -> str:
+        return os.path.dirname(self.projectDir)
 
     @property
-    def projectName(self):
-        os.path.dirname(self.projectDir)
+    def autosavePath(self) -> str:
+        return f"{os.path.basename(projectDir)}.autosave"
 
-    def write_out(
-            self,
-            path: str = '',
-            overwrite: bool = False,
-            writeParameters: bool = True
-    ):
+    @property
+    def path(self):
+        """Returns the path to the yaml file
+
+        Returns
+        -------
+        str
+            Path to yaml file
+
+        Raises
+        ------
+        RuntimeError
+            Raised if project directory is not set
         """
-        Writes out the string representation of the GudrunFile.
-        If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.txt'.
+        if not self.projectDir:
+            raise RuntimeError("Save location not set.")
+        return os.path.join(self.projectDir, f"{self.projectName}.yaml")
+
+    def setSaveLocation(self, projectDir: str):
+        """Sets the save location/project directory
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
-        path : str, optional
-            Path to write to.
+        projectDir : str
+            Path to new save location
+        """
+        self.projectDir = projectDir
+
+    def checkSaveLocation(self) -> bool:
+        """Checks if user has set the save location
+        """
+        return bool(self.projectDir)
+
+    def save(self):
+        """Saves yaml file to project directory
+        """
+        self.writeYaml(self.path)
+
+    def importGudrunFile(self, path) -> GudrunFile:
+        return self.gudrunFileParser.parse(path)
+
+    def importProject(self, projectDir) -> GudrunFile:
+        """Imports from a project directory
+
+        Parameters
+        ----------
+        projectDir : str
+            Path to GudPy project folder
+
+        Raises
+        ------
+        FileNotFoundError
+            Raised if there is no YAML input file in the
+            project directory
+
         Returns
         -------
-        None
+        GudrunFile
+            Genererated GudrunFile from input
         """
-        if path:
-            if not overwrite:
-                assert (not os.path.exists(path))
-            f = open(
-                path, "w", encoding="utf-8"
+        loadFile = ""
+
+        if os.path.exists(os.path.join(
+            projectDir,
+            f"{os.path.basename(projectDir)}.yaml"
+        )):
+            # If default file exists
+            loadFile = os.path.join(
+                projectDir,
+                f"{os.path.basename(projectDir)}.yaml"
             )
-        elif not overwrite:
-            assert (not os.path.exists(os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH)
-            ))
-            f = open(
-                os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH
-                ), "w", encoding="utf-8")
         else:
-            if not self.path():
-                path = os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH)
-            f = open(path, "w", encoding="utf-8")
+            # Try to find yaml files
+            for f in os.listdir(projectDir):
+                if os.path.splitext(f)[1] == ".yaml":
+                    # If file is yaml
+                    loadFile = os.path.join(projectDir, f)
+        if not loadFile:
+            raise FileNotFoundError(
+                "Could not find GudPy input file within the project")
 
-        if os.path.basename(f.name) == self.OUTPATH:
-            for sampleBackground in self.sampleBackgrounds:
-                sampleBackground.writeAllSamples = False
-        f.write(str(self))
-        f.close()
+        self.setSaveLocation(projectDir)
+        return self._parseYaml(loadFile)
 
-        if writeParameters:
-            for sb in self.sampleBackgrounds:
-                for s in sb.samples:
-                    if s.runThisSample:
-                        gf = deepcopy(self)
-                        gf.sampleBackgrounds = [deepcopy(sb)]
-                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
-                        gf.write_out(
-                            path=os.path.join(
-                                self.instrument.GudrunInputFileDir,
-                                s.pathName(),
-                            ),
-                            overwrite=True,
-                            writeParameters=False
-                        )
+    def exportGudrunFile(self, path):
+        return self.gudrunFileParser.export(path)
+
+    def writeGudrunFile(self, path):
+        self.
+        return self.gudrunFileParser.writeGudrunFile(path)
 
 # =================================================================
-#                           YAML PARSING
+#                         PARSING HELPERS
 # =================================================================
 
-    def getYamlModule(self) -> yaml:
+    def _getYamlModule(self) -> yaml:
         yaml_ = yaml()
         yaml_.preserve_quotes = True
         yaml_.default_flow_style = None
         yaml_.encoding = 'utf-8'
         return yaml_
 
-    def parseYaml(self, path) -> GudrunFile:
-        yamldict = self.yamlToDict(path)
-        gudrunFile = GudrunFile()
+    def _parseYaml(self, path) -> GudrunFile:
+        self.loadFile = path
+        yamldict = self._yamlToDict(path)
+        gudrunFile = GudrunFile(loadFile=path)
         for k, v in yamldict.items():
             if k == "GUI":
                 GUI = GUIConfig()
-                self.yamlToObject(GUI, v)
+                self._yamlToObject(GUI, v)
                 config.GUIConfig = GUI
                 continue
             if not hasattr(gudrunFile, k):
@@ -149,7 +159,7 @@ class YamlParser:
                 continue
 
             objType = type(gudrunFile.__dict__[k])
-            parsingFunc = self.parsingFuncMap(objType)
+            parsingFunc = self._parsingFuncMap(objType)
             if parsingFunc:
                 try:
                     obj = parsingFunc(v)
@@ -161,7 +171,7 @@ class YamlParser:
                     raise YAMLException(f"Invalid YAML file: {str(e)}")
         return gudrunFile
 
-    def writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
+    def _writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
         with open(path, "wb") as fp:
             outyaml = {
                 "Instrument": gudrunFile.instrument,
@@ -172,39 +182,39 @@ class YamlParser:
                 "GUI": config.GUI
             }
             self.yaml.dump(
-                {k: self.toYaml(v) for k, v in outyaml.items()},
+                {k: self._toYaml(v) for k, v in outyaml.items()},
                 fp
             )
 
-    def parsingFuncMap(self, type: type) -> typ.Callable | None:
+    def _parsingFuncMap(self, type: type) -> typ.Callable | None:
         parsingFuncs = {
-            Instrument: self.parseYamlInstrument,
-            Beam: self.parseYamlBeam,
-            Normalisation: self.parseYamlNormalisation,
-            SampleBackground: self.parseYamlSampleBackground,
-            Sample: self.parseYamlSample,
-            Composition: self.parseYamlComposition,
-            Component: self.parseYamlComponent,
-            Components: self.parseYamlComponents,
-            list[Element]: self.parseYamlElements,
-            DataFiles: self.parseYamlDataFiles
+            Instrument: self._parseYamlInstrument,
+            Beam: self._parseYamlBeam,
+            Normalisation: self._parseYamlNormalisation,
+            SampleBackground: self._parseYamlSampleBackground,
+            Sample: self._parseYamlSample,
+            Composition: self._parseYamlComposition,
+            Component: self._parseYamlComponent,
+            Components: self._parseYamlComponents,
+            list[Element]: self._parseYamlElements,
+            DataFiles: self._parseYamlDataFiles
         }
         if type in parsingFuncs.keys():
             return parsingFuncs[type]
         else:
             return None
 
-    def yamlToDict(self, path) -> any:
+    def _yamlToDict(self, path) -> any:
         # Read the input stream into our attribute.
         with open(path, encoding=self.yaml.encoding) as fp:
             return self.yaml.load(fp)
 
-    def yamlToObject(self, obj: any, yamldict: any) -> any:
+    def _yamlToObject(self, obj: any, yamldict: any) -> any:
         for k, v in yamldict.items():
-            self.assignYamlToAttr(obj, k, v)
+            self._assignYamlToAttr(obj, k, v)
         return obj
 
-    def assignYamlToAttr(self, obj: any, key, val) -> None:
+    def _assignYamlToAttr(self, obj: any, key, val) -> None:
         if not hasattr(obj, key):
             # If attribute is not valid
             print(
@@ -214,61 +224,61 @@ class YamlParser:
             return
         setattr(obj, key, type(obj.__dict__[key])(self.toBuiltin(val)))
 
-    def parseYamlInstrument(self, yamldict: any) -> Instrument:
+    def _parseYamlInstrument(self, yamldict: any) -> Instrument:
         instrument = Instrument()
-        instrument = self.yamlToObject(instrument, yamldict)
+        instrument = self._yamlToObject(instrument, yamldict)
         return instrument
 
-    def parseYamlBeam(self, yamldict: any) -> Normalisation:
+    def _parseYamlBeam(self, yamldict: any) -> Normalisation:
         beam = Beam()
-        beam = self.yamlToObject(beam, yamldict)
+        beam = self._yamlToObject(beam, yamldict)
         return beam
 
-    def parseYamlNormalisation(self, yamldict: any) -> Normalisation:
+    def _parseYamlNormalisation(self, yamldict: any) -> Normalisation:
         normalisation = Normalisation()
         for k, v in yamldict.items():
             if k == "composition":
-                composition = self.parseYamlComposition(yamldict[k])
+                composition = self._parseYamlComposition(yamldict[k])
                 setattr(normalisation, k, composition)
             else:
-                self.assignYamlToAttr(normalisation, k, v)
+                self._assignYamlToAttr(normalisation, k, v)
         return normalisation
 
-    def parseYamlSample(self, yamldict: any) -> Sample:
+    def _parseYamlSample(self, yamldict: any) -> Sample:
         sample = Sample()
         for k, v in yamldict.items():
             if k == "composition":
-                composition = self.parseYamlComposition()
+                composition = self._parseYamlComposition()
                 setattr(sample, k, composition)
             elif k == "containers":
                 for contyaml in yamldict[k]:
-                    container = self.parseYamlContainer(contyaml)
+                    container = self._parseYamlContainer(contyaml)
                     sample.containers.append(container)
             else:
-                self.assignYamlToAttr(sample, k, v)
+                self._assignYamlToAttr(sample, k, v)
         return sample
 
-    def parseYamlSampleBackground(self, yamldict: any) -> SampleBackground:
+    def _parseYamlSampleBackground(self, yamldict: any) -> SampleBackground:
         sampleBg = SampleBackground()
         for k, v in yamldict.items():
             if k == "samples":
                 for sampleyaml in yamldict[k]:
-                    sample = self.parseYamlSample(sampleyaml)
+                    sample = self._parseYamlSample(sampleyaml)
                     sample.name = utils.replace_unwanted_chars(sample.name)
                     sampleBg.samples.append(sample)
             else:
-                self.assignYamlToAttr(sampleBg, k, v)
+                self._assignYamlToAttr(sampleBg, k, v)
 
-    def parseYamlComposition(self, yamldict: any) -> Composition:
+    def _parseYamlComposition(self, yamldict: any) -> Composition:
         composition = Composition()
         for k, v in yamldict.items():
             if k == "elements":
-                elements = self.parseYamlElements(yamldict[k])
+                elements = self._parseYamlElements(yamldict[k])
                 setattr(composition, k, elements)
             elif k == "weightedComponents":
                 weightedComponents = []
                 for wc in yamldict[k]:
-                    component = self.parseYamlComponent(wc)
+                    component = self._parseYamlComponent(wc)
                     ratio = wc["ratio"]
                     try:
                         weightedComponents.append(
@@ -280,28 +290,28 @@ class YamlParser:
                             "Invalid ratio given to Weighted Component")
                 setattr(composition, k, weightedComponents)
             else:
-                self.assignYamlToAttr(composition, k, v)
+                self._assignYamlToAttr(composition, k, v)
         return composition
 
-    def parseYamlContainer(self, yamldict: any) -> Container:
+    def _parseYamlContainer(self, yamldict: any) -> Container:
         container = Container()
         for k, v in yamldict.items():
             if k == "composition":
-                composition = self.parseYamlComposition()
+                composition = self._parseYamlComposition()
                 setattr(container, k, composition)
             else:
-                self.assignYamlToAttr(container, k, v)
+                self._assignYamlToAttr(container, k, v)
         return container
 
-    def parseYamlDataFiles(self, yamldict: any) -> DataFiles:
+    def _parseYamlDataFiles(self, yamldict: any) -> DataFiles:
         dataFiles = DataFiles()
         for df in yamldict["_dataFiles"]:
             dataFile = DataFile(df["filename"])
-            dataFile = self.yamlToObject(dataFile, df)
+            dataFile = self._yamlToObject(dataFile, df)
             dataFiles.dataFiles.append(dataFile)
         return dataFiles
 
-    def parseYamlComponent(self, yamldict: any) -> Component:
+    def _parseYamlComponent(self, yamldict: any) -> Component:
         if (
             "component" not in yamldict
             or "ratio" not in yamldict
@@ -310,18 +320,18 @@ class YamlParser:
                 "Weighted Component expects 'component' and"
                 + " 'ratio' to be provided")
         component = Component()
-        self.yamlToObject(
+        self._yamlToObject(
             component, yamldict["component"]
         )
         return component
 
-    def parseYamlComponents(self, yamllist: list[dict]) -> Components:
+    def _parseYamlComponents(self, yamllist: list[dict]) -> Components:
         components = []
         for c in yamllist:
-            components.append(self.parseYamlComponent(c))
+            components.append(self._parseYamlComponent(c))
         return components
 
-    def parseYamlElements(self, yamllist: list[str]) -> list[Element]:
+    def _parseYamlElements(self, yamllist: list[str]) -> list[Element]:
         elements = []
         for idx, element in enumerate(yamllist):
             # Ensuring correct arguements are provided
@@ -358,7 +368,7 @@ class YamlParser:
             return float(var)
         if var.__class__.__module__ == "builtins":
             if isinstance(var, (list, tuple)):
-                return type(var)([self.toYaml(v) for v in var])
+                return type(var)([self._toYaml(v) for v in var])
             else:
                 return var
         elif isinstance(var, Enum):
@@ -369,7 +379,7 @@ class YamlParser:
             Component, Composition, Element, DataFiles, DataFile, GUIConfig
         )):
             return {
-                k: self.toYaml(v)
+                k: self._toYaml(v)
                 for k, v in var.__dict__.items()
                 if k not in var.yamlignore
             }
@@ -392,11 +402,3 @@ class YamlParser:
             return float(yamlvar)
         elif yamlvar.__class__.__module__ == "ruamel.yaml.scalarstring":
             return str(yamlvar)
-
-# =================================================================
-#                           TXT PARSING
-# =================================================================
-
-
-class TxtParser:
-    def __init__(self):

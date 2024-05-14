@@ -10,7 +10,6 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 class PurgeFile:
     """
     Class to represent a PurgeFile.
-
     ...
 
     Attributes
