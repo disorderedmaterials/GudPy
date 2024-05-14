@@ -133,7 +133,7 @@ class GudPy:
             Path to the desired save location of project
         """
         self.projectDir = projectDir
-        self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
+        self.gudrunFile.filename = f"{os.path.basename(projectDir)}"
         self.gudrunFile.projectDir = projectDir
         self.originalGudrunFile.projectDir = projectDir
         self.autosaveLocation = (
@@ -517,6 +517,7 @@ class Gudrun(Process):
                 tmp,
                 gudrunFile.OUTPATH
             )
+            assert (gudrunFile.path() is not None)
             gudrunFile.write_out(path)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
