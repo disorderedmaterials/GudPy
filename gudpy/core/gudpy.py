@@ -16,6 +16,7 @@ from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
+from core.io import txt_parser, gudpy_io
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -25,8 +26,8 @@ class GudPy:
         self
     ):
         self.originalGudrunFile: GudrunFile = None
-        self.gudrunFile: GudrunFile = None
-        self.purgeFile = None
+        self._gudrunFile: GudrunFile = None
+        self.io = gudpy_io.GudpyIO()
 
         self.purge: Purge = None
         self.gudrun: Gudrun = None
@@ -39,10 +40,17 @@ class GudPy:
         self.projectDir = ""
         self.autosaveLocation = ""
 
-    def loadFromFile(
+    @property
+    def gudrunFile(self):
+        return self._gudrunFile
+
+    @gudrunFile.setter
+    def gudrunFile(self, gudrunFile: GudrunFile):
+        self._gudrunFile = gudrunFile
+
+    def loadFromGudrunFile(
         self,
         loadFile: str,
-        format: enums.Format,
         config: bool = False
     ):
         """Loads GudPy from an input file
@@ -64,17 +72,11 @@ class GudPy:
         if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
-        self.gudrunFile = GudrunFile(
-            loadFile=loadFile,
-            format=format,
-            config=config
-        )
+        self.gudrunFileParser = txt_parser.GudrunFileParser()
+        self.gudrunFile = self.gudrunFileParser.parse(loadFile, config)
 
         self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
         self.originalGudrunFile.filename = "original"
-
-        self.projectDir == ""
-        self.autosaveLocation = ""
 
     def loadFromProject(self, projectDir: str):
         """Loads GudPy from a project directory
@@ -90,29 +92,10 @@ class GudPy:
             Raised if there is no YAML input file in the
             project directory
         """
-        loadFile = ""
+        if not os.path.exists(projectDir):
+            raise FileNotFoundError("Directory does not exist.")
 
-        if os.path.exists(os.path.join(
-            projectDir,
-            f"{os.path.basename(projectDir)}.yaml"
-        )):
-            # If default file exists
-            loadFile = os.path.join(
-                projectDir,
-                f"{os.path.basename(projectDir)}.yaml"
-            )
-        else:
-            # Try to find yaml files
-            for f in os.listdir(projectDir):
-                if os.path.splitext(f)[1] == ".yaml":
-                    # If file is yaml
-                    loadFile = os.path.join(projectDir, f)
-        if not loadFile:
-            raise FileNotFoundError(
-                "Could not find GudPy input file within the project")
-
-        self.loadFromFile(loadFile=loadFile, format=enums.Format.YAML)
-        self.setSaveLocation(projectDir)
+        self.gudrunFile = self.io.importProject(projectDir)
 
     def checkSaveLocation(self):
         """Checks if user has set the save location
@@ -231,8 +214,8 @@ class GudPy:
         """
         self.prepareRun()
         self.purge = Purge()
-        self.purgeFile = PurgeFile(self.gudrunFile)
-        exitcode = self.purge.purge(self.purgeFile)
+        purgeFile = PurgeFile(self.gudrunFile)
+        exitcode = self.purge.purge(purgeFile)
         self.gudrunFile.save()
         if exitcode:
             raise exc.PurgeException(
