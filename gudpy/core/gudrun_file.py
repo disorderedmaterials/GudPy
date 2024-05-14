@@ -2,6 +2,11 @@ import os
 import time
 import re
 from copy import deepcopy
+from abc import abstractmethod
+from enum import Enum
+from ruamel.yaml import YAML as yaml
+from ruamel.yaml import YAMLError
+import os
 
 from core.utils import (
     extract_nums_from_string,
@@ -28,6 +33,7 @@ from core.enums import (
     MergeWeights, Scales, NormalisationType, OutputUnits,
     Geometry
 )
+from core.gui_config import GUIConfig
 from core import utils
 from core import config as cfg
 from core.gudpy_yaml import YAML
@@ -122,7 +128,6 @@ class GudrunFile:
         self,
         projectDir=None,
         loadFile=None,
-        format=Format.YAML,
         config=False
     ):
         """
@@ -142,15 +147,11 @@ class GudrunFile:
             If a new input file should be constructed from a config
         """
 
-        self.yaml = YAML()
-        self.format = format
-
+        self.yaml = self.getYamlModule()
         # Construct the outpath of generated input file
-        self.OUTPATH = "gudpy.txt"
         self.gudrunOutput = None
         self.projectDir = projectDir
         self.loadFile = loadFile
-        self.filename = None
         self.stream = None
 
         self.instrument = Instrument()
@@ -182,21 +183,52 @@ class GudrunFile:
             setattr(result, k, deepcopy(v, memo))
         return result
 
+    def setGudrunDir(self, dir):
+        self.instrument.GudrunInputFileDir = dir
+
+    def convertToSample(self, container, persist=False):
+
+        sample = container.convertToSample()
+
+        if persist:
+            for i, sampleBackground in enumerate(self.sampleBackgrounds):
+                for sample in sampleBackground.samples:
+                    if container in sample.containers:
+                        sample.containers.remove(container)
+                        break
+            self.sampleBackgrounds[i].append(sample)
+        return sample
+
+    def determineError(self, sample):
+        gudPath = sample.dataFiles[0].replace(
+            self.instrument.dataFileType,
+            "gud"
+        )
+        gudFile = GudFile(
+            os.path.join(
+                self.instrument.GudrunInputFileDir, gudPath
+            )
+        )
+        error = round(
+            (
+                1.0 - (gudFile.averageLevelMergedDCS / gudFile.expectedDCS)
+            ) * 100, 1
+        )
+        return error
+
     def runSamples(self):
         return [
             s for sb in self.sampleBackgrounds
             for s in sb.samples
             if s.runThisSample]
 
-    def path(self):
-        if not self.projectDir:
-            return None
-        else:
-            return os.path.join(self.projectDir, self.filename)
-
     def checkNormDataFiles(self):
         return (len(self.normalisation.dataFiles)
                 and len(self.normalisation.dataFilesBg))
+
+    # =================================================================
+    #                         TEXTFILE PARSING
+    # =================================================================
 
     def getNextToken(self):
         """
@@ -1473,119 +1505,6 @@ class GudrunFile:
             + footer
             + components
         )
-
-    def save(self, path='', format=None):
-        if not path:
-            path = self.path()
-
-        if not format:
-            format = self.format
-        if format == Format.TXT:
-            self.write_out(
-                path=f"{os.path.splitext(path)[0]}.txt", overwrite=True)
-        elif format == Format.YAML:
-            if self.path():
-                filepath = os.path.join(
-                    self.path(), f"{os.path.splitext(path)[0]}.yaml")
-                self.write_yaml(filepath)
-
-    def write_yaml(self, path):
-        self.yaml = YAML()
-        self.yaml.writeYAML(self, path)
-
-    def write_out(self, path='', overwrite=False, writeParameters=True):
-        """
-        Writes out the string representation of the GudrunFile.
-        If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.txt'.
-
-        Parameters
-        ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
-        path : str, optional
-            Path to write to.
-        Returns
-        -------
-        None
-        """
-        if path:
-            if not overwrite:
-                assert (not os.path.exists(path))
-            f = open(
-                path, "w", encoding="utf-8"
-            )
-        elif not overwrite:
-            assert (not os.path.exists(os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH)
-            ))
-            f = open(
-                os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH
-                ), "w", encoding="utf-8")
-        else:
-            if not self.path():
-                path = os.path.join(
-                    self.instrument.GudrunInputFileDir,
-                    self.OUTPATH)
-            f = open(path, "w", encoding="utf-8")
-
-        if os.path.basename(f.name) == self.OUTPATH:
-            for sampleBackground in self.sampleBackgrounds:
-                sampleBackground.writeAllSamples = False
-        f.write(str(self))
-        f.close()
-
-        if writeParameters:
-            for sb in self.sampleBackgrounds:
-                for s in sb.samples:
-                    if s.runThisSample:
-                        gf = deepcopy(self)
-                        gf.sampleBackgrounds = [deepcopy(sb)]
-                        gf.sampleBackgrounds[0].samples = [deepcopy(s)]
-                        gf.write_out(
-                            path=os.path.join(
-                                self.instrument.GudrunInputFileDir,
-                                s.pathName(),
-                            ),
-                            overwrite=True,
-                            writeParameters=False
-                        )
-
-    def setGudrunDir(self, dir):
-        self.instrument.GudrunInputFileDir = dir
-
-    def convertToSample(self, container, persist=False):
-
-        sample = container.convertToSample()
-
-        if persist:
-            for i, sampleBackground in enumerate(self.sampleBackgrounds):
-                for sample in sampleBackground.samples:
-                    if container in sample.containers:
-                        sample.containers.remove(container)
-                        break
-            self.sampleBackgrounds[i].append(sample)
-        return sample
-
-    def determineError(self, sample):
-        gudPath = sample.dataFiles[0].replace(
-            self.instrument.dataFileType,
-            "gud"
-        )
-        gudFile = GudFile(
-            os.path.join(
-                self.instrument.GudrunInputFileDir, gudPath
-            )
-        )
-        error = round(
-            (
-                1.0 - (gudFile.averageLevelMergedDCS / gudFile.expectedDCS)
-            ) * 100, 1
-        )
-        return error
 
 
 Container.getNextToken = GudrunFile.getNextToken
