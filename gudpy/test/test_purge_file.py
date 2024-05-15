@@ -1,10 +1,12 @@
 import os
 from unittest import TestCase
 from shutil import copyfile
+import tempfile
 
 from core.purge_file import PurgeFile
 from core.enums import Format
 from core import gudpy
+from core.io.gudpy_io import GudPyIO
 
 
 class TestPurgeFile(TestCase):
@@ -28,9 +30,8 @@ class TestPurgeFile(TestCase):
             loadFile="test/TestData/NIMROD-water/good_water.txt",
             format=Format.TXT)
 
-        self.gudpy.gudrunFile.write_out(
-            path="test/TestData/NIMROD-water/good_water.txt",
-            overwrite=True
+        self.gudpy.loadFromGudrunFile(
+            path="test/TestData/NIMROD-water/good_water.txt"
         )
         self.g = self.gudpy.gudrunFile
         self.expectedPurgeFile = {
@@ -42,7 +43,6 @@ class TestPurgeFile(TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
-
         [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
         return super().tearDown()
 
@@ -58,9 +58,10 @@ class TestPurgeFile(TestCase):
             )
 
     def testWritePurgeFile(self):
-
-        purge = PurgeFile(self.g)
-        purge.write_out()
-        with open("purge_det.dat", encoding="utf-8") as f:
-            outlines = f.read()
-            self.assertEqual(outlines, str(purge))
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            purge = PurgeFile(self.g)
+            GudPyIO.writeObject(purge, "purge_det.dat")
+            with open("purge_det.dat", encoding="utf-8") as f:
+                outlines = f.read()
+                self.assertEqual(outlines, str(purge))

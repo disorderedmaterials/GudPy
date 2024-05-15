@@ -4,6 +4,7 @@ from unittest import TestCase
 from core.exception import ParserException
 from core.gud_file import GudFile
 from core import gudpy
+from core.io.gudpy_io import GudPyIO
 from test.test_gudpy_workflows import GudPyContext
 
 
@@ -337,7 +338,7 @@ class TestParseGudFile(TestCase):
                 gudpy.projectDir,
                 gf.fname
             )
-            gf.write_out(path)
+            GudPyIO.writeObject(gf, path)
             gf1 = GudFile(path)
 
             dicA = gf.__dict__
@@ -363,7 +364,7 @@ class TestParseGudFile(TestCase):
                 gudpy.projectDir,
                 gf.fname
             )
-            gf.write_out(path)
+            GudPyIO.writeObject(gf, path)
             gf1 = GudFile(path)
 
             dicA = gf.__dict__

@@ -2,6 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from ruamel.yaml import YAML as yaml
 from ruamel.yaml import YAMLError
+import shutil
 import os
 
 from core.composition import (
@@ -23,12 +24,10 @@ from core.io.txt_parser import GudrunFileParser
 from core import config
 
 
-class GudpyIO:
+class GudPyIO:
     def __init__(self):
-        # Construct the outpath of generated input file
         self.projectDir = ""
         self.loadFile = ""
-        self.autosaveLocation = ""
 
         self.yaml = self._getYamlModule()
         self.gudrunFileParser = GudrunFileParser()
@@ -39,7 +38,7 @@ class GudpyIO:
 
     @property
     def autosavePath(self) -> str:
-        return f"{os.path.basename(projectDir)}.autosave"
+        return f"{os.path.basename(self.projectDir)}.autosave"
 
     @property
     def path(self):
@@ -79,8 +78,9 @@ class GudpyIO:
         """
         self.writeYaml(self.path)
 
-    def importGudrunFile(self, path) -> GudrunFile:
-        return self.gudrunFileParser.parse(path)
+    def importGudrunFile(self, path, config=False) -> GudrunFile:
+        self.loadFile = path
+        return self.gudrunFileParser.parse(path, config)
 
     def importProject(self, projectDir) -> GudrunFile:
         """Imports from a project directory
@@ -125,12 +125,31 @@ class GudpyIO:
         self.setSaveLocation(projectDir)
         return self._parseYaml(loadFile)
 
-    def exportGudrunFile(self, path):
-        return self.gudrunFileParser.export(path)
+    def exportProject(self, targetDir):
+        if os.path.exists(targetDir):
+            raise IsADirectoryError("Cannot be an existing directory")
 
-    def writeGudrunFile(self, path):
-        self.
-        return self.gudrunFileParser.writeGudrunFile(path)
+        oldFile = os.path.join(targetDir, os.path.basename(self.loadFile))
+        oldDir = self.projectDir
+        self.setSaveLocation(targetDir)
+        os.makedirs(targetDir)
+
+        shutil.copytree(oldDir, targetDir)
+        os.rename(oldFile, self.path)
+
+    @classmethod
+    def exportGudrunFile(cls, path):
+        return GudrunFileParser.export(path)
+
+    @classmethod
+    def writeGudrunFile(cls, gudrunFile, path):
+        GudrunFileParser.writeGudrunFile(gudrunFile, path)
+
+    @classmethod
+    def writeObject(cls, obj, path):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(str(obj))
+            f.close()
 
 # =================================================================
 #                         PARSING HELPERS

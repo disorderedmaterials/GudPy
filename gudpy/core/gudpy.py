@@ -16,7 +16,7 @@ from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
-from core.io import txt_parser, gudpy_io
+from core.io.gudpy_io import GudPyIO
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -27,7 +27,7 @@ class GudPy:
     ):
         self.originalGudrunFile: GudrunFile = None
         self._gudrunFile: GudrunFile = None
-        self.io = gudpy_io.GudpyIO()
+        self.io = GudPyIO()
 
         self.purge: Purge = None
         self.gudrun: Gudrun = None
@@ -72,8 +72,7 @@ class GudPy:
         if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
-        self.gudrunFileParser = txt_parser.GudrunFileParser()
-        self.gudrunFile = self.gudrunFileParser.parse(loadFile, config)
+        self.gudrunFile = self.io.importGudrunFile(loadFile, config)
 
         self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
         self.originalGudrunFile.filename = "original"
@@ -105,7 +104,7 @@ class GudPy:
         bool
             If the save location is set or not
         """
-        return bool(self.projectDir)
+        return self.io.checkSaveLocation()
 
     def setSaveLocation(self, projectDir: str):
         """Sets the save location
@@ -115,28 +114,12 @@ class GudPy:
         projectDir : str
             Path to the desired save location of project
         """
-        self.projectDir = projectDir
-        self.gudrunFile.filename = f"{os.path.basename(projectDir)}"
-        self.gudrunFile.projectDir = projectDir
-        self.originalGudrunFile.projectDir = projectDir
-        self.autosaveLocation = (
-            f"{os.path.basename(projectDir)}.autosave"
-        )
+        self.io.setSaveLocation(projectDir)
 
-    def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
+    def save(self):
         """Saves current GudPy input file
-
-        Parameters
-        ----------
-        path : str, optional
-            Path to desired save location, by default ""
-        format : enums.Format, optional
-            Desired format of save file, by default enums.Format.YAML
         """
-        if not path:
-            path = self.gudrunFile.path()
-        self.originalGudrunFile.save(path=path)
-        self.gudrunFile.save(path=path, format=format)
+        self.io.save()
 
     def saveAs(self, targetDir: str):
         """Save GudPy project to a new location, set current
@@ -152,26 +135,7 @@ class GudPy:
         IsADirectoryError
             Raised if the requested save location already exists
         """
-        if os.path.exists(targetDir):
-            raise IsADirectoryError("Cannot be an existing directory")
-
-        oldDir = self.projectDir
-        self.setSaveLocation(targetDir)
-        os.makedirs(targetDir)
-
-        if os.path.exists(os.path.join(oldDir, "Purge")):
-            shutil.copytree(
-                os.path.join(oldDir, "Purge"),
-                os.path.join(targetDir, "Purge")
-            )
-        if os.path.exists(os.path.join(oldDir, "Gudrun")):
-            shutil.copytree(
-                os.path.join(oldDir, "Gudrun"),
-                os.path.join(targetDir, "Gudrun")
-            )
-        self.gudrunFile.filename = os.path.basename(targetDir)
-        self.gudrunFile.save(path=self.gudrunFile.path(),
-                             format=enums.Format.YAML)
+        self.io.exportProject(targetDir)
         self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
@@ -216,7 +180,7 @@ class GudPy:
         self.purge = Purge()
         purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(purgeFile)
-        self.gudrunFile.save()
+        self.io.save()
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
@@ -240,6 +204,7 @@ class GudPy:
 
         if not gudrunFile:
             gudrunFile = self.gudrunFile
+        self.io.save()
         self.gudrun = Gudrun()
         exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
         if exitcode:
@@ -420,7 +385,7 @@ class Purge(Process):
     def purge(self, purgeFile: PurgeFile):
         self.checkBinary()
         with tempfile.TemporaryDirectory() as tmp:
-            purgeFile.write_out(os.path.join(
+            GudPyIO.writeObject(purgeFile, os.path.join(
                 tmp,
                 f"{self.PROCESS}.dat"
             ))
@@ -501,7 +466,7 @@ class Gudrun(Process):
                 gudrunFile.OUTPATH
             )
             assert (gudrunFile.path() is not None)
-            gudrunFile.write_out(path)
+            GudPyIO.writeGudrunFile(path)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
                 stdout=subprocess.PIPE,
