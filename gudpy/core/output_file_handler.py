@@ -7,6 +7,7 @@ import tempfile
 import core.utils as utils
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
+from core.io.gudpy_io import GudPyIO
 
 
 @dataclass
@@ -127,7 +128,7 @@ class GudrunOutputHandler(OutputHandler):
 
         super().__init__(
             gudrunFile.instrument.GudrunInputFileDir,
-            gudrunFile.projectDir,
+            GudPyIO.projectDir,
             "Gudrun",
         )
 
@@ -140,6 +141,7 @@ class GudrunOutputHandler(OutputHandler):
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
         self.gudrunFile = gudrunFile
+        self.gudrunFile.outputFolder = self.outputDir
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
@@ -176,11 +178,9 @@ class GudrunOutputHandler(OutputHandler):
         inputFilePath = self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
-        if self.overwrite and os.path.exists(
-                os.path.join(self.gudrunFile.projectDir, "Gudrun")):
+        if self.overwrite and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(os.path.join(self.gudrunFile.projectDir, "Gudrun"),
-                            os.path.join(tmp, "prev"))
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
         # Move over folders to output directory
         shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))

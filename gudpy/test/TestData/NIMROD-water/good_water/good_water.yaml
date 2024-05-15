@@ -1,4 +1,4 @@
-Instrument:
+instrument:
   name: NIMROD
   dataFileDir: TestData/NIMROD-water/raw/
   dataFileType: raw
@@ -34,7 +34,7 @@ Instrument:
   logarithmicStepSize: 0.04
   hardGroupEdges: true
   nxsDefinitionFile: ''
-Beam:
+beam:
   sampleGeometry: FLATPLATE
   beamProfileValues: [1.0, 1.0]
   stepSizeAbsorption: 0.05
@@ -53,15 +53,15 @@ Beam:
   overallBackgroundFactor: 1.0
   sampleDependantBackgroundFactor: 0.0
   shieldingAttenuationCoefficient: 0.0
-Components: []
-Normalisation:
+components: []
+normalisation:
   periodNumber: 1
   dataFiles:
-    dataFiles: [NIMROD00016702_V.raw]
+    _dataFiles: [NIMROD00016702_V.raw]
     name: NORMALISATION
   periodNumberBg: 1
   dataFilesBg:
-    dataFiles: [NIMROD00016698_EmptyInst.raw, NIMROD00016703_EmptyInst.raw]
+    _dataFiles: [NIMROD00016698_EmptyInst.raw, NIMROD00016703_EmptyInst.raw]
     name: NORMALISATION BACKGROUND
   forceCalculationOfCorrections: true
   composition:
@@ -86,7 +86,7 @@ Normalisation:
   lowerLimitSmoothedNormalisation: 0.01
   normalisationDegreeSmoothing: 1.0
   minNormalisationSignalBR: 0.0
-SampleBackgrounds:
+sampleBackgrounds:
 - periodNumber: 1
   dataFiles:
     dataFiles: [NIMROD00016698_EmptyInst.raw, NIMROD00016703_EmptyInst.raw]
@@ -95,7 +95,7 @@ SampleBackgrounds:
   - name: H2O,_Can_N9
     periodNumber: 1
     dataFiles:
-      dataFiles: [NIMROD00016608_H2O_in_N9.raw, NIMROD00016610_H2O_in_N9.raw]
+      _dataFiles: [NIMROD00016608_H2O_in_N9.raw, NIMROD00016610_H2O_in_N9.raw]
       name: H2O,_Can_N9
     forceCalculationOfCorrections: true
     composition:
@@ -139,7 +139,7 @@ SampleBackgrounds:
     - name: N9
       periodNumber: 1
       dataFiles:
-        dataFiles: [NIMROD00016694_Empty_N9.raw, NIMROD00016699_Empty_N9.raw, NIMROD00016704_Empty_N9.raw]
+        _dataFiles: [NIMROD00016694_Empty_N9.raw, NIMROD00016699_Empty_N9.raw, NIMROD00016704_Empty_N9.raw]
         name: N9
       composition:
         type_: Container
@@ -165,7 +165,7 @@ SampleBackgrounds:
   - name: D2O,_Can_N10
     periodNumber: 1
     dataFiles:
-      dataFiles: [NIMROD00016609_D2O_in_N10.raw, NIMROD00016611_D2O_in_N10.raw]
+      _dataFiles: [NIMROD00016609_D2O_in_N10.raw, NIMROD00016611_D2O_in_N10.raw]
       name: D2O,_Can_N10
     forceCalculationOfCorrections: true
     composition:
@@ -209,7 +209,7 @@ SampleBackgrounds:
     - name: N10
       periodNumber: 1
       dataFiles:
-        dataFiles: [NIMROD00016695_Empty_N10.raw, NIMROD00016700_Empty_N10.raw, NIMROD00016705_Empty_N10.raw]
+        _dataFiles: [NIMROD00016695_Empty_N10.raw, NIMROD00016700_Empty_N10.raw, NIMROD00016705_Empty_N10.raw]
         name: N10
       composition:
         type_: Container
@@ -235,7 +235,7 @@ SampleBackgrounds:
   - name: HDO,_Can_N6
     periodNumber: 1
     dataFiles:
-      dataFiles: [NIMROD00016741_HDO_in_N6.raw, NIMROD00016743_HDO_in_N6.raw]
+      _dataFiles: [NIMROD00016741_HDO_in_N6.raw, NIMROD00016743_HDO_in_N6.raw]
       name: HDO,_Can_N6
     forceCalculationOfCorrections: true
     composition:
@@ -280,7 +280,7 @@ SampleBackgrounds:
     - name: N6
       periodNumber: 1
       dataFiles:
-        dataFiles: [NIMROD00014908_Empty_N6.raw]
+        _dataFiles: [NIMROD00014908_Empty_N6.raw]
         name: N6
       composition:
         type_: Container
@@ -351,7 +351,7 @@ SampleBackgrounds:
     - name: N8
       periodNumber: 1
       dataFiles:
-        dataFiles: [NIMROD00016994_Empty_N8.raw]
+        _dataFiles: [NIMROD00016994_Empty_N8.raw]
         name: N8
       composition:
         type_: Container

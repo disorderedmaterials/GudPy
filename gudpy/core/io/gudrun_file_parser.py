@@ -23,11 +23,11 @@ import core.enums as enums
 class GudrunFileParser:
     """Class to manage the parsing of Gudrun input files
     """
-    OUTPATH = "gudpy.txt"
 
     def __init__(self):
         # Text stream
         self.stream = None
+        self.config = False
 
     @classmethod
     def writeGudrunFile(cls, gudrunFile: GudrunFile, runDir: str):
@@ -35,7 +35,7 @@ class GudrunFileParser:
         for sampleBackground in gudrunFile.sampleBackgrounds:
             sampleBackground.writeAllSamples = False
 
-        writePath = os.path.join(runDir, GudrunFileParser.OUTPATH)
+        writePath = os.path.join(runDir, gudrunFile.OUTPATH)
 
         with open(writePath, "w", encoding="utf-8") as f:
             f.write(str(gudrunFile))
@@ -66,6 +66,8 @@ class GudrunFileParser:
         normalisation = None
         sampleBackgrounds = []
 
+        self.config = config
+
         # Ensure only valid files are given.
         if not path:
             raise ParserException(
@@ -94,22 +96,27 @@ class GudrunFileParser:
 
         # Iterate through the file,
         # parsing the Instrument, Beam and Normalisation.
-        while self.stream:
-            line = utils.firstword(line)
-            if line == "INSTRUMENT":
-                instrument = self._parseInstrument(line)
-                KEYWORDS[line] = True
-            elif line == "BEAM":
-                beam = self._parseBeam(line)
-                KEYWORDS[line] = True
-            elif line == "NORMALISATION":
-                normalisation = self._parseNormalisation(line)
-                KEYWORDS[line] = True
+        while (self.stream and not all(value for value in KEYWORDS.values())):
+            line = self._getNextToken()
+            kwd = utils.firstword(line)
+            if kwd == "INSTRUMENT":
+                instrument = self._parseInstrument()
+                KEYWORDS[kwd] = True
+            elif kwd == "BEAM":
+                beam = self._parseBeam()
+                KEYWORDS[kwd] = True
+            elif kwd == "NORMALISATION":
+                normalisation = self._parseNormalisation()
+                KEYWORDS[kwd] = True
 
         # If we didn't parse each one of the keywords, then panic.
         if not all(KEYWORDS.values()) and not config:
+            unparsed = []
+            for k, v in KEYWORDS.items():
+                if not v:
+                    unparsed.append(k)
             raise ParserException((
-                'INSTRUMENT, BEAM and NORMALISATION'
+                f'{unparsed}'
                 ' were not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
             ))
@@ -134,26 +141,24 @@ class GudrunFileParser:
             line = self._getNextToken()
 
         return GudrunFile(
-            loadFile=path,
-            params=(
-                instrument,
-                beam,
-                normalisation,
-                sampleBackgrounds,
-                components
-            ))
+            instrument=instrument,
+            beam=beam,
+            normalisation=normalisation,
+            sampleBackgrounds=sampleBackgrounds,
+            components=components
+        )
 
 # =================================================================
 #                         PARSING HELPERS
 # =================================================================
-    def _getNextToken(self) -> str | None:
+    def _getNextToken(self) -> typ.Union[str, None]:
         """
         Pops the 'next token' from the stream and returns it.
         Essentially removes the first line in the stream and returns it.
         """
         return self.stream.pop(0) if self.stream else None
 
-    def _peekNextToken(self) -> str | None:
+    def _peekNextToken(self) -> typ.Union[str, None]:
         """
         Returns the next token in the input stream, without removing it.
         """
@@ -436,7 +441,7 @@ class GudrunFileParser:
             # For N float attributes,
             # we extract the first N floats from the line.
             beam.beamProfileValues = (
-                enums.extract_floats_from_string(self._getNextToken())
+                utils.extract_floats_from_string(self._getNextToken())
             )
 
             # For single float attributes,
@@ -504,6 +509,7 @@ class GudrunFileParser:
                 "Whilst parsing Beam, an exception occured."
                 " The input file is most likely of an incorrect format, "
                 "and some attributes were missing."
+                f"{e}"
             ) from e
 
     def _parseNormalisation(self) -> Normalisation:
@@ -704,7 +710,7 @@ class GudrunFileParser:
                 "and some attributes were missing."
             ) from e
 
-    def _parseSampleBackground(self, _) -> SampleBackground:
+    def _parseSampleBackground(self) -> SampleBackground:
         """
         Intialises a SampleBackground object.
         Parses the attributes of the SampleBackground from the input stream.
@@ -748,7 +754,7 @@ class GudrunFileParser:
                 "and some attributes were missing."
             ) from e
 
-    def _parseSample(self, _) -> Sample:
+    def _parseSample(self) -> Sample:
         """
         Intialises a Sample object.
         Parses the attributes of the Sample from the input stream.
@@ -875,13 +881,13 @@ class GudrunFileParser:
             topHatW = utils.nthfloat(self._getNextToken(), 0)
             if topHatW == 0:
                 sample.topHatW = 0
-                sample.FTMode = FTModes.NO_FT
+                sample.FTMode = enums.FTModes.NO_FT
             elif topHatW < 0:
                 sample.topHatW = abs(topHatW)
-                sample.FTMode = FTModes.SUB_AVERAGE
+                sample.FTMode = enums.FTModes.SUB_AVERAGE
             else:
                 sample.topHatW = topHatW
-                sample.FTMode = FTModes.ABSOLUTE
+                sample.FTMode = enums.FTModes.ABSOLUTE
 
             sample.minRadFT = utils.nthfloat(self._getNextToken(), 0)
             sample.grBroadening = utils.nthfloat(self._getNextToken(), 0)
@@ -897,7 +903,7 @@ class GudrunFileParser:
                     not in line
             ):
                 sample.resonanceValues.append(
-                    enums.extract_floats_from_string(line)
+                    utils.extract_floats_from_string(line)
                 )
                 line = self._getNextToken()
 
@@ -952,7 +958,7 @@ class GudrunFileParser:
                 "and some attributes were missing."
             ) from e
 
-    def _parseContainer(self, _) -> Container:
+    def _parseContainer(self) -> Container:
         """
         Intialises a Container object.
         Parses the attributes of the Container from the input stream.
@@ -1135,7 +1141,7 @@ class GudrunFileParser:
         """
 
         # Parse sample background.
-        sampleBackground = self.makeParse("SAMPLE BACKGROUND")
+        sampleBackground = self._parseSampleBackground()
 
         self._consumeWhitespace()
         line = self._peekNextToken()
@@ -1147,7 +1153,7 @@ class GudrunFileParser:
             elif "GO" in line:
                 self._getNextToken()
             elif "SAMPLE" in line and utils.firstword(line) == "SAMPLE":
-                sample = self.makeParse("SAMPLE")
+                sample = self._parseSample()
                 if not sample.name:
                     sample.name = utils.replace_unwanted_chars(
                         utils.uniquifyName(
@@ -1158,7 +1164,7 @@ class GudrunFileParser:
                         ))
                 sampleBackground.samples.append(sample)
             elif "CONTAINER" in line and utils.firstword(line) == "CONTAINER":
-                container = self.makeParse("CONTAINER")
+                container = self._parseContainer()
                 if not container.name:
                     container.name = utils.uniquifyName(
                         "CONTAINER",
@@ -1174,7 +1180,7 @@ class GudrunFileParser:
         return sampleBackground
 
 
-Container._getNextToken = TxtParser._getNextToken
-Container._peekNextToken = TxtParser._peekNextToken
-Container._consumeUpToDelim = TxtParser._consumeUpToDelim
-Container._consumeWhitespace = TxtParser._consumeWhitespace
+Container._getNextToken = GudrunFileParser._getNextToken
+Container._peekNextToken = GudrunFileParser._peekNextToken
+Container._consumeUpToDelim = GudrunFileParser._consumeUpToDelim
+Container._consumeWhitespace = GudrunFileParser._consumeWhitespace

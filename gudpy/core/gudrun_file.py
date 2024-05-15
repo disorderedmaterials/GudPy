@@ -14,6 +14,7 @@ SUFFIX = ".exe" if os.name == "nt" else ""
 
 
 class GudrunFile:
+    OUTPATH = "gudpy.txt"
     """
     Class to represent a GudFile (files with .gud extension).
     .gud files are outputted by gudrun_dcs, via merge_routines
@@ -80,18 +81,11 @@ class GudrunFile:
 
     def __init__(
         self,
-        params: tuple[
-            Instrument,
-            Normalisation,
-            list[SampleBackground],
-            Components
-        ] = (
-            Instrument(),
-            Beam(),
-            Normalisation(),
-            [],
-            Components()
-        )
+        instrument=Instrument(),
+        beam=Beam(),
+        normalisation=Normalisation(),
+        sampleBackgrounds: list[SampleBackground] = [],
+        components=Components()
     ):
         """
         Constructs all the necessary attributes for the GudrunFile object.
@@ -109,13 +103,16 @@ class GudrunFile:
         config : bool
             If a new input file should be constructed from a config
         """
-        inst, norm, beam, sbg, comp = params
-
-        self.instrument = inst
-        self.normalisation = norm
+        self.instrument = instrument
+        self.normalisation = normalisation
         self.beam = beam
-        self.sampleBackgrounds = sbg
-        self.components = comp
+        self.sampleBackgrounds = sampleBackgrounds
+        self.components = components
+        self.purged = False
+
+    @property
+    def path(self):
+        return os.path.join(self.outputFolder, self.OUTPATH)
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)

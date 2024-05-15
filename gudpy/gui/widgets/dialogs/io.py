@@ -95,8 +95,6 @@ class ExportDialog(QDialog):
         Toggles renaming files to the sample name.
     performExport(filename)
         Performs an export to a filename.
-    export()
-        Performs a standard export.
     exportAs()
         Allows exporting to a specific file.
     """
@@ -174,7 +172,7 @@ class ExportDialog(QDialog):
     def toggleRename(self, state):
         self.loadFilesList(rename=bool(state))
 
-    def performExport(self, filename=None):
+    def performExport(self, filename):
         fl = GudPyFileLibrary(self.gudrunFile)
         archive = fl.exportMintData(
             self.gudrunFile.samples(),
@@ -189,11 +187,7 @@ class ExportDialog(QDialog):
         )
         self.widget.close()
 
-    def export(self):
-        self.performExport()
-
     def exportAs(self):
-
         dialog = QFileDialog()
         dialog.setDefaultSuffix("zip")
         dialog.setWindowTitle("Export to..")
