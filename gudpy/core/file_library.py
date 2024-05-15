@@ -167,15 +167,10 @@ class GudPyFileLibrary:
     def exportMintData(
         self,
         samples,
+        exportTo="",
         renameDataFiles=False,
-        exportTo=None,
         includeParams=False,
     ):
-        if not exportTo:
-            exportTo = os.path.join(
-                self.gudrunFile.projectDir,
-                Path(self.gudrunFile.path()).stem + ".zip",
-            )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
                 if len(sample.dataFiles.dataFiles):

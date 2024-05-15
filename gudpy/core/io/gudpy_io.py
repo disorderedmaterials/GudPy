@@ -4,6 +4,7 @@ from ruamel.yaml import YAML as yaml
 from ruamel.yaml import YAMLError
 import shutil
 import os
+import typing as typ
 
 from core.composition import (
     Component, Components, Composition, WeightedComponent
@@ -20,28 +21,28 @@ from core.sample_background import SampleBackground
 from core.sample import Sample
 from core.container import Container
 from core.gudrun_file import GudrunFile
-from core.io.txt_parser import GudrunFileParser
+from core.io.gudrun_file_parser import GudrunFileParser
 from core import config
 
 
 class GudPyIO:
-    def __init__(self):
-        self.projectDir = ""
-        self.loadFile = ""
+    projectDir = ""
+    loadFile = ""
 
+    def __init__(self):
         self.yaml = self._getYamlModule()
         self.gudrunFileParser = GudrunFileParser()
 
-    @property
-    def projectName(self) -> str:
-        return os.path.dirname(self.projectDir)
+    @classmethod
+    def projectName(cls) -> str:
+        return os.path.dirname(cls.projectDir)
 
-    @property
-    def autosavePath(self) -> str:
-        return f"{os.path.basename(self.projectDir)}.autosave"
+    @classmethod
+    def autosavePath(cls) -> str:
+        return f"{os.path.basename(cls.projectDir)}.autosave"
 
-    @property
-    def path(self):
+    @classmethod
+    def path(cls):
         """Returns the path to the yaml file
 
         Returns
@@ -54,11 +55,12 @@ class GudPyIO:
         RuntimeError
             Raised if project directory is not set
         """
-        if not self.projectDir:
+        if not cls.projectDir:
             raise RuntimeError("Save location not set.")
-        return os.path.join(self.projectDir, f"{self.projectName}.yaml")
+        return os.path.join(cls.projectDir, f"{cls.projectName()}.yaml")
 
-    def setSaveLocation(self, projectDir: str):
+    @classmethod
+    def setSaveLocation(cls, projectDir: str):
         """Sets the save location/project directory
 
         Parameters
@@ -66,20 +68,21 @@ class GudPyIO:
         projectDir : str
             Path to new save location
         """
-        self.projectDir = projectDir
+        cls.projectDir = projectDir
 
-    def checkSaveLocation(self) -> bool:
+    @classmethod
+    def checkSaveLocation(cls) -> bool:
         """Checks if user has set the save location
         """
-        return bool(self.projectDir)
+        return bool(cls.projectDir)
 
     def save(self):
         """Saves yaml file to project directory
         """
-        self.writeYaml(self.path)
+        self.writeYaml(self.path())
 
     def importGudrunFile(self, path, config=False) -> GudrunFile:
-        self.loadFile = path
+        GudPyIO.loadFile = path
         return self.gudrunFileParser.parse(path, config)
 
     def importProject(self, projectDir) -> GudrunFile:
@@ -135,7 +138,7 @@ class GudPyIO:
         os.makedirs(targetDir)
 
         shutil.copytree(oldDir, targetDir)
-        os.rename(oldFile, self.path)
+        os.rename(oldFile, self.path())
 
     @classmethod
     def exportGudrunFile(cls, path):
@@ -165,8 +168,9 @@ class GudPyIO:
     def _parseYaml(self, path) -> GudrunFile:
         self.loadFile = path
         yamldict = self._yamlToDict(path)
-        gudrunFile = GudrunFile(loadFile=path)
+        gudrunFile = GudrunFile()
         for k, v in yamldict.items():
+            k = k.lower()
             if k == "GUI":
                 GUI = GUIConfig()
                 self._yamlToObject(GUI, v)
@@ -188,16 +192,19 @@ class GudPyIO:
                 except YAMLError as e:
                     # Exception caused by yaml parsing library
                     raise YAMLException(f"Invalid YAML file: {str(e)}")
+                except Exception as e:
+                    print(f"Failed at: {k}")
+                    raise e
         return gudrunFile
 
     def _writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
         with open(path, "wb") as fp:
             outyaml = {
-                "Instrument": gudrunFile.instrument,
-                "Beam": gudrunFile.beam,
-                "Components": gudrunFile.components.components,
-                "Normalisation": gudrunFile.normalisation,
-                "SampleBackgrounds": gudrunFile.sampleBackgrounds,
+                "instrument": gudrunFile.instrument,
+                "beam": gudrunFile.beam,
+                "components": gudrunFile.components.components,
+                "normalisation": gudrunFile.normalisation,
+                "sampleBackgrounds": gudrunFile.sampleBackgrounds,
                 "GUI": config.GUI
             }
             self.yaml.dump(
@@ -205,7 +212,7 @@ class GudPyIO:
                 fp
             )
 
-    def _parsingFuncMap(self, type: type) -> typ.Callable | None:
+    def _parsingFuncMap(self, type: type) -> typ.Union[typ.Callable, None]:
         parsingFuncs = {
             Instrument: self._parseYamlInstrument,
             Beam: self._parseYamlBeam,
@@ -241,7 +248,17 @@ class GudPyIO:
                 f"given to '{type(obj).__name__}'"
             )
             return
-        setattr(obj, key, type(obj.__dict__[key])(self.toBuiltin(val)))
+
+        try:
+            if isinstance(obj.__dict__[key], Enum):
+                setattr(obj, key, type(obj.__dict__[key])[val])
+                return
+
+            setattr(obj, key, type(obj.__dict__[key])(self.toBuiltin(val)))
+        except Exception as e:
+            raise YAMLException(
+                "Parsing failed while trying to assign attribute"
+                f"'{key}' to {type(obj).__name__}") from e
 
     def _parseYamlInstrument(self, yamldict: any) -> Instrument:
         instrument = Instrument()
@@ -259,6 +276,9 @@ class GudPyIO:
             if k == "composition":
                 composition = self._parseYamlComposition(yamldict[k])
                 setattr(normalisation, k, composition)
+            if k == "dataFiles":
+                dataFiles = self._parseYamlDataFiles(yamldict[k])
+                setattr(normalisation, k, dataFiles)
             else:
                 self._assignYamlToAttr(normalisation, k, v)
         return normalisation
@@ -323,7 +343,7 @@ class GudPyIO:
         return container
 
     def _parseYamlDataFiles(self, yamldict: any) -> DataFiles:
-        dataFiles = DataFiles()
+        dataFiles = DataFiles([], yamldict["name"])
         for df in yamldict["_dataFiles"]:
             dataFile = DataFile(df["filename"])
             dataFile = self._yamlToObject(dataFile, df)

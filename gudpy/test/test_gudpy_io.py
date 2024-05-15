@@ -1514,7 +1514,7 @@ class TestGudPyIO(TestCase):
 
             gfFilePath = os.path.join(
                 gudpy.io.projectDir,
-                gudpy.io.gudrunFileParser.OUTPATH
+                gudpy.gudrunFile.OUTPATH
             )
 
             gudpy.io.writeGudrunFile(gfFilePath)

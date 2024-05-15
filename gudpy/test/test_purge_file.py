@@ -4,7 +4,6 @@ from shutil import copyfile
 import tempfile
 
 from core.purge_file import PurgeFile
-from core.enums import Format
 from core import gudpy
 from core.io.gudpy_io import GudPyIO
 
@@ -20,19 +19,11 @@ class TestPurgeFile(TestCase):
         else:
             dirpath = (
                 "/".join(os.path.realpath(__file__).split("/")[:-1])
-                + "/"
-                + path
             )
         self.gudpy = gudpy.GudPy()
         self.keepsakes = os.listdir()
-        copyfile(dirpath, "test/TestData/NIMROD-water/good_water.txt")
-        self.gudpy.loadFromFile(
-            loadFile="test/TestData/NIMROD-water/good_water.txt",
-            format=Format.TXT)
-
-        self.gudpy.loadFromGudrunFile(
-            path="test/TestData/NIMROD-water/good_water.txt"
-        )
+        refFile = os.path.join(dirpath, path)
+        self.gudpy.loadFromGudrunFile(loadFile=refFile)
         self.g = self.gudpy.gudrunFile
         self.expectedPurgeFile = {
             "standardDeviation": (10, 10),
@@ -59,9 +50,10 @@ class TestPurgeFile(TestCase):
 
     def testWritePurgeFile(self):
         with tempfile.TemporaryDirectory() as tmp:
-            os.chdir(tmp)
+            path = os.path.join(tmp, "purge_det.dat")
             purge = PurgeFile(self.g)
-            GudPyIO.writeObject(purge, "purge_det.dat")
-            with open("purge_det.dat", encoding="utf-8") as f:
+            GudPyIO.writeObject(purge, path)
+            with open(path, encoding="utf-8") as f:
                 outlines = f.read()
                 self.assertEqual(outlines, str(purge))
+                f.close()

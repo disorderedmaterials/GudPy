@@ -31,7 +31,6 @@ class GudPyController(QtCore.QObject):
         super().__init__()
         self.gudpy: gp.GudPy = gp.GudPy()
         self.mainWidget: QtWidgets.QMainWindow = GudPyMainWindow()
-        self.purged: bool = False
 
         # Current process thread running
         self.workerThread: QtCore.QThread = None
@@ -396,7 +395,7 @@ class GudPyController(QtCore.QObject):
                 os.path.join(
                     self.gudpy.projectDir, "Purge", "purge_det.dat"
                 )
-            ):
+            ) or not self.gudpy.gudrunFile.purged:
                 purgeResult = self.mainWidget.purgeOptionsMessageBox(
                     "purge_det.dat found, but wasn't run in this session. "
                     "Run Purge?",
@@ -424,7 +423,7 @@ class GudPyController(QtCore.QObject):
             self.startProcess()
 
     def purgeFinished(self, exitcode):
-        self.purged = True
+        self.gudpy.gudrunFile.purged = True
 
         if exitcode != 0:
             self.mainWidget.sendError(

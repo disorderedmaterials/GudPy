@@ -17,6 +17,7 @@ import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
 from core.io.gudpy_io import GudPyIO
+from core.io.gudrun_file_parser import GudrunFileParser
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -73,9 +74,6 @@ class GudPy:
             raise FileNotFoundError("Input file does not exist.")
 
         self.gudrunFile = self.io.importGudrunFile(loadFile, config)
-
-        self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
-        self.originalGudrunFile.filename = "original"
 
     def loadFromProject(self, projectDir: str):
         """Loads GudPy from a project directory
@@ -408,7 +406,7 @@ class Purge(Process):
                     return self.exitcode
 
             self.purgeLocation = self.organiseOutput(
-                tmp, purgeFile.gudrunFile.projectDir)
+                tmp, GudPyIO.projectDir)
 
         self.exitcode = 0
         return self.exitcode
@@ -465,7 +463,6 @@ class Gudrun(Process):
                 tmp,
                 gudrunFile.OUTPATH
             )
-            assert (gudrunFile.path() is not None)
             GudPyIO.writeGudrunFile(path)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
@@ -489,13 +486,7 @@ class Gudrun(Process):
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
             if save:
-                gudrunFile.save(
-                    path=os.path.join(
-                        gudrunFile.projectDir,
-                        f"{gudrunFile.filename}"
-                    ),
-                    format=enums.Format.YAML
-                )
+                GudPyIO.save()
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
@@ -893,8 +884,8 @@ class BatchProcessing:
         batchSize: int,
         iterator: iterators.Iterator = None,
     ):
-        self.batchedGudrunFile.projectDir = (os.path.join(
-            self.batchedGudrunFile.projectDir,
+        self.batchedGudrunFile.outputFolder = (os.path.join(
+            GudPyIO.projectDir,
             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
         ))
         exitcode = gudrun.gudrun(GudrunFile, purge, iterator)
