@@ -29,9 +29,10 @@ class GudrunFileParser:
         # Text stream
         self.stream = None
 
-    def writeGudrunFile(self, gudrunFile: GudrunFile, runDir: str):
+    @classmethod
+    def writeGudrunFile(cls, gudrunFile: GudrunFile, runDir: str):
         gudrunFile.setGudrunDir(runDir)
-        for sampleBackground in self.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             sampleBackground.writeAllSamples = False
 
         writePath = os.path.join(runDir, GudrunFileParser.OUTPATH)
@@ -41,7 +42,7 @@ class GudrunFileParser:
             f.close()
 
     def export(self, gudrunFile: GudrunFile, path: str):
-        for sampleBackground in self.sampleBackgrounds:
+        for sampleBackground in gudrunFile.sampleBackgrounds:
             sampleBackground.writeAllSamples = True
 
         with open(path, "w", encoding="utf-8") as f:
@@ -59,8 +60,6 @@ class GudrunFileParser:
         Raises ParserException if Instrument,
         Beam or Normalisation are missing.
         """
-        self.config = config
-
         instrument = None
         beam = None
         components = None

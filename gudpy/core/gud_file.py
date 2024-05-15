@@ -71,13 +71,6 @@ class GudFile:
         Contents of the .gud file.
     output : str
         Output for use in the GUI.
-    Methods
-    -------
-    parse():
-        Parses the GudFile from path, assigning values
-        to each of the attributes.
-    write_out(overwrite=False)
-        Writes out the string representation of the GudFile to a file.
     """
 
     def __init__(self, path):
@@ -350,22 +343,3 @@ class GudFile:
             f'{self.suggestedTweakFactor}\n'
 
         )
-
-    def write_out(self, path):
-        """
-        Writes out the string representation of the GudFile.
-        If 'overwrite' is True, then the initial file is overwritten.
-        Otherwise, it is written to 'gudpy_{initial filename}.gud'.
-
-        Parameters
-        ----------
-        overwrite : bool, optional
-            Overwrite the initial file? (default is False).
-
-        Returns
-        -------
-        None
-        """
-        f = open(path, "w", encoding="utf-8")
-        f.write(str(self))
-        f.close()

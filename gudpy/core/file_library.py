@@ -4,6 +4,7 @@ from pathlib import Path
 
 from core import utils
 from core.enums import CrossSectionSource
+from core.io.gudpy_io import GudPyIO
 
 
 class GudPyFileLibrary:
@@ -202,9 +203,7 @@ class GudPyFileLibrary:
                         sample.sampleFile = path
 
                         if not os.path.exists(path):
-                            sample.write_out(
-                                self.gudrunFile.projectDir
-                            )
+                            GudPyIO.writeObject(sample, path)
                         zipFile.write(path, arcname=os.path.basename(path))
 
             return zipFile.filename

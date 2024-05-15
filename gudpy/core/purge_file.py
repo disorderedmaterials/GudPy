@@ -24,12 +24,6 @@ class PurgeFile:
          standard deviation.
     ignoreBad : bool
         Ignore any existing bad spectrum files (spec.bad, spec.dat)?
-    Methods
-    -------
-    write_out()
-        Writes out the string representation of the PurgeFile to purge_det.dat
-    purge()
-        Writes out the file, and then calls purge_det on that file.
     """
 
     def __init__(
@@ -51,28 +45,6 @@ class PurgeFile:
         self.excludeSampleAndCan = excludeSampleAndCan
         self.standardDeviation = standardDeviation
         self.ignoreBad = ignoreBad
-
-    def write_out(self, path=""):
-        """
-        Writes out the string representation of the PurgeFile to
-        purge_det.dat.
-
-        Parameters
-        ----------
-        None
-        Returns
-        -------
-        None
-        """
-        # Write out the string representation of the PurgeFile
-        # To purge_det.dat.
-        if not path:
-            f = open("purge_det.dat", "w", encoding="utf-8")
-            f.write(str(self))
-        else:
-            f = open(path, "w", encoding="utf-8")
-            f.write(str(self))
-        f.close()
 
     def __str__(self):
         """

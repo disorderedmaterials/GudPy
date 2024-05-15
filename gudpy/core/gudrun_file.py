@@ -23,10 +23,6 @@ class GudrunFile:
 
     Attributes
     ----------
-    path : str
-        Path to the file.
-    OUTPATH : str
-        Path to write to, when not overwriting the initial file.
     instrument : Instrument
         Instrument object extracted from the input file.
     beam : Beam
@@ -35,11 +31,6 @@ class GudrunFile:
         Normalisation object extracted from the input file.
     sampleBackgrounds : SampleBackground[]
         List of SampleBackgrounds extracted from the input file.
-    purged : bool
-        Have the detectors been purged?
-    stream : str[]
-        List of strings, where each item represents a line
-        in the input stream.
     Methods
     -------
     getNextToken():
@@ -85,20 +76,10 @@ class GudrunFile:
     sampleBackgroundHelper():
         Parses the SampleBackground, its Samples and their Containers.
         Returns the SampleBackground object.
-    parse():
-        Parse the GudrunFile from its path.
-        Assign objects from the file to the attributes of the class.
-    write_out(overwrite=False)
-        Writes out the string representation of the GudrunFile to a file.
-    purge():
-        Create a PurgeFile from the GudrunFile, and run purge_det on it.
     """
 
     def __init__(
         self,
-        projectDir=None,
-        loadFile=None,
-        config=False,
         params: tuple[
             Instrument,
             Normalisation,
