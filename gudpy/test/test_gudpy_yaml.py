@@ -8,17 +8,15 @@ from core.enums import Format
 class TestYAML(TestCase):
     def testYAML(self):
         gudpy1 = gudpy.GudPy()
-        gudpy1.loadFromFile(
+        gudpy1.loadFromGudrunFile(
             loadFile="test/TestData/NIMROD-water/water.txt",
-            format=Format.TXT
         )
         gudpy1.save(path="test/TestData/NIMROD-water/water.yaml")
         gf1 = gudpy1.gudrunFile
 
         gudpy2 = gudpy.GudPy()
-        gudpy2.loadFromFile(
+        gudpy2.loadFromYamlFile(
             loadFile="test/TestData/NIMROD-water/water.yaml",
-            format=Format.YAML
         )
         gf2 = gudpy2.gudrunFile
 
