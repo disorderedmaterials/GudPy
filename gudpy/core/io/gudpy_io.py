@@ -76,10 +76,10 @@ class GudPyIO:
         """
         return bool(cls.projectDir)
 
-    def save(self):
+    def save(self, gudrunFile):
         """Saves yaml file to project directory
         """
-        self.writeYaml(self.path())
+        self._writeYAML(gudrunFile, self.path())
 
     def importGudrunFile(self, path, config=False) -> GudrunFile:
         GudPyIO.loadFile = path
@@ -128,21 +128,34 @@ class GudPyIO:
         self.setSaveLocation(projectDir)
         return self._parseYaml(loadFile)
 
-    def exportProject(self, targetDir):
+    def importFromYamlFile(self, loadFile) -> GudrunFile:
+        return self._parseYaml(loadFile)
+
+    def exportProject(self, gudrunFile, targetDir):
         if os.path.exists(targetDir):
             raise IsADirectoryError("Cannot be an existing directory")
 
         oldFile = os.path.join(targetDir, os.path.basename(self.loadFile))
-        oldDir = self.projectDir
-        self.setSaveLocation(targetDir)
         os.makedirs(targetDir)
+        print("TARGET DIR: " + targetDir)
 
-        shutil.copytree(oldDir, targetDir)
-        os.rename(oldFile, self.path())
+        if self.projectDir and oldFile:
+            shutil.copytree(self.projectDir, targetDir)
+            os.rename(oldFile, self.path())
+        else:
+            yamlPath = os.path.join(
+                targetDir,
+                f"{os.path.basename(targetDir)}.yaml"
+            )
+            print("yaml PATH: " + yamlPath)
+            self.exportYamlFile(gudrunFile, yamlPath)
+
+    def exportYamlFile(self, gudrunFile, path):
+        self._writeYAML(gudrunFile, path)
 
     @classmethod
-    def exportGudrunFile(cls, path):
-        return GudrunFileParser.export(path)
+    def exportGudrunFile(cls, gudrunFile, path):
+        return GudrunFileParser.export(gudrunFile, path)
 
     @classmethod
     def writeGudrunFile(cls, gudrunFile, path):
@@ -193,8 +206,7 @@ class GudPyIO:
                     # Exception caused by yaml parsing library
                     raise YAMLException(f"Invalid YAML file: {str(e)}")
                 except Exception as e:
-                    print(f"Failed at: {k}")
-                    raise e
+                    raise YAMLException(f"Failed at: {k}. Details: {e}")
         return gudrunFile
 
     def _writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
@@ -208,9 +220,10 @@ class GudPyIO:
                 "GUI": config.GUI
             }
             self.yaml.dump(
-                {k: self._toYaml(v) for k, v in outyaml.items()},
+                {k: self.toYaml(v) for k, v in outyaml.items()},
                 fp
             )
+            print(fp)
 
     def _parsingFuncMap(self, type: type) -> typ.Union[typ.Callable, None]:
         parsingFuncs = {
@@ -368,7 +381,7 @@ class GudPyIO:
         components = []
         for c in yamllist:
             components.append(self._parseYamlComponent(c))
-        return components
+        return Components(components)
 
     def _parseYamlElements(self, yamllist: list[str]) -> list[Element]:
         elements = []
@@ -407,7 +420,7 @@ class GudPyIO:
             return float(var)
         if var.__class__.__module__ == "builtins":
             if isinstance(var, (list, tuple)):
-                return type(var)([self._toYaml(v) for v in var])
+                return type(var)([self.toYaml(v) for v in var])
             else:
                 return var
         elif isinstance(var, Enum):
@@ -418,7 +431,7 @@ class GudPyIO:
             Component, Composition, Element, DataFiles, DataFile, GUIConfig
         )):
             return {
-                k: self._toYaml(v)
+                k: self.toYaml(v)
                 for k, v in var.__dict__.items()
                 if k not in var.yamlignore
             }

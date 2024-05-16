@@ -18,7 +18,6 @@ def loadProject(ctx, project):
 
 
 def loadFile(ctx, value):
-    print(value)
     file, format = value
     if not file:
         file = click.prompt("Path to load file", type=click.Path())
@@ -35,7 +34,7 @@ def loadFile(ctx, value):
     if not file or format:
         return
     ctx.obj = gp.GudPy()
-    ctx.obj.loadFromFile(file, format)
+    ctx.obj.loadFromGudrunFile(file)
     click.echo(click.style(u"\u2714", fg="green", bold=True) +
                f" GudPy input file {file} sucessfuly loaded")
 
@@ -56,7 +55,7 @@ def loadConfig(ctx, cfg):
         return
 
     ctx.obj = gp.GudPy()
-    ctx.obj.loadFromFile(cfg, enums.Format.TXT, config=True)
+    ctx.obj.loadFromGudrunFile(cfg, config=True)
 
 
 def echoIndent(text):

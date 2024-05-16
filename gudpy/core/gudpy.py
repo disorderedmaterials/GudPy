@@ -17,7 +17,6 @@ import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
 from core.io.gudpy_io import GudPyIO
-from core.io.gudrun_file_parser import GudrunFileParser
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -38,9 +37,6 @@ class GudPy:
 
         self.gudrunOutput = None
 
-        self.projectDir = ""
-        self.autosaveLocation = ""
-
     @property
     def gudrunFile(self):
         return self._gudrunFile
@@ -48,6 +44,10 @@ class GudPy:
     @gudrunFile.setter
     def gudrunFile(self, gudrunFile: GudrunFile):
         self._gudrunFile = gudrunFile
+
+    @property
+    def projectDir(self):
+        return self.io.projectDir
 
     def loadFromGudrunFile(
         self,
@@ -60,8 +60,6 @@ class GudPy:
         ----------
         loadFile : str
             Path of input file to load from
-        format : enums.Format
-            Format of the input file (YAML or TXT)
         config : bool, optional
             If loading from preset config, by default False
 
@@ -74,6 +72,27 @@ class GudPy:
             raise FileNotFoundError("Input file does not exist.")
 
         self.gudrunFile = self.io.importGudrunFile(loadFile, config)
+
+    def loadFromYamlFile(
+        self,
+        loadFile: str,
+    ):
+        """Loads GudPy from a YAML input file
+
+        Parameters
+        ----------
+        loadFile : str
+            Path of input file to load from
+
+        Raises
+        ------
+        FileNotFoundError
+            Raised if input file does not exist
+        """
+        if not os.path.exists(loadFile):
+            raise FileNotFoundError("Input file does not exist.")
+
+        self.gudrunFile = self.io.importFromYamlFile(loadFile)
 
     def loadFromProject(self, projectDir: str):
         """Loads GudPy from a project directory
@@ -117,7 +136,7 @@ class GudPy:
     def save(self):
         """Saves current GudPy input file
         """
-        self.io.save()
+        self.io.save(self.gudrunFile)
 
     def saveAs(self, targetDir: str):
         """Save GudPy project to a new location, set current
@@ -133,7 +152,8 @@ class GudPy:
         IsADirectoryError
             Raised if the requested save location already exists
         """
-        self.io.exportProject(targetDir)
+        if self.projectDir:
+            self.io.exportProject(self.gudrunFile, targetDir)
         self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
@@ -178,7 +198,7 @@ class GudPy:
         self.purge = Purge()
         purgeFile = PurgeFile(self.gudrunFile)
         exitcode = self.purge.purge(purgeFile)
-        self.io.save()
+        self.save()
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
@@ -202,7 +222,7 @@ class GudPy:
 
         if not gudrunFile:
             gudrunFile = self.gudrunFile
-        self.io.save()
+        self.save()
         self.gudrun = Gudrun()
         exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
         if exitcode:

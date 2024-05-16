@@ -779,7 +779,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
         viewInputDialog = ViewInputDialog(self.gudrunFile, self)
-        viewInputDialog.widget.exec_()
+        viewInputDialog.widget.exec()
 
     def handleAllPlotModeChanged(self, index):
         plotMode = self.ui.allPlotComboBox.itemData(index)

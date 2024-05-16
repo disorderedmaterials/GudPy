@@ -60,10 +60,10 @@ class GudrunFileParser:
         Raises ParserException if Instrument,
         Beam or Normalisation are missing.
         """
-        instrument = None
-        beam = None
-        components = None
-        normalisation = None
+        instrument = Instrument()
+        beam = Beam()
+        components = Components()
+        normalisation = Normalisation()
         sampleBackgrounds = []
 
         self.config = config
@@ -772,7 +772,6 @@ class GudrunFileParser:
                 .replace("SAMPLE", "").strip()
             )
             sample.name = utils.replace_unwanted_chars(sample.name)
-            print(sample.name)
             self._consumeWhitespace()
             # The number of files and period number are both stored
             # on the same line.
@@ -1097,7 +1096,7 @@ class GudrunFileParser:
             ) from e
 
     def _parseComponents(self) -> Components:
-        components = Components
+        components = Components()
         try:
             while self.stream:
                 component = self._parseComponent()
