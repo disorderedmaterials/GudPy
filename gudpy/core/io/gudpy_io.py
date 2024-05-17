@@ -139,7 +139,7 @@ class GudPyIO:
         os.makedirs(targetDir)
         print("TARGET DIR: " + targetDir)
 
-        if self.projectDir and oldFile:
+        if os.path.exists(self.projectDir) and os.path.exists(oldFile):
             shutil.copytree(self.projectDir, targetDir)
             os.rename(oldFile, self.path())
         else:
