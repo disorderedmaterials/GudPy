@@ -1,6 +1,6 @@
 # GudPy
 
-_Last Release: 0.5.0, Monday 18th March 2024_
+_Last Release: 0.5.1, Friday 17th May 2024_
 
 _Release Build::_ [![Release Build Status](https://github.com/disorderedmaterials/GudPy/actions/workflows/release.yml/badge.svg)](https://github.com/disorderedmaterials/GudPy/actions/workflows/release.yml)
 _Development Build::_ [![Development Build Status](https://github.com/disorderedmaterials/GudPy/actions/workflows/continuous.yml/badge.svg)](https://github.com/disorderedmaterials/GudPy/actions/workflows/continuous.yml)
