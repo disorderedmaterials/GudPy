@@ -1075,7 +1075,9 @@ class GudrunFileParser:
                     enums.CrossSectionSource[crossSectionSource]
                 )
             else:
-                container.totalCrossSectionSource = enums.CrossSectionSource.FILE
+                container.totalCrossSectionSource = (
+                    enums.CrossSectionSource.FILE
+                )
                 container.crossSectionFilename = crossSectionSource
             container.tweakFactor = utils.nthfloat(self._getNextToken(), 0)
 

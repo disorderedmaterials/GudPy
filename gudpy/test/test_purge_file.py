@@ -1,6 +1,5 @@
 import os
 from unittest import TestCase
-from shutil import copyfile
 import tempfile
 
 from core.purge_file import PurgeFile
