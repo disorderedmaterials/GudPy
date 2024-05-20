@@ -21,12 +21,12 @@ class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
         emptyPath = ""
         self.assertRaises(
-            RuntimeError, GudPyIO.importGudrunFile, loadFile=emptyPath)
+            RuntimeError, GudPyIO.importGudrunFile, emptyPath)
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
         self.assertRaises(
-            ParserException, GudPyIO.importGudrunFile, loadFile=invalidPath)
+            ParserException, GudPyIO.importGudrunFile, invalidPath)
 
     def testInstrumentInitDataTypes(self):
 

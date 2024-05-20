@@ -109,7 +109,6 @@ class GudrunFileParser:
             elif kwd == "NORMALISATION":
                 normalisation = self._parseNormalisation()
                 KEYWORDS[kwd] = True
-
         # If we didn't parse each one of the keywords, then panic.
         if not all(KEYWORDS.values()) and not config:
             unparsed = []
