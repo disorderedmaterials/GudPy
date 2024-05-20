@@ -251,13 +251,6 @@ class TestParseGudFile(TestCase):
         self.gudpy.gudrunFile.instrument.dataFileDir = str(dataFileDir) + "/"
         return super().setUp()
 
-    def tearDown(self) -> None:
-        [os.remove(f) for f in os.listdir() if f not in self.keepsakes]
-        [os.remove(os.path.join(self.gudpy.projectDir, f))
-         for f in os.listdir(self.gudpy.projectDir)
-         if f not in self.keepsakes]
-        return super().tearDown()
-
     def testEmptyPath(self):
         emptyPath = ""
         self.assertRaises(ParserException, GudFile, emptyPath)
