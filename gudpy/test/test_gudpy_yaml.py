@@ -2,7 +2,6 @@ from unittest import TestCase
 import os
 
 from core import gudpy
-from core.enums import Format
 
 
 class TestYAML(TestCase):
