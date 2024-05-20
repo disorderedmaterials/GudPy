@@ -391,6 +391,7 @@ class TestGudPyIO(TestCase):
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
             "stepSize": 0.0,
+            "outputFolder": '',
             "yamlignore": {
                 "runAsSample",
                 "topHatW",
@@ -454,6 +455,8 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerA],
+            "outputFolder": '',
+            "sampleFile": '',
             "yamlignore": {
                 "yamlignore",
             }
@@ -509,6 +512,8 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerB],
+            "outputFolder": '',
+            "sampleFile": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -564,6 +569,8 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerC],
+            "outputFolder": '',
+            "sampleFile": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -620,6 +627,8 @@ class TestGudPyIO(TestCase):
             "scatteringFraction": 1.0,
             "attenuationCoefficient": 0.0,
             "containers": [self.expectedContainerD],
+            "outputFolder": '',
+            "sampleFile": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -645,6 +654,7 @@ class TestGudPyIO(TestCase):
                 self.expectedSampleB,
                 self.expectedSampleC,
             ],
+            "outputFolder": '',
             "writeAllSamples": True,
             "yamlignore": {
                 "writeAllSamples",
@@ -750,7 +760,6 @@ class TestGudPyIO(TestCase):
                             )
                         )
                         for key_ in sampleAttrsDict.keys():
-
                             if key_ == "containers":
                                 for j, container in enumerate(sample[key_]):
                                     containerAttrsDict = (
@@ -1540,7 +1549,7 @@ class TestGudPyIO(TestCase):
                 gudpy.gudrunFile.OUTPATH
             )
 
-            gudpy.io.writeGudrunFile(gudpy.gudrunFile, gfFilePath)
+            gudpy.io.writeGudrunFile(gudpy.gudrunFile, gudpy.io.projectDir)
             gudrunFile = GudPyIO.importGudrunFile(gfFilePath)
             # Test that a default value is appended
             self.assertEqual(
