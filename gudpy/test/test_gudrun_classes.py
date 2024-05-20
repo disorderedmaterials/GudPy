@@ -15,17 +15,18 @@ from core.enums import (
     FTModes, Instruments, Scales, UnitsOfDensity, MergeWeights,
     NormalisationType, OutputUnits, Geometry, CrossSectionSource
 )
+from core.io.gudpy_io import GudPyIO
 
 
 class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
-
         emptyPath = ""
-        self.assertRaises(RuntimeError, GudrunFile, loadFile=emptyPath)
+        self.assertRaises(
+            RuntimeError, GudPyIO.importGudrunFile, loadFile=emptyPath)
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
-        self.assertRaises(ParserException, GudrunFile, loadFile=invalidPath)
+        self.assertRaises(ParserException, GudPyIO.importGudrunFile, , loadFile=invalidPath)
 
     def testInstrumentInitDataTypes(self):
 
