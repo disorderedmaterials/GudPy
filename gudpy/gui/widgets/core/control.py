@@ -128,7 +128,7 @@ class GudPyController(QtCore.QObject):
 
     def tryLoadAutosaved(self, projectDir):
         for f in os.listdir(projectDir):
-            if f == self.gudpy.autosaveLocation:
+            if f == self.gudpy.io.autosavePath:
                 path = os.path.join(projectDir, f)
                 autoFileInfo = QtCore.QFileInfo(path)
                 autoDate = autoFileInfo.lastModified()
@@ -210,7 +210,12 @@ class GudPyController(QtCore.QObject):
         except IOError:
             self.mainWidget.sendError("Could not open file.")
             return
+        except exc.YAMLException as e:
+            self.mainWidget.sendError(f"Could not parse input file: {e}")
+            return
         self.mainWidget.updateWidgets(self.gudrunFile)
+        for sample in self.gudrunFile.sampleBackgrounds[0].samples:
+            print(sample.name)
         self.mainWidget.setWindowTitle(
             f"GudPy - {self.gudpy.io.projectName}[*]")
 

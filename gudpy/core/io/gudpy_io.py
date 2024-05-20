@@ -183,7 +183,6 @@ class GudPyIO:
         yamldict = self._yamlToDict(path)
         gudrunFile = GudrunFile()
         for k, v in yamldict.items():
-            k = k.lower()
             if k == "GUI":
                 GUI = GUIConfig()
                 self._yamlToObject(GUI, v)
@@ -194,8 +193,7 @@ class GudPyIO:
                 print(f"Ignoring depreciated attribute '{k}'")
                 continue
 
-            objType = type(gudrunFile.__dict__[k])
-            parsingFunc = self._parsingFuncMap(objType)
+            parsingFunc = self._parsingFuncMap(k)
             if parsingFunc:
                 try:
                     obj = parsingFunc(v)
@@ -206,7 +204,7 @@ class GudPyIO:
                     # Exception caused by yaml parsing library
                     raise YAMLException(f"Invalid YAML file: {str(e)}")
                 except Exception as e:
-                    raise YAMLException(f"Failed at: {k}. Details: {e}")
+                    raise YAMLException(f"Failed at: '{k}'. Details: {e}")
         return gudrunFile
 
     def _writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
@@ -223,23 +221,23 @@ class GudPyIO:
                 {k: self.toYaml(v) for k, v in outyaml.items()},
                 fp
             )
-            print(fp)
 
-    def _parsingFuncMap(self, type: type) -> typ.Union[typ.Callable, None]:
+    def _parsingFuncMap(self, key) -> typ.Union[typ.Callable, None]:
         parsingFuncs = {
-            Instrument: self._parseYamlInstrument,
-            Beam: self._parseYamlBeam,
-            Normalisation: self._parseYamlNormalisation,
-            SampleBackground: self._parseYamlSampleBackground,
-            Sample: self._parseYamlSample,
-            Composition: self._parseYamlComposition,
-            Component: self._parseYamlComponent,
-            Components: self._parseYamlComponents,
-            list[Element]: self._parseYamlElements,
-            DataFiles: self._parseYamlDataFiles
+            "instrument ": self._parseYamlInstrument,
+            "beam": self._parseYamlBeam,
+            "normalisation": self._parseYamlNormalisation,
+            "sampleBackgrounds": self._parseYamlSampleBackground,
+            "sample": self._parseYamlSample,
+            "composition": self._parseYamlComposition,
+            "component": self._parseYamlComponent,
+            "components": self._parseYamlComponents,
+            "elements": self._parseYamlElements,
+            "dataFiles": self._parseYamlDataFiles,
+            "dataFilesBg": self._parseYamlDataFiles
         }
-        if type in parsingFuncs.keys():
-            return parsingFuncs[type]
+        if key in parsingFuncs.keys():
+            return parsingFuncs[key]
         else:
             return None
 
@@ -287,10 +285,10 @@ class GudPyIO:
         normalisation = Normalisation()
         for k, v in yamldict.items():
             if k == "composition":
-                composition = self._parseYamlComposition(yamldict[k])
+                composition = self._parseYamlComposition(v)
                 setattr(normalisation, k, composition)
-            if k == "dataFiles":
-                dataFiles = self._parseYamlDataFiles(yamldict[k])
+            elif k == "dataFiles" or k == "dataFilesBg":
+                dataFiles = self._parseYamlDataFiles(v)
                 setattr(normalisation, k, dataFiles)
             else:
                 self._assignYamlToAttr(normalisation, k, v)
@@ -299,8 +297,11 @@ class GudPyIO:
     def _parseYamlSample(self, yamldict: any) -> Sample:
         sample = Sample()
         for k, v in yamldict.items():
-            if k == "composition":
-                composition = self._parseYamlComposition()
+            if k == "dataFiles":
+                dataFiles = self._parseYamlDataFiles(v)
+                setattr(sample, k, dataFiles)
+            elif k == "composition":
+                composition = self._parseYamlComposition(v)
                 setattr(sample, k, composition)
             elif k == "containers":
                 for contyaml in yamldict[k]:
@@ -310,19 +311,28 @@ class GudPyIO:
                 self._assignYamlToAttr(sample, k, v)
         return sample
 
-    def _parseYamlSampleBackground(self, yamldict: any) -> SampleBackground:
-        sampleBg = SampleBackground()
-        for k, v in yamldict.items():
-            if k == "samples":
-                for sampleyaml in yamldict[k]:
-                    sample = self._parseYamlSample(sampleyaml)
-                    sample.name = utils.replace_unwanted_chars(sample.name)
-                    sampleBg.samples.append(sample)
-            else:
-                self._assignYamlToAttr(sampleBg, k, v)
+    def _parseYamlSampleBackground(
+            self, yamllist: list
+    ) -> list[SampleBackground]:
+        sampleBackgrounds = []
+        for sbg in yamllist:
+            sampleBg = SampleBackground()
+            for k, v in sbg.items():
+                if k == "samples":
+                    for sampleyaml in v:
+                        sample = self._parseYamlSample(sampleyaml)
+                        sample.name = utils.replace_unwanted_chars(sample.name)
+                        sampleBg.samples.append(sample)
+                elif k == "dataFiles":
+                    dataFiles = self._parseYamlDataFiles(v)
+                    setattr(sampleBg, k, dataFiles)
+                else:
+                    self._assignYamlToAttr(sampleBg, k, v)
+            sampleBackgrounds.append(sampleBg)
+        return sampleBackgrounds
 
     def _parseYamlComposition(self, yamldict: any) -> Composition:
-        composition = Composition()
+        composition = Composition(yamldict["type_"])
         for k, v in yamldict.items():
             if k == "elements":
                 elements = self._parseYamlElements(yamldict[k])
@@ -349,8 +359,11 @@ class GudPyIO:
         container = Container()
         for k, v in yamldict.items():
             if k == "composition":
-                composition = self._parseYamlComposition()
+                composition = self._parseYamlComposition(v)
                 setattr(container, k, composition)
+            elif k == "dataFiles":
+                dataFiles = self._parseYamlDataFiles(v)
+                setattr(container, k, dataFiles)
             else:
                 self._assignYamlToAttr(container, k, v)
         return container
@@ -359,7 +372,14 @@ class GudPyIO:
         dataFiles = DataFiles([], yamldict["name"])
         for df in yamldict["_dataFiles"]:
             dataFile = DataFile(df["filename"])
-            dataFile = self._yamlToObject(dataFile, df)
+            for k, v in df.items():
+                if k == "_outputs":
+                    outDict = {}
+                    for k_, v_ in v:
+                        outDict[k_] = v_
+                    dataFile._outputs = outDict
+                else:
+                    self._assignYamlToAttr(dataFile, k, v)
             dataFiles.dataFiles.append(dataFile)
         return dataFiles
 

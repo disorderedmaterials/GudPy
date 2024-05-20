@@ -152,8 +152,7 @@ class GudPy:
         IsADirectoryError
             Raised if the requested save location already exists
         """
-        if self.projectDir:
-            self.io.exportProject(self.gudrunFile, targetDir)
+        self.io.exportProject(self.gudrunFile, targetDir)
         self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
