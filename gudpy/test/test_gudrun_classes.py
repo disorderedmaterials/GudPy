@@ -26,7 +26,8 @@ class TestGudrunClasses(TestCase):
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
-        self.assertRaises(ParserException, GudPyIO.importGudrunFile, , loadFile=invalidPath)
+        self.assertRaises(
+            ParserException, GudPyIO.importGudrunFile, loadFile=invalidPath)
 
     def testInstrumentInitDataTypes(self):
 
