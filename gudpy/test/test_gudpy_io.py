@@ -960,7 +960,7 @@ class TestGudPyIO(TestCase):
     def testReloadGudrunFile(self):
         with GudPyContext() as gudpy:
             GudPyIO.writeGudrunFile(gudpy.gudrunFile, gudpy.io.loadFile)
-            g1 = gudpy.io.importGudrunFile()
+            g1 = gudpy.io.importGudrunFile(gudpy.io.loadFile)
             g1.instrument.GudrunInputFileDir = (
                 gudpy.gudrunFile.instrument.GudrunInputFileDir)
             self.assertEqual(

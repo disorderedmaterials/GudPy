@@ -495,7 +495,7 @@ class InelasticitySubtraction(Iterator):
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
-                    filename = target.dataFiles[0].filename
+                    filename = target.dataFilenames[0]
                     targetFile = (
                         prevOutput.output(
                             sample.name, filename, suffix)

@@ -76,10 +76,9 @@ class TestGudPyWorkflows(TestCase):
 
                 actualMintFile = ("test/TestData/water-ref/plain/"
                                   f"{mintFilename}.mint01")
-                actualData = open(gudpy.gudrunOutput.sampleOutputs[
-                    sample.name].outputs[sample.dataFiles[0]][".mint01"],
-                    "r", encoding="utf-8"
-                ).readlines()[10:]
+                actualData = open(sample.dataFiles[0].mintFile,
+                                  "r", encoding="utf-8"
+                                  ).readlines()[10:]
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
                 ).readlines()[10:]
@@ -244,8 +243,7 @@ class TestGudPyWorkflows(TestCase):
                     )
 
                     actualData = open(
-                        gudpy.gudrunIterator.iterator.gudrunOutputs[-1].output(
-                            sample.name, sample.dataFiles[0], ".mint01"),
+                        sample.dataFiles[0].mintFile,
                         "r", encoding="utf-8"
                     ).readlines()[10:]
                     expectedData = open(
@@ -273,12 +271,7 @@ class TestGudPyWorkflows(TestCase):
                     )
 
                     actualData = open(
-                        gudpy.gudrunIterator.iterator.gudrunOutputs[
-                            len(
-                                gudpy.gudrunIterator.iterator.gudrunOutputs
-                            ) - 2
-                        ].output(
-                            sample.name, sample.dataFiles[0], ".msubw01"),
+                        sample.dataFiles[0].msubwFile,
                         "r", encoding="utf-8"
                     ).readlines()[10:]
                     expectedData = open(
