@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from core.exception import ParserException
-from core.gudrun_file import GudrunFile
 from core.beam import Beam
 from core.composition import Composition
 from core.container import Container
