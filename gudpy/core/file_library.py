@@ -1,6 +1,5 @@
 import os
 from zipfile import ZipFile, ZIP_DEFLATED
-from pathlib import Path
 
 from core import utils
 from core.enums import CrossSectionSource

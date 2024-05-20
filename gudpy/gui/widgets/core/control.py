@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 import traceback
 import typing as typ
