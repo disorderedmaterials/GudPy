@@ -41,7 +41,8 @@ class GudrunFileParser:
             f.write(str(gudrunFile))
             f.close()
 
-    def export(self, gudrunFile: GudrunFile, path: str):
+    @classmethod
+    def export(cls, gudrunFile: GudrunFile, path: str):
         for sampleBackground in gudrunFile.sampleBackgrounds:
             sampleBackground.writeAllSamples = True
 
