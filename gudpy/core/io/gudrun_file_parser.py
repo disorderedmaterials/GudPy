@@ -117,7 +117,7 @@ class GudrunFileParser:
                 if not v:
                     unparsed.append(k)
             raise ParserException((
-                f'{", ".join(unparsed)}'
+                'INSTRUMENT, BEAM, NORMALISATION,'
                 ' were not parsed. It\'s possible the file'
                 ' supplied is of an incorrect format!'
             ))
