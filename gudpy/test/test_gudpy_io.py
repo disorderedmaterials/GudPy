@@ -42,8 +42,8 @@ class GudPyContext:
             loadFile=path,
         )
 
-        gPath = os.path.join(self.tempdir.name, "good_water.txt")
-        GudPyIO.writeGudrunFile(self.gudpy.gudrunFile, gPath)
+        gPath = os.path.join(self.tempdir.name, GudrunFile.OUTPATH)
+        GudPyIO.writeGudrunFile(self.gudpy.gudrunFile, self.tempdir.name)
 
         self.gudpy.loadFromGudrunFile(
             loadFile=gPath,
@@ -802,6 +802,12 @@ class TestGudPyIO(TestCase):
                         self.expectedSampleBackground[key],
                         sampleBackgroundsAttrsDict[key],
                     )
+
+    def testSaveAsProject(self):
+        with GudPyContext() as gudpy:
+            gudpy.saveAs(os.path.join(
+                gudpy.projectDir, "test"
+            ))
 
     def testWriteGudrunFile(self):
         with GudPyContext() as gudpy:
