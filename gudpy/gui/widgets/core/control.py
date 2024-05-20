@@ -214,7 +214,6 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.sendError(f"Could not parse input file: {e}")
             return
         self.mainWidget.updateWidgets(self.gudrunFile)
-        for sample in self.gudrunFile.sampleBackgrounds[0].samples:
         self.mainWidget.setWindowTitle(
             f"GudPy - {self.gudpy.io.projectName}[*]")
 
@@ -293,22 +292,20 @@ class GudPyController(QtCore.QObject):
         """
         Saves the current state of the input file as...
         """
-        filename, filter = QFileDialog.getSaveFileName(
-            self,
+        filename, _ = QFileDialog.getSaveFileName(
+            self.mainWidget,
             "Export input file as..",
             ".",
-            "Gudrun Compatible (*.txt)",
         )
+        print(filename)
         if filename:
-            ext = re.search(r"\((.+?)\)", filter).group(1).replace("*", "")
-            if filter and sys.platform.startswith("linux"):
-                filename += ext
+            filename.replace(".txt", "")
+            filename += ".txt"
             if os.path.dirname(filename) == self.gudpy.projectDir:
                 self.mainWidget.sendWarning("Do not modify project folder.")
                 return
-        self.gudpy.io.exportGudrunFile(self.gudrunFile, filename)
-
-        self.setUnModified()
+            self.gudpy.io.exportGudrunFile(self.gudrunFile, filename)
+            self.setUnModified()
 
     def exportArchive(self):
         if not self.gudpy.checkSaveLocation():
