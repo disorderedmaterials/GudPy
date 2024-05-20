@@ -14,9 +14,20 @@ class SamplePlotConfig():
         self.sample = sample
         self.gudrunOutput = gudrunOutput
         self.parent = parent
+        self.mint01DataSet = None
+        self.mint01Series = None
+        self.mdcs01DataSet = None
+        self.mdcs01Series = None
+        self.dcsLevel = None
+        self.dcsSeries = None
+        self.mdor01DataSet = None
+        self.mdor01Series = None
         self.constructDataSets(offsetX, offsetY)
 
     def constructDataSets(self, offsetX, offsetY):
+        if not self.gudrunOutput:
+            return
+
         if len(self.sample.dataFiles):
             # mint01 dataset.
             mintPath = self.gudrunOutput.output(

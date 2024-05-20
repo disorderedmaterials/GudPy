@@ -27,7 +27,6 @@ from gui.widgets.dialogs.composition_acceptance import (
 from gui.widgets.dialogs.io import ExportDialog, MissingFilesDialog
 from gui.widgets.dialogs.batch import BatchProcessingDialog
 from gui.widgets.core.gudpy_tree import GudPyTreeView
-from gui.widgets.core.output_tree import OutputTreeView
 
 from gui.widgets.tables.composition_table import CompositionTable
 from gui.widgets.tables.ratio_composition_table import RatioCompositionTable
@@ -52,7 +51,7 @@ from gui.widgets.slots.normalisation_slots import NormalisationSlots
 from gui.widgets.slots.container_slots import ContainerSlots
 from gui.widgets.slots.sample_background_slots import SampleBackgroundSlots
 from gui.widgets.slots.sample_slots import SampleSlots
-from gui.widgets.slots.output_slots import OutputSlots
+from gui.widgets.slots.output_slots import OutputSlots, OutputTreeView
 # from gui.widgets.resources import resources_rc  # noqa
 from core import enums
 from core import config
@@ -841,11 +840,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             self.ui.bottomContainerPlotFrame.setVisible(False)
             self.ui.containerPlotSplitter.setSizes([1, 0])
 
-    @abstractmethod
+    @ abstractmethod
     def isPlotModeSplittable(self, plotMode):
         return plotMode in SPLIT_PLOTS.keys()
 
-    @abstractmethod
+    @ abstractmethod
     def splitPlotMode(self, plotMode):
         return SPLIT_PLOTS[plotMode]
 
