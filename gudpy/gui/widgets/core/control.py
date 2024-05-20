@@ -215,7 +215,6 @@ class GudPyController(QtCore.QObject):
             return
         self.mainWidget.updateWidgets(self.gudrunFile)
         for sample in self.gudrunFile.sampleBackgrounds[0].samples:
-            print(sample.name)
         self.mainWidget.setWindowTitle(
             f"GudPy - {self.gudpy.io.projectName}[*]")
 
@@ -286,7 +285,6 @@ class GudPyController(QtCore.QObject):
             return
 
         try:
-            print(dirname)
             self.gudpy.saveAs(dirname)
         except IsADirectoryError as e:
             self.mainWidget.sendError(e)

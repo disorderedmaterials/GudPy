@@ -137,7 +137,6 @@ class GudPyIO:
 
         oldFile = os.path.join(targetDir, os.path.basename(self.loadFile))
         os.makedirs(targetDir)
-        print("TARGET DIR: " + targetDir)
 
         if os.path.exists(self.projectDir) and os.path.exists(oldFile):
             shutil.copytree(self.projectDir, targetDir)
@@ -147,7 +146,6 @@ class GudPyIO:
                 targetDir,
                 f"{os.path.basename(targetDir)}.yaml"
             )
-            print("yaml PATH: " + yamlPath)
             self.exportYamlFile(gudrunFile, yamlPath)
 
     def exportYamlFile(self, gudrunFile, path):
@@ -224,7 +222,7 @@ class GudPyIO:
 
     def _parsingFuncMap(self, key) -> typ.Union[typ.Callable, None]:
         parsingFuncs = {
-            "instrument ": self._parseYamlInstrument,
+            "instrument": self._parseYamlInstrument,
             "beam": self._parseYamlBeam,
             "normalisation": self._parseYamlNormalisation,
             "sampleBackgrounds": self._parseYamlSampleBackground,
