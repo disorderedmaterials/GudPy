@@ -966,7 +966,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
@@ -987,7 +987,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
@@ -1010,7 +1010,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
@@ -1030,7 +1030,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
@@ -1050,7 +1050,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file supplied'
             ' is of an incorrect format!'),
             str(cm.exception),
@@ -1065,7 +1065,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
@@ -1083,7 +1083,7 @@ class TestGudPyIO(TestCase):
             with GudPyContext() as gudpy:
                 gudpy.loadFromGudrunFile("test_data.txt")
         self.assertEqual((
-            'INSTRUMENT, BEAM and NORMALISATION'
+            'INSTRUMENT, BEAM, NORMALISATION,'
             ' were not parsed. It\'s possible the file'
             ' supplied is of an incorrect format!'
         ),
