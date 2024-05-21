@@ -29,6 +29,7 @@ class GudrunFileParser:
         self.stream = None
         self.config = False
 
+    @classmethod
     def writeGudrunFileTo(cls, gudrunFile: GudrunFile, path: str):
         gudrunFile.setGudrunDir(os.path.dirname(path))
         for sampleBackground in gudrunFile.sampleBackgrounds:
