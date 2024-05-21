@@ -29,17 +29,19 @@ class GudrunFileParser:
         self.stream = None
         self.config = False
 
-    @classmethod
-    def writeGudrunFile(cls, gudrunFile: GudrunFile, runDir: str):
-        gudrunFile.setGudrunDir(runDir)
+    def writeGudrunFileTo(cls, gudrunFile: GudrunFile, path: str):
+        gudrunFile.setGudrunDir(os.path.dirname(path))
         for sampleBackground in gudrunFile.sampleBackgrounds:
             sampleBackground.writeAllSamples = False
 
-        writePath = os.path.join(runDir, gudrunFile.OUTPATH)
-
-        with open(writePath, "w", encoding="utf-8") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(str(gudrunFile))
             f.close()
+
+    @classmethod
+    def writeGudrunFile(cls, gudrunFile: GudrunFile, runDir: str):
+        cls.writeGudrunFile(gudrunFile, os.path.join(
+            runDir, GudrunFile.OUTPATH))
 
     @classmethod
     def export(cls, gudrunFile: GudrunFile, path: str):

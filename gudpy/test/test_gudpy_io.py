@@ -43,7 +43,7 @@ class GudPyContext:
         )
 
         gPath = os.path.join(self.tempdir.name, GudrunFile.OUTPATH)
-        GudPyIO.writeGudrunFile(self.gudpy.gudrunFile, self.tempdir.name)
+        GudPyIO.writeGudrunFileTo(self.gudpy.gudrunFile, gPath)
 
         self.gudpy.loadFromGudrunFile(
             loadFile=gPath,
@@ -820,7 +820,7 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFile(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
             with open(
                 gudpy.io.loadFile,
                 encoding="utf-8"
@@ -909,7 +909,7 @@ class TestGudPyIO(TestCase):
 
     def testRewriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFile(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
             copyPath = os.path.join(
                 gudpy.gudrunFile.instrument.GudrunInputFileDir,
                 "copyGF.txt"
@@ -917,7 +917,7 @@ class TestGudPyIO(TestCase):
             g1 = gudpy.io.importGudrunFile(gudpy.io.loadFile)
             g1.instrument.GudrunInputFileDir = (
                 gudpy.gudrunFile.instrument.GudrunInputFileDir)
-            GudPyIO.writeGudrunFile(g1, copyPath)
+            GudPyIO.writeGudrunFileTo(g1, copyPath)
 
             def compareString(string1, string2):
                 return string1 == string2
@@ -959,7 +959,7 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFile(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
             g1 = gudpy.io.importGudrunFile(gudpy.io.loadFile)
             g1.instrument.GudrunInputFileDir = (
                 gudpy.gudrunFile.instrument.GudrunInputFileDir)
@@ -1549,7 +1549,7 @@ class TestGudPyIO(TestCase):
                 gudpy.gudrunFile.OUTPATH
             )
 
-            gudpy.io.writeGudrunFile(gudpy.gudrunFile, gudpy.io.projectDir)
+            gudpy.io.writeGudrunFileTo(gudpy.gudrunFile, gfFilePath)
             gudrunFile = GudPyIO.importGudrunFile(gfFilePath)
             # Test that a default value is appended
             self.assertEqual(
