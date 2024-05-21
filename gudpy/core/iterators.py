@@ -485,8 +485,6 @@ class InelasticitySubtraction(Iterator):
         extensions to msubw01. If the scale selected is the wavelength-scale,
         then set self scattering file extensions to mint01.
         """
-        # Dict to pick suffix based on scale
-        suffix = {Scales.Q: ".msubw01", Scales.WAVELENGTH: ".mint01"}[scale]
 
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
@@ -495,12 +493,10 @@ class InelasticitySubtraction(Iterator):
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
-                    filename = target.dataFilenames[0]
-                    targetFile = (
-                        prevOutput.output(
-                            sample.name, filename, suffix)
-                        if prevOutput else ""
-                    )
+                    if scale == Scales.Q:
+                        targetFile = target.dataFiles.dataFiles[0].msubwFile
+                    else:
+                        targetFile = target.dataFiles.dataFiles[0].mintFile
                     target.fileSelfScattering = (
                         targetFile
                     )

@@ -25,7 +25,6 @@ from core.enums import (
     Geometry
 )
 from core import gudpy as gp
-from core.io.gudpy_io import GudPyIO
 from core.io.gudrun_file_parser import GudrunFileParser
 
 
@@ -292,6 +291,7 @@ class TestGudPyIO(TestCase):
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
             "stepSize": 0.0,
+            "outputFolder": "",
             "yamlignore": {
                 "runAsSample",
                 "topHatW",
@@ -771,7 +771,6 @@ class TestGudPyIO(TestCase):
                                     )
 
                                     for _key in containerAttrsDict.keys():
-
                                         if isinstance(
                                             container[_key],
                                             (DataFiles, Composition),
@@ -1554,7 +1553,7 @@ class TestGudPyIO(TestCase):
             )
 
             gudpy.io.writeGudrunFileTo(gudpy.gudrunFile, gfFilePath)
-            gudrunFile = GudPyIO.importGudrunFile(gfFilePath)
+            gudrunFile = gudpy.io.importGudrunFile(gfFilePath)
             # Test that a default value is appended
             self.assertEqual(
                 self.expectedSampleA["exponentialValues"],

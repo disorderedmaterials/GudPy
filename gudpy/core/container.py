@@ -97,6 +97,7 @@ class Container:
         self.grBroadening = 0.
         self.powerForBroadening = 0.0
         self.stepSize = 0.0
+        self.outputFolder = ""
 
         self.yamlignore = {
             "runAsSample",
@@ -112,8 +113,6 @@ class Container:
 
         if config:
             self.parseFromConfig(config)
-
-        self.outputFolder = ""
 
     def __str__(self):
         """
