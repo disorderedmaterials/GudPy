@@ -26,6 +26,7 @@ from core.enums import (
 )
 from core import gudpy as gp
 from core.io.gudpy_io import GudPyIO
+from core.io.gudrun_file_parser import GudrunFileParser
 
 
 class GudPyContext:
@@ -43,7 +44,7 @@ class GudPyContext:
         )
 
         gPath = os.path.join(self.tempdir.name, GudrunFile.OUTPATH)
-        GudPyIO.writeGudrunFileTo(self.gudpy.gudrunFile, gPath)
+        GudrunFileParser.writeGudrunFileTo(self.gudpy.gudrunFile, gPath)
 
         self.gudpy.loadFromGudrunFile(
             loadFile=gPath,
@@ -820,7 +821,8 @@ class TestGudPyIO(TestCase):
 
     def testWriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudrunFileParser.writeGudrunFileTo(
+                gudpy.gudrunFile, gudpy.io.loadFile)
             with open(
                 gudpy.io.loadFile,
                 encoding="utf-8"
@@ -909,7 +911,8 @@ class TestGudPyIO(TestCase):
 
     def testRewriteGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudrunFileParser.writeGudrunFileTo(
+                gudpy.gudrunFile, gudpy.io.loadFile)
             copyPath = os.path.join(
                 gudpy.gudrunFile.instrument.GudrunInputFileDir,
                 "copyGF.txt"
@@ -917,7 +920,7 @@ class TestGudPyIO(TestCase):
             g1 = gudpy.io.importGudrunFile(gudpy.io.loadFile)
             g1.instrument.GudrunInputFileDir = (
                 gudpy.gudrunFile.instrument.GudrunInputFileDir)
-            GudPyIO.writeGudrunFileTo(g1, copyPath)
+            GudrunFileParser.writeGudrunFileTo(g1, copyPath)
 
             def compareString(string1, string2):
                 return string1 == string2
@@ -959,7 +962,8 @@ class TestGudPyIO(TestCase):
 
     def testReloadGudrunFile(self):
         with GudPyContext() as gudpy:
-            GudPyIO.writeGudrunFileTo(gudpy.gudrunFile, gudpy.io.loadFile)
+            GudrunFileParser.writeGudrunFileTo(
+                gudpy.gudrunFile, gudpy.io.loadFile)
             g1 = gudpy.io.importGudrunFile(gudpy.io.loadFile)
             g1.instrument.GudrunInputFileDir = (
                 gudpy.gudrunFile.instrument.GudrunInputFileDir)
