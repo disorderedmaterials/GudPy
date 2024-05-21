@@ -20,13 +20,15 @@ from core.io.gudpy_io import GudPyIO
 class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
         emptyPath = ""
+        gudpyIO = GudPyIO()
         self.assertRaises(
-            RuntimeError, GudPyIO.importGudrunFile, emptyPath)
+            RuntimeError, gudpyIO.importGudrunFile, emptyPath)
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
+        gudpyIO = GudPyIO()
         self.assertRaises(
-            ParserException, GudPyIO.importGudrunFile, invalidPath)
+            ParserException, gudpyIO.importGudrunFile, invalidPath)
 
     def testInstrumentInitDataTypes(self):
 

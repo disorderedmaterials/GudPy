@@ -41,7 +41,7 @@ class GudrunFileParser:
 
     @classmethod
     def writeGudrunFile(cls, gudrunFile: GudrunFile, runDir: str):
-        cls.writeGudrunFile(gudrunFile, os.path.join(
+        cls.writeGudrunFileTo(gudrunFile, os.path.join(
             runDir, GudrunFile.OUTPATH))
 
     @classmethod
