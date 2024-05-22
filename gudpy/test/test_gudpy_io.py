@@ -236,6 +236,7 @@ class TestGudPyIO(TestCase):
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
             "stepSize": 0.0,
+            "outputFolder": '',
             "yamlignore": {
                 "runAsSample",
                 "topHatW",
@@ -342,6 +343,7 @@ class TestGudPyIO(TestCase):
             "grBroadening": 0.0,
             "powerForBroadening": 0.0,
             "stepSize": 0.0,
+            "outputFolder": '',
             "yamlignore": {
                 "runAsSample",
                 "topHatW",
@@ -1159,15 +1161,10 @@ class TestGudPyIO(TestCase):
                 f.write(
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Instrument, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingBeamAttributesSeq(self):
         expectedBeam = deepcopy(self.expectedBeam)
@@ -1195,15 +1192,10 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Beam, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingBeamAttributesRand(self):
         expectedBeam = deepcopy(self.expectedBeam)
@@ -1235,15 +1227,10 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
 
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Beam, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingNormalisationAttributesSeq(self):
         expectedNormalisation = deepcopy(self.expectedNormalisation)
@@ -1280,15 +1267,10 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
 
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Beam, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingNormalisationAttributesRand(self):
         expectedNormalisation = deepcopy(self.expectedNormalisation)
@@ -1328,16 +1310,10 @@ class TestGudPyIO(TestCase):
                     + str(badNormalisation)
                     + "\n\n}"
                 )
-
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Normalisation, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingSampleBackgroundAttributes(self):
         badSampleBackground = str(self.goodSampleBackground).split("\n")
@@ -1355,15 +1331,10 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
             f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-        with self.assertRaises(ParserException) as cm:
             with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-            self.assertEqual(
-                "Whilst parsing Sample Background, an exception occured."
-                " The input file is most likely of an incorrect format, "
-                "and some attributes were missing.",
-                str(cm.exception)
-            )
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingSampleAttributesSeq(self):
         expectedSampleA = deepcopy(self.expectedSampleA)
@@ -1411,15 +1382,10 @@ class TestGudPyIO(TestCase):
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
 
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Sample, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingSampleAttributesRand(self):
         expectedSampleA = deepcopy(self.expectedSampleA)
@@ -1469,16 +1435,10 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Sample, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingContainerAttributesSeq(self):
         expectedContainerA = deepcopy(self.expectedContainerA)
@@ -1531,15 +1491,10 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testAppendExponentialValues(self):
         with GudPyContext() as gudpy:
@@ -1552,7 +1507,7 @@ class TestGudPyIO(TestCase):
                 gudpy.gudrunFile.OUTPATH
             )
 
-            gudpy.io.writeGudrunFileTo(gudpy.gudrunFile, gfFilePath)
+            GudrunFileParser.writeGudrunFileTo(gudpy.gudrunFile, gfFilePath)
             gudrunFile = gudpy.io.importGudrunFile(gfFilePath)
             # Test that a default value is appended
             self.assertEqual(
@@ -1614,15 +1569,10 @@ class TestGudPyIO(TestCase):
                     + "\n\n}"
                 )
                 f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Container, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+            with GudPyContext() as gudpy:
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testZeroExitGudrun(self):
         with GudPyContext() as gudpy:

@@ -12,11 +12,11 @@ class TestYAML(TestCase):
             gudpy1.loadFromGudrunFile(
                 loadFile="test/TestData/NIMROD-water/water.txt",
             )
-            gudpy1.saveAs(os.path.join(tmp.name, "water"))
+            gudpy1.saveAs(os.path.join(tmp, "water"))
             gf1 = gudpy1.gudrunFile
 
             gudpy2 = gudpy.GudPy()
-            gudpy2.loadFromProject(os.path.join(tmp.name, "water"))
+            gudpy2.loadFromProject(os.path.join(tmp, "water"))
             gf2 = gudpy2.gudrunFile
 
             gf1.instrument.GudrunInputFileDir = os.path.abspath(
