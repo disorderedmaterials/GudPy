@@ -82,8 +82,8 @@ class DataFiles:
         """
 
         self._dataFiles: DataFile = []
-        self.setFiles(dataFiles)
         self.isSampleDataFile = isSampleDataFile
+        self.setFiles(dataFiles)
 
         self.name = name
 
