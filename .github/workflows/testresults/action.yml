@@ -7,7 +7,8 @@ runs:
   - name: Download Test Results
     uses: actions/download-artifact@v4
     with:
-      name: testResults
+      name: testResults-*
+      merge-multiple: true
       path: results
 
   - name: Publish Test Results
