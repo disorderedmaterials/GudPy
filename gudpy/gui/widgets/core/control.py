@@ -81,7 +81,7 @@ class GudPyController(QtCore.QObject):
         self.mainWidget.ui.exportInputFile.triggered.connect(
             self.exportInputFile)
         self.mainWidget.ui.viewLiveInputFile.triggered.connect(
-            self.mainWidget.viewInput)
+            self.viewInput)
         self.mainWidget.ui.insertSampleBackground.triggered.connect(
             self.mainWidget.ui.objectTree.insertSampleBackground
         )
@@ -318,6 +318,12 @@ class GudPyController(QtCore.QObject):
         if self.gudpy.checkSaveLocation() and not self.workerThread:
             self.gudpy.save()
 
+    def viewInput(self):
+        text = self.mainWidget.viewInput()
+        self.gudrunFile = self.gudpy.io.gudrunFileParser.parse(
+            text.splitlines())
+        self.mainWidget.updateWidgets(self.gudrunFile)
+
     """
 
     PROCESSES
@@ -460,7 +466,7 @@ class GudPyController(QtCore.QObject):
         )
         self.mainWidget.outputSlots.setOutput(
             self.gudpy.purge.output, "purge_det",
-            gudrunFile=self.gudrunFile
+            self.gudrunFile
         )
 
         if isinstance(self.workerThread, gp.Purge):
@@ -529,7 +535,8 @@ class GudPyController(QtCore.QObject):
 
             self.mainWidget.outputSlots.setOutput(
                 self.gudpy.gudrunIterator.output,
-                f"Gudrun {self.gudpy.gudrunIterator.iterator.name}")
+                f"Gudrun {self.gudpy.gudrunIterator.iterator.name}",
+                self.gudrunFile)
             self.mainWidget.sampleSlots.setSample(
                 self.mainWidget.sampleSlots.sample)
             self.mainWidget.iterationResultsDialog(
@@ -547,7 +554,7 @@ class GudPyController(QtCore.QObject):
                 )
                 return
             self.mainWidget.outputSlots.setOutput(
-                self.gudpy.gudrun.output, "Gudrun")
+                self.gudpy.gudrun.output, "Gudrun", self.gudrunFile)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudrunFile,
                 gudrunOutput=self.gudpy.gudrun.gudrunOutput

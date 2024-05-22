@@ -3,6 +3,7 @@ import sys
 from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QDialog
 from PySide6.QtUiTools import QUiLoader
+from core.io.gudpy_io import GudPyIO
 
 
 class ViewInputDialog(QDialog):
@@ -52,7 +53,7 @@ class ViewInputDialog(QDialog):
             )
         loader = QUiLoader()
         self.widget = loader.load(uifile)
-        self.widget.setWindowTitle(self.gudrunFile.path())
+        self.widget.setWindowTitle(GudPyIO.projectName)
         self.widget.saveAndCloseButton.clicked.connect(self.save)
         self.widget.closeButton.clicked.connect(self.widget.close)
         self.widget.textEdit.setText(str(self.gudrunFile))
@@ -67,7 +68,6 @@ class ViewInputDialog(QDialog):
         """
         Saves the input file and updates the UI appropiately.
         """
-        with open(self.gudrunFile.path(), "w", encoding="utf-8") as fp:
-            fp.write(self.widget.textEdit.toPlainText())
+        text = self.widget.textEdit.toPlainText()
         self.widget.close()
-        self.parent.updateFromFile()
+        return text

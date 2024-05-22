@@ -265,7 +265,14 @@ class TestGudPyWorkflows(TestCase):
                     )
 
                     actualData = open(
-                        sample.dataFiles[0].msubwFile,
+                        os.path.join(
+                            gudpy.projectDir, "Gudrun",
+                            "Inelasticity_Subtraction_(WavelengthIteration)",
+                            f"WavelengthIteration_{i}",
+                            sample.name,
+                            sample.dataFiles[0].name,
+                            "Diagnostics",
+                            f"{sample.dataFiles[0].name}.msubw01"),
                         "r", encoding="utf-8"
                     ).readlines()[10:]
                     expectedData = open(

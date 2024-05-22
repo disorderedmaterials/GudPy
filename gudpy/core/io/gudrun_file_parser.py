@@ -53,13 +53,11 @@ class GudrunFileParser:
             f.write(str(gudrunFile))
             f.close()
 
-    def parse(
-            self, path: str, config=False
-        ) -> typ.Tuple[
+    def parse(self, lines: list[str]) -> typ.Tuple[
             Instrument, Beam, Normalisation,
             list[SampleBackground], Components]:
         """
-        Parse the GudrunFile from its path.
+        Parse the GudrunFile from a list of lines.
         Assign objects from the file to the attributes of the class.
         Raises ParserException if Instrument,
         Beam or Normalisation are missing.
@@ -70,31 +68,12 @@ class GudrunFileParser:
         normalisation = Normalisation()
         sampleBackgrounds = []
 
-        self.config = config
-
-        # Ensure only valid files are given.
-        if not path:
-            raise ParserException(
-                "Path not supplied. Cannot parse from an empty path!"
-            )
-        if not os.path.exists(path):
-            raise ParserException(
-                "The path supplied is invalid.\
-                 Cannot parse from an invalid path" + path
-            )
-
         KEYWORDS = {
             "INSTRUMENT": False,
             "BEAM": False,
             "NORMALISATION": False
         }
-        # Decide the encoding
-        import chardet
-        with open(path, 'rb') as fp:
-            encoding = chardet.detect(fp.read())['encoding']
-        # Read the input stream into our attribute.
-        with open(path, encoding=encoding) as fp:
-            self.stream = fp.readlines()
+        self.stream = lines
         # Here we go! Get the first token and begin parsing.
         line = self._getNextToken()
 
@@ -151,9 +130,43 @@ class GudrunFileParser:
             components=components
         )
 
+    def parseFromPath(
+            self, path: str, config=False
+        ) -> typ.Tuple[
+            Instrument, Beam, Normalisation,
+            list[SampleBackground], Components]:
+        """
+        Parse the GudrunFile from its path.
+        Assign objects from the file to the attributes of the class.
+        Raises ParserException if Instrument,
+        Beam or Normalisation are missing.
+        """
+        self.config = config
+
+        # Ensure only valid files are given.
+        if not path:
+            raise ParserException(
+                "Path not supplied. Cannot parse from an empty path!"
+            )
+        if not os.path.exists(path):
+            raise ParserException(
+                "The path supplied is invalid.\
+                 Cannot parse from an invalid path" + path
+            )
+
+        # Decide the encoding
+        import chardet
+        with open(path, 'rb') as fp:
+            encoding = chardet.detect(fp.read())['encoding']
+        # Read the input stream into our attribute.
+        with open(path, encoding=encoding) as fp:
+            lines = fp.readlines()
+        return self.parse(lines)
+
 # =================================================================
 #                         PARSING HELPERS
 # =================================================================
+
     def _getNextToken(self) -> typ.Union[str, None]:
         """
         Pops the 'next token' from the stream and returns it.

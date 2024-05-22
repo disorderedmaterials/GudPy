@@ -906,7 +906,7 @@ class BatchProcessing:
         exitcode = gudrun.gudrun(GudrunFile, purge, iterator)
         self.writeDiagnosticsFile(
             os.path.join(
-                self.batchedGudrunFile.path(),
+                self.batchedGudrunFile.outputFolder,
                 "batch_processing_diagnostics.txt",
             ),
             self.batchedGudrunFile,
