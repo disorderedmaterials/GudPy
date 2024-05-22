@@ -109,10 +109,7 @@ class GudrunFile:
         self.sampleBackgrounds = sampleBackgrounds
         self.components = components
         self.purged = False
-
-    @property
-    def path(self):
-        return os.path.join(self.outputFolder, self.OUTPATH)
+        self.outputFolder = ""
 
     def __deepcopy__(self, memo):
         result = self.__class__.__new__(self.__class__)

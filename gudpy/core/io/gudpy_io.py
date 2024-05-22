@@ -83,7 +83,7 @@ class GudPyIO:
 
     def importGudrunFile(self, path, config=False) -> GudrunFile:
         GudPyIO.loadFile = path
-        return self.gudrunFileParser.parse(path, config)
+        return self.gudrunFileParser.parseFromPath(path, config)
 
     def importProject(self, projectDir) -> GudrunFile:
         """Imports from a project directory

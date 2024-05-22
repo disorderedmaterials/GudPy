@@ -6,6 +6,7 @@ from PySide6 import QtCore, QtGui, QtUiTools, QtWidgets, QtCharts
 
 from core.container import Container
 from core.sample import Sample
+from core.io.gudpy_io import GudPyIO
 
 from gui.widgets.dialogs.iterators import (
     CompositionIterationDialog,
@@ -705,7 +706,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
     def setModified(self):
         if not self.modified:
-            if self.gudrunFile.path():
+            if GudPyIO.projectDir:
                 self.modified = True
                 self.ui.setWindowModified(True)
                 self.ui.save.setEnabled(True)
@@ -737,7 +738,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.viewLiveInputFile.setEnabled(state)
         self.ui.save.setEnabled(
             state & self.modified
-            if self.gudrunFile.path()
+            if GudPyIO.projectDir
             else False
         )
         self.ui.exportInputFile.setEnabled(state)
@@ -778,7 +779,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
     def viewInput(self):
         self.currentState = str(self.gudrunFile)
         viewInputDialog = ViewInputDialog(self.gudrunFile, self)
-        viewInputDialog.widget.exec()
+        text = viewInputDialog.widget.exec()
+        return text
 
     def handleAllPlotModeChanged(self, index):
         plotMode = self.ui.allPlotComboBox.itemData(index)
