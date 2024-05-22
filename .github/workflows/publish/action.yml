@@ -20,7 +20,7 @@ runs:
   - name: Download Artifacts
     uses: actions/download-artifact@v4
     with:
-      name: packages
+      name: GudPy-*
       path: ${{ github.workspace }}/packages
 
   - name: Download Prerequisites
