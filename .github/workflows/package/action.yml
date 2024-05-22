@@ -14,9 +14,9 @@ runs:
 
   - name: Upload Artifacts (OSX)
     if: runner.os == 'MacOS'
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
-      name: Packages
+      name: packages
       path: |
         dist/GudPy-*.dmg
         dist/GudPy-*-OSX
@@ -30,9 +30,9 @@ runs:
 
   - name: Upload Artifacts (Windows)
     if: runner.os == 'Windows'
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
-      name: Packages
+      name: packages
       path: |
         dist/GudPy-*-Windows.zip
 
@@ -50,9 +50,9 @@ runs:
 
   - name: Upload Artifacts (Linux)
     if: runner.os == 'Linux'
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
-      name: Packages
+      name: packages
       path: |
         dist/GudPy-*.sif
         dist/GudPy-*-Linux
