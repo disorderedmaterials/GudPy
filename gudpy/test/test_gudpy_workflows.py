@@ -42,9 +42,8 @@ class GudPyContext:
 
 class TestGudPyWorkflows(TestCase):
     def getGudFile(self, gudpy, sampleIndex) -> GudFile:
-        return gudpy.gudrunOutput.sampleOutputs[
-            gudpy.gudrunFile.sampleBackgrounds[0].samples[
-                sampleIndex].name].gudFile
+        return gudpy.gudrunFile.sampleBackgrounds[0].samples[
+            sampleIndex].dataFiles[0].gudFile
 
     def testGudPyDCS(self):
         with GudPyContext() as gudpy:
@@ -70,9 +69,7 @@ class TestGudPyWorkflows(TestCase):
             self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
 
             for sample in gudpy.gudrunFile.sampleBackgrounds[0].samples:
-                mintFilename = (
-                    os.path.splitext(sample.dataFiles[0].filename)[0]
-                )
+                mintFilename = sample.dataFiles[0].name
 
                 actualMintFile = ("test/TestData/water-ref/plain/"
                                   f"{mintFilename}.mint01")
@@ -233,10 +230,7 @@ class TestGudPyWorkflows(TestCase):
                     for x in gudpy.gudrunFile.sampleBackgrounds[0].samples
                     if x.runThisSample
                 ]:
-                    dataFilename = (
-                        os.path.splitext(sample.dataFiles[0])[0]
-                    )
-
+                    dataFilename = sample.dataFiles[0].name
                     actualMintFile = (
                         f'test/TestData/water-ref/wavelength{i}/'
                         f'{dataFilename}.mint01'

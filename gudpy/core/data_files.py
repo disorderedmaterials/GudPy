@@ -35,11 +35,10 @@ class DataFile:
     def gudFile(self):
         if not self.isSampleDataFile:
             return None
-        if not self.gudFile:
-            gudPath = self._outputs.get(".gud", None)
-            if not gudPath:
-                return None
-            return GudFile(gudPath)
+        gudPath = self._outputs.get(".gud", None)
+        if not gudPath:
+            return None
+        return GudFile(gudPath)
 
     @property
     def mintFile(self):

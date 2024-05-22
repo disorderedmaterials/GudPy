@@ -597,6 +597,7 @@ class InelasticitySubtraction(Iterator):
 
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile,
+            head="Current",
             overwrite=True
         )
         output = outputHandler.organiseOutput(exclude=exclude)
