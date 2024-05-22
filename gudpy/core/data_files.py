@@ -21,26 +21,6 @@ class DataFile:
             "yamlignore"
         }
 
-    def detectSampleDataFile(self, path):
-        for f in os.listdir(path):
-            if f == "Diagnostics":
-                self.isSampleDataFile = True
-
-    def constructDictFromDir(self, dirPath, dict):
-        for f in os.listdir(dirPath):
-            ext = os.path.splitext(f)
-            dict[ext] = f
-
-    def importOutputs(self, path):
-        self.detectSampleDataFile(path)
-        if self.isSampleDataFile:
-            outputsDir = os.path.join(path, "Outputs")
-            diagDir = os.path.join(path, "Diagnostics")
-            self.constructDictFromDir(outputsDir, self._outputs)
-            self.constructDictFromDir(diagDir, self.diagnostics)
-        else:
-            self.constructDictFromDir(path, self._outputs)
-
     def addOutput(self, path):
         ext = os.path.splitext(path)[1]
         self._outputs[ext] = path
@@ -90,7 +70,7 @@ class DataFiles:
     -------
     """
 
-    def __init__(self, dataFiles, name):
+    def __init__(self, dataFiles, name, isSampleDataFile=False):
         """
         Constructs all the necessary attributes for the DataFiles object.
 
@@ -102,8 +82,9 @@ class DataFiles:
             Name of the parent of the data files, e.g. Sample Background
         """
 
-        self._dataFiles = []
+        self._dataFiles: DataFile = []
         self.setFiles(dataFiles)
+        self.isSampleDataFile = isSampleDataFile
 
         self.name = name
 
@@ -120,15 +101,7 @@ class DataFiles:
         for dataFile in dataFilenames:
             if not dataFile:
                 continue
-            self._dataFiles.append(DataFile(dataFile))
-
-    def importOutputs(self, path):
-        self.outputFolder = path
-        children = os.listdir(path)
-
-        for df in self._dataFiles:
-            if df.name in children:
-                return
+            self._dataFiles.append(DataFile(dataFile, self.isSampleDataFile))
 
     def __str__(self):
         """
@@ -174,7 +147,7 @@ class DataFiles:
         return len(self._dataFiles)
 
     def __getitem__(self, n):
-        return self._dataFiles[n].filename
+        return self._dataFiles[n]
 
     def __setitem__(self, n, item):
         if n >= len(self):

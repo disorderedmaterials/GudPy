@@ -789,7 +789,7 @@ class GudrunFileParser:
             for _ in range(numberOfFiles):
                 dataFiles.append(utils.firstword(self._getNextToken()))
             # Create a DataFiles object from the dataFiles list constructed.
-            sample.dataFiles = DataFiles(dataFiles, sample.name)
+            sample.dataFiles = DataFiles(dataFiles, sample.name, True)
 
             # For boolean attributes, we convert the first
             # integer in the line to its boolean value.
@@ -994,7 +994,7 @@ class GudrunFileParser:
                 dataFiles.append(utils.firstword(self._getNextToken()))
 
             # Create a DataFiles object from the dataFiles list constructed.
-            container.dataFiles = DataFiles(dataFiles, container.name)
+            container.dataFiles = DataFiles(dataFiles, container.name, True)
 
             # Construct composition
             composition = []
