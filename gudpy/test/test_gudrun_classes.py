@@ -22,7 +22,7 @@ class TestGudrunClasses(TestCase):
         emptyPath = ""
         gudpyIO = GudPyIO()
         self.assertRaises(
-            RuntimeError, gudpyIO.importGudrunFile, emptyPath)
+            ParserException, gudpyIO.importGudrunFile, emptyPath)
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
