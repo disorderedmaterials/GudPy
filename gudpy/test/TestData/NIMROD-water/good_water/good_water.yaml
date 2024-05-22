@@ -137,13 +137,13 @@ sampleBackgrounds:
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       - filename: NIMROD00016610_H2O_in_N9.raw
         name: NIMROD00016610_H2O_in_N9
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       name: H2O,_Can_N9
       outputFolders: {}
       _outputs: {}
@@ -195,19 +195,19 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         - filename: NIMROD00016699_Empty_N9.raw
           name: NIMROD00016699_Empty_N9
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         - filename: NIMROD00016704_Empty_N9.raw
           name: NIMROD00016704_Empty_N9
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         name: N9
         outputFolders: {}
         _outputs: {}
@@ -244,13 +244,13 @@ sampleBackgrounds:
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       - filename: NIMROD00016611_D2O_in_N10.raw
         name: NIMROD00016611_D2O_in_N10
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       name: D2O,_Can_N10
       outputFolders: {}
       _outputs: {}
@@ -302,19 +302,19 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         - filename: NIMROD00016700_Empty_N10.raw
           name: NIMROD00016700_Empty_N10
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         - filename: NIMROD00016705_Empty_N10.raw
           name: NIMROD00016705_Empty_N10
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         name: N10
         outputFolders: {}
         _outputs: {}
@@ -351,13 +351,13 @@ sampleBackgrounds:
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       - filename: NIMROD00016743_HDO_in_N6.raw
         name: NIMROD00016743_HDO_in_N6
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       name: HDO,_Can_N6
       outputFolders: {}
       _outputs: {}
@@ -410,7 +410,7 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         name: N6
         outputFolders: {}
         _outputs: {}
@@ -447,13 +447,13 @@ sampleBackgrounds:
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       - filename: NIMROD00016744_NullWater_in_N8.raw
         name: NIMROD00016744_NullWater_in_N8
         ext: .raw
         outputFolder: ''
         _outputs: {}
-        isSampleDataFile: false
+        isSampleDataFile: true
       name: Null_Water,_Can_N8
       outputFolders: {}
       _outputs: {}
@@ -506,7 +506,7 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: false
+          isSampleDataFile: true
         name: N8
         outputFolders: {}
         _outputs: {}

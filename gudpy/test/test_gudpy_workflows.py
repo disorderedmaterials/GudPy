@@ -71,7 +71,7 @@ class TestGudPyWorkflows(TestCase):
 
             for sample in gudpy.gudrunFile.sampleBackgrounds[0].samples:
                 mintFilename = (
-                    os.path.splitext(sample.dataFiles[0])[0]
+                    os.path.splitext(sample.dataFiles[0].filename)[0]
                 )
 
                 actualMintFile = ("test/TestData/water-ref/plain/"
