@@ -30,11 +30,11 @@ class TestYAML(TestCase):
 
             normalisationDataFilesA = gf1.normalisation.__dict__.pop(
                 "dataFiles")
-            normalisationDataFilesA.pop("_dataFiles")
+            normalisationDataFilesA.__dict__.pop("_dataFiles")
             normalisationDataFilesBgA = gf1.normalisation.__dict__.pop(
                 "dataFilesBg"
             )
-            normalisationDataFilesBgA.pop("_dataFiles")
+            normalisationDataFilesBgA.__dict__.pop("_dataFiles")
             normalisationCompositionA = gf1.normalisation.__dict__.pop(
                 "composition"
             )
@@ -44,11 +44,11 @@ class TestYAML(TestCase):
 
             normalisationDataFilesB = gf2.normalisation.__dict__.pop(
                 "dataFiles")
-            normalisationDataFilesB.pop("_dataFiles")
+            normalisationDataFilesB.__dict__.pop("_dataFiles")
             normalisationDataFilesBgB = gf2.normalisation.__dict__.pop(
                 "dataFilesBg"
             )
-            normalisationDataFilesBgB.pop("_dataFiles")
+            normalisationDataFilesBgB.__dict__.pop("_dataFiles")
             normalisationCompositionB = gf2.normalisation.__dict__.pop(
                 "composition"
             )
@@ -80,7 +80,7 @@ class TestYAML(TestCase):
             sampleBackgroundDataFilesA = gf1.sampleBackgrounds[0].__dict__.pop(
                 "dataFiles"
             )
-            sampleBackgroundDataFilesA.pop("_dataFiles")
+            sampleBackgroundDataFilesA.__dict__.pop("_dataFiles")
             sampleBackgroundSamplesA = gf1.sampleBackgrounds[0].__dict__.pop(
                 "samples"
             )
@@ -88,7 +88,7 @@ class TestYAML(TestCase):
             sampleBackgroundDataFilesB = gf2.sampleBackgrounds[0].__dict__.pop(
                 "dataFiles"
             )
-            sampleBackgroundDataFilesB.pop("_dataFiles")
+            sampleBackgroundDataFilesB.__dict__.pop("_dataFiles")
             sampleBackgroundSamplesB = gf2.sampleBackgrounds[0].__dict__.pop(
                 "samples"
             )
@@ -106,13 +106,13 @@ class TestYAML(TestCase):
                 sampleBackgroundSamplesA, sampleBackgroundSamplesB
             ):
                 sampleDataFilesA = sampleA.__dict__.pop("dataFiles")
-                sampleDataFilesA.pop("_dataFiles")
+                sampleDataFilesA.__dict__.pop("_dataFiles")
                 sampleCompositionA = sampleA.__dict__.pop("composition")
                 sampleElementsA = sampleCompositionA.__dict__.pop("elements")
                 sampleContainersA = sampleA.__dict__.pop("containers")
 
                 sampleDataFilesB = sampleB.__dict__.pop("dataFiles")
-                sampleDataFilesB.pop("_dataFiles")
+                sampleDataFilesB.__dict__.pop("_dataFiles")
                 sampleCompositionB = sampleB.__dict__.pop("composition")
                 sampleElementsB = sampleCompositionB.__dict__.pop("elements")
                 sampleContainersB = sampleB.__dict__.pop("containers")
@@ -133,7 +133,7 @@ class TestYAML(TestCase):
                     sampleContainersA, sampleContainersB
                 ):
                     containerDataFilesA = containerA.__dict__.pop("dataFiles")
-                    containerDataFilesA.pop("_dataFiles")
+                    containerDataFilesA.__dict__.pop("_dataFiles")
                     containerCompositionA = containerA.__dict__.pop(
                         "composition")
                     containerElementsA = containerCompositionA.__dict__.pop(
@@ -141,7 +141,7 @@ class TestYAML(TestCase):
                     )
 
                     containerDataFilesB = containerB.__dict__.pop("dataFiles")
-                    containerDataFilesB.pop("_dataFiles")
+                    containerDataFilesB.__dict__.pop("_dataFiles")
                     containerCompositionB = containerB.__dict__.pop(
                         "composition")
                     containerElementsB = containerCompositionB.__dict__.pop(
