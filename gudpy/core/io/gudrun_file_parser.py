@@ -53,9 +53,7 @@ class GudrunFileParser:
             f.write(str(gudrunFile))
             f.close()
 
-    def parse(self, lines: list[str]) -> typ.Tuple[
-            Instrument, Beam, Normalisation,
-            list[SampleBackground], Components]:
+    def parse(self, lines: list[str], config=False) -> GudrunFile:
         """
         Parse the GudrunFile from a list of lines.
         Assign objects from the file to the attributes of the class.
@@ -161,7 +159,7 @@ class GudrunFileParser:
         # Read the input stream into our attribute.
         with open(path, encoding=encoding) as fp:
             lines = fp.readlines()
-        return self.parse(lines)
+        return self.parse(lines, config)
 
 # =================================================================
 #                         PARSING HELPERS
