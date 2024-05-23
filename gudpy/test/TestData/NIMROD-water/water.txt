@@ -287,7 +287,7 @@ NIMROD00016742_NullWater_in_N8.msubw01          Name of file containing self sca
 
 CONTAINER N8          {
 
-1  1          Number of  files and period number
+1  1          Number of files and period number
 NIMROD00016994_Empty_N8.raw          CONTAINER N8 data files
 Ti  0  7.16          Composition
 Zr  0  3.438          Composition

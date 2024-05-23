@@ -37,6 +37,7 @@ class GudPyContext:
         )
 
         self.gudpy = gp.GudPy()
+        self.gudpy.testFilePath = os.path.join(testDir, "test_data.txt")
 
         self.gudpy.loadFromGudrunFile(
             loadFile=path,
@@ -978,91 +979,90 @@ class TestGudPyIO(TestCase):
             )
 
     def testLoadEmptyGudrunFile(self):
-        f = open("test_data.txt", "w", encoding="utf-8")
-        f.close()
         with GudPyContext() as gudpy:
+            f = open(gudpy.testFilePath, "w", encoding="utf-8")
+            f.close()
             self.assertRaises(
                 ParserException, gudpy.loadFromGudrunFile,
-                "test_data.txt")
+                gudpy.testFilePath)
 
     def testLoadMissingInstrument(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
-            f.write(
-                "NORMALISATION        {\n\n"
-                + str(self.goodNormalisation)
-                + "\n\n}\n\n"
-            )
-
-            with GudPyContext() as gudpy:
-                self.assertRaises(
-                    ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+        with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
+                f.write(
+                    "NORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}\n\n"
+                )
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingBeam(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument)
-                + "\n\n}\n\n"
-            )
-            f.write(
-                "NORMALISATION        {\n\n"
-                + str(self.goodNormalisation)
-                + "\n\n}"
-            )
-            with GudPyContext() as gudpy:
-                self.assertRaises(
-                    ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+        with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n" + str(self.goodInstrument)
+                    + "\n\n}\n\n"
+                )
+                f.write(
+                    "NORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}"
+                )
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingNormalisation(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument)
-                + "\n\n}\n\n"
-            )
-            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
-
-            with GudPyContext() as gudpy:
-                self.assertRaises(
-                    ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+        with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n" + str(self.goodInstrument)
+                    + "\n\n}\n\n"
+                )
+                f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingInstrumentAndBeam(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "NORMALISATION        {\n\n"
-                + str(self.goodNormalisation)
-                + "\n\n}"
-            )
-
         with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "NORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}"
+                )
+
             self.assertRaises(
-                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
+                ParserException, gudpy.loadFromGudrunFile, gudpy.testFilePath)
 
     def testLoadMissingInstrumentAndNormalisation(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-
         with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
             self.assertRaises(
-                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingNormalisationAndBeam(self):
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
-            )
-
         with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n" +
+                    str(self.goodInstrument) + "\n\n}"
+                )
             self.assertRaises(
-                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingInstrumentAttributesSeq(self):
         expectedInstrument = deepcopy(self.expectedInstrument)
@@ -1080,15 +1080,16 @@ class TestGudPyIO(TestCase):
             del badInstrument[i]
             badInstrument = "\n".join(badInstrument)
 
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
-                )
-
-        with GudPyContext() as gudpy:
-            self.assertRaises(
-                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
+            with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n" +
+                        str(badInstrument) + "\n\n}"
+                    )
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    gudpy.testFilePath)
 
     def testLoadMissingInstrumentAttributesRand(self):
         expectedInstrument = deepcopy(self.expectedInstrument)
@@ -1102,7 +1103,6 @@ class TestGudPyIO(TestCase):
         expectedInstrument.pop("goodDetectorThreshold", None)
         expectedInstrument.pop("yamlignore", None)
         for i in range(50):
-
             key = random.choice(list(expectedInstrument))
             j = list(expectedInstrument).index(key)
 
@@ -1110,15 +1110,16 @@ class TestGudPyIO(TestCase):
             del badInstrument[j]
             badInstrument = "\n".join(badInstrument)
 
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
-                )
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n" +
+                        str(badInstrument) + "\n\n}"
+                    )
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingBeamAttributesSeq(self):
         expectedBeam = deepcopy(self.expectedBeam)
@@ -1136,20 +1137,18 @@ class TestGudPyIO(TestCase):
             badBeam = str(self.goodBeam).split("\n")
             del badBeam[i]
             badBeam = "\n".join(badBeam)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
-
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingBeamAttributesRand(self):
         expectedBeam = deepcopy(self.expectedBeam)
@@ -1172,19 +1171,18 @@ class TestGudPyIO(TestCase):
             del badBeam[j]
             badBeam = "\n".join(badBeam)
 
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
-
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write("\n\nBEAM        {\n\n" + str(badBeam) + "\n\n}")
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingNormalisationAttributesSeq(self):
         expectedNormalisation = deepcopy(self.expectedNormalisation)
@@ -1196,6 +1194,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         expectedNormalisation.pop("crossSectionFilename")
+        expectedNormalisation.pop("outputFolder", None)
         expectedNormalisation.pop("yamlignore", None)
 
         self.goodNormalisation.dataFiles = DataFiles([], "")
@@ -1206,25 +1205,24 @@ class TestGudPyIO(TestCase):
             badNormalisation = str(self.goodNormalisation).split("\n")
             del badNormalisation[i]
             badNormalisation = "\n".join(badNormalisation)
-
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(badNormalisation)
-                    + "\n\n}"
-                )
-
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(badNormalisation)
+                        + "\n\n}"
+                    )
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingNormalisationAttributesRand(self):
         expectedNormalisation = deepcopy(self.expectedNormalisation)
@@ -1236,6 +1234,7 @@ class TestGudPyIO(TestCase):
         expectedNormalisation.pop("outerRadius", None)
         expectedNormalisation.pop("sampleHeight", None)
         expectedNormalisation.pop("crossSectionFilename")
+        expectedNormalisation.pop("outputFolder", None)
         expectedNormalisation.pop("yamlignore", None)
 
         self.goodNormalisation.dataFiles = DataFiles([], "")
@@ -1251,44 +1250,46 @@ class TestGudPyIO(TestCase):
             del badNormalisation[j]
             badNormalisation = "\n".join(badNormalisation)
 
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(badNormalisation)
-                    + "\n\n}"
-                )
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(badNormalisation)
+                        + "\n\n}"
+                    )
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingSampleBackgroundAttributes(self):
         badSampleBackground = str(self.goodSampleBackground).split("\n")
         del badSampleBackground[2]
         badSampleBackground = "\n".join(badSampleBackground)
-        with open("test_data.txt", "w", encoding="utf-8") as f:
-            f.write("'  '  '        '  '/'\n\n")
-            f.write(
-                "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
-            )
-            f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-            f.write(
-                "\n\nNORMALISATION        {\n\n"
-                + str(self.goodNormalisation)
-                + "\n\n}"
-            )
-            f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-            with GudPyContext() as gudpy:
-                self.assertRaises(
-                    ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+        with GudPyContext() as gudpy:
+            with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                f.write("'  '  '        '  '/'\n\n")
+                f.write(
+                    "INSTRUMENT        {\n\n" +
+                    str(self.goodInstrument) + "\n\n}"
+                )
+                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                f.write(
+                    "\n\nNORMALISATION        {\n\n"
+                    + str(self.goodNormalisation)
+                    + "\n\n}"
+                )
+                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile,
+                gudpy.testFilePath)
 
     def testLoadMissingSampleAttributesSeq(self):
         expectedSampleA = deepcopy(self.expectedSampleA)
@@ -1304,6 +1305,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("exponentialValues", None)
         expectedSampleA.pop("crossSectionFilename", None)
         expectedSampleA.pop("FTMode", None)
+        expectedSampleA.pop("outputFolder", None)
+        expectedSampleA.pop("sampleFile", None)
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
@@ -1321,25 +1324,25 @@ class TestGudPyIO(TestCase):
             badSampleBackground = sbgStr.split("\n")
             del badSampleBackground[i + 10]
             badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
-
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(self.goodNormalisation)
+                        + "\n\n}"
+                    )
+                    f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingSampleAttributesRand(self):
         expectedSampleA = deepcopy(self.expectedSampleA)
@@ -1355,6 +1358,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("exponentialValues", None)
         expectedSampleA.pop("crossSectionFilename", None)
         expectedSampleA.pop("FTMode", None)
+        expectedSampleA.pop("outputFolder", None)
+        expectedSampleA.pop("sampleFile", None)
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
@@ -1375,24 +1380,25 @@ class TestGudPyIO(TestCase):
             del badSampleBackground[j + 10]
 
             badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(self.goodNormalisation)
+                        + "\n\n}"
+                    )
+                    f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testLoadMissingContainerAttributesSeq(self):
         expectedContainerA = deepcopy(self.expectedContainerA)
@@ -1415,6 +1421,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("powerForBroadening", None)
         expectedContainerA.pop("stepSize", None)
         expectedContainerA.pop("yamlignore", None)
+        expectedContainerA.pop("outputFolder", None)
 
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
@@ -1431,24 +1438,25 @@ class TestGudPyIO(TestCase):
             del badSampleBackground[i + 44]
             badSampleBackground = "\n".join(badSampleBackground)
 
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(self.goodNormalisation)
+                        + "\n\n}"
+                    )
+                    f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testAppendExponentialValues(self):
         with GudPyContext() as gudpy:
@@ -1490,6 +1498,7 @@ class TestGudPyIO(TestCase):
         expectedContainerA.pop("powerForBroadening", None)
         expectedContainerA.pop("stepSize", None)
         expectedContainerA.pop("yamlignore", None)
+        expectedContainerA.pop("outputFolder", None)
 
         self.goodSampleBackground.samples[0].containers[0].dataFiles = (
             DataFiles([], "")
@@ -1506,27 +1515,30 @@ class TestGudPyIO(TestCase):
             ]
             sbgStr = str(self.goodSampleBackground)
             badSampleBackground = sbgStr.split("\n")
+            if not badSampleBackground[j + 44]:
+                continue
             del badSampleBackground[j + 44]
 
             badSampleBackground = "\n".join(badSampleBackground)
-            with open("test_data.txt", "w", encoding="utf-8") as f:
-                f.write("'  '  '        '  '/'\n\n")
-                f.write(
-                    "INSTRUMENT        {\n\n"
-                    + str(self.goodInstrument)
-                    + "\n\n}"
-                )
-                f.write("\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
-                f.write(
-                    "\n\nNORMALISATION        {\n\n"
-                    + str(self.goodNormalisation)
-                    + "\n\n}"
-                )
-                f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
             with GudPyContext() as gudpy:
+                with open(gudpy.testFilePath, "w", encoding="utf-8") as f:
+                    f.write("'  '  '        '  '/'\n\n")
+                    f.write(
+                        "INSTRUMENT        {\n\n"
+                        + str(self.goodInstrument)
+                        + "\n\n}"
+                    )
+                    f.write(
+                        "\n\nBEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
+                    f.write(
+                        "\n\nNORMALISATION        {\n\n"
+                        + str(self.goodNormalisation)
+                        + "\n\n}"
+                    )
+                    f.write("\n\n{}\n\nEND".format(str(badSampleBackground)))
                 self.assertRaises(
                     ParserException, gudpy.loadFromGudrunFile,
-                    "test_data.txt")
+                    gudpy.testFilePath)
 
     def testZeroExitGudrun(self):
         with GudPyContext() as gudpy:
