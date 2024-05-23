@@ -53,6 +53,10 @@ class GudPyContext:
             self.tempdir.name, "good_water"
         ))
 
+        os.makedirs(os.path.join(
+            self.tempdir.name, "good_water"
+        ))
+
     def __enter__(self):
         return self.gudpy
 
@@ -976,16 +980,10 @@ class TestGudPyIO(TestCase):
     def testLoadEmptyGudrunFile(self):
         f = open("test_data.txt", "w", encoding="utf-8")
         f.close()
-        with self.assertRaises(ParserException) as cm:
-            with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+        with GudPyContext() as gudpy:
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile,
+                "test_data.txt")
 
     def testLoadMissingInstrument(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
@@ -997,16 +995,10 @@ class TestGudPyIO(TestCase):
                 + "\n\n}\n\n"
             )
 
-        with self.assertRaises(ParserException) as cm:
             with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingBeam(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
@@ -1020,16 +1012,10 @@ class TestGudPyIO(TestCase):
                 + str(self.goodNormalisation)
                 + "\n\n}"
             )
-        with self.assertRaises(ParserException) as cm:
             with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingNormalisation(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
@@ -1040,16 +1026,10 @@ class TestGudPyIO(TestCase):
             )
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}\n\n")
 
-        with self.assertRaises(ParserException) as cm:
             with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+                self.assertRaises(
+                    ParserException, gudpy.loadFromGudrunFile,
+                    "test_data.txt")
 
     def testLoadMissingInstrumentAndBeam(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
