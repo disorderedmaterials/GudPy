@@ -296,7 +296,6 @@ class GudPyController(QtCore.QObject):
             "Export input file as..",
             ".",
         )
-        print(filename)
         if filename:
             filename.replace(".txt", "")
             filename += ".txt"
