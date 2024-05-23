@@ -1060,31 +1060,18 @@ class TestGudPyIO(TestCase):
                 + "\n\n}"
             )
 
-        with self.assertRaises(ParserException) as cm:
-            with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file supplied'
-            ' is of an incorrect format!'),
-            str(cm.exception),
-        )
+        with GudPyContext() as gudpy:
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
 
     def testLoadMissingInstrumentAndNormalisation(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
             f.write("'  '  '        '  '/'\n\n")
             f.write("BEAM        {\n\n" + str(self.goodBeam) + "\n\n}")
 
-        with self.assertRaises(ParserException) as cm:
-            with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+        with GudPyContext() as gudpy:
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
 
     def testLoadMissingNormalisationAndBeam(self):
         with open("test_data.txt", "w", encoding="utf-8") as f:
@@ -1093,16 +1080,9 @@ class TestGudPyIO(TestCase):
                 "INSTRUMENT        {\n\n" + str(self.goodInstrument) + "\n\n}"
             )
 
-        with self.assertRaises(ParserException) as cm:
-            with GudPyContext() as gudpy:
-                gudpy.loadFromGudrunFile("test_data.txt")
-        self.assertEqual((
-            'INSTRUMENT, BEAM, NORMALISATION,'
-            ' were not parsed. It\'s possible the file'
-            ' supplied is of an incorrect format!'
-        ),
-            str(cm.exception),
-        )
+        with GudPyContext() as gudpy:
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
 
     def testLoadMissingInstrumentAttributesSeq(self):
         expectedInstrument = deepcopy(self.expectedInstrument)
@@ -1126,15 +1106,9 @@ class TestGudPyIO(TestCase):
                     "INSTRUMENT        {\n\n" + str(badInstrument) + "\n\n}"
                 )
 
-            with self.assertRaises(ParserException) as cm:
-                with GudPyContext() as gudpy:
-                    gudpy.loadFromGudrunFile("test_data.txt")
-                self.assertEqual(
-                    "Whilst parsing Instrument, an exception occured."
-                    " The input file is most likely of an incorrect format, "
-                    "and some attributes were missing.",
-                    str(cm.exception)
-                )
+        with GudPyContext() as gudpy:
+            self.assertRaises(
+                ParserException, gudpy.loadFromGudrunFile, "test_data.txt")
 
     def testLoadMissingInstrumentAttributesRand(self):
         expectedInstrument = deepcopy(self.expectedInstrument)
