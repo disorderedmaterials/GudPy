@@ -10,7 +10,7 @@ from core.io.gudpy_io import GudPyIO
 class TestPurgeFile(TestCase):
     def setUp(self) -> None:
 
-        path = "TestData/NIMROD-water/water.txt"
+        path = f"TestData{os.path.sep}NIMROD-water{os.path.sep}water.txt"
 
         if os.name == "nt":
             from pathlib import Path
