@@ -64,8 +64,8 @@ class GudPyFileLibrary:
         }
 
         self.dataFiles = [
-            *gudrunFile.normalisation.dataFiles.dataFiles,
-            *gudrunFile.normalisation.dataFilesBg.dataFiles,
+            *gudrunFile.normalisation.dataFiles.dataFilenames,
+            *gudrunFile.normalisation.dataFilesBg.dataFilenames,
         ]
 
         # If NXS files are being used
@@ -90,15 +90,15 @@ class GudPyFileLibrary:
         # that file too.
 
         for sampleBackground in gudrunFile.sampleBackgrounds:
-            self.dataFiles.extend(sampleBackground.dataFiles.dataFiles)
+            self.dataFiles.extend(sampleBackground.dataFiles.dataFilenames)
 
             for sample in sampleBackground.samples:
-                self.dataFiles.extend(sample.dataFiles.dataFiles)
+                self.dataFiles.extend(sample.dataFiles.dataFilenames)
                 if sample.totalCrossSectionSource == CrossSectionSource.FILE:
                     self.files[sample.name] = sample.crossSectionFilename
 
                 for container in sample.containers:
-                    self.dataFiles.extend(container.dataFiles.dataFiles)
+                    self.dataFiles.extend(container.dataFiles.dataFilenames)
                     if container.totalCrossSectionSource == (
                         CrossSectionSource.FILE
                     ):
@@ -180,7 +180,7 @@ class GudPyFileLibrary:
                 if len(sample.dataFiles.dataFiles):
                     path = os.path.join(
                         self.gudrunFile.projectDir,
-                        sample.dataFiles.dataFiles[0].replace(
+                        sample.dataFiles.dataFilenames[0].replace(
                             self.gudrunFile.instrument.dataFileType, "mint01"
                         ),
                     )
@@ -199,6 +199,8 @@ class GudPyFileLibrary:
                             self.gudrunFile.projectDir,
                             safeSampleName + ".sample",
                         )
+                        sample.sampleFile = path
+
                         if not os.path.exists(path):
                             sample.write_out(
                                 self.gudrunFile.projectDir

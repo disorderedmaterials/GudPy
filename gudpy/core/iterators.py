@@ -1,10 +1,12 @@
 from copy import deepcopy
+import os
 import math
 from enum import Enum
 
 from core.gud_file import GudFile
 from core.enums import Scales, IterationModes
 from core.gudrun_file import GudrunFile
+from core import utils
 import core.output_file_handler as handlers
 
 
@@ -493,7 +495,7 @@ class InelasticitySubtraction(Iterator):
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
-                    filename = target.dataFiles[0]
+                    filename = target.dataFiles[0].filename
                     targetFile = (
                         prevOutput.output(
                             sample.name, filename, suffix)
@@ -580,13 +582,29 @@ class InelasticitySubtraction(Iterator):
         """
         overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
+        head = os.path.join(
+            utils.replace_unwanted_chars(self.name),
+            f"{self.iterationType}_{self.iterationCount}"
+        )
+
+        # Organise output history (don't overwrite)
+
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile,
-            head=f"{self.iterationType}_{self.iterationCount}",
+            head=head,
             overwrite=overwrite
         )
         output = outputHandler.organiseOutput(exclude=exclude)
         self.gudrunOutputs.append(output)
+
+        # Organise current output (overrides each time)
+
+        outputHandler = handlers.GudrunOutputHandler(
+            gudrunFile=gudrunFile,
+            overwrite=True
+        )
+        output = outputHandler.organiseOutput(exclude=exclude)
+
         return output
 
 

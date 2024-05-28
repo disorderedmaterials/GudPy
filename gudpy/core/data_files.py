@@ -1,4 +1,77 @@
+import os
+
 from core import config
+from core import utils
+from core.gud_file import GudFile
+
+
+class DataFile:
+    def __init__(self, filename, isSampleDataFile: bool = False):
+        self.filename = filename
+        self.name = utils.replace_unwanted_chars(
+            os.path.splitext(filename)[0]
+        )
+        self.ext = os.path.splitext(filename)[1]
+        self.outputFolder = ""
+        self._outputs = {}
+        self.isSampleDataFile = isSampleDataFile
+
+        self.yamlignore = {
+            "str",
+            "yamlignore"
+        }
+
+    def detectSampleDataFile(self, path):
+        for f in os.listdir(path):
+            if f == "Diagnostics":
+                self.isSampleDataFile = True
+
+    def constructDictFromDir(self, dirPath, dict):
+        for f in os.listdir(dirPath):
+            ext = os.path.splitext(f)
+            dict[ext] = f
+
+    def importOutputs(self, path):
+        self.detectSampleDataFile(path)
+        if self.isSampleDataFile:
+            outputsDir = os.path.join(path, "Outputs")
+            diagDir = os.path.join(path, "Diagnostics")
+            self.constructDictFromDir(outputsDir, self._outputs)
+            self.constructDictFromDir(diagDir, self.diagnostics)
+        else:
+            self.constructDictFromDir(path, self._outputs)
+
+    def addOutput(self, path):
+        ext = os.path.splitext(path)[1]
+        self._outputs[ext] = path
+
+    def outputs(self, ext):
+        return self._outputs[ext]
+
+    def __str__(self):
+        return self.filename
+
+    @property
+    def gudFile(self):
+        if not self.isSampleDataFile:
+            return None
+        if not self.gudFile:
+            gudPath = self._outputs.get(".gud", None)
+            if not gudPath:
+                return None
+            return GudFile(gudPath)
+
+    @property
+    def mintFile(self):
+        if not self.isSampleDataFile:
+            return None
+        return self._outputs.get(".mint01", None)
+
+    @property
+    def msubwFile(self):
+        if not self.isSampleDataFile:
+            return None
+        return self._outputs.get(".msubw01", None)
 
 
 class DataFiles:
@@ -28,13 +101,34 @@ class DataFiles:
         name : str
             Name of the parent of the data files, e.g. Sample Background
         """
-        self.dataFiles = dataFiles
+
+        self._dataFiles = []
+        self.setFiles(dataFiles)
+
         self.name = name
 
         self.yamlignore = {
             "str",
             "yamlignore"
         }
+
+        self.outputFolders = {}
+        self._outputs = {}
+
+    def setFiles(self, dataFilenames):
+        self._dataFiles.clear()
+        for dataFile in dataFilenames:
+            if not dataFile:
+                continue
+            self._dataFiles.append(DataFile(dataFile))
+
+    def importOutputs(self, path):
+        self.outputFolder = path
+        children = os.listdir(path)
+
+        for df in self._dataFiles:
+            if df.name in children:
+                return
 
     def __str__(self):
         """
@@ -50,10 +144,19 @@ class DataFiles:
             String representation of DataFiles.
         """
         self.str = [
-            df + config.spc10 + self.name + " data files"
-            for df in self.dataFiles
+            df.filename + config.spc10 + self.name + " data files"
+            for df in self._dataFiles
         ]
         return """\n""".join(self.str)
+
+    @property
+    def dataFilenames(self):
+        dfNames = [df.filename for df in self._dataFiles]
+        return dfNames
+
+    @property
+    def dataFiles(self):
+        return self._dataFiles
 
     def __len__(self):
         """
@@ -68,15 +171,15 @@ class DataFiles:
         int
             Number of data files,
         """
-        return len(self.dataFiles)
+        return len(self._dataFiles)
 
     def __getitem__(self, n):
-        return self.dataFiles[n]
+        return self._dataFiles[n].filename
 
     def __setitem__(self, n, item):
         if n >= len(self):
-            self.dataFiles.extend(n+1)
-        self.dataFiles[n] = item
+            self._dataFiles.extend(n+1)
+        self._dataFiles[n] = DataFile(item)
 
     def __iter__(self):
-        return iter(self.dataFiles)
+        return iter(self._dataFiles)

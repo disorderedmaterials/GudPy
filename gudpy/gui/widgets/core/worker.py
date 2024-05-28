@@ -39,13 +39,16 @@ class PurgeWorker(Worker, gudpy.Purge):
 
         self.appendDataFiless(gudrunFile.normalisation.dataFiles[0])
         self.appendDataFiless(gudrunFile.normalisation.dataFilesBg[0])
-        self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+        self.appendDataFiless([df.filename for sb
+                               in gudrunFile.sampleBackgrounds
                                for df in sb.dataFiles])
         if not purgeFile.excludeSampleAndCan:
-            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+            self.appendDataFiless([df.filename for sb
+                                   in gudrunFile.sampleBackgrounds
                                    for s in sb.samples for df in s.dataFiles
                                    if s.runThisSample])
-            self.appendDataFiless([df for sb in gudrunFile.sampleBackgrounds
+            self.appendDataFiless([df.filename for sb
+                                   in gudrunFile.sampleBackgrounds
                                    for s in sb.samples for c in s.containers
                                    for df in c.dataFiles if s.runThisSample])
 

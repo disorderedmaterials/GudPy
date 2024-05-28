@@ -18,6 +18,7 @@ class SampleBackground:
     Methods
     -------
     """
+
     def __init__(self):
         """
         Constructs all the necessary attributes for the
@@ -36,6 +37,8 @@ class SampleBackground:
             "writeAllSamples",
             "yamlignore"
         }
+
+        self.outputFolder = ""
 
     def __str__(self):
         """

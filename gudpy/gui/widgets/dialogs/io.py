@@ -177,11 +177,7 @@ class ExportDialog(QDialog):
     def performExport(self, filename=None):
         fl = GudPyFileLibrary(self.gudrunFile)
         archive = fl.exportMintData(
-            [
-                s
-                for sb in self.gudrunFile.sampleBackgrounds
-                for s in sb.samples
-            ],
+            self.gudrunFile.samples(),
             renameDataFiles=self.widget.renameCheckBox.checkState(),
             exportTo=filename,
             includeParams=self.widget.includeParamsCheckBox.checkState()
