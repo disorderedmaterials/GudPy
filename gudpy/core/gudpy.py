@@ -69,7 +69,7 @@ class GudPy:
             Raised if input file does not exist
         """
         if not os.path.exists(loadFile):
-            raise FileNotFoundError("Input file does not exist.")
+            raise FileNotFoundError(f"Input file '{loadFile}' does not exist.")
 
         self.gudrunFile = self.io.importGudrunFile(loadFile, config)
 
