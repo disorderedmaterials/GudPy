@@ -11,12 +11,7 @@ class TestPurgeFile(TestCase):
     def setUp(self) -> None:
 
         path = f"TestData{os.path.sep}NIMROD-water{os.path.sep}water.txt"
-
-        if os.name == "nt":
-            from pathlib import Path
-            dirpath = Path().resolve() / "test/" / Path(path)
-        else:
-            dirpath = (os.path.dirname(__file__))
+        dirpath = (os.path.dirname(__file__))
         self.gudpy = gudpy.GudPy()
         self.keepsakes = os.listdir()
         refFile = os.path.join(dirpath, path)
