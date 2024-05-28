@@ -17,7 +17,8 @@ class TestPurgeFile(TestCase):
             dirpath = Path().resolve() / "test/" / Path(path)
         else:
             dirpath = (
-                "/".join(os.path.realpath(__file__).split("/")[:-1])
+                os.path.sep.join(os.path.realpath(
+                    __file__).split(os.path.sep)[:-1])
             )
         self.gudpy = gudpy.GudPy()
         self.keepsakes = os.listdir()
