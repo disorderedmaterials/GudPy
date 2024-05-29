@@ -46,7 +46,8 @@ runs:
       echo "Release tag will be: continuous"
       echo "Release name will be: 'Continuous (${{ env.gudPyVersion }})'"
       export GITHUB_TOKEN=${{ github.token }}
-      ./update-release -r disorderedmaterials/gudpy -t continuous -p -e -u -n "Continuous (${{ env.gudPyVersion }})" -b "Continuous release from \`main\` branch. Built $(date)." packages/*
+      FILES=( $(find ./packages -type f -name *.zip -name *.sif -name *.exe -name *.dmg) )
+      ./update-release -r disorderedmaterials/gudpy -t continuous -p -e -u -n "Continuous (${{ env.gudPyVersion }})" -b "Continuous release from \`main\` branch. Built $(date)." ${FILES[@]}
 
   - name: Publish on Harbor (Release)
     if: ${{ inputs.publish == 'true' && inputs.isRelease == 'true' }}
@@ -54,7 +55,7 @@ runs:
     run: |
       echo "Release tag will be: latest"
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:latest
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-Linux/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:latest
 
   - name: Publish on Harbor (Continuous)
     if: ${{ inputs.publish == 'true' && inputs.isRelease == 'false' }}
@@ -62,4 +63,4 @@ runs:
     run: |
       echo "Release tag will be: continuous"
       singularity remote login --username ${HARBOR_USER} --password ${HARBOR_SECRET} docker://harbor.stfc.ac.uk
-      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:continuous
+      ${SINGULARITY_ROOT}/bin/singularity push packages/GudPy-Linux/GudPy-${{ env.gudPyVersion }}.sif oras://harbor.stfc.ac.uk/isis_disordered_materials/gudpy:continuous
