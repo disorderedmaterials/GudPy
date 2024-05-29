@@ -266,13 +266,13 @@ class TestParseGudFile(TestCase):
     def testValidPath(self):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
-            gf = gudpy.gudrun.gudrunOutput.gudFile(0)
+            gf = gudpy.gudrunFile.runSamples[0].gudFile
             self.assertIsInstance(gf, GudFile)
 
     def loadGudFile(self, index):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
-            gf = gudpy.gudrun.gudrunOutput.gudFile(index)
+            gf = gudpy.gudrunFile.runSamples[index].gudFile
 
             self.assertIsInstance(gf, GudFile)
 
@@ -326,7 +326,7 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileA(self):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
-            gf = gudpy.gudrun.gudrunOutput.gudFile(0)
+            gf = gudpy.gudrunFile.runSamples[0].gudFile
             path = os.path.join(
                 gudpy.projectDir,
                 gf.fname
@@ -352,7 +352,7 @@ class TestParseGudFile(TestCase):
     def testWriteGudFileB(self):
         with GudPyContext() as gudpy:
             gudpy.runGudrun()
-            gf = gudpy.gudrun.gudrunOutput.gudFile(1)
+            gf = gudpy.gudrunFile.runSamples[1].gudFile
             path = os.path.join(
                 gudpy.projectDir,
                 gf.fname

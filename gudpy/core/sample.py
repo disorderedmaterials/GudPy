@@ -152,14 +152,11 @@ class Sample:
 
         self.outputFolder = ""
         self.sampleFile = ""
+        self.selfScatteringFilePath = ""
 
-    def importOutputs(self, path):
-        self.outputFolder = path
-        for f in os.listdir(path):
-            ext = os.path.splitext(f)
-            if ext == ".sample":
-                self.sampleFile = f
-                return
+    @property
+    def gudFile(self):
+        return self.dataFiles[0].gudFile
 
     def pathName(self):
         return utils.replace_unwanted_chars(self.name).translate(

@@ -543,7 +543,6 @@ class GudPyController(QtCore.QObject):
                 self.gudpy.gudrunIterator.iterator.name)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
-                gudrunOutput=self.gudpy.gudrunIterator.gudrunOutput
             )
         elif self.workerThread == self.gudpy.gudrun:
             if exitcode != 0:
@@ -556,7 +555,6 @@ class GudPyController(QtCore.QObject):
                 self.gudpy.gudrun.output, "Gudrun", self.gudrunFile)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudrunFile,
-                gudrunOutput=self.gudpy.gudrun.gudrunOutput
             )
         self.workerThread = None
 

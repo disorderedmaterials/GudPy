@@ -101,7 +101,6 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.modified = False
         self.clipboard = None
         self.results = {}
-        self.gudrunOutput = None
 
         self.allPlots = []
         self.plotModes = {}
@@ -357,7 +356,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         if not self.widgetsRefreshing:
             self.setModified()
 
-    def updateWidgets(self, gudrunFile, gudrunOutput=None):
+    def updateWidgets(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.ui.gudrunFile = gudrunFile
         self.widgetsRefreshing = True
@@ -390,8 +389,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        if gudrunOutput:
-            self.updateResults(gudrunOutput)
+        self.updateResults(gudrunFile)
         self.widgetsRefreshing = False
 
     def updateGeometries(self):
@@ -430,9 +428,6 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
-        if not self.gudrunOutput:
-            return
-
         self.updateSamples()
 
         if self.ui.objectStack.currentIndex() == 5 and isinstance(
@@ -566,17 +561,14 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.currentTaskLabel.setText(taskName)
 
     def updateSamples(self):
-        if not self.gudrunOutput:
-            return
-
         samples = [
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(self.gudrunOutput)
+            topChart = GudPyChart(self.gudrunFile)
             topChart.addSample(sample)
-            bottomChart = GudPyChart(self.gudrunOutput)
+            bottomChart = GudPyChart(self.gudrunFile)
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
@@ -592,7 +584,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 bottomChart.plot(bottom)
             else:
                 topChart.plot(plotMode)
-            gf = self.gudrunOutput.gudFile(name=sample.name)
+            gf = sample.gudFile
             self.results[sample] = [
                 topChart, bottomChart, gf if gf else None]
 
@@ -601,22 +593,21 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(self.gudrunOutput)
+        allTopChart = GudPyChart(self.gudrunFile)
         allTopChart.addSamples(samples)
         allTopChart.plot(
             self.ui.allPlotComboBox.itemData(
                 self.ui.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(self.gudrunOutput)
+        allBottomChart = GudPyChart(self.gudrunFile)
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.ui.allSampleTopPlot.setChart(allTopChart)
         self.ui.allSampleBottomPlot.setChart(allBottomChart)
 
-    def updateResults(self, gudrunOutput):
+    def updateResults(self):
         self.ui.plotTab.setEnabled(True)
-        self.gudrunOutput = gudrunOutput
         self.updateSamples()
         self.updateAllSamples()
         self.focusResult()

@@ -52,6 +52,24 @@ class DataFile:
             return None
         return self._outputs.get(".msubw01", None)
 
+    @property
+    def mcdsFile(self):
+        if not self.isSampleDataFile:
+            return None
+        return self._outputs.get(".mcds01", None)
+
+    @property
+    def mdorFile(self):
+        if not self.isSampleDataFile:
+            return None
+        return self._outputs.get(".mdor01", None)
+
+    @property
+    def mgorFile(self):
+        if not self.isSampleDataFile:
+            return None
+        return self._outputs.get(".mgor01", None)
+
 
 class DataFiles:
     """
