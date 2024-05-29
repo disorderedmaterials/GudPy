@@ -16,6 +16,7 @@ from core.purge_file import PurgeFile
 import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
+from core.io.gudpy_io import GudPyIO
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -25,8 +26,8 @@ class GudPy:
         self
     ):
         self.originalGudrunFile: GudrunFile = None
-        self.gudrunFile: GudrunFile = None
-        self.purgeFile = None
+        self._gudrunFile: GudrunFile = None
+        self.io = GudPyIO()
 
         self.purge: Purge = None
         self.gudrun: Gudrun = None
@@ -36,13 +37,21 @@ class GudPy:
 
         self.gudrunOutput = None
 
-        self.projectDir = ""
-        self.autosaveLocation = ""
+    @property
+    def gudrunFile(self):
+        return self._gudrunFile
 
-    def loadFromFile(
+    @gudrunFile.setter
+    def gudrunFile(self, gudrunFile: GudrunFile):
+        self._gudrunFile = gudrunFile
+
+    @property
+    def projectDir(self):
+        return self.io.projectDir
+
+    def loadFromGudrunFile(
         self,
         loadFile: str,
-        format: enums.Format,
         config: bool = False
     ):
         """Loads GudPy from an input file
@@ -51,8 +60,6 @@ class GudPy:
         ----------
         loadFile : str
             Path of input file to load from
-        format : enums.Format
-            Format of the input file (YAML or TXT)
         config : bool, optional
             If loading from preset config, by default False
 
@@ -62,19 +69,30 @@ class GudPy:
             Raised if input file does not exist
         """
         if not os.path.exists(loadFile):
+            raise FileNotFoundError(f"Input file '{loadFile}' does not exist.")
+
+        self.gudrunFile = self.io.importGudrunFile(loadFile, config)
+
+    def loadFromYamlFile(
+        self,
+        loadFile: str,
+    ):
+        """Loads GudPy from a YAML input file
+
+        Parameters
+        ----------
+        loadFile : str
+            Path of input file to load from
+
+        Raises
+        ------
+        FileNotFoundError
+            Raised if input file does not exist
+        """
+        if not os.path.exists(loadFile):
             raise FileNotFoundError("Input file does not exist.")
 
-        self.gudrunFile = GudrunFile(
-            loadFile=loadFile,
-            format=format,
-            config=config
-        )
-
-        self.originalGudrunFile = copy.deepcopy(self.gudrunFile)
-        self.originalGudrunFile.filename = "original"
-
-        self.projectDir == ""
-        self.autosaveLocation = ""
+        self.gudrunFile = self.io.importFromYamlFile(loadFile)
 
     def loadFromProject(self, projectDir: str):
         """Loads GudPy from a project directory
@@ -90,29 +108,10 @@ class GudPy:
             Raised if there is no YAML input file in the
             project directory
         """
-        loadFile = ""
+        if not os.path.exists(projectDir):
+            raise FileNotFoundError("Directory does not exist.")
 
-        if os.path.exists(os.path.join(
-            projectDir,
-            f"{os.path.basename(projectDir)}.yaml"
-        )):
-            # If default file exists
-            loadFile = os.path.join(
-                projectDir,
-                f"{os.path.basename(projectDir)}.yaml"
-            )
-        else:
-            # Try to find yaml files
-            for f in os.listdir(projectDir):
-                if os.path.splitext(f)[1] == ".yaml":
-                    # If file is yaml
-                    loadFile = os.path.join(projectDir, f)
-        if not loadFile:
-            raise FileNotFoundError(
-                "Could not find GudPy input file within the project")
-
-        self.loadFromFile(loadFile=loadFile, format=enums.Format.YAML)
-        self.setSaveLocation(projectDir)
+        self.gudrunFile = self.io.importProject(projectDir)
 
     def checkSaveLocation(self):
         """Checks if user has set the save location
@@ -122,7 +121,7 @@ class GudPy:
         bool
             If the save location is set or not
         """
-        return bool(self.projectDir)
+        return self.io.checkSaveLocation()
 
     def setSaveLocation(self, projectDir: str):
         """Sets the save location
@@ -132,28 +131,12 @@ class GudPy:
         projectDir : str
             Path to the desired save location of project
         """
-        self.projectDir = projectDir
-        self.gudrunFile.filename = f"{os.path.basename(projectDir)}.yaml"
-        self.gudrunFile.projectDir = projectDir
-        self.originalGudrunFile.projectDir = projectDir
-        self.autosaveLocation = (
-            f"{os.path.basename(projectDir)}.autosave"
-        )
+        self.io.setSaveLocation(projectDir)
 
-    def save(self, path: str = "", format: enums.Format = enums.Format.YAML):
+    def save(self):
         """Saves current GudPy input file
-
-        Parameters
-        ----------
-        path : str, optional
-            Path to desired save location, by default ""
-        format : enums.Format, optional
-            Desired format of save file, by default enums.Format.YAML
         """
-        if not path:
-            path = self.gudrunFile.path()
-        self.originalGudrunFile.save(path=path)
-        self.gudrunFile.save(path=path, format=format)
+        self.io.save(self.gudrunFile)
 
     def saveAs(self, targetDir: str):
         """Save GudPy project to a new location, set current
@@ -169,26 +152,7 @@ class GudPy:
         IsADirectoryError
             Raised if the requested save location already exists
         """
-        if os.path.exists(targetDir):
-            raise IsADirectoryError("Cannot be an existing directory")
-
-        oldDir = self.projectDir
-        self.setSaveLocation(targetDir)
-        os.makedirs(targetDir)
-
-        if os.path.exists(os.path.join(oldDir, "Purge")):
-            shutil.copytree(
-                os.path.join(oldDir, "Purge"),
-                os.path.join(targetDir, "Purge")
-            )
-        if os.path.exists(os.path.join(oldDir, "Gudrun")):
-            shutil.copytree(
-                os.path.join(oldDir, "Gudrun"),
-                os.path.join(targetDir, "Gudrun")
-            )
-        self.gudrunFile.filename = os.path.basename(targetDir)
-        self.gudrunFile.save(path=self.gudrunFile.path(),
-                             format=enums.Format.YAML)
+        self.io.exportProject(self.gudrunFile, targetDir)
         self.loadFromProject(projectDir=targetDir)
 
     def checkFilesExist(self):
@@ -231,9 +195,9 @@ class GudPy:
         """
         self.prepareRun()
         self.purge = Purge()
-        self.purgeFile = PurgeFile(self.gudrunFile)
-        exitcode = self.purge.purge(self.purgeFile)
-        self.gudrunFile.save()
+        purgeFile = PurgeFile(self.gudrunFile)
+        exitcode = self.purge.purge(purgeFile)
+        self.save()
         if exitcode:
             raise exc.PurgeException(
                 "Purge failed to run with the following output:\n"
@@ -257,6 +221,7 @@ class GudPy:
 
         if not gudrunFile:
             gudrunFile = self.gudrunFile
+        self.save()
         self.gudrun = Gudrun()
         exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
         if exitcode:
@@ -265,6 +230,7 @@ class GudPy:
                 f"{self.gudrun.error}"
             )
         self.gudrunOutput = self.gudrun.gudrunOutput
+        self.save()
 
     def iterateGudrun(self, iterator: iterators.Iterator):
         """Runs gudrun_dcs iteratively while tweaking parameters
@@ -437,7 +403,7 @@ class Purge(Process):
     def purge(self, purgeFile: PurgeFile):
         self.checkBinary()
         with tempfile.TemporaryDirectory() as tmp:
-            purgeFile.write_out(os.path.join(
+            GudPyIO.writeObject(purgeFile, os.path.join(
                 tmp,
                 f"{self.PROCESS}.dat"
             ))
@@ -460,7 +426,7 @@ class Purge(Process):
                     return self.exitcode
 
             self.purgeLocation = self.organiseOutput(
-                tmp, purgeFile.gudrunFile.projectDir)
+                tmp, GudPyIO.projectDir)
 
         self.exitcode = 0
         return self.exitcode
@@ -485,12 +451,18 @@ class Gudrun(Process):
         gudrunOutput = outputHandler.organiseOutput(exclude=exclude)
         return gudrunOutput
 
+    def obtainDependencies(
+        fileSelfScattering,
+        gudrunFile: GudrunFile
+    ):
+        if gudrunFile.instrument.subWavelengthBinnedData:
+            return
+
     def gudrun(
         self,
         gudrunFile: GudrunFile,
         purge: Purge = None,
         iterator: iterators.Iterator = None,
-        save: bool = True
     ) -> int:
         self.checkBinary()
         if not purge:
@@ -510,7 +482,7 @@ class Gudrun(Process):
                 tmp,
                 gudrunFile.OUTPATH
             )
-            gudrunFile.write_out(path)
+            GudPyIO.writeGudrunFile(gudrunFile, tmp)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
                 stdout=subprocess.PIPE,
@@ -532,14 +504,6 @@ class Gudrun(Process):
             else:
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
-            if save:
-                gudrunFile.save(
-                    path=os.path.join(
-                        gudrunFile.projectDir,
-                        f"{gudrunFile.filename}"
-                    ),
-                    format=enums.Format.YAML
-                )
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
@@ -575,22 +539,21 @@ class GudrunIterator:
         gudrun: Gudrun,
         purge: Purge,
         prevOutput: handlers.GudrunOutput,
-        save=True
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
         modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
+    def iterate(self, purge) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator, save)
+                self.gudrunFile, purge, self.iterator)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -602,7 +565,67 @@ class GudrunIterator:
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput, save)
+                self.gudrunFile, gudrun, purge, prevOutput)
+            if exitcode:  # An exit code != 0 indicates failure
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
+
+            prevOutput = gudrun.gudrunOutput
+
+        self.result = self.iterator.result
+
+        self.exitcode = (0, "")
+        return self.exitcode
+
+
+class InelasiticityIterator(GudrunIterator):
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        iterator: iterators.Iterator,
+    ):
+
+        super().__init__(
+            gudrunFile=gudrunFile,
+            iterator=iterator
+        )
+
+    def copyDCS(self, prevOutput):
+        return
+
+    def singleIteration(
+        self,
+        gudrunFile: GudrunFile,
+        gudrun: Gudrun,
+        purge: Purge,
+        prevOutput: handlers.GudrunOutput,
+    ) -> typ.Tuple[int, str]:  # (exitcode, error)
+        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
+        if exitcode:
+            return exitcode
+        self.gudrunOutput = gudrun.gudrunOutput
+        return 0
+
+    def iterate(self, purge) -> typ.Tuple[int, str]:
+        prevOutput = None
+
+        # If the iterator requires a prelimenary run
+        if self.iterator.requireDefault:
+            exitcode = self.gudrunObjects[0].gudrun(
+                self.gudrunFile, purge, self.iterator)
+            if exitcode:  # An exit code != 0 indicates failure
+                self.exitcode = (exitcode, self.gudrunObjects[0].error)
+                return self.exitcode
+            prevOutput = self.gudrunObjects[0].gudrunOutput
+
+        # Iterate through gudrun objects
+        for gudrun in self.gudrunObjects:
+            if gudrun.output:
+                # If object has already been run, skip
+                continue
+            exitcode = self.singleIteration(
+                self.gudrunFile, gudrun, purge, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
@@ -876,14 +899,14 @@ class BatchProcessing:
         batchSize: int,
         iterator: iterators.Iterator = None,
     ):
-        self.batchedGudrunFile.projectDir = (os.path.join(
-            self.batchedGudrunFile.projectDir,
+        self.batchedGudrunFile.outputFolder = (os.path.join(
+            GudPyIO.projectDir,
             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}"
         ))
         exitcode = gudrun.gudrun(GudrunFile, purge, iterator)
         self.writeDiagnosticsFile(
             os.path.join(
-                self.batchedGudrunFile.path(),
+                self.batchedGudrunFile.outputFolder,
                 "batch_processing_diagnostics.txt",
             ),
             self.batchedGudrunFile,

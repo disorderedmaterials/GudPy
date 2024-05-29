@@ -42,9 +42,8 @@ class GudPyContext:
 
 class TestGudPyWorkflows(TestCase):
     def getGudFile(self, gudpy, sampleIndex) -> GudFile:
-        return gudpy.gudrunOutput.sampleOutputs[
-            gudpy.gudrunFile.sampleBackgrounds[0].samples[
-                sampleIndex].name].gudFile
+        return gudpy.gudrunFile.sampleBackgrounds[0].samples[
+            sampleIndex].dataFiles[0].gudFile
 
     def testGudPyDCS(self):
         with GudPyContext() as gudpy:
@@ -70,16 +69,13 @@ class TestGudPyWorkflows(TestCase):
             self.assertAlmostEqual(dcsLevelPercentage, 13.0, 0)
 
             for sample in gudpy.gudrunFile.sampleBackgrounds[0].samples:
-                mintFilename = (
-                    os.path.splitext(sample.dataFiles[0])[0]
-                )
+                mintFilename = sample.dataFiles[0].name
 
                 actualMintFile = ("test/TestData/water-ref/plain/"
                                   f"{mintFilename}.mint01")
-                actualData = open(gudpy.gudrunOutput.sampleOutputs[
-                    sample.name].outputs[sample.dataFiles[0]][".mint01"],
-                    "r", encoding="utf-8"
-                ).readlines()[10:]
+                actualData = open(sample.dataFiles[0].mintFile,
+                                  "r", encoding="utf-8"
+                                  ).readlines()[10:]
                 expectedData = open(
                     actualMintFile, "r", encoding="utf-8"
                 ).readlines()[10:]
@@ -234,18 +230,14 @@ class TestGudPyWorkflows(TestCase):
                     for x in gudpy.gudrunFile.sampleBackgrounds[0].samples
                     if x.runThisSample
                 ]:
-                    dataFilename = (
-                        os.path.splitext(sample.dataFiles[0])[0]
-                    )
-
+                    dataFilename = sample.dataFiles[0].name
                     actualMintFile = (
                         f'test/TestData/water-ref/wavelength{i}/'
                         f'{dataFilename}.mint01'
                     )
 
                     actualData = open(
-                        gudpy.gudrunIterator.iterator.gudrunOutputs[-1].output(
-                            sample.name, sample.dataFiles[0], ".mint01"),
+                        sample.dataFiles[0].mintFile,
                         "r", encoding="utf-8"
                     ).readlines()[10:]
                     expectedData = open(
@@ -273,12 +265,14 @@ class TestGudPyWorkflows(TestCase):
                     )
 
                     actualData = open(
-                        gudpy.gudrunIterator.iterator.gudrunOutputs[
-                            len(
-                                gudpy.gudrunIterator.iterator.gudrunOutputs
-                            ) - 2
-                        ].output(
-                            sample.name, sample.dataFiles[0], ".msubw01"),
+                        os.path.join(
+                            gudpy.projectDir, "Gudrun",
+                            "Inelasticity_Subtraction_(WavelengthIteration)",
+                            f"WavelengthIteration_{i}",
+                            sample.name,
+                            sample.dataFiles[0].name,
+                            "Diagnostics",
+                            f"{sample.dataFiles[0].name}.msubw01"),
                         "r", encoding="utf-8"
                     ).readlines()[10:]
                     expectedData = open(

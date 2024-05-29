@@ -20,10 +20,10 @@ class NormalisationSlots():
         self.widgetsRefreshing = True
 
         self.widget.dataFilesList.makeModel(
-            self.normalisation.dataFiles.dataFiles
+            self.normalisation.dataFiles.dataFilenames
         )
         self.widget.backgroundDataFilesList.makeModel(
-            self.normalisation.dataFilesBg.dataFiles
+            self.normalisation.dataFilesBg.dataFilenames
         )
 
         self.widget.dataFilesList.setSelectionMode(
@@ -645,7 +645,7 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.normalisation.dataFiles.dataFiles = (
+            self.normalisation.dataFiles.setFiles(
                 self.widget.dataFilesList.model().stringList()
             )
 
@@ -659,7 +659,7 @@ class NormalisationSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.normalisation.dataFilesBg.dataFiles = (
+            self.normalisation.dataFilesBg.setFiles(
                 self.widget.backgroundDataFilesList.model().stringList()
             )
 

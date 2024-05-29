@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from core.exception import ParserException
-from core.gudrun_file import GudrunFile
 from core.beam import Beam
 from core.composition import Composition
 from core.container import Container
@@ -15,17 +14,21 @@ from core.enums import (
     FTModes, Instruments, Scales, UnitsOfDensity, MergeWeights,
     NormalisationType, OutputUnits, Geometry, CrossSectionSource
 )
+from core.io.gudpy_io import GudPyIO
 
 
 class TestGudrunClasses(TestCase):
     def testEmptyPath(self):
-
         emptyPath = ""
-        self.assertRaises(RuntimeError, GudrunFile, loadFile=emptyPath)
+        gudpyIO = GudPyIO()
+        self.assertRaises(
+            ParserException, gudpyIO.importGudrunFile, emptyPath)
 
     def testInvalidPath(self):
         invalidPath = "invalid_path"
-        self.assertRaises(ParserException, GudrunFile, loadFile=invalidPath)
+        gudpyIO = GudPyIO()
+        self.assertRaises(
+            ParserException, gudpyIO.importGudrunFile, invalidPath)
 
     def testInstrumentInitDataTypes(self):
 

@@ -1,10 +1,12 @@
 from copy import deepcopy
+import os
 import math
 from enum import Enum
 
 from core.gud_file import GudFile
 from core.enums import Scales, IterationModes
 from core.gudrun_file import GudrunFile
+from core import utils
 import core.output_file_handler as handlers
 
 
@@ -483,8 +485,6 @@ class InelasticitySubtraction(Iterator):
         extensions to msubw01. If the scale selected is the wavelength-scale,
         then set self scattering file extensions to mint01.
         """
-        # Dict to pick suffix based on scale
-        suffix = {Scales.Q: ".msubw01", Scales.WAVELENGTH: ".mint01"}[scale]
 
         # Iterate through all of the samples, and set the suffixes of
         # all of their data files to the suffix
@@ -493,12 +493,10 @@ class InelasticitySubtraction(Iterator):
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
                     target = sample
-                    filename = target.dataFiles[0]
-                    targetFile = (
-                        prevOutput.output(
-                            sample.name, filename, suffix)
-                        if prevOutput else ""
-                    )
+                    if scale == Scales.Q:
+                        targetFile = target.dataFiles[0].msubwFile
+                    else:
+                        targetFile = target.dataFiles[0].mintFile
                     target.fileSelfScattering = (
                         targetFile
                     )
@@ -580,13 +578,30 @@ class InelasticitySubtraction(Iterator):
         """
         overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
+        head = os.path.join(
+            utils.replace_unwanted_chars(self.name),
+            f"{self.iterationType}_{self.iterationCount}"
+        )
+
+        # Organise output history (don't overwrite)
+
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile,
-            head=f"{self.iterationType}_{self.iterationCount}",
+            head=head,
             overwrite=overwrite
         )
         output = outputHandler.organiseOutput(exclude=exclude)
         self.gudrunOutputs.append(output)
+
+        # Organise current output (overrides each time)
+
+        outputHandler = handlers.GudrunOutputHandler(
+            gudrunFile=gudrunFile,
+            head="Current",
+            overwrite=True
+        )
+        output = outputHandler.organiseOutput(exclude=exclude)
+
         return output
 
 

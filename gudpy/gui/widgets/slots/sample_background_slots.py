@@ -21,7 +21,7 @@ class SampleBackgroundSlots():
 
         # Populate data files list.
         self.widget.sampleBackgroundDataFilesList.makeModel(
-            self.sampleBackground.dataFiles.dataFiles
+            self.sampleBackground.dataFiles.dataFilenames
         )
 
         self.widget.sampleBackgroundDataFilesList.model().dataChanged.connect(
@@ -63,7 +63,7 @@ class SampleBackgroundSlots():
         if not self.widgetsRefreshing:
             self.parent.setModified()
             self.parent.gudrunFile.purged = False
-            self.sampleBackground.dataFiles.dataFiles = (
+            self.sampleBackground.dataFiles.setFiles(
                 self.widget.sampleBackgroundDataFilesList.model().stringList()
             )
 

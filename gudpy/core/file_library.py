@@ -1,9 +1,9 @@
 import os
 from zipfile import ZipFile, ZIP_DEFLATED
-from pathlib import Path
 
 from core import utils
 from core.enums import CrossSectionSource
+from core.io.gudpy_io import GudPyIO
 
 
 class GudPyFileLibrary:
@@ -64,8 +64,8 @@ class GudPyFileLibrary:
         }
 
         self.dataFiles = [
-            *gudrunFile.normalisation.dataFiles.dataFiles,
-            *gudrunFile.normalisation.dataFilesBg.dataFiles,
+            *gudrunFile.normalisation.dataFiles.dataFilenames,
+            *gudrunFile.normalisation.dataFilesBg.dataFilenames,
         ]
 
         # If NXS files are being used
@@ -90,15 +90,15 @@ class GudPyFileLibrary:
         # that file too.
 
         for sampleBackground in gudrunFile.sampleBackgrounds:
-            self.dataFiles.extend(sampleBackground.dataFiles.dataFiles)
+            self.dataFiles.extend(sampleBackground.dataFiles.dataFilenames)
 
             for sample in sampleBackground.samples:
-                self.dataFiles.extend(sample.dataFiles.dataFiles)
+                self.dataFiles.extend(sample.dataFiles.dataFilenames)
                 if sample.totalCrossSectionSource == CrossSectionSource.FILE:
                     self.files[sample.name] = sample.crossSectionFilename
 
                 for container in sample.containers:
-                    self.dataFiles.extend(container.dataFiles.dataFiles)
+                    self.dataFiles.extend(container.dataFiles.dataFilenames)
                     if container.totalCrossSectionSource == (
                         CrossSectionSource.FILE
                     ):
@@ -166,21 +166,16 @@ class GudPyFileLibrary:
     def exportMintData(
         self,
         samples,
+        exportTo="",
         renameDataFiles=False,
-        exportTo=None,
         includeParams=False,
     ):
-        if not exportTo:
-            exportTo = os.path.join(
-                self.gudrunFile.projectDir,
-                Path(self.gudrunFile.path()).stem + ".zip",
-            )
         with ZipFile(exportTo, "w", ZIP_DEFLATED) as zipFile:
             for sample in samples:
                 if len(sample.dataFiles.dataFiles):
                     path = os.path.join(
                         self.gudrunFile.projectDir,
-                        sample.dataFiles.dataFiles[0].replace(
+                        sample.dataFiles.dataFilenames[0].replace(
                             self.gudrunFile.instrument.dataFileType, "mint01"
                         ),
                     )
@@ -199,10 +194,10 @@ class GudPyFileLibrary:
                             self.gudrunFile.projectDir,
                             safeSampleName + ".sample",
                         )
+                        sample.sampleFile = path
+
                         if not os.path.exists(path):
-                            sample.write_out(
-                                self.gudrunFile.projectDir
-                            )
+                            GudPyIO.writeObject(sample, path)
                         zipFile.write(path, arcname=os.path.basename(path))
 
             return zipFile.filename

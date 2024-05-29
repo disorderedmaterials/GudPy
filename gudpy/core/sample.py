@@ -1,3 +1,5 @@
+import os
+
 from core.utils import bjoin, numifyBool
 from core.data_files import DataFiles
 from core.composition import Composition
@@ -108,7 +110,7 @@ class Sample:
         """
         self.name = ""
         self.periodNumber = 1
-        self.dataFiles = DataFiles([], "SAMPLE")
+        self.dataFiles = DataFiles([], "SAMPLE", True)
         self.forceCalculationOfCorrections = True
         self.composition = Composition("SAMPLE")
         self.geometry = Geometry.SameAsBeam
@@ -147,6 +149,17 @@ class Sample:
         self.yamlignore = {
             "yamlignore"
         }
+
+        self.outputFolder = ""
+        self.sampleFile = ""
+
+    def importOutputs(self, path):
+        self.outputFolder = path
+        for f in os.listdir(path):
+            ext = os.path.splitext(f)
+            if ext == ".sample":
+                self.sampleFile = f
+                return
 
     def pathName(self):
         return utils.replace_unwanted_chars(self.name).translate(

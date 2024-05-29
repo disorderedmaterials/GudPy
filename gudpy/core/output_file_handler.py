@@ -7,6 +7,7 @@ import tempfile
 import core.utils as utils
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
+from core.io.gudpy_io import GudPyIO
 
 
 @dataclass
@@ -127,7 +128,7 @@ class GudrunOutputHandler(OutputHandler):
 
         super().__init__(
             gudrunFile.instrument.GudrunInputFileDir,
-            gudrunFile.projectDir,
+            GudPyIO.projectDir,
             "Gudrun",
         )
 
@@ -140,6 +141,7 @@ class GudrunOutputHandler(OutputHandler):
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
         self.gudrunFile = gudrunFile
+        self.gudrunFile.outputFolder = self.outputDir
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
@@ -176,11 +178,9 @@ class GudrunOutputHandler(OutputHandler):
         inputFilePath = self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
-        if self.overwrite and os.path.exists(
-                os.path.join(self.gudrunFile.projectDir, "Gudrun")):
+        if self.overwrite and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(os.path.join(self.gudrunFile.projectDir, "Gudrun"),
-                            os.path.join(tmp, "prev"))
+                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
 
         # Move over folders to output directory
         shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
@@ -203,12 +203,15 @@ class GudrunOutputHandler(OutputHandler):
         # Create normalisation folders and move datafiles
         for normFile in self.gudrunFile.normalisation.dataFiles:
             self._copyOutputs(
-                normFile, os.path.join(
-                    dest, "Normalisation"))
+                normFile, dest, "Normalisation")
+            self.gudrunFile.normalisation.outputDir = os.path.join(
+                self.outputDir, "Normalisation"
+            )
         for normBgFile in self.gudrunFile.normalisation.dataFilesBg:
-            self._copyOutputs(normBgFile,
-                              os.path.join(dest,
-                                           "NormalisationBackground"))
+            self._copyOutputs(normBgFile, dest, "NormalisationBackground")
+            self.gudrunFile.normalisation.backgroundOutputDir = os.path.join(
+                self.outputDir, "NormalisationBackground"
+            )
 
     def _createSampleBgDir(self, dest: str):
         """
@@ -227,10 +230,15 @@ class GudrunOutputHandler(OutputHandler):
             for dataFile in sampleBackground.dataFiles:
                 self._copyOutputs(
                     dataFile,
+                    dest,
                     os.path.join(
-                        dest, "SampleBackgrounds",
-                        f"SampleBackground{count + 1}")
-                )
+                        "SampleBackgrounds",
+                        f"SampleBackground{count + 1}"
+                    ))
+            sampleBackground.outputDir = os.path.join(
+                self.outputDir, "SampleBackgrounds",
+                f"SampleBackground{count + 1}"
+            )
 
     def _createSampleDir(self, dest: str):
         """
@@ -297,17 +305,21 @@ class GudrunOutputHandler(OutputHandler):
             sampleOutputs[sample.name] = SampleOutput(
                 sampleFile, gudFile, sampleOutput, sampleDiag)
 
+            sample.outputFolder = os.path.join(
+                self.outputDir,
+                utils.replace_unwanted_chars(sample.name)
+
+            )
+
             # Create container folders within sample folder
             for container in sample.containers:
-                containerPath = os.path.join(
-                    samplePath,
-                    (utils.replace_unwanted_chars(container.name)
-                     if container.name != "CONTAINER"
-                     else "Container"))
                 for dataFile in container.dataFiles:
                     self._copyOutputs(
                         dataFile,
-                        containerPath
+                        samplePath,
+                        (utils.replace_unwanted_chars(container.name)
+                         if container.name != "CONTAINER"
+                         else "Container")
                     )
         return sampleOutputs
 
@@ -349,7 +361,7 @@ class GudrunOutputHandler(OutputHandler):
                     continue
         return inputFile
 
-    def _copyOutputs(self, fpath, dest):
+    def _copyOutputs(self, dataFile, dest, folderName):
         """
         Copy all files with the same basename
         as the provided filepath, except the original file.
@@ -363,13 +375,15 @@ class GudrunOutputHandler(OutputHandler):
         dest : str
             Directory for the files to be copied to
         """
-        fname = os.path.splitext(fpath)[0]
+        dest = os.path.join(dest, folderName)
+        fname = os.path.splitext(dataFile.filename)[0]
         runDir = os.path.join(dest, fname)
         dirCreated = False
         for f in os.listdir(self.gudrunDir):
             # Get files with the same filename but not the same
             # extension
-            if os.path.splitext(f)[0] == fname:
+            name, ext = os.path.splitext(f)
+            if name == fname:
                 if not dirCreated:
                     utils.makeDir(runDir)
                     dirCreated = True
@@ -377,9 +391,15 @@ class GudrunOutputHandler(OutputHandler):
                     os.path.join(self.gudrunDir, f),
                     os.path.join(runDir, f)
                 )
+                dataFile.outputFolder = os.path.join(
+                    self.outputDir, folderName, fname
+                )
+                dataFile.addOutput(os.path.join(
+                    self.outputDir, folderName, fname, f
+                ))
                 self.copiedFiles.append(f)
 
-    def _copyOutputsByExt(self, fpath, dest, folderName):
+    def _copyOutputsByExt(self, dataFile, dest, folderName):
         """
         Copy all files with the same basename
         as the provided filepath and splits them into outputs
@@ -404,7 +424,7 @@ class GudrunOutputHandler(OutputHandler):
             Dictionary mapping output extension to filepath
         """
         # Data filename
-        fname = os.path.splitext(fpath)[0]
+        fname = os.path.splitext(dataFile.filename)[0]
         # Path to folder which will hold all outputs from the run
         runDir = os.path.join(dest, fname)
         # Has the run dir been created?
@@ -431,9 +451,14 @@ class GudrunOutputHandler(OutputHandler):
                         gudFile = GudFile(os.path.join(self.gudrunDir, f))
                     outputs[ext] = os.path.join(
                         self.outputDir, folderName, fname, "Outputs", f)
+                    dataFile.addOutput(os.path.join(
+                        self.outputDir, folderName, fname, "Outputs", f))
+
                 else:
                     diagnostics[ext] = os.path.join(
                         self.outputDir, folderName, fname, "Diagnostics", f)
+                    dataFile.addOutput(os.path.join(
+                        self.outputDir, folderName, fname, "Diagnostics", f))
                 shutil.copyfile(
                     os.path.join(self.gudrunDir, f),
                     os.path.join(dir, f)

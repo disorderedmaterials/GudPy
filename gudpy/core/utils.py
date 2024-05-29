@@ -23,6 +23,10 @@ def firstword(string):
     return string.split(" ")[0]
 
 
+def lastword(string):
+    return string.split(" ")[-1]
+
+
 def replace_unwanted_chars(string):
     unwanted = [" "]
     for char in unwanted:
