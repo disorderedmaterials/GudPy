@@ -439,7 +439,7 @@ class Gudrun(Process):
         exclude: list[str] = [],
         head: str = "",
         overwrite: bool = True
-    ) -> handlers.GudrunOutput:
+    ) -> None:
 
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile, head=head, overwrite=overwrite

@@ -124,11 +124,6 @@ class GudrunOutputHandler(OutputHandler):
 
     def organiseOutput(self, exclude: list[str] = []):
         """Organises Gudrun outputs
-
-        Returns
-        -------
-        GudrunOutput : GudrunOutput
-            Dataclass containing information about important paths
         """
         # Create normalisation and sample background folders
         self._createNormDir(self.tempOutDir)
