@@ -599,9 +599,6 @@ class InelasiticityIterator(GudrunIterator):
             iterator=iterator
         )
 
-    def copyDCS(self, prevOutput):
-        return
-
     def singleIteration(
         self,
         gudrunFile: GudrunFile,

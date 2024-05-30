@@ -560,12 +560,12 @@ class InelasticitySubtraction(Iterator):
         self.resetTopHatWidths(gudrunFile)
         self.setSelfScatteringFiles(Scales.Q, gudrunFile)
 
-    def performIteration(self, gudrunFile, prevOutput):
+    def performIteration(self, gudrunFile):
         if self.iterationType == "QIteration":
-            self.wavelengthIteration(gudrunFile, prevOutput)
+            self.wavelengthIteration(gudrunFile)
             self.iterationCount += 1
         else:
-            self.QIteration(gudrunFile, prevOutput)
+            self.QIteration(gudrunFile)
             self.nCurrent += 1
         return gudrunFile
 
