@@ -47,7 +47,8 @@ runs:
       echo "Release tag will be: continuous"
       echo "Release name will be: 'Continuous (${{ env.gudPyVersion }})'"
       export GITHUB_TOKEN=${{ github.token }}
-      FILES=( $(find ./packages -type f -name *.zip -name *.sif -name *.exe -name *.dmg) )
+      FILES=( $(find ./packages -mindepth 2 -maxdepth 2 -type f -name "GudPy-${{ env.gudPyVersion }}*") )
+      echo ${FILES[@]}
       ./update-release -r disorderedmaterials/gudpy -t continuous -p -e -u -n "Continuous (${{ env.gudPyVersion }})" -b "Continuous release from \`main\` branch. Built $(date)." ${FILES[@]}
 
   - name: Publish on Harbor (Release)
