@@ -1,5 +1,3 @@
-import os
-
 from core.utils import bjoin, numifyBool
 from core.data_files import DataFiles
 from core.composition import Composition
