@@ -36,7 +36,9 @@ runs:
       echo "Release tag will be: ${{ env.gudPyVersion }}"
       echo "Release name will be: ${{ env.gudPyVersion }}"
       export GITHUB_TOKEN=${{ github.token }}
-      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudPyVersion }} -e -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md packages/*
+      FILES=( $(find ./packages -mindepth 2 -maxdepth 2 -type f -name "GudPy-${{ env.gudPyVersion }}*") )
+      echo ${FILES[@]}
+      ./update-release -r disorderedmaterials/gudpy -t ${{ env.gudPyVersion }} -e -n "${{ env.gudPyVersion }}" -f ReleaseNotes.md ${FILES[@]}
 
   - name: Publish on GitHub (Continuous)
     if: ${{ inputs.publish == 'true' && inputs.isRelease == 'false' }}
