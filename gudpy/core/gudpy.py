@@ -447,6 +447,7 @@ class Gudrun(Process):
         outputHandler.organiseOutput(exclude=exclude)
 
     def obtainDependencies(
+        self,
         gudrunFile: GudrunFile
     ) -> list[str]:
         if not gudrunFile.instrument.subWavelengthBinnedData:
