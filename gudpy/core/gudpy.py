@@ -451,7 +451,7 @@ class Gudrun(Process):
         gudrunFile: GudrunFile
     ) -> list[str]:
         if not gudrunFile.instrument.subWavelengthBinnedData:
-            return
+            return []
 
         if not GudPyIO.projectDir:
             cli.echoWarning(
