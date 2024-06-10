@@ -10,13 +10,7 @@ from core.sample import Sample
 
 
 class SamplePlotConfig():
-
-
-<< << << < HEAD
-== == == =
-
->>>>>> > 531d1f2(Remove references to gudrunOutput)
-   def __init__(self, sample, offsetX, offsetY, parent):
+    def __init__(self, sample, offsetX, offsetY, parent):
         self.sample = sample
         self.parent = parent
         self.mint01DataSet = None
