@@ -6,10 +6,10 @@ from gui.widgets.charts.sample_plot_data import (
     Mdor01Plot, Mgor01Plot, Mint01Plot
 )
 from gui.widgets.charts.enums import PlotModes
+from core.sample import Sample
 
 
 class SamplePlotConfig():
-
     def __init__(self, sample, offsetX, offsetY, parent):
         self.sample = sample
         self.parent = parent
@@ -54,7 +54,9 @@ class SamplePlotConfig():
                 self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
 
             # gud data, for dcs level.
-            gudFile = self.sample.gudFile
+            gudFile = None
+            if isinstance(self.sample, Sample):
+                gudFile = self.sample.gudFile
             hasDCSData = False
 
             if gudFile and os.path.exists(gudFile.path):

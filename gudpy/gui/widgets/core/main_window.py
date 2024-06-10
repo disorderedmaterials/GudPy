@@ -389,7 +389,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        self.updateResults(gudrunFile)
+        self.updateResults()
         self.widgetsRefreshing = False
 
     def updateGeometries(self):
@@ -566,9 +566,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(self.gudrunFile)
+            topChart = GudPyChart()
             topChart.addSample(sample)
-            bottomChart = GudPyChart(self.gudrunFile)
+            bottomChart = GudPyChart()
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
@@ -593,14 +593,14 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(self.gudrunFile)
+        allTopChart = GudPyChart()
         allTopChart.addSamples(samples)
         allTopChart.plot(
             self.ui.allPlotComboBox.itemData(
                 self.ui.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(self.gudrunFile)
+        allBottomChart = GudPyChart()
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.ui.allSampleTopPlot.setChart(allTopChart)

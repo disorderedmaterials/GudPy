@@ -11,7 +11,6 @@ from gui.widgets.charts.enums import Axes
 
 
 class GudPyChart(QChart):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
