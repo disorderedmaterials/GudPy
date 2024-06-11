@@ -47,6 +47,30 @@ class DataFile:
         return self._outputs.get(".mint01", None)
 
     @property
+    def mdcsFile(self):
+        if not self.isSampleDataFile:
+            return None
+        mdcsFile = self._outputs.get(".mdcs01", None)
+        if mdcsFile:
+            return mdcsFile
+        # If units are d-spacing
+        mdcsdFile = self._outputs.get(".mdcsd01", None)
+        if mdcsdFile:
+            return mdcsdFile
+        # If units are energy
+        mdcseFile = self._outputs.get(".mdcse01", None)
+        if mdcseFile:
+            return mdcseFile
+        # If units are time-of-flight
+        mdcstFile = self._outputs.get(".mdcst01", None)
+        if mdcstFile:
+            return mdcstFile
+        # If units are wavelength
+        mdcswFile = self._outputs.get(".mdcsw01", None)
+        if mdcswFile:
+            return mdcswFile
+
+    @property
     def msubwFile(self):
         if not self.isSampleDataFile:
             return None

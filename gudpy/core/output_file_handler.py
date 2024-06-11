@@ -94,6 +94,8 @@ class GudrunOutputHandler(OutputHandler):
         )
 
         self.overwrite = overwrite
+        self.parentDir = self.outputDir
+
         # Append head to path
         self.outputDir = os.path.join(self.outputDir, f"{head}")
 
@@ -136,7 +138,8 @@ class GudrunOutputHandler(OutputHandler):
         # If overwrite, move previous directory
         if self.overwrite and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
+                shutil.move(self.parentDir, os.path.join(tmp, "prev"))
+            os.makedirs(self.parentDir)
 
         # Move over folders to output directory
         shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))

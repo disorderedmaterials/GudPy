@@ -463,8 +463,10 @@ class Gudrun(Process):
         dependencies = []
 
         for sample in gudrunFile.runSamples():
-            if sample.crossSectionFilePath:
-                dependencies.append(sample.crossSectionFilePath)
+            if sample.crossSectionFilename:
+                dependencies.append(sample.crossSectionFilename)
+            if sample.selfScatteringFilePath:
+                dependencies.append(sample.selfScatteringFilePath)
 
         return dependencies
 
@@ -508,9 +510,9 @@ class Gudrun(Process):
             ) as gudrun:
                 for line in gudrun.stdout:
                     line = "\n".join(line.decode("utf8").split("\n"))
+                    self._outputChanged(line)
                     if self.checkError(line):
                         return self.exitcode
-                    self._outputChanged(line)
                 if gudrun.stderr:
                     self.error = gudrun.stderr.decode("utf8")
                     self.exitcode = 1

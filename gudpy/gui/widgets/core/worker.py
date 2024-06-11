@@ -153,7 +153,7 @@ class IteratorBaseWorker(QThread):
             self.gudrunObjects.append(worker)
 
     def _outputChanged(self, output):
-        idx = (f"{self.iterator.name} {self.iterator.nCurrent}"
+        idx = (f"{self.iterator.name} {self.iterator.iterationCount}"
                if self.iterator.nCurrent != 0
                or not self.iterator.requireDefault else "Default run")
         currentOutput = self.output.get(idx, "")
