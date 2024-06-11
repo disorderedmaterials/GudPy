@@ -470,21 +470,6 @@ class Gudrun(Process):
 
         return dependencies
 
-        if not GudPyIO.projectDir:
-            cli.echoWarning(
-                "Cannot source run dependencies - no previous GudPy"
-                " project referenced. Running without wavelength binning"
-                " data."
-            )
-
-        dependencies = []
-
-        for sample in gudrunFile.runSamples():
-            if sample.crossSectionFilePath:
-                dependencies.append(sample.crossSectionFilePath)
-
-        return dependencies
-
     def gudrun(
         self,
         gudrunFile: GudrunFile,

@@ -491,9 +491,8 @@ class InelasticitySubtraction(Iterator):
         for sampleBackground in gudrunFile.sampleBackgrounds:
             for sample in sampleBackground.samples:
                 if sample.runThisSample and len(sample.dataFiles):
-                    print(sample.dataFiles[0]._outputs)
                     if scale == Scales.Q:
-                        targetFile = sample.dataFiles[0].msubwFile
+                        targetFile = sample.dataFiles[0].mdcsFile
                     else:
                         targetFile = sample.dataFiles[0].mintFile
                     sample.fileSelfScattering = (
