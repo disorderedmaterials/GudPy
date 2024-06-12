@@ -544,19 +544,19 @@ class GudrunIterator:
         prevOutput: handlers.GudrunOutput,
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
         modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge) -> typ.Tuple[int, str]:
+    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator)
+                self.gudrunFile, purge, self.iterator, save)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -568,7 +568,7 @@ class GudrunIterator:
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput)
+                self.gudrunFile, gudrun, purge, prevOutput, save)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
