@@ -61,7 +61,7 @@ class OptimiseTab(QtWidgets.QWidget):
         self.sampleGroupBox.setLayout(self.sampleLayout)
 
         self.optimiseOptionsLayout = QtWidgets.QHBoxLayout()
-        self.optimiseExponents = OptimiseExponents(self)
+        self.exponentialGroupBox = OptimiseExponents(self)
 
         self.inelasticityGroupBox = QtWidgets.QGroupBox(
             title="Optimise Inelasticity Subtractions")

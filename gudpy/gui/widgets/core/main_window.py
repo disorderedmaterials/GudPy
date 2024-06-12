@@ -16,6 +16,7 @@ from gui.widgets.dialogs.iterators import (
     ThicknessIterationDialog,
     TweakFactorIterationDialog,
 )
+from gui.widgets.core.optimise_tab import OptimiseTab
 
 from gui.widgets.dialogs.purge import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
@@ -104,6 +105,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
         self.allPlots = []
         self.plotModes = {}
+
+        self.optimiseTab = OptimiseTab(self)
 
         self.initComponents()
 
@@ -322,6 +325,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.insertContainerMenu.addMenu(
             insertContainerFromTemplate
         )
+        self.ui.tabWidget.addTab(self.optimiseTab, "Optimise")
 
         self.setActionsEnabled(False)
         self.ui.tabWidget.setVisible(False)
@@ -365,6 +369,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.beamSlots.setBeam(self.gudrunFile.beam)
         self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+        self.optimiseTab.setSamples(self.gudrunFile.runSamples())
 
         if len(self.gudrunFile.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(
