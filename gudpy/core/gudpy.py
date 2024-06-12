@@ -221,10 +221,7 @@ class GudPy:
             gudrunFile = self.gudrunFile
         self.save()
         self.gudrun = Gudrun()
-        exitcode = self.gudrun.gudrun(
-            gudrunFile=gudrunFile,
-            purge=self.purge
-        )
+        exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:\n"
@@ -478,14 +475,9 @@ class Gudrun(Process):
         gudrunFile: GudrunFile,
         purge: Purge = None,
         iterator: iterators.Iterator = None,
-        << << << < HEAD
-        == == == =
-        save: bool = True,
-        suppress: bool = False,
-        >>>>>> > e725a61(Add suppress/save options to gudrun)
     ) -> int:
         self.checkBinary()
-        if not purge and not suppress:
+        if not purge:
             cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
@@ -627,7 +619,7 @@ class InelasiticityIterator(GudrunIterator):
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator, save)
+                self.gudrunFile, purge, self.iterator)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
