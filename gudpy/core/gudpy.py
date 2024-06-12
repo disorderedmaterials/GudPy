@@ -223,10 +223,7 @@ class GudPy:
             gudrunFile = self.gudrunFile
         self.save()
         self.gudrun = Gudrun()
-        exitcode = self.gudrun.gudrun(
-            gudrunFile=gudrunFile,
-            purge=self.purge
-        )
+        exitcode = self.gudrun.gudrun(gudrunFile=gudrunFile)
         if exitcode:
             raise exc.GudrunException(
                 "Gudrun failed to run with the following output:\n"
@@ -468,7 +465,7 @@ class Gudrun(Process):
         iterator: iterators.Iterator = None,
     ) -> int:
         self.checkBinary()
-        if not purge and not suppress:
+        if not purge:
             cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []
@@ -501,10 +498,10 @@ class Gudrun(Process):
                     self.exitcode = 1
                     return self.exitcode
 
-            if iterator and save:
+            if iterator:
                 self.gudrunOutput = iterator.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
-            elif save:
+            else:
                 self.gudrunOutput = self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
             gudrunFile.setGudrunDir(self.gudrunOutput.path)
@@ -544,19 +541,19 @@ class GudrunIterator:
         prevOutput: handlers.GudrunOutput,
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
         modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
+    def iterate(self, purge) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator, save)
+                self.gudrunFile, purge, self.iterator)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -568,7 +565,7 @@ class GudrunIterator:
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput, save)
+                self.gudrunFile, gudrun, purge, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
@@ -604,19 +601,19 @@ class InelasiticityIterator(GudrunIterator):
         prevOutput: handlers.GudrunOutput,
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
         modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator, save=save)
+        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
         if exitcode:
             return exitcode
         self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
-    def iterate(self, purge, save=True) -> typ.Tuple[int, str]:
+    def iterate(self, purge) -> typ.Tuple[int, str]:
         prevOutput = None
 
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator, save)
+                self.gudrunFile, purge, self.iterator)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
@@ -628,7 +625,7 @@ class InelasiticityIterator(GudrunIterator):
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput, save)
+                self.gudrunFile, gudrun, purge, prevOutput)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
