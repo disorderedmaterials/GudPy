@@ -16,6 +16,7 @@ from gui.widgets.dialogs.iterators import (
     ThicknessIterationDialog,
     TweakFactorIterationDialog,
 )
+from gui.widgets.core.optimise_tab import OptimiseTab
 
 from gui.widgets.dialogs.purge import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
@@ -101,10 +102,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.modified = False
         self.clipboard = None
         self.results = {}
-        self.gudrunOutput = None
 
         self.allPlots = []
         self.plotModes = {}
+
+        self.optimiseTab = OptimiseTab(self)
 
         self.initComponents()
 
@@ -323,6 +325,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.insertContainerMenu.addMenu(
             insertContainerFromTemplate
         )
+        self.ui.tabWidget.addTab(self.optimiseTab, "Optimise")
 
         self.setActionsEnabled(False)
         self.ui.tabWidget.setVisible(False)
@@ -357,7 +360,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         if not self.widgetsRefreshing:
             self.setModified()
 
-    def updateWidgets(self, gudrunFile, gudrunOutput=None):
+    def updateWidgets(self, gudrunFile):
         self.gudrunFile = gudrunFile
         self.ui.gudrunFile = gudrunFile
         self.widgetsRefreshing = True
@@ -366,6 +369,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.beamSlots.setBeam(self.gudrunFile.beam)
         self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+        self.optimiseTab.setSamples(self.gudrunFile.runSamples())
 
         if len(self.gudrunFile.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(
@@ -390,8 +394,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
-        if gudrunOutput:
-            self.updateResults(gudrunOutput)
+        self.updateResults()
         self.widgetsRefreshing = False
 
     def updateGeometries(self):
@@ -430,9 +433,6 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
-        if not self.gudrunOutput:
-            return
-
         self.updateSamples()
 
         if self.ui.objectStack.currentIndex() == 5 and isinstance(
@@ -566,17 +566,14 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.currentTaskLabel.setText(taskName)
 
     def updateSamples(self):
-        if not self.gudrunOutput:
-            return
-
         samples = [
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
-            topChart = GudPyChart(self.gudrunOutput)
+            topChart = GudPyChart()
             topChart.addSample(sample)
-            bottomChart = GudPyChart(self.gudrunOutput)
+            bottomChart = GudPyChart()
             bottomChart.addSample(sample)
             if sample not in self.plotModes.keys():
                 plotMode = (
@@ -592,7 +589,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 bottomChart.plot(bottom)
             else:
                 topChart.plot(plotMode)
-            gf = self.gudrunOutput.gudFile(name=sample.name)
+            gf = sample.gudFile
             self.results[sample] = [
                 topChart, bottomChart, gf if gf else None]
 
@@ -601,22 +598,21 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
         ]
-        allTopChart = GudPyChart(self.gudrunOutput)
+        allTopChart = GudPyChart()
         allTopChart.addSamples(samples)
         allTopChart.plot(
             self.ui.allPlotComboBox.itemData(
                 self.ui.allPlotComboBox.currentIndex()
             )
         )
-        allBottomChart = GudPyChart(self.gudrunOutput)
+        allBottomChart = GudPyChart()
         allBottomChart.addSamples(samples)
         self.allPlots = [allTopChart, allBottomChart]
         self.ui.allSampleTopPlot.setChart(allTopChart)
         self.ui.allSampleBottomPlot.setChart(allBottomChart)
 
-    def updateResults(self, gudrunOutput):
+    def updateResults(self):
         self.ui.plotTab.setEnabled(True)
-        self.gudrunOutput = gudrunOutput
         self.updateSamples()
         self.updateAllSamples()
         self.focusResult()
