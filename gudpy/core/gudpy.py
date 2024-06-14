@@ -437,7 +437,7 @@ class Gudrun(Process):
         self,
         gudrunFile: GudrunFile,
         exclude: list[str] = [],
-        head: str = "",
+        head: list[str] = [],
         overwrite: bool = True
     ) -> None:
 

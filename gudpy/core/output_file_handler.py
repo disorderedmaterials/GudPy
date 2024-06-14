@@ -70,7 +70,7 @@ class GudrunOutputHandler(OutputHandler):
     def __init__(
         self,
         gudrunFile: GudrunFile,
-        head: str = "",
+        head: list[str] = [],
         overwrite: bool = True
     ):
         """
@@ -109,9 +109,9 @@ class GudrunOutputHandler(OutputHandler):
         if head:
             # Append head to path
             self.outputDir = os.path.join(
-                self.outputDir, f"{head}")
+                self.outputDir, *head)
             self.tempOutDir = os.path.join(
-                self.tempOutDir, f"{head}")
+                self.tempOutDir, *head)
 
         self.gudrunFile.outputFolder = self.outputDir
 
