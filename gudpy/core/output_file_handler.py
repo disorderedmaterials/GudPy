@@ -116,6 +116,8 @@ class GudrunOutputHandler(OutputHandler):
 
         self.gudrunFile.outputFolder = self.outputDir
 
+        self.gudrunFile.outputFolder = self.outputDir
+
         # Files that have been copied
         self.copiedFiles = []
 
