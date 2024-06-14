@@ -199,6 +199,7 @@ class TestGudPyWorkflows(TestCase):
             gudpy.gudrunFile = g
 
             gudpy.runPurge()
+
             iterator = iterators.Composition(
                 gudrunFile=g,
                 nTotal=10,

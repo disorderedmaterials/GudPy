@@ -96,23 +96,24 @@ class GudrunOutputHandler(OutputHandler):
         self.overwrite = overwrite
         self.parentDir = self.outputDir
 
-        # Append head to path
-        self.outputDir = os.path.join(self.outputDir, f"{head}")
-
         # List of run samples
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
         self.gudrunFile = gudrunFile
-        self.gudrunFile.outputFolder = self.outputDir
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, "Gudrun")
         if head:
+            # Append head to path
+            self.outputDir = os.path.join(
+                self.outputDir, f"{head}")
             self.tempOutDir = os.path.join(
                 self.tempOutDir, f"{head}")
+
+        self.gudrunFile.outputFolder = self.outputDir
 
         # Files that have been copied
         self.copiedFiles = []
@@ -139,10 +140,9 @@ class GudrunOutputHandler(OutputHandler):
         if self.overwrite and os.path.exists(self.outputDir):
             with tempfile.TemporaryDirectory() as tmp:
                 shutil.move(self.parentDir, os.path.join(tmp, "prev"))
-            os.makedirs(self.parentDir)
 
         # Move over folders to output directory
-        shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
+        shutil.move(self.tempOutDir, self.outputDir)
 
     def _createNormDir(self, dest: str):
         """

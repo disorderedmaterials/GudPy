@@ -102,14 +102,14 @@ class Iterator:
         """
         pass
 
-    def organiseOutput(self, gudrunFile, exclude=[]):
+    def organiseOutput(self, gudrunFile, exclude=[]) -> None:
         """
         This organises the output of the iteration.
         """
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile,
         )
-        return outputHandler.organiseOutput(exclude=exclude)
+        outputHandler.organiseOutput(exclude=exclude)
 
 
 class Radius(Iterator):
@@ -183,8 +183,8 @@ class Thickness(Iterator):
     """
 
     def __init__(self, nTotal):
-        super().__init__(nTotal)
         self.name = "Thickness"
+        super().__init__(nTotal)
         self.iterationMode = IterationModes.THICKNESS
 
     def applyCoefficientToAttribute(self, sample, coefficient):
@@ -231,8 +231,8 @@ class TweakFactor(Iterator):
     """
 
     def __init__(self, nTotal):
-        super().__init__(nTotal)
         self.name = "TweakFactor"
+        super().__init__(nTotal)
         self.iterationMode = IterationModes.TWEAK_FACTOR
 
     def performIteration(self, gudrunFile) -> GudrunFile:
@@ -285,8 +285,8 @@ class Density(Iterator):
     """
 
     def __init__(self, nTotal):
-        super().__init__(nTotal)
         self.name = "Density"
+        super().__init__(nTotal)
         self.iterationMode = IterationModes.DENSITY
 
     def applyCoefficientToAttribute(self, sample, coefficient):
@@ -374,8 +374,8 @@ class InelasticitySubtraction(Iterator):
             Input GudrunFile that we will be using for iterating.
         """
         nTotal *= 2
-        super().__init__(nTotal)
         self.name = "Inelasticity Subtraction"
+        super().__init__(nTotal)
         self.iterationMode = IterationModes.INELASTICITY
         # Does a default iteration first (no changes)
         self.iterationType = "QIteration"
@@ -654,9 +654,9 @@ class Composition(Iterator):
         ratio=1,
         components=[],
     ):
+        self.name = "Composition"
         super().__init__(nTotal)
         self.requireDefault = False
-        self.name = "Composition"
         self.originalGudrunFile = gudrunFile
         self.mode = mode
         self.nCurrent = 0

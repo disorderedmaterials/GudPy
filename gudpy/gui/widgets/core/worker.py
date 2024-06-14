@@ -6,7 +6,7 @@ from core import gudpy
 import core.exception as exc
 from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
-from core.iterators import Iterator
+from core.iterators import Iterator, InelasticitySubtraction
 from core import iterators, config
 
 SUFFIX = ".exe" if os.name == "nt" else ""
@@ -153,9 +153,15 @@ class IteratorBaseWorker(QThread):
             self.gudrunObjects.append(worker)
 
     def _outputChanged(self, output):
-        idx = (f"{self.iterator.name} {self.iterator.iterationCount}"
+        idx = (f"{self.iterator.name} {self.iterator.nCurrent}"
                if self.iterator.nCurrent != 0
                or not self.iterator.requireDefault else "Default run")
+
+        if isinstance(self.iterator, InelasticitySubtraction):
+            idx = (
+                f"{self.iterator.iterationType} {self.iterator.iterationCount}"
+            )
+
         currentOutput = self.output.get(idx, "")
         self.output[idx] = currentOutput + output
         self.outputChanged.emit(output)

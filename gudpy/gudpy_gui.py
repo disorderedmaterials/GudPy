@@ -10,6 +10,13 @@ class GudPy(QApplication):
         super(GudPy, self).__init__(args)
         self.gudpy = GudPyController()
         self.aboutToQuit.connect(self.gudpy.cleanup)
+
+        if (sys.argv[1]):
+            self.gudpy.gudpy.loadFromProject(sys.argv[1])
+            self.gudpy.mainWidget.updateWidgets(self.gudpy.gudrunFile)
+            self.gudpy.mainWidget.setWindowTitle(
+                f"GudPy - {self.gudpy.gudpy.io.projectName}[*]")
+
         sys.exit(self.exec())
 
     def onException(self, cls, exception, traceback):
