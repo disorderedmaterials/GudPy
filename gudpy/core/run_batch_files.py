@@ -166,12 +166,11 @@ class BatchProcessor:
                         initial.process(headless=headless)
                         iterator.performIteration(i)
                         initial.organiseOutput(
-                            head=[
-                                self.gudrunFile.instrument.GudrunInputFileDir,
+                            head=os.path.join(
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                                 "FIRST_BATCH",
                                 f"{dirText}_{i+1}"
-                            ]
+                            )
                         )
                         self.writeDiagnosticsFile(
                             os.path.join(
@@ -195,12 +194,11 @@ class BatchProcessor:
                     self.batchedGudrunFile.process(headless=headless)
                     iterator.performIteration(i)
                     self.batchedGudrunFile.organiseOutput(
-                        head=[
-                            self.gudrunFile.instrument.GudrunInputFileDir,
+                        head=os.path.join(
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
                             f"{dirText}_{i+1}"
-                        ]
+                        )
                     )
                     self.writeDiagnosticsFile(
                         os.path.join(
