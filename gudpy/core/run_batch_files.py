@@ -194,16 +194,11 @@ class BatchProcessor:
                     self.batchedGudrunFile.process(headless=headless)
                     iterator.performIteration(i)
                     self.batchedGudrunFile.organiseOutput(
-<< << << < HEAD
                         head=os.path.join(
-== == == =
-                        head=[
-                            self.gudrunFile.instrument.GudrunInputFileDir,
->>>>>> > e03b8d2(Fix head path joining)
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
                             f"{dirText}_{i+1}"
-                        ]
+                        )
                     )
                     self.writeDiagnosticsFile(
                         os.path.join(
@@ -248,7 +243,7 @@ class BatchProcessor:
                 )
             else:
                 if propogateFirstBatch:
-                    iterator=iteratorType(initial)
+                    iterator = iteratorType(initial)
                     for i in range(maxIterations):
                         tasks.append(
                             initial.dcs(
@@ -304,7 +299,7 @@ class BatchProcessor:
                             ]
                         )
                     tasks.append(None)
-                iterator=iteratorType(self.batchedGudrunFile)
+                iterator = iteratorType(self.batchedGudrunFile)
                 for i in range(maxIterations):
                     tasks.append(
                         self.batchedGudrunFile.dcs(
