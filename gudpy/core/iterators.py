@@ -577,9 +577,8 @@ class InelasticitySubtraction(Iterator):
         """
         overwrite = (self.iterationCount == 1 and
                      self.iterationType == "WavelengthIteration")
-        head = (
-            f"{utils.replace_unwanted_chars(self.name)}" +
-            f"{os.path.sep}" +
+        head = os.path.join(
+            f"{utils.replace_unwanted_chars(self.name)}",
             f"{self.iterationType}_{self.iterationCount}"
         )
 

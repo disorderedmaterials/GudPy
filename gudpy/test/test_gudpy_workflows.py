@@ -268,7 +268,7 @@ class TestGudPyWorkflows(TestCase):
                     actualData = open(
                         os.path.join(
                             gudpy.projectDir, "Gudrun",
-                            "Inelasticity_Subtraction_(WavelengthIteration)",
+                            "Inelasticity_Subtraction/WavelengthIteration/",
                             f"WavelengthIteration_{i}",
                             sample.name,
                             sample.dataFiles[0].name,

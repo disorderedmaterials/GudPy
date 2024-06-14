@@ -70,7 +70,7 @@ class GudrunOutputHandler(OutputHandler):
     def __init__(
         self,
         gudrunFile: GudrunFile,
-        head: list[str] = [],
+        head: str,
         overwrite: bool = True
     ):
         """
@@ -101,6 +101,7 @@ class GudrunOutputHandler(OutputHandler):
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
         self.gudrunFile = gudrunFile
+        self.head = head
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
@@ -109,9 +110,9 @@ class GudrunOutputHandler(OutputHandler):
         if head:
             # Append head to path
             self.outputDir = os.path.join(
-                self.outputDir, *head)
+                self.outputDir, head)
             self.tempOutDir = os.path.join(
-                self.tempOutDir, *head)
+                self.tempOutDir, head)
 
         self.gudrunFile.outputFolder = self.outputDir
 
@@ -128,6 +129,7 @@ class GudrunOutputHandler(OutputHandler):
     def organiseOutput(self, exclude: list[str] = []):
         """Organises Gudrun outputs
         """
+
         # Create normalisation and sample background folders
         self._createNormDir(self.tempOutDir)
         self._createSampleBgDir(self.tempOutDir)
@@ -137,7 +139,7 @@ class GudrunOutputHandler(OutputHandler):
         self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
-        if self.overwrite and os.path.exists(self.outputDir):
+        if self.overwrite and os.path.exists(self.parentDir):
             with tempfile.TemporaryDirectory() as tmp:
                 shutil.move(self.parentDir, os.path.join(tmp, "prev"))
 
