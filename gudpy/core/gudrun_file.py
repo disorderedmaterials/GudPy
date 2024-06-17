@@ -120,6 +120,15 @@ class GudrunFile:
             setattr(result, k, deepcopy(v, memo))
         return result
 
+    def clearOutputs(self):
+        self.outputFolder = ""
+        for sbg in self.sampleBackgrounds:
+            sbg.outputFolder = ""
+        for sample in self.runSamples():
+            for df in sample.dataFiles:
+                df._outputs = {}
+                df.outputFolder = ""
+
     def setGudrunDir(self, dir):
         self.instrument.GudrunInputFileDir = dir
 

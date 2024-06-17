@@ -833,11 +833,11 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             self.ui.bottomContainerPlotFrame.setVisible(False)
             self.ui.containerPlotSplitter.setSizes([1, 0])
 
-    @ abstractmethod
+    @abstractmethod
     def isPlotModeSplittable(self, plotMode):
         return plotMode in SPLIT_PLOTS.keys()
 
-    @ abstractmethod
+    @abstractmethod
     def splitPlotMode(self, plotMode):
         return SPLIT_PLOTS[plotMode]
 

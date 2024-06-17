@@ -495,6 +495,8 @@ class Gudrun(Process):
                 gudrunFile.OUTPATH
             )
 
+            gudrunFile.clearOutputs()
+
             deps = self.obtainDependencies(gudrunFile)
             for dep in deps:
                 shutil.copyfile(
@@ -667,6 +669,8 @@ class CompositionIterator:
                     self.exitcode = (exitcode, gudrunNC.error)
                     return self.exitcode
 
+                newCenterGudFile = self.gudrunFile.runSamples()[0].gudFile
+
                 # Run the current center
                 currentCenter = self.iterator.iterateCurrentCenter(
                     self.gudrunFile, sampleArg)
@@ -678,13 +682,13 @@ class CompositionIterator:
                     self.exitcode = (exitcode, gudrunCC.error)
                     return self.exitcode
 
+                currentCenterGudFile = self.gudrunFile.runSamples()[0].gudFile
+
                 # Compare the cost of the two centers
                 self.iterator.compareCost(
                     sampleArg=sampleArg,
-                    currentCenterGudFile=gudrunCC.sampleArg[
-                        "background"].samples[0].dataFiles[0].gudFile,
-                    newCenterGudFile=gudrunNC.sampleArg[
-                        "background"].samples[0].dataFiles[0].gudFile
+                    currentCenterGudFile=currentCenterGudFile,
+                    newCenterGudFile=newCenterGudFile
                 )
 
                 # Check if result has been achieved
