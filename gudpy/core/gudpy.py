@@ -35,8 +35,6 @@ class GudPy:
         self.gudrunIterator: GudrunIterator = None
         self.batchProcessor: BatchProcessing = None
 
-        self.gudrunOutput = None
-
     @property
     def gudrunFile(self):
         return self._gudrunFile
@@ -229,7 +227,6 @@ class GudPy:
                 "Gudrun failed to run with the following output:\n"
                 f"{self.gudrun.error}"
             )
-        self.gudrunOutput = self.gudrun.gudrunOutput
         self.save()
 
     def iterateGudrun(self, iterator: iterators.Iterator):
@@ -256,7 +253,6 @@ class GudPy:
                 f"{error}"
             )
         self.gudrunFile = self.gudrunIterator.gudrunFile
-        self.gudrunOutput = self.gudrunIterator.gudrunOutput
 
     def iterateComposition(self, iterator: iterators.Composition):
         """Runs gudrun_dcs iteratively while tweaking the composition
@@ -441,22 +437,38 @@ class Gudrun(Process):
         self,
         gudrunFile: GudrunFile,
         exclude: list[str] = [],
-        head: str = "",
+        head: list[str] = [],
         overwrite: bool = True
-    ) -> handlers.GudrunOutput:
+    ) -> None:
 
         outputHandler = handlers.GudrunOutputHandler(
             gudrunFile=gudrunFile, head=head, overwrite=overwrite
         )
-        gudrunOutput = outputHandler.organiseOutput(exclude=exclude)
-        return gudrunOutput
+        outputHandler.organiseOutput(exclude=exclude)
 
     def obtainDependencies(
-        fileSelfScattering,
+        self,
         gudrunFile: GudrunFile
-    ):
-        if gudrunFile.instrument.subWavelengthBinnedData:
-            return
+    ) -> list[str]:
+        if not gudrunFile.instrument.subWavelengthBinnedData:
+            return []
+
+        if not GudPyIO.projectDir:
+            cli.echoWarning(
+                "Cannot source run dependencies - no previous GudPy"
+                " project referenced. Running without wavelength binning"
+                " data."
+            )
+
+        dependencies = []
+
+        for sample in gudrunFile.runSamples():
+            if sample.crossSectionFilename:
+                dependencies.append(sample.crossSectionFilename)
+            if sample.selfScatteringFilePath:
+                dependencies.append(sample.selfScatteringFilePath)
+
+        return dependencies
 
     def gudrun(
         self,
@@ -482,6 +494,16 @@ class Gudrun(Process):
                 tmp,
                 gudrunFile.OUTPATH
             )
+
+            gudrunFile.clearOutputs()
+
+            deps = self.obtainDependencies(gudrunFile)
+            for dep in deps:
+                shutil.copyfile(
+                    dep, os.path.join(
+                        tmp, os.path.basename(dep)
+                    ))
+
             GudPyIO.writeGudrunFile(gudrunFile, tmp)
             with subprocess.Popen(
                 [self.BINARY_PATH, path], cwd=tmp,
@@ -490,21 +512,20 @@ class Gudrun(Process):
             ) as gudrun:
                 for line in gudrun.stdout:
                     line = "\n".join(line.decode("utf8").split("\n"))
+                    self._outputChanged(line)
                     if self.checkError(line):
                         return self.exitcode
-                    self._outputChanged(line)
                 if gudrun.stderr:
                     self.error = gudrun.stderr.decode("utf8")
                     self.exitcode = 1
                     return self.exitcode
 
             if iterator:
-                self.gudrunOutput = iterator.organiseOutput(
+                iterator.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
             else:
-                self.gudrunOutput = self.organiseOutput(
+                self.organiseOutput(
                     gudrunFile, exclude=purgeFiles)
-            gudrunFile.setGudrunDir(self.gudrunOutput.path)
 
         self.exitcode = 0
         return self.exitcode
@@ -522,7 +543,6 @@ class GudrunIterator:
         self.iterator = iterator
         self.gudrunObjects = []
         self.exitcode = (1, "Operation incomplete")
-        self.gudrunOutput = None
         self.result = {}
 
         for _ in range(
@@ -538,18 +558,14 @@ class GudrunIterator:
         gudrunFile: GudrunFile,
         gudrun: Gudrun,
         purge: Purge,
-        prevOutput: handlers.GudrunOutput,
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
+        modGfFile = self.iterator.performIteration(gudrunFile)
         exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
         if exitcode:
             return exitcode
-        self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
     def iterate(self, purge) -> typ.Tuple[int, str]:
-        prevOutput = None
-
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
@@ -557,7 +573,6 @@ class GudrunIterator:
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
-            prevOutput = self.gudrunObjects[0].gudrunOutput
 
         # Iterate through gudrun objects
         for gudrun in self.gudrunObjects:
@@ -565,12 +580,10 @@ class GudrunIterator:
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput)
+                self.gudrunFile, gudrun, purge)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
-
-            prevOutput = gudrun.gudrunOutput
 
         self.result = self.iterator.result
 
@@ -590,26 +603,19 @@ class InelasiticityIterator(GudrunIterator):
             iterator=iterator
         )
 
-    def copyDCS(self, prevOutput):
-        return
-
     def singleIteration(
         self,
         gudrunFile: GudrunFile,
         gudrun: Gudrun,
         purge: Purge,
-        prevOutput: handlers.GudrunOutput,
     ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        modGfFile = self.iterator.performIteration(gudrunFile, prevOutput)
+        modGfFile = self.iterator.performIteration(gudrunFile)
         exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
         if exitcode:
             return exitcode
-        self.gudrunOutput = gudrun.gudrunOutput
         return 0
 
     def iterate(self, purge) -> typ.Tuple[int, str]:
-        prevOutput = None
-
         # If the iterator requires a prelimenary run
         if self.iterator.requireDefault:
             exitcode = self.gudrunObjects[0].gudrun(
@@ -617,7 +623,6 @@ class InelasiticityIterator(GudrunIterator):
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, self.gudrunObjects[0].error)
                 return self.exitcode
-            prevOutput = self.gudrunObjects[0].gudrunOutput
 
         # Iterate through gudrun objects
         for gudrun in self.gudrunObjects:
@@ -625,12 +630,10 @@ class InelasiticityIterator(GudrunIterator):
                 # If object has already been run, skip
                 continue
             exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge, prevOutput)
+                self.gudrunFile, gudrun, purge)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
-
-            prevOutput = gudrun.gudrunOutput
 
         self.result = self.iterator.result
 
@@ -666,6 +669,8 @@ class CompositionIterator:
                     self.exitcode = (exitcode, gudrunNC.error)
                     return self.exitcode
 
+                newCenterGudFile = self.gudrunFile.runSamples()[0].gudFile
+
                 # Run the current center
                 currentCenter = self.iterator.iterateCurrentCenter(
                     self.gudrunFile, sampleArg)
@@ -677,13 +682,13 @@ class CompositionIterator:
                     self.exitcode = (exitcode, gudrunCC.error)
                     return self.exitcode
 
+                currentCenterGudFile = self.gudrunFile.runSamples()[0].gudFile
+
                 # Compare the cost of the two centers
                 self.iterator.compareCost(
                     sampleArg=sampleArg,
-                    currentCenterGudFile=gudrunCC.gudrunOutput.gudFile(
-                        name=sampleArg["background"].samples[0].name),
-                    newCenterGudFile=gudrunNC.gudrunOutput.gudFile(
-                        name=sampleArg["background"].samples[0].name)
+                    currentCenterGudFile=currentCenterGudFile,
+                    newCenterGudFile=newCenterGudFile
                 )
 
                 # Check if result has been achieved
@@ -921,8 +926,6 @@ class BatchProcessing:
         batchedFile: GudrunFile,
         outputFolder: str,
     ) -> int:
-        prevOutput = None
-
         batchedFile.projectDir = os.path.join(
             batchedFile.projectDir,
             f"BATCH_PROCESSING_BATCH_SIZE{self.BATCH_SIZE}",
@@ -937,7 +940,6 @@ class BatchProcessing:
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, error)
                 return self.exitcode
-            prevOutput = gudrunIterator.defaultRun.gudrunOutput
 
         # Iterate through gudrun objects
         for i, gudrun in enumerate(gudrunIterator.gudrunObjects):
@@ -948,7 +950,7 @@ class BatchProcessing:
                 return self.exitcode
 
             exitcode = gudrunIterator.singleIteration(
-                batchedFile, gudrun, prevOutput)
+                batchedFile, gudrun)
 
             self.writeDiagnosticsFile(
                 os.path.join(batchedFile.path(),
@@ -958,8 +960,6 @@ class BatchProcessing:
             if exitcode:
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
-
-            prevOutput = gudrun.gudrunOutput
 
         self.exitcode = (0, )
         return self.exitcode

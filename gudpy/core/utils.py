@@ -187,7 +187,8 @@ def makeDir(targetPath):
     dirPath : str
         Path of created directory
     """
-    if not os.path.isdir(targetPath):
+
+    if not os.path.exists(targetPath):
         os.makedirs(targetPath)
 
     return targetPath

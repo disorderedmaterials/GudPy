@@ -235,6 +235,7 @@ sampleBackgrounds:
       outputFolder: ''
     outputFolder: ''
     sampleFile: ''
+    selfScatteringFilePath: ''
   - name: D2O,_Can_N10
     periodNumber: 1
     dataFiles:
@@ -342,6 +343,7 @@ sampleBackgrounds:
       outputFolder: ''
     outputFolder: ''
     sampleFile: ''
+    selfScatteringFilePath: ''
   - name: HDO,_Can_N6
     periodNumber: 1
     dataFiles:
@@ -438,6 +440,7 @@ sampleBackgrounds:
       outputFolder: ''
     outputFolder: ''
     sampleFile: ''
+    selfScatteringFilePath: ''
   - name: Null_Water,_Can_N8
     periodNumber: 1
     dataFiles:
@@ -534,5 +537,6 @@ sampleBackgrounds:
       outputFolder: ''
     outputFolder: ''
     sampleFile: ''
+    selfScatteringFilePath: ''
   outputFolder: ''
 GUI: {useComponents: false}

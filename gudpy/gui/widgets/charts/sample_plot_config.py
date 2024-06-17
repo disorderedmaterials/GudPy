@@ -6,13 +6,12 @@ from gui.widgets.charts.sample_plot_data import (
     Mdor01Plot, Mgor01Plot, Mint01Plot
 )
 from gui.widgets.charts.enums import PlotModes
+from core.sample import Sample
 
 
 class SamplePlotConfig():
-
-    def __init__(self, sample, gudrunOutput, offsetX, offsetY, parent):
+    def __init__(self, sample, offsetX, offsetY, parent):
         self.sample = sample
-        self.gudrunOutput = gudrunOutput
         self.parent = parent
         self.mint01DataSet = None
         self.mint01Series = None
@@ -25,16 +24,9 @@ class SamplePlotConfig():
         self.constructDataSets(offsetX, offsetY)
 
     def constructDataSets(self, offsetX, offsetY):
-        if not self.gudrunOutput:
-            return
-
         if len(self.sample.dataFiles):
             # mint01 dataset.
-            mintPath = self.gudrunOutput.output(
-                name=self.sample.name,
-                dataFile=self.sample.dataFiles[0],
-                type=".mint01"
-            )
+            mintPath = self.sample.dataFiles[0].mintFile
             hasMintData = False
 
             if mintPath and os.path.exists(mintPath):
@@ -48,11 +40,7 @@ class SamplePlotConfig():
                 self.mint01Series.setName(f"{self.sample.name} mint01")
 
             # mdcs01 dataset.
-            mdcsPath = self.gudrunOutput.output(
-                name=self.sample.name,
-                dataFile=self.sample.dataFiles[0],
-                type=".mdcs01"
-            )
+            mdcsPath = self.sample.dataFiles[0].mcdsFile
             hasMdcsData = False
 
             if mdcsPath and os.path.exists(mdcsPath):
@@ -66,9 +54,9 @@ class SamplePlotConfig():
                 self.mdcs01Series.setName(f"{self.sample.name} mdcs01")
 
             # gud data, for dcs level.
-            gudFile = self.gudrunOutput.gudFile(
-                name=self.sample.name
-            )
+            gudFile = None
+            if isinstance(self.sample, Sample):
+                gudFile = self.sample.gudFile
             hasDCSData = False
 
             if gudFile and os.path.exists(gudFile.path):
@@ -87,11 +75,7 @@ class SamplePlotConfig():
                 )
 
             # mdor01 dataset.
-            mdorPath = self.gudrunOutput.output(
-                name=self.sample.name,
-                dataFile=self.sample.dataFiles[0],
-                type=".mdor01"
-            )
+            mdorPath = self.sample.dataFiles[0].mdorFile
             hasMdorData = False
 
             if mdorPath and os.path.exists(mdorPath):
@@ -105,11 +89,7 @@ class SamplePlotConfig():
                 self.mdor01Series.setName(f"{self.sample.name} mdor01")
 
             # mgor01 dataset.
-            mgorPath = self.gudrunOutput.output(
-                name=self.sample.name,
-                dataFile=self.sample.dataFiles[0],
-                type=".mgor01"
-            )
+            mgorPath = self.sample.dataFiles[0].mgorFile
             hasMgorData = False
 
             if mgorPath and os.path.exists(mgorPath):

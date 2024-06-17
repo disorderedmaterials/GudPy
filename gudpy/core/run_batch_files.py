@@ -167,7 +167,6 @@ class BatchProcessor:
                         iterator.performIteration(i)
                         initial.organiseOutput(
                             head=os.path.join(
-                                self.gudrunFile.instrument.GudrunInputFileDir,
                                 f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                                 "FIRST_BATCH",
                                 f"{dirText}_{i+1}"
@@ -196,7 +195,6 @@ class BatchProcessor:
                     iterator.performIteration(i)
                     self.batchedGudrunFile.organiseOutput(
                         head=os.path.join(
-                            self.gudrunFile.instrument.GudrunInputFileDir,
                             f"BATCH_PROCESSING_BATCH_SIZE{batchSize}",
                             "REST",
                             f"{dirText}_{i+1}"

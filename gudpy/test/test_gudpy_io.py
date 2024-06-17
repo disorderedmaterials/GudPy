@@ -465,6 +465,7 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerA],
             "outputFolder": '',
             "sampleFile": '',
+            "selfScatteringFilePath": '',
             "yamlignore": {
                 "yamlignore",
             }
@@ -522,6 +523,7 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerB],
             "outputFolder": '',
             "sampleFile": '',
+            "selfScatteringFilePath": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -579,6 +581,7 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerC],
             "outputFolder": '',
             "sampleFile": '',
+            "selfScatteringFilePath": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -637,6 +640,7 @@ class TestGudPyIO(TestCase):
             "containers": [self.expectedContainerD],
             "outputFolder": '',
             "sampleFile": '',
+            "selfScatteringFilePath": '',
             "yamlignore": {
                 "yamlignore"
             }
@@ -1307,6 +1311,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("FTMode", None)
         expectedSampleA.pop("outputFolder", None)
         expectedSampleA.pop("sampleFile", None)
+        expectedSampleA.pop("selfScatteringFilePath", None)
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
@@ -1360,6 +1365,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("FTMode", None)
         expectedSampleA.pop("outputFolder", None)
         expectedSampleA.pop("sampleFile", None)
+        expectedSampleA.pop("selfScatteringFilePath", None)
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
