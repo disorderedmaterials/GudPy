@@ -70,7 +70,7 @@ class GudrunOutputHandler(OutputHandler):
     def __init__(
         self,
         gudrunFile: GudrunFile,
-        head: str,
+        head: str = "",
         overwrite: bool = True
     ):
         """
