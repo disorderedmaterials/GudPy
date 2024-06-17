@@ -228,7 +228,7 @@ class TestGudPyWorkflows(TestCase):
 
                 for sample in [
                     x
-                    for x in gudpy.gudrunFile.sampleBackgrounds[0].samples
+                    for x in self.g.sampleBackgrounds[0].samples
                     if x.runThisSample
                 ]:
                     dataFilename = sample.dataFiles[0].name
@@ -267,8 +267,9 @@ class TestGudPyWorkflows(TestCase):
 
                     actualData = open(
                         os.path.join(
-                            gudpy.projectDir, "Gudrun",
-                            "Inelasticity_Subtraction/WavelengthIteration/",
+                            gudpy.projectDir,
+                            "Gudrun",
+                            "WavelengthIteration",
                             f"WavelengthIteration_{i}",
                             sample.name,
                             sample.dataFiles[0].name,
