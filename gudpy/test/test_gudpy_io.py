@@ -466,6 +466,7 @@ class TestGudPyIO(TestCase):
             "outputFolder": '',
             "sampleFile": '',
             "selfScatteringFilePath": '',
+            "_referenceDataFile": "",
             "yamlignore": {
                 "yamlignore",
             }
@@ -524,6 +525,7 @@ class TestGudPyIO(TestCase):
             "outputFolder": '',
             "sampleFile": '',
             "selfScatteringFilePath": '',
+            "_referenceDataFile": "",
             "yamlignore": {
                 "yamlignore"
             }
@@ -582,6 +584,7 @@ class TestGudPyIO(TestCase):
             "outputFolder": '',
             "sampleFile": '',
             "selfScatteringFilePath": '',
+            "_referenceDataFile": "",
             "yamlignore": {
                 "yamlignore"
             }
@@ -641,6 +644,7 @@ class TestGudPyIO(TestCase):
             "outputFolder": '',
             "sampleFile": '',
             "selfScatteringFilePath": '',
+            "_referenceDataFile": "",
             "yamlignore": {
                 "yamlignore"
             }
@@ -1312,6 +1316,8 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("outputFolder", None)
         expectedSampleA.pop("sampleFile", None)
         expectedSampleA.pop("selfScatteringFilePath", None)
+        expectedSampleA.pop("_referenceDataFile", None)
+
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")
@@ -1366,6 +1372,7 @@ class TestGudPyIO(TestCase):
         expectedSampleA.pop("outputFolder", None)
         expectedSampleA.pop("sampleFile", None)
         expectedSampleA.pop("selfScatteringFilePath", None)
+        expectedSampleA.pop("_referenceDataFile", None)
         expectedSampleA.pop("yamlignore", None)
 
         self.goodSampleBackground.samples[0].dataFiles = DataFiles([], "")

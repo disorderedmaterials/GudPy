@@ -591,56 +591,6 @@ class GudrunIterator:
         return self.exitcode
 
 
-class InelasiticityIterator(GudrunIterator):
-    def __init__(
-        self,
-        gudrunFile: GudrunFile,
-        iterator: iterators.Iterator,
-    ):
-
-        super().__init__(
-            gudrunFile=gudrunFile,
-            iterator=iterator
-        )
-
-    def singleIteration(
-        self,
-        gudrunFile: GudrunFile,
-        gudrun: Gudrun,
-        purge: Purge,
-    ) -> typ.Tuple[int, str]:  # (exitcode, error)
-        modGfFile = self.iterator.performIteration(gudrunFile)
-        exitcode = gudrun.gudrun(modGfFile, purge, self.iterator)
-        if exitcode:
-            return exitcode
-        return 0
-
-    def iterate(self, purge) -> typ.Tuple[int, str]:
-        # If the iterator requires a prelimenary run
-        if self.iterator.requireDefault:
-            exitcode = self.gudrunObjects[0].gudrun(
-                self.gudrunFile, purge, self.iterator)
-            if exitcode:  # An exit code != 0 indicates failure
-                self.exitcode = (exitcode, self.gudrunObjects[0].error)
-                return self.exitcode
-
-        # Iterate through gudrun objects
-        for gudrun in self.gudrunObjects:
-            if gudrun.output:
-                # If object has already been run, skip
-                continue
-            exitcode = self.singleIteration(
-                self.gudrunFile, gudrun, purge)
-            if exitcode:  # An exit code != 0 indicates failure
-                self.exitcode = (exitcode, gudrun.error)
-                return self.exitcode
-
-        self.result = self.iterator.result
-
-        self.exitcode = (0, "")
-        return self.exitcode
-
-
 class CompositionIterator:
     def __init__(
         self,

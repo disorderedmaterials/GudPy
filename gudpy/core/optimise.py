@@ -1,7 +1,9 @@
 import skopt
 import os
 import tempfile
+import copy
 from scipy.optimize import minimize
+import shutil
 
 import gudpy_cli as cli
 from core import data
@@ -12,9 +14,55 @@ from core.gudrun_file import GudrunFile
 from core.sample import Sample
 
 
-class ParameterOptimisation:
-    def __init__(self):
-        pass
+class InelasticityOptimisation:
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+    ):
+        self.originalGudrunFile = copy.deepcopy(gudrunFile)
+        self.gudrunIterators = gudpy.GudrunIterator(
+            gudrunFile, iterators.InelasticitySubtraction(3))
+        self.samples = {}
+        self.results = {}
+
+        for sample in gudrunFile.runSamples():
+            if not sample.mse:
+                continue
+
+            self.mse[sample.name]["initial"] = copy.deepcopy(sample)
+
+    def optimise(self, purge: gudpy.Purge):
+        for i, gudrun in enumerate(self.gudrunIterators.gudrunObjects):
+            exitcode = self.gudrunIterators.singleIteration(
+                self.gudrunIterators.gudrunFile, gudrun, purge)
+            if exitcode:  # An exit code != 0 indicates failure
+                self.exitcode = (exitcode, gudrun.error)
+                return self.exitcode
+            if self.gudrunIterators.iterator.iterationType == "QIteration":
+                for sample in self.gudrunIterators.gudrunFile.runSamples():
+                    self.mse[sample.name][i] = copy.deepcopy(sample)
+
+        for sample in self.originalGudrunFile.runSamples():
+            self.results[sample.name]["bestSample"] = (
+                self.mse[sample.name]["initial"]
+            )
+            self.results[sample.name]["bestIt"] = "initial"
+            for iteration, sample in self.mse[sample.name]:
+                if sample.mse < self.results[sample.name]["bestSample"]:
+                    self.results[sample.name]["bestSample"] = sample
+                    self.results[sample.name]["bestIt"] = iteration
+
+        return self.results
+
+    def exportResults(self, path):
+        utils.makeDir(path)
+        for sample in self.originalGudrunFile.runSamples():
+            bestMint = (
+                self.results[sample.name]["bestSample"].dataFiles[0].mintFile
+            )
+            shutil.copyfile(bestMint, os.path.join(
+                path, f"{sample.name}.mint01"
+            ))
 
 
 class BayesianOptimisation:

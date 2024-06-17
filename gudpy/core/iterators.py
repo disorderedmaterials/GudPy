@@ -568,7 +568,7 @@ class InelasticitySubtraction(Iterator):
             self.iterationCount += 1
         else:
             self.QIteration(gudrunFile)
-            self.nCurrent += 1
+        self.nCurrent += 1
         return gudrunFile
 
     def organiseOutput(self, gudrunFile, exclude=[]):

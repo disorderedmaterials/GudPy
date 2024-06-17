@@ -7,6 +7,7 @@ from core.enums import (
 )
 from core import utils
 from core import config
+from core import data
 
 
 class Sample:
@@ -145,16 +146,39 @@ class Sample:
         self.containers = []
 
         self.yamlignore = {
-            "yamlignore"
+            "yamlignore",
         }
 
         self.outputFolder = ""
         self.sampleFile = ""
         self.selfScatteringFilePath = ""
 
+        self._referenceDataFile = ""
+
     @property
     def gudFile(self):
         return self.dataFiles[0].gudFile
+
+    @property
+    def referenceDataFile(self):
+        return self._referenceDataFile
+
+    @referenceDataFile.setter
+    def referenceDataFile(self, path):
+        self._referenceDataFile = path
+        self.referenceData = data.NpDataSet(path)
+
+    @property
+    def referenceData(self):
+        return data.NpDataSet(self._referenceDataFile)
+
+    @property
+    def mse(self):
+        if not self.dataFiles[0].mintFile or self.referenceData:
+            return None
+        expData = data.NpDataSet(self.dataFiles[0].mintFile)
+        mse = data.meanSquaredError(self.referenceData, expData)
+        return mse
 
     def pathName(self):
         return utils.replace_unwanted_chars(self.name).translate(
