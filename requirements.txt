@@ -3,3 +3,4 @@ chardet
 ruamel.yaml
 h5py
 click
+scikit-optimize
