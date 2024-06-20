@@ -17,6 +17,7 @@ import core.output_file_handler as handlers
 from core.file_library import GudPyFileLibrary
 from core import data_files
 from core.io.gudpy_io import GudPyIO
+import core.optimise as opti
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -34,6 +35,7 @@ class GudPy:
         self.runModes: RunModes = None
         self.gudrunIterator: GudrunIterator = None
         self.batchProcessor: BatchProcessing = None
+        self.optimiser = None
 
     @property
     def gudrunFile(self):
@@ -290,6 +292,37 @@ class GudPy:
         gudrunFile = self.runModes.partition(self.gudrunFile)
         self.runGudrun(gudrunFile=gudrunFile)
 
+    def optimiseExponentialSubtractions(
+        self,
+        samples: list,
+        limit: float = 0.5,
+        nIters: int = 15,
+    ):
+        for sample in samples:
+            gudrunFileCopy = copy.deepcopy(self.gudrunFile)
+            optimiser = opti.BayesianOptimisation(
+                gudrunFile=gudrunFileCopy,
+                targetSample=sample,
+                gudrun=self.gudrun,
+                actual=sample.referenceDataFile,
+                limit=limit,
+                nIters=nIters,
+                verbose=False,
+                purge=self.purge
+            )
+            mse, optExponents = optimiser.optimise()
+            sample.exponentialValues = optExponents
+
+        self.runGudrun()
+
+    def optimiseInelasticity(self):
+        optimiser = opti.InelasticityOptimisation(
+            gudrunFile=self.gudrunFile,
+            purge=self.purge
+        )
+        results = optimiser.optimise(purge=self.purge)
+        return results
+
     def batchProcessing(
         self,
         iterator: iterators.Iterator = None,
@@ -437,7 +470,7 @@ class Gudrun(Process):
         self,
         gudrunFile: GudrunFile,
         exclude: list[str] = [],
-        head: list[str] = [],
+        head: str = "",
         overwrite: bool = True
     ) -> None:
 
@@ -475,9 +508,10 @@ class Gudrun(Process):
         gudrunFile: GudrunFile,
         purge: Purge = None,
         iterator: iterators.Iterator = None,
+        supress=True
     ) -> int:
         self.checkBinary()
-        if not purge:
+        if not purge and not supress:
             cli.echoWarning("Gudrun running without purge")
         with tempfile.TemporaryDirectory() as tmp:
             purgeFiles = []

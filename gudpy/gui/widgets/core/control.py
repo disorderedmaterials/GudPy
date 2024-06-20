@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 import typing as typ
+import copy
 
 from PySide6 import QtCore, QtWidgets
 
@@ -108,6 +109,10 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.updateComponents)
         self.mainWidget.ui.exportArchive.triggered.connect(self.exportArchive)
         self.mainWidget.ui.exit.triggered.connect(self.exit_)
+        (self.mainWidget.optimiseTab.exponentialGroupBox
+         .runOptimiseExponents.clicked.connect(
+             self.runOptimiseExponents
+         ))
 
     @property
     def gudrunFile(self) -> None:
@@ -524,6 +529,7 @@ class GudPyController(QtCore.QObject):
         self.startProcess()
 
     def gudrunFinished(self, exitcode):
+        self.mainWidget.setModified()
         if self.workerThread == self.gudpy.gudrunIterator:
             if self.gudpy.gudrunIterator.exitcode[0] != 0:
                 self.mainWidget.sendError(
@@ -556,6 +562,7 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudrunFile,
             )
+        self.gudpy.io.save()
         self.workerThread = None
 
     def compositionIterationFinished(self, exitcode):
@@ -608,6 +615,37 @@ class GudPyController(QtCore.QObject):
             onFinish=self.gudrunFinished
         )
         self.workerThread = self.gudpy.gudrunIterator
+        self.startProcess()
+
+    def runOptimiseExponents(self):
+        gudrunFileCopy = copy.deepcopy(self.gudrunFile)
+        self.gudpy.gudrun = worker.GudrunWorker(
+            gudrunFile=gudrunFileCopy, purge=self.gudpy.purge
+        )
+
+        if not self.prepareRun():
+            return
+
+        samples = []
+        for sw in self.mainWidget.optimiseTab.sampleWidgets:
+            if sw.runSample:
+                samples.append(sw.sample)
+
+        self.gudpy.optimiser = worker.OptimiseExponentsWorker(
+            gudrun=self.gudpy.gudrun,
+            gudrunFile=gudrunFileCopy,
+            samples=samples,
+            limit=(self.mainWidget.optimiseTab
+                   .exponentialGroupBox.limitSpinBox.value()),
+            nIters=(self.mainWidget.optimiseTab
+                    .exponentialGroupBox.nIterationsSpinBox.value())
+        )
+
+        self.connectProcessSignals(
+            process=self.gudpy.optimiser, onFinish=self.gudrunFinished
+        )
+
+        self.workerThread = self.gudpy.gudrun
         self.startProcess()
 
     def stopProcess(self):

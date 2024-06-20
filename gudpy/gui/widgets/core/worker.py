@@ -8,6 +8,8 @@ from core.gudrun_file import GudrunFile
 from core.purge_file import PurgeFile
 from core.iterators import Iterator, InelasticitySubtraction
 from core import iterators, config
+from core import optimise
+from core.sample import Sample
 
 SUFFIX = ".exe" if os.name == "nt" else ""
 
@@ -37,20 +39,22 @@ class PurgeWorker(Worker, gudpy.Purge):
         self.dataFileType = gudrunFile.instrument.dataFileType
         self.dataFiles = [gudrunFile.instrument.groupFileName]
 
-        self.appendDataFiless(gudrunFile.normalisation.dataFiles[0])
-        self.appendDataFiless(gudrunFile.normalisation.dataFilesBg[0])
-        self.appendDataFiless([df.filename for sb
-                               in gudrunFile.sampleBackgrounds
-                               for df in sb.dataFiles])
+        self.appendDataFiles(
+            [df.filename for df in gudrunFile.normalisation.dataFiles])
+        self.appendDataFiles(
+            [df.filename for df in gudrunFile.normalisation.dataFilesBg])
+        self.appendDataFiles([df.filename for sb
+                              in gudrunFile.sampleBackgrounds
+                              for df in sb.dataFiles])
         if not purgeFile.excludeSampleAndCan:
-            self.appendDataFiless([df.filename for sb
-                                   in gudrunFile.sampleBackgrounds
-                                   for s in sb.samples for df in s.dataFiles
-                                   if s.runThisSample])
-            self.appendDataFiless([df.filename for sb
-                                   in gudrunFile.sampleBackgrounds
-                                   for s in sb.samples for c in s.containers
-                                   for df in c.dataFiles if s.runThisSample])
+            self.appendDataFiles([df.filename for sb
+                                  in gudrunFile.sampleBackgrounds
+                                  for s in sb.samples for df in s.dataFiles
+                                  if s.runThisSample])
+            self.appendDataFiles([df.filename for sb
+                                  in gudrunFile.sampleBackgrounds
+                                  for s in sb.samples for c in s.containers
+                                  for df in c.dataFiles if s.runThisSample])
 
     def _progressChanged(self):
         stepSize = math.ceil(100 / len(self.dataFiles))
@@ -60,7 +64,7 @@ class PurgeWorker(Worker, gudpy.Purge):
                 progress += stepSize
         return progress
 
-    def appendDataFiless(self, dfs):
+    def appendDataFiles(self, dfs):
         if isinstance(dfs, str):
             dfs = [dfs]
         for df in dfs:
@@ -245,6 +249,56 @@ class BatchWorker(IteratorBaseWorker, gudpy.BatchProcessing):
     def run(self):
         try:
             self.process(purge=self.purge)
+            self.finished.emit(0)
+        except exc.GudrunException as e:
+            self.error = str(e)
+            self.finished.emit(1)
+
+
+class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
+    outputChanged = Signal(str)
+    progressChanged = Signal(int, str)
+    finished = Signal(int)
+
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        gudrun: GudrunWorker,
+        samples: list[Sample],
+        limit: float = 0.5,
+        nIters: int = 15,
+        verbose=False
+    ) -> None:
+        super().__init__(
+            gudrunFile=gudrunFile,
+            samples=samples,
+            gudrun=gudrun,
+            limit=limit,
+            nIters=nIters,
+            verbose=verbose
+        )
+        self.output = {}
+        self.gudrun.outputChanged.connect(self._outputChanged)
+        self.gudrun.progressChanged.connect(self._progressChanged)
+
+    def _outputChanged(self, output):
+        idx = f"{self.sample.name} {self.nCurrent}"
+
+        currentOutput = self.output.get(idx, "")
+        self.output[idx] = currentOutput + output
+        self.outputChanged.emit(output)
+
+    def _progressChanged(self, progress):
+        self.progressChanged.emit(
+            progress,
+            f"Optimise {self.sample.name} "
+            f"(current MSE: {self.mse})" if self.mse else ""
+            f"- {self.nCurrent}/{self.nIters}"
+        )
+
+    def run(self):
+        try:
+            self.optimise()
             self.finished.emit(0)
         except exc.GudrunException as e:
             self.error = str(e)

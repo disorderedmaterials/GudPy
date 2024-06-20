@@ -12,14 +12,17 @@ from core import gudpy
 from core import utils
 from core.gudrun_file import GudrunFile
 from core.sample import Sample
+from core.io import gudpy_io
 
 
 class InelasticityOptimisation:
     def __init__(
         self,
         gudrunFile: GudrunFile,
+        purge=None,
     ):
         self.originalGudrunFile = copy.deepcopy(gudrunFile)
+        self.purge = purge
         self.gudrunIterators = gudpy.GudrunIterator(
             gudrunFile, iterators.InelasticitySubtraction(3))
         self.samples = {}
@@ -31,10 +34,10 @@ class InelasticityOptimisation:
 
             self.mse[sample.name]["initial"] = copy.deepcopy(sample)
 
-    def optimise(self, purge: gudpy.Purge):
+    def optimise(self):
         for i, gudrun in enumerate(self.gudrunIterators.gudrunObjects):
             exitcode = self.gudrunIterators.singleIteration(
-                self.gudrunIterators.gudrunFile, gudrun, purge)
+                self.gudrunIterators.gudrunFile, gudrun, self.purge)
             if exitcode:  # An exit code != 0 indicates failure
                 self.exitcode = (exitcode, gudrun.error)
                 return self.exitcode
@@ -69,21 +72,27 @@ class BayesianOptimisation:
     def __init__(
             self,
             gudrunFile: GudrunFile,
-            targetSample: Sample,
-            simulation: str,
-            actual: str,
+            samples: list[Sample],
+            gudrun: "gudpy.Gudrun",
             limit: float = 0.5,
+            nIters: int = 15,
             verbose=False
     ) -> None:
-        self.LIMIT = limit
+        self.limit = limit
+        self.nIters = nIters
         self.gudrunFile = gudrunFile
-        self.sample = targetSample
-        self.simulation = data.NpDataSet(simulation, self.LIMIT)
-        self.actual = data.NpDataSet(actual, self.LIMIT)
+        self.samples = samples
+        self.sample = samples[0]
+        self.nCurrent = 0
+        self.mse = None
+
+        self.simulation = data.NpDataSet(
+            self.sample.referenceDataFile, self.limit)
+        self.actual = data.NpDataSet(
+            self.sample.dataFiles[0].mintFile, self.limit)
         self.verbose = verbose
 
-        self.gudrunIterator = None
-        self.gudrun = gudpy.Gudrun()
+        self.gudrun = gudrun
 
     def tweakExponent(self, exponents):
         if self.verbose:
@@ -102,19 +111,16 @@ class BayesianOptimisation:
 
         self.gudrun.gudrun(
             gudrunFile=self.gudrunFile,
-            purge=None,
-            suppress=True
         )
 
-        mintFile = self.gudrun.gudrunOutput.output(
-            name=self.sample.name,
-            dataFile=self.sample.dataFiles[0],
-            type=".mint01"
-        )
+        mintFile = self.sample.dataFiles[0].mintFile
 
-        self.actual = data.NpDataSet(mintFile, self.LIMIT)
+        self.actual = data.NpDataSet(mintFile, self.limit)
 
         error = data.meanSquaredError(self.actual, self.simulation)
+
+        self.nCurrent += 1
+        self.mse = error
 
         if self.verbose:
             cli.echoIndent(f"MSE: {error}\n")
@@ -156,18 +162,30 @@ class BayesianOptimisation:
             skopt.space.Real(0, 5, name='decay2'),
         ]
 
+        projectFolder = gudpy_io.GudPyIO.projectDir
         with tempfile.TemporaryDirectory() as tmp:
             dir = os.path.join(tmp, "Optimisation")
             utils.makeDir(os.path.join(dir))
-            self.gudrunFile.projectDir = dir
+            gudpy_io.GudPyIO.projectDir = dir
             result = skopt.gp_minimize(
-                self.tweakExponent, paramSpace, n_calls=ncalls
+                self.tweakExponent, paramSpace, n_calls=self.nIters
             )
             mse = round(result.fun, 5)
             optExponents = [result.x[0:2] + [0.0],
                             result.x[2:] + [0.0]]
 
+        gudpy_io.GudPyIO.projectDir = projectFolder
         return mse, optExponents
+
+    def optimise(self):
+        for sample in self.samples:
+            self.sample = sample
+            self.simulation = data.NpDataSet(
+                sample.referenceDataFile, self.limit)
+            self.actual = data.NpDataSet(
+                sample.dataFiles[0].mintFile, self.limit)
+
+            self.optimiseSample()
 
     def gradientDescent(self, maxiter=15):
         cli.echoIndent("Gradient Descent")
