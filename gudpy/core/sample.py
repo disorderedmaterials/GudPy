@@ -166,7 +166,6 @@ class Sample:
     @referenceDataFile.setter
     def referenceDataFile(self, path):
         self._referenceDataFile = path
-        self.referenceData = data.NpDataSet(path)
 
     @property
     def referenceData(self):
@@ -174,7 +173,7 @@ class Sample:
 
     @property
     def mse(self):
-        if not self.dataFiles[0].mintFile or self.referenceData:
+        if not self.dataFiles[0].mintFile or not self.referenceDataFile:
             return None
         expData = data.NpDataSet(self.dataFiles[0].mintFile)
         mse = data.meanSquaredError(self.referenceData, expData)

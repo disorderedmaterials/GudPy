@@ -71,7 +71,7 @@ class GudrunOutputHandler(OutputHandler):
         self,
         gudrunFile: GudrunFile,
         head: str = "",
-        overwrite: bool = True
+        overwrite: bool = True,
     ):
         """
         Initialise `GudrunOutputHandler`

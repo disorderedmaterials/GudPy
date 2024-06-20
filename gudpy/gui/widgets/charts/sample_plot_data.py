@@ -22,6 +22,29 @@ class GudPyPlot(data.DataSet):
     def __init__(self, path, exists):
         super().__init__(path=path, exists=exists)
 
+    def constructDataSet(self, path, lim=None):
+        dataSet = []
+        with open(path, "r", encoding="utf-8") as fp:
+            for dataLine in fp.readlines():
+
+                # Ignore commented lines.
+                if dataLine[0] == "#":
+                    continue
+
+                splitLine = [float(n) for n in dataLine.split()]
+                if len(splitLine) > 2:
+                    x, y, err, *__ = splitLine
+                    if lim and x > lim:
+                        return dataSet
+                    dataSet.append(GuiPoint(x, y, err))
+                else:
+                    x, y = splitLine
+                    if lim and x > lim:
+                        return dataSet
+                    dataSet.append(GuiPoint(x, y))
+
+        return dataSet
+
     def toQPointList(self):
         return [x.toQPoint() for x in self.dataSet] if self.dataSet else None
 
