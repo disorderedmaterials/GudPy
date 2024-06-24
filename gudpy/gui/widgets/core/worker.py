@@ -263,8 +263,8 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
     def __init__(
         self,
         gudrunFile: GudrunFile,
-        gudrun: GudrunWorker,
         samples: list[Sample],
+        purge: PurgeWorker = None,
         limit: float = 0.5,
         nIters: int = 15,
         verbose=False
@@ -272,12 +272,22 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
         super().__init__(
             gudrunFile=gudrunFile,
             samples=samples,
-            gudrun=gudrun,
             limit=limit,
             nIters=nIters,
             verbose=verbose
         )
         self.output = {}
+
+        self.gudrunObjects = []
+        self.gudrunQueue = []
+        for _ in range(nIters):
+            gudrunWorker = GudrunWorker(gudrunFile=gudrunFile, purge=purge)
+            self.gudrunObjects.append(gudrunWorker)
+            self.gudrunQueue.append(gudrunWorker)
+            gudrunWorker.outputChanged.connect(self._outputChanged)
+            gudrunWorker.progressChanged.connect(self._progressChanged)
+
+        self.gudrun = GudrunWorker(gudrunFile=gudrunFile, purge=purge)
         self.gudrun.outputChanged.connect(self._outputChanged)
         self.gudrun.progressChanged.connect(self._progressChanged)
 
@@ -289,17 +299,23 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
         self.outputChanged.emit(output)
 
     def _progressChanged(self, progress):
+        rounded = ""
+
+        for set in self.sample.exponentialValues:
+            roundedSet = [round(v, 3) for v in set]
+            if rounded:
+                rounded += ", "
+            rounded += str(roundedSet)
+
         self.progressChanged.emit(
             progress,
-            f"Optimise {self.sample.name} "
-            f"(current MSE: {self.mse})" if self.mse else ""
-            f"- {self.nCurrent}/{self.nIters}"
+            f"Optimise {self.sample.name} " +
+            (f"- {rounded}" +
+             f" MSE: {self.mse} " if self.mse else "") +
+            f"- {self.nCurrent + 1}/{int(self.nIters/len(self.samples))}"
         )
 
     def run(self):
-        try:
-            self.optimise()
-            self.finished.emit(0)
-        except exc.GudrunException as e:
-            self.error = str(e)
-            self.finished.emit(1)
+        exitcode, error = self.optimise()
+        self.error = error
+        self.finished.emit(exitcode)

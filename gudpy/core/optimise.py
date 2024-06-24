@@ -13,6 +13,7 @@ from core import utils
 from core.gudrun_file import GudrunFile
 from core.sample import Sample
 from core.io import gudpy_io
+import core.exception as exc
 
 
 class InelasticityOptimisation:
@@ -29,7 +30,7 @@ class InelasticityOptimisation:
         self.results = {}
 
         for sample in gudrunFile.runSamples():
-            if not sample.mse:
+            if not sample.mse():
                 continue
 
             self.mse[sample.name]["initial"] = copy.deepcopy(sample)
@@ -51,7 +52,7 @@ class InelasticityOptimisation:
             )
             self.results[sample.name]["bestIt"] = "initial"
             for iteration, sample in self.mse[sample.name]:
-                if sample.mse < self.results[sample.name]["bestSample"]:
+                if sample.mse() < self.results[sample.name]["bestSample"]:
                     self.results[sample.name]["bestSample"] = sample
                     self.results[sample.name]["bestIt"] = iteration
 
@@ -73,26 +74,35 @@ class BayesianOptimisation:
             self,
             gudrunFile: GudrunFile,
             samples: list[Sample],
-            gudrun: "gudpy.Gudrun",
+            purge: "gudpy.Purge" = None,
             limit: float = 0.5,
             nIters: int = 15,
             verbose=False
     ) -> None:
         self.limit = limit
-        self.nIters = nIters
+        self.nCalls = nIters
+        self.nIters = nIters * len(samples)
+        self.purge = purge
         self.gudrunFile = gudrunFile
         self.samples = samples
         self.sample = samples[0]
         self.nCurrent = 0
         self.mse = None
 
+        self.exitcode = 0
+        self.error = ""
+
+        self.gudrun = gudpy.Gudrun()
+        self.gudrunObjects = []
+        self.gudrunQueue = []
+        for _ in range(nIters):
+            self.gudrunQueue.append(gudpy.Gudrun())
+
         self.simulation = data.NpDataSet(
             self.sample.referenceDataFile, self.limit)
         self.actual = data.NpDataSet(
             self.sample.dataFiles[0].mintFile, self.limit)
         self.verbose = verbose
-
-        self.gudrun = gudrun
 
     def tweakExponent(self, exponents):
         if self.verbose:
@@ -109,9 +119,16 @@ class BayesianOptimisation:
             [Amplitude2, Decay2, 0.0]
         )
 
-        self.gudrun.gudrun(
+        gudrun = self.gudrunQueue.pop()
+
+        self.gudrunObjects.append(gudrun)
+        exitcode = gudrun.gudrun(
             gudrunFile=self.gudrunFile,
+            purge=self.purge
         )
+
+        if exitcode:
+            raise exc.GudrunException(gudrun.error)
 
         mintFile = self.sample.dataFiles[0].mintFile
 
@@ -120,7 +137,7 @@ class BayesianOptimisation:
         error = data.meanSquaredError(self.actual, self.simulation)
 
         self.nCurrent += 1
-        self.mse = error
+        self.mse = round(error, 5)
 
         if self.verbose:
             cli.echoIndent(f"MSE: {error}\n")
@@ -168,31 +185,42 @@ class BayesianOptimisation:
             utils.makeDir(os.path.join(dir))
             gudpy_io.GudPyIO.projectDir = dir
             result = skopt.gp_minimize(
-                self.tweakExponent, paramSpace, n_calls=self.nIters
+                self.tweakExponent, paramSpace, n_calls=self.nCalls
             )
             mse = round(result.fun, 5)
             optExponents = [result.x[0:2] + [0.0],
                             result.x[2:] + [0.0]]
 
         gudpy_io.GudPyIO.projectDir = projectFolder
-        return mse, optExponents
+
+        if initError < mse:
+            optExponents = initExp
+
+        return optExponents
 
     def optimise(self):
-        for sample in self.samples:
-            self.sample = sample
-            self.simulation = data.NpDataSet(
-                sample.referenceDataFile, self.limit)
-            self.actual = data.NpDataSet(
-                sample.dataFiles[0].mintFile, self.limit)
-
-            self.optimiseSample()
+        try:
+            for sample in self.samples:
+                self.sample = sample
+                self.simulation = data.NpDataSet(
+                    sample.referenceDataFile, self.limit)
+                self.actual = data.NpDataSet(
+                    sample.dataFiles[0].mintFile, self.limit)
+                optExponents = self.optimiseSample()
+                self.sample.exponentialValues = optExponents
+                self.nCurrent = 0
+            self.nCurrent = "Finishing run"
+            self.gudrun.gudrun(self.gudrunFile)
+            self.nCurrent = 0
+        except exc.GudrunException as e:
+            return (1, e)
+        return (0, "")
 
     def gradientDescent(self, maxiter=15):
         cli.echoIndent("Gradient Descent")
         initial = [el for sl in self.sample.exponentialValues
                    for el in sl[:-1]]
         initial.extend([0.0] * (4 - len(initial)))
-        print(initial)
         bounds = [(0, 3), (0, 3), (0, 3), (0, 3)]
         with tempfile.TemporaryDirectory() as tmp:
             dir = os.path.join(tmp, "Optimisation")
