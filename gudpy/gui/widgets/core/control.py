@@ -109,10 +109,9 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.updateComponents)
         self.mainWidget.ui.exportArchive.triggered.connect(self.exportArchive)
         self.mainWidget.ui.exit.triggered.connect(self.exit_)
-        (self.mainWidget.optimiseTab.exponentialGroupBox
-         .runOptimiseExponents.clicked.connect(
-             self.runOptimiseExponents
-         ))
+        (self.mainWidget.optimiseTab.runOptimise.connect(
+            self.runOptimiseExponents
+        ))
 
     @property
     def gudrunFile(self) -> None:
@@ -371,6 +370,20 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.processStopped)
         process.finished.connect(onFinish)
 
+    def dissconnectProcessSignals(
+        self,
+        process,
+        onFinish
+    ):
+        process.started.disconnect(self.mainWidget.processStarted)
+        process.outputChanged.disconnect(
+            self.mainWidget.outputSlots.setOutputStream)
+        process.progressChanged.disconnect(
+            self.mainWidget.updateProgressBar)
+        process.finished.disconnect(
+            self.mainWidget.processStopped)
+        process.finished.disconnect(onFinish)
+
     def createPurgeProcess(self) -> bool:
         if not self.prepareRun():
             return False
@@ -474,6 +487,10 @@ class GudPyController(QtCore.QObject):
         )
 
         if isinstance(self.workerThread, gp.Purge):
+            self.dissconnectProcessSignals(
+                self.workerThread,
+                self.purgeFinished
+            )
             self.workerThread = None
         if self.workerThread:
             self.startProcess()
@@ -530,6 +547,8 @@ class GudPyController(QtCore.QObject):
 
     def gudrunFinished(self, exitcode):
         self.mainWidget.setModified()
+        if self.workerThread.isRunning():
+            return
         if self.workerThread == self.gudpy.gudrunIterator:
             if self.gudpy.gudrunIterator.exitcode[0] != 0:
                 self.mainWidget.sendError(
@@ -550,7 +569,7 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
             )
-        elif self.workerThread == self.gudpy.gudrun:
+        else:
             if exitcode != 0:
                 self.mainWidget.sendError(
                     f"Gudrun failed with the following output: "
@@ -558,11 +577,11 @@ class GudPyController(QtCore.QObject):
                 )
                 return
             self.mainWidget.outputSlots.setOutput(
-                self.gudpy.gudrun.output, "Gudrun", self.gudrunFile)
+                self.workerThread.output, "Gudrun", self.gudrunFile)
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudrunFile,
             )
-        self.gudpy.io.save()
+        self.gudpy.io.save(self.gudrunFile)
         self.workerThread = None
 
     def compositionIterationFinished(self, exitcode):
@@ -619,9 +638,6 @@ class GudPyController(QtCore.QObject):
 
     def runOptimiseExponents(self):
         gudrunFileCopy = copy.deepcopy(self.gudrunFile)
-        self.gudpy.gudrun = worker.GudrunWorker(
-            gudrunFile=gudrunFileCopy, purge=self.gudpy.purge
-        )
 
         if not self.prepareRun():
             return
@@ -632,9 +648,9 @@ class GudPyController(QtCore.QObject):
                 samples.append(sw.sample)
 
         self.gudpy.optimiser = worker.OptimiseExponentsWorker(
-            gudrun=self.gudpy.gudrun,
             gudrunFile=gudrunFileCopy,
             samples=samples,
+            purge=self.gudpy.purge,
             limit=(self.mainWidget.optimiseTab
                    .exponentialGroupBox.limitSpinBox.value()),
             nIters=(self.mainWidget.optimiseTab
@@ -645,7 +661,7 @@ class GudPyController(QtCore.QObject):
             process=self.gudpy.optimiser, onFinish=self.gudrunFinished
         )
 
-        self.workerThread = self.gudpy.gudrun
+        self.workerThread = self.gudpy.optimiser
         self.startProcess()
 
     def stopProcess(self):

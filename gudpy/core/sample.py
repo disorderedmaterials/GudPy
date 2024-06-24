@@ -171,13 +171,12 @@ class Sample:
     def referenceData(self):
         return data.NpDataSet(self._referenceDataFile)
 
-    @property
-    def mse(self):
+    def mse(self, limit=None):
         if not self.dataFiles[0].mintFile or not self.referenceDataFile:
             return None
-        expData = data.NpDataSet(self.dataFiles[0].mintFile)
-        mse = data.meanSquaredError(self.referenceData, expData)
-        return mse
+        refData = data.NpDataSet(self.referenceDataFile, lim=limit)
+        expData = data.NpDataSet(self.dataFiles[0].mintFile, lim=limit)
+        return data.meanSquaredError(refData, expData)
 
     def pathName(self):
         return utils.replace_unwanted_chars(self.name).translate(

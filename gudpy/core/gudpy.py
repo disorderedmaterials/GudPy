@@ -298,20 +298,16 @@ class GudPy:
         limit: float = 0.5,
         nIters: int = 15,
     ):
-        for sample in samples:
-            gudrunFileCopy = copy.deepcopy(self.gudrunFile)
-            optimiser = opti.BayesianOptimisation(
-                gudrunFile=gudrunFileCopy,
-                targetSample=sample,
-                gudrun=self.gudrun,
-                actual=sample.referenceDataFile,
-                limit=limit,
-                nIters=nIters,
-                verbose=False,
-                purge=self.purge
-            )
-            mse, optExponents = optimiser.optimise()
-            sample.exponentialValues = optExponents
+        gudrunFileCopy = copy.deepcopy(self.gudrunFile)
+        optimiser = opti.BayesianOptimisation(
+            gudrunFile=gudrunFileCopy,
+            samples=samples,
+            purge=self.purge,
+            limit=limit,
+            nIters=nIters,
+            verbose=False,
+        )
+        optimiser.optimise()
 
         self.runGudrun()
 

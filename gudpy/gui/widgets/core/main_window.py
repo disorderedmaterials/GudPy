@@ -433,6 +433,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
+        if not self.gudrunFile.outputFolder:
+            return
+
         self.updateSamples()
 
         if self.ui.objectStack.currentIndex() == 5 and isinstance(

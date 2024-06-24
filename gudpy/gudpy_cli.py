@@ -228,14 +228,8 @@ def edit(ctx, sample, attribute, value, path):
     type=click.Path(exists=False),
     help="Location to create new project"
 )
-@click.option(
-    "--method",
-    type=click.Choice(["bayesian", "simplex"]),
-    default="bayesian",
-    help="Optimisation method to use"
-)
 @click.pass_context
-def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
+def optimise(ctx, verbose, simulationdata, samplename, niters, output):
     echoProcess("Bayesian Optimisation")
     dir = output if output else os.path.join(
         ctx.obj.projectDir,
@@ -243,7 +237,8 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
     )
     ctx.obj.setSaveLocation(dir)
     echoProcess("gudrun_dcs")
-    ctx.obj.runGudrun()
+
+    ctx.obj.gudrun = gp.Gudrun()
 
     sample = None
     for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
@@ -254,50 +249,18 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
     if sample is None:
         return echoError("No sample found")
 
-    sampleData = ctx.obj.gudrunOutput.output(
-        name=sample.name,
-        dataFile=sample.dataFiles[0],
-        type=".mint01"
-    )
+    sample.referenceDataFile = simulationdata
+    samples = [sample]
 
-    if not sampleData:
-        return echoError(
-            f"No data found associated with sample '{sample.name}'")
+    echoIndent(f"Initial MSE: {round(sample.mse(), 5)}\n")
 
-    opti = opt.BayesianOptimisation(
-        gudrunFile=ctx.obj.gudrunFile,
-        targetSample=sample,
-        simulation=simulationdata,
-        actual=sampleData,
-        limit=2.0,
-        verbose=verbose
-    )
-
-    initError = data.meanSquaredError(opti.actual, opti.simulation)
-    initValues = sample.exponentialValues
-    echoIndent(f"Initial MSE: {round(initError, 5)}\n")
-
-    mse = None
-    optExponents = None
-    if method == "bayesian":
-        mse, optExponents = opti.optimise(ncalls=niters)
-    else:
-        mse, optExponents = opti.gradientDescent(maxiter=niters)
-
-    if not mse or not optExponents:
-        return echoError("Optimisation unsuccessful")
+    ctx.obj.optimiseExponentialSubtractions(
+        samples=samples)
 
     echoTick("Optimisation complete")
 
-    if mse > initError:
-        echoTick("Best values already achieved.")
-        optExponents = initValues
-        mse = initError
-
-    echoTick(f"Optimum exponentialValues: {optExponents}")
+    echoTick(f"Optimum exponentialValues: {sample.exponentialValues}")
     echoTick(f"MSE: {mse}")
-
-    sample.exponentialValues = optExponents
 
     for sbg in ctx.obj.gudrunFile.sampleBackgrounds:
         for s in sbg.samples:
@@ -306,23 +269,7 @@ def optimise(ctx, verbose, simulationdata, samplename, niters, output, method):
 
     echoProcess("gudrun_dcs")
     ctx.obj.runGudrun()
-    shutil.copyfile(
-        ctx.obj.gudrun.gudrunOutput.output(
-            name=sample.name,
-            dataFile=sample.dataFiles[0],
-            type=".mint01"
-        ),
-        os.path.join(
-            ctx.obj.projectDir,
-            f"{sample.name}_optimised.mint01"
-        )
-    )
     echoTick("Gudrun Complete")
-    echoTick("New mintfile avaliable at " +
-             os.path.join(
-                 ctx.obj.projectDir,
-                 f"{sample.name}_optimised.mint01"
-             ))
 
 
 @cli.command()
