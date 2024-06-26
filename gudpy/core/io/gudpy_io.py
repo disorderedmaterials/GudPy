@@ -264,6 +264,10 @@ class GudPyIO:
                 setattr(obj, key, type(obj.__dict__[key])[val])
                 return
 
+            if key == "outputFolder":
+                if not os.path.exists(val):
+                    return
+
             setattr(obj, key, type(obj.__dict__[key])(self.toBuiltin(val)))
         except Exception as e:
             raise YAMLException(
@@ -380,7 +384,8 @@ class GudPyIO:
                         continue
                     outDict = {}
                     for k_, v_ in v.items():
-                        outDict[k_] = v_
+                        if os.path.exists(v_):
+                            outDict[k_] = v_
                     dataFile._outputs = outDict
                 else:
                     self._assignYamlToAttr(dataFile, k, v)

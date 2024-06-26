@@ -188,9 +188,13 @@ class DataFiles:
         return len(self._dataFiles)
 
     def __getitem__(self, n):
+        if not self._dataFiles:
+            return None
         return self._dataFiles[n]
 
     def __setitem__(self, n, item):
+        if not self._dataFiles:
+            return None
         if n >= len(self):
             self._dataFiles.extend(n+1)
         self._dataFiles[n] = DataFile(item)

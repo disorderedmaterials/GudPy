@@ -307,12 +307,15 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
                 rounded += ", "
             rounded += str(roundedSet)
 
+        text = (f"Optimise {self.sample.name} " +
+                (f"- {rounded}" +
+                 f" MSE: {self.mse} " if self.mse else "") +
+                f"- {self.nCurrent + 1}/{int(self.nIters/len(self.samples))}"
+                )
+
         self.progressChanged.emit(
             progress,
-            f"Optimise {self.sample.name} " +
-            (f"- {rounded}" +
-             f" MSE: {self.mse} " if self.mse else "") +
-            f"- {self.nCurrent + 1}/{int(self.nIters/len(self.samples))}"
+            text
         )
 
     def run(self):

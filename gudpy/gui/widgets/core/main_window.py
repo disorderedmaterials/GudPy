@@ -394,6 +394,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
         )
+        self.ui.objectTree.model().dataChanged.connect(
+            lambda: self.optimiseTab.setSamples(self.gudrunFile.runSamples())
+        )
         self.updateResults()
         self.widgetsRefreshing = False
 
@@ -749,6 +752,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.checkFilesExist.setEnabled(state)
         self.ui.runFilesIndividually.setEnabled(state)
         self.ui.runContainersAsSamples.setEnabled(state)
+        self.optimiseTab.setEnabled(state)
 
     def setActionsEnabled(self, state):
         self.setTreeActionsEnabled(state)
