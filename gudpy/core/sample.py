@@ -157,6 +157,8 @@ class Sample:
 
     @property
     def gudFile(self):
+        if not self.dataFiles:
+            return None
         return self.dataFiles[0].gudFile
 
     @property
@@ -172,7 +174,8 @@ class Sample:
         return data.NpDataSet(self._referenceDataFile)
 
     def mse(self, limit=None):
-        if not self.dataFiles[0].mintFile or not self.referenceDataFile:
+        if (not self.dataFiles or not self.dataFiles[0].mintFile
+                or not self.referenceDataFile):
             return None
         refData = data.NpDataSet(self.referenceDataFile, lim=limit)
         expData = data.NpDataSet(self.dataFiles[0].mintFile, lim=limit)

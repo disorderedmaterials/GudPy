@@ -84,18 +84,25 @@ class BayesianOptimisation:
         self.nIters = nIters * len(samples)
         self.purge = purge
         self.gudrunFile = gudrunFile
-        self.samples = samples
-        self.sample = samples[0]
+        self.samples = []
+        self.sample = None
         self.nCurrent = 0
         self.mse = None
+        self.result = None
 
         self.exitcode = 0
         self.error = ""
 
+        for sample in samples:
+            for copySample in self.gudrunFile.runSamples():
+                if sample.name == copySample.name:
+                    self.samples.append(copySample)
+        self.sample = self.samples[0]
+
         self.gudrun = gudpy.Gudrun()
         self.gudrunObjects = []
         self.gudrunQueue = []
-        for _ in range(nIters):
+        for _ in range(nIters + len(self.samples)):
             self.gudrunQueue.append(gudpy.Gudrun())
 
         self.simulation = data.NpDataSet(
@@ -154,16 +161,16 @@ class BayesianOptimisation:
         ]
 
         projectFolder = gudpy_io.GudPyIO.projectDir
-        with tempfile.TemporaryDirectory() as tmp:
-            dir = os.path.join(tmp, "Optimisation")
-            utils.makeDir(os.path.join(dir))
-            gudpy_io.GudPyIO.projectDir = dir
-            result = skopt.gp_minimize(
-                self.tweakExponent, paramSpace, n_calls=self.nCalls
-            )
-            mse = round(result.fun, 5)
-            optExponents = [result.x[0:2] + [0.0],
-                            result.x[2:] + [0.0]]
+        outputPath = os.path.join(projectFolder, "Optimise", "Exponents")
+        utils.makeDir(outputPath)
+        gudpy_io.GudPyIO.projectDir = outputPath
+        result = skopt.gp_minimize(
+            self.tweakExponent, paramSpace, n_calls=self.nCalls
+        )
+        self.result = result
+        mse = round(result.fun, 5)
+        optExponents = [result.x[0:2] + [0.0],
+                        result.x[2:] + [0.0]]
 
         gudpy_io.GudPyIO.projectDir = projectFolder
 
@@ -183,8 +190,6 @@ class BayesianOptimisation:
                 optExponents = self.optimiseSample()
                 self.sample.exponentialValues = optExponents
                 self.nCurrent = 0
-            self.nCurrent = "Finishing run"
-            self.gudrun.gudrun(self.gudrunFile)
             self.nCurrent = 0
         except exc.GudrunException as e:
             return (1, e)
