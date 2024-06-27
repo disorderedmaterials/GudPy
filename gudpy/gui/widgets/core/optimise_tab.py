@@ -4,6 +4,7 @@ import copy
 import shutil
 
 from core import utils
+import core.optimise as opt
 
 
 class SampleWidget(QtWidgets.QWidget):
@@ -17,15 +18,15 @@ class SampleWidget(QtWidgets.QWidget):
         self.initUI()
 
     def initUI(self):
-        layout = QtWidgets.QGridLayout()
+        layout = QtWidgets.QHBoxLayout()
 
         self.sampleNameLabel = QtWidgets.QLabel(self.sample.name, self)
-        layout.addWidget(self.sampleNameLabel, 0, 0)
+        layout.addWidget(self.sampleNameLabel)
 
         self.checkBox = QtWidgets.QCheckBox("Optimise", self)
         self.checkBox.setChecked(False)
         self.checkBox.stateChanged.connect(self.checkChanged)
-        layout.addWidget(self.checkBox, 0, 1)
+        layout.addWidget(self.checkBox)
 
         self.lineEdit = QtWidgets.QLineEdit(self)
         self.lineEdit.editingFinished.connect(self.checkFile)
@@ -33,12 +34,11 @@ class SampleWidget(QtWidgets.QWidget):
             self.lineEdit.setText(self.sample.referenceDataFile)
             self.checkBox.setChecked(True)
             self.runSample = True
-        layout.addWidget(self.lineEdit, 0, 2)
+        layout.addWidget(self.lineEdit)
 
         self.browseButton = QtWidgets.QPushButton("Browse", self)
         self.browseButton.clicked.connect(self.browseFiles)
-        layout.addWidget(self.browseButton, 0, 3)
-
+        layout.addWidget(self.browseButton)
         self.setLayout(layout)
 
     def checkChanged(self):
@@ -220,7 +220,7 @@ class OptimiseExponents(QtWidgets.QGroupBox):
         )
         if not dirname:
             return False
-        utils.makedir(dirname)
+        utils.makeDir(dirname)
         for sample in self.resultsModel.samples:
             mintFile = sample.dataFiles[0].mintFile
             shutil.copyfile(mintFile, os.path.join(
@@ -232,23 +232,34 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
         def __init__(self):
             super().__init__(("Sample", "Initial MSE",
                               "Final MSE", "Optimum iterations"))
+            self.results = {}
 
         def data(self, index: QtCore.QModelIndex, role: int):
             if role == QtCore.Qt.DisplayRole:
+                sample = self.samples[index.row()]
                 if index.column() == 0:
-                    return self.samples[index.row()].name
+                    return sample.name
                 if index.column() == 1:
                     if not self.initSamples[index.row()].mse():
                         return "-"
                     return str(round(self.initSamples[index.row()].mse(), 5))
                 if index.column() == 2:
-                    return "e"
+                    if not self.results.get(sample.name, None):
+                        return "-"
+                    bestSamp = self.results[sample.name]["bestSample"]
+                    return str(round(bestSamp.mse(), 5))
                 if index.column() == 3:
-                    return "F"
+                    if not self.results.get(sample.name, None):
+                        return "-"
+
+                    return (self.results[
+                        self.samples[index.row()].name]["bestIt"]
+                        if self.results else "-")
 
     def __init__(self, parent=None):
         super().__init__(parent, title="Optimise Inelasticity Subtractions")
         self._parent = parent
+        self.results = {}
         self.inelasticityLayout = QtWidgets.QVBoxLayout()
 
         self.resultsLayout = QtWidgets.QHBoxLayout()
@@ -270,6 +281,7 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
         self.buttonLayout = QtWidgets.QHBoxLayout()
         self.runInelasticityButton = QtWidgets.QPushButton("Run")
         self.exportDataButton = QtWidgets.QPushButton("Export Data")
+        self.exportDataButton.clicked.connect(self.exportData)
         self.exportDataButton.setEnabled(False)
         self.buttonLayout.addWidget(self.runInelasticityButton)
         self.buttonLayout.addItem(QtWidgets.QSpacerItem(
@@ -282,6 +294,29 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
 
     def setSamples(self, samples):
         self.resultsModel.setSamples(samples)
+
+    def setResults(self, results: dict):
+        self.resultsModel.results = results
+        self.resultsModel.refresh()
+        self.exportDataButton.setEnabled(True)
+
+    def exportData(self):
+        dirname, _ = QtWidgets.QFileDialog.getSaveFileName(
+            caption="Export mint files to...",
+        )
+        if not dirname:
+            return False
+        utils.makeDir(dirname)
+
+        for sample in self.resultsModel.samples:
+            mintFile = None
+            optSample = self.results.get(sample.name, None)
+            if not optSample:
+                mintFile = sample.dataFiles[0].mintFile
+            else:
+                mintFile = optSample["bestSample"].mintFile
+            shutil.copyfile(mintFile, os.path.join(
+                dirname, os.path.basename(mintFile)))
 
 
 class SampleReferenceTable(QtWidgets.QTableWidget):
@@ -308,7 +343,8 @@ class OptimiseTab(QtWidgets.QWidget):
 
         self.sampleGroupBox = QtWidgets.QGroupBox(
             title="Sample Reference Files")
-        self.sampleLayout = QtWidgets.QGridLayout()
+        self.sampleLayout = QtWidgets.QVBoxLayout()
+        self.sampleLayout.setSpacing(1)
         self.sampleGroupBox.setLayout(self.sampleLayout)
 
         self.optimiseOptionsLayout = QtWidgets.QVBoxLayout()
@@ -346,34 +382,41 @@ class OptimiseTab(QtWidgets.QWidget):
         if samples == self.samples:
             return
 
+        runSamples = [sw.sample for sw in self.sampleWidgets if sw.runSample]
+
         while self.sampleLayout.count():
             item = self.sampleLayout.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
 
-        for i, sample in enumerate(samples):
-            samplewidget = SampleWidget(self._parent, sample)
-            samplewidget.refDataSet.connect(
+        self.sampleWidgets = []
+
+        for sample in samples:
+            sampleWidget = SampleWidget(self._parent, sample)
+            if sample not in runSamples:
+                sampleWidget.checkBox.setChecked(False)
+            else:
+                sampleWidget.checkBox.setChecked(True)
+            sampleWidget.refDataSet.connect(
                 lambda: (
                     self.exponentialGroupBox.resultsModel.setSamples(
                         self.samples)))
-            samplewidget.refDataSet.connect(
+            sampleWidget.refDataSet.connect(
                 lambda: (
                     self.inelasticityGroupBox.resultsModel.setSamples(
                         self.samples)))
-            self.sampleWidgets.append(samplewidget)
-            self.sampleLayout.addWidget(samplewidget.sampleNameLabel, i, 0)
-            self.sampleLayout.addWidget(samplewidget.checkBox, i, 1)
-            self.sampleLayout.addWidget(samplewidget.lineEdit, i, 2)
-            self.sampleLayout.addWidget(samplewidget.browseButton, i, 3)
+            self.sampleWidgets.append(sampleWidget)
+            self.sampleLayout.addWidget(sampleWidget)
 
         if not self._parent.widgetsRefreshing:
             self._parent.setModified()
 
-    def setOptimisedSamples(self, samples):
-        self.inelasticityGroupBox.setSamples(samples)
+    def setResults(self, samples, optimiser):
         self.exponentialGroupBox.setSamples(samples)
+
+        if isinstance(optimiser, opt.InelasticityOptimisation):
+            self.inelasticityGroupBox.setResults(optimiser.results)
 
         if not self._parent.widgetsRefreshing:
             self._parent.setModified()
@@ -384,6 +427,12 @@ class OptimiseTab(QtWidgets.QWidget):
                 if not sw.sample.referenceDataFile:
                     self._parent.sendError(
                         f"Reference data not provided for {sw.sample.name}"
+                    )
+                    return False
+                if (not sw.sample.dataFiles or
+                        not sw.sample.dataFiles[0].mintFile):
+                    self._parent.sendError(
+                        "Please run Gudrun before optimising."
                     )
                     return False
         return True

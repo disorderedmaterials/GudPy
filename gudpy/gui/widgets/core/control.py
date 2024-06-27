@@ -559,14 +559,17 @@ class GudPyController(QtCore.QObject):
         self.mainWidget.setModified()
         if self.workerThread.isRunning():
             return
-        if self.workerThread == self.gudpy.gudrunIterator:
-            if self.gudpy.gudrunIterator.exitcode[0] != 0:
-                self.mainWidget.sendError(
-                    f"Gudrun Iteration failed with the following output: "
-                    f"\n{self.gudpy.gudrunIterator.error}"
-                )
-                return
 
+        if exitcode != 0:
+            print(self.workerThread.gudrunIterator.gudrunFile.runSamples(
+            )[0].dataFiles[0]._outputs)
+            self.mainWidget.sendError(
+                f"Process failed with the following output: "
+                f"\n{self.workerThread.error}"
+            )
+            return
+
+        if self.workerThread == self.gudpy.gudrunIterator:
             self.mainWidget.outputSlots.setOutput(
                 self.gudpy.gudrunIterator.output,
                 f"Gudrun {self.gudpy.gudrunIterator.iterator.name}",
@@ -579,34 +582,22 @@ class GudPyController(QtCore.QObject):
             self.mainWidget.updateWidgets(
                 gudrunFile=self.gudpy.gudrunIterator.gudrunFile,
             )
-        else:
-            if exitcode != 0:
-                self.mainWidget.sendError(
-                    f"Gudrun failed with the following output: "
-                    f"\n{self.gudpy.gudrun.error}"
-                )
-                return
-            self.mainWidget.outputSlots.setOutput(
-                self.workerThread.output, "Gudrun", self.gudrunFile)
-            self.mainWidget.updateWidgets(
-                gudrunFile=self.gudrunFile,
-            )
 
         if self.workerThread == self.gudpy.optimiser:
-            if exitcode != 0:
-                self.mainWidget.sendError(
-                    f"Gudrun failed with the following output: "
-                    f"\n{self.gudpy.optimiser.gudrunObjects[-1].error}"
-                )
-                return
-            self.mainWidget.optimiseTab.setOptimisedSamples(
-                self.gudpy.optimiser.gudrunFile.runSamples()
+            self.mainWidget.optimiseTab.setResults(
+                self.gudpy.optimiser.gudrunIterator.gudrunFile.samples(),
+                self.gudpy.optimiser
             )
             (self.mainWidget.optimiseTab.exponentialGroupBox
              .exportDataButton.setEnabled(True))
             (self.mainWidget.optimiseTab.exponentialGroupBox
              .setParamsButton.setEnabled(True))
 
+        self.mainWidget.outputSlots.setOutput(
+            self.workerThread.output, "Gudrun", self.gudrunFile)
+        self.mainWidget.updateWidgets(
+            gudrunFile=self.gudrunFile,
+        )
         self.gudpy.io.save(self.gudrunFile)
         self.workerThread = None
 
@@ -703,7 +694,30 @@ class GudPyController(QtCore.QObject):
         self.runGudrun()
 
     def runOptimiseInelasticity(self):
-        pass
+        if not self.prepareRun():
+            return
+
+        samples = []
+        for sw in self.mainWidget.optimiseTab.sampleWidgets:
+            if sw.runSample:
+                samples.append(sw.sample)
+
+        self.gudpy.optimiser = worker.OptimiseInelasticityWorker(
+            self.gudrunFile,
+            samples,
+            purge=self.gudpy.purge
+        )
+
+        self.connectProcessSignals(
+            process=self.gudpy.optimiser, onFinish=self.gudrunFinished
+        )
+
+        self.gudpy.optimiser.progressChanged.connect(
+            self.mainWidget.optimiseTab.refreshWidgets
+        )
+
+        self.workerThread = self.gudpy.optimiser
+        self.startProcess()
 
     def stopProcess(self):
         if self.workerThread:

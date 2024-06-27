@@ -1,6 +1,5 @@
 from core import utils
 from core import data
-from core import optimise as opt
 from core import config
 from core import enums
 from core import gudpy as gp
@@ -9,7 +8,6 @@ import click
 import os
 import sys
 import ast
-import shutil
 
 
 def loadProject(ctx, project):
