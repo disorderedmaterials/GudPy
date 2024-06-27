@@ -7,7 +7,6 @@ import shutil
 
 import gudpy_cli as cli
 from core import data
-from core import iterators
 from core import gudpy
 from core import utils
 from core.gudrun_file import GudrunFile
@@ -19,48 +18,64 @@ import core.exception as exc
 class InelasticityOptimisation:
     def __init__(
         self,
-        gudrunFile: GudrunFile,
+        gudrunIterator: "gudpy.GudrunIterator",
+        samples: list[Sample],
         purge=None,
     ):
-        self.originalGudrunFile = copy.deepcopy(gudrunFile)
+        self.samples = []
         self.purge = purge
-        self.gudrunIterators = gudpy.GudrunIterator(
-            gudrunFile, iterators.InelasticitySubtraction(3))
-        self.samples = {}
+        self.gudrunIterator = gudrunIterator
+        self.mse = {}
         self.results = {}
+        self.exitcode = 0
+        self.error = ""
 
-        for sample in gudrunFile.runSamples():
-            if not sample.mse():
-                continue
+        self.mseRec = {}
 
+        for sample in self.gudrunIterator.gudrunFile.samples():
+            sample.runThisSample = False
+            if sample.name in [s.name for s in samples]:
+                sample.runThisSample = True
+                self.samples.append(sample)
+
+            self.mse[sample.name] = {}
             self.mse[sample.name]["initial"] = copy.deepcopy(sample)
+            self.results[sample.name] = {}
 
     def optimise(self):
-        for i, gudrun in enumerate(self.gudrunIterators.gudrunObjects):
-            exitcode = self.gudrunIterators.singleIteration(
-                self.gudrunIterators.gudrunFile, gudrun, self.purge)
+        projectDir = gudpy_io.GudPyIO.projectDir
+        gudpy_io.GudPyIO.projectDir = os.path.join(projectDir, "Optimise")
+
+        for gudrun in self.gudrunIterator.gudrunObjects:
+            exitcode, error = self.gudrunIterator.singleIteration(
+                self.gudrunIterator.gudrunFile, gudrun, self.purge)
+            self.exitcode = exitcode
             if exitcode:  # An exit code != 0 indicates failure
-                self.exitcode = (exitcode, gudrun.error)
-                return self.exitcode
-            if self.gudrunIterators.iterator.iterationType == "QIteration":
-                for sample in self.gudrunIterators.gudrunFile.runSamples():
+                self.error = error
+                return (exitcode, error)
+            if self.gudrunIterator.iterator.iterationType == "QIteration":
+                for sample in self.samples:
+                    i = self.gudrunIterator.iterator.iterationCount
                     self.mse[sample.name][i] = copy.deepcopy(sample)
 
-        for sample in self.originalGudrunFile.runSamples():
+        for sample in self.samples:
             self.results[sample.name]["bestSample"] = (
                 self.mse[sample.name]["initial"]
             )
             self.results[sample.name]["bestIt"] = "initial"
-            for iteration, sample in self.mse[sample.name]:
-                if sample.mse() < self.results[sample.name]["bestSample"]:
+            for iteration, sample in self.mse[sample.name].items():
+                if (sample.mse()
+                        < self.results[sample.name]["bestSample"].mse()):
                     self.results[sample.name]["bestSample"] = sample
                     self.results[sample.name]["bestIt"] = iteration
 
-        return self.results
+        gudpy_io.GudPyIO.projectDir = projectDir
+
+        return (0, self.mseRec)
 
     def exportResults(self, path):
         utils.makeDir(path)
-        for sample in self.originalGudrunFile.runSamples():
+        for sample in self.samples:
             bestMint = (
                 self.results[sample.name]["bestSample"].dataFiles[0].mintFile
             )
@@ -218,6 +233,7 @@ class BayesianOptimisation:
                 self.nCurrent = 0
             self.nCurrent = 0
         except exc.GudrunException as e:
+            self.error = e.args
             return (1, e)
         return (0, "")
 
