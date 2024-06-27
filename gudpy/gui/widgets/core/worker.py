@@ -121,8 +121,6 @@ class GudrunWorker(Worker, gudpy.Gudrun):
             self.output.count("Finished merging data for sample"),
             self.output.count("Got to: CONTAINER"),
         ])
-        if isinstance(self.iterator, iterators.InelasticitySubtraction):
-            self.progress /= 2
         return self.progress
 
     def run(self):
@@ -151,7 +149,7 @@ class IteratorBaseWorker(QThread):
 
         for _ in range(iterator.nTotal
                        + (1 if iterator.requireDefault else 0)):
-            worker = GudrunWorker(gudrunFile, iterator)
+            worker = GudrunWorker(self.gudrunFile, iterator)
             worker.outputChanged.connect(self._outputChanged)
             worker.progressChanged.connect(self._progressChanged)
             self.gudrunObjects.append(worker)
@@ -321,4 +319,57 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
     def run(self):
         exitcode, error = self.optimise()
         self.error = error
+        self.finished.emit(exitcode)
+
+
+class OptimiseInelasticityWorker(QThread, optimise.InelasticityOptimisation):
+    outputChanged = Signal(str)
+    progressChanged = Signal(int, str)
+    finished = Signal(int)
+
+    def __init__(
+        self,
+        gudrunFile: GudrunFile,
+        samples: list,
+        purge: PurgeWorker = None,
+    ) -> None:
+        self.gudrunIterator = GudrunIteratorWorker(
+            gudrunFile=gudrunFile,
+            iterator=iterators.InelasticitySubtraction(3)
+        )
+
+        super().__init__(
+            gudrunIterator=self.gudrunIterator,
+            samples=samples,
+            purge=purge
+        )
+
+        for gudrunWorker in self.gudrunIterator.gudrunObjects:
+            gudrunWorker.outputChanged.connect(self._outputChanged)
+            gudrunWorker.progressChanged.connect(self._progressChanged)
+
+    @property
+    def output(self):
+        return self.gudrunIterator.output
+
+    def _outputChanged(self, output):
+        idx = (f"{self.gudrunIterator.iterator.nCurrent}")
+
+        currentOutput = self.output.get(idx, "")
+        self.output[idx] = currentOutput + output
+        self.outputChanged.emit(output)
+
+    def _progressChanged(self, progress):
+        text = ("Optimise Inelasticity - " +
+                f"{self.gudrunIterator.iterator.iterationType} " +
+                f"{self.gudrunIterator.iterator.iterationCount} / 3")
+
+        self.progressChanged.emit(
+            progress,
+            text
+        )
+
+    def run(self):
+        exitcode, res = self.optimise()
+        self.error = res
         self.finished.emit(exitcode)
