@@ -495,6 +495,10 @@ class InelasticitySubtraction(Iterator):
                         targetFile = sample.dataFiles[0].msubwFile
                     else:
                         targetFile = sample.dataFiles[0].mintFile
+                    if not targetFile:
+                        raise RuntimeError(
+                            "There was an issue with Gudrun, please try again."
+                        )
                     sample.fileSelfScattering = (
                         os.path.basename(targetFile)
                     )
