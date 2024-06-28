@@ -61,9 +61,30 @@ normalisation:
     - filename: NIMROD00016702_V.raw
       name: NIMROD00016702_V
       ext: .raw
-      outputFolder: ''
-      _outputs: {}
+      outputFolder: 
+        /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V
+      _outputs: {.smomon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.smomon,
+        .rebinq01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.rebinq01,
+        .mul01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.mul01,
+        .mut01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.mut01,
+        .trans01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.trans01,
+        .transnofit01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.transnofit01,
+        .rawtrans: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.rawtrans,
+        .rawmon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.rawmon,
+        .pla01: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.pla01,
+        .vanrat: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Normalisation/NIMROD00016702_V/NIMROD00016702_V.vanrat}
       isSampleDataFile: false
+    isSampleDataFile: false
     name: NORMALISATION
     outputFolders: {}
     _outputs: {}
@@ -73,15 +94,34 @@ normalisation:
     - filename: NIMROD00016698_EmptyInst.raw
       name: NIMROD00016698_EmptyInst
       ext: .raw
-      outputFolder: ''
-      _outputs: {}
+      outputFolder: 
+        /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst
+      _outputs: {.rawmon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rawmon,
+        .rawtrans: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rawtrans,
+        .smomon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.smomon,
+        .rat: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rat,
+        .grp: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.grp,
+        .bad: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.bad}
       isSampleDataFile: false
     - filename: NIMROD00016703_EmptyInst.raw
       name: NIMROD00016703_EmptyInst
       ext: .raw
-      outputFolder: ''
-      _outputs: {}
+      outputFolder: 
+        /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016703_EmptyInst
+      _outputs: {.rat: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.rat,
+        .grp: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.grp,
+        .bad: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/NormalisationBackground/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.bad}
       isSampleDataFile: false
+    isSampleDataFile: false
     name: NORMALISATION BACKGROUND
     outputFolders: {}
     _outputs: {}
@@ -115,15 +155,34 @@ sampleBackgrounds:
     - filename: NIMROD00016698_EmptyInst.raw
       name: NIMROD00016698_EmptyInst
       ext: .raw
-      outputFolder: ''
-      _outputs: {}
+      outputFolder: 
+        /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst
+      _outputs: {.rawmon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rawmon,
+        .rawtrans: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rawtrans,
+        .smomon: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.smomon,
+        .rat: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.rat,
+        .grp: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.grp,
+        .bad: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016698_EmptyInst/NIMROD00016698_EmptyInst.bad}
       isSampleDataFile: false
     - filename: NIMROD00016703_EmptyInst.raw
       name: NIMROD00016703_EmptyInst
       ext: .raw
-      outputFolder: ''
-      _outputs: {}
+      outputFolder: 
+        /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016703_EmptyInst
+      _outputs: {.rat: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.rat,
+        .grp: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.grp,
+        .bad: 
+          /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/SampleBackgrounds/SampleBackground1/NIMROD00016703_EmptyInst/NIMROD00016703_EmptyInst.bad}
       isSampleDataFile: false
+    isSampleDataFile: false
     name: SAMPLE BACKGROUND
     outputFolders: {}
     _outputs: {}
@@ -136,7 +195,29 @@ sampleBackgrounds:
         name: NIMROD00016608_H2O_in_N9
         ext: .raw
         outputFolder: ''
-        _outputs: {}
+        _outputs:
+          .mdcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.mdcs01'
+          .rawmon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.rawmon'
+          .gr2: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.gr2'
+          .transnofit01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.transnofit01'
+          .mint01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.mint01'
+          .bak: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.bak'
+          .trans01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.trans01'
+          .msub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.msub01'
+          .mdor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.mdor01'
+          .mgor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.mgor01'
+          .mut01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.mut01'
+          .gud: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.gud'
+          .mul01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.mul01'
+          .gr1: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.gr1'
+          .rawtrans: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.rawtrans'
+          .abs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.abs01'
+          .dcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Outputs/NIMROD00016608_H2O_in_N9.dcs01'
+          .chksum: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.chksum'
+          .sub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.sub01'
+          .smomon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.smomon'
+          .pla01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.pla01'
+          .samrat: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/NIMROD00016608_H2O_in_N9/Diagnostics/NIMROD00016608_H2O_in_N9.samrat'
         isSampleDataFile: true
       - filename: NIMROD00016610_H2O_in_N9.raw
         name: NIMROD00016610_H2O_in_N9
@@ -144,6 +225,7 @@ sampleBackgrounds:
         outputFolder: ''
         _outputs: {}
         isSampleDataFile: true
+      isSampleDataFile: false
       name: H2O,_Can_N9
       outputFolders: {}
       _outputs: {}
@@ -195,19 +277,20 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
         - filename: NIMROD00016699_Empty_N9.raw
           name: NIMROD00016699_Empty_N9
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
         - filename: NIMROD00016704_Empty_N9.raw
           name: NIMROD00016704_Empty_N9
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
+        isSampleDataFile: false
         name: N9
         outputFolders: {}
         _outputs: {}
@@ -233,9 +316,11 @@ sampleBackgrounds:
       scatteringFraction: 1.0
       attenuationCoefficient: 0.0
       outputFolder: ''
-    outputFolder: ''
-    sampleFile: ''
+    outputFolder: /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9
+    sampleFile: 
+      /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/H2O,_Can_N9/H2O_Can_N9.sample
     selfScatteringFilePath: ''
+    _referenceDataFile: /Users/noella/Documents/dev/gp-test/dissolve-water/water-orig/H2O-SimulatedFR.r
   - name: D2O,_Can_N10
     periodNumber: 1
     dataFiles:
@@ -244,7 +329,29 @@ sampleBackgrounds:
         name: NIMROD00016609_D2O_in_N10
         ext: .raw
         outputFolder: ''
-        _outputs: {}
+        _outputs:
+          .sub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.sub01'
+          .mgor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.mgor01'
+          .mdor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.mdor01'
+          .bak: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.bak'
+          .dcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.dcs01'
+          .abs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.abs01'
+          .gr2: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.gr2'
+          .mint01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.mint01'
+          .gud: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.gud'
+          .mdcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Outputs/NIMROD00016609_D2O_in_N10.mdcs01'
+          .rawmon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.rawmon'
+          .msub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.msub01'
+          .pla01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.pla01'
+          .smomon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.smomon'
+          .trans01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.trans01'
+          .samrat: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.samrat'
+          .gr1: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.gr1'
+          .mul01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.mul01'
+          .rawtrans: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.rawtrans'
+          .chksum: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.chksum'
+          .transnofit01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.transnofit01'
+          .mut01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/NIMROD00016609_D2O_in_N10/Diagnostics/NIMROD00016609_D2O_in_N10.mut01'
         isSampleDataFile: true
       - filename: NIMROD00016611_D2O_in_N10.raw
         name: NIMROD00016611_D2O_in_N10
@@ -252,6 +359,7 @@ sampleBackgrounds:
         outputFolder: ''
         _outputs: {}
         isSampleDataFile: true
+      isSampleDataFile: false
       name: D2O,_Can_N10
       outputFolders: {}
       _outputs: {}
@@ -303,19 +411,20 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
         - filename: NIMROD00016700_Empty_N10.raw
           name: NIMROD00016700_Empty_N10
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
         - filename: NIMROD00016705_Empty_N10.raw
           name: NIMROD00016705_Empty_N10
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
+        isSampleDataFile: false
         name: N10
         outputFolders: {}
         _outputs: {}
@@ -341,9 +450,11 @@ sampleBackgrounds:
       scatteringFraction: 1.0
       attenuationCoefficient: 0.0
       outputFolder: ''
-    outputFolder: ''
-    sampleFile: ''
+    outputFolder: /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10
+    sampleFile: 
+      /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/D2O,_Can_N10/D2O_Can_N10.sample
     selfScatteringFilePath: ''
+    _referenceDataFile: /Users/noella/Documents/dev/gp-test/dissolve-water/water-orig/D2O-SimulatedFR.r
   - name: HDO,_Can_N6
     periodNumber: 1
     dataFiles:
@@ -352,7 +463,29 @@ sampleBackgrounds:
         name: NIMROD00016741_HDO_in_N6
         ext: .raw
         outputFolder: ''
-        _outputs: {}
+        _outputs:
+          .rawtrans: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.rawtrans'
+          .sub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.sub01'
+          .transnofit01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.transnofit01'
+          .abs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.abs01'
+          .dcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.dcs01'
+          .gr1: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.gr1'
+          .chksum: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.chksum'
+          .smomon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.smomon'
+          .samrat: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.samrat'
+          .trans01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.trans01'
+          .pla01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.pla01'
+          .mint01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.mint01'
+          .rawmon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.rawmon'
+          .mdcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.mdcs01'
+          .msub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.msub01'
+          .bak: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.bak'
+          .gr2: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.gr2'
+          .gud: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.gud'
+          .mul01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.mul01'
+          .mgor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.mgor01'
+          .mdor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Outputs/NIMROD00016741_HDO_in_N6.mdor01'
+          .mut01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/NIMROD00016741_HDO_in_N6/Diagnostics/NIMROD00016741_HDO_in_N6.mut01'
         isSampleDataFile: true
       - filename: NIMROD00016743_HDO_in_N6.raw
         name: NIMROD00016743_HDO_in_N6
@@ -360,6 +493,7 @@ sampleBackgrounds:
         outputFolder: ''
         _outputs: {}
         isSampleDataFile: true
+      isSampleDataFile: false
       name: HDO,_Can_N6
       outputFolders: {}
       _outputs: {}
@@ -412,7 +546,8 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
+        isSampleDataFile: false
         name: N6
         outputFolders: {}
         _outputs: {}
@@ -438,9 +573,11 @@ sampleBackgrounds:
       scatteringFraction: 1.0
       attenuationCoefficient: 0.0
       outputFolder: ''
-    outputFolder: ''
-    sampleFile: ''
+    outputFolder: /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6
+    sampleFile: 
+      /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/HDO,_Can_N6/HDO_Can_N6.sample
     selfScatteringFilePath: ''
+    _referenceDataFile: /Users/noella/Documents/dev/gp-test/dissolve-water/water-orig/HDO-SimulatedFR.r
   - name: Null_Water,_Can_N8
     periodNumber: 1
     dataFiles:
@@ -449,7 +586,29 @@ sampleBackgrounds:
         name: NIMROD00016742_NullWater_in_N8
         ext: .raw
         outputFolder: ''
-        _outputs: {}
+        _outputs:
+          .smomon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.smomon'
+          .samrat: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.samrat'
+          .gud: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.gud'
+          .trans01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.trans01'
+          .rawtrans: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.rawtrans'
+          .bak: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.bak'
+          .mut01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.mut01'
+          .gr2: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.gr2'
+          .mul01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.mul01'
+          .chksum: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.chksum'
+          .mgor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.mgor01'
+          .abs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.abs01'
+          .dcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.dcs01'
+          .mdor01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.mdor01'
+          .sub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.sub01'
+          .mint01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.mint01'
+          .pla01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.pla01'
+          .gr1: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.gr1'
+          .rawmon: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.rawmon'
+          .mdcs01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Outputs/NIMROD00016742_NullWater_in_N8.mdcs01'
+          .msub01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.msub01'
+          .transnofit01: '/Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/NIMROD00016742_NullWater_in_N8/Diagnostics/NIMROD00016742_NullWater_in_N8.transnofit01'
         isSampleDataFile: true
       - filename: NIMROD00016744_NullWater_in_N8.raw
         name: NIMROD00016744_NullWater_in_N8
@@ -457,6 +616,7 @@ sampleBackgrounds:
         outputFolder: ''
         _outputs: {}
         isSampleDataFile: true
+      isSampleDataFile: false
       name: Null_Water,_Can_N8
       outputFolders: {}
       _outputs: {}
@@ -509,7 +669,8 @@ sampleBackgrounds:
           ext: .raw
           outputFolder: ''
           _outputs: {}
-          isSampleDataFile: true
+          isSampleDataFile: false
+        isSampleDataFile: false
         name: N8
         outputFolders: {}
         _outputs: {}
@@ -535,8 +696,10 @@ sampleBackgrounds:
       scatteringFraction: 1.0
       attenuationCoefficient: 0.0
       outputFolder: ''
-    outputFolder: ''
-    sampleFile: ''
+    outputFolder: /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8
+    sampleFile: 
+      /Users/noella/Documents/dev/gp-test/water-updated/Gudrun/Null_Water,_Can_N8/Null_Water_Can_N8.sample
     selfScatteringFilePath: ''
+    _referenceDataFile: ''
   outputFolder: ''
 GUI: {useComponents: false}

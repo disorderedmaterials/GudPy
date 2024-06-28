@@ -2,14 +2,13 @@ from abc import abstractmethod
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import QPoint, QPointF
 
+from core import data
 from core.gud_file import GudFile
 
 
-class Point():
+class GuiPoint(data.Point):
     def __init__(self, x, y, err):
-        self.x = x
-        self.y = y
-        self.err = err
+        super().__init__(x=x, y=y, err=err)
 
     def toQPointF(self):
         return QPointF(self.x, self.y)
@@ -18,16 +17,12 @@ class Point():
         return QPoint(self.x, self.y)
 
 
-class GudPyPlot():
+class GudPyPlot(data.DataSet):
     # mint01 / mdcs01 / mdor01 / mgor01 / dcs
     def __init__(self, path, exists):
-        if not exists:
-            self.dataSet = None
-        else:
-            self.dataSet = self.constructDataSet(path)
+        super().__init__(path=path, exists=exists)
 
-    @abstractmethod
-    def constructDataSet(self, path):
+    def constructDataSet(self, path, lim=None):
         dataSet = []
         with open(path, "r", encoding="utf-8") as fp:
             for dataLine in fp.readlines():
@@ -36,8 +31,18 @@ class GudPyPlot():
                 if dataLine[0] == "#":
                     continue
 
-                x, y, err, *__ = [float(n) for n in dataLine.split()]
-                dataSet.append(Point(x, y, err))
+                splitLine = [float(n) for n in dataLine.split()]
+                if len(splitLine) > 2:
+                    x, y, err, *__ = splitLine
+                    if lim and x > lim:
+                        return dataSet
+                    dataSet.append(GuiPoint(x, y, err))
+                else:
+                    x, y = splitLine
+                    if lim and x > lim:
+                        return dataSet
+                    dataSet.append(GuiPoint(x, y))
+
         return dataSet
 
     def toQPointList(self):

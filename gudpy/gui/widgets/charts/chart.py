@@ -37,6 +37,7 @@ class GudPyChart(QChart):
     def disconnectMarkers(self):
         for marker in self.legend().markers():
             try:
+
                 marker.clicked.disconnect(self.handleMarkerClicked)
             except RuntimeError:
                 continue

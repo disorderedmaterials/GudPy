@@ -35,7 +35,7 @@ class GudPyIO:
 
     @classmethod
     def projectName(cls) -> str:
-        return os.path.dirname(cls.projectDir)
+        return os.path.basename(cls.projectDir)
 
     @classmethod
     def autosavePath(cls) -> str:
@@ -202,7 +202,8 @@ class GudPyIO:
                     # Exception caused by yaml parsing library
                     raise YAMLException(f"Invalid YAML file: {str(e)}")
                 except Exception as e:
-                    raise YAMLException(f"Failed at: '{k}'. Details: {e}")
+                    raise YAMLException(
+                        f"Failed at: '{k}'. Details: {e}")
         return gudrunFile
 
     def _writeYAML(self, gudrunFile: GudrunFile, path: str) -> None:
@@ -262,6 +263,10 @@ class GudPyIO:
             if isinstance(obj.__dict__[key], Enum):
                 setattr(obj, key, type(obj.__dict__[key])[val])
                 return
+
+            if key == "outputFolder":
+                if not os.path.exists(val):
+                    return
 
             setattr(obj, key, type(obj.__dict__[key])(self.toBuiltin(val)))
         except Exception as e:
@@ -374,9 +379,13 @@ class GudPyIO:
             dataFile = DataFile(df["filename"])
             for k, v in df.items():
                 if k == "_outputs":
+                    if not v:
+                        dataFile._outputs = {}
+                        continue
                     outDict = {}
-                    for k_, v_ in v:
-                        outDict[k_] = v_
+                    for k_, v_ in v.items():
+                        if os.path.exists(v_):
+                            outDict[k_] = v_
                     dataFile._outputs = outDict
                 else:
                     self._assignYamlToAttr(dataFile, k, v)

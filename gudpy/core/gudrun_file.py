@@ -168,6 +168,14 @@ class GudrunFile:
             for s in sb.samples
             if s.runThisSample]
 
+    def samples(self):
+        return [
+            s for sb in self.sampleBackgrounds
+            for s in sb.samples]
+
+    def containers(self):
+        return [c for s in self.samples() for c in s.containers]
+
     def checkNormDataFiles(self):
         return (len(self.normalisation.dataFiles)
                 and len(self.normalisation.dataFilesBg))

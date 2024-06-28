@@ -488,17 +488,20 @@ class InelasticitySubtraction(Iterator):
         # relevant to the specified scale
         if self.iterationCount == 0:
             return
-        for sampleBackground in gudrunFile.sampleBackgrounds:
-            for sample in sampleBackground.samples:
-                if sample.runThisSample and len(sample.dataFiles):
-                    if scale == Scales.Q:
-                        targetFile = sample.dataFiles[0].msubwFile
-                    else:
-                        targetFile = sample.dataFiles[0].mintFile
-                    sample.fileSelfScattering = (
-                        os.path.basename(targetFile)
+        for sample in gudrunFile.runSamples():
+            if len(sample.dataFiles):
+                if scale == Scales.Q:
+                    targetFile = sample.dataFiles[0].msubwFile
+                else:
+                    targetFile = sample.dataFiles[0].mintFile
+                if not targetFile:
+                    raise RuntimeError(
+                        "There was an issue with Gudrun, please try again."
                     )
-                    sample.selfScatteringFilePath = targetFile
+                sample.fileSelfScattering = (
+                    os.path.basename(targetFile)
+                )
+                sample.selfScatteringFilePath = targetFile
 
     def wavelengthIteration(self, gudrunFile):
         """
@@ -568,7 +571,7 @@ class InelasticitySubtraction(Iterator):
             self.iterationCount += 1
         else:
             self.QIteration(gudrunFile)
-            self.nCurrent += 1
+        self.nCurrent += 1
         return gudrunFile
 
     def organiseOutput(self, gudrunFile, exclude=[]):

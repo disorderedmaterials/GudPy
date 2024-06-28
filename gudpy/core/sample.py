@@ -1,3 +1,5 @@
+import os
+
 from core.utils import bjoin, numifyBool
 from core.data_files import DataFiles
 from core.composition import Composition
@@ -7,6 +9,7 @@ from core.enums import (
 )
 from core import utils
 from core import config
+from core import data
 
 
 class Sample:
@@ -145,16 +148,47 @@ class Sample:
         self.containers = []
 
         self.yamlignore = {
-            "yamlignore"
+            "yamlignore",
         }
 
         self.outputFolder = ""
         self.sampleFile = ""
         self.selfScatteringFilePath = ""
 
+        self._referenceDataFile = ""
+
     @property
     def gudFile(self):
+        if not self.dataFiles:
+            return None
         return self.dataFiles[0].gudFile
+
+    @property
+    def referenceDataFile(self):
+        return self._referenceDataFile
+
+    @referenceDataFile.setter
+    def referenceDataFile(self, path):
+        self._referenceDataFile = path
+
+    @property
+    def referenceData(self):
+        return data.NpDataSet(self._referenceDataFile)
+
+    def mse(self, limit=None):
+        if not self.dataFiles or not self.dataFiles[0].mintFile:
+            return None
+        if not os.path.exists(self.dataFiles[0].mintFile):
+            return None
+        if (not self.referenceDataFile
+           or not os.path.exists(self.referenceDataFile)):
+            return None
+        try:
+            refData = data.NpDataSet(self.referenceDataFile, lim=limit)
+            expData = data.NpDataSet(self.dataFiles[0].mintFile, lim=limit)
+        except TypeError:
+            return None
+        return data.meanSquaredError(refData, expData)
 
     def pathName(self):
         return utils.replace_unwanted_chars(self.name).translate(

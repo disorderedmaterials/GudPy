@@ -3,7 +3,6 @@ from PySide6.QtCore import QPoint, QPointF
 
 
 class BeamChart(QChart):
-
     def __init__(self):
         super().__init__()
         self.legend().setVisible(False)

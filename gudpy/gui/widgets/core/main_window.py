@@ -16,6 +16,7 @@ from gui.widgets.dialogs.iterators import (
     ThicknessIterationDialog,
     TweakFactorIterationDialog,
 )
+from gui.widgets.core.optimise_tab import OptimiseTab
 
 from gui.widgets.dialogs.purge import PurgeDialog
 from gui.widgets.dialogs.view_input_dialog import ViewInputDialog
@@ -104,6 +105,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
 
         self.allPlots = []
         self.plotModes = {}
+
+        self.optimiseTab = OptimiseTab(self)
 
         self.initComponents()
 
@@ -322,6 +325,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.insertContainerMenu.addMenu(
             insertContainerFromTemplate
         )
+        self.ui.tabWidget.addTab(self.optimiseTab, "Optimise")
+
+        self.ui.runContainersAsSamples.setEnabled(False)
 
         self.setActionsEnabled(False)
         self.ui.tabWidget.setVisible(False)
@@ -365,6 +371,22 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.beamSlots.setBeam(self.gudrunFile.beam)
         self.componentSlots.setComponents(self.gudrunFile.components)
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
+        self.optimiseTab.setSamples(self.gudrunFile.runSamples())
+
+        if not self.allPlots:
+            allTopChart = GudPyChart()
+            samples = [*gudrunFile.samples(), *gudrunFile.containers()]
+            allTopChart.addSamples(samples)
+            allTopChart.plot(
+                self.ui.allPlotComboBox.itemData(
+                    self.ui.allPlotComboBox.currentIndex()
+                )
+            )
+            allBottomChart = GudPyChart()
+            allBottomChart.addSamples(samples)
+            self.allPlots = [allTopChart, allBottomChart]
+            self.ui.allSampleTopPlot.setChart(allTopChart)
+            self.ui.allSampleBottomPlot.setChart(allBottomChart)
 
         if len(self.gudrunFile.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(
@@ -388,6 +410,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.objectTree.buildTree(self.gudrunFile, self)
         self.ui.objectTree.model().dataChanged.connect(
             self.handleObjectsChanged
+        )
+        self.ui.objectTree.model().dataChanged.connect(
+            lambda: self.optimiseTab.setSamples(self.gudrunFile.runSamples())
         )
         self.updateResults()
         self.widgetsRefreshing = False
@@ -428,6 +453,9 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.containerCompositionTable.farmCompositions()
 
     def focusResult(self):
+        if not self.gudrunFile.outputFolder:
+            return
+
         self.updateSamples()
 
         if self.ui.objectStack.currentIndex() == 5 and isinstance(
@@ -566,6 +594,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
+            if sample in self.results.keys():
+                continue
             topChart = GudPyChart()
             topChart.addSample(sample)
             bottomChart = GudPyChart()
@@ -589,6 +619,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 topChart, bottomChart, gf if gf else None]
 
     def updateAllSamples(self):
+        return
         samples = [
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),
@@ -740,7 +771,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.new_.setEnabled(state)
         self.ui.checkFilesExist.setEnabled(state)
         self.ui.runFilesIndividually.setEnabled(state)
-        self.ui.runContainersAsSamples.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(False)
+        self.optimiseTab.setEnabled(state)
 
     def setActionsEnabled(self, state):
         self.setTreeActionsEnabled(state)
@@ -751,7 +783,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.runFilesIndividually.setEnabled(state)
         self.ui.checkFilesExist.setEnabled(state)
         self.ui.runFilesIndividually.setEnabled(state)
-        self.ui.runContainersAsSamples.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(False)
         self.ui.batchProcessing.setEnabled(state)
         self.ui.viewLiveInputFile.setEnabled(state)
         self.ui.save.setEnabled(state & self.modified)
