@@ -165,35 +165,15 @@ class BayesianOptimisation:
             cli.echoIndent(f"MSE: {error}\n")
         return error
 
-    def tweakExponent(self, exponents):
-        cli.echoIndent("Running parameters: " + str(exponents))
+    def optimiseSample(self):
+        for sample in self.gudrunFile.runSamples():
+            if sample.name != self.sample.name:
+                sample.runThisSample = False
+            else:
+                sample.runThisSample = True
 
-        Amplitude1, Decay1 = exponents[:2]
-        Amplitude2, Decay2 = exponents[:2]
-
-        self.sample.exponentialValues = []
-        self.sample.exponentialValues.append(
-            [Amplitude1, Decay1, 0.0]
-        )
-        self.sample.exponentialValues.append(
-            [Amplitude2, Decay2, 0.0]
-        )
-
-        error = data.meanSquaredError(self.actual, self.simulation)
-        print(f"init error {error}")
-
-        mintFile = self.gudrun.gudrunOutput.output(
-            name=self.sample.name,
-            dataFile=self.sample.dataFiles[0],
-            type=".mint01"
-        )
-
-        self.actual = data.NpDataSet(mintFile, self.LIMIT)
-
-        self.actual = data.DataSet(mintFile, True, self.LIMIT)
-        error = data.meanSquaredError(self.actual, self.simulation)
-
-    def optimise(self, ncalls=15):
+        initError = self.sample.mse(limit=self.limit)
+        initExp = self.sample.exponentialValues
         paramSpace = [
             skopt.space.Real(0, 3, name='amplitdute1'),
             skopt.space.Real(0, 5, name='decay1'),
