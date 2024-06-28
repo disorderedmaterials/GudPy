@@ -92,7 +92,7 @@ class GudFile:
             raise ParserException(f"Attempted to parse {path}" +
                                   "\nOnly .gud files can be parsed.")
 
-        if not os.path.isfile(path):
+        if not os.path.exists(path):
             raise ParserException(f"{path} is not a valid path.")
 
         self.path = path

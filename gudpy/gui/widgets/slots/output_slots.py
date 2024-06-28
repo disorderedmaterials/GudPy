@@ -131,7 +131,7 @@ class OutputTreeModel(QAbstractItemModel):
             self.addChild(root, sbgNode)
 
     def _setupDictData(self, output, gudrunFile):
-        for key, value in output:
+        for key, value in output.items():
             iterationOutput = OutputNode(key, value)
             self.addChild(self._root, iterationOutput)
             self._setupSingleData(iterationOutput, value, gudrunFile)

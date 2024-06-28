@@ -297,6 +297,8 @@ class GudPyIO:
         for k, v in yamldict.items():
             if k == "dataFiles":
                 dataFiles = self._parseYamlDataFiles(v)
+                for dataFile in dataFiles:
+                    dataFile.isSampleDataFile = True
                 setattr(sample, k, dataFiles)
             elif k == "composition":
                 composition = self._parseYamlComposition(v)

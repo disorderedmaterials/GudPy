@@ -1,50 +1,11 @@
 import os
 import shutil
-import typing
-from dataclasses import dataclass
 import tempfile
 
 import core.utils as utils
 from core.gud_file import GudFile
 from core.gudrun_file import GudrunFile
 from core.io.gudpy_io import GudPyIO
-
-
-@dataclass
-class SampleOutput:
-    sampleFile: str
-    gudFile: GudFile
-    outputs: typing.Dict[str, typing.Dict[str, str]]
-    diagnostics: typing.Dict[str, typing.Dict[str, str]]
-
-
-@dataclass
-class GudrunOutput:
-    path: str
-    inputFilePath: str
-    sampleOutputs: typing.Dict[str, SampleOutput]
-
-    def gudFiles(self) -> list[str]:
-        return [so.gudFile for so in self.sampleOutputs.values()]
-
-    def gudFile(self, idx: int = None, *, name: str = None) -> GudFile:
-        try:
-            if idx is not None:
-                asList = list(self.sampleOutputs.values())
-                return asList[idx].gudFile
-            elif name is not None:
-                return self.sampleOutputs[name].gudFile
-        except KeyError:
-            return None
-
-    def output(self, name: str, dataFile: str, type: str) -> str:
-        try:
-            if type in GudrunOutputHandler.outputExts:
-                return (self.sampleOutputs[name].outputs[dataFile][type])
-            else:
-                return (self.sampleOutputs[name].diagnostics[dataFile][type])
-        except KeyError:
-            return None
 
 
 class OutputHandler:
@@ -133,23 +94,27 @@ class GudrunOutputHandler(OutputHandler):
         )
 
         self.overwrite = overwrite
-        # Append head to path
-        self.outputDir = os.path.join(self.outputDir, f"{head}")
+        self.parentDir = self.outputDir
 
         # List of run samples
         self.samples = []
         # Directory where Gudrun files are outputted (temp)
         self.gudrunDir = self.procDir
         self.gudrunFile = gudrunFile
-        self.gudrunFile.outputFolder = self.outputDir
+        self.head = head
 
         # Make sure it is a temporary directory
         assert (self.gudrunDir.startswith(tempfile.gettempdir()))
         # Temporary output dir paths
         self.tempOutDir = os.path.join(self.gudrunDir, "Gudrun")
         if head:
+            # Append head to path
+            self.outputDir = os.path.join(
+                self.outputDir, head)
             self.tempOutDir = os.path.join(
-                self.tempOutDir, f"{head}")
+                self.tempOutDir, head)
+
+        self.gudrunFile.outputFolder = self.outputDir
 
         # Files that have been copied
         self.copiedFiles = []
@@ -163,32 +128,23 @@ class GudrunOutputHandler(OutputHandler):
 
     def organiseOutput(self, exclude: list[str] = []):
         """Organises Gudrun outputs
-
-        Returns
-        -------
-        GudrunOutput : GudrunOutput
-            Dataclass containing information about important paths
         """
+
         # Create normalisation and sample background folders
         self._createNormDir(self.tempOutDir)
         self._createSampleBgDir(self.tempOutDir)
         # Create sample folders
-        sampleOutputs = self._createSampleDir(self.tempOutDir)
+        self._createSampleDir(self.tempOutDir)
         # Create additonal output folders
-        inputFilePath = self._createAddOutDir(self.tempOutDir, exclude)
+        self._createAddOutDir(self.tempOutDir, exclude)
 
         # If overwrite, move previous directory
-        if self.overwrite and os.path.exists(self.outputDir):
+        if self.overwrite and os.path.exists(self.parentDir):
             with tempfile.TemporaryDirectory() as tmp:
-                shutil.move(self.outputDir, os.path.join(tmp, "prev"))
+                shutil.move(self.parentDir, os.path.join(tmp, "prev"))
 
         # Move over folders to output directory
-        shutil.move(self.tempOutDir, utils.uniquify(self.outputDir))
-
-        return GudrunOutput(path=self.outputDir,
-                            inputFilePath=inputFilePath,
-                            sampleOutputs=sampleOutputs
-                            )
+        shutil.move(self.tempOutDir, self.outputDir)
 
     def _createNormDir(self, dest: str):
         """
@@ -262,14 +218,8 @@ class GudrunOutputHandler(OutputHandler):
             of their useful outputs
 
         """
-        sampleOutputs = {}
         # Create sample folders within background folders
         for sample in self.samples:
-            sampleFile = ""
-            gudFile = None
-            sampleOutput = {}
-            sampleDiag = {}
-
             samplePath = os.path.join(
                 dest,
                 utils.replace_unwanted_chars(sample.name)
@@ -281,10 +231,6 @@ class GudrunOutputHandler(OutputHandler):
                     samplePath,
                     utils.replace_unwanted_chars(sample.name)
                 )
-                if idx == 0:
-                    gudFile = gf
-                sampleOutput[dataFile] = out
-                sampleDiag[dataFile] = diag
 
             # Copy over .sample file
             if os.path.exists(os.path.join(
@@ -296,14 +242,27 @@ class GudrunOutputHandler(OutputHandler):
                 )
                 self.copiedFiles.append(sample.pathName())
 
+            # Find self scattering file if it exists
+            if sample.fileSelfScattering:
+                msubw01File = diag.get(".msubw01", None)
+                if msubw01File and (
+                    os.path.basename(msubw01File) == sample.fileSelfScattering
+                ):
+                    sample.selfScatteringFilePath = msubw01File
+
+            # Find cross section file if it exists
+            if sample.fileSelfScattering:
+                msubw01File = diag.get(".msubw01", None)
+                if msubw01File and (
+                    os.path.basename(msubw01File) == sample.fileSelfScattering
+                ):
+                    sample.selfScatteringFilePath = msubw01File
+
             # Path to sample file output
-            sampleFile = os.path.join(
+            sample.sampleFile = os.path.join(
                 self.outputDir,
                 utils.replace_unwanted_chars(sample.name),
                 sample.pathName())
-
-            sampleOutputs[sample.name] = SampleOutput(
-                sampleFile, gudFile, sampleOutput, sampleDiag)
 
             sample.outputFolder = os.path.join(
                 self.outputDir,
@@ -321,7 +280,6 @@ class GudrunOutputHandler(OutputHandler):
                          if container.name != "CONTAINER"
                          else "Container")
                     )
-        return sampleOutputs
 
     def _createAddOutDir(self, dest: str, exclude: list[str] = []):
         """

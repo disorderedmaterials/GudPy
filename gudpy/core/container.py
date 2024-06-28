@@ -114,6 +114,10 @@ class Container:
         if config:
             self.parseFromConfig(config)
 
+    @property
+    def gudFile(self):
+        return None
+
     def __str__(self):
         """
         Returns the string representation of the Container object.
