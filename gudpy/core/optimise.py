@@ -32,7 +32,7 @@ class InelasticityOptimisation:
 
         self.mseRec = {}
 
-        for sample in self.gudrunIterator.gudrunFile.samples():
+        for sample in self.gudrunFile.samples():
             sample.runThisSample = False
             if sample.name in [s.name for s in samples]:
                 sample.runThisSample = True
@@ -42,13 +42,17 @@ class InelasticityOptimisation:
             self.mse[sample.name]["initial"] = copy.deepcopy(sample)
             self.results[sample.name] = {}
 
+    @property
+    def gudrunFile(self):
+        return self.gudrunIterator.gudrunFile
+
     def optimise(self):
         projectDir = gudpy_io.GudPyIO.projectDir
         gudpy_io.GudPyIO.projectDir = os.path.join(projectDir, "Optimise")
 
         for gudrun in self.gudrunIterator.gudrunObjects:
             exitcode, error = self.gudrunIterator.singleIteration(
-                self.gudrunIterator.gudrunFile, gudrun, self.purge)
+                self.gudrunFile, gudrun, self.purge)
             self.exitcode = exitcode
             if exitcode:  # An exit code != 0 indicates failure
                 self.error = error
@@ -62,7 +66,7 @@ class InelasticityOptimisation:
             self.results[sample.name]["bestSample"] = (
                 self.mse[sample.name]["initial"]
             )
-            self.results[sample.name]["bestIt"] = "initial"
+            self.results[sample.name]["bestIt"] = "None"
             for iteration, sample in self.mse[sample.name].items():
                 if (sample.mse()
                         < self.results[sample.name]["bestSample"].mse()):
@@ -98,10 +102,10 @@ class BayesianOptimisation:
         self.nCalls = nIters
         self.nIters = nIters * len(samples)
         self.purge = purge
-        self.gudrunFile = gudrunFile
+        self.gudrunFile = copy.deepcopy(gudrunFile)
         self.samples = []
         self.sample = None
-        self.nCurrent = 0
+        self.nCurrent = 1
         self.mse = None
         self.result = None
 
@@ -117,7 +121,7 @@ class BayesianOptimisation:
         self.gudrun = gudpy.Gudrun()
         self.gudrunObjects = []
         self.gudrunQueue = []
-        for _ in range(nIters + len(self.samples)):
+        for _ in range(nIters * len(self.samples)):
             self.gudrunQueue.append(gudpy.Gudrun())
 
         self.simulation = data.NpDataSet(
@@ -166,6 +170,7 @@ class BayesianOptimisation:
         return error
 
     def optimiseSample(self):
+        self.mse = None
         for sample in self.gudrunFile.runSamples():
             if sample.name != self.sample.name:
                 sample.runThisSample = False
@@ -190,6 +195,7 @@ class BayesianOptimisation:
         )
         self.result = result
         mse = round(result.fun, 5)
+        self.mse = mse
         optExponents = [result.x[0:2] + [0.0],
                         result.x[2:] + [0.0]]
 
@@ -197,10 +203,12 @@ class BayesianOptimisation:
 
         if initError < mse:
             optExponents = initExp
+            self.mse = initError
 
         return optExponents
 
     def optimise(self):
+        projectFolder = gudpy_io.GudPyIO.projectDir
         try:
             for sample in self.samples:
                 self.sample = sample
@@ -210,9 +218,16 @@ class BayesianOptimisation:
                     sample.dataFiles[0].mintFile, self.limit)
                 optExponents = self.optimiseSample()
                 self.sample.exponentialValues = optExponents
-                self.nCurrent = 0
-            self.nCurrent = 0
+                self.nCurrent = 1
+            self.nCurrent = "Final Run"
+            for sample in self.gudrunFile.samples():
+                sample.runThisSample = True
+            outputPath = os.path.join(projectFolder, "Optimise", "Exponents")
+            gudpy_io.GudPyIO.projectDir = outputPath
+            self.gudrun.gudrun(gudrunFile=self.gudrunFile, purge=self.purge)
+            gudpy_io.GudPyIO.projectDir = projectFolder
         except exc.GudrunException as e:
+            gudpy_io.GudPyIO.projectDir = projectFolder
             self.error = e.args
             return (1, e)
         return (0, "")

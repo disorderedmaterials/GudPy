@@ -272,13 +272,14 @@ class GudrunOutputHandler(OutputHandler):
 
             # Create container folders within sample folder
             for container in sample.containers:
+                name = (utils.replace_unwanted_chars(container.name)
+                        if container.name != "CONTAINER"
+                        else "Container")
                 for dataFile in container.dataFiles:
-                    self._copyOutputs(
+                    self._copyOutputsByExt(
                         dataFile,
-                        samplePath,
-                        (utils.replace_unwanted_chars(container.name)
-                         if container.name != "CONTAINER"
-                         else "Container")
+                        os.path.join(samplePath, name),
+                        name
                     )
 
     def _createAddOutDir(self, dest: str, exclude: list[str] = []):

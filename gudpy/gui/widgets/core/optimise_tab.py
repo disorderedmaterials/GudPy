@@ -1,6 +1,5 @@
 from PySide6 import QtWidgets, QtCore
 import os
-import copy
 import shutil
 
 from core import utils
@@ -55,7 +54,11 @@ class SampleWidget(QtWidgets.QWidget):
 
     def checkFile(self):
         if not os.path.exists(self.lineEdit.text()):
-            self.lineEdit.setStyleSheet("color: red;")
+            if self.runSample:
+                self.sampleNameLabel.setStyleSheet("color: darkRed;")
+            else:
+                self.sampleNameLabel.setStyleSheet("")
+            self.sample.referenceDataFile = ""
         else:
             self.lineEdit.setStyleSheet("")
             self.sample.referenceDataFile = self.lineEdit.text()
@@ -72,7 +75,7 @@ class OptimiseResultsModel(QtCore.QAbstractTableModel):
 
     def rowCount(
             self, parent: QtCore.QModelIndex) -> int:
-        return len(self.samples)
+        return len(self.initSamples)
 
     def columnCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.headings)
@@ -85,18 +88,27 @@ class OptimiseResultsModel(QtCore.QAbstractTableModel):
             else:
                 return ""
 
-    def setSamples(self, samples):
-        self.samples = samples
-        if not self.initSamples:
-            self.initSamples = []
-            for s in samples:
-                self.initSamples.append(copy.deepcopy(s))
+    def setSamples(self, initSamples):
+        self.initSamples = initSamples
         bottomRight = self.createIndex(len(self.samples), len(self.headings))
         self.dataChanged.emit(self.createIndex(0, 0), bottomRight)
+
+    def setResults(self, resultSamples):
+        self.samples = []
+        for s in self.initSamples:
+            for rs in resultSamples:
+                if rs.name == s.name:
+                    self.samples.append(rs)
 
     def refresh(self):
         bottomRight = self.createIndex(len(self.samples), len(self.headings))
         self.dataChanged.emit(self.createIndex(0, 0), bottomRight)
+
+    def round(self, val, precision):
+        try:
+            return round(val, precision)
+        except TypeError:
+            return "-"
 
 
 class OptimiseExponents(QtWidgets.QGroupBox):
@@ -109,23 +121,27 @@ class OptimiseExponents(QtWidgets.QGroupBox):
         def data(self, index: QtCore.QModelIndex, role: int):
             if role == QtCore.Qt.DisplayRole:
                 if index.column() == 0:
-                    return self.samples[index.row()].name
+                    return self.initSamples[index.row()].name
                 if index.column() == 1:
                     if not self.initSamples[index.row()].mse(
                             self.limitSpinBox.value()):
                         return "-"
-                    return str(round(self.initSamples[index.row()].mse(
+                    return str(self.round(self.initSamples[index.row()].mse(
                         self.limitSpinBox.value()), 5))
                 if index.column() == 2:
+                    if not self.samples:
+                        return "-"
                     if not self.samples[index.row()].mse(
                             self.limitSpinBox.value()):
                         return "-"
-                    return str(round(self.samples[index.row()].mse(
+                    return str(self.round(self.samples[index.row()].mse(
                         self.limitSpinBox.value()), 5))
                 if index.column() == 3:
                     rounded = ""
-                    for set in self.samples[index.row()].exponentialValues:
-                        roundedSet = [round(v, 3) for v in set]
+                    samples = (self.samples if self.samples
+                               else self.initSamples)
+                    for set in samples[index.row()].exponentialValues:
+                        roundedSet = [self.round(v, 3) for v in set]
                         if rounded:
                             rounded += ", "
                         rounded += str(roundedSet)
@@ -203,15 +219,24 @@ class OptimiseExponents(QtWidgets.QGroupBox):
 
     def setSamples(self, samples):
         self.resultsModel.setSamples(samples)
+        self.resultsModel.refresh()
+
+    def setResults(self, resultSamples):
+        self.resultsModel.setResults(resultSamples)
+        self.resultsModel.refresh()
+        self.setParamsButton.setEnabled(True)
+        self.exportDataButton.setEnabled(True)
 
     def setParameters(self, gudrunFile):
         for optSample in self.resultsModel.samples:
-            for sample in gudrunFile.samples:
+            for sample in gudrunFile.samples():
                 if optSample.name == sample.name:
                     sample.exponentialValues = optSample.exponentialValues
-        message = QtWidgets.QMessageBox(
-            title="GudPy Info",
-            text="New parameters applied to the samples.")
+        message = QtWidgets.QMessageBox()
+        message.setWindowTitle("GudPy Info")
+        message.setText(
+            "New parameters applied to the samples. " +
+            "Run Gudrun to apply the changes.")
         message.exec()
 
     def exportData(self):
@@ -236,18 +261,20 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
 
         def data(self, index: QtCore.QModelIndex, role: int):
             if role == QtCore.Qt.DisplayRole:
-                sample = self.samples[index.row()]
+                sample = self.initSamples[index.row()]
                 if index.column() == 0:
                     return sample.name
                 if index.column() == 1:
-                    if not self.initSamples[index.row()].mse():
+                    if not sample.mse():
                         return "-"
-                    return str(round(self.initSamples[index.row()].mse(), 5))
+                    return str(self.round(sample.mse(), 5))
                 if index.column() == 2:
                     if not self.results.get(sample.name, None):
-                        return "-"
+                        if not sample.mse():
+                            return "-"
+                        return str(self.round(sample.mse(), 5))
                     bestSamp = self.results[sample.name]["bestSample"]
-                    return str(round(bestSamp.mse(), 5))
+                    return str(self.round(bestSamp.mse(), 5))
                 if index.column() == 3:
                     if not self.results.get(sample.name, None):
                         return "-"
@@ -265,6 +292,7 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
         self.resultsLayout = QtWidgets.QHBoxLayout()
 
         self.resultsTable = QtWidgets.QTableView()
+
         self.resultsModel = self.OptimiseInelasticityResultsModel()
         self.resultsTable.setModel(self.resultsModel)
         self.resultsModel.dataChanged.connect(self.resultsTable.update)
@@ -272,10 +300,12 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
             QtWidgets.QHeaderView.ResizeMode.ResizeToContents
         )
         self.resultsTable.verticalHeader().hide()
+        self.resultsTable.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeMode.Stretch
+        )
         self.resultsTable.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.resultsLayout.addWidget(self.resultsTable)
-
         self.inelasticityLayout.addItem(self.resultsLayout)
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
@@ -294,8 +324,10 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
 
     def setSamples(self, samples):
         self.resultsModel.setSamples(samples)
+        self.resultsModel.refresh()
 
-    def setResults(self, results: dict):
+    def setResults(self, resultSamples, results: dict):
+        self.resultsModel.setResults(resultSamples)
         self.resultsModel.results = results
         self.resultsModel.refresh()
         self.exportDataButton.setEnabled(True)
@@ -319,17 +351,6 @@ class OptimiseInelasticity(QtWidgets.QGroupBox):
                 dirname, os.path.basename(mintFile)))
 
 
-class SampleReferenceTable(QtWidgets.QTableWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._parent = parent
-        self.samples = []
-
-    def setSamples(self, samples):
-        self.setRowCount(len(samples))
-        self.setColumnCount(4)
-
-
 class OptimiseTab(QtWidgets.QWidget):
     runOptimiseExponents = QtCore.Signal(int)
     runOptimiseInelasticity = QtCore.Signal(int)
@@ -338,7 +359,7 @@ class OptimiseTab(QtWidgets.QWidget):
         super().__init__(parent)
         self._parent = parent
         self.samples = []
-        self.sampleWidgets = []
+        self.sampleWidgets = {}
         self.mainLayout = QtWidgets.QVBoxLayout()
 
         self.sampleGroupBox = QtWidgets.QGroupBox(
@@ -382,7 +403,7 @@ class OptimiseTab(QtWidgets.QWidget):
         if samples == self.samples:
             return
 
-        runSamples = [sw.sample for sw in self.sampleWidgets if sw.runSample]
+        self.samples = samples
 
         while self.sampleLayout.count():
             item = self.sampleLayout.takeAt(0)
@@ -390,40 +411,42 @@ class OptimiseTab(QtWidgets.QWidget):
             if widget is not None:
                 widget.deleteLater()
 
-        self.sampleWidgets = []
-
         for sample in samples:
-            sampleWidget = SampleWidget(self._parent, sample)
-            if sample not in runSamples:
-                sampleWidget.checkBox.setChecked(False)
-            else:
-                sampleWidget.checkBox.setChecked(True)
-            sampleWidget.refDataSet.connect(
-                lambda: (
-                    self.exponentialGroupBox.resultsModel.setSamples(
-                        self.samples)))
-            sampleWidget.refDataSet.connect(
-                lambda: (
-                    self.inelasticityGroupBox.resultsModel.setSamples(
-                        self.samples)))
-            self.sampleWidgets.append(sampleWidget)
+            sampleWidget = self.sampleWidgets.get(sample.name)
+            if not sampleWidget:
+                sampleWidget = SampleWidget(self._parent, sample)
+                sampleWidget.refDataSet.connect(
+                    lambda: (
+                        self.exponentialGroupBox.resultsModel.setSamples(
+                            self.samples)))
+                sampleWidget.refDataSet.connect(
+                    lambda: (
+                        self.inelasticityGroupBox.resultsModel.setSamples(
+                            self.samples)))
+            self.sampleWidgets[sample.name] = sampleWidget
             self.sampleLayout.addWidget(sampleWidget)
+
+        for sname in self.sampleWidgets.keys():
+            if sname not in [s.name for s in samples]:
+                self.sampleWidgets.pop(sname, None)
 
         if not self._parent.widgetsRefreshing:
             self._parent.setModified()
 
     def setResults(self, samples, optimiser):
-        self.exponentialGroupBox.setSamples(samples)
+        self.exponentialGroupBox.setResults(samples)
 
         if isinstance(optimiser, opt.InelasticityOptimisation):
-            self.inelasticityGroupBox.setResults(optimiser.results)
+            self.inelasticityGroupBox.setResults(samples, optimiser.results)
 
         if not self._parent.widgetsRefreshing:
             self._parent.setModified()
 
     def validateRun(self):
-        for sw in self.sampleWidgets:
+        sampleSelected = False
+        for sw in self.sampleWidgets.values():
             if sw.runSample:
+                sampleSelected = True
                 if not sw.sample.referenceDataFile:
                     self._parent.sendError(
                         f"Reference data not provided for {sw.sample.name}"
@@ -435,6 +458,11 @@ class OptimiseTab(QtWidgets.QWidget):
                         "Please run Gudrun before optimising."
                     )
                     return False
+        if not sampleSelected:
+            self._parent.sendError(
+                "No samples selected"
+            )
+            return False
         return True
 
     def handleOptimiseExponentsButton(self):

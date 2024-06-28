@@ -2,7 +2,6 @@ import os
 import sys
 import traceback
 import typing as typ
-import copy
 
 from PySide6 import QtCore, QtWidgets
 
@@ -561,8 +560,6 @@ class GudPyController(QtCore.QObject):
             return
 
         if exitcode != 0:
-            print(self.workerThread.gudrunIterator.gudrunFile.runSamples(
-            )[0].dataFiles[0]._outputs)
             self.mainWidget.sendError(
                 f"Process failed with the following output: "
                 f"\n{self.workerThread.error}"
@@ -585,20 +582,17 @@ class GudPyController(QtCore.QObject):
 
         if self.workerThread == self.gudpy.optimiser:
             self.mainWidget.optimiseTab.setResults(
-                self.gudpy.optimiser.gudrunIterator.gudrunFile.samples(),
+                self.gudpy.optimiser.gudrunFile.samples(),
                 self.gudpy.optimiser
             )
-            (self.mainWidget.optimiseTab.exponentialGroupBox
-             .exportDataButton.setEnabled(True))
-            (self.mainWidget.optimiseTab.exponentialGroupBox
-             .setParamsButton.setEnabled(True))
 
         self.mainWidget.outputSlots.setOutput(
             self.workerThread.output, "Gudrun", self.gudrunFile)
-        self.mainWidget.updateWidgets(
-            gudrunFile=self.gudrunFile,
-        )
-        self.gudpy.io.save(self.gudrunFile)
+        if not self.workerThread == self.gudpy.optimiser:
+            self.mainWidget.updateWidgets(
+                gudrunFile=self.gudrunFile,
+            )
+            self.gudpy.io.save(self.gudrunFile)
         self.workerThread = None
 
     def compositionIterationFinished(self, exitcode):
@@ -654,18 +648,16 @@ class GudPyController(QtCore.QObject):
         self.startProcess()
 
     def runOptimiseExponents(self):
-        gudrunFileCopy = copy.deepcopy(self.gudrunFile)
-
         if not self.prepareRun():
             return
 
         samples = []
-        for sw in self.mainWidget.optimiseTab.sampleWidgets:
+        for sw in self.mainWidget.optimiseTab.sampleWidgets.values():
             if sw.runSample:
                 samples.append(sw.sample)
 
         self.gudpy.optimiser = worker.OptimiseExponentsWorker(
-            gudrunFile=gudrunFileCopy,
+            gudrunFile=self.gudrunFile,
             samples=samples,
             purge=self.gudpy.purge,
             limit=(self.mainWidget.optimiseTab
@@ -675,7 +667,7 @@ class GudPyController(QtCore.QObject):
         )
 
         self.mainWidget.optimiseTab.setSamples(
-            self.gudpy.optimiser.gudrunFile.runSamples()
+            self.gudpy.gudrunFile.runSamples()
         )
 
         self.connectProcessSignals(
@@ -698,7 +690,7 @@ class GudPyController(QtCore.QObject):
             return
 
         samples = []
-        for sw in self.mainWidget.optimiseTab.sampleWidgets:
+        for sw in self.mainWidget.optimiseTab.sampleWidgets.values():
             if sw.runSample:
                 samples.append(sw.sample)
 

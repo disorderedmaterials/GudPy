@@ -489,7 +489,6 @@ class InelasticitySubtraction(Iterator):
         if self.iterationCount == 0:
             return
         for sample in gudrunFile.runSamples():
-            print(sample.name)
             if len(sample.dataFiles):
                 if scale == Scales.Q:
                     targetFile = sample.dataFiles[0].msubwFile

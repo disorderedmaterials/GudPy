@@ -32,7 +32,7 @@ class GudPy:
 
         self.purge: Purge = None
         self.gudrun: Gudrun = None
-        self.runModes: RunModes = None
+        self.runModes: RunModes = RunModes()
         self.gudrunIterator: GudrunIterator = None
         self.batchProcessor: BatchProcessing = None
         self.optimiser = None
@@ -713,7 +713,7 @@ class RunModes:
                     containersAsSamples.append(
                         container.convertToSample()
                     )
-            newGudrunFile.sampleBackground.samples = containersAsSamples
+            sampleBackground.samples = containersAsSamples
         return newGudrunFile
 
     def partition(self, gudrunFile):

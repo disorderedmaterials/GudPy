@@ -42,14 +42,10 @@ class DataFile:
 
     @property
     def mintFile(self):
-        if not self.isSampleDataFile:
-            return None
         return self._outputs.get(".mint01", None)
 
     @property
     def mdcsFile(self):
-        if not self.isSampleDataFile:
-            return None
         mdcsFile = self._outputs.get(".mdcs01", None)
         if mdcsFile:
             return mdcsFile
@@ -72,26 +68,18 @@ class DataFile:
 
     @property
     def msubwFile(self):
-        if not self.isSampleDataFile:
-            return None
         return self._outputs.get(".msubw01", None)
 
     @property
     def mcdsFile(self):
-        if not self.isSampleDataFile:
-            return None
         return self._outputs.get(".mcds01", None)
 
     @property
     def mdorFile(self):
-        if not self.isSampleDataFile:
-            return None
         return self._outputs.get(".mdor01", None)
 
     @property
     def mgorFile(self):
-        if not self.isSampleDataFile:
-            return None
         return self._outputs.get(".mgor01", None)
 
 

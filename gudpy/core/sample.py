@@ -1,3 +1,5 @@
+import os
+
 from core.utils import bjoin, numifyBool
 from core.data_files import DataFiles
 from core.composition import Composition
@@ -174,11 +176,18 @@ class Sample:
         return data.NpDataSet(self._referenceDataFile)
 
     def mse(self, limit=None):
-        if (not self.dataFiles or not self.dataFiles[0].mintFile
-                or not self.referenceDataFile):
+        if not self.dataFiles or not self.dataFiles[0].mintFile:
             return None
-        refData = data.NpDataSet(self.referenceDataFile, lim=limit)
-        expData = data.NpDataSet(self.dataFiles[0].mintFile, lim=limit)
+        if not os.path.exists(self.dataFiles[0].mintFile):
+            return None
+        if (not self.referenceDataFile
+           or not os.path.exists(self.referenceDataFile)):
+            return None
+        try:
+            refData = data.NpDataSet(self.referenceDataFile, lim=limit)
+            expData = data.NpDataSet(self.dataFiles[0].mintFile, lim=limit)
+        except TypeError:
+            return None
         return data.meanSquaredError(refData, expData)
 
     def pathName(self):

@@ -371,6 +371,21 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.normalisationSlots.setNormalisation(self.gudrunFile.normalisation)
         self.optimiseTab.setSamples(self.gudrunFile.runSamples())
 
+        if not self.allPlots:
+            allTopChart = GudPyChart()
+            samples = [*gudrunFile.samples(), *gudrunFile.containers()]
+            allTopChart.addSamples(samples)
+            allTopChart.plot(
+                self.ui.allPlotComboBox.itemData(
+                    self.ui.allPlotComboBox.currentIndex()
+                )
+            )
+            allBottomChart = GudPyChart()
+            allBottomChart.addSamples(samples)
+            self.allPlots = [allTopChart, allBottomChart]
+            self.ui.allSampleTopPlot.setChart(allTopChart)
+            self.ui.allSampleBottomPlot.setChart(allBottomChart)
+
         if len(self.gudrunFile.sampleBackgrounds):
             self.sampleBackgroundSlots.setSampleBackground(
                 self.gudrunFile.sampleBackgrounds[0]
@@ -577,6 +592,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
             *self.ui.objectTree.getContainers(),
         ]
         for sample in samples:
+            if sample in self.results.keys():
+                continue
             topChart = GudPyChart()
             topChart.addSample(sample)
             bottomChart = GudPyChart()
@@ -600,6 +617,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
                 topChart, bottomChart, gf if gf else None]
 
     def updateAllSamples(self):
+        return
         samples = [
             *self.ui.objectTree.getSamples(),
             *self.ui.objectTree.getContainers(),

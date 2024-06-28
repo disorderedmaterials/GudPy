@@ -95,23 +95,26 @@ class GudrunWorker(Worker, gudpy.Gudrun):
         self.progress = 0
 
         # Number of GudPy objects
-        self.markers = (
-            config.NUM_GUDPY_CORE_OBJECTS - 1
-            + len(self.gudrunFile.sampleBackgrounds) + sum([sum([
-                len([
-                    sample
-                    for sample in sampleBackground.samples
-                    if sample.runThisSample
-                ]),
-                *[
-                    len(sample.containers)
-                    for sample in sampleBackground.samples
-                    if sample.runThisSample
-                ]])
-                for sampleBackground in self.gudrunFile.sampleBackgrounds
-            ]))
+        self.markers = None
 
     def _progressChanged(self):
+        if not self.markers:
+            self.markers = (
+                config.NUM_GUDPY_CORE_OBJECTS - 1
+                + len(self.gudrunFile.sampleBackgrounds) + sum([sum([
+                    len([
+                        sample
+                        for sample in sampleBackground.samples
+                        if sample.runThisSample
+                    ]),
+                    *[
+                        len(sample.containers)
+                        for sample in sampleBackground.samples
+                        if sample.runThisSample
+                    ]])
+                    for sampleBackground in self.gudrunFile.sampleBackgrounds
+                ]))
+
         stepSize = math.ceil(100 / self.markers)
         self.progress = stepSize * sum([
             self.output.count("Got to: INSTRUMENT"),
@@ -278,14 +281,15 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
 
         self.gudrunObjects = []
         self.gudrunQueue = []
-        for _ in range(nIters):
-            gudrunWorker = GudrunWorker(gudrunFile=gudrunFile, purge=purge)
+        for _ in range(nIters * len(samples)):
+            gudrunWorker = GudrunWorker(
+                gudrunFile=self.gudrunFile, purge=purge)
             self.gudrunObjects.append(gudrunWorker)
             self.gudrunQueue.append(gudrunWorker)
             gudrunWorker.outputChanged.connect(self._outputChanged)
             gudrunWorker.progressChanged.connect(self._progressChanged)
 
-        self.gudrun = GudrunWorker(gudrunFile=gudrunFile, purge=purge)
+        self.gudrun = GudrunWorker(gudrunFile=self.gudrunFile, purge=purge)
         self.gudrun.outputChanged.connect(self._outputChanged)
         self.gudrun.progressChanged.connect(self._progressChanged)
 
@@ -305,11 +309,38 @@ class OptimiseExponentsWorker(QThread, optimise.BayesianOptimisation):
                 rounded += ", "
             rounded += str(roundedSet)
 
-        text = (f"Optimise {self.sample.name} " +
-                (f"- {rounded}" +
-                 f" MSE: {self.mse} " if self.mse else "") +
-                f"- {self.nCurrent + 1}/{int(self.nIters/len(self.samples))}"
-                )
+        if self.nCurrent == "Final Run":
+            text = (
+                "Final Run with params " +
+                f"- {rounded}"
+            )
+        else:
+            text = (
+                f"Optimise {self.sample.name} " +
+                f"- {rounded}" +
+                (f" MSE: {self.mse} " if self.mse else "") +
+                f"- {self.nCurrent}/{int(self.nIters/len(self.samples))}"
+            )
+
+        self.progressChanged.emit(
+            progress,
+            text
+        )
+
+    def _progressChangedFinalRun(self, progress):
+        rounded = ""
+
+        for set in self.sample.exponentialValues:
+            roundedSet = [round(v, 3) for v in set]
+            if rounded:
+                rounded += ", "
+            rounded += str(roundedSet)
+
+        text = (
+            "Final run with params " +
+            f"- {rounded}" +
+            f" MSE: {self.mse}"
+        )
 
         self.progressChanged.emit(
             progress,
