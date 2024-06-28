@@ -327,6 +327,8 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         )
         self.ui.tabWidget.addTab(self.optimiseTab, "Optimise")
 
+        self.ui.runContainersAsSamples.setEnabled(False)
+
         self.setActionsEnabled(False)
         self.ui.tabWidget.setVisible(False)
         self.setWindowModified(False)
@@ -769,7 +771,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.new_.setEnabled(state)
         self.ui.checkFilesExist.setEnabled(state)
         self.ui.runFilesIndividually.setEnabled(state)
-        self.ui.runContainersAsSamples.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(False)
         self.optimiseTab.setEnabled(state)
 
     def setActionsEnabled(self, state):
@@ -781,7 +783,7 @@ class GudPyMainWindow(QtWidgets.QMainWindow):
         self.ui.runFilesIndividually.setEnabled(state)
         self.ui.checkFilesExist.setEnabled(state)
         self.ui.runFilesIndividually.setEnabled(state)
-        self.ui.runContainersAsSamples.setEnabled(state)
+        self.ui.runContainersAsSamples.setEnabled(False)
         self.ui.batchProcessing.setEnabled(state)
         self.ui.viewLiveInputFile.setEnabled(state)
         self.ui.save.setEnabled(state & self.modified)
